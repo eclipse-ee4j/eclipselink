@@ -1,20 +1,36 @@
+#source files
 * text=auto
-*.bnd text eol=lf
+*.allpermissions text
+*.bak text
+*.bnd text
 *.cmd text eol=crlf
-*.g text eol=lf
-*.html text eol=lf
-*.java text eol=lf diff=java
-*.md text eol=lf
-*.MF text eol=lf
-*.mf text eol=lf
-*.mwp text eol=lf
-*.oxm text eol=lf
-*.properties text eol=lf
+*.dtd text
+*.dpr text
+*.g text
+*.html text diff=html
+*.java text diff=java
+*.md text
+*.MF text
+*.mf text
+*.mwp text
+*.oxm text
+*.properties text
 *.sh text eol=lf
-*.txt text eol=lf
-*.xml text eol=lf
-*.xsd text eol=lf
+*.sql text
+*.txt text
+*.xjb text
+*.xml text
+*.xsd text
+*.xsl text
 
+#eclipse specific files:
+*.component text
+.jsdtscope text
+*.launch text
+*.prefs text
+**/.project text
+
+#binaries
 *.zip binary
 *.jar binary
 *.jpg binary
