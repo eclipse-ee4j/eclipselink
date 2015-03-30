@@ -1849,7 +1849,7 @@ public class CacheableModelJunitTest extends JUnitTestCase {
             entity = (CacheableFalseEntity)query.getResultList().get(0);
             IndirectList list = (IndirectList)entity.getDetailsBackPointer();
             assertFalse(list.isInstantiated());
-            assertTrue(counter.getSqlStatements().size() == 1);
+            assertTrue(counter.getSqlStatements().size() == 2);
         } finally{
             rollbackTransaction(em);
             counter.remove();
