@@ -205,6 +205,7 @@
 
         <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
         <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
+        <echo message="additional.jvmargs    ='${additional.jvmargs}'"/>
     </target>
 
     <target name="init_eclipselink" if="use.eclipselink">
