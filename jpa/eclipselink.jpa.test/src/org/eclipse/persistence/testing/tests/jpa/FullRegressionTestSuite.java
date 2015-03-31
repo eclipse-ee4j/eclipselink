@@ -41,6 +41,7 @@ import org.eclipse.persistence.testing.tests.jpa.advanced.MetadataCachingTestSui
 import org.eclipse.persistence.testing.tests.jpa.advanced.NamedQueryJUnitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.OptimisticConcurrencyJUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.advanced.OptimisticLockForceIncrementTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.advanced.PersistenceUnitProcessorTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.PessimisticLockEntityRefreshTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.advanced.PessimisticLockingExtendedScopeTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.advanced.QueryCastTestSuite;
@@ -340,6 +341,9 @@ public class FullRegressionTestSuite extends TestSuite {
 
         // XML Mapping Metadata Complete
         fullSuite.addTest(XMLMappingMetadataCompleteJunitTestCase.suite());
+
+        // Persistence Unit Processor tests.
+        fullSuite.addTest(PersistenceUnitProcessorTest.suite());
 
         return fullSuite;
     }
