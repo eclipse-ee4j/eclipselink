@@ -38,6 +38,7 @@
                strategy. Also includes fixes to eclipselink.jar creation.
 *     egwin  - rework to standardize antcall conventions and fix multiple target builds.
 *     tkraus - additional JDK, Ant and JDBC driver check, conditional Oracle extensions tests build
+*     mvalovy - OSGi tests
 #******************************************************************************/-->
 <!-- =============================================================================
 *  General Comments
@@ -1573,7 +1574,7 @@
             depends="clear-db, test-core-srg, test-jpa21-srg, test-jpars, test-moxy-srg, test-sdo-srg, test-dbws-srg, test-dbws-builder-srg"
             />
     <target name="test-lrg" description="run all the LRG test suites"
-            depends="clear-db, test-core, test-jpa21, test-wdf, test-jpars, test-moxy, test-sdo, test-dbws, test-dbws-builder"
+            depends="clear-db, test-core, test-jpa21, test-wdf, test-jpars, test-moxy, test-sdo, test-dbws, test-dbws-builder, test-osgi"
             />
 
     <!-- Run clear-db -->
@@ -1670,5 +1671,11 @@
     </target>
     <target name="test-perf" description="run the performance tests">
         <ant antfile="antbuild.xml" dir="${eclipselink.perf.test}" target="test"/>
+    </target>
+    <!-- Run OSGi Tests -->
+    <target name="test-osgi" depends="test-osgi-moxy"
+            description="run eclipselink osgi tests"/>
+    <target name="test-osgi-moxy" description="run the moxy osgi tests">
+        <ant antfile="antbuild.xml" dir="${eclipselink.moxy.test}" target="test-osgi"/>
     </target>
 </project>
