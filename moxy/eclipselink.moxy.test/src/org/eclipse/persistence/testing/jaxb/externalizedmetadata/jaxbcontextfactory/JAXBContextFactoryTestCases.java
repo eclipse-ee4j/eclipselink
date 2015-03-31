@@ -584,7 +584,8 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
 
     }
 
-    public void testBindingFormatListJSONWhitespace() throws Exception {
+    //see: https://bugs.eclipse.org/bugs/show_bug.cgi?id=463573
+    public void IGNORED_testBindingFormatListJSONWhitespace() throws Exception {
          List<Object> inputFiles = new ArrayList<Object>();
          inputFiles.add(new File(FILE_PATH + "foo-oxm-whitespace.json"));
          inputFiles.add(new InputSource(new FileInputStream(INPUT_SRC_OXM_JSON)));
