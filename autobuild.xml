@@ -97,7 +97,7 @@
         <property name="junit.dir"       value="${build.deps.dir}/junit"/>
         <property name="build.tool.root" value="${build.location}"/>
         <property name="db-property.file" value="${build.tool.root}/db-${branch}.properties"/>
-        <property file="${db-propery.file}"/>
+        <property file="${db-property.file}"/>
 
         <echo message=" "/>
         <echo message="git.exec        ='${git.exec}'"/>
