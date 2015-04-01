@@ -27,6 +27,9 @@ import java.util.concurrent.CountDownLatch;
 
 import junit.framework.TestCase;
 
+import org.eclipse.persistence.exceptions.ServerPlatformException;
+import org.eclipse.persistence.logging.DefaultSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.platform.server.ServerPlatformBase;
 import org.eclipse.persistence.platform.server.ServerPlatformDetector;
 import org.eclipse.persistence.platform.server.ServerPlatformUtils;
@@ -43,10 +46,15 @@ import org.junit.Test;
 public class SessionManagerTest extends TestCase {
 
     private List<ServerPlatformDetector> detectors;
+    private SessionLog originalLogger;
 
     @Before
     @Override
     public void setUp() {
+        originalLogger = (SessionLog) getField(SessionManager.class, "LOG", null);
+        SessionLog log = new LogWrapper();
+        log.setLevel(originalLogger.getLevel());
+        setStaticField(SessionManager.class, "LOG", log);
     }
 
     @After
@@ -62,12 +70,13 @@ public class SessionManagerTest extends TestCase {
             }
             setStaticField(ServerPlatformUtils.class, "SERVER_PLATFORM_CLS", null);
         }
-        reinitManager(false);
+        setStaticField(SessionManager.class, "LOG", originalLogger);
+        reinitManager(false, true);
     }
 
     @Test
     public void testConcurrency() {
-        reinitManager(true);
+        reinitManager(true, true);
 
         SessionManager sm = SessionManager.getManager();
         Assert.assertEquals("test", getField(SessionManager.class, "context", sm));
@@ -121,7 +130,7 @@ public class SessionManagerTest extends TestCase {
         Collection<SessionManager> allManagers = SessionManager.getAllManagers();
         Assert.assertEquals(1, allManagers.size());
         Assert.assertNull(getField(SessionManager.class, "context", allManagers.iterator().next()));
-        reinitManager(true);
+        reinitManager(true, true);
         allManagers = SessionManager.getAllManagers();
         Assert.assertEquals(1, allManagers.size());
         Assert.assertEquals("test", getField(SessionManager.class, "context", allManagers.iterator().next()));
@@ -138,7 +147,7 @@ public class SessionManagerTest extends TestCase {
         Assert.assertEquals(1, allManagers.size());
         Assert.assertTrue(sm == allManagers.iterator().next());
 
-        reinitManager(true);
+        reinitManager(true, true);
         SessionManager.setManager(sm);
         m1 = SessionManager.getManager();
         Assert.assertNotNull(m1);
@@ -149,10 +158,40 @@ public class SessionManagerTest extends TestCase {
         sm.destroy();
     }
 
-    private void reinitManager(boolean addDetector) {
+    @Test
+    public void testInvalidPlatform() {
+        // platform class name can be invalid/not found
+        reinitManager(true, false);
+        SessionManager sm = SessionManager.getManager();
+        LogWrapper logger = (LogWrapper) getField(SessionManager.class, "LOG", null);
+        assertEquals(SessionLog.WARNING, logger.getLastLevel());
+        assertEquals(SessionLog.CONNECTION, logger.getLastCategory());
+        Throwable t = logger.getLastThrowable();
+        assertTrue("invalid excpetion type: " + t, t instanceof ServerPlatformException);
+        assertTrue("invalid excpetion type: " + t.getCause(), t.getCause() instanceof ClassNotFoundException);
+    }
+
+    @Test
+    public void testNPEFromPlatform() {
+        // platform impl can throw NPE which is being wrapped by other exceptions
+        Platform.forceNPE = true;
+        try {
+            reinitManager(true, true);
+            SessionManager sm = SessionManager.getManager();
+            LogWrapper logger = (LogWrapper) getField(SessionManager.class, "LOG", null);
+            assertEquals(SessionLog.WARNING, logger.getLastLevel());
+            assertEquals(SessionLog.CONNECTION, logger.getLastCategory());
+            Throwable t = logger.getLastThrowable();
+            assertTrue("invalid excpetion type: " + t, t instanceof ServerPlatformException);
+        } finally {
+            Platform.forceNPE = false;
+        }
+    }
+
+    private void reinitManager(boolean addDetector, boolean validDetector) {
         if (addDetector) {
             detectors = (List<ServerPlatformDetector>) getField(ServerPlatformUtils.class, "PLATFORMS", null);
-            detectors.add(0, new Detector());
+            detectors.add(0, new Detector(validDetector));
             setStaticField(ServerPlatformUtils.class, "SERVER_PLATFORM_CLS", null);
         }
         Method m = null;
@@ -241,12 +280,52 @@ public class SessionManagerTest extends TestCase {
         }
     }
 
+    private static final class LogWrapper extends DefaultSessionLog {
+        private volatile Throwable lastThrowable;
+        private volatile String lastCategory;
+        private volatile int lastLevel;
+
+        @Override
+        public void logThrowable(int level, String category, Throwable throwable) {
+            this.lastLevel = level;
+            this.lastCategory = category;
+            this.lastThrowable = throwable;
+            super.logThrowable(level, category, throwable);
+        }
+
+        /**
+         * @return the throwable
+         */
+        public Throwable getLastThrowable() {
+            return lastThrowable;
+        }
+
+        /**
+         * @return the category
+         */
+        public String getLastCategory() {
+            return lastCategory;
+        }
+
+        /**
+         * @return the level
+         */
+        public int getLastLevel() {
+            return lastLevel;
+        }
+
+    }
+
     public static final class Platform extends ServerPlatformBase {
 
         private volatile String partitionId = "test";
+        private static boolean forceNPE = false;
 
         public Platform(DatabaseSession newDatabaseSession) {
             super(newDatabaseSession);
+            if (forceNPE) {
+                throw new NullPointerException();
+            }
         }
 
         @Override
@@ -267,9 +346,15 @@ public class SessionManagerTest extends TestCase {
 
     private static class Detector implements ServerPlatformDetector {
 
+        private final boolean valid;
+
+        Detector(boolean valid) {
+            this.valid = valid;
+        }
+
         @Override
         public String checkPlatform() {
-            return Platform.class.getName();
+            return valid ? Platform.class.getName() : "non-existing-class-name";
         }
     }
 

@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import org.eclipse.persistence.exceptions.ServerPlatformException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetClassLoaderForClass;
@@ -65,7 +66,8 @@ public class SessionManager {
     private static volatile boolean supportPartitions;
     private String context;
     private static final Object[] lock = new Object[0];
-    private static final SessionLog LOG = AbstractSessionLog.getLog();
+    // not final for tests
+    private static SessionLog LOG = AbstractSessionLog.getLog();
 
     static {
         init();
@@ -75,11 +77,12 @@ public class SessionManager {
         String platformClass = ServerPlatformUtils.detectServerPlatform(null);
         try {
             detectedPlatform = ServerPlatformUtils.createServerPlatform(null, platformClass, SessionManager.class.getClassLoader());
-        } catch (NullPointerException npe) {
-            //some platforms may not be handling 'null' session well,
-            //so be defensive here and only log throwable here
+        } catch (ServerPlatformException e) {
+            // some platforms may not be handling 'null' session well or
+            // detected class as such may not be valid for some reason (ie
+            // not found), so be defensive here and only log throwable here
             detectedPlatform = null;
-            LOG.logThrowable(SessionLog.WARNING, AbstractSessionLog.CONNECTION, npe);
+            LOG.logThrowable(SessionLog.WARNING, AbstractSessionLog.CONNECTION, e);
         }
         supportPartitions = detectedPlatform != null && detectedPlatform.usesPartitions();
         if (supportPartitions) {
