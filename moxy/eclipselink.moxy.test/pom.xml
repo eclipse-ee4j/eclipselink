@@ -93,7 +93,7 @@
     </dependencies>
 
     <build>
-        <testSourceDirectory>src/org/eclipse/persistence/testing/moxy/osgi</testSourceDirectory>
+        <testSourceDirectory>src/org/eclipse/persistence/testing/osgi</testSourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
