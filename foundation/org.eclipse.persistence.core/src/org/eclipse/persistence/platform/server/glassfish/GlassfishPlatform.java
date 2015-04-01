@@ -13,6 +13,8 @@
  *       - 316513: Enable JMX MBean functionality for JBoss, Glassfish and WebSphere in addition to WebLogic
  *       Move JMX MBean generic registration code up from specific platforms
  *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513</link>        
+ *     04/01/2015 Will Dazey
+ *       - 463726: Added DatabaseSession null check
  ******************************************************************************/  
 package org.eclipse.persistence.platform.server.glassfish;
 
@@ -160,7 +162,7 @@ public class GlassfishPlatform extends JMXServerPlatformBase implements JMXEnabl
      */
     public void prepareServerSpecificServicesMBean() {
         // No check for an existing cached MBean - we will replace it if it exists
-        if(shouldRegisterRuntimeBean) {
+        if(getDatabaseSession() != null && shouldRegisterRuntimeBean) {
             this.setRuntimeServicesMBean(new MBeanGlassfishRuntimeServices(getDatabaseSession()));
         }
     }
