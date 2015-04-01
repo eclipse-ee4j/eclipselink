@@ -112,6 +112,8 @@ public final class ServerPlatformUtils {
                     //ignore, throw first exception
                     throw ServerPlatformException.serverPlatformClassNotFound(platformClass, ex);
                 }
+            } else {
+                throw ServerPlatformException.serverPlatformClassNotFound(platformClass, ex);
             }
         }
         final Class[] paramTypes = new Class[] { DatabaseSession.class };
