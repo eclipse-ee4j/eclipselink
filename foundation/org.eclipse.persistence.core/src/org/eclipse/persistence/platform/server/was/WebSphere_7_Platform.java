@@ -14,6 +14,8 @@
  *       Move JMX MBean generic registration code up from specific platforms
  *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513</link>
  *     05/10/2014 - 428675 - 2.5.2 - Rick Curtis - Add support for WebSphere logger.
+ *     04/01/2015 Will Dazey
+ *       - 463726: Added DatabaseSession null check
  ******************************************************************************/
 package org.eclipse.persistence.platform.server.was;
 
@@ -120,7 +122,7 @@ public class WebSphere_7_Platform extends WebSphere_6_1_Platform implements JMXE
      */
     public void prepareServerSpecificServicesMBean() {
         // No check for an existing cached MBean - we will replace it if it exists
-        if (shouldRegisterRuntimeBean) {
+        if (getDatabaseSession() != null && shouldRegisterRuntimeBean) {
             this.setRuntimeServicesMBean(new MBeanWebSphereRuntimeServices(getDatabaseSession()));
         }
     }

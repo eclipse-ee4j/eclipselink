@@ -1,19 +1,21 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     06/30/2010-2.1.1 Michael O'Brien 
+ *     06/30/2010-2.1.1 Michael O'Brien
  *       - 316513: Enable JMX MBean functionality for JBoss, Glassfish and WebSphere in addition to WebLogic
  *       Move JMX MBean generic registration code up from specific platforms
- *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513</link>        
- ******************************************************************************/  
+ *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513</link>
+ *     04/01/2015 Will Dazey
+ *       - 463726: Added DatabaseSession null check
+ ******************************************************************************/
 package org.eclipse.persistence.platform.server.jboss;
 
 import javax.persistence.spi.PersistenceUnitInfo;
@@ -43,7 +45,7 @@ public class JBossPlatform extends JMXServerPlatformBase implements JMXEnabledPl
      * to satisfy the requirements for 248746 where we provide an identifier pair for JMX sessions.
      * Each application can have several modules.
      * 1) Application name - the persistence unit associated with the session (a 1-1 relationship)
-     * 2) Module name - the ejb or war jar name (there is a 1-many relationship for module:session(s)) 
+     * 2) Module name - the ejb or war jar name (there is a 1-many relationship for module:session(s))
      */
     static {
         /** Override by subclass: Search String in application server ClassLoader for the application:persistence_unit name */
@@ -55,7 +57,7 @@ public class JBossPlatform extends JMXServerPlatformBase implements JMXEnabledPl
         APP_SERVER_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_POSTFIX = "/}";
         APP_SERVER_CLASSLOADER_MODULE_EJB_WAR_SEARCH_STRING_POSTFIX = "postfix,match~not;required^";
     }
-    
+
     /**
      * INTERNAL:
      * Default Constructor: All behavior for the default constructor is inherited
@@ -71,7 +73,7 @@ public class JBossPlatform extends JMXServerPlatformBase implements JMXEnabledPl
     public boolean isRuntimeServicesEnabledDefault() {
         return true;
     }
-    
+
     /**
      * INTERNAL: getExternalTransactionControllerClass(): Answer the class of external transaction controller to use
      * for JBoss. This is read-only.
@@ -108,16 +110,16 @@ public class JBossPlatform extends JMXServerPlatformBase implements JMXEnabledPl
                 puInfo.getPersistenceUnitName(), realClassLoader);
         return new JPAClassLoaderHolder(realClassLoader, false);
     }
-    
+
     /**
-     * INTERNAL: 
+     * INTERNAL:
      * prepareServerSpecificServicesMBean(): Server specific implementation of the
      * creation and deployment of the JMX MBean to provide runtime services for the
      * databaseSession.
      *
      * Default is to do nothing.
      * Implementing platform classes must override this function and supply
-     * the server specific MBean instance for later registration by calling it in the constructor.  
+     * the server specific MBean instance for later registration by calling it in the constructor.
      *
      * @see #isRuntimeServicesEnabled()
      * @see #disableRuntimeServices()
@@ -125,13 +127,13 @@ public class JBossPlatform extends JMXServerPlatformBase implements JMXEnabledPl
      */
     public void prepareServerSpecificServicesMBean() {
         // No check for an existing cached MBean - we will replace it if it exists
-        if(shouldRegisterRuntimeBean) {
+        if(getDatabaseSession() != null && shouldRegisterRuntimeBean) {
             this.setRuntimeServicesMBean(new MBeanJBossRuntimeServices(getDatabaseSession()));
         }
     }
-    
+
     /**
-     * INTERNAL: 
+     * INTERNAL:
      * serverSpecificRegisterMBean(): Server specific implementation of the
      * creation and deployment of the JMX MBean to provide runtime services for my
      * databaseSession.
@@ -146,5 +148,5 @@ public class JBossPlatform extends JMXServerPlatformBase implements JMXEnabledPl
         // get and cache module and application name during registration
         initializeApplicationNameAndModuleName();
     }
-    
+
 }
