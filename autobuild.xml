@@ -88,6 +88,7 @@
                  M2_HOME         - location of Maven3 install (on build server)
         -->
         <property name="branch" value="2.6_WAS"/>
+        <property name="release.type" value="SE"/>
 
         <condition property="git.exec"   value="${env.GIT_EXEC}">
             <isset property="env.GIT_EXEC"/>
@@ -384,8 +385,12 @@
             </fileset>
         </copy>
         <!-- Generate proper handoff file -->
+        <condition property="handoff_build_proc"   value="build_se"
+                                                   else="build">
+            <equals arg1="${release.type}" arg2="SE"/>
+        </condition>
         <antcall target="generate-handoff">
-            <param name="procedure"   value="build"/>
+            <param name="procedure"   value="${handoff_build_proc}"/>
             <param name="host"        value="Eclipse"/>
             <param name="extract.loc" value="${build.extract.dir}"/>
         </antcall>
@@ -410,8 +415,12 @@
         <copy file="${hudson.workspace}/${eclipselink.dbws.test}/${report.dir}/junit-noframes.html"         tofile="${test.extract.dir}/eclipselink-dbws-lrg-${version.string}.html"      failonerror="false"/>
         <copy file="${hudson.workspace}/${eclipselink.dbws.builder.test}/${report.dir}/junit-noframes.html" tofile="${test.extract.dir}/eclipselink-dbws-util-lrg-${version.string}.html" failonerror="false"/>
         <!-- Generate proper handoff file -->
+        <condition property="handoff_test_proc"   value="test_se"
+                                                  else="test">
+            <equals arg1="${release.type}" arg2="SE"/>
+        </condition>
         <antcall target="generate-handoff">
-            <param name="procedure"   value="test"/>
+            <param name="procedure"   value="${handoff_test_proc}"/>
             <param name="host"        value="${host}"/>
             <param name="extract.loc" value="${test.extract.dir}"/>
         </antcall>
