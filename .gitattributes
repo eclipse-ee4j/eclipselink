@@ -2,7 +2,6 @@
 * text=auto
 *.allpermissions text
 *.bak text
-*.bnd text
 *.cmd text eol=crlf
 *.dtd text
 *.dpr text
