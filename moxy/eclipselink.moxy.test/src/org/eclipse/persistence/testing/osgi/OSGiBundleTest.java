@@ -10,12 +10,13 @@
  * Contributors:
  *     Marcel Valovy - 2.6 - initial implementation
  ******************************************************************************/
-package org.eclipse.persistence.testing.moxy.osgi;
+package org.eclipse.persistence.testing.osgi;
 
 import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.inject.Inject;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,7 +28,6 @@ import static org.ops4j.pax.exam.CoreOptions.localRepository;
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.repositories;
-import static org.ops4j.pax.exam.CoreOptions.systemPackage;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.ExamReactorStrategy;
 import org.ops4j.pax.exam.junit.PaxExam;
@@ -35,6 +35,7 @@ import org.ops4j.pax.exam.spi.reactors.PerClass;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.Version;
 
 /**
  * Tests that all MOXy exported bundles can be properly loaded by OSGi framework.
@@ -64,6 +65,8 @@ public class OSGiBundleTest {
                         "http://maven.java.net/content/repositories/snapshots/"),
                 localRepository(getLocalRepository()),
                 mavenBundle().groupId("org.osgi").artifactId("org.osgi.compendium").version("4.3.0"),
+                mavenBundle().groupId("org.eclipse.persistence").artifactId("org.eclipse.persistence.asm")
+                        .version("2.5.1"),
                 //JAXB API
                 bundle("file:" + PLUGINS_DIR + "javax.xml.bind_2.2.12.v201410011542.jar"),
                 //WS API
@@ -71,9 +74,16 @@ public class OSGiBundleTest {
                 //EclipseLink bundles
                 bundle("file:" + PLUGINS_DIR + "org.eclipse.persistence.moxy_2.7.0." + QUALIFIER + ".jar"),
                 bundle("file:" + PLUGINS_DIR + "org.eclipse.persistence.core_2.7.0." + QUALIFIER + ".jar"),
+                bundle("file:" + PLUGINS_DIR + "org.eclipse.persistence.asm_5.0.1.v201405080102.jar"),
 
                 junitBundles(),
                 felix());
+    }
+
+    @Test
+    public void testAsmVersion() {
+        Class<?> c = loadClass("org.eclipse.persistence.internal.libraries.asm.AnnotationVisitor");
+        assertClassLoadedByBundle(c, "org.eclipse.persistence.asm", "5.0.1.v201405080102");
     }
 
     @Test
@@ -167,8 +177,21 @@ public class OSGiBundleTest {
     private void assertClassLoadedByBundle(Class<?> c, String bundle) {
         Bundle b = FrameworkUtil.getBundle(c);
         Assert.assertEquals("Class '" + c.getName() + "' was loaded by '"
-                + b.getSymbolicName() + "', expected was '" + bundle + "'",
+                        + b.getSymbolicName() + "', expected was '" + bundle + "'",
                 bundle, b.getSymbolicName());
+        Assert.assertEquals("Bundle '" + bundle + "' is not running", Bundle.ACTIVE, b.getState());
+    }
+
+    private void assertClassLoadedByBundle(Class<?> c, String bundle, String version) {
+        Bundle b = FrameworkUtil.getBundle(c);
+        Version v = b.getVersion();
+        Assert.assertEquals("Class '" + c.getName() + "' was loaded by '"
+                        + b.getSymbolicName() + "', expected was '" + bundle + "'",
+                bundle, b.getSymbolicName());
+        Assert.assertEquals("Class '" + c.getName() + "' was loaded by '"
+                        + b.getSymbolicName() + "', version '" + v.toString() +"' expected was '" + bundle + "', version '" +
+                        v.toString() + "'.",
+                version, v.toString());
         Assert.assertEquals("Bundle '" + bundle + "' is not running", Bundle.ACTIVE, b.getState());
     }
 
@@ -177,7 +200,7 @@ public class OSGiBundleTest {
         return (path != null && path.trim().length() > 0)
                 ? path
                 : System.getProperty("user.home") + File.separator
-                    + ".m2" + File.separator
-                    + "repository";
+                + ".m2" + File.separator
+                + "repository";
     }
 }
