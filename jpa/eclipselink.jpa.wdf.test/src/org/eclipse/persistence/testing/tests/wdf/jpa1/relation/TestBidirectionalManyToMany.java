@@ -328,6 +328,9 @@ public class TestBidirectionalManyToMany extends JPA1Base {
             verify(emp.postUpdateWasCalled(), "post update was not called");
             Set<Pair> expected = new HashSet<Pair>(SEED_SET);
             expected.remove(new Pair(HANS_ID_VALUE, removedId));
+            //we need to remove also record with Fred (if applicable), because if Fred had associated project, which is now removed,
+            //he is not associated with the project anymore
+            expected.remove(new Pair(FRED_ID_VALUE, removedId));
             expected.add(new Pair(HANS_ID_VALUE, newId));
             checkJoinTable(expected);
             env.beginTransaction(em);
