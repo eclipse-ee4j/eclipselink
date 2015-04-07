@@ -287,7 +287,9 @@
     <target name="test-package-installer-zip"
             depends="clean-installer-reports, compile-tests, run-installer-tests, installer-junit-report"
             description="build and run moxy (installer) tests and generate junit report"/>
-    <target name="test-osgi" depends="compile-and-run-osgi-tests"/>
+    <target name="test-osgi"
+            depends="init-osgi, check-osgi, compile-and-run-osgi-tests"
+            description="build and run moxy and moxy-core osgi tests"/>
 
     <!-- The following tests build and run against eclipselink.jar -->
     <target name="test-against-jar" depends="clean-reports, compile-and-run-tests-against-jar, moxy-junit-report"
@@ -342,8 +344,18 @@
             description="build and run moxy (oxm) tl deployment xml tests">
         <run_oxm_deploymentxml_tl_tests runpathref="oxm.run.path"/>
     </target>
-    <target name="compile-and-run-osgi-tests" description="build and run moxy osgi tests through maven">
-        <property environment="env"/>
+
+    <target name="init-osgi">
+        <!-- Detect compatible version of JDK for OSGi tests (= 1.7). -->
+        <condition property="compat.jdk.osgi" value="true">
+            <matches string="${java.version}" pattern="1.7(?:.\d+)*.*"/>
+        </condition>
+        <echo message="Detected JDK version:${java.version}. OSGi tests will not run on other JDK than 1.7!"/>
+    </target>
+    <target name="check-osgi" unless="compat.jdk.osgi">
+        <echo message="Skipping OSGi Tests for JDK > 1.7."/>
+    </target>
+    <target name="compile-and-run-osgi-tests" if="compat.jdk.osgi">
         <condition property="M2_HOME" value="${env.M2_HOME}"
                    else="C:/apache-maven-3.0.3">
             <isset property="env.M2_HOME"/>
