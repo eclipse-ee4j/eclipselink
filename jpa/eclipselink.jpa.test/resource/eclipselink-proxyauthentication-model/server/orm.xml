@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings  version="1.0"
+                  xmlns="http://java.sun.com/xml/ns/persistence/orm"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemalocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_1_0.xsd">
+
+    <entity class="org.eclipse.persistence.testing.models.jpa.proxyauthentication.Employee" metadata-complete="false">
+        <table name="%%dbUser%%.JPA_PROXY_EMPLOYEE"/>
+        <attributes>
+            <id name="id">
+                <table-generator name="JPA_PROXY_EMPLOYEE_TABLE_GENERATOR" 
+                                 table="%%dbUser%%.PROXY_EMPLOYEE_SEQ"
+                                 pk-column-name="SEQ_NAME"
+                                 value-column-name="SEQ_COUNT"
+                                 pk-column-value="PROXY_EMPLOYEE_SEQ"
+                                 initial-value="5"/>
+            </id>
+        </attributes>
+    </entity>
+    
+    <entity class="org.eclipse.persistence.testing.models.jpa.proxyauthentication.PhoneNumber" metadata-complete="false">
+        <table name="%%proxyUser%%.PROXY_PHONENUMBER"/>
+    </entity>
+    
+</entity-mappings>

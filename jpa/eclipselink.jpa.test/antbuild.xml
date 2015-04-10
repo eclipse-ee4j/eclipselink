@@ -2813,6 +2813,12 @@
         <replace dir="${jpatest.basedir}/stage/META-INF" token='%%database3-platform%%' value="${db3.platform}">
             <include name="*.xml"/>
         </replace>
+        <replace dir="${jpatest.basedir}/stage/META-INF" token='%%dbUser%%' value="${db.user}">
+            <include name="*.xml"/>
+        </replace>
+        <replace dir="${jpatest.basedir}/stage/META-INF" token='%%proxyUser%%' value="${oracle.proxy.user}">
+            <include name="*.xml"/>
+        </replace>
         <!-- Replace datasource type, name and transaction type -->
         <antcall target="replace-datasource-type" inheritRefs="true"/>
         <antcall target="add-project-cache-properties" inheritRefs="true"/>

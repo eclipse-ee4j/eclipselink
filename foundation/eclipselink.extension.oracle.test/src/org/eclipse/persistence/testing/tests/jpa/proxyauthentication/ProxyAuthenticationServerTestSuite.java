@@ -427,6 +427,8 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
             oracleConn = (OracleConnection)serverSession.getServerPlatform().unwrapConnection(conn);
         }
         oracleConn.openProxySession(OracleConnection.PROXYTYPE_USER_NAME, props);
+        // 12c driver will default to an autoCommit setting of true on calling openProxySession
+        oracleConn.setAutoCommit(false);
         System.out.println("====testJtaDataSource openProxySession ok");
         mngr.rollback();
         

@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     05/28/2008-1.0M8 Andrei Ilitchev 
- *        - New file introduced for bug 224964: Provide support for Proxy Authentication through JPA. 
- ******************************************************************************/  
+ *     05/28/2008-1.0M8 Andrei Ilitchev
+ *        - New file introduced for bug 224964: Provide support for Proxy Authentication through JPA.
+ ******************************************************************************/
 package org.eclipse.persistence.platform.database.oracle;
 
 import java.sql.Connection;
@@ -46,14 +46,14 @@ public class OracleJDBC_10_1_0_2ProxyConnectionCustomizer extends ConnectionCust
     public OracleJDBC_10_1_0_2ProxyConnectionCustomizer(Accessor accessor, Session session) {
         super(accessor, session);
     }
-    
+
     /**
      * INTERNAL:
      * Applies customization to connection.
-     * Called only if connection is not already customized (isActive()==false). 
+     * Called only if connection is not already customized (isActive()==false).
      * The method may throw SQLException wrapped into DatabaseException.
      * isActive method called after this method should return true only in case
-     * the connection was actually customized. 
+     * the connection was actually customized.
      */
     public void customize() {
         // Lazily initialize proxy properties - customize method may be never called
@@ -88,7 +88,7 @@ public class OracleJDBC_10_1_0_2ProxyConnectionCustomizer extends ConnectionCust
                 // Unexpectedly oracleConnection already has a proxy session - probably it was not closed when connection was returned back to connection pool.
                 // That may happen on jta transaction rollback (especially triggered outside of user's thread - such as timeout)
                 // when beforeCompletion is never issued
-                // and application server neither closes proxySession nor allows access to connection in afterCompletion. 
+                // and application server neither closes proxySession nor allows access to connection in afterCompletion.
                 try {
                     if (args != null) {
                         ((AbstractSession)this.session).log(SessionLog.FINEST, SessionLog.CONNECTION, "proxy_connection_customizer_already_proxy_session", args);
@@ -99,7 +99,9 @@ public class OracleJDBC_10_1_0_2ProxyConnectionCustomizer extends ConnectionCust
                     this.session.getSessionLog().logThrowable(SessionLog.WARNING, SessionLog.CONNECTION, exception);
                 }
             }
-            oracleConnection.openProxySession(proxyType, proxyProperties); 
+            oracleConnection.openProxySession(proxyType, proxyProperties);
+            // 12c driver will default to an autoCommit setting of true on calling openProxySession
+            oracleConnection.setAutoCommit(false);
             if (args != null) {
                 ((AbstractSession)this.session).log(SessionLog.FINEST, SessionLog.CONNECTION, "proxy_connection_customizer_opened_proxy_session", args);
             }
@@ -119,11 +121,11 @@ public class OracleJDBC_10_1_0_2ProxyConnectionCustomizer extends ConnectionCust
     public boolean isActive() {
         return oracleConnection != null;
     }
-    
+
     /**
      * INTERNAL:
      * Clears customization from connection.
-     * Called only if connection is customized (isActive()==true). 
+     * Called only if connection is customized (isActive()==true).
      * If the method fails due to SQLException it should "eat" it
      * (just like DatasourceAccessor.closeConnection method).
      * isActive method called after this method should always return false.
@@ -148,7 +150,7 @@ public class OracleJDBC_10_1_0_2ProxyConnectionCustomizer extends ConnectionCust
             oracleConnection = null;
         }
     }
-    
+
     /**
      * INTERNAL:
      * Normally called only when customizer is in inactive state (isActive()==false)
@@ -161,7 +163,7 @@ public class OracleJDBC_10_1_0_2ProxyConnectionCustomizer extends ConnectionCust
             throw new InternalError("clone not supported");
         }
     }
-    
+
     /**
      * INTERNAL:
      * Two customizers considered equal if they produce the sane customization.
@@ -173,7 +175,7 @@ public class OracleJDBC_10_1_0_2ProxyConnectionCustomizer extends ConnectionCust
             return false;
         }
     }
-    
+
     /**
      * INTERNAL:
      * Two customizers considered equal if they produce the sane customization.
@@ -190,7 +192,7 @@ public class OracleJDBC_10_1_0_2ProxyConnectionCustomizer extends ConnectionCust
         }
         return this.proxyType == customizer.proxyType && this.proxyProperties.equals(customizer.proxyProperties);
     }
-    
+
     /**
      * INTERNAL:
      * Precondition: session.getProperty(PersistenceUnitProperties.ORACLE_PROXY_TYPE) != null
@@ -200,7 +202,7 @@ public class OracleJDBC_10_1_0_2ProxyConnectionCustomizer extends ConnectionCust
         try {
             proxyType = ((Integer)session.getPlatform().getConversionManager().convertObject(proxyTypeValue, Integer.class)).intValue();
         } catch (ConversionException conversionException) {
-            throw ValidationException.oracleJDBC10_1_0_2ProxyConnectorRequiresIntProxytype();            
+            throw ValidationException.oracleJDBC10_1_0_2ProxyConnectorRequiresIntProxytype();
         }
         proxyProperties = new Properties();
         if(proxyType == OracleConnection.PROXYTYPE_USER_NAME) {
@@ -238,7 +240,7 @@ public class OracleJDBC_10_1_0_2ProxyConnectionCustomizer extends ConnectionCust
             proxyProperties.put(OracleConnection.PROXY_ROLES, proxyRoles);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Clears connection's both implicit and explicit caches.
