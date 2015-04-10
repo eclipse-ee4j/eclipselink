@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -39,16 +38,15 @@ import java.util.Vector;
 
 import javax.persistence.CacheStoreMode;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.FlushModeType;
 import javax.persistence.Query;
 import javax.persistence.metamodel.Attribute;
+import javax.persistence.metamodel.Attribute.PersistentAttributeType;
+import javax.persistence.metamodel.Bindable.BindableType;
 import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.MapAttribute;
 import javax.persistence.metamodel.Metamodel;
 import javax.persistence.metamodel.SingularAttribute;
-import javax.persistence.metamodel.Attribute.PersistentAttributeType;
-import javax.persistence.metamodel.Bindable.BindableType;
 import javax.persistence.metamodel.Type.PersistenceType;
 import javax.persistence.spi.LoadState;
 import javax.persistence.spi.ProviderUtil;
@@ -57,7 +55,6 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.eclipse.persistence.annotations.BatchFetchType;
-import org.eclipse.persistence.annotations.JoinFetch;
 import org.eclipse.persistence.config.CascadePolicy;
 import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.QueryHints;
@@ -94,7 +91,6 @@ import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.JoinedAttributeTestHelper;
 import org.eclipse.persistence.testing.framework.QuerySQLTracker;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
 import org.eclipse.persistence.testing.models.jpa.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.Bag;
@@ -123,8 +119,8 @@ import org.eclipse.persistence.testing.models.jpa.advanced.Quantity;
 import org.eclipse.persistence.testing.models.jpa.advanced.Room;
 import org.eclipse.persistence.testing.models.jpa.advanced.SmallProject;
 import org.eclipse.persistence.testing.models.jpa.advanced.Violation;
-import org.eclipse.persistence.testing.models.jpa.advanced.ViolationCode;
 import org.eclipse.persistence.testing.models.jpa.advanced.Violation.ViolationID;
+import org.eclipse.persistence.testing.models.jpa.advanced.ViolationCode;
 import org.eclipse.persistence.testing.models.jpa.advanced.ViolationCode.ViolationCodeId;
 import org.eclipse.persistence.testing.models.jpa.advanced.additionalcriteria.Bolt;
 import org.eclipse.persistence.testing.models.jpa.advanced.additionalcriteria.Eater;
@@ -136,7 +132,6 @@ import org.eclipse.persistence.testing.models.jpa.advanced.additionalcriteria.Sc
 import org.eclipse.persistence.testing.models.jpa.advanced.additionalcriteria.Student;
 import org.eclipse.persistence.tools.schemaframework.SchemaManager;
 import org.eclipse.persistence.tools.schemaframework.StoredFunctionDefinition;
-import org.hamcrest.core.IsEqual;
 
 /**
  * This test suite tests EclipseLink JPA annotations extensions.
@@ -164,6 +159,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         super(name);
     }
 
+    @Override
     public void setUp() {
         super.setUp();
         clearCache();
@@ -574,7 +570,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         AbstractSession session = (AbstractSession) JpaHelper.getEntityManager(em).getActiveSession();
         ClassDescriptor descriptor = session.getDescriptorForAlias("Jigsaw");
 
-        Jigsaw foundJigsaw = (Jigsaw) em.find(Jigsaw.class, jigsaw.getId());
+        Jigsaw foundJigsaw = em.find(Jigsaw.class, jigsaw.getId());
         int expectedNumber = foundJigsaw.getPieces().size();
 
         ForeignReferenceMapping mapping = (ForeignReferenceMapping) descriptor.getMappingForAttributeName("pieces");
@@ -615,7 +611,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             AbstractSession session = (AbstractSession) JpaHelper.getEntityManager(em).getActiveSession();
             ClassDescriptor descriptor = session.getDescriptorForAlias("Jigsaw");
 
-            Jigsaw foundJigsaw = (Jigsaw) em.find(Jigsaw.class, jigsaw.getId());
+            Jigsaw foundJigsaw = em.find(Jigsaw.class, jigsaw.getId());
             int expectedNumber = foundJigsaw.getPieces().size();
 
             OneToManyMapping mapping = (OneToManyMapping) descriptor.getMappingForAttributeName("pieces");
@@ -2110,6 +2106,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         Session session = getServerSession();
         ClassDescriptor departmentDesc = session.getDescriptor(Department.class);
         DescriptorEventAdapter listener = new DescriptorEventAdapter(){
+            @Override
             public void postClone(DescriptorEvent event) {
                 ((Department)event.getObject()).getEquipment().size();
             }
