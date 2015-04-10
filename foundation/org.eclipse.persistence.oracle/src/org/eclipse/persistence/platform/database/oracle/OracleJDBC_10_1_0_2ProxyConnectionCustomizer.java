@@ -100,6 +100,8 @@ public class OracleJDBC_10_1_0_2ProxyConnectionCustomizer extends ConnectionCust
                 }
             }
             oracleConnection.openProxySession(proxyType, proxyProperties);
+            // 12c driver will default to an autoCommit setting of true on calling openProxySession
+            oracleConnection.setAutoCommit(false);
             if (args != null) {
                 ((AbstractSession)this.session).log(SessionLog.FINEST, SessionLog.CONNECTION, "proxy_connection_customizer_opened_proxy_session", args);
             }
