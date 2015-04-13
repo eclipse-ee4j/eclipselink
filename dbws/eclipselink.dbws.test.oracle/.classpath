@@ -6,6 +6,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.core"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.oracle"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.dbws"/>
+	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="var" path="ORACLE_JDBC_LIB"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
+	<classpathentry kind="src" path="utility/source"/>
 	<classpathentry kind="src" path="uitools/source"/>
+	<classpathentry kind="src" path="framework/source"/>
+	<classpathentry kind="src" path="platformsmodel/source"/>
+	<classpathentry kind="src" path="platformsplugin/source"/>
+	<classpathentry kind="src" path="mappingsmodel/source"/>
+	<classpathentry kind="src" path="mappingsio/source"/>
+	<classpathentry kind="src" path="mappingsplugin/source"/>
+	<classpathentry kind="src" path="scplugin/source"/>
 	<classpathentry kind="lib" path="config"/>
 	<classpathentry kind="lib" path="iconlib/resource"/>
 	<classpathentry kind="lib" path="/eclipselink.utils.workbench.lib/compile/ant.jar"/>
