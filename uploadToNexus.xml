@@ -192,6 +192,9 @@
         <property name="hermes.prefix"        value="org.eclipse.persistence.jpa.jpql"/>
         <property name="hermes.criteria"      value="[1.0.0,9.0.0)"/>
         <property name="hermes.name"          value="EclipseLink Hermes JPQL Parser"/>
+        <property name="extension.prefix"     value="org.eclipse.persistence.extension"/>
+        <property name="extension.criteria"   value="[1.0.0,9.0.0)"/>
+        <property name="extension.name"       value="EclipseLink Extensions"/>
 
         <selectbundle basename="${jpaapi.prefix}"  directory="${maven.2.jpa.plugins.dir}"
                       criterion="${jpaapi.criteria}" property="jpaapi.version" versiononly="true"
@@ -223,6 +226,9 @@
         <selectbundle basename="${hermes.prefix}"  directory="${maven.2.common.plugins.dir}"
                       criterion="${hermes.criteria}" property="hermes.version" versiononly="true"
                 />
+        <selectbundle basename="${extension.prefix}"  directory="${maven.2.common.plugins.dir}"
+                      criterion="${extension.criteria}" property="extension.version" versiononly="true"
+        />
 
         <echo message="jpaapi.version     = ${jpaapi.version}"/>
         <echo message="sdoapi.version     = ${sdoapi.version}"/>
@@ -234,6 +240,7 @@
         <echo message="oraclebndl.version = ${oraclebndl.version}"/>
         <echo message="oraclenosql.version= ${oraclenosql.version}"/>
         <echo message="hermes.version     = ${hermes.version}"/>
+        <echo message="extension.version  = ${extension.version}"/>
 
         <!-- Maven standards state we should publish with a stripped down 3-part version rather -->
         <!-- than the 4-part OSGi version. So we need to generate "(bundle).mvn.version" from   -->
@@ -325,6 +332,7 @@
         <property name="builder.dependencies"     value="${deps.head}${dep.core}${dep.dbws}${dep.moxy}${dep.jpa}${dep.nosql}${dep.oracle}${dep.servlet}${dep.wsdl}${dep.oracleddl}${deps.foot}"/>
         <property name="moxy.dependencies"        value="${deps.head}${dep.core}${dep.validation}${dep.json}${deps.foot}"/>
         <property name="sdo.dependencies"         value="${deps.head}${dep.sdoapi}${dep.moxy}${dep.core}${deps.foot}"/>
+        <property name="extension.dependencies"   value="${deps.head}${dep.core}${deps.foot}"/>
     </target>
 
     <!-- Nexus typicaly is configured to disallow uploads of already published versions (non-snapshot)   -->
@@ -519,6 +527,15 @@
             <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/org.eclipse.persistence.dbws.builder.source_${version.string}.jar"/>
             <param name="artifactName"    value="EclipseLink DBWS Builder"/>
             <param name="dependencies"    value="${builder.dependencies}"/>
+        </antcall>
+        <antcall target="upload-artifact">
+            <param name="groupId"         value="org.eclipse.persistence"/>
+            <param name="artifactId"      value="org.eclipse.persistence.extension"/>
+            <param name="artifactVersion" value="${maven.version}"/>
+            <param name="artifact"        value="${maven.2.common.plugins.dir}/org.eclipse.persistence.extension_${version.string}.jar"/>
+            <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/org.eclipse.persistence.extension.source_${version.string}.jar"/>
+            <param name="artifactName"    value="EclipseLink Extensions"/>
+            <param name="dependencies"    value="${extension.dependencies}"/>
         </antcall>
     </target>
 
