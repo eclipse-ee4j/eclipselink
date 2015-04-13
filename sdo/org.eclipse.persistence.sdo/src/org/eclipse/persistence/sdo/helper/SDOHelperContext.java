@@ -51,6 +51,7 @@ import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.logging.Logger;
 
 /**
  * <b>Purpose:</b>
@@ -68,6 +69,9 @@ import java.util.concurrent.ConcurrentMap;
  * @since Oracle TopLink 11.1.1.0.0
  */
 public class SDOHelperContext implements HelperContext {
+
+    private static final Logger LOGGER = Logger.getLogger(SDOHelperContext.class.getName());
+
     protected CopyHelper copyHelper;
     protected DataFactory dataFactory;
     protected DataHelper dataHelper;
@@ -144,6 +148,17 @@ public class SDOHelperContext implements HelperContext {
     // allow users to provide application info 
     private static ApplicationResolver appResolver;
     private static boolean isAppResolverSet = false;
+
+    /**
+     * Default strategy for HelperContext creation.
+     * Singleton.
+     */
+    private static final HelperContextResolver DEFAULT_HCR = new DefaultHelperContextResolver();
+
+    /**
+     * Strategy for HelperContext creation. Couldn't be null.
+     */
+    private static HelperContextResolver helperContextResolver = DEFAULT_HCR;
 
     /**
      * ADVANCED:
@@ -452,9 +467,11 @@ public class SDOHelperContext implements HelperContext {
         ConcurrentMap<String, HelperContext> contextMap = getContextMap();
         helperContext = contextMap.get(identifier);
         if (null == helperContext) {
-            helperContext = new SDOHelperContext(identifier, classLoader);
+            LOGGER.fine("helperContext not found.");
+            helperContext = helperContextResolver.getHelperContext(identifier, classLoader);
             HelperContext existingContext = contextMap.putIfAbsent(identifier, helperContext);
             if (existingContext != null) {
+                LOGGER.fine(String.format("contextMap already has context for id: %s. Existing one will be used.", identifier));
                 helperContext = existingContext;
             }
         }
@@ -790,6 +807,26 @@ public class SDOHelperContext implements HelperContext {
                 }
             }
         }
+    }
+
+    /**
+     * Getter for HelperContextResolver
+     * @return actual stategy
+     */
+    public static HelperContextResolver getHelperContextResolver() {
+        return helperContextResolver;
+    }
+
+    /**
+     * Method allows dynamically change HelperContext creation strategy.
+     *
+     * @param helperContextResolver strategy to be used. If it is null - then default strategy will be set.
+     */
+    public static void setHelperContextResolver(HelperContextResolver helperContextResolver) {
+        if (helperContextResolver == null)
+            SDOHelperContext.helperContextResolver = DEFAULT_HCR;
+        else
+            SDOHelperContext.helperContextResolver = helperContextResolver;
     }
 
     /**
@@ -1236,4 +1273,23 @@ public class SDOHelperContext implements HelperContext {
         return getProperties().get(name);
     }
 
+    /**
+     * Strategy for HelperContext creation.
+     *
+     * If is not set explicitly the default one is used.
+     */
+    public interface HelperContextResolver {
+
+        HelperContext getHelperContext(String id, ClassLoader classLoader);
+    }
+
+    private static class DefaultHelperContextResolver implements HelperContextResolver {
+
+        @Override
+        public HelperContext getHelperContext(String id, ClassLoader classLoader) {
+            LOGGER.fine(String.format("DefaultHelperContextResolver: new HelperContext will be created for id: %s and classLoader: %s",
+                    id, classLoader));
+            return new SDOHelperContext(id, classLoader);
+        }
+    }
 }
