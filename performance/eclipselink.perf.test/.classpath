@@ -8,10 +8,11 @@
 	<classpathentry kind="var" path="EXTENSION_LIB_EXTERNAL/jmh-core-0.9.3.jar"/>
 	<classpathentry kind="var" path="EXTENSION_LIB_EXTERNAL/jmh-generator-annprocess-0.9.3.jar"/>
 	<classpathentry kind="var" path="EXTENSION_LIB_EXTERNAL/commons-math3-3.3.jar"/>
-    <classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.json-1.0.jar"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/jpa/plugins/javax.persistence_2.1.0.v201304241213.jar" sourcepath="/ECLIPSELINK_HOME/jpa/plugins/javax.persistence.source_2.1.0.v201304241213.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.jpa"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.core"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.moxy"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.glassfish.javax.json_1.0.4.v201311181159.jar" sourcepath="/ECLIPSELINK_HOME/plugins/org.glassfish.javax.json.source_1.0.4.v201311181159.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.validation_1.1.0.v201304101302.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
