@@ -1485,6 +1485,8 @@
                 <include name="${package-rename.jar}"/>
                 <include name="readme.html"/>
             </zipfileset>
+            <!-- extension jar -->
+            <zipfileset dir="${eclipselink.plugins}/" includes="${eclipselink.extension.prefix}_${version.string}.jar, ${eclipselink.extension.prefix}.source_${version.string}.jar" prefix="eclipselink/jlib/extension"/>
             <!-- modelgen processor jar -->
             <zipfileset dir="${eclipselink.plugins}/" includes="${eclipselink.modelgen.prefix}_${version.string}.jar, ${eclipselink.modelgen.prefix}.source_${version.string}.jar" prefix="eclipselink/jlib/jpa"/>
             <!-- jpa persistence 2.1 jars -->
