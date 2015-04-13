@@ -1,15 +1,15 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests;
 
 import java.lang.reflect.Method;
@@ -122,10 +122,11 @@ public class TestRunModel extends TestModel {
             tests.add("org.eclipse.persistence.testing.tests.optimization.queryandsqlcounting.QueryAndSQLCountingTestModel");
             tests.add("org.eclipse.persistence.testing.tests.identitymaps.cache.CacheIdentityMapTestModel");
             tests.add("org.eclipse.persistence.testing.tests.failover.FailoverTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.distributedservers.rcm.jgroups.JGroupsDistributedServersModel");
         }
 
         // ** All new tests should be in light, unless they require specific db/config support
-        // or take a really long time, or need some kind of manual verification.        
+        // or take a really long time, or need some kind of manual verification.
         if (isAll) {
             // Requires specific classpath.
             tests.add("org.eclipse.persistence.testing.tests.classpath.ClassPathTestModel");
@@ -141,18 +142,17 @@ public class TestRunModel extends TestModel {
             tests.add("org.eclipse.persistence.testing.tests.sessionbroker.MultipleClientBrokersTestModel");
             tests.add("org.eclipse.persistence.testing.tests.sessionbroker.RMISessionBrokerRemoteModel");
             tests.add("org.eclipse.persistence.testing.tests.sessionbroker.ServerBrokerTestModel");
- 
+
             // Requires remote config.
             tests.add("org.eclipse.persistence.testing.tests.remote.RMIRemoteModel");
             tests.add("org.eclipse.persistence.testing.tests.remote.rmi.IIOP.RMIIIOPRemoteModel");
             tests.add("org.eclipse.persistence.testing.tests.remote.suncorba.SunCORBARemoteModel");
             tests.add("org.eclipse.persistence.testing.tests.distributedservers.DistributedSessionBrokerServersModel");
             tests.add("org.eclipse.persistence.testing.tests.distributedservers.rcm.RCMDistributedServersModel");
-            tests.add("org.eclipse.persistence.testing.tests.distributedservers.rcm.jgroups.JGroupsDistributedServersModel");
 
             // Can take a long time, can deadlock.
             tests.add("org.eclipse.persistence.testing.tests.clientserver.ClientServerTestModel");
-            
+
             // PLSQL
             tests.add("org.eclipse.persistence.testing.tests.plsql.PLSQLTestModel");
             tests.add("org.eclipse.persistence.testing.tests.plsql.PLSQLXMLTestModel");
@@ -223,7 +223,7 @@ public class TestRunModel extends TestModel {
     public static TestModel buildJPATestModel() {
         List tests = new ArrayList();
         tests.add("org.eclipse.persistence.testing.tests.jpa.AllJPATests");
-                    
+
         TestModel model = new TestModel();
         model.setName("JPA Tests");
         for (int index = 0; index < tests.size(); ++index) {
@@ -234,8 +234,8 @@ public class TestRunModel extends TestModel {
             }
         }
         return model;
-    }    
-    
+    }
+
     /**
      * Build and return a model of all Oracle specific tests.
      */
@@ -247,7 +247,7 @@ public class TestRunModel extends TestModel {
         tests.add("org.eclipse.persistence.testing.tests.xdb.XDBTestModel");
         tests.add("org.eclipse.persistence.testing.tests.xdb.XDBTestModelMWIntegration");
         tests.add("org.eclipse.persistence.testing.tests.unwrappedconnection.UnwrapConnectionXDBTestModel");
-        
+
         TestModel model = new TestModel();
         model.setName("Oracle Tests");
         for (int index = 0; index < tests.size(); ++index) {
@@ -265,8 +265,8 @@ public class TestRunModel extends TestModel {
             }
         }
         return model;
-    }   
-    
+    }
+
     /**
      * Build and return a model of all Oracle NoSQL tests.
      */
@@ -275,7 +275,7 @@ public class TestRunModel extends TestModel {
         tests.add("org.eclipse.persistence.testing.tests.eis.nosql.NoSQLTestModel");
         tests.add("org.eclipse.persistence.testing.tests.jpa.nosql.NoSQLTestSuite");
         tests.add("org.eclipse.persistence.testing.tests.jpa.nosql.NoSQLMappedTestSuite");
-        tests.add("org.eclipse.persistence.testing.tests.eis.aq.AQTestModel");        
+        tests.add("org.eclipse.persistence.testing.tests.eis.aq.AQTestModel");
 
         TestModel model = new TestModel();
         model.setName("Oracle NoSQL Tests");
@@ -304,7 +304,7 @@ public class TestRunModel extends TestModel {
         tests.add("org.eclipse.persistence.testing.tests.NoSQLJPATestSuite");
         tests.add("org.eclipse.persistence.testing.tests.eis.cobol.CobolTestModel");
         tests.add("org.eclipse.persistence.testing.tests.eis.xmlfile.XMLFileTestModel");
-        
+
         TestModel model = new TestModel();
         model.setName("NoSQL Tests");
         for (int index = 0; index < tests.size(); ++index) {
@@ -323,14 +323,14 @@ public class TestRunModel extends TestModel {
         }
         return model;
     }
-    
+
     /**
      * Return the JUnit suite to allow JUnit runner to find it.
      */
     public static junit.framework.TestSuite suite() {
         return buildLRGTestModel();
     }
-    
+
     public static TestRunModel buildLRGTestModel() {
         TestRunModel model = new TestRunModel();
         model.setName("LRGTestModel");
@@ -406,7 +406,7 @@ public class TestRunModel extends TestModel {
         performanceTests.add("org.eclipse.persistence.testing.tests.performance.ConcurrencyComparisonTestModel");
         performanceTests.add("org.eclipse.persistence.testing.tests.performance.ConcurrencyRegressionTestModel");
         performanceTests.add("org.eclipse.persistence.testing.tests.performance.JavaPerformanceComparisonModel");
-                    
+
         TestModel performanceModel = new TestModel();
         performanceModel.setName("Performance Tests");
         for (int index = 0; index < performanceTests.size(); ++index) {
@@ -426,7 +426,7 @@ public class TestRunModel extends TestModel {
         Vector performanceTests = new Vector();
         performanceTests.add("org.eclipse.persistence.testing.tests.jpa.performance.JPAPerformanceTestModel");
         performanceTests.add("org.eclipse.persistence.testing.tests.jpa.memory.JPAMemoryTestModel");
-                    
+
         TestModel performanceModel = new TestModel();
         performanceModel.setName("JPA Performance Tests");
         for (int index = 0; index < performanceTests.size(); ++index) {
@@ -438,7 +438,7 @@ public class TestRunModel extends TestModel {
         }
         return performanceModel;
     }
-    
+
     /**
      * Reset to the old login.
      */

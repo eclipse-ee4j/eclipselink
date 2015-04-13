@@ -30,6 +30,7 @@ public class JGroupsDistributedServersModel extends BroadcastDistributedServersM
 
     public void addTests() {
         addSuperTests();
+        addTest(new JGroupsConfigurationTest());
 
         // substitute each test with wrapped test - an instance of
         // BroadcastSetupHelper.TestWrapperWithEventLock, which contains

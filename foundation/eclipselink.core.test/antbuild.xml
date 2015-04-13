@@ -248,6 +248,8 @@
             <pathelement path="${core_test.run.dir}"/>
             <pathelement path="${jdbc.driver.jar}"/>
             <pathelement path="${tools.lib}"/>
+            <pathelement path="${core_test.2.common.plugins.dir}/${persistence.extension}_${version.string}.jar"/>
+            <pathelement path="${extensions.depend.dir}/${jgroups.jar}"/>
         </path>
         <path id="core_test.run.path">
             <path refid="core_test.compile.path"/>
