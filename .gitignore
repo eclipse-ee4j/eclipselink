@@ -1,6 +1,5 @@
 .DS_Store
 *.class
-!**/org.eclipse.persistence.core/resource/**/jdk8/**
 *test.jar
 *model.jar
 eclipselink*.jar

@@ -10,7 +10,7 @@ Export-Package: org.eclipse.persistence.eis.adapters.jms;version="2.7.0",
  org.eclipse.persistence.nosql.annotations;version="2.7.0"
 Bundle-Name: EclipseLink NoSQL Extensions
 Created-By: 1.6.0_26 (Sun Microsystems Inc.)
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.nosql
 Bundle-Vendor: Eclipse.org - EclipseLink Project
 Fragment-Host: org.eclipse.persistence.core;bundle-version="2.4.0"

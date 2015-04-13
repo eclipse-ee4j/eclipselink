@@ -130,12 +130,12 @@
     <echo message="Ant version detected: '${ant.version}'"/>
     <fail message="An non-compatible version of Ant was detected! Build won't run properly unless running at least 1.7.x of Ant!." unless="compat.ant"/>
 
-    <!-- Detect compatible version of JDK (>= 1.7). -->
+    <!-- Detect compatible version of JDK (>= 1.8). -->
     <condition property="compat.jdk" value="true">
-        <matches string="${java.version}" pattern="1.(?:[7-9]|[1-9]\d)(?:.\d+)*.*"/>
+        <matches string="${java.version}" pattern="1.(?:[8-9]|[1-9]\d)(?:.\d+)*.*"/>
     </condition>
     <echo message="JDK version detected: '${java.version}'"/>
-    <fail message="An non-compatible version of JDK was detected! Build won't run properly unless running at least 1.7 of JDK!." unless="compat.jdk"/>
+    <fail message="A non-compatible version of JDK was detected! Build won't run properly unless running on at least JDK 1.8!." unless="compat.jdk"/>
 
     <!-- JDBC driver settings info -->
     <condition property="msg.jdbc.driver.jar.configured" value="JDBC driver JAR: '${jdbc.driver.jar}'" else="JDBC driver JAR: jdbc.driver.jar property missing">
@@ -589,46 +589,6 @@
         <ant antfile="antbuild.xml" dir="${eclipselink.util.jaxb}"              target="build"/>
     </target>
 
-    <target name="build-jdk8" description="compile JDK 8+ specific sources">
-        <!--
-            helper target to compile JDK 8 specific sources
-            expected flow:
-            - build eclipselink.jar on JDK 7
-            - switch to JDK 8
-            - run 'ant -f antbuild.xml build-jdk8'
-               -> this creates *.class files under resources
-                  and they should be commited into the repo
-            - switch back to JDK 7
-            - run regular build
-               -> tycho takes *.class files from resources
-                  and puts them into final jar files
-        -->
-        <fail message="This target requires JDK 8">
-            <condition>
-                <not>
-                    <equals arg1="${ant.java.version}" arg2="1.8"/>
-                </not>
-            </condition>
-        </fail>
-        <property name="jdk8.tmp.dir" value="${java.io.tmpdir}/el-jdk8-compilation"/>
-        <mkdir dir="${jdk8.tmp.dir}"/>
-        <javac srcdir="${eclipselink.core}/src"
-               destdir="${jdk8.tmp.dir}"
-               includes="**/jdk8/**"
-               debug="${javac.debug}"
-               debuglevel="${javac.debuglevel}"
-               encoding="UTF-8"
-               optimize="${javac.optimize}"
-               deprecation="${javac.deprecation}"
-               failonerror="true"
-               memoryMaximumSize="512m"
-               fork="true"
-               classpath="${eclipselink.jar}"
-        />
-        <copy todir="${eclipselink.core}/resource" includeemptydirs="false" verbose="true">
-            <fileset dir="${jdk8.tmp.dir}" includes="**/jdk8/**"/>
-        </copy>
-    </target>
     <!--      *** intended for dev use only ***
     *    Create runtime components (excluding Tests) from existing classes in project heirarchy.
     *    note: oracle extension tries to be tricksy and either jars from classes like others,
@@ -1165,7 +1125,7 @@
             packagenames="org.eclipse.persistence.**"
             destdir="${unified.javadocs}"
             useexternalfile="yes"
-            additionalparam="-breakiterator -quiet -notimestamp"
+            additionalparam="${javadoc.additionParams} ${javadoc.xdoclint}"
             windowtitle="${eclipselink.javadoc.title}"
             failonerror="true"
             >
@@ -1244,17 +1204,14 @@
         <delete dir="${build.dir}/commonj.sdo" failonerror="false"/>
         <delete dir="${sdo.javadocs}" failonerror="false"/>
         <unzip src="${eclipselink.sdo.plugins}/${commonj.sdo.src.zip}" dest="${build.dir}/commonj.sdo/src"/>
-        <condition property="additionalParamTmp" value="-breakiterator -quiet -notimestamp -Xdoclint:none" else="-breakiterator -quiet -notimestamp">
-            <!-- Detect compatible version of JDK (>= 1.8.0). -->
-            <matches string="${java.version}" pattern="1.(?:[8-9]|[1-9]\d)(?:.\d+)*.*"/>
-        </condition>
+        <!-- explicitly disabled javadoc checks here -->
         <javadoc
                 maxmemory="768m"
                 Verbose="false"
                 packagenames="org.eclipse.persistence.**"
                 destdir="${sdo.javadocs}"
                 useexternalfile="yes"
-                additionalparam="${additionalParamTmp}"
+                additionalparam="-Xdoclint:none ${javadoc.additionParams}"
                 windowtitle="${eclipselink.javadoc.title}"
                 failonerror="true"
                 >
@@ -1292,7 +1249,7 @@
             packagenames="org.eclipse.persistence.**"
             destdir="${eclipselink.javadocs}"
             useexternalfile="yes"
-            additionalparam="-breakiterator -quiet -notimestamp"
+            additionalparam="${javadoc.additionParams} ${javadoc.xdoclint}"
             windowtitle="${eclipselink.javadoc.title}"
             failonerror="true"
             >
@@ -1360,7 +1317,7 @@
             packagenames="org.eclipse.persistence.**"
             destdir="${nosql.javadocs}"
             useexternalfile="yes"
-            additionalparam="-breakiterator -quiet -notimestamp"
+            additionalparam="${javadoc.additionParams}"
             windowtitle="${nosql.javadoc.title}"
             >
             <classpath>
@@ -1395,7 +1352,7 @@
             packagenames="org.eclipse.persistence.**"
             destdir="${jpars.javadocs}"
             useexternalfile="yes"
-            additionalparam="-breakiterator -quiet -notimestamp"
+            additionalparam="${javadoc.additionParams}"
             windowtitle="${jpars.javadoc.title}"
             >
             <classpath>

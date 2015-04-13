@@ -10,7 +10,7 @@ Export-Package:
  org.eclipse.persistence.tools.profiler.oracle;version="2.7.0"
 Bundle-Name: EclipseLink Oracle Extensions
 Created-By: 1.6.0_26 (Sun Microsystems Inc.)
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.oracle
 Bundle-Vendor: Eclipse.org - EclipseLink Project
 Fragment-Host: org.eclipse.persistence.core;bundle-version="2.7.0"

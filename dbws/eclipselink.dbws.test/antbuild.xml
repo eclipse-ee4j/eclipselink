@@ -36,12 +36,12 @@
     <available file="../${ant.project.name}" type="dir" property="dbws_test.is.local"/>
     <fail unless="dbws_test.is.local" message="Not running from '${ant.project.name}' directory"/>
 
-    <!-- Detect compatible version of JDK (>= 1.7). -->
+    <!-- Detect compatible version of JDK (>= 1.8). -->
     <condition property="compat.jdk" value="true">
-        <matches string="${java.version}" pattern="1.(?:[7-9]|[1-9]\d)(?:.\d+)*.*"/>
+        <matches string="${java.version}" pattern="1.(?:[8-9]|[1-9]\d)(?:.\d+)*.*"/>
     </condition>
     <echo message="JDK version detected: '${java.version}'"/>
-    <fail message="An non-compatible version of JDK was detected! Build won't run properly unless running at least 1.7 of JDK!." unless="compat.jdk"/>
+    <fail message="A non-compatible version of JDK was detected! Build won't run properly unless running at least on JDK 1.8!" unless="compat.jdk"/>
 
     <!-- Sets the warning message appropriately -->
     <condition property="jdk_message" value="Warning: Minimum of JDK6 is required for this component to build." else="java.version='${java.version}'">

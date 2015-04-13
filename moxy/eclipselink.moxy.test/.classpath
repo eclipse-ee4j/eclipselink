@@ -5,7 +5,7 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.core"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.moxy"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.nosql"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/com.sun.xml.bind_2.2.11.v201406210428.jar"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.mail_1.4.0.v201005080615.jar"/>

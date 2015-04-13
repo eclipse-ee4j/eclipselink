@@ -22,8 +22,8 @@
     <properties>
         <!-- TOOL Properties -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <tycho.version>0.21.0</tycho.version>
-        <junit4-version>4.8.1</junit4-version>
+        <tycho.version>0.23.0-SNAPSHOT</tycho.version>
+        <junit4-version>4.12</junit4-version>
         <!-- maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format> Seems it must be in settings.xml -->
         <!-- PROJECT Properties -->
         <release.version>2.7.0</release.version>
@@ -34,8 +34,7 @@
         <src>./src</src>
         <!-- BUILD Properties -->
         <orbit.drop>R20130827064939</orbit.drop>
-        <!-- orbit.drop>R20130517111416</orbit.drop -->
-        <eclipse.drop>kepler</eclipse.drop>
+        <eclipse.drop>luna</eclipse.drop>
         <findbugs.version>3.0.0</findbugs.version>
         <findbugs.threshold>Normal</findbugs.threshold>
     </properties>
@@ -59,6 +58,14 @@
             <url>http://download.eclipse.org/releases/${eclipse.drop}</url>
         </repository>
     </repositories>
+    <!-- required for tycho 0.23.0 which contains JDT with the fix
+     for https://bugs.eclipse.org/bugs/show_bug.cgi?id=432541 -->
+    <pluginRepositories>
+        <pluginRepository>
+            <id>tycho-snapshots</id>
+            <url>https://repo.eclipse.org/content/repositories/tycho-snapshots/</url>
+        </pluginRepository>
+    </pluginRepositories>
 
     <profiles>
         <profile>
@@ -200,11 +207,6 @@
                 <artifactId>tycho-compiler-plugin</artifactId>
                 <version>${tycho.version}</version>
                 <configuration>
-                    <excludes>
-                        <!-- some sources here require JDK 8 for compilation
-                             so exclude them from the tycho build -->
-                        <exclude>**/jdk8/**</exclude>
-                    </excludes>
                     <!-- Set to force OSGi Compatability settings (defaults to "false") (Only available as of Tycho 0.16.0) -->
                     <!-- requireJREPackageImports>true</requireJREPackageImports -->
                     <!-- compilerArgument>-nowarn</compilerArgument> <disable all warnings -->
@@ -228,7 +230,7 @@
                 <artifactId>target-platform-configuration</artifactId>
                 <version>${tycho.version}</version>
                 <configuration>
-                    <executionEnvironmentDefault>JavaSE-1.7</executionEnvironmentDefault>
+                    <executionEnvironmentDefault>JavaSE-1.8</executionEnvironmentDefault>
                     <pomDependencies>consider</pomDependencies>
                     <resolver>p2</resolver>
                     <environments>
