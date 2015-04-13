@@ -13,7 +13,6 @@
 package org.eclipse.persistence.testing.sdo.helper;
 
 import junit.framework.*;
-import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
 import org.eclipse.persistence.testing.sdo.helper.datafactory.SDODataFactoryTestSuite;
 import org.eclipse.persistence.testing.sdo.helper.sdohelper.SDOHelperTestCases;
 import org.eclipse.persistence.testing.sdo.helper.typehelper.SDOTypeHelperTestSuite;
@@ -45,6 +44,7 @@ public class SDOHelperTestSuite extends TestCase {
         suite.addTest(new SDOXMLHelperTestSuite().suite());
 
         suite.addTestSuite(SDOHelperTestCases.class);
+        suite.addTestSuite(SDOHelperContextTest.class);
         return suite;
     }
 }
