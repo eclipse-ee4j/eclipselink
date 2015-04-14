@@ -1571,10 +1571,10 @@
 
     <!-- Testing -->
     <target name="test-srg" description="run all the SRG test suites"
-            depends="clear-db, test-core-srg, test-jpa21-srg, test-jpars, test-moxy-srg, test-sdo-srg, test-dbws-srg, test-dbws-builder-srg"
+            depends="clear-db, test-core-srg, test-jpa21-srg, test-jpars, test-moxy-srg, test-sdo-srg, test-dbws-srg, test-dbws-builder-srg, generate-report"
             />
     <target name="test-lrg" description="run all the LRG test suites"
-            depends="clear-db, test-core, test-jpa21, test-wdf, test-jpars, test-moxy, test-sdo, test-dbws, test-dbws-builder, test-osgi"
+            depends="clear-db, test-core, test-jpa21, test-wdf, test-jpars, test-moxy, test-sdo, test-dbws, test-dbws-builder, test-osgi, generate-report"
             />
 
     <!-- Run clear-db -->
@@ -1678,4 +1678,18 @@
     <target name="test-osgi-moxy" description="run the moxy osgi tests">
         <ant antfile="antbuild.xml" dir="${eclipselink.moxy.test}" target="test-osgi"/>
     </target>
+
+    <target name="generate-report">
+        <property name="test.results.dir" location="${basedir}/target/${report.dir}"/>
+        <mkdir dir="${test.results.dir}"/>
+        <junitreport todir="${test.results.dir}">
+            <fileset dir="${basedir}">
+                <include name="**/*test-results.xml"/>
+                <include name="**/TEST-*.xml"/>
+            </fileset>
+            <report format="frames" todir="${test.results.dir}"/>
+        </junitreport>
+        <echo>Browse results at ${test.results.dir}/index.html</echo>
+    </target>
+
 </project>

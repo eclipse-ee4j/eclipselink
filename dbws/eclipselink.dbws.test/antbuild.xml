@@ -250,7 +250,7 @@
           value="${db.platform}"
         />
         <test
-          name="dbws.testing.@{package-name}.@{testsuite-name}TestSuite"
+          name="dbws.testing.@{package-name}.@{testsuite-name}TestSuite" outfile="${report.dir}/@{package-name}.@{testsuite-name}-test-results"
         />
       </junit>
       <junitreport
