@@ -30,6 +30,7 @@ foundation/org.eclipse.persistence.core/src/org/eclipse/persistence/Version.java
 out/
 eclipselink_extracted/*
 /eclipselink.zip
+/eclipselink-src.zip
 foundation/targets/target.oracle/oracle.libs/*.jar
 utils/eclipselink.utils.workbench.lib/mw/
 utils/eclipselink.utils.workbench.lib/mwtest/

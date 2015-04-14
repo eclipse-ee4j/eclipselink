@@ -12,7 +12,7 @@
 	<classpathentry kind="src" path="scplugin/source"/>
 	<classpathentry kind="lib" path="config"/>
 	<classpathentry kind="lib" path="iconlib/resource"/>
-	<classpathentry kind="lib" path="/eclipselink.utils.workbench.lib/compile/ant.jar"/>
+	<classpathentry kind="lib" path="/eclipselink.utils.workbench.lib/compile/ant.jar" sourcepath="/eclipselink.utils.workbench.lib/source/ant_src.zip"/>
 	<classpathentry kind="lib" path="/eclipselink.utils.workbench.lib/compile/xercesImpl.jar"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/eclipselink.jar" sourcepath="/ECLIPSELINK_SRC_JAR"/>
 	<classpathentry kind="output" path="class"/>
