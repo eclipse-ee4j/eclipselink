@@ -21,6 +21,8 @@
  *       - 389090: JPA 2.1 DDL Generation Support
  *     03/19/2015 - Rick Curtis
  *       - 462586 : Add national character support for z/OS.
+ *     04/14/2015 - Will Dazey
+ *       - 464641 : Fixed platform matching returning CNF.
  *       ******************************************************************************/  
 package org.eclipse.persistence.internal.sessions;
 
@@ -185,51 +187,39 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * @param throwException - set to true if the caller cares to throw exceptions, false to swallow them.
      */
     protected void setOrDetectDatasource(boolean throwException) {
-        // Try to set the platform from JPA 2.1 schema properties first before attempting a detection.
+        String vendorNameAndVersion = null;
+        String driverName = null;
+
+        // Try to set the platform from JPA 2.1 schema properties first before
+        // attempting a detection.
         if (getProperties().containsKey(PersistenceUnitProperties.SCHEMA_DATABASE_PRODUCT_NAME)) {
-            String vendorNameAndVersion = (String) getProperties().get(PersistenceUnitProperties.SCHEMA_DATABASE_PRODUCT_NAME);
+            vendorNameAndVersion = (String) getProperties().get(PersistenceUnitProperties.SCHEMA_DATABASE_PRODUCT_NAME);
             
             String majorVersion = (String) getProperties().get(PersistenceUnitProperties.SCHEMA_DATABASE_MAJOR_VERSION);
             if (majorVersion != null) {
                 vendorNameAndVersion += majorVersion;
             }
             
+            // The minorVersion is not currently used in platform matching, but
+            // shouldn't change matching when added
             String minorVersion = (String) getProperties().get(PersistenceUnitProperties.SCHEMA_DATABASE_MINOR_VERSION);
             if (minorVersion != null) {
                 vendorNameAndVersion += minorVersion;
             }
-
-            getLogin().setPlatformClassName(DBPlatformHelper.getDBPlatform(vendorNameAndVersion, getSessionLog()));
         } else {
             Connection conn = null;
-            
             try {
                 conn = (Connection) getReadLogin().connectToDatasource(null, this);
-                // null out the cached platform because the platform on the login will be changed by the following line of code
-                this.platform = null;
-                String platformName = null;
-
-                try {
-                    DatabaseMetaData dmd = conn.getMetaData();
-                    String vendorNameAndVersion = dmd.getDatabaseProductName() + dmd.getDatabaseMajorVersion() + dmd.getDatabaseProductVersion();
-                    platformName = DBPlatformHelper.getDBPlatform(vendorNameAndVersion, getSessionLog());
-                    getLogin().setPlatformClassName(platformName);
-                } catch (EclipseLinkException classNotFound) {
-                    if (platformName.indexOf("Oracle") != -1) {
-                        // If we are running against Oracle, it is possible that we are running in an environment where
-                        // the OracleXPlatform class can not be loaded. Try using OraclePlatform class before giving up
-                        getLogin().setPlatformClassName(OraclePlatform.class.getName());
-                    } else {
-                        throw classNotFound;
-                    }
-                }
-                
-                getLogin().getPlatform().setDriverName(conn.getMetaData().getDriverName());
+                DatabaseMetaData dmd = conn.getMetaData();
+                vendorNameAndVersion = dmd.getDatabaseProductName() + dmd.getDatabaseMajorVersion() + dmd.getDatabaseProductVersion();
+                driverName = conn.getMetaData().getDriverName();
             } catch (SQLException ex) {
                 if (throwException) {
-                    DatabaseException dbEx =  DatabaseException.errorRetrieveDbMetadataThroughJDBCConnection();
-                    // Typically exception would occur if user did not provide correct connection
-                    // parameters. The root cause of exception should be propagated up
+                    DatabaseException dbEx = DatabaseException.errorRetrieveDbMetadataThroughJDBCConnection();
+                    // Typically exception would occur if user did not provide
+                    // correct connection
+                    // parameters. The root cause of exception should be
+                    // propagated up
                     dbEx.initCause(ex);
                     throw dbEx;
                 }
@@ -239,14 +229,38 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
                         conn.close();
                     } catch (SQLException ex) {
                         if (throwException) {
-                            DatabaseException dbEx =  DatabaseException.errorRetrieveDbMetadataThroughJDBCConnection();
-                            // Typically exception would occur if user did not provide correct connection
-                            // parameters. The root cause of exception should be propagated up
+                            DatabaseException dbEx = DatabaseException.errorRetrieveDbMetadataThroughJDBCConnection();
+                            // Typically exception would occur if user did not
+                            // provide correct connection
+                            // parameters. The root cause of exception should be
+                            // propagated up
                             dbEx.initCause(ex);
                             throw dbEx;
                         }
                     }
                 }
+            }
+        }
+
+        String platformName = null;
+        try {
+            // null out the cached platform because the platform on the login
+            // will be changed by the following line of code
+            this.platform = null;
+            platformName = DBPlatformHelper.getDBPlatform(vendorNameAndVersion, getSessionLog());
+            getLogin().setPlatformClassName(platformName);
+            if (driverName != null) {
+                getLogin().getPlatform().setDriverName(driverName);
+            }
+        } catch (EclipseLinkException classNotFound) {
+            if (platformName.indexOf("Oracle") != -1) {
+                // If we are running against Oracle, it is possible that we are
+                // running in an environment where
+                // the OracleXPlatform class can not be loaded. Try using
+                // OraclePlatform class before giving up
+                getLogin().setPlatformClassName(OraclePlatform.class.getName());
+            } else {
+                throw classNotFound;
             }
         }
     }
