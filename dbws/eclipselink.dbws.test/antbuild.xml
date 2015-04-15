@@ -257,10 +257,10 @@
         todir="./${report.dir}"
         >
         <fileset
-          dir="."
+          dir="./${report.dir}"
           >
           <include
-            name="TEST-*TestSuite.xml"
+            name="*-test-results.xml"
           />
         </fileset>
         <report
