@@ -57,29 +57,39 @@
 
     <xsd:simpleType name="regexShorthands">
         <xsd:restriction base="xsd:string">
+            <!--\i - Matches any character that may be the first character of an XML name.-->
             <xsd:pattern value="\i"/>
             <xsd:pattern value="\I"/>
+            <!--\c - Matches any character that may occur after the first character in an XML name.-->
             <xsd:pattern value="\c"/>
             <xsd:pattern value="\C"/>
+            <!--\d - All digits.-->
             <xsd:pattern value="\d"/>
             <xsd:pattern value="\D"/>
+            <!--\w - Word character.-->
             <!--'This shorthand translates to a pattern with ampersand characters, which causes the Java Matcher behave non-deterministically and malfunction from time to time!'-->
             <!--<xsd:pattern value="\w"/>-->
             <!--'This shorthand translates to a pattern with ampersand characters, which causes the Java Matcher behave non-deterministically and malfunction from time to time!'-->
             <!--<xsd:pattern value="\W"/>-->
+            <!--\s - Whitespace character.-->
             <xsd:pattern value="\s"/>
             <xsd:pattern value="\S"/>
+            <!--\b, \B - Boundary definitions.-->
             <!--'This expression is not supported in the current option setting.'-->
             <!--<xsd:pattern value="\b"/>-->
             <!--'This expression is not supported in the current option setting.'-->
             <!--<xsd:pattern value="\B"/>-->
+            <!--\h - Horizontal whitespace character - Java does not support, changed in Java 8 though.-->
             <xsd:pattern value="\h"/>
             <xsd:pattern value="\H"/>
+            <!--\v - Vertical whitespace character - Java translates the shorthand to \cK only, meaning changed in Java 8 though.-->
             <!--'This expression is not supported in the current option setting.'-->
             <!--<xsd:pattern value="\v"/>-->
             <xsd:pattern value="\V"/>
+            <!--\X - Extended grapheme cluster.-->
             <!--'This expression is not supported in the current option setting.'-->
             <!--<xsd:pattern value="\X"/>-->
+            <!--\R - Carriage return.-->
             <xsd:pattern value="\R"/>
         </xsd:restriction>
     </xsd:simpleType>
