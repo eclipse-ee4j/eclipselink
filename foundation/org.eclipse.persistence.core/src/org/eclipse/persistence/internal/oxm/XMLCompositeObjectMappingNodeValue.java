@@ -486,7 +486,6 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
                         if(null == namespace) {
                             namespace = XMLPlatformFactory.getInstance().getXMLPlatform().resolveNamespacePrefix(element, prefix);
                         }
-                        String name = xsiType.substring(colonIndex + 1);
                         QName qName = new QName(namespace, xsiType.substring(colonIndex + 1));
                         ConversionManager conversionManager = unmarshalRecord.getConversionManager();
                         Class theClass = conversionManager.javaType(qName);

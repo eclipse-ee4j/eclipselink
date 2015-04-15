@@ -86,4 +86,15 @@
         <Bug pattern="MS_SHOULD_BE_FINAL"/>
     </Match>
 
+    <Match>
+        <Or>
+            <!-- clones by constructor -->
+            <Class name="org.eclipse.persistence.internal.helper.NonSynchronizedVector"/>
+            <Class name="org.eclipse.persistence.internal.oxm.XMLUnmarshaller"/>
+            <!-- optimized cloning -->
+            <Class name="org.eclipse.persistence.core.queries.CoreAttributeGroup"/>
+        </Or>
+        <Bug pattern="CN_IDIOM_NO_SUPER_CALL"/>
+    </Match>
+
 </FindBugsFilter>

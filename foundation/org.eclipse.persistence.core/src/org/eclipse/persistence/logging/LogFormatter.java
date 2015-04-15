@@ -12,13 +12,15 @@
  ******************************************************************************/
 package org.eclipse.persistence.logging;
 
-import java.util.logging.SimpleFormatter;
-import java.util.logging.LogRecord;
-import java.util.logging.Level;
-import java.io.*;
-import java.text.*;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.text.MessageFormat;
 import java.util.Date;
-import org.eclipse.persistence.internal.security.*;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.SimpleFormatter;
+
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 
 /**
  * <p>
@@ -89,9 +91,8 @@ public class LogFormatter extends SimpleFormatter {
             sb.append(message);
             sb.append(lineSeparator);
             if (record.getThrown() != null) {
-                try {
-                    StringWriter sw = new StringWriter();
-                    PrintWriter pw = new PrintWriter(sw);
+                StringWriter sw = new StringWriter();
+                try (PrintWriter pw = new PrintWriter(sw)) {
                     if (record.getLevel().intValue() == Level.SEVERE.intValue()) {
                         record.getThrown().printStackTrace(pw);
                     } else if (record.getLevel().intValue() <= Level.WARNING.intValue()) {
@@ -104,7 +105,6 @@ public class LogFormatter extends SimpleFormatter {
                     }
                     pw.close();
                     sb.append(sw.toString());
-                } catch (Exception ex) {
                 }
             }
             return sb.toString();

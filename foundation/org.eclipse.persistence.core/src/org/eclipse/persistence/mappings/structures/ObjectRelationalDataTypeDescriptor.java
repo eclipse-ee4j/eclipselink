@@ -14,21 +14,29 @@
  ******************************************************************************/
 package org.eclipse.persistence.mappings.structures;
 
-import java.util.*;
-
-import java.sql.*;
+import java.sql.Array;
+import java.sql.Ref;
+import java.sql.Struct;
+import java.sql.Types;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.descriptors.RelationalDescriptor;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
+import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.internal.expressions.*;
-import org.eclipse.persistence.internal.databaseaccess.*;
-import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.descriptors.RelationalDescriptor;
-import org.eclipse.persistence.internal.queries.ContainerPolicy;
+import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.queries.ValueReadQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 
 /**
@@ -177,17 +185,15 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
         boolean isNestedStructure = false;
         ObjectRelationalDataTypeDescriptor ord=null;
         DatabaseField nestedType = null;
-        if (arrayField != null){
-            nestedType = arrayField.getNestedTypeField();
-            if ((nestedType != null) && nestedType.getSqlType()==Types.STRUCT){
-                ClassDescriptor descriptor = session.getDescriptor(nestedType.getType());
-                if ((descriptor != null) && (descriptor.isObjectRelationalDataTypeDescriptor())) {
-                    //this is used to convert non-null objects passed through stored procedures and custom SQL to structs
-                    ord=(ObjectRelationalDataTypeDescriptor)descriptor;
-                }
-            } else if ((nestedType != null) && (nestedType instanceof ObjectRelationalDatabaseField) ){
-                isNestedStructure = true;
+        nestedType = arrayField.getNestedTypeField();
+        if ((nestedType != null) && nestedType.getSqlType()==Types.STRUCT){
+            ClassDescriptor descriptor = session.getDescriptor(nestedType.getType());
+            if ((descriptor != null) && (descriptor.isObjectRelationalDataTypeDescriptor())) {
+                //this is used to convert non-null objects passed through stored procedures and custom SQL to structs
+                ord=(ObjectRelationalDataTypeDescriptor)descriptor;
             }
+        } else if ((nestedType != null) && (nestedType instanceof ObjectRelationalDatabaseField) ){
+            isNestedStructure = true;
         }
         //handle ARRAY conversions
         ReadObjectQuery query = new ReadObjectQuery();

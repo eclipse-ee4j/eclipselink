@@ -12,22 +12,23 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.security;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 
 import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.DESKeySpec;
-import javax.crypto.spec.SecretKeySpec;
-import javax.crypto.SecretKeyFactory;
 import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
-import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.exceptions.ValidationException;
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.DESKeySpec;
+import javax.crypto.spec.SecretKeySpec;
+
 import org.eclipse.persistence.exceptions.ConversionException;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.helper.Helper;
 
 /**
  * TopLink reference implementation for password encryption.
@@ -37,12 +38,12 @@ import org.eclipse.persistence.exceptions.ConversionException;
 public class JCEEncryptor implements Securable {
     // Legacy decrypt cipher used for backwards compatibility only.
     private static final String DES = "DES/ECB/PKCS5Padding";
-    private Cipher decryptCipherDES;
+    private final Cipher decryptCipherDES;
 
     // All encryption is done through the AES cipher.
     private static final String AES = "AES/ECB/PKCS5Padding";
-    private Cipher encryptCipherAES;
-    private Cipher decryptCipherAES;
+    private final Cipher encryptCipherAES;
+    private final Cipher decryptCipherAES;
 
     public JCEEncryptor() throws Exception {
         /**

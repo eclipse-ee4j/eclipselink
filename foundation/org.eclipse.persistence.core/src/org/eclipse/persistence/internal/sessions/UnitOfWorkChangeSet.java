@@ -12,8 +12,14 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.sessions;
 
-import java.util.*;
-import java.io.*;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
 
@@ -203,7 +209,7 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
      * Which may result in duplicates, in the UnitOfWorkChangeSet.
      */
     public ObjectChangeSet findObjectChangeSet(ObjectChangeSet changeSet, UnitOfWorkChangeSet mergeFromChangeSet) {
-        Map<ObjectChangeSet, ObjectChangeSet> changes = getObjectChanges().get(changeSet.getClassName());
+        Map<ObjectChangeSet, ObjectChangeSet> changes = getObjectChanges().get(changeSet.getClassType());
         ObjectChangeSet potential = null;
         if (changes != null) {
             potential = changes.get(changeSet);

@@ -17,18 +17,6 @@
 package org.eclipse.persistence.dynamic;
 
 //javase imports
-import java.lang.reflect.Modifier;
-
-//EclipseLink imports
-import org.eclipse.persistence.dynamic.DynamicClassLoader.EnumInfo;
-import org.eclipse.persistence.exceptions.DynamicException;
-import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
-import org.eclipse.persistence.internal.dynamic.DynamicPropertiesManager;
-import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.libraries.asm.ClassWriter;
-import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
-import org.eclipse.persistence.internal.libraries.asm.Type;
-
 import static org.eclipse.persistence.internal.dynamic.DynamicPropertiesManager.PROPERTIES_MANAGER_FIELD;
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.AASTORE;
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.ACC_ENUM;
@@ -42,7 +30,6 @@ import static org.eclipse.persistence.internal.libraries.asm.Opcodes.ALOAD;
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.ANEWARRAY;
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.ARETURN;
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.BIPUSH;
-import static org.eclipse.persistence.internal.libraries.asm.Opcodes.SIPUSH;
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.CHECKCAST;
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.DUP;
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.GETSTATIC;
@@ -59,7 +46,20 @@ import static org.eclipse.persistence.internal.libraries.asm.Opcodes.INVOKEVIRTU
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.NEW;
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.PUTSTATIC;
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.RETURN;
+import static org.eclipse.persistence.internal.libraries.asm.Opcodes.SIPUSH;
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.V1_5;
+
+import java.lang.reflect.Modifier;
+
+//EclipseLink imports
+import org.eclipse.persistence.dynamic.DynamicClassLoader.EnumInfo;
+import org.eclipse.persistence.exceptions.DynamicException;
+import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
+import org.eclipse.persistence.internal.dynamic.DynamicPropertiesManager;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.libraries.asm.ClassWriter;
+import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
+import org.eclipse.persistence.internal.libraries.asm.Type;
 
 /**
  * Write the byte codes of a dynamic entity class. The class writer will create
@@ -138,10 +138,12 @@ public class DynamicClassWriter implements EclipseLinkClassWriter {
         this.parentClassName = parentClassName;
     }
 
+    @Override
     public Class<?> getParentClass() {
         return this.parentClass;
     }
 
+    @Override
     public String getParentClassName() {
         return this.parentClassName;
     }
@@ -160,6 +162,7 @@ public class DynamicClassWriter implements EclipseLinkClassWriter {
         return parentClass;
     }
 
+    @Override
     public byte[] writeClass(DynamicClassLoader loader, String className) throws ClassNotFoundException {
 
         EnumInfo enumInfo = loader.enumInfoRegistry.get(className);
@@ -169,7 +172,7 @@ public class DynamicClassWriter implements EclipseLinkClassWriter {
 
         Class<?> parent = getParentClass(loader);
         parentClassName = parent.getName();
-        if (parent == null || parent.isPrimitive() || parent.isArray() || parent.isEnum() || parent.isInterface() || Modifier.isFinal(parent.getModifiers())) {
+        if (parent.isPrimitive() || parent.isArray() || parent.isEnum() || parent.isInterface() || Modifier.isFinal(parent.getModifiers())) {
             throw new IllegalArgumentException("Invalid parent class: " + parent);
         }
         String classNameAsSlashes = className.replace('.', '/');
@@ -372,6 +375,7 @@ public class DynamicClassWriter implements EclipseLinkClassWriter {
      * to verify if a duplicate request of the same className can proceed and
      * return the same class that may already exist.
      */
+    @Override
     public boolean isCompatible(EclipseLinkClassWriter writer) {
         if (writer == null) {
             return false;

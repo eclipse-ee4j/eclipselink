@@ -322,7 +322,7 @@ public class TransformerFactory {
         String getterMethod = mapping.getGetMethodName();
         if (mapping.isAbstractDirectMapping() && mapping.getAttributeAccessor().isVirtualAttributeAccessor()){
             return metadataClass.getMetadataClass(((AbstractDirectMapping)mapping).getAttributeClassificationName());
-        } else if (mapping != null && getterMethod != null) {
+        } else if (getterMethod != null) {
             MetadataMethod method = metadataClass.getMethod(getterMethod, new ArrayList(), checkSuperclass);
             if (method == null) {
                 return null;

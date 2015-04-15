@@ -16,17 +16,29 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.queries;
 
-import java.util.*;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.databaseaccess.Accessor;
-import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
-import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.internal.databaseaccess.Accessor;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
+import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.DeleteAllQuery;
+import org.eclipse.persistence.queries.ReportQuery;
+import org.eclipse.persistence.queries.UpdateAllQuery;
+import org.eclipse.persistence.queries.WriteObjectQuery;
 
 /**
  * <p><b>Purpose</b>:
@@ -151,13 +163,11 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
 
         // second call - populate temp table.
         // if that fails save the exception and untill cleanup
-        if(ex == null) {
-            try {
-                DatasourceCall databseCall = (DatasourceCall)getCalls().elementAt(getCalls().size() - 2);
-                executeCall(databseCall);
-            } catch (DatabaseException databaseEx) {
-                ex = databaseEx;
-            }
+        try {
+            DatasourceCall databseCall = (DatasourceCall)getCalls().elementAt(getCalls().size() - 2);
+            executeCall(databseCall);
+        } catch (DatabaseException databaseEx) {
+            ex = databaseEx;
         }
 
         // third (a call per table) - delete from original tables calls.

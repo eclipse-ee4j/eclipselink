@@ -26,7 +26,6 @@ import java.net.InetAddress;
 import javax.naming.Context;
 
 public abstract class CORBATransportManager extends TransportManager {
-    protected RemoteCommandManager rcm;
 
     public CORBATransportManager(RemoteCommandManager rcm) {
         this.rcm = rcm;
@@ -37,6 +36,7 @@ public abstract class CORBATransportManager extends TransportManager {
      * INTERNAL:
      * Initialize default properties for RMI.
      */
+    @Override
     public void initialize() {
         super.initialize();
         if (rcm.getServiceId().getURL() == null) {
@@ -66,6 +66,7 @@ public abstract class CORBATransportManager extends TransportManager {
      * Remove the local connection from remote accesses.  The implementation removes the local connection from JNDI or RMI registry and set it to null.
      * This method is invoked internally by TopLink when the RCM is shutdown and should not be invoked by user's application.
      */
+    @Override
     public void removeLocalConnection() {
         String unbindName = null;
         try {
@@ -87,6 +88,7 @@ public abstract class CORBATransportManager extends TransportManager {
      *
      * @return The type of naming service used.
      */
+    @Override
     public int getNamingServiceType() {
         return TransportManager.JNDI_NAMING_SERVICE;
     }
@@ -113,6 +115,7 @@ public abstract class CORBATransportManager extends TransportManager {
      * INTERNAL:
      * Create and return a wrapper of  a CORBA remote connection to the specified service
      */
+    @Override
     public RemoteConnection createConnection(ServiceId connectionServiceId) {
         RemoteConnection connection = null;
 
@@ -167,6 +170,7 @@ public abstract class CORBATransportManager extends TransportManager {
      * Create the local command connection for this transport in a naming service and
      * return it.
      */
+    @Override
     public void createLocalConnection() {
         // Register the remote connection in JNDI naming service
         Object connectionImpl = buildCORBAConnection();

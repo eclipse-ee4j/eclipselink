@@ -14,32 +14,100 @@
  ******************************************************************************/
 package org.eclipse.persistence.sessions.factories;
 
-import java.io.*;
-import java.util.*;
-import org.eclipse.persistence.descriptors.*;
-import org.eclipse.persistence.descriptors.copying.*;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.history.*;
-import org.eclipse.persistence.internal.descriptors.*;
-import org.eclipse.persistence.internal.expressions.*;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.indirection.*;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
+
+import org.eclipse.persistence.descriptors.CMPPolicy;
+import org.eclipse.persistence.descriptors.CachePolicy;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.DescriptorQueryManager;
+import org.eclipse.persistence.descriptors.InheritancePolicy;
+import org.eclipse.persistence.descriptors.InterfacePolicy;
+import org.eclipse.persistence.descriptors.RelationalDescriptor;
+import org.eclipse.persistence.descriptors.ReturningPolicy;
+import org.eclipse.persistence.descriptors.SelectedFieldsLockingPolicy;
+import org.eclipse.persistence.descriptors.TimestampLockingPolicy;
+import org.eclipse.persistence.descriptors.VersionLockingPolicy;
+import org.eclipse.persistence.descriptors.copying.CloneCopyPolicy;
+import org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy;
+import org.eclipse.persistence.descriptors.invalidation.DailyCacheInvalidationPolicy;
+import org.eclipse.persistence.descriptors.invalidation.NoExpiryCacheInvalidationPolicy;
+import org.eclipse.persistence.descriptors.invalidation.TimeToLiveCacheInvalidationPolicy;
+import org.eclipse.persistence.eis.EISLogin;
+import org.eclipse.persistence.eis.interactions.XMLInteraction;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionOperator;
+import org.eclipse.persistence.history.HistoryPolicy;
+import org.eclipse.persistence.indirection.IndirectMap;
+import org.eclipse.persistence.internal.codegen.ClassDefinition;
+import org.eclipse.persistence.internal.codegen.CodeGenerator;
+import org.eclipse.persistence.internal.codegen.NonreflectiveMethodDefinition;
+import org.eclipse.persistence.internal.descriptors.FieldTransformation;
+import org.eclipse.persistence.internal.descriptors.MethodBasedFieldTransformation;
+import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
+import org.eclipse.persistence.internal.descriptors.TransformerBasedFieldTransformation;
 import org.eclipse.persistence.internal.expressions.ExpressionJavaPrinter;
+import org.eclipse.persistence.internal.expressions.FunctionExpression;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.DescriptorCompare;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.indirection.BasicIndirectionPolicy;
+import org.eclipse.persistence.internal.indirection.ContainerIndirectionPolicy;
+import org.eclipse.persistence.internal.indirection.IndirectionPolicy;
+import org.eclipse.persistence.internal.indirection.NoIndirectionPolicy;
+import org.eclipse.persistence.internal.indirection.ProxyIndirectionPolicy;
+import org.eclipse.persistence.internal.indirection.TransparentIndirectionPolicy;
 import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.internal.sessions.factories.DirectToXMLTypeMappingHelper;
-import org.eclipse.persistence.mappings.*;
-import org.eclipse.persistence.mappings.converters.*;
+import org.eclipse.persistence.mappings.AggregateCollectionMapping;
+import org.eclipse.persistence.mappings.AggregateObjectMapping;
+import org.eclipse.persistence.mappings.CollectionMapping;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.DirectCollectionMapping;
+import org.eclipse.persistence.mappings.DirectMapMapping;
+import org.eclipse.persistence.mappings.DirectToFieldMapping;
+import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+import org.eclipse.persistence.mappings.ManyToManyMapping;
+import org.eclipse.persistence.mappings.OneToManyMapping;
+import org.eclipse.persistence.mappings.OneToOneMapping;
+import org.eclipse.persistence.mappings.TransformationMapping;
+import org.eclipse.persistence.mappings.VariableOneToOneMapping;
+import org.eclipse.persistence.mappings.converters.Converter;
+import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
+import org.eclipse.persistence.mappings.converters.SerializedObjectConverter;
+import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.mappings.querykeys.*;
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.internal.codegen.*;
-import org.eclipse.persistence.descriptors.invalidation.*;
-import org.eclipse.persistence.eis.*;
-import org.eclipse.persistence.eis.interactions.*;
-import org.eclipse.persistence.sequencing.*;
-import org.eclipse.persistence.indirection.IndirectMap;
+import org.eclipse.persistence.mappings.querykeys.DirectQueryKey;
+import org.eclipse.persistence.mappings.querykeys.QueryKey;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.FetchGroup;
+import org.eclipse.persistence.queries.InMemoryQueryIndirectionPolicy;
+import org.eclipse.persistence.queries.MethodBaseQueryRedirector;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.queries.ReadQuery;
+import org.eclipse.persistence.queries.ReportQuery;
+import org.eclipse.persistence.sequencing.Sequence;
+import org.eclipse.persistence.sequencing.TableSequence;
+import org.eclipse.persistence.sequencing.UnaryTableSequence;
+import org.eclipse.persistence.sessions.DatabaseLogin;
+import org.eclipse.persistence.sessions.DatasourceLogin;
+import org.eclipse.persistence.sessions.Login;
+import org.eclipse.persistence.sessions.Project;
 
 /**
  * <p><b>Purpose</b>: Allow for a class storing a TopLink project's descriptors (meta-data) to be generated.
@@ -890,15 +958,9 @@ public class ProjectClassGenerator {
     private String constructValidSQLorEJBQLLinesForJavaSource(String qlString){
         //Bug2612384 Deals with the possibility of multi-line SQL statements.
         //Expects beginning and closing quotes to be in place
-        String insertString = "\" " + Helper.cr() + '\t' + '\t' + "+ " + "\"";
-
         if (qlString != null) {
-            qlString.trim();
-            //remove trailing carraige returns
-            while (qlString.endsWith("\n"))
-                qlString = qlString.substring(0, qlString.length() - 1);
-
-            qlString = qlString.replaceAll("\n",insertString);
+            String insertString = "\" " + Helper.cr() + '\t' + '\t' + "+ " + "\"";
+            qlString = qlString.trim().replaceAll("\n", insertString);
         }
         return qlString;
     }

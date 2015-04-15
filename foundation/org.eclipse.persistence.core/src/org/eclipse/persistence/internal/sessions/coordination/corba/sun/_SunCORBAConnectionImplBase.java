@@ -12,6 +12,15 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.sessions.coordination.corba.sun;
 
+import java.util.Hashtable;
+
+import org.omg.CORBA.BAD_OPERATION;
+import org.omg.CORBA.CompletionStatus;
+import org.omg.CORBA.portable.InputStream;
+import org.omg.CORBA.portable.InvokeHandler;
+import org.omg.CORBA.portable.ObjectImpl;
+import org.omg.CORBA.portable.OutputStream;
+import org.omg.CORBA.portable.ResponseHandler;
 
 /**
 * org/eclipse/persistence/internal/remotecommand/corba/sun/_SunCORBAConnectionImplBase.java .
@@ -19,22 +28,22 @@ package org.eclipse.persistence.internal.sessions.coordination.corba.sun;
 * from rcm.idl
 * Tuesday, March 30, 2004 2:00:14 PM EST
 */
-public abstract class _SunCORBAConnectionImplBase extends org.omg.CORBA.portable.ObjectImpl implements org.eclipse.persistence.internal.sessions.coordination.corba.sun.SunCORBAConnection, org.omg.CORBA.portable.InvokeHandler {
+public abstract class _SunCORBAConnectionImplBase extends ObjectImpl implements SunCORBAConnection, InvokeHandler {
     // Constructors
     public _SunCORBAConnectionImplBase() {
     }
 
-    private static java.util.Hashtable _methods = new java.util.Hashtable();
+    private static Hashtable _methods = new Hashtable();
 
     static {
-        _methods.put("executeCommand", new java.lang.Integer(0));
+        _methods.put("executeCommand", Integer.valueOf(0));
     }
 
-    public org.omg.CORBA.portable.OutputStream _invoke(String $method, org.omg.CORBA.portable.InputStream in, org.omg.CORBA.portable.ResponseHandler $rh) {
-        org.omg.CORBA.portable.OutputStream out = null;
-        java.lang.Integer __method = (java.lang.Integer)_methods.get($method);
+    public org.omg.CORBA.portable.OutputStream _invoke(String $method, InputStream in, ResponseHandler $rh) {
+        OutputStream out = null;
+        Integer __method = (Integer) _methods.get($method);
         if (__method == null) {
-            throw new org.omg.CORBA.BAD_OPERATION(0, org.omg.CORBA.CompletionStatus.COMPLETED_MAYBE);
+            throw new BAD_OPERATION(0, CompletionStatus.COMPLETED_MAYBE);
         }
 
         switch (__method.intValue()) {
@@ -48,7 +57,7 @@ public abstract class _SunCORBAConnectionImplBase extends org.omg.CORBA.portable
             break;
         }
         default:
-            throw new org.omg.CORBA.BAD_OPERATION(0, org.omg.CORBA.CompletionStatus.COMPLETED_MAYBE);
+            throw new BAD_OPERATION(0, CompletionStatus.COMPLETED_MAYBE);
         }
 
         return out;

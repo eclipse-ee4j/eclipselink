@@ -1081,7 +1081,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
         try {
             return super.clone();
         } catch (Exception exception) {
-            return null;
+            throw new AssertionError(exception);
         }
     }
     /**

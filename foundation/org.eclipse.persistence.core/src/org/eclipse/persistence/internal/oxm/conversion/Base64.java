@@ -12,8 +12,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.oxm.conversion;
 
-import java.util.BitSet;
-
 /**
  * INTERNAL:
  * <p><b>Purpose</b>: Convert to/from XML base64Binary.</p>

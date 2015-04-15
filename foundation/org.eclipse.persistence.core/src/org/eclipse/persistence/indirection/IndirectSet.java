@@ -12,14 +12,15 @@
  ******************************************************************************/
 package org.eclipse.persistence.indirection;
 
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.beans.PropertyChangeListener;
 import java.io.Serializable;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+
 import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
 import org.eclipse.persistence.descriptors.changetracking.CollectionChangeTracker;
 import org.eclipse.persistence.exceptions.QueryException;
@@ -590,7 +591,7 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
      * @see java.util.Set#toArray(java.lang.Object[])
      */
     @Override
-    public <E> E[] toArray(E[] a) {
+    public <T> T[] toArray(T[] a) {
         return this.getDelegate().toArray(a);
     }
 

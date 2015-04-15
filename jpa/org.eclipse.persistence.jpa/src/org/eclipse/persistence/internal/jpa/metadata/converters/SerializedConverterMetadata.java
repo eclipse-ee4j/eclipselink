@@ -125,7 +125,7 @@ public class SerializedConverterMetadata extends AbstractConverterMetadata {
         } else {
             converter = new SerializedObjectConverter(mapping, getClassName());
         }
-        if ((m_serializerPackage != null) || (m_serializerPackage.length() == 0)) {
+        if ((m_serializerPackage != null) && (m_serializerPackage.length() > 0)) {
             converter.setSerializerPackage(m_serializerPackage);
         } else {
             // Default package to target classes package.

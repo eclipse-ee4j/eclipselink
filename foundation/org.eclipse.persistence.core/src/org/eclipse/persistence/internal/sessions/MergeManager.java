@@ -18,23 +18,32 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.sessions;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.VersionLockingPolicy;
+import org.eclipse.persistence.exceptions.OptimisticLockException;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.internal.descriptors.PersistenceEntity;
-import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.helper.linkedlist.LinkedNode;
-import org.eclipse.persistence.queries.DoesExistQuery;
-import org.eclipse.persistence.sessions.remote.*;
-import org.eclipse.persistence.internal.sessions.remote.*;
-import org.eclipse.persistence.internal.identitymaps.*;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
+import org.eclipse.persistence.internal.sessions.remote.ObjectDescriptor;
+import org.eclipse.persistence.internal.sessions.remote.RemoteUnitOfWork;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.queries.DoesExistQuery;
 import org.eclipse.persistence.sessions.SessionProfiler;
+import org.eclipse.persistence.sessions.remote.DistributedSession;
 
 /**
  * <p><b>Purpose</b>:
@@ -793,11 +802,7 @@ public class MergeManager {
                 // #1, 2, 3, 9, 4, 5, 6
                 // If original does not exist then we must merge the entire object.
                 // This occurs when an object is new, was merged or read into the unit of work and, or referenced objects is not in the shared cache.
-                boolean originalWasNull = false;
-                if (original == null){
-                    originalWasNull = true;
-                    original = unitOfWork.buildOriginal(clone);
-                }
+                original = unitOfWork.buildOriginal(clone);
                 if (objectChangeSet == null) {
                     // #6 - references to uncached objects
                     // No changeset so this would not have been locked as part of the unit of work acquireLocks, so must append a lock.
@@ -808,9 +813,9 @@ public class MergeManager {
                     } else {
                         cacheKey.setObject(original);
                     }
-                    objectBuilder.mergeIntoObject(original, objectChangeSet, true, clone, this, targetSession, false, !descriptor.getCopyPolicy().buildsNewInstance(), originalWasNull);
+                    objectBuilder.mergeIntoObject(original, objectChangeSet, true, clone, this, targetSession, false, !descriptor.getCopyPolicy().buildsNewInstance(), true);
 
-                    if (originalWasNull && !unitOfWork.isObjectRegistered(clone)){
+                    if (!unitOfWork.isObjectRegistered(clone)){
                         // mark the instance in the cache as invalid as we may have just merged a stub if
                         // a detached stub was referenced by a managed entity
                         cacheKey.setInvalidationState(CacheKey.CACHE_KEY_INVALID);
@@ -830,7 +835,7 @@ public class MergeManager {
                     if (!objectChangeSet.isNew()) {
                         // #5 read in uow, #9 grid
                         objectBuilder.mergeIntoObject(original, objectChangeSet, true, clone, this, targetSession, false, !descriptor.getCopyPolicy().buildsNewInstance(), false);
-                        if (originalWasNull && !unitOfWork.isObjectRegistered(clone)){
+                        if (!unitOfWork.isObjectRegistered(clone)){
                             // mark the instance in the cache as invalid as we may have just merged a stub if
                             // a detached stub was referenced by a managed entity
                             cacheKey.setInvalidationState(CacheKey.CACHE_KEY_INVALID);

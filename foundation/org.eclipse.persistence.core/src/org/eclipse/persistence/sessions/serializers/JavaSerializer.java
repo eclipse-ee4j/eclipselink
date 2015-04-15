@@ -26,7 +26,10 @@ import org.eclipse.persistence.sessions.Session;
  * @author James Sutherland
  */
 public class JavaSerializer extends AbstractSerializer {
+
     public static final JavaSerializer instance = new JavaSerializer();
+
+    @Override
     public Object serialize(Object object, Session session) {
         ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
         try {
@@ -39,25 +42,24 @@ public class JavaSerializer extends AbstractSerializer {
         return byteOut.toByteArray();
     }
 
+    @Override
     public Class getType() {
         return byte[].class;
     }
 
+    @Override
     public Object deserialize(Object bytes, Session session) {
         ByteArrayInputStream byteIn = new ByteArrayInputStream((byte[])bytes);
-        try {
-            ObjectInputStream objectIn = null;
-            if (session == null) {
-                objectIn = new ObjectInputStream(byteIn);
-            } else {
-                objectIn = new CustomObjectInputStream(byteIn, session);
-            }
+        try (ObjectInputStream objectIn = session == null
+                ? new ObjectInputStream(byteIn)
+                : new CustomObjectInputStream(byteIn, session)) {
             return objectIn.readObject();
-        } catch (Exception exception) {
+        } catch (IOException | ClassNotFoundException exception) {
             throw new RuntimeException(exception);
         }
     }
 
+    @Override
     public String toString() {
         return getClass().getSimpleName();
     }

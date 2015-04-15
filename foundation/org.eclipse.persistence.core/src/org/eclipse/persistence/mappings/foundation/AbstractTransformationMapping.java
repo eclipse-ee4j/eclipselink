@@ -18,29 +18,63 @@ package org.eclipse.persistence.mappings.foundation;
 
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
-import java.util.*;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.indirection.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
+
+import org.eclipse.persistence.exceptions.ConversionException;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
-import org.eclipse.persistence.internal.descriptors.*;
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
+import org.eclipse.persistence.internal.descriptors.FieldTransformation;
+import org.eclipse.persistence.internal.descriptors.InstanceVariableAttributeAccessor;
+import org.eclipse.persistence.internal.descriptors.MethodAttributeAccessor;
+import org.eclipse.persistence.internal.descriptors.MethodBasedFieldTransformation;
+import org.eclipse.persistence.internal.descriptors.TransformerBasedFieldTransformation;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
-import org.eclipse.persistence.internal.indirection.*;
+import org.eclipse.persistence.internal.indirection.BasicIndirectionPolicy;
+import org.eclipse.persistence.internal.indirection.ContainerIndirectionPolicy;
+import org.eclipse.persistence.internal.indirection.DatabaseValueHolder;
+import org.eclipse.persistence.internal.indirection.IndirectionPolicy;
+import org.eclipse.persistence.internal.indirection.NoIndirectionPolicy;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
-import org.eclipse.persistence.internal.sessions.remote.*;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
-import org.eclipse.persistence.internal.sessions.*;
-import org.eclipse.persistence.sessions.DatabaseRecord;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.ChangeRecord;
+import org.eclipse.persistence.internal.sessions.MergeManager;
+import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
+import org.eclipse.persistence.internal.sessions.TransformationMappingChangeRecord;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.internal.sessions.remote.RemoteValueHolder;
 import org.eclipse.persistence.mappings.Association;
 import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.mappings.transformers.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.sessions.remote.*;
+import org.eclipse.persistence.mappings.transformers.AttributeTransformer;
+import org.eclipse.persistence.mappings.transformers.FieldTransformer;
+import org.eclipse.persistence.mappings.transformers.MethodBasedAttributeTransformer;
+import org.eclipse.persistence.mappings.transformers.MethodBasedFieldTransformer;
+import org.eclipse.persistence.queries.ObjectBuildingQuery;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.queries.WriteObjectQuery;
 import org.eclipse.persistence.sessions.CopyGroup;
+import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.sessions.remote.DistributedSession;
 
 /**
  * <p><b>Purpose</b>: A transformation mapping is used for a specialized translation between how
@@ -285,6 +319,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * Require for cloning, the part must be cloned.
      * Ignore the attribute value, go right to the object itself.
      */
+    @Override
     public Object buildCloneForPartObject(Object attributeValue, Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession, Integer refreshCascade, boolean isExisting, boolean isFromSharedCache) {
         if (isReadOnly() || !isMutable()) {
             return attributeValue;
@@ -666,6 +701,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * INTERNAL:
      * Check for write-only, one-way transformation.
      */
+    @Override
     public Object getAttributeValueFromObject(Object object) throws DescriptorException {
         if (isWriteOnly()) {
             return null;
@@ -1200,7 +1236,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * record to set into the object, but should not set the value on the object, only return it.
      */
     public void setAttributeTransformation(String methodName) {
-        if ((methodName != null) && (methodName != "")) {
+        if ((methodName != null) && (!methodName.isEmpty())) {
             setAttributeTransformer(new MethodBasedAttributeTransformer(methodName));
         } else {
             setAttributeTransformer(null);
@@ -1211,6 +1247,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * INTERNAL:
      * Check for write-only, one-way transformations.
      */
+    @Override
     public void setAttributeValueInObject(Object object, Object value) {
         if (isWriteOnly()) {
             return;

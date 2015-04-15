@@ -12,24 +12,26 @@
  ******************************************************************************/
 package org.eclipse.persistence.transaction;
 
-import java.util.*;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import javax.naming.*;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
-import org.eclipse.persistence.sessions.broker.SessionBroker;
-import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.sessions.ExternalTransactionController;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.ExceptionHandler;
+import org.eclipse.persistence.exceptions.TransactionException;
+import org.eclipse.persistence.internal.sequencing.SequencingCallback;
+import org.eclipse.persistence.internal.sequencing.SequencingCallbackFactory;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.exceptions.ExceptionHandler;
-import org.eclipse.persistence.exceptions.TransactionException;
-import org.eclipse.persistence.exceptions.DatabaseException;
-import org.eclipse.persistence.internal.sequencing.SequencingCallback;
-import org.eclipse.persistence.internal.sequencing.SequencingCallbackFactory;
+import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.ExternalTransactionController;
+import org.eclipse.persistence.sessions.broker.SessionBroker;
 
 /**
  * <p>
@@ -453,9 +455,12 @@ public abstract class AbstractTransactionController implements ExternalTransacti
         } catch (NamingException ex) {
             throw TransactionException.jndiLookupException(jndiName, ex);
         } finally {
-            try {
-                context.close();
-            } catch (Exception ex2) {/* ignore */
+            if (context != null) {
+                try {
+                    context.close();
+                } catch (Exception ex2) {
+                    /* ignore */
+                }
             }
         }
         return jndiObject;

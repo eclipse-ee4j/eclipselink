@@ -12,19 +12,28 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.sessions.remote;
 
-import java.util.*;
-import java.rmi.server.*;
+import java.rmi.server.ObjID;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.IdentityHashMap;
+import java.util.Map;
+import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
-import org.eclipse.persistence.internal.descriptors.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.internal.queries.*;
+import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.queries.Cursor;
+import org.eclipse.persistence.queries.CursorPolicy;
+import org.eclipse.persistence.queries.CursoredStream;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.ScrollableCursor;
 import org.eclipse.persistence.sessions.coordination.CommandManager;
 
 /**
@@ -227,11 +236,12 @@ public class RemoteSessionController {
     public Transporter cursoredStreamClose(Transporter remoteCursoredStreamOid) {
         Transporter transporter = new Transporter();
         try {
-            CursoredStream stream = (CursoredStream)getRemoteCursors().get(remoteCursoredStreamOid.getObject());
+            ObjID id = (ObjID) (remoteCursoredStreamOid.getObject());
+            CursoredStream stream = (CursoredStream) getRemoteCursors().get(id);
             if (stream != null) {
                 stream.close();
             }
-            getRemoteCursors().remove(remoteCursoredStreamOid);
+            getRemoteCursors().remove(id);
         } catch (RuntimeException exception) {
             transporter.setException(exception);
         }

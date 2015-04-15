@@ -207,7 +207,7 @@ public class AttributeNameTokenizer implements Iterable<String> {
          * @throws NoSuchElementException when attribute name has no more tokens.
          */
         @Override
-        public String next() throws NoSuchElementException {
+        public String next() {
             final String tokenToReturn = token;
             if (matcher.lookingAt()) {
                 token =  matcher.groupCount() > 0 ? matcher.group(1) : null;

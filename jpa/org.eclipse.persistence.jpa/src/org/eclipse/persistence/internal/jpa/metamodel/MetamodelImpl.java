@@ -309,7 +309,7 @@ public class MetamodelImpl implements Metamodel, Serializable {
             // make types field modification thread-safe
             synchronized (this.types) {
                 // check for a cached type right after we synchronize
-                type = this.types.get(javaClass);
+                type = this.types.get(key);
                 // If a type is not found (not created during metamodel.initialize() - it is usually a Basic type
                 if(null == type) {
                     type = new BasicTypeImpl<X>(javaClass);
@@ -369,7 +369,7 @@ public class MetamodelImpl implements Metamodel, Serializable {
         // Process all Entity and Embeddable types (MappedSuperclasses are handled later)
         for (ClassDescriptor descriptor : this.getSession().getProject().getOrderedDescriptors()) {
             // The ClassDescriptor is always of type RelationalDescriptor - the cast is safe
-            ManagedTypeImpl<?> managedType = ManagedTypeImpl.create(this, (ClassDescriptor)descriptor);
+            ManagedTypeImpl<?> managedType = ManagedTypeImpl.create(this, descriptor);
             String descriptorJavaType = managedType.getJavaTypeName();
             if(null == descriptorJavaType) {
                 AbstractSessionLog.getLog().log(SessionLog.FINEST, SessionLog.METAMODEL, "metamodel_relationaldescriptor_javaclass_null_on_managedType", descriptor, managedType);

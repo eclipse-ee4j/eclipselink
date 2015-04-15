@@ -12,11 +12,15 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.sessions.factories;
 
-import java.io.*;
-import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.oxm.XMLMarshaller;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.sessions.factories.model.SessionConfigs;
+import org.eclipse.persistence.oxm.XMLContext;
+import org.eclipse.persistence.oxm.XMLMarshaller;
 
 /**
  * INTERNAL:
@@ -36,12 +40,9 @@ public class XMLSessionConfigWriter {
      * @param eclipseLinkSessions the SessionConfigs instance to write
      */
     public static void write(SessionConfigs toplinkSessions, String fileName) {
-        Writer writer;
-        try {
-            //Bug#4305370 Needs to be utf-8 encoded.
-            writer = new OutputStreamWriter(new FileOutputStream(fileName), "UTF-8");
+        //Bug#4305370 Needs to be utf-8 encoded.
+        try (Writer writer = new OutputStreamWriter(new FileOutputStream(fileName), "UTF-8")) {
             write(toplinkSessions, writer);
-            writer.close();
         } catch (IOException exception) {
             throw ValidationException.fileError(exception);
         }

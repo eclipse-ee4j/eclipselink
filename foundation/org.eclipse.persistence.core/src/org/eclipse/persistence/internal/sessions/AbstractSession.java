@@ -32,7 +32,6 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.reflect.Constructor;
 import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -446,19 +445,10 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
             // use class.forName() to avoid loading parser classes for JAXB
             // Use Class.forName not thread class loader to avoid class loader issues.
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try {
-                    parserClass = AccessController.doPrivileged(new PrivilegedClassForName(queryBuilderClassName));
-                } catch (PrivilegedActionException exception) {
-                }
+                parserClass = AccessController.doPrivileged(new PrivilegedClassForName(queryBuilderClassName));
+                builder = (JPAQueryBuilder)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(parserClass));
             } else {
                 parserClass = PrivilegedAccessHelper.getClassForName(queryBuilderClassName);
-            }
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                try {
-                    builder = (JPAQueryBuilder)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(parserClass));
-                } catch (PrivilegedActionException exception) {
-                }
-            } else {
                 builder = (JPAQueryBuilder)PrivilegedAccessHelper.newInstanceFromClass(parserClass);
             }
         } catch (Exception e) {

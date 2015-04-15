@@ -212,6 +212,7 @@ public class CoreAttributeGroup<
         }
     }
 
+    @Override
     public CoreAttributeGroup clone() {
        Map<CoreAttributeGroup<ATTRIBUTE_ITEM, DESCRIPTOR>, CoreAttributeGroup<ATTRIBUTE_ITEM, DESCRIPTOR>> cloneMap = new IdentityHashMap<CoreAttributeGroup<ATTRIBUTE_ITEM, DESCRIPTOR>, CoreAttributeGroup<ATTRIBUTE_ITEM, DESCRIPTOR>>();
        return clone(cloneMap);
@@ -231,8 +232,7 @@ public class CoreAttributeGroup<
         try {
             clone = (CoreAttributeGroup) super.clone();
         } catch (CloneNotSupportedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new AssertionError(e);
         }
         clone.name = this.name;
         clone.type = this.type;
@@ -405,7 +405,7 @@ public class CoreAttributeGroup<
                 return result;
             }
         }
-        return (CoreAttributeGroup)this;
+        return this;
     }
 
     /**
@@ -468,7 +468,7 @@ public class CoreAttributeGroup<
      */
     protected ATTRIBUTE_ITEM getItem(String[] attributePath, boolean create) {
         ATTRIBUTE_ITEM item = null;
-        CoreAttributeGroup<ATTRIBUTE_ITEM, DESCRIPTOR> currentGroup = (CoreAttributeGroup) this;
+        CoreAttributeGroup<ATTRIBUTE_ITEM, DESCRIPTOR> currentGroup = this;
 
         for (int index = 0; index < attributePath.length; index++) {
             String attrName = attributePath[index];

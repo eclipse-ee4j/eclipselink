@@ -26,6 +26,8 @@
 package org.eclipse.persistence.internal.databaseaccess;
 
 // javase imports
+import static org.eclipse.persistence.internal.helper.DatabaseField.NULL_SQL_TYPE;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,10 +50,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-// EclipseLink imports
-import org.eclipse.persistence.queries.Call;
-import org.eclipse.persistence.queries.DatabaseQuery;
-import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -66,11 +64,14 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.ArrayRecord;
 import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescriptor;
+// EclipseLink imports
+import org.eclipse.persistence.queries.Call;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.sessions.DatabaseLogin;
+import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.Login;
 import org.eclipse.persistence.sessions.SessionProfiler;
-import org.eclipse.persistence.sessions.DatabaseRecord;
-import org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescriptor;
-import static org.eclipse.persistence.internal.helper.DatabaseField.NULL_SQL_TYPE;
 
 /**
  * INTERNAL:
@@ -749,8 +750,6 @@ public class DatabaseAccessor extends DatasourceAccessor {
                             session.getEventManager().moreRowsDetected(call);
                         }
                     }
-                } else {
-                    result = null;
                 }
             } else {
                 boolean hasMultipleResultsSets = call.hasMultipleResultSets();
@@ -1295,8 +1294,6 @@ public class DatabaseAccessor extends DatasourceAccessor {
                         } catch (IOException exception) {
                             throw DatabaseException.errorReadingBlobData();
                         }
-                    } else {
-                        value = null;
                     }
                 } else {
                     value = platform.getObjectFromResultSet(resultSet, columnNumber, type, session);
@@ -1377,11 +1374,11 @@ public class DatabaseAccessor extends DatasourceAccessor {
         } else if ((fieldType == ClassConstants.SHORT) || (fieldType == ClassConstants.PSHORT)) {
             value = Short.valueOf(resultSet.getShort(columnNumber));
             isPrimitive = ((Short)value).shortValue() == 0;
-        } else if (Helper.shouldOptimizeDates && (fieldType != null) && ((type == Types.TIME) || (type == Types.DATE) || (type == Types.TIMESTAMP))) {
+        } else if (Helper.shouldOptimizeDates && (type == Types.TIME) || (type == Types.DATE) || (type == Types.TIMESTAMP)) {
             // Optimize dates by avoid conversion to timestamp then back to date or time or util.date.
             String dateString = resultSet.getString(columnNumber);
             value = platform.convertObject(dateString, fieldType);
-        } else if ((fieldType != null) && ((type == Types.TIME) || (type == Types.DATE) || (type == Types.TIMESTAMP))) {
+        } else if ((type == Types.TIME) || (type == Types.DATE) || (type == Types.TIMESTAMP)) {
             // PERF: Optimize dates by calling direct get method if type is Date or Time,
             // unfortunately the double conversion is unavoidable for Calendar and util.Date.
             if (fieldType == ClassConstants.SQLDATE) {

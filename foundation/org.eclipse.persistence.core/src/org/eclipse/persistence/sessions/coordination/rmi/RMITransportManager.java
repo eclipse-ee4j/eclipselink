@@ -13,18 +13,22 @@
 package org.eclipse.persistence.sessions.coordination.rmi;
 
 import java.io.IOException;
-import javax.naming.Context;
-import javax.rmi.PortableRemoteObject;
+import java.net.InetAddress;
 import java.rmi.Naming;
 import java.rmi.NoSuchObjectException;
 import java.rmi.server.UnicastRemoteObject;
-import java.net.InetAddress;
+
+import javax.naming.Context;
+import javax.rmi.PortableRemoteObject;
+
 import org.eclipse.persistence.exceptions.RemoteCommandManagerException;
 import org.eclipse.persistence.internal.sessions.coordination.RemoteConnection;
-import org.eclipse.persistence.internal.sessions.coordination.rmi.*;
-import org.eclipse.persistence.sessions.coordination.TransportManager;
+import org.eclipse.persistence.internal.sessions.coordination.rmi.RMIRemoteCommandConnection;
+import org.eclipse.persistence.internal.sessions.coordination.rmi.RMIRemoteCommandConnectionImpl;
+import org.eclipse.persistence.internal.sessions.coordination.rmi.RMIRemoteConnection;
 import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
 import org.eclipse.persistence.sessions.coordination.ServiceId;
+import org.eclipse.persistence.sessions.coordination.TransportManager;
 
 /**
  * <p>
@@ -192,7 +196,7 @@ public class RMITransportManager extends TransportManager {
         }
         String fullURL = url;
 
-        if ((fullURL != null) && (fullURL.endsWith("/") || fullURL.endsWith("\\"))) {
+        if ((fullURL.endsWith("/") || fullURL.endsWith("\\"))) {
             fullURL = fullURL.substring(0, fullURL.length() - 1);
         }
         return fullURL + "/" + serviceName;

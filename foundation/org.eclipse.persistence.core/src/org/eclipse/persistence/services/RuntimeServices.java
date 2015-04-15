@@ -637,8 +637,9 @@ public abstract class RuntimeServices {
                 return SessionLog.FINEST_LABEL;
             case SessionLog.OFF:
                 return SessionLog.OFF_LABEL;
+            default:
+                return "N/A";
             }
-            return "N/A";
         }
 
         /**

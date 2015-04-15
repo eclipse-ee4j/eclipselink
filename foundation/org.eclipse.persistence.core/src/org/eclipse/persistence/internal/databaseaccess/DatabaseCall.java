@@ -22,20 +22,39 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.databaseaccess;
 
-import java.util.*;
-import java.sql.*;
-import java.io.*;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.sessions.DatabaseRecord;
-import org.eclipse.persistence.queries.*;
+import java.io.CharArrayWriter;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.sql.Array;
+import java.sql.CallableStatement;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Struct;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.internal.queries.*;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.expressions.ParameterExpression;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.queries.CallQueryMechanism;
+import org.eclipse.persistence.internal.queries.DatabaseQueryMechanism;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.internal.expressions.ParameterExpression;
-import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescriptor;
+import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.ModifyQuery;
+import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.sessions.DatabaseRecord;
 
 /**
  * INTERNAL:
@@ -280,7 +299,7 @@ public abstract class DatabaseCall extends DatasourceCall {
                     DatabaseField field = outParameter.getOutputField();
                     if (value instanceof Struct){
                         ClassDescriptor descriptor = session.getDescriptor(field.getType());
-                        if ((value != null) && (descriptor != null) && descriptor.isObjectRelationalDataTypeDescriptor()) {
+                        if ((descriptor != null) && descriptor.isObjectRelationalDataTypeDescriptor()) {
                             AbstractRecord nestedRow = ((ObjectRelationalDataTypeDescriptor)descriptor).buildRowFromStructure((Struct)value);
                             ReadObjectQuery query = new ReadObjectQuery();
                             query.setSession(session);
@@ -436,7 +455,7 @@ public abstract class DatabaseCall extends DatasourceCall {
     public static void appendLogParameters(Collection parameters, Accessor accessor, StringWriter writer, AbstractSession session) {
         writer.write("\tbind => [");
 
-        if (session == null || (session != null && session.shouldDisplayData())) {
+        if (session == null || session.shouldDisplayData()) {
             for (Iterator paramsEnum = parameters.iterator(); paramsEnum.hasNext();) {
                 Object parameter = paramsEnum.next();
                 if (parameter instanceof DatabaseField) {

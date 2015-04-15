@@ -16,16 +16,32 @@
  ******************************************************************************/
 package org.eclipse.persistence.sessions.server;
 
-import java.util.*;
-import org.eclipse.persistence.internal.databaseaccess.*;
-import org.eclipse.persistence.queries.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.exceptions.ConcurrencyException;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.databaseaccess.Accessor;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
+import org.eclipse.persistence.internal.sequencing.SequencingServer;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
+import org.eclipse.persistence.internal.sessions.ExclusiveIsolatedClientSession;
+import org.eclipse.persistence.internal.sessions.IsolatedClientSession;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.queries.Call;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.sessions.Login;
 import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.internal.sequencing.SequencingServer;
-import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.internal.sessions.*;
 
 /**
  * Implementation of Server
@@ -533,10 +549,9 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
                 return accessors;
             }
         }
-        if (accessors == null) {
-            accessors = new ArrayList(1);
-            accessors.add(this.readConnectionPool.acquireConnection());
-        }
+        // accessors == null
+        accessors = new ArrayList(1);
+        accessors.add(this.readConnectionPool.acquireConnection());
         return accessors;
     }
 

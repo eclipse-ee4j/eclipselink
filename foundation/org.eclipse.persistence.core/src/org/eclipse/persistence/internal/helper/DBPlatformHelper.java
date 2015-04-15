@@ -13,17 +13,17 @@
 package org.eclipse.persistence.internal.helper;
 
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ArrayList;
-import java.io.BufferedReader;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.persistence.logging.SessionLog;
 
@@ -155,21 +155,13 @@ public class DBPlatformHelper {
     private static void load(List<String[]> properties, final String resourceName,
             final ClassLoader classLoader)
                             throws IOException {
-
-        BufferedReader bin = new BufferedReader(new InputStreamReader(openResourceInputStream(resourceName,classLoader)));
-
-        try {
+        try (BufferedReader bin = new BufferedReader(
+                new InputStreamReader(openResourceInputStream(resourceName,classLoader)))) {
             for (String line = bin.readLine(); line != null; line = bin.readLine()) {
                 String[] keyValue = validateLineForReturnAsKeyValueArray(line);
                 if (keyValue != null) {
                     properties.add(keyValue);
                 }
-            }
-        } finally {
-            try {
-                bin.close();
-            } catch (Exception e) {
-                // no action
             }
         }
     }

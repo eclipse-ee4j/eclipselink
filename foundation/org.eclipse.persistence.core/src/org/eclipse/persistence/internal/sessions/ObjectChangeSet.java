@@ -12,21 +12,30 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.sessions;
 
-import java.io.*;
-import java.util.*;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
-import org.eclipse.persistence.descriptors.VersionLockingPolicy;
 import org.eclipse.persistence.descriptors.TimestampLockingPolicy;
-import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.mappings.*;
+import org.eclipse.persistence.descriptors.VersionLockingPolicy;
+import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
+import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
+import org.eclipse.persistence.queries.FetchGroup;
+import org.eclipse.persistence.queries.ReadObjectQuery;
 
 /**
  * <p>
@@ -1094,9 +1103,9 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
         if (this.isNew && ((this.changes == null) || this.changes.isEmpty())) {
             AbstractSession unitOfWork = this.unitOfWorkChangeSet.getSession();
             // Full change set is only required for cache coordination, not remote.
-            if (!unitOfWork.isRemoteUnitOfWork()) {
+            if (unitOfWork != null && !unitOfWork.isRemoteUnitOfWork()) {
                 ClassDescriptor descriptor = getDescriptor();
-                if ((unitOfWork != null) && (descriptor != null)) {
+                if (descriptor != null) {
                     FetchGroup fetchGroup = null;
                     if(descriptor.hasFetchGroupManager()) {
                         fetchGroup = descriptor.getFetchGroupManager().getObjectFetchGroup(this.cloneObject);

@@ -29,35 +29,47 @@ package org.eclipse.persistence.internal.sessions;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.internal.helper.DBPlatformHelper;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.EclipseLinkException;
+import org.eclipse.persistence.exceptions.IntegrityException;
+import org.eclipse.persistence.exceptions.OptimisticLockException;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
+import org.eclipse.persistence.internal.helper.DBPlatformHelper;
 import org.eclipse.persistence.internal.sequencing.Sequencing;
-import org.eclipse.persistence.internal.sequencing.SequencingHome;
 import org.eclipse.persistence.internal.sequencing.SequencingFactory;
-import org.eclipse.persistence.sequencing.Sequence;
-import org.eclipse.persistence.sequencing.SequencingControl;
+import org.eclipse.persistence.internal.sequencing.SequencingHome;
 import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.sessions.Login;
-import org.eclipse.persistence.sessions.DatasourceLogin;
-import org.eclipse.persistence.sessions.SessionProfiler;
-import org.eclipse.persistence.tools.tuning.SessionTuner;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.platform.database.OraclePlatform;
 import org.eclipse.persistence.platform.database.events.DatabaseEventListener;
-import org.eclipse.persistence.platform.server.ServerPlatform;
 import org.eclipse.persistence.platform.server.NoServerPlatform;
+import org.eclipse.persistence.platform.server.ServerPlatform;
 import org.eclipse.persistence.platform.server.ServerPlatformBase;
 import org.eclipse.persistence.queries.AttributeGroup;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.QueryResultsCachePolicy;
 import org.eclipse.persistence.queries.ReadQuery;
+import org.eclipse.persistence.sequencing.Sequence;
+import org.eclipse.persistence.sequencing.SequencingControl;
+import org.eclipse.persistence.sessions.DatasourceLogin;
+import org.eclipse.persistence.sessions.Login;
+import org.eclipse.persistence.sessions.SessionProfiler;
+import org.eclipse.persistence.tools.tuning.SessionTuner;
 
 /**
  * Implementation of org.eclipse.persistence.sessions.DatabaseSession
@@ -186,6 +198,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      *
      * @param throwException - set to true if the caller cares to throw exceptions, false to swallow them.
      */
+    @SuppressWarnings("null")
     protected void setOrDetectDatasource(boolean throwException) {
         String vendorNameAndVersion = null;
         String driverName = null;
