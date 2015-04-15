@@ -73,6 +73,10 @@
     <property name="wls.mt.install.orainst.loc"  location="${oracle.mt.install.dir}/oraInst.loc"/>
     <!--   WebLogic installation directory full path. -->
     <property name="wls.mt.install.wl.home"      location="${weblogic.mt.install.dir}/wlserver"/>
+	<!--   WebLogic common modules installation directory full path. -->
+	<property name="wls.mt.install.modules"      location="${weblogic.mt.install.dir}/oracle_common/modules"/>
+	<!--   WebLogic toplink module installation directory full path. -->
+	<property name="wls.mt.module.toplink"       location="${wls.mt.install.modules}/oracle.toplink"/>
     <!--   Full (absilute) domain directory path. -->
     <property name="wls.mt.domain.full.path"     location="${weblogic.mt.domain.path}"/>
     <!--   Full (absilute) domain libraries directory path. -->
@@ -230,7 +234,7 @@
     <!-- INTERNAL: Copy EclipseLink, jUnit and JDBC driver libraries into domain's lib directory -->
     <macrodef name="wls-install-libraries">
         <sequential>
-            <copy file="${wls.mt.eclipselink.lib}" todir="${wls.mt.domain.lib.full.path}"/>
+            <copy file="${wls.mt.eclipselink.lib}" todir="${wls.mt.module.toplink}" overwrite="true"/>
             <copy file="${wls.mt.jdbc.driver.jar}" todir="${wls.mt.domain.lib.full.path}"/>
             <copy file="${wls.mt.junit.lib}"       todir="${wls.mt.domain.lib.full.path}"/>
         </sequential>
@@ -1149,6 +1153,11 @@
             else=" - wls.mt.install.wl.home is not initialized">
             <isset property="wls.mt.install.wl.home"/>
         </condition>
+        <condition property="wls.mt.module.toplink.message"
+            value=" + wls.mt.module.toplink = ${wls.mt.module.toplink}"
+            else=" - wls.mt.module.toplink is not initialized">
+            <isset property="wls.mt.module.toplink"/>
+        </condition>
         <condition property="wls.mt.config.tool.message"
             value=" + wls.mt.config.tool = ${wls.mt.config.tool}"
             else=" - wls.mt.config.tool is not initialized">
@@ -1210,6 +1219,7 @@
         <echo message="${wls.mt.junit.lib.file.check.message}"/>
         <echo message="Domain creation properties generated:"/>
         <echo message="${wls.mt.install.wl.home.message}"/>
+        <echo message="${wls.mt.module.toplink.message}"/>
         <echo message="${wls.mt.config.tool.message}"/>
         <echo message="${wls.mt.domain.full.path.message}"/>
         <echo message="${wls.mt.domain.template.message}"/>
