@@ -14,6 +14,7 @@ package org.eclipse.persistence.tools.workbench.framework.help;
 
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Desktop;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -22,6 +23,8 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -30,7 +33,6 @@ import java.util.WeakHashMap;
 import java.util.prefs.Preferences;
 
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
@@ -38,7 +40,6 @@ import javax.swing.KeyStroke;
 
 import org.eclipse.persistence.tools.workbench.framework.resources.ResourceRepository;
 import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
-import org.eclipse.persistence.tools.workbench.utility.string.StringTools;
 
 
 /**
@@ -496,8 +497,15 @@ class DefaultHelpManager
         public void handleValue(String value, Component component) {
             String browser = this.preferences.get(BROWSER_PREFERENCE, BROWSER_PREFERENCE_DEFAULT);
             try {
-                Runtime.getRuntime().exec(browser + " " + value);
-            } catch (IOException ex) {
+                if (browser.isEmpty()) {
+                    Desktop.getDesktop().browse(new URI(value));
+                } else {
+                    Runtime.getRuntime().exec(browser + " " + value);
+                }
+            } catch (IOException | URISyntaxException ex) {
+                if (component == null) {
+                    throw new RuntimeException(DefaultHelpManager.this.resourceRepository.getString("CONFIGURE_EXTERNAL_BROWSER"));
+                }
                 showBrowserConfigMessages(component);
             }
        }
@@ -508,12 +516,7 @@ class DefaultHelpManager
          * @see oracle.help.CustomProtocolHandler#handleValue(String)
          */
         public void handleValue(String value) {
-            String browser = this.preferences.get(BROWSER_PREFERENCE, BROWSER_PREFERENCE_DEFAULT);
-            try {
-                Runtime.getRuntime().exec(browser + " " + value);
-            } catch (IOException ex) {
-                throw new RuntimeException(DefaultHelpManager.this.resourceRepository.getString("CONFIGURE_EXTERNAL_BROWSER"));
-            }
+            handleValue(value, null);
        }
 
         private void showBrowserConfigMessages(Component component) {
@@ -528,10 +531,10 @@ class DefaultHelpManager
 
     private HashMap<String, String> initializeTopicMap() {
         HashMap<String, String> topicMap = new HashMap<String, String>(1);
-        topicMap.put("default", "http://wiki.eclipse.org/EclipseLink/UserGuide");
+        topicMap.put("default", "http://www.eclipse.org/eclipselink/documentation/");
         topicMap.put("eclipselink_home", "http://www.eclipse.org/eclipselink/");
-        topicMap.put("eclipslink_userguide", "http://wiki.eclipse.org/EclipseLink/UserGuide");
-        topicMap.put("eclipselink_api",  "http://www.eclipse.org/eclipselink/api/1.0/index.html");
+        topicMap.put("eclipslink_userguide", "http://www.eclipse.org/eclipselink/documentation/");
+        topicMap.put("eclipselink_api",  "http://www.eclipse.org/eclipselink/api/2.6/index.html");
         topicMap.put("eclipselink_examples", "http://wiki.eclipse.org/EclipseLink/Examples");
         return topicMap;
     }
