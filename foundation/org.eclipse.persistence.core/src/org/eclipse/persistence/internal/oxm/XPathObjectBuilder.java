@@ -428,13 +428,8 @@ public class XPathObjectBuilder extends CoreObjectBuilder<CoreAbstractRecord, Co
                             }else{
                                 ((ContainerValue)mappingNodeValue).setIndex(containerIndex);
                             }
-                            if (mappingNodeValue.isNullCapableValue()) {
-                                addNullCapableValue((NullCapableValue)mappingNodeValue);
-                            }
                             branchNode.addChild(xmlFld.getXPathFragment(), mappingNodeValue, xmlDescriptor.getNamespaceResolver());
                         }
-
-
                         continue;
                     } else if (xmlMapping instanceof ObjectReferenceMapping) {
                         ObjectReferenceMapping xmlORMapping = (ObjectReferenceMapping)xmlMapping;
@@ -442,12 +437,6 @@ public class XPathObjectBuilder extends CoreObjectBuilder<CoreAbstractRecord, Co
                         while (fieldIt.hasNext()) {
                             Field xmlFld = (Field)fieldIt.next();
                             mappingNodeValue = new XMLObjectReferenceMappingNodeValue(xmlORMapping, xmlFld);
-                            if (mappingNodeValue.isContainerValue()) {
-                                addContainerValue((ContainerValue)mappingNodeValue);
-                            }
-                            if (mappingNodeValue.isNullCapableValue()) {
-                                addNullCapableValue((NullCapableValue)mappingNodeValue);
-                            }
                             addChild(xmlFld.getXPathFragment(), mappingNodeValue, xmlDescriptor.getNamespaceResolver());
                         }
                         continue;

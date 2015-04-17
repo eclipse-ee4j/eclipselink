@@ -13,18 +13,20 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.tools.model.query;
 
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.COALESCE;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
+
 import org.eclipse.persistence.jpa.jpql.parser.CoalesceExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ScalarExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.tools.model.IListChangeListener;
 import org.eclipse.persistence.jpa.jpql.utility.iterable.ListIterable;
 import org.eclipse.persistence.jpa.jpql.utility.iterable.SnapshotCloneListIterable;
-import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
 /**
  * A <code><b>COALESCE</b></code> expression returns <code>null</code> if all its arguments evaluate
@@ -76,10 +78,7 @@ public class CoalesceExpressionStateObject extends AbstractEncapsulatedExpressio
      */
     public CoalesceExpressionStateObject(StateObject parent, List<StateObject> items) {
         super(parent);
-                if (this.items == null) {
-                    this.items = new ArrayList<StateObject>();
-                }
-        this.items.addAll(parent(items));
+        this.items = new ArrayList<>(parent(items));
     }
 
     /**
@@ -92,6 +91,7 @@ public class CoalesceExpressionStateObject extends AbstractEncapsulatedExpressio
      */
     public CoalesceExpressionStateObject(StateObject parent, StateObject... items) {
         super(parent);
+        this.items = new ArrayList<>();
         Collections.addAll(this.items, parent(items));
     }
 
@@ -104,6 +104,7 @@ public class CoalesceExpressionStateObject extends AbstractEncapsulatedExpressio
      */
     public CoalesceExpressionStateObject(StateObject parent, String... items) {
         super(parent);
+        this.items = new ArrayList<>();
         parseItemInternal(items);
     }
 

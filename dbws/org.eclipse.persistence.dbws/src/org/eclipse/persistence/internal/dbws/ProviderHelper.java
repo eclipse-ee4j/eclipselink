@@ -15,6 +15,50 @@ package org.eclipse.persistence.internal.dbws;
 
 //javase imports
 
+import static javax.xml.soap.SOAPConstants.SOAP_1_2_PROTOCOL;
+import static javax.xml.soap.SOAPConstants.URI_NS_SOAP_1_1_ENVELOPE;
+import static javax.xml.soap.SOAPConstants.URI_NS_SOAP_1_2_ENVELOPE;
+import static javax.xml.ws.handler.MessageContext.INBOUND_MESSAGE_ATTACHMENTS;
+import static org.eclipse.persistence.internal.dbws.SOAPResponseWriter.RECEIVER_QNAME;
+import static org.eclipse.persistence.internal.dbws.SOAPResponseWriter.SERVER_QNAME;
+import static org.eclipse.persistence.internal.xr.Util.DBWS_SCHEMA_XML;
+import static org.eclipse.persistence.internal.xr.Util.DBWS_SERVICE_XML;
+import static org.eclipse.persistence.internal.xr.Util.DBWS_WSDL;
+import static org.eclipse.persistence.internal.xr.Util.META_INF_PATHS;
+import static org.eclipse.persistence.internal.xr.Util.SCHEMA_2_CLASS;
+import static org.eclipse.persistence.internal.xr.Util.SERVICE_NAMESPACE_PREFIX;
+import static org.eclipse.persistence.internal.xr.Util.WEB_INF_DIR;
+import static org.eclipse.persistence.internal.xr.Util.WSDL_DIR;
+import static org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
+
+import javax.activation.DataHandler;
+import javax.servlet.ServletContext;
+import javax.xml.namespace.QName;
+import javax.xml.soap.SOAPBodyElement;
+import javax.xml.soap.SOAPElement;
+import javax.xml.soap.SOAPEnvelope;
+import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPFactory;
+import javax.xml.soap.SOAPFault;
+import javax.xml.soap.SOAPMessage;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.ws.WebServiceException;
+import javax.xml.ws.handler.MessageContext;
+import javax.xml.ws.soap.SOAPFaultException;
+
 import org.eclipse.persistence.dbws.DBWSModelProject;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DBWSException;
@@ -44,49 +88,6 @@ import org.eclipse.persistence.sessions.Project;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
-import javax.activation.DataHandler;
-import javax.servlet.ServletContext;
-import javax.xml.namespace.QName;
-import javax.xml.soap.SOAPBodyElement;
-import javax.xml.soap.SOAPElement;
-import javax.xml.soap.SOAPEnvelope;
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPFactory;
-import javax.xml.soap.SOAPFault;
-import javax.xml.soap.SOAPMessage;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.ws.WebServiceException;
-import javax.xml.ws.handler.MessageContext;
-import javax.xml.ws.soap.SOAPFaultException;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-
-import static javax.xml.soap.SOAPConstants.SOAP_1_2_PROTOCOL;
-import static javax.xml.soap.SOAPConstants.URI_NS_SOAP_1_1_ENVELOPE;
-import static javax.xml.soap.SOAPConstants.URI_NS_SOAP_1_2_ENVELOPE;
-import static javax.xml.ws.handler.MessageContext.INBOUND_MESSAGE_ATTACHMENTS;
-import static org.eclipse.persistence.internal.dbws.SOAPResponseWriter.RECEIVER_QNAME;
-import static org.eclipse.persistence.internal.dbws.SOAPResponseWriter.SERVER_QNAME;
-import static org.eclipse.persistence.internal.xr.Util.DBWS_SCHEMA_XML;
-import static org.eclipse.persistence.internal.xr.Util.DBWS_SERVICE_XML;
-import static org.eclipse.persistence.internal.xr.Util.DBWS_WSDL;
-import static org.eclipse.persistence.internal.xr.Util.META_INF_PATHS;
-import static org.eclipse.persistence.internal.xr.Util.SCHEMA_2_CLASS;
-import static org.eclipse.persistence.internal.xr.Util.SERVICE_NAMESPACE_PREFIX;
-import static org.eclipse.persistence.internal.xr.Util.WEB_INF_DIR;
-import static org.eclipse.persistence.internal.xr.Util.WSDL_DIR;
-import static org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT;
 
 // Java extension imports
 // EclipseLink imports
@@ -476,7 +477,7 @@ public class ProviderHelper extends XRServiceFactory {
                 }
                 soapFault = soapFactory.createFault("SOAPMessage request format error - missing body element", faultCodeQName);
             } catch (SOAPException se) {
-                /* safe to ignore */
+                throw new WebServiceException(se.getMessage(), se);
             }
             throw new SOAPFaultException(soapFault);
         }
@@ -492,9 +493,11 @@ public class ProviderHelper extends XRServiceFactory {
                         this.attachments = attachments;
                         return this;
                     }
+                    @Override
                     public boolean isXOPPackage() {
                         return true;
                     }
+                    @Override
                     public DataHandler getAttachmentAsDataHandler(String id) {
                         // strip off 'cid:' (Is this needed?)
                         String attachmentRefId = id;
@@ -503,6 +506,7 @@ public class ProviderHelper extends XRServiceFactory {
                         }
                         return attachments.get(attachmentRefId);
                     }
+                    @Override
                     public byte[] getAttachmentAsByteArray(String id) {
                         ByteArrayOutputStream out = null;
                         try {
@@ -552,7 +556,7 @@ public class ProviderHelper extends XRServiceFactory {
                 }
                 soapFault = soapFactory.createFault("SOAPMessage request format error - " + e1, faultCodeQName);
             } catch (SOAPException se) {
-                // ignore
+                throw new WebServiceException(se.getMessage(), se);
             }
             throw new SOAPFaultException(soapFault);
         }
@@ -640,7 +644,7 @@ public class ProviderHelper extends XRServiceFactory {
                     }
                     soapFault = soapFactory.createFault("SOAPMessage response error - " + e.getMessage(), faultCodeQName);
                 } catch (SOAPException soape2) {
-                    // ignore
+                    throw new WebServiceException(soape2.getMessage(), soape2);
                 }
                 throw new SOAPFaultException(soapFault);
             }

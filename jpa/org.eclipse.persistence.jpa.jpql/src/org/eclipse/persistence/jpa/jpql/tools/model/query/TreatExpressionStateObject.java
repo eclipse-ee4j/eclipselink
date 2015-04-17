@@ -13,12 +13,17 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.tools.model.query;
 
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.LEFT_PARENTHESIS;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.RIGHT_PARENTHESIS;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.SPACE;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.AS;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.TREAT;
+
 import java.io.IOException;
 import java.util.List;
+
 import org.eclipse.persistence.jpa.jpql.parser.TreatExpression;
 import org.eclipse.persistence.jpa.jpql.tools.spi.IEntity;
-import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
-import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
 /**
  * Returns an expression that allows to treat its base as if it were a subclass of the class
@@ -34,7 +39,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * @since 2.4
  * @author Pascal Filion
  */
-@SuppressWarnings({"nls", "unused"}) // unused used for the import statement: see bug 330740
+@SuppressWarnings({"nls"})
 public class TreatExpressionStateObject extends AbstractStateObject {
 
     /**
@@ -103,6 +108,7 @@ public class TreatExpressionStateObject extends AbstractStateObject {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void accept(StateObjectVisitor visitor) {
         acceptUnknownVisitor(visitor);
     }
@@ -152,9 +158,9 @@ public class TreatExpressionStateObject extends AbstractStateObject {
      * managed type provider does not have an entity with that name
      */
     public IEntity getEntity() {
-
+        String entityName = entityTypeName.getText();
         for (IEntity entity : getManagedTypeProvider().entities()) {
-            if (entity.getName().equals(entityTypeName)) {
+            if (entity.getName().equals(entityName)) {
                 return entity;
             }
         }

@@ -40,7 +40,7 @@ import org.eclipse.persistence.mappings.ForeignReferenceMapping;
  * @author dclarke, mnorman
  * @since EclipseLink 1.2
  */
-public class DynamicTypeImpl implements DynamicType {
+public class DynamicTypeImpl implements DynamicType, Cloneable {
 
     protected ClassDescriptor descriptor;
     protected DynamicType parentType;
@@ -70,17 +70,16 @@ public class DynamicTypeImpl implements DynamicType {
 
     @Override
     public Object clone() {
-        DynamicTypeImpl clonedDynamicTypeImpl = null;
         // clone yerself
         try {
-            clonedDynamicTypeImpl = (DynamicTypeImpl)super.clone();
+            return super.clone();
         }
         catch (Exception exception) {
-            // ignore
+            throw new AssertionError(exception);
         }
-        return clonedDynamicTypeImpl;
     }
 
+    @Override
     public ClassDescriptor getDescriptor() {
         return this.descriptor;
     }
@@ -97,6 +96,7 @@ public class DynamicTypeImpl implements DynamicType {
         this.dpm = dpm;
     }
 
+    @Override
     public DynamicType getParentType() {
         return this.parentType;
     }
@@ -108,14 +108,17 @@ public class DynamicTypeImpl implements DynamicType {
     /**
      * @see DynamicType#getName()
      */
+    @Override
     public String getName() {
         return getDescriptor().getAlias();
     }
 
+    @Override
     public String getClassName() {
         return getDescriptor().getJavaClassName();
     }
 
+    @Override
     public int getNumberOfProperties() {
         return dpm.getPropertyNames().size();
     }
@@ -129,10 +132,12 @@ public class DynamicTypeImpl implements DynamicType {
         return getDescriptor().isFullyInitialized();
     }
 
+    @Override
     public boolean containsProperty(String propertyName) {
         return dpm.contains(propertyName);
     }
 
+    @Override
     public Class<? extends DynamicEntity> getJavaClass() {
         return getDescriptor().getJavaClass();
     }
@@ -145,14 +150,17 @@ public class DynamicTypeImpl implements DynamicType {
         return mapping;
     }
 
+    @Override
     public List<String> getPropertiesNames() {
         return dpm.getPropertyNames();
     }
 
+    @Override
     public Class<?> getPropertyType(String propertyName) {
         return getMapping(propertyName).getAttributeClassification();
     }
 
+    @Override
     public DynamicEntity newDynamicEntity() {
         DynamicEntity newDynamicEntity = (DynamicEntity)getDescriptor().getInstantiationPolicy().
             buildNewInstance();
@@ -194,10 +202,12 @@ public class DynamicTypeImpl implements DynamicType {
         }
     }
 
+    @Override
     public int getPropertyIndex(String propertyName) {
         return dpm.getPropertyNames().indexOf(propertyName);
     }
 
+    @Override
     public Class<?> getPropertyType(int propertyIndex) {
         return getDescriptor().getMappings().get(propertyIndex).getAttributeClassification();
     }

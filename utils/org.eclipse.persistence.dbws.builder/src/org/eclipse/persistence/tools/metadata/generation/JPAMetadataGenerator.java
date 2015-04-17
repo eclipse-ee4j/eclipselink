@@ -217,7 +217,7 @@ public class JPAMetadataGenerator {
      * @see org.eclipse.persistence.internal.databaseaccess.DatabasePlatform
      */
     public JPAMetadataGenerator(String defaultPackage, DatabasePlatform dbPlatform, boolean generateCRUDOps) {
-        this.defaultPackage = defaultPackage.toLowerCase();
+        this.defaultPackage = defaultPackage == null ? null : defaultPackage.toLowerCase();
         this.dbPlatform = dbPlatform;
         this.generateCRUDOps = generateCRUDOps;
 
@@ -377,7 +377,7 @@ public class JPAMetadataGenerator {
                 entity.getAttributes().getIds().add((IdAccessor) attribute);
             } else {
                 attribute = new BasicAccessor();
-                entity.getAttributes().getBasics().add((BasicAccessor) attribute);
+                entity.getAttributes().getBasics().add(attribute);
             }
             attribute.setName(fType.getFieldName().toLowerCase());
             attribute.setAttributeType(getAttributeTypeNameForFieldType(fType, dbPlatform));

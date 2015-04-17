@@ -252,7 +252,7 @@ public class XPathFragment <
             while(st.hasMoreTokens()) {
                 String indexString = st.nextToken();
                 try {
-                    index = Integer.valueOf(indexString).intValue();
+                    index = Integer.parseInt(indexString);
                     setContainsIndex(true);
                 } catch (NumberFormatException e) {
                     int equalsOffset = indexString.indexOf('=');

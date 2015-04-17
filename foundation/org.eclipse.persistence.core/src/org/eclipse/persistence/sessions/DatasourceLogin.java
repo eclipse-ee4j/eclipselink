@@ -12,25 +12,31 @@
  ******************************************************************************/
 package org.eclipse.persistence.sessions;
 
-import java.util.*;
-import java.io.*;
+import java.io.PrintWriter;
+import java.io.Serializable;
+import java.io.StringWriter;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.text.MessageFormat;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.platform.database.DatabasePlatform;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.sequencing.Sequence;
+import java.util.Map;
+import java.util.Properties;
+
 import org.eclipse.persistence.Version;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.localization.*;
-import org.eclipse.persistence.internal.security.SecurableObjectHolder;
 import org.eclipse.persistence.internal.helper.ConversionManager;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.helper.NonSynchronizedProperties;
+import org.eclipse.persistence.internal.localization.ToStringLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
+import org.eclipse.persistence.internal.security.SecurableObjectHolder;
+import org.eclipse.persistence.platform.database.DatabasePlatform;
+import org.eclipse.persistence.queries.ValueReadQuery;
+import org.eclipse.persistence.sequencing.Sequence;
 
 /**
  * <p>
@@ -319,7 +325,8 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
                 } else if (passwordObject instanceof String) {
                     result.put("password", getSecurableObjectHolder().getSecurableObject().decryptPassword((String)passwordObject));
                 } else {
-                    result.put("password", null);
+                    //properties cannot store null
+                    result.remove("password");
                 }
             } else if ((passwordObject instanceof char[]) && (((char[])passwordObject).length == 0)) {
                 // Bug 236726 - deal with empty string for passwords

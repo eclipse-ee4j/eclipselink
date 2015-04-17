@@ -14,20 +14,23 @@ package org.eclipse.persistence.queries;
 
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
-import java.util.*;
-import org.eclipse.persistence.internal.expressions.*;
+import java.util.List;
+import java.util.Map;
+
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.expressions.ForUpdateClause;
+import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
-import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
+import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.MergeManager;
-import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.internal.queries.ContainerPolicy;
-import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.mappings.CollectionMapping;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 
 /**
  * <p><b>Purpose</b>:
@@ -112,6 +115,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
      * INTERNAL:
      * Clone the query
      */
+    @Override
     public Object clone() {
         ObjectBuildingQuery cloneQuery = (ObjectBuildingQuery) super.clone();
         cloneQuery.isCacheCheckComplete = this.isCacheCheckComplete;
@@ -122,6 +126,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
      * Used to give the subclasses opportunity to copy aspects of the cloned query
      * to the original query.
      */
+    @Override
     protected void clonedQueryExecutionComplete(DatabaseQuery query, AbstractSession session) {
         super.clonedQueryExecutionComplete(query, session);
         //reset cache check flag for next execution.
@@ -135,6 +140,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
      * with class names to a project with classes.
      * @param classLoader
      */
+    @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){
         super.convertClassNamesToClasses(classLoader);
         Class referenceClass = null;
@@ -188,6 +194,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
      * By default this calls prepareFromQuery, but additional properties may be required
      * to be copied as prepareFromQuery only copies properties that affect the SQL.
      */
+    @Override
     public void copyFromQuery(DatabaseQuery query) {
         super.copyFromQuery(query);
         if (query.isObjectBuildingQuery()) {
@@ -206,6 +213,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
      * This is used only for primary key queries, as the descriptor query manager
      * stores a predefined query for this query to avoid having to re-prepare and allow for customization.
      */
+    @Override
     protected void prepareCustomQuery(DatabaseQuery customQuery) {
         ((ObjectBuildingQuery)customQuery).isCacheCheckComplete = this.isCacheCheckComplete;
     }
@@ -218,6 +226,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
      * dynamic queries.
      * This only copies over properties that are configured through EJBQL.
      */
+    @Override
     public void prepareFromQuery(DatabaseQuery query) {
         super.prepareFromQuery(query);
         if (query.isObjectBuildingQuery()) {
@@ -326,6 +335,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
      * PUBLIC:
      * Return the reference class of the query.
      */
+    @Override
     public Class getReferenceClass() {
         return referenceClass;
     }
@@ -334,6 +344,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
      * INTERNAL:
      * Return the reference class of the query.
      */
+    @Override
     public String getReferenceClassName() {
         if ((referenceClassName == null) && (referenceClass != null)) {
             referenceClassName = referenceClass.getName();
@@ -368,6 +379,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
      * PUBLIC:
      * Return if this is an object building query.
      */
+    @Override
     public boolean isObjectBuildingQuery() {
         return true;
     }
@@ -483,9 +495,6 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
         int size = joinExpressions.size();
         if ((size == 0) || (clone == null)) {
             return;
-        }
-        if (concreteDescriptor == null) {
-            concreteDescriptor = unitOfWork.getDescriptor(clone.getClass());
         }
         for (int index = 0; index < size; index++) {//since a's descriptor won't have a mapping for 'b'.
             //baseExpression will be first relationship expression after the ExpressionBuilder, and may include aggregate intermediaries

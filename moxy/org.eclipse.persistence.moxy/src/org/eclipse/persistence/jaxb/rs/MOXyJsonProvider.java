@@ -264,12 +264,13 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
             return getDomainClasses(genericArrayType.getGenericComponentType());
         } else if(genericType instanceof WildcardType) {
             Set<Class<?>> result = new LinkedHashSet<Class<?>>();
-            result.add((Class<?>) genericType);
             Type[] upperTypes = ((WildcardType)genericType).getUpperBounds();
             if(upperTypes.length > 0){
                 for (Type upperType : upperTypes) {
                     result.addAll(getDomainClasses(upperType));
                 }
+            } else {
+                result.add(Object.class);
             }
             return result;
         } else {
@@ -366,6 +367,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
      * @return -1 since the size of the JSON message is not known.
      * @see javax.ws.rs.ext.MessageBodyWriter#getSize(java.lang.Object, java.lang.Class, java.lang.reflect.Type, java.lang.annotation.Annotation[], javax.ws.rs.core.MediaType)
      */
+    @Override
     public long getSize(Object t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return -1;
     }
@@ -421,6 +423,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
      * <li>javax.activation.DataSource</li>
      * </ul>
      */
+    @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         if(!supportsMediaType(mediaType)) {
             return false;
@@ -523,6 +526,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
      * <li>javax.ws.rs.core.StreamingOutput</li>
      * </ul>
      */
+    @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         if(type == JSONWithPadding.class && APPLICATION_XJAVASCRIPT.equals(mediaType.toString())) {
             return true;
@@ -623,6 +627,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
     /*
      * @see javax.ws.rs.ext.MessageBodyReader#readFrom(java.lang.Class, java.lang.reflect.Type, java.lang.annotation.Annotation[], javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap, java.io.InputStream)
      */
+    @Override
     public Object readFrom(Class<Object> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException {
         try {
             if(null == genericType) {
@@ -908,6 +913,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
     /**
      * @see javax.ws.rs.ext.MessageBodyWriter#writeTo(java.lang.Object, java.lang.Class, java.lang.reflect.Type, java.lang.annotation.Annotation[], javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap, java.io.OutputStream)
      */
+    @Override
     public void writeTo(Object object, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {
         try {
             if(null == genericType) {

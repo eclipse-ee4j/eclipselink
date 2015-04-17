@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+
 import org.eclipse.persistence.jpa.jpql.tools.model.IListChangeListener;
 import org.eclipse.persistence.jpa.jpql.utility.iterable.ListIterable;
 import org.eclipse.persistence.jpa.jpql.utility.iterable.SnapshotCloneListIterable;
@@ -57,10 +58,7 @@ public abstract class AbstractListHolderStateObject<T extends StateObject> exten
      */
     protected AbstractListHolderStateObject(StateObject parent, List<? extends T> items) {
         super(parent);
-                if (this.items == null) {
-                    this.items = new ArrayList<T>();
-                }
-        this.items.addAll(items);
+        this.items = new ArrayList<T>(items);
         parent(items);
     }
 
@@ -73,6 +71,7 @@ public abstract class AbstractListHolderStateObject<T extends StateObject> exten
      */
     protected AbstractListHolderStateObject(StateObject parent, T... items) {
         super(parent);
+        this.items = new ArrayList<>();
         Collections.addAll(this.items, parent(items));
     }
 

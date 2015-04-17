@@ -12,16 +12,24 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.descriptors;
 
-import java.io.*;
-import java.lang.reflect.*;
+import java.io.Serializable;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.core.descriptors.CoreInstantiationPolicy;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.security.*;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedClassForName;
+import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredConstructorFor;
+import org.eclipse.persistence.internal.security.PrivilegedInvokeConstructor;
+import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
@@ -183,14 +191,14 @@ public class InstantiationPolicy extends CoreInstantiationPolicy implements Clon
      * INTERNAL:
      * Clones the InstantiationPolicy
      */
+    @Override
     public Object clone() {
         try {
             // clones itself
             return super.clone();
         } catch (Exception exception) {
-            ;
+            throw new AssertionError(exception);
         }
-        return null;
     }
 
     /**
@@ -473,6 +481,7 @@ public class InstantiationPolicy extends CoreInstantiationPolicy implements Clon
     }
 
 
+    @Override
     public String toString() {
         String mName = null;
         if (this.isUsingDefaultConstructor()) {
@@ -507,6 +516,7 @@ public class InstantiationPolicy extends CoreInstantiationPolicy implements Clon
         setFactoryMethodName(factoryMethodName);
     }
 
+    @Override
     public void useFactoryInstantiationPolicy(String factoryClassName, String methodName) {
         setMethodName(methodName);
         setFactory(null);

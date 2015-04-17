@@ -13,11 +13,15 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.tools.model.query;
 
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.COMMA;
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.SPACE;
+
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.eclipse.persistence.jpa.jpql.Assert;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
@@ -33,7 +37,6 @@ import org.eclipse.persistence.jpa.jpql.tools.spi.IType;
 import org.eclipse.persistence.jpa.jpql.tools.spi.ITypeRepository;
 import org.eclipse.persistence.jpa.jpql.tools.utility.iterable.SnapshotCloneIterable;
 import org.eclipse.persistence.jpa.jpql.utility.CollectionTools;
-import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
 
 /**
  * The abstract definition of a {@link StateObject}.
@@ -188,6 +191,7 @@ public abstract class AbstractStateObject implements StateObject {
     /**
      * {@inheritDoc}
      */
+    @Override
     public final void addPropertyChangeListener(String propertyName, IPropertyChangeListener<?> listener) {
         changeSupport.addPropertyChangeListener(propertyName, listener);
     }
@@ -308,15 +312,14 @@ public abstract class AbstractStateObject implements StateObject {
      * @return The given object
      */
     protected StateObject checkParent(StateObject parent) {
-        if (parent == null) {
-            Assert.isNotNull(parent, "The parent cannot be null");
-        }
+        Assert.isNotNull(parent, "The parent cannot be null");
         return parent;
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public final Iterable<StateObject> children() {
         List<StateObject> children = new ArrayList<StateObject>();
         addChildren(children);
@@ -326,6 +329,7 @@ public abstract class AbstractStateObject implements StateObject {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void decorate(StateObject decorator) {
         this.decorator = parent(decorator);
     }
@@ -341,6 +345,7 @@ public abstract class AbstractStateObject implements StateObject {
     /**
      * {@inheritDoc}
      */
+    @Override
     public IdentificationVariableStateObject findIdentificationVariable(String identificationVariable) {
         return parent.findIdentificationVariable(identificationVariable);
     }
@@ -370,6 +375,7 @@ public abstract class AbstractStateObject implements StateObject {
     /**
      * {@inheritDoc}
      */
+    @Override
     public DeclarationStateObject getDeclaration() {
         return parent.getDeclaration();
     }
@@ -377,6 +383,7 @@ public abstract class AbstractStateObject implements StateObject {
     /**
      * {@inheritDoc}
      */
+    @Override
     public StateObject getDecorator() {
         return decorator;
     }
@@ -384,6 +391,7 @@ public abstract class AbstractStateObject implements StateObject {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Expression getExpression() {
         return expression;
     }
@@ -391,6 +399,7 @@ public abstract class AbstractStateObject implements StateObject {
     /**
      * {@inheritDoc}
      */
+    @Override
     public JPQLGrammar getGrammar() {
         return getRoot().getGrammar();
     }
@@ -398,6 +407,7 @@ public abstract class AbstractStateObject implements StateObject {
     /**
      * {@inheritDoc}
      */
+    @Override
     public IManagedTypeProvider getManagedTypeProvider() {
         return getRoot().getManagedTypeProvider();
     }
@@ -405,6 +415,7 @@ public abstract class AbstractStateObject implements StateObject {
     /**
      * {@inheritDoc}
      */
+    @Override
     public StateObject getParent() {
         return parent;
     }
@@ -412,6 +423,7 @@ public abstract class AbstractStateObject implements StateObject {
     /**
      * {@inheritDoc}
      */
+    @Override
     public IJPQLQueryBuilder getQueryBuilder() {
         return getRoot().getQueryBuilder();
     }
@@ -419,6 +431,7 @@ public abstract class AbstractStateObject implements StateObject {
     /**
      * {@inheritDoc}
      */
+    @Override
     public JPQLQueryStateObject getRoot() {
         return parent.getRoot();
     }
@@ -479,6 +492,7 @@ public abstract class AbstractStateObject implements StateObject {
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean isDecorated() {
         return decorator != null;
     }
@@ -486,6 +500,7 @@ public abstract class AbstractStateObject implements StateObject {
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean isEquivalent(StateObject stateObject) {
         return (this == stateObject) ||
                ((stateObject != null) && (stateObject.getClass() == getClass()));
@@ -533,6 +548,7 @@ public abstract class AbstractStateObject implements StateObject {
     /**
      * {@inheritDoc}
      */
+    @Override
     public final void removePropertyChangeListener(String propertyName, IPropertyChangeListener<?> listener) {
         changeSupport.removePropertyChangeListener(propertyName, listener);
     }
@@ -550,6 +566,7 @@ public abstract class AbstractStateObject implements StateObject {
     /**
      * {@inheritDoc}
      */
+    @Override
     public final void setParent(StateObject parent) {
         Assert.isNotNull(parent, "The parent cannot be null");
         this.parent = parent;
@@ -568,6 +585,7 @@ public abstract class AbstractStateObject implements StateObject {
     /**
      * {@inheritDoc}
      */
+    @Override
     public final void toString(Appendable writer) {
         try {
             toStringInternal(writer);
@@ -619,6 +637,7 @@ public abstract class AbstractStateObject implements StateObject {
     /**
      * {@inheritDoc}
      */
+    @Override
     public final void toText(Appendable writer) {
         try {
             toTextInternal(writer);

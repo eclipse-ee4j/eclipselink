@@ -12,12 +12,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.util;
 
-import org.eclipse.persistence.internal.weaving.PersistenceWeavedRest;
-import org.eclipse.persistence.jpa.rs.DataStorage;
-import org.eclipse.persistence.jpa.rs.PersistenceContext;
-import org.eclipse.persistence.jpa.rs.logging.LoggingLocalization;
-
-import javax.ws.rs.core.MediaType;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -27,6 +21,13 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.ws.rs.core.MediaType;
+
+import org.eclipse.persistence.internal.weaving.PersistenceWeavedRest;
+import org.eclipse.persistence.jpa.rs.DataStorage;
+import org.eclipse.persistence.jpa.rs.PersistenceContext;
+import org.eclipse.persistence.jpa.rs.logging.LoggingLocalization;
 
 public class JPARSLogger {
 
@@ -198,20 +199,17 @@ public class JPARSLogger {
         logger.log(level, LoggingLocalization.buildMessage(message, params));
     }
 
-    private static String readData(InputStream is) {
+    private static String readData(InputStream is) throws IOException {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         ByteArrayInputStream bais = null;
         int nRead;
         byte[] data = new byte[16384];
-        try {
-            while ((nRead = is.read(data, 0, data.length)) != -1) {
-                buffer.write(data, 0, nRead);
-            }
-            buffer.flush();
-            byte[] bytes = buffer.toByteArray();
-            bais = new ByteArrayInputStream(bytes);
-        } catch (IOException e) {
+        while ((nRead = is.read(data, 0, data.length)) != -1) {
+            buffer.write(data, 0, nRead);
         }
+        buffer.flush();
+        byte[] bytes = buffer.toByteArray();
+        bais = new ByteArrayInputStream(bytes);
         return getDataFromInputStream(bais);
     }
 

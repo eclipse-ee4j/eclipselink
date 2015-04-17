@@ -12,14 +12,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.sdo;
 
-import commonj.sdo.ChangeSummary;
-import commonj.sdo.DataGraph;
-import commonj.sdo.DataObject;
-import commonj.sdo.Property;
-import commonj.sdo.Sequence;
-import commonj.sdo.Type;
-import commonj.sdo.helper.DataHelper;
-import commonj.sdo.helper.HelperContext;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -29,12 +21,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
 import javax.xml.namespace.QName;
-import org.eclipse.persistence.sdo.SDOConstants;
-import org.eclipse.persistence.sdo.helper.ListWrapper;
-import org.eclipse.persistence.sdo.helper.SDODataHelper;
-import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
-import org.eclipse.persistence.sdo.helper.XPathEngine;
+
 import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
@@ -42,6 +31,19 @@ import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.sequenced.SequencedObject;
 import org.eclipse.persistence.oxm.sequenced.Setting;
+import org.eclipse.persistence.sdo.helper.ListWrapper;
+import org.eclipse.persistence.sdo.helper.SDODataHelper;
+import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
+import org.eclipse.persistence.sdo.helper.XPathEngine;
+
+import commonj.sdo.ChangeSummary;
+import commonj.sdo.DataGraph;
+import commonj.sdo.DataObject;
+import commonj.sdo.Property;
+import commonj.sdo.Sequence;
+import commonj.sdo.Type;
+import commonj.sdo.helper.DataHelper;
+import commonj.sdo.helper.HelperContext;
 
 public class SDODataObject implements DataObject, SequencedObject {
 
@@ -109,6 +111,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         }
     }
 
+    @Override
     public Object get(String path) {// path like "a/b/c"
         try {
             return XPathEngine.getInstance().get(path, this);
@@ -118,18 +121,22 @@ public class SDODataObject implements DataObject, SequencedObject {
         }
     }
 
+    @Override
     public void set(String path, Object value) throws ClassCastException, UnsupportedOperationException, IllegalArgumentException {
         XPathEngine.getInstance().set(path, value, this, false);
     }
 
+    @Override
     public boolean isSet(String path) {
         return XPathEngine.getInstance().isSet(path, this);
     }
 
+    @Override
     public void unset(String path) {
         XPathEngine.getInstance().unset(path, this);
     }
 
+    @Override
     public boolean getBoolean(String path) throws ClassCastException {
         try {
             Boolean value = (Boolean)XPathEngine.getInstance().convertObjectToValueByPath(path, Boolean.class, this);
@@ -144,6 +151,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         }
     }
 
+    @Override
     public byte getByte(String path) {
         try {
             Byte value = (Byte)XPathEngine.getInstance().convertObjectToValueByPath(path, Byte.class, this);
@@ -157,6 +165,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         }
     }
 
+    @Override
     public char getChar(String path) {
         try {
             Character value = (Character)XPathEngine.getInstance().convertObjectToValueByPath(path, Character.class, this);
@@ -170,6 +179,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         }
     }
 
+    @Override
     public double getDouble(String path) {
         try {
             Double value = (Double)XPathEngine.getInstance().convertObjectToValueByPath(path, Double.class, this);
@@ -183,6 +193,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         }
     }
 
+    @Override
     public float getFloat(String path) {
         try {
             Float value = (Float)XPathEngine.getInstance().convertObjectToValueByPath(path, Float.class, this);
@@ -196,6 +207,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         }
     }
 
+    @Override
     public int getInt(String path) {
         try {
             Integer value = (Integer)XPathEngine.getInstance().convertObjectToValueByPath(path, Integer.class, this);
@@ -209,6 +221,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         }
     }
 
+    @Override
     public long getLong(String path) {
         try {
             Long value = (Long)XPathEngine.getInstance().convertObjectToValueByPath(path, Long.class, this);
@@ -222,6 +235,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         }
     }
 
+    @Override
     public short getShort(String path) {
         try {
             Short value = (Short)XPathEngine.getInstance().convertObjectToValueByPath(path, Short.class, this);
@@ -235,6 +249,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         }
     }
 
+    @Override
     public byte[] getBytes(String path) {
         try {
             byte[] value = (byte[])XPathEngine.getInstance().convertObjectToValueByPath(path, byte[].class, this);
@@ -245,6 +260,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         }
     }
 
+    @Override
     public BigDecimal getBigDecimal(String path) {
         try {
             BigDecimal value = (BigDecimal)XPathEngine.getInstance().convertObjectToValueByPath(path, BigDecimal.class, this);
@@ -255,6 +271,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         }
     }
 
+    @Override
     public BigInteger getBigInteger(String path) {
         try {
             BigInteger value = (BigInteger)XPathEngine.getInstance().convertObjectToValueByPath(path, BigInteger.class, this);
@@ -265,6 +282,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         }
     }
 
+    @Override
     public SDODataObject getDataObject(String path) throws ClassCastException {
         Object value = get(path);
         if(value instanceof ListWrapper) {
@@ -273,6 +291,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         return (SDODataObject)value;
     }
 
+    @Override
     public Date getDate(String path) {
         try {
             Date value = (Date)XPathEngine.getInstance().convertObjectToValueByPath(path, Date.class, this);
@@ -283,6 +302,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         }
     }
 
+    @Override
     public String getString(String path) {
         try {
             String value = (String)XPathEngine.getInstance().convertObjectToValueByPath(path, String.class, this);
@@ -293,6 +313,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         }
     }
 
+    @Override
     public List getList(String path) {
         try {
             return (List)XPathEngine.getInstance().convertObjectToValueByPath(path, List.class, this);
@@ -302,71 +323,88 @@ public class SDODataObject implements DataObject, SequencedObject {
         }
     }
 
+    @Override
     public void setBoolean(String path, boolean value) {
         convertValueAndSet(path, value);
     }
 
+    @Override
     public void setByte(String path, byte value) {
         convertValueAndSet(path, value);
     }
 
+    @Override
     public void setChar(String path, char value) {
         convertValueAndSet(path, value);
     }
 
+    @Override
     public void setDouble(String path, double value) {
         convertValueAndSet(path, value);
     }
 
+    @Override
     public void setFloat(String path, float value) {
         convertValueAndSet(path, value);
     }
 
+    @Override
     public void setInt(String path, int value) {
         convertValueAndSet(path, value);
     }
 
+    @Override
     public void setLong(String path, long value) {
         convertValueAndSet(path, value);
     }
 
+    @Override
     public void setShort(String path, short value) {
         convertValueAndSet(path, value);
     }
 
+    @Override
     public void setBytes(String path, byte[] value) {
         convertValueAndSet(path, value);
     }
 
+    @Override
     public void setBigDecimal(String path, BigDecimal value) {
         convertValueAndSet(path, value);
     }
 
+    @Override
     public void setBigInteger(String path, BigInteger value) {
         convertValueAndSet(path, value);
     }
 
+    @Override
     public void setDataObject(String path, DataObject value) {
         set(path, value);
     }
 
+    @Override
     public void setDate(String path, Date value) {
         convertValueAndSet(path, value);
     }
 
+    @Override
     public void setString(String path, String value) {
         convertValueAndSet(path, value);
     }
 
+    @Override
     public void setList(String path, List value) {
         convertValueAndSet(path, value);
     }
 
+    @Override
     public Object get(int propertyIndex) throws IllegalArgumentException {
         Property p = getInstanceProperty(propertyIndex);
         return get(p);
     }
 
+    @Override
     public void set(int propertyIndex, Object value) {
         try {
             Property p = getInstanceProperty(propertyIndex);
@@ -376,86 +414,103 @@ public class SDODataObject implements DataObject, SequencedObject {
         }
     }
 
+    @Override
     public boolean isSet(int propertyIndex) {
         Property p = getInstanceProperty(propertyIndex);
         return isSet(p);
     }
 
+    @Override
     public void unset(int propertyIndex) {
         Property p = getInstanceProperty(propertyIndex);
         unset(p);
     }
 
+    @Override
     public boolean getBoolean(int propertyIndex) throws IllegalArgumentException, ClassCastException {
         Property property = getInstanceProperty(propertyIndex);
         return getBoolean(property);
     }
 
+    @Override
     public byte getByte(int propertyIndex) throws IllegalArgumentException, ClassCastException {
         Property property = getInstanceProperty(propertyIndex);
         return getByte(property);
     }
 
+    @Override
     public char getChar(int propertyIndex) throws IllegalArgumentException, ClassCastException {
         Property property = getInstanceProperty(propertyIndex);
         return getChar(property);
     }
 
+    @Override
     public double getDouble(int propertyIndex) throws IllegalArgumentException, ClassCastException {
         Property property = getInstanceProperty(propertyIndex);
         return getDouble(property);
     }
 
+    @Override
     public float getFloat(int propertyIndex) throws IllegalArgumentException, ClassCastException {
         Property property = getInstanceProperty(propertyIndex);
         return getFloat(property);
     }
 
+    @Override
     public int getInt(int propertyIndex) throws IllegalArgumentException, ClassCastException {
         Property property = getInstanceProperty(propertyIndex);
         return getInt(property);
     }
 
+    @Override
     public long getLong(int propertyIndex) throws IllegalArgumentException, ClassCastException {
         Property property = getInstanceProperty(propertyIndex);
         return getLong(property);
     }
 
+    @Override
     public short getShort(int propertyIndex) throws IllegalArgumentException, ClassCastException {
         Property property = getInstanceProperty(propertyIndex);
         return getShort(property);
     }
 
+    @Override
     public byte[] getBytes(int propertyIndex) throws IllegalArgumentException, ClassCastException {
         Property property = getInstanceProperty(propertyIndex);
         return getBytes(property);
     }
 
+    @Override
     public BigDecimal getBigDecimal(int propertyIndex) throws IllegalArgumentException, ClassCastException {
         Property property = getInstanceProperty(propertyIndex);
         return getBigDecimal(property);
     }
 
+    @Override
     public BigInteger getBigInteger(int propertyIndex) throws IllegalArgumentException, ClassCastException {
         Property property = getInstanceProperty(propertyIndex);
         return getBigInteger(property);
     }
 
+    @Override
     public SDODataObject getDataObject(int propertyIndex) {
         Property property = getInstanceProperty(propertyIndex);
         return getDataObject(property);
     }
 
+    @Override
     public Date getDate(int propertyIndex) throws IllegalArgumentException, ClassCastException {
         Property property = getInstanceProperty(propertyIndex);
         return getDate(property);
     }
 
+    @Override
     public String getString(int propertyIndex) throws IllegalArgumentException, ClassCastException {
         Property property = getInstanceProperty(propertyIndex);
         return getString(property);
     }
 
+    @Override
     public List getList(int propertyIndex) {
         Property property = getInstanceProperty(propertyIndex);
         return getList(property);
@@ -464,6 +519,8 @@ public class SDODataObject implements DataObject, SequencedObject {
     /**
      * @deprecated in SDO 2.1.0.
      */
+    @Deprecated
+    @Override
     public Sequence getSequence(String path) {
         // get property from path
         Object anObject = get(path);
@@ -480,6 +537,8 @@ public class SDODataObject implements DataObject, SequencedObject {
     /**
      * @deprecated in SDO 2.1.0.
      */
+    @Deprecated
+    @Override
     public Sequence getSequence(int propertyIndex) {
         // get property
         Property aProperty = getInstanceProperty(propertyIndex);
@@ -489,6 +548,8 @@ public class SDODataObject implements DataObject, SequencedObject {
     /**
      * @deprecated in SDO 2.1.0.
      */
+    @Deprecated
+    @Override
     public Sequence getSequence(Property property) {
         return getSequencePrivate(property);
     }
@@ -508,71 +569,88 @@ public class SDODataObject implements DataObject, SequencedObject {
         }
     }
 
+    @Override
     public SDOSequence getSequence() {
         // sequence object should be null if !sequenced
         return sequence;
     }
 
+    @Override
     public void setBoolean(int propertyIndex, boolean value) {
         convertValueAndSet(propertyIndex, value);
     }
 
+    @Override
     public void setByte(int propertyIndex, byte value) {
         convertValueAndSet(propertyIndex, value);
     }
 
+    @Override
     public void setChar(int propertyIndex, char value) {
         convertValueAndSet(propertyIndex, value);
     }
 
+    @Override
     public void setDouble(int propertyIndex, double value) {
         convertValueAndSet(propertyIndex, value);
     }
 
+    @Override
     public void setFloat(int propertyIndex, float value) {
         convertValueAndSet(propertyIndex, value);
     }
 
+    @Override
     public void setInt(int propertyIndex, int value) {
         convertValueAndSet(propertyIndex, value);
     }
 
+    @Override
     public void setLong(int propertyIndex, long value) {
         convertValueAndSet(propertyIndex, value);
     }
 
+    @Override
     public void setShort(int propertyIndex, short value) {
         convertValueAndSet(propertyIndex, value);
     }
 
+    @Override
     public void setBytes(int propertyIndex, byte[] value) {
         convertValueAndSet(propertyIndex, value);
     }
 
+    @Override
     public void setBigDecimal(int propertyIndex, BigDecimal value) {
         convertValueAndSet(propertyIndex, value);
     }
 
+    @Override
     public void setBigInteger(int propertyIndex, BigInteger value) {
         convertValueAndSet(propertyIndex, value);
     }
 
+    @Override
     public void setDataObject(int propertyIndex, DataObject value) {
         set(propertyIndex, value);
     }
 
+    @Override
     public void setDate(int propertyIndex, Date value) {
         convertValueAndSet(propertyIndex, value);
     }
 
+    @Override
     public void setString(int propertyIndex, String value) {
         convertValueAndSet(propertyIndex, value);
     }
 
+    @Override
     public void setList(int propertyIndex, List value) {
         convertValueAndSet(propertyIndex, value);
     }
 
+    @Override
     public Object get(Property property) throws IllegalArgumentException {
         if (null == property) {// check null property before null type
             throw new IllegalArgumentException("Argument not Supported.");
@@ -699,6 +777,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         return aHelperContext.getTypeHelper().defineOpenContentProperty(null, propertyDO);
     }
 
+    @Override
     public void set(Property property, Object value) throws UnsupportedOperationException, IllegalArgumentException {
         set((SDOProperty) property, value, true);
     }
@@ -811,6 +890,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         }
     }
 
+    @Override
     public boolean isSet(Property property) {
         if (null == property) {
             throw SDOException.cannotPerformOperationOnNullArgument("isSet");
@@ -824,6 +904,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         }
     }
 
+    @Override
     public void unset(Property property) {
         if (null == property) {
             throw SDOException.cannotPerformOperationOnNullArgument("unset");
@@ -892,6 +973,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         }
     }
 
+    @Override
     public boolean getBoolean(Property property) throws IllegalArgumentException, ClassCastException {
         Boolean propertyBooleanValue = (Boolean)convertObjectToValue(property, Boolean.class);
         if (propertyBooleanValue == null) {
@@ -900,6 +982,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         return propertyBooleanValue.booleanValue();
     }
 
+    @Override
     public byte getByte(Property property) throws IllegalArgumentException, ClassCastException {
         Byte propertyByteValue = (Byte)convertObjectToValue(property, Byte.class);
         if (propertyByteValue == null) {
@@ -908,6 +991,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         return propertyByteValue.byteValue();
     }
 
+    @Override
     public char getChar(Property property) throws IllegalArgumentException {
         Character propertyCharValue = (Character)convertObjectToValue(property, Character.class);
         if (propertyCharValue == null) {
@@ -916,6 +1000,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         return propertyCharValue.charValue();
     }
 
+    @Override
     public double getDouble(Property property) throws IllegalArgumentException {
         Double propertyDoubleValue = (Double)convertObjectToValue(property, Double.class);
         if (propertyDoubleValue == null) {
@@ -924,6 +1009,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         return propertyDoubleValue.doubleValue();
     }
 
+    @Override
     public float getFloat(Property property) throws IllegalArgumentException {
         Float propertyFloatValue = (Float)convertObjectToValue(property, Float.class);
         if (propertyFloatValue == null) {
@@ -932,6 +1018,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         return propertyFloatValue.floatValue();
     }
 
+    @Override
     public int getInt(Property property) throws IllegalArgumentException {
         Integer propertyIntegerValue = (Integer)convertObjectToValue(property, Integer.class);
         if (propertyIntegerValue == null) {
@@ -940,6 +1027,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         return propertyIntegerValue.intValue();
     }
 
+    @Override
     public long getLong(Property property) throws IllegalArgumentException {
         Long propertyLongValue = (Long)convertObjectToValue(property, Long.class);
         if (propertyLongValue == null) {
@@ -948,6 +1036,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         return propertyLongValue.longValue();
     }
 
+    @Override
     public short getShort(Property property) throws IllegalArgumentException {
         Short propertyShortValue = (Short)convertObjectToValue(property, Short.class);
         if (propertyShortValue == null) {
@@ -956,21 +1045,25 @@ public class SDODataObject implements DataObject, SequencedObject {
         return propertyShortValue.shortValue();
     }
 
+    @Override
     public byte[] getBytes(Property property) throws IllegalArgumentException {
         byte[] propertyByteValue = (byte[])convertObjectToValue(property, byte[].class);
         return propertyByteValue;
     }
 
+    @Override
     public BigDecimal getBigDecimal(Property property) throws IllegalArgumentException {
         BigDecimal propertyDecimalValue = (BigDecimal)convertObjectToValue(property, BigDecimal.class);
         return propertyDecimalValue;
     }
 
+    @Override
     public BigInteger getBigInteger(Property property) throws IllegalArgumentException {
         BigInteger propertyBigIntegerValue = (BigInteger)convertObjectToValue(property, BigInteger.class);
         return propertyBigIntegerValue;
     }
 
+    @Override
     public SDODataObject getDataObject(Property property) throws IllegalArgumentException, ClassCastException {
         if(property != null && property.isMany()) {
             List value = (List)get(property);
@@ -983,6 +1076,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         return (SDODataObject)get(property);
     }
 
+    @Override
     public Date getDate(Property property) {
         if (null == property) {
             throw SDOException.cannotPerformOperationOnNullArgument("getDate");
@@ -996,11 +1090,13 @@ public class SDODataObject implements DataObject, SequencedObject {
         return propertyDateValue;
     }
 
+    @Override
     public String getString(Property property) {
         String propertyStringValue = (String)convertObjectToValue(property, String.class);
         return propertyStringValue;
     }
 
+    @Override
     public List getList(Property property) {
         if (null == property) {
             throw SDOException.cannotPerformOperationOnNullArgument("getList");
@@ -1037,76 +1133,94 @@ public class SDODataObject implements DataObject, SequencedObject {
         return theList;
     }
 
+    @Override
     public void setBoolean(Property property, boolean value) {
         convertValueAndSet(property, value);
     }
 
+    @Override
     public void setByte(Property property, byte value) {
         convertValueAndSet(property, value);
     }
 
+    @Override
     public void setChar(Property property, char value) {
         convertValueAndSet(property, value);
     }
 
+    @Override
     public void setDouble(Property property, double value) {
         convertValueAndSet(property, value);
     }
 
+    @Override
     public void setFloat(Property property, float value) {
         convertValueAndSet(property, value);
     }
 
+    @Override
     public void setInt(Property property, int value) {
         convertValueAndSet(property, value);
     }
 
+    @Override
     public void setLong(Property property, long value) {
         convertValueAndSet(property, value);
     }
 
+    @Override
     public void setShort(Property property, short value) {
         convertValueAndSet(property, value);
     }
 
+    @Override
     public void setBytes(Property property, byte[] value) {
         convertValueAndSet(property, value);
     }
 
+    @Override
     public void setBigDecimal(Property property, BigDecimal value) {
         convertValueAndSet(property, value);
     }
 
+    @Override
     public void setBigInteger(Property property, BigInteger value) {
         convertValueAndSet(property, value);
     }
 
+    @Override
     public void setDataObject(Property property, DataObject value) {
         set(property, value);
     }
 
+    @Override
     public void setDate(Property property, Date value) {
         convertValueAndSet(property, value);
     }
 
+    @Override
     public void setString(Property property, String value) {
         convertValueAndSet(property, value);
     }
 
+    @Override
     public void setList(Property property, List value) {
         convertValueAndSet(property, value);
     }
 
+    @Override
     public DataObject createDataObject(String propertyName) {
         Property aProperty = getInstanceProperty(propertyName);
         return createDataObject(aProperty);
     }
 
+    @Override
     public SDODataObject createDataObject(int propertyIndex) {
         Property aProperty = getInstanceProperty(propertyIndex);
         return createDataObject(aProperty);
     }
 
+    @Override
     public SDODataObject createDataObject(Property aProperty) {
         if (aProperty.isContainment()) {
             Type aType = aProperty.getType();
@@ -1117,18 +1231,21 @@ public class SDODataObject implements DataObject, SequencedObject {
         return null;
     }
 
+    @Override
     public SDODataObject createDataObject(String propertyName, String namespaceURI, String typeName) {
         Property aProperty = getInstanceProperty(propertyName);
         Type aType = aHelperContext.getTypeHelper().getType(namespaceURI, typeName);
         return createDataObject(aProperty, aType);
     }
 
+    @Override
     public SDODataObject createDataObject(int propertyIndex, String namespaceURI, String typeName) {
         Property aProperty = getInstanceProperty(propertyIndex);
         Type aType = aHelperContext.getTypeHelper().getType(namespaceURI, typeName);
         return createDataObject(aProperty, aType);
     }
 
+    @Override
     public SDODataObject createDataObject(Property property, Type aType) {
         SDODataObject created = (SDODataObject) aHelperContext.getDataFactory().create(aType);
 
@@ -1291,6 +1408,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         }
     }
 
+    @Override
     public void detach() {
         detachWithSequenceUpdate();
     }
@@ -1347,14 +1465,17 @@ public class SDODataObject implements DataObject, SequencedObject {
         }
     }
 
+    @Override
     public void delete() {
         deleteWithSequenceUpdate();
     }
 
+    @Override
     public SDODataObject getContainer() {
         return container;
     }
 
+    @Override
     public SDOProperty getContainmentProperty() {
         if ((container != null) && (containmentPropertyName != null)) {
             return container.getInstanceProperty(containmentPropertyName);
@@ -1363,6 +1484,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         }
     }
 
+    @Override
     public DataGraph getDataGraph() {
         return dataGraph;
     }
@@ -1371,10 +1493,12 @@ public class SDODataObject implements DataObject, SequencedObject {
         this.dataGraph = dataGraph;
     }
 
+    @Override
     public SDOType getType() {
         return type;
     }
 
+    @Override
     public List getInstanceProperties() {
         if (null == instanceProperties) {
             instanceProperties = new ArrayList();
@@ -1382,10 +1506,12 @@ public class SDODataObject implements DataObject, SequencedObject {
         return instanceProperties;
     }
 
+    @Override
     public SDOProperty getProperty(String propertyName) {
         return getInstanceProperty(propertyName);
     }
 
+    @Override
     public SDOProperty getInstanceProperty(String propertyName) {
         if (getType() == null) {
             throw new UnsupportedOperationException("Type is null");
@@ -1436,6 +1562,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         }
     }
 
+    @Override
     public SDODataObject getRootObject() {
         if (getContainer() != null) {
             return getContainer().getRootObject();
@@ -1443,6 +1570,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         return this;
     }
 
+    @Override
     public SDOChangeSummary getChangeSummary() {
         return changeSummary;
     }
@@ -1973,7 +2101,7 @@ public class SDODataObject implements DataObject, SequencedObject {
                 theType = ((DataObject)next).getType();
             }
             else{
-              theType = ((SDOTypeHelper)aHelperContext.getTypeHelper()).getTypeForSimpleJavaType(value.getClass());
+              theType = ((SDOTypeHelper)aHelperContext.getTypeHelper()).getTypeForSimpleJavaType(next.getClass());
             }
             if (propertyName != null) {
                 SDOProperty prop = (SDOProperty)aHelperContext.getXSDHelper().getGlobalProperty(propertyUri, propertyName, true);
@@ -2777,6 +2905,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         return openContentPropertiesAttributes;
     }
 
+    @Override
     public List<Setting> getSettings() {
         if(null != sequence) {
             return getSequence().getSettings();

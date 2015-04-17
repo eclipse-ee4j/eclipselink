@@ -14,6 +14,13 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.features.paging;
 
+import java.util.List;
+import java.util.Map;
+
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriInfo;
+import javax.xml.bind.JAXBElement;
+
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.ItemLinks;
 import org.eclipse.persistence.internal.queries.ReportItem;
@@ -29,14 +36,6 @@ import org.eclipse.persistence.jpa.rs.util.list.ReadAllQueryResultCollection;
 import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultCollection;
 import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultListItem;
 
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriInfo;
-import javax.xml.bind.JAXBElement;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-
 /**
  * FeatureResponseBuilder implementation used for pageable collections. Used in JPARS 2.0.
  *
@@ -44,7 +43,6 @@ import java.util.Vector;
  * @since EclipseLink 2.6.0.
  */
 public class PagingResponseBuilder extends FeatureResponseBuilderImpl {
-    private static final String NO_PREVIOUS_CHUNK = "-1";
 
     /**
      * {@inheritDoc}
@@ -72,10 +70,10 @@ public class PagingResponseBuilder extends FeatureResponseBuilderImpl {
      */
     @Override
     public Object buildAttributeResponse(PersistenceContext context, Map<String, Object> queryParams, String attribute, Object results, UriInfo uriInfo) {
-        if (results instanceof Collection) {
-            if (containsDomainObjects(results)) {
-                final List<Object> items = (List<Object>)results;
-                if ((items != null) && (!items.isEmpty())) {
+        if (results instanceof List) {
+            final List<Object> items = (List<Object>) results;
+            if (containsDomainObjects(items)) {
+                if (!items.isEmpty()) {
                     ReadAllQueryResultCollection response = new ReadAllQueryResultCollection();
                     response.setItems(items);
                     return populatePagedCollectionLinks(queryParams, uriInfo, response);
@@ -86,9 +84,8 @@ public class PagingResponseBuilder extends FeatureResponseBuilderImpl {
     }
 
     @SuppressWarnings("rawtypes")
-    private boolean containsDomainObjects(Object object) {
-        Collection collection = (Collection) object;
-        for (Object collectionItem : collection) {
+    private boolean containsDomainObjects(List object) {
+        for (Object collectionItem : object) {
             if (PersistenceWeavedRest.class.isAssignableFrom(collectionItem.getClass())) {
                 return true;
             }
@@ -99,7 +96,7 @@ public class PagingResponseBuilder extends FeatureResponseBuilderImpl {
     private Object populatePagedReadAllQueryItemLinks(PersistenceContext context, Object result) {
         // populate links for the entity
         ClassDescriptor descriptor = context.getJAXBDescriptorForClass(result.getClass());
-        if ((result instanceof PersistenceWeavedRest) && (descriptor != null) && (context != null)) {
+        if ((result instanceof PersistenceWeavedRest) && (descriptor != null)) {
             final PersistenceWeavedRest entity = (PersistenceWeavedRest) result;
             final String href = HrefHelper.buildEntityHref(context, descriptor.getAlias(), IdHelper.stringifyId(result, descriptor.getAlias(), context));
 
@@ -180,9 +177,6 @@ public class PagingResponseBuilder extends FeatureResponseBuilderImpl {
         for (Object result : results) {
             ReportQueryResultListItem queryResultListItem = new ReportQueryResultListItem();
             List<JAXBElement> jaxbFields = createShellJAXBElementList(reportItems, result);
-            if (jaxbFields == null) {
-                return null;
-            }
             // We don't have a way of determining self links for the report query responses
             // so, no links array will be inserted into individual items in the response
             queryResultListItem.setFields(jaxbFields);

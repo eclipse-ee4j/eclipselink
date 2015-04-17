@@ -141,6 +141,7 @@ public abstract class ORMetadata {
      *
      * equals plays a big role in the shouldOverride() method from this class.
      */
+    @Override
     public abstract boolean equals(Object objectToCompare);
 
     /**

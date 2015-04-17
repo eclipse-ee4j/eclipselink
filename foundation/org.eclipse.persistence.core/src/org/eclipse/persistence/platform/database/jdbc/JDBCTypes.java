@@ -13,10 +13,6 @@
 
 package org.eclipse.persistence.platform.database.jdbc;
 
-import java.sql.Array;
-import java.sql.Struct;
-import java.util.List;
-import java.util.ListIterator;
 import static java.lang.Integer.MIN_VALUE;
 import static java.sql.Types.ARRAY;
 import static java.sql.Types.BIGINT;
@@ -50,16 +46,6 @@ import static java.sql.Types.TIMESTAMP;
 import static java.sql.Types.TINYINT;
 import static java.sql.Types.VARBINARY;
 import static java.sql.Types.VARCHAR;
-
-import org.eclipse.persistence.internal.helper.ClassConstants;
-import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.helper.DatabaseType;
-import org.eclipse.persistence.internal.sessions.AbstractRecord;
-import org.eclipse.persistence.platform.database.DatabasePlatform;
-import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredProcedureCall;
-import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLargument;
-import org.eclipse.persistence.queries.StoredProcedureCall;
-import org.eclipse.persistence.sessions.DatabaseRecord;
 import static org.eclipse.persistence.internal.helper.ClassConstants.BIGDECIMAL;
 import static org.eclipse.persistence.internal.helper.ClassConstants.JavaSqlDate_Class;
 import static org.eclipse.persistence.internal.helper.ClassConstants.JavaSqlTime_Class;
@@ -70,6 +56,21 @@ import static org.eclipse.persistence.internal.helper.ClassConstants.STRING;
 import static org.eclipse.persistence.internal.helper.ClassConstants.Void_Class;
 import static org.eclipse.persistence.internal.helper.DatabaseType.DatabaseTypeHelper.databaseTypeHelper;
 import static org.eclipse.persistence.internal.helper.Helper.NL;
+
+import java.sql.Array;
+import java.sql.Struct;
+import java.util.List;
+import java.util.ListIterator;
+
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseType;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.platform.database.DatabasePlatform;
+import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredProcedureCall;
+import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLargument;
+import org.eclipse.persistence.queries.StoredProcedureCall;
+import org.eclipse.persistence.sessions.DatabaseRecord;
 
 /**
  * <b>PUBLIC</b>: JDBC types
@@ -217,36 +218,44 @@ public enum JDBCTypes implements JDBCType {
             this.typeName = typeName;
         }
 
+        @Override
         public boolean isComplexDatabaseType() {
             return false;
         }
 
+        @Override
         public boolean isJDBCType() {
             return true;
         }
 
+        @Override
         public int getSqlCode() {
             return typeCode;
         }
 
+        @Override
         public int getConversionCode() {
             return getSqlCode();
         }
 
+        @Override
         public String getTypeName() {
             return typeName;
         }
 
+        @Override
         public int computeInIndex(PLSQLargument inArg, int newIndex,
             ListIterator<PLSQLargument> i) {
             return databaseTypeHelper.computeInIndex(inArg, newIndex);
         }
 
+        @Override
         public int computeOutIndex(PLSQLargument outArg, int newIndex,
             ListIterator<PLSQLargument> i) {
             return databaseTypeHelper.computeOutIndex(outArg, newIndex);
         }
 
+        @Override
         public void buildInDeclare(StringBuilder sb, PLSQLargument inArg) {
             databaseTypeHelper.declareTarget(sb, inArg, this);
             sb.append(" := :");
@@ -255,20 +264,24 @@ public enum JDBCTypes implements JDBCType {
             sb.append(NL);
         }
 
+        @Override
         public void buildOutDeclare(StringBuilder sb, PLSQLargument outArg) {
             databaseTypeHelper.declareTarget(sb, outArg, this);
             sb.append(";");
             sb.append(NL);
         }
 
+        @Override
         public void buildBeginBlock(StringBuilder sb, PLSQLargument arg, PLSQLStoredProcedureCall call) {
             // nothing to do for simple types
         }
 
+        @Override
         public void buildOutAssignment(StringBuilder sb, PLSQLargument outArg, PLSQLStoredProcedureCall call) {
             databaseTypeHelper.buildOutAssignment(sb, outArg, call);
         }
 
+        @Override
         public void translate(PLSQLargument arg, AbstractRecord translationRow,
                 AbstractRecord copyOfTranslationRow, List<DatabaseField> copyOfTranslationFields,
                 List<DatabaseField> translationRowFields, List translationRowValues,
@@ -277,12 +290,14 @@ public enum JDBCTypes implements JDBCType {
                 copyOfTranslationFields, translationRowFields, translationRowValues, call);
         }
 
+        @Override
         public void buildOutputRow(PLSQLargument outArg, AbstractRecord outputRow,
                 DatabaseRecord newOutputRow, List<DatabaseField> outputRowFields, List outputRowValues) {
             databaseTypeHelper.buildOutputRow(outArg, outputRow,
                 newOutputRow, outputRowFields, outputRowValues);
         }
 
+        @Override
         public void logParameter(StringBuilder sb, Integer direction, PLSQLargument arg,
                 AbstractRecord translationRow, DatabasePlatform platform) {
             databaseTypeHelper.logParameter(sb, direction, arg, translationRow, platform);
@@ -452,7 +467,10 @@ public enum JDBCTypes implements JDBCType {
                 case TIME :
                     clz = JavaSqlTime_Class;
                     break;
-                }
+                default:
+                    clz = STRING;
+                    break;
+            }
             return clz;
         }
 }

@@ -46,6 +46,7 @@
             <Class name="org.eclipse.persistence.internal.sessions.ObjectChangeSet"/>
             <Class name="org.eclipse.persistence.internal.sessions.coordination.jms.JMSTopicRemoteConnection"/>
             <Class name="org.eclipse.persistence.internal.helper.WriteLockManager"/>
+            <Class name="org.eclipse.persistence.jpa.rs.service.JPARSPersistenceContextFactoryProvider"/>
         </Or>
         <Bug pattern="MS_SHOULD_BE_FINAL"/>
     </Match>
@@ -88,13 +89,37 @@
 
     <Match>
         <Or>
+            <Class name="org.eclipse.persistence.jpa.jpql.tools.model.query.AbstractStateObject"/>
+        </Or>
+        <Bug pattern="UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS"/>
+    </Match>
+
+    <!-- Cloneable warnings -->
+    <Match>
+        <Or>
             <!-- clones by constructor -->
+            <Class name="org.eclipse.persistence.descriptors.PessimisticLockingPolicy"/>
+            <Class name="org.eclipse.persistence.internal.helper.NonSynchronizedProperties"/>
             <Class name="org.eclipse.persistence.internal.helper.NonSynchronizedVector"/>
+            <Class name="org.eclipse.persistence.internal.jpa.CMP3Policy"/>
             <Class name="org.eclipse.persistence.internal.oxm.XMLUnmarshaller"/>
+            <Class name="org.eclipse.persistence.internal.sessions.EmptyRecord"/>
+            <Class name="org.eclipse.persistence.oxm.XMLMarshaller"/>
+            <Class name="org.eclipse.persistence.oxm.XMLUnmarshaller"/>
+            <Class name="org.eclipse.persistence.sdo.helper.ListWrapper"/>
+            <Class name="org.eclipse.persistence.sessions.interceptors.CacheKeyInterceptor"/>
             <!-- optimized cloning -->
             <Class name="org.eclipse.persistence.core.queries.CoreAttributeGroup"/>
         </Or>
         <Bug pattern="CN_IDIOM_NO_SUPER_CALL"/>
+    </Match>
+
+    <Match>
+        <Or>
+            <!-- clones by constructor -->
+            <Class name="org.eclipse.persistence.internal.jpa.metadata.mappings.AccessMethodsMetadata"/>
+        </Or>
+        <Bug pattern="CN_IMPLEMENTS_CLONE_BUT_NOT_CLONEABLE"/>
     </Match>
 
 </FindBugsFilter>

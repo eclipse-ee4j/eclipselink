@@ -12,19 +12,24 @@
  ******************************************************************************/
 package org.eclipse.persistence.descriptors;
 
-import java.lang.reflect.*;
+import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
-import java.util.*;
-import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
 
-import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.core.descriptors.CoreDescriptorEventManager;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.sessions.SessionProfiler;
+import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.sessions.SessionProfiler;
 
 /**
  * <p><b>Purpose</b>: The event manager allows for a descriptor to specify that
@@ -167,19 +172,17 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      * INTERNAL:
      * Clone the manager and its private parts.
      */
+    @Override
     public Object clone() {
-        DescriptorEventManager clone = null;
-
         try {
-            clone = (DescriptorEventManager)super.clone();
+            DescriptorEventManager clone = (DescriptorEventManager)super.clone();
             clone.setEventSelectors((Vector)getEventSelectors().clone());
             clone.setEventMethods((Vector)getEventMethods().clone());
             clone.setEventListeners(getEventListeners());
+            return clone;
         } catch (Exception exception) {
-            ;
+            throw new AssertionError(exception);
         }
-
-        return clone;
     }
 
     /**
@@ -220,6 +223,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      * Execute the given selector with the event as argument.
      * @exception DescriptorException - the method cannot be found or executed
      */
+    @Override
     public void executeEvent(DescriptorEvent event) throws DescriptorException {
         try {
             event.getSession().startOperationProfile(SessionProfiler.DescriptorEvent);
@@ -522,6 +526,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      * Return if the event manager has any event listeners, or event methods.
      * If nothing is listening to event they can be avoided.
      */
+    @Override
     public boolean hasAnyEventListeners() {
         // Check listeners in case of collection added to directly as occurs
         // for aggregates that have a clone of the event manager but not the

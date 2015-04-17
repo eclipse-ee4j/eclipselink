@@ -13,9 +13,11 @@
 package org.eclipse.persistence.descriptors.copying;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.sessions.*;
+import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
+import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.UnitOfWork;
 
 /**
  * <p><b>Purpose</b>: Allows customization of how an object is cloned.
@@ -30,11 +32,13 @@ public abstract class AbstractCopyPolicy implements CopyPolicy {
         super();
     }
 
+    @Override
     public abstract Object buildClone(Object domainObject, Session session) throws DescriptorException;
 
     /**
      * By default use the buildClone.
      */
+    @Override
     public Object buildWorkingCopyClone(Object domainObject, Session session) throws DescriptorException {
         return buildClone(domainObject, session);
     }
@@ -42,6 +46,7 @@ public abstract class AbstractCopyPolicy implements CopyPolicy {
     /**
      * By default create a new instance.
      */
+    @Override
     public Object buildWorkingCopyCloneFromRow(Record row, ObjectBuildingQuery query, Object primaryKey, UnitOfWork uow) throws DescriptorException {
         return this.descriptor.getObjectBuilder().buildNewInstance();
     }
@@ -50,13 +55,14 @@ public abstract class AbstractCopyPolicy implements CopyPolicy {
      * INTERNAL:
      * Clones the CopyPolicy
      */
+    @Override
     public Object clone() {
         try {
             // clones itself
             return super.clone();
         } catch (Exception exception) {
+            throw new AssertionError(exception);
         }
-        return null;
     }
 
     /**
@@ -69,6 +75,7 @@ public abstract class AbstractCopyPolicy implements CopyPolicy {
     /**
      * Do nothing by default.
      */
+    @Override
     public void initialize(Session session) throws DescriptorException {
         // Do nothing by default.
     }
@@ -76,6 +83,7 @@ public abstract class AbstractCopyPolicy implements CopyPolicy {
     /**
      * Set the descriptor.
      */
+    @Override
     public void setDescriptor(ClassDescriptor descriptor) {
         this.descriptor = descriptor;
     }

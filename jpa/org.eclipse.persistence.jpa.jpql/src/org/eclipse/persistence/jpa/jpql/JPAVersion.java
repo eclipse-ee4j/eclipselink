@@ -168,7 +168,7 @@ public enum JPAVersion {
             String currentVersion = getVersion();
 
             for (JPAVersion version : versions()) {
-                if (currentVersion.equals(version.version)) {
+                if (currentVersion.equals(String.valueOf(version.version))) {
                     return version;
                 }
             }

@@ -290,6 +290,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     /**
      * Initialize operators to avoid concurrency issues.
      */
+    @Override
     public void initialize() {
         getPlatformOperators();
     }
@@ -477,6 +478,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      * The platform may decide to bind some types, such as byte arrays and large strings.
      * Should only be called in case binding is not used.
      */
+    @Override
     public void appendParameter(Call call, Writer writer, Object parameter) {
         appendParameterInternal(call, writer, parameter);
     }
@@ -944,6 +946,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     /**
      * Copy the state into the new platform.
      */
+    @Override
     public void copyInto(Platform platform) {
         super.copyInto(platform);
         if (!(platform instanceof DatabasePlatform)) {
@@ -1072,6 +1075,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      * It does things such as determining if a field must be bound and flagging the parameter as one
      * that must be bound.
      */
+    @Override
     public Object getCustomModifyValueForCall(Call call, Object value, DatabaseField field, boolean shouldBind) {
 
         if (typeConverters != null){
@@ -1219,6 +1223,8 @@ public class DatabasePlatform extends DatasourcePlatform {
      * @see getEndDelimiter()
      * @return The quote character for this platform
      */
+    @Deprecated
+    @Override
     public String getIdentifierQuoteCharacter() {
         return "\"";
     }
@@ -1536,6 +1542,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         }
     }
 
+    @Override
     public int getSequencePreallocationSize() {
         return getDefaultSequence().getPreallocationSize();
     }
@@ -2246,6 +2253,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         return shouldTrimStrings;
     }
 
+    @Override
     public boolean shouldUseCustomModifyForCall(DatabaseField field) {
         return (field.getSqlType() == Types.STRUCT &&
             (typeConverters != null && typeConverters.containsKey(field.getType()))) ||
@@ -3090,16 +3098,16 @@ public class DatabasePlatform extends DatasourcePlatform {
         if ((fieldType.isSizeAllowed()) && ((field.getSize() != 0) || (fieldType.isSizeRequired()))) {
             writer.write("(");
             if (field.getSize() == 0) {
-                writer.write(String.valueOf(fieldType.getDefaultSize()));
+                writer.write(Integer.toString(fieldType.getDefaultSize()));
             } else {
-                writer.write(String.valueOf(field.getSize()));
+                writer.write(Integer.toString(field.getSize()));
             }
             if (field.getSubSize() != 0) {
                 writer.write(",");
-                writer.write(Integer.valueOf(field.getSubSize()).toString());
+                writer.write(Integer.toString(field.getSubSize()));
             } else if (fieldType.getDefaultSubSize() != 0) {
                 writer.write(",");
-                writer.write(Integer.valueOf(fieldType.getDefaultSubSize()).toString());
+                writer.write(Integer.toString(fieldType.getDefaultSubSize()));
             }
             writer.write(")");
         }

@@ -12,6 +12,43 @@
  ******************************************************************************/
 package org.eclipse.persistence.jaxb.plugins;
 
+import static com.sun.xml.xsom.XSFacet.FACET_FRACTIONDIGITS;
+import static com.sun.xml.xsom.XSFacet.FACET_LENGTH;
+import static com.sun.xml.xsom.XSFacet.FACET_MAXEXCLUSIVE;
+import static com.sun.xml.xsom.XSFacet.FACET_MAXINCLUSIVE;
+import static com.sun.xml.xsom.XSFacet.FACET_MAXLENGTH;
+import static com.sun.xml.xsom.XSFacet.FACET_MINEXCLUSIVE;
+import static com.sun.xml.xsom.XSFacet.FACET_MININCLUSIVE;
+import static com.sun.xml.xsom.XSFacet.FACET_MINLENGTH;
+import static com.sun.xml.xsom.XSFacet.FACET_PATTERN;
+import static com.sun.xml.xsom.XSFacet.FACET_TOTALDIGITS;
+
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.math.BigInteger;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.xml.bind.annotation.XmlElement;
+
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.SAXParseException;
+
 import com.sun.codemodel.JAnnotationArrayMember;
 import com.sun.codemodel.JAnnotationUse;
 import com.sun.codemodel.JAnnotationValue;
@@ -45,40 +82,6 @@ import com.sun.xml.xsom.impl.AttributeUseImpl;
 import com.sun.xml.xsom.impl.ParticleImpl;
 import com.sun.xml.xsom.impl.RestrictionSimpleTypeImpl;
 import com.sun.xml.xsom.impl.parser.DelayedRef;
-import org.xml.sax.ErrorHandler;
-
-import javax.xml.bind.annotation.XmlElement;
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.math.BigInteger;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import static com.sun.xml.xsom.XSFacet.FACET_LENGTH;
-import static com.sun.xml.xsom.XSFacet.FACET_MAXEXCLUSIVE;
-import static com.sun.xml.xsom.XSFacet.FACET_MINEXCLUSIVE;
-import static com.sun.xml.xsom.XSFacet.FACET_MAXINCLUSIVE;
-import static com.sun.xml.xsom.XSFacet.FACET_MININCLUSIVE;
-import static com.sun.xml.xsom.XSFacet.FACET_MAXLENGTH;
-import static com.sun.xml.xsom.XSFacet.FACET_MINLENGTH;
-import static com.sun.xml.xsom.XSFacet.FACET_FRACTIONDIGITS;
-import static com.sun.xml.xsom.XSFacet.FACET_TOTALDIGITS;
-import static com.sun.xml.xsom.XSFacet.FACET_PATTERN;
 
 
 /**
@@ -350,22 +353,29 @@ public class BeanValidationPlugin extends Plugin {
      * Stores the applied annotations and their origin into the map arg.
      */
     private void applyAnnotations(XSSimpleType simpleType, JFieldVar fieldVar, Map<JAnnotationUse, FacetType> a) {
-        XSFacet facet; // Auxiliary field.
+        XSFacet facet = null; // Auxiliary field.
         JType fieldType = fieldVar.type();
         if (notAnnotated(fieldVar, sizeAnn) && isSizeAnnotationApplicable(fieldType)) {
-            if ((facet = simpleType.getFacet(FACET_LENGTH)) != null) {
-                int length = Integer.valueOf(facet.getValue().value);
-                a.put(fieldVar.annotate(sizeAnn).param("min", length).param("max", length), FacetType.length);
-            } else {
-                Integer minLength = (facet = simpleType.getFacet(FACET_MINLENGTH)) != null ? Integer.valueOf(facet.getValue().value) : null;
-                Integer maxLength = (facet = simpleType.getFacet(FACET_MAXLENGTH)) != null ? Integer.valueOf(facet.getValue().value) : null;
+            try {
+                if ((facet = simpleType.getFacet(FACET_LENGTH)) != null) {
+                    int length = Integer.parseInt(facet.getValue().value);
+                    a.put(fieldVar.annotate(sizeAnn).param("min", length).param("max", length), FacetType.length);
+                } else {
+                    Integer minLength = (facet = simpleType.getFacet(FACET_MINLENGTH)) != null ? Integer.parseInt(facet.getValue().value) : null;
+                    Integer maxLength = (facet = simpleType.getFacet(FACET_MAXLENGTH)) != null ? Integer.parseInt(facet.getValue().value) : null;
 
-                if (minLength != null && maxLength != null) // Note: If using both minLength + maxLength, the minLength's customizations are considered.
-                    a.put(fieldVar.annotate(sizeAnn).param("min", minLength).param("max", maxLength), FacetType.minLength);
-                else if (minLength != null)
-                    a.put(fieldVar.annotate(sizeAnn).param("min", minLength), FacetType.minLength);
-                else if (maxLength != null)
-                    a.put(fieldVar.annotate(sizeAnn).param("max", maxLength), FacetType.maxLength);
+                    if (minLength != null && maxLength != null) // Note: If using both minLength + maxLength, the minLength's customizations are considered.
+                        a.put(fieldVar.annotate(sizeAnn).param("min", minLength).param("max", maxLength), FacetType.minLength);
+                    else if (minLength != null)
+                        a.put(fieldVar.annotate(sizeAnn).param("min", minLength), FacetType.minLength);
+                    else if (maxLength != null)
+                        a.put(fieldVar.annotate(sizeAnn).param("max", maxLength), FacetType.maxLength);
+                }
+            } catch (NumberFormatException nfe) {
+                if (facet != null) {
+                    String msg = "'" + facet.getName() + "' in '" + simpleType.getName() + "' cannot be parsed.";
+                    throw new RuntimeException(new SAXParseException(msg, facet.getLocator(), nfe));
+                }
             }
         }
 

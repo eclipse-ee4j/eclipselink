@@ -12,6 +12,13 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.util;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
+
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.internal.descriptors.PersistenceEntity;
@@ -25,13 +32,6 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.eclipse.persistence.sessions.DatabaseSession;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
 
 /**
  * EclipseLink helper class used for converting composite key values passed into
@@ -188,7 +188,7 @@ public class IdHelper {
         if (descriptor.hasCMPPolicy()) {
             CMP3Policy policy = (CMP3Policy) descriptor.getCMPPolicy();
             entity = policy.createBeanUsingKey(id, (AbstractSession) context.getServerSession());
-        } else if (entity instanceof DynamicEntity) {
+        } else if (DynamicEntity.class.isAssignableFrom(descriptor.getJavaClass())) {
             DynamicEntityImpl dynamicEntity = (DynamicEntityImpl) context.newEntity(entityType);
             // if there is only one PK mapping, we assume the id object
             // represents the value of that mapping
@@ -249,6 +249,7 @@ public class IdHelper {
             this.index = index;
         }
 
+        @Override
         public int compareTo(SortableKey o) {
             return mapping.getAttributeName().compareTo(o.getMapping().getAttributeName());
         }

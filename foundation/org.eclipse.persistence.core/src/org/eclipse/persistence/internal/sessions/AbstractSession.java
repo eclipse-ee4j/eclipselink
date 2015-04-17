@@ -28,6 +28,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.sessions;
 
+import java.io.Serializable;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.reflect.Constructor;
@@ -154,7 +155,7 @@ import org.eclipse.persistence.sessions.serializers.Serializer;
  *    </ul>
  * @see DatabaseSessionImpl
  */
-public abstract class AbstractSession extends CoreAbstractSession<ClassDescriptor, Login, Platform, Project, SessionEventManager> implements org.eclipse.persistence.sessions.Session, CommandProcessor, java.io.Serializable, java.lang.Cloneable {
+public abstract class AbstractSession extends CoreAbstractSession<ClassDescriptor, Login, Platform, Project, SessionEventManager> implements org.eclipse.persistence.sessions.Session, CommandProcessor, Serializable, Cloneable {
     /** ExceptionHandler handles database exceptions. */
     transient protected ExceptionHandler exceptionHandler;
 
@@ -958,7 +959,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         try {
             return super.clone();
         } catch (Exception exception) {
-            return null;
+            throw new AssertionError(exception);
         }
     }
 

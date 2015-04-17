@@ -22,17 +22,19 @@
 */
 package org.eclipse.persistence.platform.database;
 
-import java.util.*;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.Hashtable;
+import java.util.Map;
+import java.util.Vector;
 
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
-
-import java.io.*;
-
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.queries.ValueReadQuery;
 import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
-import org.eclipse.persistence.queries.*;
 
 /** <p><b>Purpose</b>: Provides Pervasive SQL DBMS specific behavior.
 *
@@ -71,6 +73,7 @@ public class PervasivePlatform extends org.eclipse.persistence.platform.database
     //
     // Cloned from AccessPlatform.java
     //
+    @Override
     protected Map<String, Class> buildClassTypes() {
         Map<String, Class> classTypeMapping = super.buildClassTypes();
 
@@ -81,6 +84,7 @@ public class PervasivePlatform extends org.eclipse.persistence.platform.database
     }
 
 
+    @Override
     protected Hashtable buildFieldTypes() {
         Hashtable fieldTypeMapping;
 
@@ -138,6 +142,7 @@ public class PervasivePlatform extends org.eclipse.persistence.platform.database
     /**
      * Pervasive uses ":" as prefix for procedure arguments.
      */
+    @Override
     public String getProcedureArgumentString() {
         return ":";
     }
@@ -154,6 +159,7 @@ public class PervasivePlatform extends org.eclipse.persistence.platform.database
     /**
      * In CREATE PROCEDURE, Pervasive requires brackets after the procedure name, even if there are no arguments.
      */
+    @Override
     public boolean requiresProcedureBrackets() {
         return true;
     }
@@ -161,6 +167,7 @@ public class PervasivePlatform extends org.eclipse.persistence.platform.database
     /**
      * Pervasive uses CALL or EXECUTE not CALL PROCEDURE or EXECUTE PROCEDURE
      */
+    @Override
     public String getProcedureCallHeader() {
         return "CALL ";
     }
@@ -178,6 +185,7 @@ public class PervasivePlatform extends org.eclipse.persistence.platform.database
     /**
      * Pervasive uses ":" as prefix for procedure parameters.
      */
+    @Override
     public String getStoredProcedureParameterPrefix() {
         return ":";
     }
@@ -192,6 +200,7 @@ public class PervasivePlatform extends org.eclipse.persistence.platform.database
     }
 
 
+    @Override
     protected void initializePlatformOperators() {
         super.initializePlatformOperators();
 
@@ -287,6 +296,7 @@ public class PervasivePlatform extends org.eclipse.persistence.platform.database
     /**
      * Answers whether platform is Pervasive
      */
+    @Override
     public boolean isPervasive() {
         return true;
     }
@@ -294,6 +304,7 @@ public class PervasivePlatform extends org.eclipse.persistence.platform.database
     /**
      * JDBC defines an outer join syntax which many drivers do not support. So we normally avoid it.
      */
+    @Override
     public boolean shouldUseJDBCOuterJoinSyntax() {
         return false; // not sure about this
     }
@@ -304,6 +315,7 @@ public class PervasivePlatform extends org.eclipse.persistence.platform.database
     *  Taken from
     *  org.eclipse.persistence\foundation\org.eclipse.persistence.core\src\org\eclipse\persistence\platform\database\AccessPlatform.java
     */
+    @Override
     public void printFieldIdentityClause(Writer writer)    throws ValidationException {
         try {
             writer.write(" IDENTITY");
@@ -346,7 +358,8 @@ public class PervasivePlatform extends org.eclipse.persistence.platform.database
      *  Indicates whether the platform supports identity.
      *
      */
-     public boolean supportsIdentity() {
+     @Override
+    public boolean supportsIdentity() {
          return true;
      }
 
@@ -356,12 +369,14 @@ public class PervasivePlatform extends org.eclipse.persistence.platform.database
      /**
       * INTERNAL:
       */
-     public boolean supportsLocalTempTables() {
+     @Override
+    public boolean supportsLocalTempTables() {
          return true;
      }
 
 
-     public boolean supportsGlobalTempTables() {
+     @Override
+    public boolean supportsGlobalTempTables() {
          return true;
      }
 
@@ -369,14 +384,16 @@ public class PervasivePlatform extends org.eclipse.persistence.platform.database
      /**
       * INTERNAL:
       */
-     protected String getCreateTempTableSqlPrefix() {
+     @Override
+    protected String getCreateTempTableSqlPrefix() {
          return "CREATE TABLE ";
      }
 
      /**
       * INTERNAL:
       */
-     public DatabaseTable getTempTableForTable(DatabaseTable table) {
+     @Override
+    public DatabaseTable getTempTableForTable(DatabaseTable table) {
          return new DatabaseTable("#" + table.getName(), table.getTableQualifier(), table.shouldUseDelimiters(), getStartDelimiter(), getEndDelimiter());
      }
 
@@ -385,22 +402,23 @@ public class PervasivePlatform extends org.eclipse.persistence.platform.database
      *
      * Taken from org.eclipse.persistence\foundation\org.eclipse.persistence.core\src\org\eclipse\persistence\platform\database\AccessPlatform.java
      */
-     public void printFieldTypeSize(Writer writer, FieldDefinition field,FieldTypeDefinition fieldType, boolean shouldPrintFieldIdentityClause) throws IOException {
+     @Override
+    public void printFieldTypeSize(Writer writer, FieldDefinition field,FieldTypeDefinition fieldType, boolean shouldPrintFieldIdentityClause) throws IOException {
         if (!shouldPrintFieldIdentityClause) {
             // if type requires both precision and scale: NUMERIC, DECIMAL
             if ((fieldType.getName().equals("NUMERIC")) || (fieldType.getName().equals("DECIMAL"))) {
                 writer.write(fieldType.getName());
                 writer.write("(");
                 if (field.getSize() == 0) {
-                    writer.write(Integer.valueOf(fieldType.getDefaultSize()).toString());
+                    writer.write(Integer.toString(fieldType.getDefaultSize()));
                 } else {
-                    writer.write(Integer.valueOf(field.getSize()).toString());
+                    writer.write(Integer.toString(field.getSize()));
                 }
                 writer.write(",");
                 if (field.getSubSize() != 0) {
-                    writer.write(Integer.valueOf(field.getSubSize()).toString());
+                    writer.write(Integer.toString(field.getSubSize()));
                 } else {
-                    writer.write(Integer.valueOf(fieldType.getDefaultSubSize()).toString());
+                    writer.write(Integer.toString(fieldType.getDefaultSubSize()));
                 }
                 writer.write(")");
             } else {
@@ -429,7 +447,8 @@ public class PervasivePlatform extends org.eclipse.persistence.platform.database
       * in them
       *
       */
-     public String getSelectForUpdateString() {
+     @Override
+    public String getSelectForUpdateString() {
          return "";
      }
 
@@ -440,6 +459,7 @@ public class PervasivePlatform extends org.eclipse.persistence.platform.database
      * INTERNAL:
      * Indicates whether SELECT DISTINCT ... FOR UPDATE is allowed by the platform (Oracle doesn't allow this).
      */
+    @Override
     public boolean isForUpdateCompatibleWithDistinct() {
         return false;
     }
@@ -466,6 +486,7 @@ public class PervasivePlatform extends org.eclipse.persistence.platform.database
      * INTERNAL:
      * Indicates whether locking clause could be applied to the query that has more than one table
      */
+    @Override
     public boolean supportsLockingQueriesWithMultipleTables() {
         return false;
     }
