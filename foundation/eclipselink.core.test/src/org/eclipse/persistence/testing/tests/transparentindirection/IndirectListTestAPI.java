@@ -12,17 +12,24 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.transparentindirection;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Vector;
+import java.util.stream.StreamSupport;
+
+import junit.framework.TestSuite;
+
+import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
 import org.eclipse.persistence.indirection.IndirectCollectionsFactory;
 import org.eclipse.persistence.indirection.IndirectList;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
-import org.eclipse.persistence.internal.helper.JavaSEPlatform;
 import org.eclipse.persistence.internal.indirection.QueryBasedValueHolder;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
@@ -35,27 +42,58 @@ public class IndirectListTestAPI extends ZTestCase {
 
     private Vector<String> list;
     private IndirectList<String> testList;
+    private Listener testListLsn;
+    private Class<? extends IndirectList> cls;
+    private boolean useListener;
 
     /**
      * Constructor
      * @param name java.lang.String
      */
     public IndirectListTestAPI(String name) {
+        this(name, null, true);
+    }
+
+    public IndirectListTestAPI(String name, Class<? extends IndirectList> cls, boolean useListener) {
         super(name);
+        this.cls = cls;
+        this.useListener = useListener;
+    }
+
+    public static TestSuite getTestSuiteFor(Class<? extends IndirectList> cls, boolean useListener) {
+        ZTestSuite ts = new ZTestSuite("Suite for " + cls.getName() + "(useListener: " + useListener + ")");
+        Enumeration<String> tests = ts.methodNamesStartingWithTestFor(IndirectListTestAPI.class);
+        while (tests.hasMoreElements()) {
+            ts.addTest(new IndirectListTestAPI(tests.nextElement(), cls, useListener));
+        }
+        return ts;
     }
 
     /**
      * set up the test fixture:
      * 1. an IndirectList based on a Vector
      */
+    @Override
     protected void setUp() {
         super.setUp();
-        list = this.setUpList();
+        list = setUpList();
         Object temp = new Vector<>(list);
 
         ValueHolderInterface vh = new QueryBasedValueHolder(new ReadAllQuery(), new DatabaseRecord(), new TestSession(temp));
-        testList = IndirectCollectionsFactory.createIndirectList();
+        if (cls == null) {
+            testList = IndirectCollectionsFactory.createIndirectList();
+        } else {
+            try {
+                testList = cls.newInstance();
+            } catch (InstantiationException | IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
         testList.setValueHolder(vh);
+        if (useListener) {
+            testListLsn = new Listener();
+            testList._persistence_setPropertyChangeListener(testListLsn);
+        }
     }
 
     protected Vector setUpList() {
@@ -79,6 +117,9 @@ public class IndirectListTestAPI extends ZTestCase {
     @Override
     protected void tearDown() {
         super.tearDown();
+        if (useListener) {
+            testListLsn.events.clear();
+        }
     }
 
     public void testAdd1() {
@@ -86,8 +127,9 @@ public class IndirectListTestAPI extends ZTestCase {
 
         list.add(3, temp);
         testList.add(3, temp);
-        this.assertEquals(list, testList);
-        this.assertTrue(testList.contains(temp));
+        assertEquals(list, testList);
+        assertTrue(testList.contains(temp));
+        assertAddEvents(1);
     }
 
     public void testAdd2() {
@@ -95,8 +137,9 @@ public class IndirectListTestAPI extends ZTestCase {
 
         list.add(temp);
         testList.add(temp);
-        this.assertEquals(list, testList);
-        this.assertTrue(testList.contains(temp));
+        assertEquals(list, testList);
+        assertTrue(testList.contains(temp));
+        assertAddEvents(1);
     }
 
     public void testAddAll1() {
@@ -106,8 +149,9 @@ public class IndirectListTestAPI extends ZTestCase {
 
         list.addAll(temp);
         testList.addAll(temp);
-        this.assertEquals(list, testList);
-        this.assertTrue(testList.containsAll(temp));
+        assertEquals(list, testList);
+        assertTrue(testList.containsAll(temp));
+        assertAddEvents(2);
     }
 
     public void testAddAll2() {
@@ -117,77 +161,94 @@ public class IndirectListTestAPI extends ZTestCase {
 
         list.addAll(3, temp);
         testList.addAll(3, temp);
-        this.assertEquals(list, testList);
-        this.assertTrue(testList.containsAll(temp));
+        assertEquals(list, testList);
+        assertTrue(testList.containsAll(temp));
+        assertAddEvents(2);
     }
 
     public void testAddElement() {
         String temp = "foo";
         list.addElement(temp);
         testList.addElement(temp);
-        this.assertEquals(list, testList);
-        this.assertTrue(testList.contains(temp));
+        assertEquals(list, testList);
+        assertTrue(testList.contains(temp));
+        assertAddEvents(1);
     }
 
     public void testClear() {
+        int originalSize = testList.size();
         list.clear();
         testList.clear();
-        this.assertEquals(list, testList);
-        this.assertTrue(testList.size() == 0);
+        assertEquals(list, testList);
+        assertTrue(testList.isEmpty());
+        assertRemoveEvents(originalSize);
+
     }
 
     public void testContains() {
-        this.assertTrue(testList.contains(list.elementAt(1)));
+        assertTrue(testList.contains(list.elementAt(1)));
+        assertNoEvents();
     }
 
     public void testContainsAll() {
-        this.assertTrue(testList.containsAll(list.subList(1, 5)));
+        assertTrue(testList.containsAll(list.subList(1, 5)));
+        assertNoEvents();
     }
 
     public void testElementAt() {
-        this.assertEquals(list.elementAt(1), testList.elementAt(1));
+        assertEquals(list.elementAt(1), testList.elementAt(1));
+        assertNoEvents();
     }
 
     public void testElements() {
-        this.assertEquals(list.elements().nextElement(), testList.elements().nextElement());
+        assertEquals(list.elements().nextElement(), testList.elements().nextElement());
+        assertNoEvents();
     }
 
     public void testEquals() {
-        this.assertTrue(testList.equals(list));
+        assertTrue(testList.equals(list));
+        assertNoEvents();
     }
 
     public void testFirstElement() {
-        this.assertEquals(list.firstElement(), testList.firstElement());
+        assertEquals(list.firstElement(), testList.firstElement());
+        assertNoEvents();
     }
 
     public void testGet() {
-        this.assertEquals(list.get(1), testList.get(1));
+        assertEquals(list.get(1), testList.get(1));
+        assertNoEvents();
     }
 
     public void testHashCode() {
-        this.assertEquals(list.hashCode(), testList.hashCode());
+        assertEquals(list.hashCode(), testList.hashCode());
+        assertNoEvents();
     }
 
     public void testIndexOf1() {
         String temp = "one";
-        this.assertEquals(list.indexOf(temp), testList.indexOf(temp));
+        assertEquals(list.indexOf(temp), testList.indexOf(temp));
+        assertNoEvents();
     }
 
     public void testIndexOf2() {
         String temp = "seven";
-        this.assertEquals(list.indexOf(temp, 3), testList.indexOf(temp, 3));
+        assertEquals(list.indexOf(temp, 3), testList.indexOf(temp, 3));
+        assertNoEvents();
     }
 
     public void testInsertElementAt() {
         String temp = "foo";
         list.insertElementAt(temp, 3);
         testList.insertElementAt(temp, 3);
-        this.assertEquals(list, testList);
-        this.assertTrue(testList.contains(temp));
+        assertEquals(list, testList);
+        assertTrue(testList.contains(temp));
+        assertAddEvents(1);
     }
 
     public void testIsEmpty() {
-        this.assertTrue(!testList.isEmpty());
+        assertTrue(!testList.isEmpty());
+        assertNoEvents();
     }
 
     public void testIterator() {
@@ -196,21 +257,25 @@ public class IndirectListTestAPI extends ZTestCase {
         for (Iterator stream = testList.iterator(); stream.hasNext(); i++) {
             stream.next();
         }
-        this.assertEquals(list.size(), i);
+        assertEquals(list.size(), i);
+        assertNoEvents();
     }
 
     public void testLastElement() {
-        this.assertEquals(list.lastElement(), testList.lastElement());
+        assertEquals(list.lastElement(), testList.lastElement());
+        assertNoEvents();
     }
 
     public void testLastIndexOf1() {
         String temp = "one";
-        this.assertEquals(list.lastIndexOf(temp), testList.lastIndexOf(temp));
+        assertEquals(list.lastIndexOf(temp), testList.lastIndexOf(temp));
+        assertNoEvents();
     }
 
     public void testLastIndexOf2() {
         String temp = "one";
-        this.assertEquals(list.lastIndexOf(temp, 7), testList.lastIndexOf(temp, 7));
+        assertEquals(list.lastIndexOf(temp, 7), testList.lastIndexOf(temp, 7));
+        assertNoEvents();
     }
 
     public void testListIterator1() {
@@ -219,7 +284,8 @@ public class IndirectListTestAPI extends ZTestCase {
         for (ListIterator stream = testList.listIterator(); stream.hasNext(); i++) {
             stream.next();
         }
-        this.assertEquals(list.size(), i);
+        assertEquals(list.size(), i);
+        assertNoEvents();
     }
 
     public void testListIterator2() {
@@ -228,23 +294,26 @@ public class IndirectListTestAPI extends ZTestCase {
         for (ListIterator stream = testList.listIterator(2); stream.hasNext(); i++) {
             stream.next();
         }
-        this.assertEquals(list.size(), i + 2);
+        assertEquals(list.size(), i + 2);
+        assertNoEvents();
     }
 
     public void testRemove1() {
         Object temp = list.remove(1);
-        this.assertEquals(temp, testList.remove(1));
-        this.assertEquals(list, testList);
-        this.assertTrue(!testList.contains(temp));
+        assertEquals(temp, testList.remove(1));
+        assertEquals(list, testList);
+        assertTrue(!testList.contains(temp));
+        assertRemoveEvents(1);
     }
 
     public void testRemove2() {
         Object temp = "one";
 
-        this.assertTrue(list.remove(temp));
-        this.assertTrue(testList.remove(temp));
-        this.assertEquals(list, testList);
-        this.assertTrue(!testList.contains(temp));
+        assertTrue(list.remove(temp));
+        assertTrue(testList.remove(temp));
+        assertEquals(list, testList);
+        assertTrue(!testList.contains(temp));
+        assertRemoveEvents(1);
     }
 
     public void testRemoveAll() {
@@ -252,45 +321,52 @@ public class IndirectListTestAPI extends ZTestCase {
         temp.addElement("one");
         temp.addElement("two");
 
-        this.assertTrue(list.removeAll(temp));
-        this.assertTrue(testList.removeAll(temp));
-        this.assertEquals(list, testList);
-        this.assertTrue(!testList.containsAll(temp));
+        assertTrue(list.removeAll(temp));
+        assertTrue(testList.removeAll(temp));
+        assertEquals(list, testList);
+        assertTrue(!testList.containsAll(temp));
+        assertRemoveEvents(2);
     }
 
     public void testRemoveAllElements() {
+        int originalSize = testList.size();
         list.removeAllElements();
         testList.removeAllElements();
-        this.assertEquals(list, testList);
-        this.assertTrue(testList.size() == 0);
+        assertEquals(list, testList);
+        assertTrue(testList.size() == 0);
+        assertRemoveEvents(originalSize);
     }
 
     public void testRemoveElement() {
         Object temp = "one";
-        this.assertTrue(list.removeElement(temp));
-        this.assertTrue(testList.removeElement(temp));
-        this.assertEquals(list, testList);
-        this.assertTrue(!testList.contains(temp));
+        assertTrue(list.removeElement(temp));
+        assertTrue(testList.removeElement(temp));
+        assertEquals(list, testList);
+        assertTrue(!testList.contains(temp));
+        assertRemoveEvents(1);
     }
 
     public void testRemoveElementAt() {
         Object temp = testList.elementAt(1);
         list.removeElementAt(1);
         testList.removeElementAt(1);
-        this.assertEquals(list, testList);
-        this.assertTrue(!testList.contains(temp));
+        assertEquals(list, testList);
+        assertTrue(!testList.contains(temp));
+        assertRemoveEvents(1);
     }
 
     public void testRetainAll() {
+        int originalSize = testList.size();
         Vector temp = new Vector();
         temp.addElement("one");
         temp.addElement("two");
 
-        this.assertTrue(list.retainAll(temp));
-        this.assertTrue(testList.retainAll(temp));
-        this.assertEquals(list, testList);
-        this.assertTrue(testList.containsAll(temp));
-        this.assertEquals(temp.size(), testList.size());
+        assertTrue(list.retainAll(temp));
+        assertTrue(testList.retainAll(temp));
+        assertEquals(list, testList);
+        assertTrue(testList.containsAll(temp));
+        assertEquals(temp.size(), testList.size());
+        assertRemoveEvents(originalSize - temp.size());
     }
 
     public void testSet() {
@@ -298,24 +374,28 @@ public class IndirectListTestAPI extends ZTestCase {
 
         list.set(3, temp);
         testList.set(3, temp);
-        this.assertEquals(list, testList);
-        this.assertTrue(testList.contains(temp));
+        assertEquals(list, testList);
+        assertTrue(testList.contains(temp));
+        assertRemoveAddEvents(1);
     }
 
     public void testSetElementAt() {
         String temp = "foo";
         list.setElementAt(temp, 3);
         testList.setElementAt(temp, 3);
-        this.assertEquals(list, testList);
-        this.assertTrue(testList.contains(temp));
+        assertEquals(list, testList);
+        assertTrue(testList.contains(temp));
+        assertRemoveAddEvents(1);
     }
 
     public void testSize() {
-        this.assertEquals(list.size(), testList.size());
+        assertEquals(list.size(), testList.size());
+        assertNoEvents();
     }
 
     public void testSubList() {
-        this.assertEquals(list.subList(2, 5), testList.subList(2, 5));
+        assertEquals(list.subList(2, 5), testList.subList(2, 5));
+        assertNoEvents();
     }
 
     public void testToArray1() {
@@ -330,7 +410,8 @@ public class IndirectListTestAPI extends ZTestCase {
             v2.addElement(temp[i]);
         }
 
-        this.assertEquals(v1, v2);
+        assertEquals(v1, v2);
+        assertNoEvents();
     }
 
     public void testToArray2() {
@@ -345,119 +426,118 @@ public class IndirectListTestAPI extends ZTestCase {
             v2.addElement(temp[i]);
         }
 
-        this.assertEquals(v1, v2);
+        assertEquals(v1, v2);
+        assertNoEvents();
     }
 
     //Java SE 8 API
     public void testSort() {
         assertElementsEqual(list, testList);
-        Comparator c = new Comparator<String>() {
+        Comparator<String> c = new Comparator<String>() {
 
             @Override
             public int compare(String o1, String o2) {
                 return o1.compareTo(o2);
             }
         };
-        try {
-            callMethod(testList, "sort", new Class[]{Comparator.class}, new Object[]{c});
-        } catch (UnsupportedOperationException e) {
-            if (JavaSEPlatform.CURRENT.compareTo(JavaSEPlatform.v1_8) < 0) {
-                //nothing to check on JDK 7 and lower
-                return;
-            }
-        }
-        list = new Vector<>();
-        list.addElement("eight");
-        list.addElement("five");
-        list.addElement("four");
-        list.addElement("nine");
-        list.addElement("one");
-        list.addElement("seven");
-        list.addElement("six");
-        list.addElement("three");
-        list.addElement("two");
-        list.addElement("zero");
+        list.sort(c);
+        testList.sort(c);
         assertElementsEqual(list, testList);
+        assertNoEvents();
     }
 
     public void testSpliterator() {
-        Object o = null;
-        try {
-            o = callMethod(testList, "spliterator", new Class[0], new Object[0]);
-        } catch (UnsupportedOperationException e) {
-            if (JavaSEPlatform.CURRENT.compareTo(JavaSEPlatform.v1_8) < 0) {
-                //nothing to check on JDK 7 and lower
-                return;
-            }
-        }
-        assertNotNull("Should get an instance of java.util.Spliterator", o);
-        boolean streamFound = false;
-        for (Class c: o.getClass().getInterfaces()) {
-            if ("java.util.Spliterator".equals(c.getName())) {
-                streamFound = true;
-                break;
-            }
-        }
-        assertTrue("not implementing java.util.Spliterator", streamFound);
+        assertTrue(StreamSupport.stream(testList.spliterator(), true).allMatch(item -> list.contains(item)));
+        assertTrue(StreamSupport.stream(list.spliterator(), true).allMatch(item -> testList.contains(item)));
+        assertEquals(testList.size(), testList.stream().count());
+        assertNoEvents();
     }
 
     public void testStream() {
-        Object o = null;
-        try {
-            o = callMethod(testList, "stream", new Class[0], new Object[0]);
-        } catch (UnsupportedOperationException e) {
-            if (JavaSEPlatform.CURRENT.compareTo(JavaSEPlatform.v1_8) < 0) {
-                //nothing to check on JDK 7 and lower
-                return;
-            }
-        }
-        assertNotNull("Should get an instance of java.util.stream.Stream", o);
-        boolean streamFound = false;
-        if (o.getClass().getEnclosingClass() != null) {
-            for (Class c: o.getClass().getEnclosingClass().getInterfaces()) {
-                if ("java.util.stream.Stream".equals(c.getName())) {
-                    streamFound = true;
-                    break;
-                }
-            }
-        }
-        assertTrue("not implementing java.util.stream.Stream", streamFound);
+        assertTrue(testList.stream().allMatch(item -> list.contains(item)));
+        assertTrue(list.stream().allMatch(item -> testList.contains(item)));
+        assertEquals(testList.size(), testList.stream().count());
+        assertNoEvents();
     }
 
     public void testParallelStream() {
-        Object o = null;
-        try {
-            o = callMethod(testList, "parallelStream", new Class[0], new Object[0]);
-        } catch (UnsupportedOperationException e) {
-            if (JavaSEPlatform.CURRENT.compareTo(JavaSEPlatform.v1_8) < 0) {
-                //nothing to check on JDK 7 and lower
-                return;
-            }
-        }
-        assertNotNull("Should get an instance of java.util.stream.Stream", o);
-        boolean streamFound = false;
-        if (o.getClass().getEnclosingClass() != null) {
-            for (Class c: o.getClass().getEnclosingClass().getInterfaces()) {
-                if ("java.util.stream.Stream".equals(c.getName())) {
-                    streamFound = true;
-                    break;
-                }
-            }
-        }
-        assertTrue("not implementing java.util.stream.Stream", streamFound);
+        assertTrue(testList.parallelStream().allMatch(item -> list.contains(item)));
+        assertTrue(list.parallelStream().allMatch(item -> testList.contains(item)));
+        assertEquals(testList.size(), testList.parallelStream().count());
+        assertNoEvents();
     }
 
-    private Object callMethod(List list, String method, Class[] params, Object[] args) {
-        try {
-            Method m = list.getClass().getMethod(method, params);
-            return m.invoke(list, args);
-        } catch (NoSuchMethodException | SecurityException | IllegalArgumentException | IllegalAccessException | InvocationTargetException ex) {
-            if (JavaSEPlatform.CURRENT.atLeast(JavaSEPlatform.v1_8)) {
-                fail("cannot call method '" + method + "' " + ex.getMessage());
-            } else {
-                throw new UnsupportedOperationException();
+    public void testRemoveIf() {
+        // remove 'six' and 'seven'
+        assertTrue(list.removeIf(item -> item.startsWith("s")));
+        assertTrue(testList.removeIf(item -> item.startsWith("s")));
+        assertEquals("size do not match", 8, testList.size());
+        assertElementsEqual(list, testList);
+        assertRemoveEvents(2);
+    }
+
+    public void testReplaceAll() {
+        list.replaceAll(String::toUpperCase);
+        testList.replaceAll(String::toUpperCase);
+        assertElementsEqual(list, testList);
+        assertRemoveAddEvents(testList.size());
+    }
+
+    public void testForEach() {
+        final StringWriter sw1 = new StringWriter();
+        final StringWriter sw2 = new StringWriter();
+        list.forEach(sw1::append);
+        testList.forEach(sw2::append);
+        assertElementsEqual(list, testList);
+        assertEquals(sw1.toString(), sw2.toString());
+        assertNoEvents();
+    }
+
+    private void assertNoEvents() {
+        if (useListener) {
+            assertTrue(testListLsn.events.isEmpty());
+        }
+    }
+
+    private void assertAddEvents(int count) {
+        if (useListener) {
+            assertEquals("events do not match", count, testListLsn.events.size());
+            for (CollectionChangeEvent cce : testListLsn.events) {
+                assertEquals("expected add event", CollectionChangeEvent.ADD, cce.getChangeType());
             }
         }
-        return null;
+    }
+
+    private void assertRemoveEvents(int count) {
+        if (useListener) {
+            assertEquals("events do not match", count, testListLsn.events.size());
+            for (CollectionChangeEvent cce : testListLsn.events) {
+                assertEquals("expected add event", CollectionChangeEvent.REMOVE, cce.getChangeType());
+            }
+        }
+    }
+
+    private void assertRemoveAddEvents(int count) {
+        if (useListener) {
+            int totalEvents = count * 2;
+            assertEquals("events do not match", totalEvents, testListLsn.events.size());
+            for (int i = 0; i < totalEvents;) {
+                CollectionChangeEvent removeEvent = testListLsn.events.get(i++);
+                CollectionChangeEvent addEvent = testListLsn.events.get(i++);
+                assertEquals("expected remove event", CollectionChangeEvent.REMOVE, removeEvent.getChangeType());
+                assertEquals("expected add event", CollectionChangeEvent.ADD, addEvent.getChangeType());
+                assertFalse("removed: '" + removeEvent.getNewValue() + "', new: '" + addEvent.getNewValue() + "'",
+                        removeEvent.getNewValue().equals(addEvent.getNewValue()));
+            }
+        }
+    }
+
+    private static final class Listener implements PropertyChangeListener {
+        private List<CollectionChangeEvent> events = new ArrayList<>();
+
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+            events.add((CollectionChangeEvent)evt);
+        }
     }
 }

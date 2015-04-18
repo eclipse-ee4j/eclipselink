@@ -18,7 +18,16 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.Spliterator;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
+
 import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
 import org.eclipse.persistence.descriptors.changetracking.CollectionChangeTracker;
 import org.eclipse.persistence.descriptors.changetracking.MapChangeEvent;
@@ -33,7 +42,7 @@ import org.eclipse.persistence.descriptors.changetracking.MapChangeEvent;
  * </ul>
  * EclipseLink will place an
  * IndirectMap in the instance variable when the containing domain object is read from
- * the datatabase. With the first message sent to the IndirectMap, the contents
+ * the database. With the first message sent to the IndirectMap, the contents
  * are fetched from the database and normal Hashtable/Map behavior is resumed.
  *
  * @param <K> the type of keys maintained by this map
@@ -49,7 +58,7 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
     protected volatile Hashtable<K, V> delegate;
 
     /** Delegate indirection behavior to a value holder */
-    protected ValueHolderInterface valueHolder;
+    protected volatile ValueHolderInterface valueHolder;
 
     /** Change tracking listener. */
     private transient PropertyChangeListener changeListener;
@@ -132,13 +141,11 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
             while (objects.hasNext()) {
                 K o = objects.next();
                 objects.remove();
-                this.raiseRemoveChangeEvent(o, this.get(o));
             }
         } else {
             this.getDelegate().clear();
         }
     }
-
 
     /**
      * INTERNAL:
@@ -250,8 +257,15 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
 
                     @Override
                     public void remove() {
-                        raiseRemoveChangeEvent(currentObject.getKey(), currentObject.getValue());
                         this.delegateIterator.remove();
+                        if (currentObject != null) {
+                            raiseRemoveChangeEvent(currentObject.getKey(), currentObject.getValue());
+                        }
+                    }
+
+                    @Override
+                    public void forEachRemaining(Consumer<? super java.util.Map.Entry<K, V>> action) {
+                        this.delegateIterator.forEachRemaining(action);
                     }
                 };
             }
@@ -262,7 +276,7 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
             }
 
             @Override
-            public <T> T[] toArray(T a[]){
+            public <T> T[] toArray(T[] a){
                 return this.delegateSet.toArray(a);
             }
 
@@ -292,9 +306,9 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
             @Override
             public boolean retainAll(Collection<?> c){
                 boolean result = false;
-                Iterator objects = delegateSet.iterator();
+                Iterator<Map.Entry<K, V>> objects = delegateSet.iterator();
                 while (objects.hasNext()) {
-                    Map.Entry object = (Map.Entry)objects.next();
+                    Map.Entry object = objects.next();
                     if (!c.contains(object)) {
                         objects.remove();
                         raiseRemoveChangeEvent(object.getKey(), object.getValue());
@@ -307,8 +321,7 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
             @Override
             public boolean removeAll(Collection<?> c){
                 boolean result = false;
-                for (Iterator cs = c.iterator(); cs.hasNext(); ){
-                    Object object = cs.next();
+                for (Object object : c) {
                     if ( ! (object instanceof Map.Entry)){
                         continue;
                     }
@@ -333,6 +346,39 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
             @Override
             public int hashCode(){
                 return this.delegateSet.hashCode();
+            }
+
+            @Override
+            public boolean removeIf(Predicate<? super Map.Entry<K, V>> filter) {
+                boolean hasChanged = false;
+                Iterator<Map.Entry<K, V>> objects = iterator();
+                while (objects.hasNext()) {
+                    if (filter.test(objects.next())) {
+                        objects.remove();
+                        hasChanged |= true;
+                    }
+                }
+                return hasChanged;
+            }
+
+            @Override
+            public Stream<Map.Entry<K, V>> stream() {
+                return this.delegateSet.stream();
+            }
+
+            @Override
+            public Stream<java.util.Map.Entry<K, V>> parallelStream() {
+                return this.delegateSet.parallelStream();
+            }
+
+            @Override
+            public void forEach(Consumer<? super java.util.Map.Entry<K, V>> action) {
+                this.delegateSet.forEach(action);
+            }
+
+            @Override
+            public Spliterator<java.util.Map.Entry<K, V>> spliterator() {
+                return this.delegateSet.spliterator();
             }
         };
     }
@@ -360,14 +406,16 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
      * This method used to be synchronized, which caused deadlock.
      */
     protected Hashtable<K, V> getDelegate() {
-        if (delegate == null) {
+        Hashtable<K, V> newDelegate = this.delegate;
+        if (newDelegate == null) {
             synchronized(this){
-                if (delegate == null) {
-                    delegate = this.buildDelegate();
+                newDelegate = this.delegate;
+                if (newDelegate == null) {
+                    this.delegate = newDelegate = this.buildDelegate();
                 }
             }
         }
-        return delegate;
+        return newDelegate;
     }
 
     /**
@@ -404,15 +452,17 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
       */
     @Override
      public ValueHolderInterface getValueHolder() {
+         ValueHolderInterface vh = this.valueHolder;
          // PERF: lazy initialize value holder and vector as are normally set after creation.
-         if (valueHolder == null) {
+         if (vh == null) {
              synchronized(this){
-                 if (valueHolder == null) {
-                     valueHolder = new ValueHolder(new Hashtable<>(initialCapacity, loadFactor));
+                vh = this.valueHolder;
+                 if (vh == null) {
+                     this.valueHolder = vh = new ValueHolder(new Hashtable<>(initialCapacity, loadFactor));
                  }
              }
          }
-         return valueHolder;
+         return vh;
      }
 
     /**
@@ -522,6 +572,11 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
                         IndirectMap.this.raiseRemoveChangeEvent(currentObject, IndirectMap.this.getDelegate().get(currentObject));
                         this.delegateIterator.remove();
                     }
+
+                    @Override
+                    public void forEachRemaining(Consumer<? super K> action) {
+                        this.delegateIterator.forEachRemaining(action);
+                    }
                 };
             }
 
@@ -595,8 +650,40 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
             public int hashCode(){
                 return this.delegateSet.hashCode();
             }
-        };
 
+            @Override
+            public boolean removeIf(Predicate<? super K> filter) {
+                boolean hasChanged = false;
+                Iterator<K> objects = iterator();
+                while (objects.hasNext()) {
+                    if (filter.test(objects.next())) {
+                        objects.remove();
+                        hasChanged |= true;
+                    }
+                }
+                return hasChanged;
+            }
+
+            @Override
+            public Stream<K> stream() {
+                return this.delegateSet.stream();
+            }
+
+            @Override
+            public Stream<K> parallelStream() {
+                return this.delegateSet.parallelStream();
+            }
+
+            @Override
+            public void forEach(Consumer<? super K> action) {
+                this.delegateSet.forEach(action);
+            }
+
+            @Override
+            public Spliterator<K> spliterator() {
+                return this.delegateSet.spliterator();
+            }
+        };
 
     }
 
@@ -621,14 +708,169 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
     public synchronized void putAll(Map<? extends K,? extends V> t) {
         // Must trigger add events if tracked or uow.
         if (hasTrackedPropertyChangeListener()) {
-            Iterator<? extends K> objects = t.keySet().iterator();
-            while (objects.hasNext()) {
-                K key = objects.next();
-                this.put(key, t.get(key));
-            }
+            t.entrySet().stream().forEach((newEntry) -> {
+                this.put(newEntry.getKey(), newEntry.getValue());
+            });
         }else{
             this.getDelegate().putAll(t);
         }
+    }
+
+    @Override
+    public synchronized V compute(K key, BiFunction<? super K,? super V,? extends V> remappingFunction) {
+        // Must trigger add events if tracked or uow.
+        if (hasTrackedPropertyChangeListener()) {
+            V oldValue = get(key);
+            V newValue = remappingFunction.apply(key, oldValue);
+            if (oldValue != null ) {
+               if (newValue != null) {
+                  put(key, newValue);
+                  return newValue;
+               }
+               remove(key);
+            } else {
+               if (newValue != null) {
+                  put(key, newValue);
+                  return newValue;
+               }
+            }
+            return null;
+        }
+        return getDelegate().compute(key, remappingFunction);
+    }
+
+    @Override
+    public synchronized V computeIfAbsent(K key, Function<? super K,? extends V> mappingFunction) {
+        // Must trigger add events if tracked or uow.
+        if (hasTrackedPropertyChangeListener()) {
+            V oldValue = get(key);
+            if (oldValue == null) {
+                V newValue = mappingFunction.apply(key);
+                if (newValue != null) {
+                    put(key, newValue);
+                }
+                return newValue;
+            }
+            return oldValue;
+        }
+        return getDelegate().computeIfAbsent(key, mappingFunction);
+    }
+
+    @Override
+    public synchronized V computeIfPresent(K key, BiFunction<? super K,? super V,? extends V> remappingFunction) {
+        // Must trigger add events if tracked or uow.
+        if (hasTrackedPropertyChangeListener()) {
+            if (get(key) != null) {
+                V oldValue = get(key);
+                V newValue = remappingFunction.apply(key, oldValue);
+                if (newValue != null) {
+                    put(key, newValue);
+                    return newValue;
+                }
+                remove(key);
+            }
+            return null;
+        }
+        return getDelegate().computeIfPresent(key, remappingFunction);
+    }
+
+    @Override
+    public synchronized void forEach(BiConsumer<? super K,? super V> action) {
+        getDelegate().forEach(action);
+    }
+
+    @Override
+    public synchronized V getOrDefault(Object key, V defaultValue) {
+        return getDelegate().getOrDefault(key, defaultValue);
+    }
+
+    @Override
+    public synchronized V merge(K key, V value, BiFunction<? super V,? super V,? extends V> remappingFunction) {
+        // Must trigger add events if tracked or uow.
+        if (hasTrackedPropertyChangeListener()) {
+            V oldValue = get(key);
+            V newValue = (oldValue == null) ? value : remappingFunction.apply(oldValue, value);
+            if (newValue == null) {
+                remove(key);
+            } else {
+                put(key, newValue);
+            }
+            return newValue;
+        }
+        return getDelegate().merge(key, value, remappingFunction);
+    }
+
+    @Override
+    public synchronized V putIfAbsent(K key, V value) {
+        // Must trigger add events if tracked or uow.
+        if (hasTrackedPropertyChangeListener()) {
+            V current = getDelegate().get(key);
+            if (current == null) {
+                V v = getDelegate().put(key, value);
+                raiseAddChangeEvent(key, value);
+                return v;
+            }
+            return current;
+        }
+        return getDelegate().putIfAbsent(key, value);
+    }
+
+    @Override
+    public synchronized boolean remove(Object key, Object value) {
+        // Must trigger add events if tracked or uow.
+        if (hasTrackedPropertyChangeListener()) {
+            Map<K, V> del = getDelegate();
+            if (del.containsKey(key) && Objects.equals(del.get(key), value)) {
+                del.remove(key);
+                raiseRemoveChangeEvent(key, value);
+                return true;
+            }
+            return false;
+        }
+        return getDelegate().remove(key, value);
+    }
+
+    @Override
+    public synchronized V replace(K key, V value) {
+        // Must trigger add events if tracked or uow.
+        if (hasTrackedPropertyChangeListener()) {
+            Map<K, V> del = getDelegate();
+            if (del.containsKey(key)) {
+                return put(key, value);
+            }
+            return null;
+        }
+        return getDelegate().replace(key, value);
+    }
+
+    @Override
+    public synchronized boolean replace(K key, V oldValue, V newValue) {
+        // Must trigger add events if tracked or uow.
+        if (hasTrackedPropertyChangeListener()) {
+            Map<K, V> del = getDelegate();
+            if (del.containsKey(key) && Objects.equals(del.get(key), oldValue)) {
+                put(key, newValue);
+                return true;
+            }
+            return false;
+        }
+        return getDelegate().replace(key, oldValue, newValue);
+    }
+
+    @Override
+    public synchronized void replaceAll(BiFunction<? super K,? super V,? extends V> function) {
+        // Must trigger add events if tracked or uow.
+        if (hasTrackedPropertyChangeListener()) {
+            getDelegate().entrySet().stream().forEach((entry) -> {
+                K key = entry.getKey();
+                V oldValue = entry.getValue();
+                entry.setValue(function.apply(key, entry.getValue()));
+                raiseRemoveChangeEvent(key, oldValue);
+                raiseAddChangeEvent(key, entry.getValue());
+            });
+            return;
+        }
+        getDelegate().replaceAll(function);
     }
 
     /**
@@ -722,7 +964,7 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
      * Return the elements that have been removed before instantiation.
      */
     @Override
-    public Collection getRemovedElements() {
+    public Collection<Map.Entry<K, V>> getRemovedElements() {
         return null;
     }
 
@@ -731,7 +973,7 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
      * Return the elements that have been added before instantiation.
      */
     @Override
-    public Collection getAddedElements() {
+    public Collection<Map.Entry<K, V>> getAddedElements() {
         return null;
     }
 
@@ -805,15 +1047,17 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
 
                     @Override
                     public void remove() {
-                        Iterator iterator = IndirectMap.this.getDelegate().entrySet().iterator();
-                        while (iterator.hasNext()){
-                            Map.Entry entry = (Map.Entry)iterator.next();
+                        for (Map.Entry entry : IndirectMap.this.getDelegate().entrySet()) {
                             if (entry.getValue().equals(currentObject)){
                                 IndirectMap.this.raiseRemoveChangeEvent(entry.getKey(), entry.getValue());
                             }
-
                         }
                         this.delegateIterator.remove();
+                    }
+
+                    @Override
+                    public void forEachRemaining(Consumer<? super V> action) {
+                        this.delegateIterator.forEachRemaining(action);
                     }
                 };
             }
@@ -824,7 +1068,7 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
             }
 
             @Override
-            public <T> T[] toArray(T a[]){
+            public <T> T[] toArray(T[] a){
                 return this.delegateCollection.toArray(a);
             }
 
@@ -835,13 +1079,13 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
 
             @Override
             public boolean remove(Object o){
-                Iterator iterator = IndirectMap.this.getDelegate().entrySet().iterator();
-                while (iterator.hasNext()){
-                    Map.Entry entry = (Map.Entry)iterator.next();
+                for (Iterator<Map.Entry<K, V>> entryIt = IndirectMap.this.getDelegate().entrySet().iterator(); entryIt.hasNext();) {
+                    Map.Entry<K, V> entry = entryIt.next();
                     if (entry.getValue().equals(o)){
                         IndirectMap.this.raiseRemoveChangeEvent(entry.getKey(), entry.getValue());
+                        entryIt.remove();
+                        return true;
                     }
-                    return true;
                 }
                 return false;
             }
@@ -870,8 +1114,8 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
             @Override
             public boolean retainAll(Collection<?> c){
                 boolean result = false;
-                for (Iterator iterator = IndirectMap.this.entrySet().iterator(); iterator.hasNext();){
-                    Map.Entry entry = (Map.Entry)iterator.next();
+                for (Iterator<Map.Entry<K, V>> iterator = IndirectMap.this.entrySet().iterator(); iterator.hasNext();){
+                    Map.Entry<K, V> entry = iterator.next();
                     if (! c.contains(entry.getValue()) ) {
                         iterator.remove();
                         result = true;
@@ -885,7 +1129,6 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
                 IndirectMap.this.clear();
             }
 
-
             @Override
             public boolean equals(Object o){
                 return this.delegateCollection.equals(o);
@@ -896,6 +1139,38 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
                 return this.delegateCollection.hashCode();
             }
 
+            @Override
+            public void forEach(Consumer<? super V> action) {
+                this.delegateCollection.forEach(action);
+            }
+
+            @Override
+            public boolean removeIf(Predicate<? super V> filter) {
+                boolean hasChanged = false;
+                Iterator<V> objects = iterator();
+                while (objects.hasNext()) {
+                    if (filter.test(objects.next())) {
+                        objects.remove();
+                        hasChanged |= true;
+                    }
+                }
+                return hasChanged;
+            }
+
+            @Override
+            public Spliterator<V> spliterator() {
+                return this.delegateCollection.spliterator();
+            }
+
+            @Override
+            public Stream<V> stream() {
+                return this.delegateCollection.stream();
+            }
+
+            @Override
+            public Stream<V> parallelStream() {
+                return this.delegateCollection.parallelStream();
+            }
         };
     }
 }

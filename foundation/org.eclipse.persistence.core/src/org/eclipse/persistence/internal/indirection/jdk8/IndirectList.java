@@ -13,19 +13,14 @@
 package org.eclipse.persistence.internal.indirection.jdk8;
 
 import java.util.Collection;
-import java.util.Comparator;
-import java.util.Spliterator;
-import java.util.Vector;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.function.UnaryOperator;
-import java.util.stream.Stream;
 
 /**
  * Java SE 8 additions to {@link org.eclipse.persistence.indirection.IndirectList}.
  *
  * @author Lukas Jungmann
+ * @deprecated Use {@link org.eclipse.persistence.indirection.IndirectList} instead.
  */
+@Deprecated
 public class IndirectList<E> extends org.eclipse.persistence.indirection.IndirectList<E> {
 
     public IndirectList() {
@@ -42,41 +37,6 @@ public class IndirectList<E> extends org.eclipse.persistence.indirection.Indirec
 
     public IndirectList(Collection<? extends E> vector) {
         super(vector);
-    }
-
-    @Override
-    public Spliterator<E> spliterator() {
-        return getDelegate().spliterator();
-    }
-
-    @Override
-    public synchronized void replaceAll(UnaryOperator<E> operator) {
-        getDelegate().replaceAll(operator);
-    }
-
-    @Override
-    public synchronized boolean removeIf(Predicate<? super E> filter) {
-        return getDelegate().removeIf(filter);
-    }
-
-    @Override
-    public synchronized void forEach(Consumer<? super E> action) {
-        getDelegate().forEach(action);
-    }
-
-    @Override
-    public Stream<E> parallelStream() {
-        return getDelegate().parallelStream();
-    }
-
-    @Override
-    public Stream<E> stream() {
-        return getDelegate().stream();
-    }
-
-    @Override
-    public void sort(Comparator<? super E> c) {
-        getDelegate().sort(c);
     }
 
 }

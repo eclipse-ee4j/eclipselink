@@ -12,15 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.indirection;
 
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.Collection;
 import java.util.Map;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedClassForName;
-import org.eclipse.persistence.logging.AbstractSessionLog;
-import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.logging.SessionLogEntry;
 
 /**
  * Provides factory methods to create JDK specific implementation
@@ -34,9 +27,6 @@ import org.eclipse.persistence.logging.SessionLogEntry;
  * @since EclipseLink 2.6.0
  */
 public final class IndirectCollectionsFactory {
-
-    //loaded using reflection to avoid runtime (and compile time) dependency on JDK 8
-    private static final String JDK8_SUPPORT_PROVIDER = "org.eclipse.persistence.internal.indirection.jdk8.IndirectCollectionsProvider";
 
     private static final IndirectCollectionsProvider provider = getProvider();
 
@@ -184,37 +174,6 @@ public final class IndirectCollectionsFactory {
      * of {@link IndirectCollection}s
      */
     private static IndirectCollectionsProvider getProvider() {
-        try {
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                final Class support = AccessController.doPrivileged(new PrivilegedClassForName(JDK8_SUPPORT_PROVIDER, true, IndirectCollectionsFactory.class.getClassLoader()));
-                return AccessController.doPrivileged(new PrivilegedAction<IndirectCollectionsProvider>() {
-
-                    @Override
-                    public IndirectCollectionsProvider run() {
-                        try {
-                            return (IndirectCollectionsProvider) support.newInstance();
-                        } catch (InstantiationException | IllegalAccessException ex) {
-                            throw new RuntimeException(ex);
-                        }
-                    }
-                });
-            } else {
-                Class support = PrivilegedAccessHelper.getClassForName(JDK8_SUPPORT_PROVIDER, true, IndirectCollectionsFactory.class.getClassLoader());
-                return (IndirectCollectionsProvider) PrivilegedAccessHelper.newInstanceFromClass(support);
-            }
-        } catch (Throwable t) {
-            SessionLogEntry sle = new SessionLogEntry(null, t);
-            sle.setMessage("IndirectCollections: Using JDK 7 compatible APIs.");
-            sle.setLevel(SessionLog.FINEST);
-            sle.setNameSpace(SessionLog.MISC);
-            //avoid printing date as that would cause an attempt to access
-            //a field of this class which has not been initialized yet
-            //see DefaultSessionLog.getDateString->ConversionManager.convertObject
-            //    ->ClassConstants
-            sle.setDate(null);
-            AbstractSessionLog.getLog().log(sle);
-        }
-
         return new DefaultProvider();
     }
 

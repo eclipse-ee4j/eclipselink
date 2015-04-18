@@ -13,8 +13,6 @@
 package org.eclipse.persistence.indirection;
 
 import java.beans.PropertyChangeListener;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -22,7 +20,12 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Spliterator;
 import java.util.Vector;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
+import java.util.stream.Stream;
 
 import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
 import org.eclipse.persistence.descriptors.changetracking.CollectionChangeTracker;
@@ -42,7 +45,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
  * </ul>
  * EclipseLink will place an
  * IndirectList in the instance variable when the containing domain object is read from
- * the datatabase. With the first message sent to the IndirectList, the contents
+ * the database. With the first message sent to the IndirectList, the contents
  * are fetched from the database and normal Collection/List/Vector behavior is resumed.
  *
  * @param <E> the type of elements maintained by this list
@@ -57,19 +60,19 @@ public class IndirectList<E> extends Vector<E> implements CollectionChangeTracke
     protected volatile Vector<E> delegate;
 
     /** Delegate indirection behavior to a value holder. */
-    protected ValueHolderInterface valueHolder;
+    protected volatile ValueHolderInterface valueHolder;
 
     /** Change tracking listener. */
-    private transient PropertyChangeListener changeListener;
+    private transient PropertyChangeListener changeListener = null;
 
     /** The mapping attribute name, used to raise change events. */
-    private transient String attributeName;
+    private transient String attributeName = null;
 
     /** Store added elements to avoid instantiation on add. */
-    private transient List addedElements;
+    private transient List<E> addedElements = null;
 
     /** Store removed elements to avoid instantiation on remove. */
-    private transient List removedElements;
+    private transient List<E> removedElements = null;
 
     /** Store initial size for lazy init. */
     protected int initialCapacity;
@@ -267,39 +270,36 @@ public class IndirectList<E> extends Vector<E> implements CollectionChangeTracke
      * Return the freshly-built delegate.
      */
     protected Vector<E> buildDelegate() {
-        Vector delegate = (Vector<E>)getValueHolder().getValue();
-        if (delegate == null) {
-            delegate = new Vector<>(this.initialCapacity, this.capacityIncrement);
+        Vector<E> newDelegate = (Vector<E>) getValueHolder().getValue();
+        if (newDelegate == null) {
+            newDelegate = new Vector<>(this.initialCapacity, this.capacityIncrement);
         }
         // This can either be another indirect list or a Vector.
         // It can be another indirect list because the mapping's query uses the same container policy.
         // Unwrap any redundant indirection layers, which can cause issues and impact performance.
-        while (delegate instanceof IndirectList) {
-            if(((IndirectList) delegate).isListOrderBrokenInDb()) {
+        while (newDelegate instanceof IndirectList) {
+            if(((IndirectList) newDelegate).isListOrderBrokenInDb()) {
                 this.isListOrderBrokenInDb = true;
             }
-            delegate = ((IndirectList) delegate).getDelegate();
+            newDelegate = ((IndirectList<E>) newDelegate).getDelegate();
         }
         // First add/remove any cached changes.
         if (hasAddedElements()) {
-            int size = getAddedElements().size();
-            for (int index = 0; index < size; index++) {
-                Object element = ((List)getAddedElements()).get(index);
+            for (E element: getAddedElements()) {
                 // On a flush or resume the element may already be in the database.
-                if (!delegate.contains(element)) {
-                    delegate.add(element);
+                if (!newDelegate.contains(element)) {
+                    newDelegate.add(element);
                 }
             }
             this.addedElements = null;
         }
         if (hasRemovedElements()) {
-            int size = getRemovedElements().size();
-            for (int index = 0; index < size; index++) {
-                delegate.remove(((List)getRemovedElements()).get(index));
+            for (E element: getRemovedElements()) {
+                newDelegate.remove(element);
             }
             this.removedElements = null;
         }
-        return delegate;
+        return newDelegate;
     }
 
     /**
@@ -448,14 +448,16 @@ public class IndirectList<E> extends Vector<E> implements CollectionChangeTracke
      * This method used to be synchronized, which caused deadlock.
      */
     protected Vector<E> getDelegate() {
-        if (delegate == null) {
+        Vector<E> v = this.delegate;
+        if (v == null) {
             synchronized(this){
-                if (delegate == null) {
-                    delegate = this.buildDelegate();
+                v = this.delegate;
+                if (v == null) {
+                    this.delegate = v = this.buildDelegate();
                 }
             }
         }
-        return delegate;
+        return v;
     }
 
     /**
@@ -475,15 +477,17 @@ public class IndirectList<E> extends Vector<E> implements CollectionChangeTracke
      */
     @Override
     public ValueHolderInterface getValueHolder() {
+        ValueHolderInterface vh = this.valueHolder;
         // PERF: lazy initialize value holder and vector as are normally set after creation.
-        if (valueHolder == null) {
+        if (vh == null) {
             synchronized(this) {
-                if (valueHolder == null) {
-                        valueHolder = new ValueHolder(new Vector(this.initialCapacity, this.capacityIncrement));
+                vh = this.valueHolder;
+                if (vh == null) {
+                        this.valueHolder = vh = new ValueHolder(new Vector(this.initialCapacity, this.capacityIncrement));
                 }
             }
         }
-        return valueHolder;
+        return vh;
     }
 
     /**
@@ -525,7 +529,7 @@ public class IndirectList<E> extends Vector<E> implements CollectionChangeTracke
     @Override
     public void insertElementAt(E obj, int index) {
         this.getDelegate().insertElementAt(obj, index);
-        this.raiseAddChangeEvent(obj, Integer.valueOf(index));
+        this.raiseAddChangeEvent(obj, index);
     }
 
     /**
@@ -631,13 +635,13 @@ public class IndirectList<E> extends Vector<E> implements CollectionChangeTracke
             @Override
             public void remove() {
                 this.delegateIterator.remove();
-                IndirectList.this.raiseRemoveChangeEvent(this.currentObject, Integer.valueOf(this.delegateIterator.nextIndex()));
+                IndirectList.this.raiseRemoveChangeEvent(this.currentObject, this.delegateIterator.nextIndex());
             }
 
             @Override
             public void set(E object) {
                 this.delegateIterator.set(object);
-                Integer index = Integer.valueOf(this.delegateIterator.previousIndex());
+                Integer index = this.delegateIterator.previousIndex();
                 IndirectList.this.raiseRemoveChangeEvent(this.currentObject, index, true);
                 IndirectList.this.raiseAddChangeEvent(object, index, true);
             }
@@ -645,7 +649,12 @@ public class IndirectList<E> extends Vector<E> implements CollectionChangeTracke
             @Override
             public void add(E object) {
                 this.delegateIterator.add(object);
-                IndirectList.this.raiseAddChangeEvent(object, Integer.valueOf(this.delegateIterator.previousIndex()));
+                IndirectList.this.raiseAddChangeEvent(object, this.delegateIterator.previousIndex());
+            }
+
+            @Override
+            public void forEachRemaining(Consumer<? super E> action) {
+                this.delegateIterator.forEachRemaining(action);
             }
         };
     }
@@ -656,7 +665,7 @@ public class IndirectList<E> extends Vector<E> implements CollectionChangeTracke
     @Override
     public E remove(int index) {
         E value = getDelegate().remove(index);
-        this.raiseRemoveChangeEvent(value, Integer.valueOf(index));
+        this.raiseRemoveChangeEvent(value, index);
         return value;
     }
 
@@ -676,7 +685,7 @@ public class IndirectList<E> extends Vector<E> implements CollectionChangeTracke
                 // Must avoid recursion for relationship maintenance.
                 return false;
             } else {
-                getRemovedElements().add(element);
+                getRemovedElements().add((E) element);
             }
             this.raiseRemoveChangeEvent(element, null);
             return true;
@@ -699,7 +708,7 @@ public class IndirectList<E> extends Vector<E> implements CollectionChangeTracke
         // Must trigger remove events if tracked or uow.
         if (hasBeenRegistered() || hasTrackedPropertyChangeListener()) {
             boolean hasChanged = false;
-            Iterator objects = c.iterator();
+            Iterator<?> objects = c.iterator();
             while (objects.hasNext()) {
                 hasChanged |= remove(objects.next());
             }
@@ -767,7 +776,7 @@ public class IndirectList<E> extends Vector<E> implements CollectionChangeTracke
     @Override
     public E set(int index, E element) {
         E oldValue = getDelegate().set(index, element);
-        Integer bigIntIndex = Integer.valueOf(index);
+        Integer bigIntIndex = index;
         raiseRemoveChangeEvent(oldValue, bigIntIndex, true);
         raiseAddChangeEvent(element, bigIntIndex, true);
         return oldValue;
@@ -828,28 +837,6 @@ public class IndirectList<E> extends Vector<E> implements CollectionChangeTracke
         return getDelegate().size();
     }
 
-// TODO: Rewrite to work directly with Vector#sort(Comparator) when source level will be at least 1.8
-    /**
-     * Sort content of this instance according to the order induced by provided comparator.
-     * @param c The comparator to determine the order of the array. A {@code null} value
-     *          indicates that the elements' {@linkplain Comparable natural ordering}
-     *          should be used.
-     * @throws UnsupportedOperationException when running with JDK &lt; 1.8.
-     * @since 2.6.0 with JDK 1.8
-     */
-    public void sort(Comparator<? super E> c) {
-        Vector<E> delegate = getDelegate();
-        Method sortM;
-        try {
-            sortM = delegate.getClass().getMethod("sort", Comparator.class);
-            sortM.invoke(delegate, c);
-        } catch (IllegalArgumentException | NoSuchMethodException e) {
-            throw new UnsupportedOperationException(e);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new IllegalStateException(e);
-        }
-    }
-
     /**
      * Return whether this collection should attempt do deal with adds and removes without retrieving the
      * collection from the dB
@@ -881,6 +868,61 @@ public class IndirectList<E> extends Vector<E> implements CollectionChangeTracke
     @Override
     public <T> T[] toArray(T[] a) {
         return getDelegate().toArray(a);
+    }
+
+    @Override
+    public Spliterator<E> spliterator() {
+        return getDelegate().spliterator();
+    }
+
+    @Override
+    public synchronized void replaceAll(UnaryOperator<E> operator) {
+        // Must trigger remove/add events if tracked or uow.
+        if (hasBeenRegistered() || hasTrackedPropertyChangeListener()) {
+            List<E> del = getDelegate();
+            for (int i = 0; i < del.size(); i++) {
+                set(i, operator.apply(del.get(i)));
+            }
+        } else {
+            getDelegate().replaceAll(operator);
+        }
+    }
+
+    @Override
+    public synchronized boolean removeIf(Predicate<? super E> filter) {
+        // Must trigger remove events if tracked or uow.
+        if (hasBeenRegistered() || hasTrackedPropertyChangeListener()) {
+            boolean hasChanged = false;
+            Iterator<E> objects = iterator();
+            while (objects.hasNext()) {
+                if (filter.test(objects.next())) {
+                    objects.remove();
+                    hasChanged |= true;
+                }
+            }
+            return hasChanged;
+        }
+        return getDelegate().removeIf(filter);
+    }
+
+    @Override
+    public void forEach(Consumer<? super E> action) {
+        getDelegate().forEach(action);
+    }
+
+    @Override
+    public Stream<E> parallelStream() {
+        return getDelegate().parallelStream();
+    }
+
+    @Override
+    public Stream<E> stream() {
+        return getDelegate().stream();
+    }
+
+    @Override
+    public void sort(Comparator<? super E> c) {
+        getDelegate().sort(c);
     }
 
     /**
@@ -963,9 +1005,9 @@ public class IndirectList<E> extends Vector<E> implements CollectionChangeTracke
      * Return the elements that have been removed before instantiation.
      */
     @Override
-    public Collection getRemovedElements() {
+    public Collection<E> getRemovedElements() {
         if (removedElements == null) {
-            removedElements = new ArrayList();
+            removedElements = new ArrayList<>();
         }
         return removedElements;
     }
@@ -975,9 +1017,9 @@ public class IndirectList<E> extends Vector<E> implements CollectionChangeTracke
      * Return the elements that have been added before instantiation.
      */
     @Override
-    public Collection getAddedElements() {
+    public Collection<E> getAddedElements() {
         if (addedElements == null) {
-            addedElements = new ArrayList();
+            addedElements = new ArrayList<>();
         }
         return addedElements;
     }

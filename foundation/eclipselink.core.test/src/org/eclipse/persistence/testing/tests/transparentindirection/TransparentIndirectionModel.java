@@ -12,13 +12,19 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.transparentindirection;
 
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.tools.schemaframework.*;
-import org.eclipse.persistence.testing.models.transparentindirection.*;
-
 import org.eclipse.persistence.indirection.IndirectList;
 import org.eclipse.persistence.indirection.IndirectMap;
 import org.eclipse.persistence.indirection.IndirectSet;
+import org.eclipse.persistence.testing.framework.ReadObjectTest;
+import org.eclipse.persistence.testing.framework.TestModel;
+import org.eclipse.persistence.testing.framework.TestSuite;
+import org.eclipse.persistence.testing.models.transparentindirection.BidirectionalRelationshipSystem;
+import org.eclipse.persistence.testing.models.transparentindirection.CustomIndirectContainerSystem;
+import org.eclipse.persistence.testing.models.transparentindirection.Dog;
+import org.eclipse.persistence.testing.models.transparentindirection.IndirectListSystem;
+import org.eclipse.persistence.testing.models.transparentindirection.IndirectMapSystem;
+import org.eclipse.persistence.testing.models.transparentindirection.IndirectSetSystem;
+import org.eclipse.persistence.tools.schemaframework.PopulationManager;
 
 /**
  * Test transparent indirection.
@@ -28,6 +34,7 @@ public class TransparentIndirectionModel extends TestModel {
         setDescription("Test Transparent Indirection");
     }
 
+    @Override
     public void addRequiredSystems() {
         addRequiredSystem(new IndirectListSystem());
         addRequiredSystem(new IndirectMapSystem());
@@ -36,10 +43,24 @@ public class TransparentIndirectionModel extends TestModel {
         addRequiredSystem(new BidirectionalRelationshipSystem());
     }
 
+    public static final class X<E> extends IndirectList<E> {}
+    public static final class Y<E> extends IndirectSet<E> {}
+    public static final class Z<K, V> extends IndirectMap<K, V> {}
+
+    @Override
     public void addTests() {
         addTest(new ZTestSuite(IndirectListTestAPI.class));
+        addTest(IndirectListTestAPI.getTestSuiteFor(IndirectList.class, false));
+        addTest(IndirectListTestAPI.getTestSuiteFor(X.class, false));
+        addTest(IndirectListTestAPI.getTestSuiteFor(X.class, true));
         addTest(new ZTestSuite(IndirectMapTestAPI.class));
+        addTest(IndirectMapTestAPI.getTestSuiteFor(IndirectMap.class, false));
+        addTest(IndirectMapTestAPI.getTestSuiteFor(Z.class, false));
+        addTest(IndirectMapTestAPI.getTestSuiteFor(Z.class, true));
         addTest(new ZTestSuite(IndirectSetTestAPI.class));
+        addTest(IndirectSetTestAPI.getTestSuiteFor(IndirectSet.class, false));
+        addTest(IndirectSetTestAPI.getTestSuiteFor(Y.class, false));
+        addTest(IndirectSetTestAPI.getTestSuiteFor(Y.class, true));
 
         addTest(new ZTestSuite(IndirectListTestDatabase.class));
         addTest(new ZTestSuite(IndirectMapTestDatabase.class));
