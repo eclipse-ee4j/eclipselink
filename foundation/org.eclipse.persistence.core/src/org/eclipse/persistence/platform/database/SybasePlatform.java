@@ -22,17 +22,31 @@
  *****************************************************************************/
 package org.eclipse.persistence.platform.database;
 
-import java.io.*;
-import java.sql.*;
-import java.util.*;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
+import java.util.Vector;
 
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.expressions.*;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
-import org.eclipse.persistence.internal.expressions.*;
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.expressions.RelationExpression;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.queries.ValueReadQuery;
 
 /**
  *    <p><b>Purpose</b>: Provides Sybase ASE specific behavior.
@@ -62,7 +76,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
         this.driverSupportsNationalCharacterVarying = Helper.compareVersions(dmd.getDriverVersion(), "7.0.0") >= 0;
     }
 
-    protected Map getTypeStrings() {
+    protected Map<Integer, String> getTypeStrings() {
         if (typeStrings == null) {
             initializeTypeStrings();
         }
@@ -71,34 +85,34 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
 
     protected synchronized void initializeTypeStrings() {
         if (typeStrings == null) {
-            Map types = new HashMap(30);
-            types.put(new Integer(Types.ARRAY), "ARRAY");
-            types.put(new Integer(Types.BIGINT), "BIGINT");
-            types.put(new Integer(Types.BINARY), "BINARY");
-            types.put(new Integer(Types.BIT), "BIT");
-            types.put(new Integer(Types.BLOB), "BLOB");
-            types.put(new Integer(Types.CHAR), "CHAR");
-            types.put(new Integer(Types.CLOB), "CLOB");
-            types.put(new Integer(Types.DATE), "DATE");
-            types.put(new Integer(Types.DECIMAL), "DECIMAL");
-            types.put(new Integer(Types.DOUBLE), "DOUBLE");
-            types.put(new Integer(Types.FLOAT), "FLOAT");
-            types.put(new Integer(Types.INTEGER), "INTEGER");
-            types.put(new Integer(Types.JAVA_OBJECT), "JAVA_OBJECT");
-            types.put(new Integer(Types.LONGVARBINARY), "LONGVARBINARY");
-            types.put(new Integer(Types.LONGVARCHAR), "LONGVARCHAR");
-            types.put(new Integer(Types.NULL), "NULL");
-            types.put(new Integer(Types.NUMERIC), "NUMERIC");
-            types.put(new Integer(Types.OTHER), "OTHER");
-            types.put(new Integer(Types.REAL), "REAL");
-            types.put(new Integer(Types.REF), "REF");
-            types.put(new Integer(Types.SMALLINT), "SMALLINT");
-            types.put(new Integer(Types.STRUCT), "STRUCT");
-            types.put(new Integer(Types.TIME), "TIME");
-            types.put(new Integer(Types.TIMESTAMP), "TIMESTAMP");
-            types.put(new Integer(Types.TINYINT), "TINYINT");
-            types.put(new Integer(Types.VARBINARY), "VARBINARY");
-            types.put(new Integer(Types.VARCHAR), "VARCHAR");
+            Map<Integer, String> types = new HashMap<>(30);
+            types.put(Types.ARRAY, "ARRAY");
+            types.put(Types.BIGINT, "BIGINT");
+            types.put(Types.BINARY, "BINARY");
+            types.put(Types.BIT, "BIT");
+            types.put(Types.BLOB, "BLOB");
+            types.put(Types.CHAR, "CHAR");
+            types.put(Types.CLOB, "CLOB");
+            types.put(Types.DATE, "DATE");
+            types.put(Types.DECIMAL, "DECIMAL");
+            types.put(Types.DOUBLE, "DOUBLE");
+            types.put(Types.FLOAT, "FLOAT");
+            types.put(Types.INTEGER, "INTEGER");
+            types.put(Types.JAVA_OBJECT, "JAVA_OBJECT");
+            types.put(Types.LONGVARBINARY, "LONGVARBINARY");
+            types.put(Types.LONGVARCHAR, "LONGVARCHAR");
+            types.put(Types.NULL, "NULL");
+            types.put(Types.NUMERIC, "NUMERIC");
+            types.put(Types.OTHER, "OTHER");
+            types.put(Types.REAL, "REAL");
+            types.put(Types.REF, "REF");
+            types.put(Types.SMALLINT, "SMALLINT");
+            types.put(Types.STRUCT, "STRUCT");
+            types.put(Types.TIME, "TIME");
+            types.put(Types.TIMESTAMP, "TIMESTAMP");
+            types.put(Types.TINYINT, "TINYINT");
+            types.put(Types.VARBINARY, "VARBINARY");
+            types.put(Types.VARCHAR, "VARCHAR");
             this.typeStrings = types;
         }
     }
@@ -331,7 +345,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
      */
     @Override
     public String getJdbcTypeName(int jdbcType) {
-        return (String)getTypeStrings().get(new Integer(jdbcType));
+        return getTypeStrings().get(jdbcType);
     }
 
     /**
@@ -392,6 +406,8 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
     public String getProcedureCallHeader() {
         return useJDBCStoredProcedureSyntax() ? "{Call " : "EXECUTE ";
     }
+
+    @Override
     public String getProcedureCallTail() {
         return useJDBCStoredProcedureSyntax() ? "}" : "";
     }
@@ -553,15 +569,15 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
      * <p><b>NOTE</b>: BigInteger {@literal &} BigDecimal maximums are dependent upon their precision {@literal &} Scale
      */
     @Override
-    public Hashtable maximumNumericValues() {
-        Hashtable values = new Hashtable();
+    public Hashtable<Class<? extends Number>, Number> maximumNumericValues() {
+        Hashtable<Class<? extends Number>, Number> values = new Hashtable<>();
 
-        values.put(Integer.class, Integer.valueOf(Integer.MAX_VALUE));
-        values.put(Long.class, Long.valueOf(Long.MAX_VALUE));
+        values.put(Integer.class, Integer.MAX_VALUE);
+        values.put(Long.class, Long.MAX_VALUE);
         values.put(Double.class, Double.valueOf(Float.MAX_VALUE));
-        values.put(Short.class, Short.valueOf(Short.MAX_VALUE));
-        values.put(Byte.class, Byte.valueOf(Byte.MAX_VALUE));
-        values.put(Float.class, Float.valueOf(Float.MAX_VALUE));
+        values.put(Short.class, Short.MAX_VALUE);
+        values.put(Byte.class, Byte.MAX_VALUE);
+        values.put(Float.class, Float.MAX_VALUE);
         values.put(java.math.BigInteger.class, new java.math.BigInteger("99999999999999999999999999999999999999"));
         values.put(java.math.BigDecimal.class, new java.math.BigDecimal("9999999999999999999.9999999999999999999"));
         return values;
@@ -573,15 +589,15 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
      * <p><b>NOTE</b>: BigInteger {@literal &} BigDecimal minimums are dependent upon their precision {@literal &} Scale
      */
     @Override
-    public Hashtable minimumNumericValues() {
-        Hashtable values = new Hashtable();
+    public Hashtable<Class<? extends Number>, Number> minimumNumericValues() {
+        Hashtable<Class<? extends Number>, Number> values = new Hashtable<>();
 
-        values.put(Integer.class, Integer.valueOf(Integer.MIN_VALUE));
-        values.put(Long.class, Long.valueOf(Long.MIN_VALUE));
-        values.put(Double.class, Double.valueOf(1.4012984643247149E-44));// The double values are weird. They lose precision at E-45
-        values.put(Short.class, Short.valueOf(Short.MIN_VALUE));
-        values.put(Byte.class, Byte.valueOf(Byte.MIN_VALUE));
-        values.put(Float.class, Float.valueOf(Float.MIN_VALUE));
+        values.put(Integer.class, Integer.MIN_VALUE);
+        values.put(Long.class, Long.MIN_VALUE);
+        values.put(Double.class, 1.4012984643247149E-44);// The double values are weird. They lose precision at E-45
+        values.put(Short.class, Short.MIN_VALUE);
+        values.put(Byte.class, Byte.MIN_VALUE);
+        values.put(Float.class, Float.MIN_VALUE);
         values.put(java.math.BigInteger.class, new java.math.BigInteger("-99999999999999999999999999999999999999"));
         values.put(java.math.BigDecimal.class, new java.math.BigDecimal("-9999999999999999999.9999999999999999999"));
         return values;
@@ -641,7 +657,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
      */
     @Override
     public void registerOutputParameter(CallableStatement statement, int index, int jdbcType) throws SQLException {
-        statement.registerOutParameter(index, jdbcType, (String)getTypeStrings().get(new Integer(jdbcType)));
+        statement.registerOutParameter(index, jdbcType, getTypeStrings().get(jdbcType));
     }
 
     /**

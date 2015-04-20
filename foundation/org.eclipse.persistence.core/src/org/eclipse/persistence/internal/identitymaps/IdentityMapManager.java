@@ -1286,7 +1286,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
                     parameters[0] = cacheKey.getObject();
                     writer.write(TraceLocalization.buildMessage("locked_object", parameters) + Helper.cr());
                     writer.write("PK: " + cacheKey.getKey() + Helper.cr());
-                    parameters[0] = new Integer(cacheKey.getDepth());
+                    parameters[0] = cacheKey.getDepth();
                     writer.write(TraceLocalization.buildMessage("depth", parameters) + Helper.cr());
                     Exception stack = cacheKey.getStack();
                     if (stack != null) stack.printStackTrace(new PrintWriter(writer));

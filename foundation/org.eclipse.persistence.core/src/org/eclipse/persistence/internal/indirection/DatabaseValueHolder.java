@@ -12,11 +12,13 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.indirection;
 
-import java.io.*;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.indirection.*;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.internal.localization.*;
+import java.io.Serializable;
+
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
+import org.eclipse.persistence.indirection.WeavedAttributeValueHolderInterface;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.localization.ToStringLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
@@ -35,7 +37,7 @@ public abstract class DatabaseValueHolder implements WeavedAttributeValueHolderI
     protected Object value;
 
     /** Indicates whether the object has been read from the database or not. */
-    protected boolean isInstantiated;
+    protected volatile boolean isInstantiated;
 
     /** Stores the session for the database that contains the object. */
     protected transient AbstractSession session;
@@ -52,6 +54,7 @@ public abstract class DatabaseValueHolder implements WeavedAttributeValueHolderI
      */
     protected boolean isCoordinatedWithProperty = false;
 
+    @Override
     public Object clone() {
         try {
             return super.clone();
@@ -81,16 +84,15 @@ public abstract class DatabaseValueHolder implements WeavedAttributeValueHolderI
     /**
      * Return the object.
      */
+    @Override
     public Object getValue() {
-        if (!this.isInstantiated) {
+        boolean instantiated = this.isInstantiated;
+        if (!instantiated) {
             synchronized (this) {
-                if (!this.isInstantiated) {
+                instantiated = this.isInstantiated;
+                if (!instantiated) {
                     // The value must be set directly because the setValue can also cause instantiation under UOW.
                     privilegedSetValue(instantiate());
-                    // Cycles can somehow recurse into this twice...
-                    if (this.isInstantiated) {
-                        return value;
-                    }
                     this.isInstantiated = true;
                     postInstantiate();
                     resetFields();
@@ -134,6 +136,7 @@ public abstract class DatabaseValueHolder implements WeavedAttributeValueHolderI
      * It is used to check whether a valueholder that has been weaved into a class is coordinated
      * with the underlying property
      */
+    @Override
     public boolean isCoordinatedWithProperty(){
         return isCoordinatedWithProperty;
     }
@@ -144,6 +147,7 @@ public abstract class DatabaseValueHolder implements WeavedAttributeValueHolderI
      * A DatabaseValueHolder is set up by TopLink and will never be a newly weaved valueholder.
      * As a result, this method is stubbed out.
      */
+    @Override
     public boolean isNewlyWeavedValueHolder(){
         return false;
     }
@@ -161,6 +165,7 @@ public abstract class DatabaseValueHolder implements WeavedAttributeValueHolderI
      * Return a boolean indicating whether the object
      * has been read from the database or not.
      */
+    @Override
     public boolean isInstantiated() {
         return isInstantiated;
     }
@@ -245,6 +250,7 @@ public abstract class DatabaseValueHolder implements WeavedAttributeValueHolderI
      * It is used internally by EclipseLink to set whether a valueholder that has been weaved into a class is coordinated
      * with the underlying property
      */
+    @Override
     public void setIsCoordinatedWithProperty(boolean coordinated){
         this.isCoordinatedWithProperty = coordinated;
     }
@@ -255,6 +261,7 @@ public abstract class DatabaseValueHolder implements WeavedAttributeValueHolderI
      * A DatabaseValueHolder is set up by EclipseLink and will never be a newly weaved valueholder
      * As a result, this method is stubbed out.
      */
+    @Override
     public void setIsNewlyWeavedValueHolder(boolean isNew){
     }
 
@@ -289,6 +296,7 @@ public abstract class DatabaseValueHolder implements WeavedAttributeValueHolderI
     /**
      * Set the object.
      */
+    @Override
     public void setValue(Object value) {
         this.value = value;
         setInstantiated();
@@ -299,10 +307,12 @@ public abstract class DatabaseValueHolder implements WeavedAttributeValueHolderI
      * Return if add/remove should trigger instantiation or avoid.
      * Current instantiation is avoided is using change tracking.
      */
+    @Override
     public boolean shouldAllowInstantiationDeferral() {
         return true;
     }
 
+    @Override
     public String toString() {
         if (isInstantiated()) {
             return "{" + getValue() + "}";

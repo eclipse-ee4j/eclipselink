@@ -905,7 +905,7 @@ public class ReportQuery extends ReadAllQuery {
         Vector fieldExpressions = NonSynchronizedVector.newInstance(getItems().size());
 
         if (shouldSelectValue1()) {
-            Expression one = new ConstantExpression(new Integer(1), new ExpressionBuilder());
+            Expression one = new ConstantExpression(Integer.valueOf(1), new ExpressionBuilder());
             this.addItem("one", one);
             this.dontUseDistinct();
             fieldExpressions.addElement(one);

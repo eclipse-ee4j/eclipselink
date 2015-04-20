@@ -12,9 +12,9 @@
  ******************************************************************************/
 package org.eclipse.persistence.sessions.remote.corba.sun;
 
-import java.util.*;
+import java.util.Map;
 
-import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.queries.DatabaseQuery;
 
 /**
 * INTERNAL:
@@ -24,7 +24,7 @@ import org.eclipse.persistence.queries.*;
 * Thursday, May 3, 2001 1:36:59 PM EDT
 */
 abstract public class TransporterHelper {
-    private static String _id = "IDL:org/eclipse/persistence/internal/remote/Transporter:1.0";
+    private static final String _id = "IDL:org/eclipse/persistence/internal/remote/Transporter:1.0";
 
     public static void insert(org.omg.CORBA.Any a, org.eclipse.persistence.internal.sessions.remote.Transporter that) {
         org.omg.CORBA.portable.OutputStream out = a.create_output_stream();
@@ -37,20 +37,21 @@ abstract public class TransporterHelper {
         return read(a.create_input_stream());
     }
 
-    private static org.omg.CORBA.TypeCode __typeCode = null;
+    private static volatile org.omg.CORBA.TypeCode __typeCode = null;
     private static boolean __active = false;
 
     synchronized public static org.omg.CORBA.TypeCode type() {
+        org.omg.CORBA.TypeCode __typeCode = TransporterHelper.__typeCode;
         if (__typeCode == null) {
             synchronized (org.omg.CORBA.TypeCode.class) {
+                __typeCode = TransporterHelper.__typeCode;
                 if (__typeCode == null) {
                     if (__active) {
                         return org.omg.CORBA.ORB.init().create_recursive_tc(_id);
                     }
                     __active = true;
                     org.omg.CORBA.ValueMember[] _members0 = new org.omg.CORBA.ValueMember[0];
-                    org.omg.CORBA.TypeCode _tcOf_members0 = null;
-                    __typeCode = org.omg.CORBA.ORB.init().create_value_tc(_id, "Transporter", org.omg.CORBA.VM_NONE.value, null, _members0);
+                    TransporterHelper.__typeCode = __typeCode = org.omg.CORBA.ORB.init().create_value_tc(_id, "Transporter", org.omg.CORBA.VM_NONE.value, null, _members0);
                     __active = false;
                 }
             }

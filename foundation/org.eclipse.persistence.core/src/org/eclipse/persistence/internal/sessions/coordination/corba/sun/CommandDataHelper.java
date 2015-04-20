@@ -20,8 +20,8 @@ package org.eclipse.persistence.internal.sessions.coordination.corba.sun;
 * Tuesday, March 30, 2004 2:00:14 PM EST
 */
 public final class CommandDataHelper implements org.omg.CORBA.portable.BoxedValueHelper {
-    private static String _id = "IDL:org/eclipse/persistence/internal/remotecommand/corba/sun/CommandData:1.0";
-    private static CommandDataHelper _instance = new CommandDataHelper();
+    private static final String _id = "IDL:org/eclipse/persistence/internal/remotecommand/corba/sun/CommandData:1.0";
+    private static final CommandDataHelper _instance = new CommandDataHelper();
 
     public CommandDataHelper() {
     }
@@ -37,20 +37,22 @@ public final class CommandDataHelper implements org.omg.CORBA.portable.BoxedValu
         return read(a.create_input_stream());
     }
 
-    private static org.omg.CORBA.TypeCode __typeCode = null;
+    private static volatile org.omg.CORBA.TypeCode __typeCode = null;
     private static boolean __active = false;
 
     synchronized public static org.omg.CORBA.TypeCode type() {
+        org.omg.CORBA.TypeCode __typeCode = CommandDataHelper.__typeCode;
         if (__typeCode == null) {
             synchronized (org.omg.CORBA.TypeCode.class) {
+                __typeCode = CommandDataHelper.__typeCode;
                 if (__typeCode == null) {
                     if (__active) {
                         return org.omg.CORBA.ORB.init().create_recursive_tc(_id);
                     }
                     __active = true;
-                    __typeCode = org.omg.CORBA.ORB.init().get_primitive_tc(org.omg.CORBA.TCKind.tk_octet);
-                    __typeCode = org.omg.CORBA.ORB.init().create_sequence_tc(0, __typeCode);
-                    __typeCode = org.omg.CORBA.ORB.init().create_value_box_tc(_id, "CommandData", __typeCode);
+                    CommandDataHelper.__typeCode = __typeCode = org.omg.CORBA.ORB.init().get_primitive_tc(org.omg.CORBA.TCKind.tk_octet);
+                    CommandDataHelper.__typeCode = __typeCode = org.omg.CORBA.ORB.init().create_sequence_tc(0, __typeCode);
+                    CommandDataHelper.__typeCode = __typeCode = org.omg.CORBA.ORB.init().create_value_box_tc(_id, "CommandData", __typeCode);
                     __active = false;
                 }
             }
@@ -69,6 +71,7 @@ public final class CommandDataHelper implements org.omg.CORBA.portable.BoxedValu
         return (byte[])((org.omg.CORBA_2_3.portable.InputStream)istream).read_value(_instance);
     }
 
+    @Override
     public java.io.Serializable read_value(org.omg.CORBA.portable.InputStream istream) {
         byte[] tmp;
         int _len0 = istream.read_long();
@@ -84,6 +87,7 @@ public final class CommandDataHelper implements org.omg.CORBA.portable.BoxedValu
         ((org.omg.CORBA_2_3.portable.OutputStream)ostream).write_value(value, _instance);
     }
 
+    @Override
     public void write_value(org.omg.CORBA.portable.OutputStream ostream, java.io.Serializable value) {
         if (!(value instanceof byte[])) {
             throw new org.omg.CORBA.MARSHAL();
@@ -93,6 +97,7 @@ public final class CommandDataHelper implements org.omg.CORBA.portable.BoxedValu
         ostream.write_octet_array(valueType, 0, valueType.length);
     }
 
+    @Override
     public String get_id() {
         return _id;
     }

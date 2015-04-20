@@ -52,6 +52,16 @@
     </Match>
 
     <!--
+        Adding a serialVersionUID field to public classes
+        would be backward incompatible change.
+        Should fix this in 3.0.
+    -->
+    <Match>
+        <Package name="~(?s)^((?!internal).)*"/>
+        <Bug pattern="SE_NO_SERIALVERSIONID"/>
+    </Match>
+
+    <!--
         As designed, not an error
     -->
     <Match>
@@ -89,7 +99,7 @@
 
     <Match>
         <Or>
-            <Class name="org.eclipse.persistence.jpa.jpql.tools.model.query.AbstractStateObject"/>
+            <Class name="org.eclipse.persistence.jpa.jpql.tools.model.query.AbstractStateObject$1"/>
         </Or>
         <Bug pattern="UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS"/>
     </Match>
