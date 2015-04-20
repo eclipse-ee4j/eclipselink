@@ -1647,8 +1647,10 @@
                 <include name="**/TEST-*.xml"/>
             </fileset>
             <report format="frames" todir="${test.results.dir}"/>
+            <report format="noframes" todir="${test.results.dir}"/>
         </junitreport>
         <echo>Browse results at ${test.results.dir}/index.html</echo>
+        <echo>Browse results at ${test.results.dir}/junit-noframes.html</echo>
     </target>
 
 </project>

@@ -78,8 +78,14 @@
                                                      else="Notice: custom properties file '${user.home}/test.properties' not found to load.">
         <available file="${user.home}/test.properties"/>
     </condition>
+    <condition property="custom.cmdtst.properties.message" value="Loading ${test.properties}..."
+                                                     else="Notice: custom properties file '${test.properties}' not found to load.">
+        <available file="${test.properties}"/>
+    </condition>
     <echo message="${custom.tst.properties.message}"/>
+    <echo message="${custom.cmdtst.properties.message}"/>
     <property file="${user.home}/test.properties"/>
+    <property file="${test.properties}"/>
     <property file="${core_test.build.location}/antbuild.properties"/>
     <property file="${core_test.build.location}/${test.properties}"/>
     <property file="${core_test.build.location}/test.properties"/>
