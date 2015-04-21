@@ -11,10 +11,15 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     Nov 5, 2013-2.5 Chris Delahunt 
  *       - 421109: DB2 AS400 doesn't support "USE AND KEEP UPDATE LOCKS" used for pessimistic locking
+ *     04/30/2015 - Will Dazey
+ *       - 465063 : Added National Character support for DB2 on I
  ******************************************************************************/  
 package org.eclipse.persistence.platform.database;
 
+import java.util.Hashtable;
+
 import org.eclipse.persistence.expressions.ExpressionOperator;
+import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 
 /**
  * <b>Purpose</b>: Provides DB2 Mainframe specific behavior.<p>
@@ -61,5 +66,24 @@ public class DB2MainframePlatform extends DB2Platform {
     @Override
     public boolean supportsOuterJoinsWithBrackets() {
         return false;
+    }
+    
+    @Override
+    protected Hashtable buildFieldTypes() {
+        Hashtable<Class<?>, Object> res = super.buildFieldTypes();
+        if (getUseNationalCharacterVaryingTypeForString()) {
+            res.put(String.class, new FieldTypeDefinition("VARCHAR", DEFAULT_VARCHAR_SIZE));
+        }
+        return res;
+    }
+
+    @Override
+    public String getTableCreationSuffix() {
+        // If we're on I and using unicode support we need to append CCSID
+        // on the table rather than FOR MIXED DATA on each column
+        if (getUseNationalCharacterVaryingTypeForString()) {
+            return " CCSID";
+        }
+        return super.getTableCreationSuffix();
     }
 }

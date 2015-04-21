@@ -10,6 +10,8 @@
  * Contributors:
  *     03/19/2015 - Rick Curtis
  *       - 462586 : Add national character support for z/OS.
+ *     04/30/2015 - Will Dazey
+ *       - 465063 : Changed VendorNameToPlatformMapping file. Updating tests.
  *****************************************************************************/
 package org.eclipse.persistence.jpa.test.ddl;
 
@@ -21,6 +23,7 @@ import org.eclipse.persistence.jpa.test.framework.DDLGen;
 import org.eclipse.persistence.jpa.test.framework.Emf;
 import org.eclipse.persistence.jpa.test.framework.EmfRunner;
 import org.eclipse.persistence.logging.DefaultSessionLog;
+import org.eclipse.persistence.platform.database.DB2MainframePlatform;
 import org.eclipse.persistence.platform.database.DB2ZPlatform;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.sessions.DatabaseSession;
@@ -39,12 +42,25 @@ public class TestDBPlatformHelper {
     public void test() {
         emf.createEntityManager().close();
         Class<?> dbClass = emf.unwrap(DatabaseSession.class).getDatasourcePlatform().getClass();
-        Assert.assertNotEquals(DatabasePlatform.class, dbClass);
+        Assert.assertFalse("Database Platform: " + dbClass, DatabasePlatform.class.equals(dbClass));
     }
 
     @Test
     public void testDB2ZOS() {
-        String platformClass = DBPlatformHelper.getDBPlatform("db2dsn", log);
-        Assert.assertEquals(DB2ZPlatform.class.getName(), platformClass);
+        //Returned from jcc driver
+        Assert.assertEquals(DB2ZPlatform.class.getName(), getPlatformClass("DB2", "DSN10015"));
+    }
+    
+    @Test
+    public void testDB2I() {
+        //Returned from jcc driver (DRDA)
+        Assert.assertEquals(DB2MainframePlatform.class.getName(), getPlatformClass("AS", "QSQ07020"));
+        
+        //Returned from type 2 native driver & type 4 open source driver (non-DRDA)
+        Assert.assertEquals(DB2MainframePlatform.class.getName(), getPlatformClass("DB2 UDB for AS/400", "07.02.0000 V7R2m0"));
+    }
+    
+    private String getPlatformClass(String productName, String productVersion){
+        return DBPlatformHelper.getDBPlatform(productName + productVersion, log);
     }
 }
