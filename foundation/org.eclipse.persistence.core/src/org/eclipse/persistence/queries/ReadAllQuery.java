@@ -16,30 +16,44 @@
  ******************************************************************************/
 package org.eclipse.persistence.queries;
 
-import java.util.*;
-import java.sql.*;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
-import org.eclipse.persistence.internal.databaseaccess.*;
-import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
+import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
-import org.eclipse.persistence.internal.queries.*;
-import org.eclipse.persistence.internal.sessions.remote.*;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.InvalidObject;
+import org.eclipse.persistence.internal.helper.ThreadCursoredList;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
+import org.eclipse.persistence.internal.queries.DatasourceCallQueryMechanism;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.ResultSetRecord;
 import org.eclipse.persistence.internal.sessions.SimpleResultSetRecord;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.expressions.*;
+import org.eclipse.persistence.internal.sessions.remote.RemoteSessionController;
+import org.eclipse.persistence.internal.sessions.remote.Transporter;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.SessionProfiler;
-import org.eclipse.persistence.sessions.remote.*;
+import org.eclipse.persistence.sessions.remote.DistributedSession;
 import org.eclipse.persistence.tools.profiler.QueryMonitor;
-
-import static org.eclipse.persistence.queries.ReadAllQuery.Direction.CHILD_TO_PARENT;
-import static org.eclipse.persistence.queries.ReadAllQuery.Direction.PARENT_TO_CHILD;
 
 /**
  * <p><b>Purpose</b>:
@@ -240,42 +254,50 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
 
     /**
      * INTERNAL:
-     * Check to see if a custom query should be used for this query.
-     * This is done before the query is copied and prepared/executed.
-     * null means there is none.
+     * Check and return custom query flag. Custom query flag value is initialized when stored value is {@code null}.
+     * Called from {@link #checkForCustomQuery(AbstractSession, AbstractRecord)} to retrieve custom query flag.
+     * @param session        Current session (not used).
+     * @param translationRow Database record (not used).
+     * @return Current custom query flag. Value will never be {@code null}.
      */
     @Override
-    protected DatabaseQuery checkForCustomQuery(AbstractSession session, AbstractRecord translationRow) {
-        checkDescriptor(session);
-
-        // Check if user defined a custom query.
-        if (isCustomQueryUsed() == null) {
-            setIsCustomQueryUsed((!isUserDefined()) && isExpressionQuery() && (getSelectionCriteria() == null) && isDefaultPropertiesQuery() && (!hasOrderByExpressions()) && (this.descriptor.getQueryManager().hasReadAllQuery()));
-        }
-        if (isCustomQueryUsed().booleanValue()) {
-            ReadAllQuery customQuery = this.descriptor.getQueryManager().getReadAllQuery();
-            if (this.accessors != null) {
-                customQuery = (ReadAllQuery) customQuery.clone();
-                customQuery.setIsExecutionClone(true);
-                customQuery.setAccessors(this.accessors);
-            }
-            return customQuery;
+    protected Boolean checkCustomQueryFlag(final AbstractSession session, final AbstractRecord translationRow) {
+        // #436871 - Use local copy to avoid NPE from concurrent modification.
+        final Boolean useCustomQuery = isCustomQueryUsed;
+        if (useCustomQuery != null) {
+            return useCustomQuery;
+        // Initialize custom query flag.
         } else {
-            return null;
+            final boolean useCustomQueryValue =
+                    !isUserDefined() && isExpressionQuery() && getSelectionCriteria() == null
+                    && isDefaultPropertiesQuery() && (!hasOrderByExpressions())
+                    && descriptor.getQueryManager().hasReadAllQuery();
+            setIsCustomQueryUsed(useCustomQueryValue);
+            return Boolean.valueOf(useCustomQueryValue);
         }
     }
 
     /**
      * INTERNAL:
-     * Clone the query.
+     * Get custom all read query from query manager.
+     * Called from {@link #checkForCustomQuery(AbstractSession, AbstractRecord)} to retrieve custom read query.
+     * @return Custom all read query from query manager.
+     */
+    @Override
+    protected ObjectLevelReadQuery getReadQuery() {
+        return descriptor.getQueryManager().getReadAllQuery();
+    }
+
+    /**
+     * INTERNAL:
+     * Creates and returns a copy of this query.
+     * @return A clone of this instance.
      */
     @Override
     public Object clone() {
-        ReadAllQuery cloneQuery = (ReadAllQuery)super.clone();
-
-        // Don't use setters as that will trigger unprepare
-        cloneQuery.containerPolicy = this.containerPolicy.clone(cloneQuery);
-
+        final ReadAllQuery cloneQuery = (ReadAllQuery)super.clone();
+        // Don't use setters as that will trigger unprepare.
+        cloneQuery.containerPolicy = containerPolicy.clone(cloneQuery);
         return cloneQuery;
     }
 
