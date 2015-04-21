@@ -2195,13 +2195,10 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     /**
      * INTERNAL: PERF: Set if this query will use the descriptor custom query
      * instead of executing itself.
+     * @param isCustomQueryUsed Custom query flag as {@code boolean}.
      */
-    protected void setIsCustomQueryUsed(boolean isCustomQueryUsed) {
-        if (isCustomQueryUsed) {
-            this.isCustomQueryUsed = Boolean.TRUE;
-        } else {
-            this.isCustomQueryUsed = Boolean.FALSE;
-        }
+    protected void setIsCustomQueryUsed(final boolean isCustomQueryUsed) {
+        this.isCustomQueryUsed = isCustomQueryUsed;
     }
 
     /**
