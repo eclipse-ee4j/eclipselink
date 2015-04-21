@@ -246,23 +246,27 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
      */
     @Override
     protected DatabaseQuery checkForCustomQuery(AbstractSession session, AbstractRecord translationRow) {
-        checkDescriptor(session);
+        Boolean useCustomQuery = isCustomQueryUsed;
 
+        checkDescriptor(session);
         // Check if user defined a custom query.
-        if (isCustomQueryUsed() == null) {
+        if (useCustomQuery == null) {
             setIsCustomQueryUsed((!isUserDefined()) && isExpressionQuery() && (getSelectionCriteria() == null) && isDefaultPropertiesQuery() && (!hasOrderByExpressions()) && (this.descriptor.getQueryManager().hasReadAllQuery()));
+            // Value of isCustomQueryUsed is updated by setIsCustomQueryUsed method.
+            useCustomQuery = isCustomQueryUsed;
         }
-        if (isCustomQueryUsed().booleanValue()) {
+        if (useCustomQuery != null && useCustomQuery.booleanValue()) {
             ReadAllQuery customQuery = this.descriptor.getQueryManager().getReadAllQuery();
             if (this.accessors != null) {
                 customQuery = (ReadAllQuery) customQuery.clone();
                 customQuery.setIsExecutionClone(true);
                 customQuery.setAccessors(this.accessors);
             }
+            isCustomQueryUsed = useCustomQuery;
             return customQuery;
-        } else {
-            return null;
         }
+        isCustomQueryUsed = useCustomQuery;
+        return null;
     }
 
     /**
