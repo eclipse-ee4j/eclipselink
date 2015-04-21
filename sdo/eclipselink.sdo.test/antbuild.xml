@@ -67,6 +67,7 @@
     <property name="release.designation"  value="EclipseLink DeveloperBuild"/>
 
     <property name="jaxb-api.lib"   value="${sdotest.2.common.plugins.dir}/${jaxb-api.jar}"/>
+    <property name="jacocoagent.lib" value="${extensions.depend.dir}/${jacocoagent.jar}"/>
 
     <!-- path to OSGi Bundle compile dependencies -->
     <path id="sdotest.bundle.compile.path">
@@ -95,6 +96,7 @@
         <pathelement path="${tools.lib}"/>
         <pathelement path="${resource.dir}"/>
         <pathelement path="${classes.dir}"/>
+        <pathelement path="${jacocoagent.lib}"/>
         <pathelement path="${sdotest.2.common.plugins.dir}/${asm}"/>
     </path>
 
@@ -120,6 +122,7 @@
 
     <!-- Should be relative from the eclipselink.sdo.test/resource directory -->
     <path id="sdotest.classgen.run.path">
+        <pathelement path="${jacocoagent.lib}"/>
         <pathelement path="../${sdotest.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
         <pathelement path="../${sdotest.2.common.plugins.dir}/org.eclipse.persistence.sdo_${version.string}.jar"/>
         <pathelement path="../${classes.dir}"/>
@@ -132,7 +135,6 @@
     <available file="${sdotest.2.common.plugins.dir}/org.eclipse.persistence.moxy_${version.string}.jar" property="moxy.bundle.exist"/>
     <available file="${sdotest.2.common.plugins.dir}/org.eclipse.persistence.sdo_${version.string}.jar" property="sdo.bundle.exist"/>
     <available file="${sdotest.2.base.dir}/${eclipselink.jar}" property="eclipselink.jar.exist"/>
-
 
     <!-- Clean targets -->
     <target name="clean" description="clean the build">
@@ -173,7 +175,6 @@
         <delete dir="${resource.dir}/${tmp.dir}"/>
     </target>
 
-
     <!-- Test run macros -->
     <macrodef name="run_sdo_tests">
         <attribute name="customcontext"/>
@@ -182,10 +183,12 @@
             <delete dir="${report.dir}/@{customcontext}"/>
             <mkdir dir="${report.dir}/@{customcontext}"/>
             <echo message="customContext=@{customcontext}"/>
+            <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
             <!-- Fix for 290177 below removed temporarily to avoid out-of-memeory issues with LRG run -->
             <!-- junit printsummary="withOutAndErr" fork="yes" forkmode="once" dir="${resource.dir}" maxmemory="512m" showoutput="yes" -->
             <junit printsummary="withOutAndErr" fork="yes" dir="${resource.dir}" maxmemory="512m" showoutput="yes">
                 <jvmarg value="-XX:MaxPermSize=256m"/>
+                <jvmarg line="${additional.jvmargs}"/>
                 <sysproperty key="loggingLevelFinest" value="false"/>
                 <sysproperty key="customContext" value="@{customcontext}"/>
                 <sysproperty key="eclipselink.xml.platform" value="${xml.platform}"/>
@@ -233,8 +236,10 @@
             <delete dir="${report.dir}/srg/@{customcontext}"/>
             <mkdir dir="${report.dir}/srg/@{customcontext}"/>
             <echo message="customContext=@{customcontext}"/>
+            <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
             <junit printsummary="withOutAndErr" fork="yes" forkmode="once" dir="${resource.dir}" maxmemory="512m" showoutput="yes">
                 <jvmarg value="-XX:MaxPermSize=256m"/>
+                <jvmarg line="${additional.jvmargs}"/>
                 <sysproperty key="loggingLevelFinest" value="false"/>
                 <sysproperty key="customContext" value="@{customcontext}"/>
                 <sysproperty key="eclipselink.xml.platform" value="${xml.platform}"/>

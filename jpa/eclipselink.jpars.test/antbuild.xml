@@ -120,6 +120,8 @@
         <property name="extensions.depend.dir" value="../${core_test.2.base.dir}/extension.lib.external"/>
         <property name="junit.lib"             value="${extensions.depend.dir}/junit.jar"/>
         <property name="json.lib"          value="${jparstest.build.location}/${jparstest.2.common.plugins.dir}/${json.jar}"/>
+        <property name="jacocoagent.lib"       value="${extensions.depend.dir}/${jacocoagent.jar}"/>
+
         <echo message="user.home             ='${user.home}'"/>
         <echo message="test.properties       ='${test.properties}'"/>
         <echo message="extensions.depend.dir ='${extensions.depend.dir}'"/>
@@ -224,6 +226,7 @@
         </path>
         <!-- Run path without product components -->
         <path id="jparstest.thirdparty.run.path">
+            <pathelement path="${jacocoagent.lib}"/>
             <pathelement path="${resource.dir}"/>
             <pathelement path="${classes.dir}"/>
             <pathelement path="${antlr.lib}"/>
@@ -419,12 +422,15 @@
             <!-- Fix for 290177 below removed temporarily to avoid out-of-memeory issues with LRG run -->
             <!-- junit printsummary="withOutAndErr" fork="yes" forkmode="once" dir="${resource.dir}" maxmemory="512m" showoutput="yes" -->
             <echo message="Running @{testclass} suite"/>
+            <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
+            <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
             <junit printsummary="withOutAndErr" fork="yes" dir="${classes.dir}" maxmemory="512m" showoutput="yes">
                 <jvmarg value="-XX:MaxPermSize=256m"/>
                 <jvmarg value="-Ddb.driver=${db.driver}"/>
                 <jvmarg value="-Ddb.url=${db.url}"/>
                 <jvmarg value="-Ddb.user=${db.user}"/>
                 <jvmarg value="-Ddb.pwd=${db.pwd}"/>
+                <jvmarg line="${additional.jvmargs}"/>
                 <jvmarg value="-javaagent:../${jparstest.2.base.dir}/${eclipselink.jar}"/>
                 <jvmarg value="${remoteDebugJvmArgs}"/>
                 <!--jvmarg value="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=8787"/-->

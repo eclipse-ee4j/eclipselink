@@ -127,6 +127,8 @@
     <property name="jpatest.2.sdo.plugins.dir"      value="${jpatest.2.base.dir}/sdo/plugins"/>
     <property name="oracle.extensions.depend.dir"   value="${jpatest.2.base.dir}/../extension.oracle.lib.external"/>
 
+    <property name="jacocoagent.lib" value="${extensions.depend.dir}/${jacocoagent.jar}"/>
+
     <property name="version.qualifier"     value="qualifier"/>
     <property name="version.string"        value="${release.version}.${version.qualifier}"/>
 
@@ -426,6 +428,7 @@
         <echo message="   '${jpatest.2.common.plugins.dir}/${restfulws.jar}'"/>
         <echo message="   '${jpatest.2.common.plugins.dir}/${resource.jar}'"/>
         <echo message="   '${junit.lib}'"/>
+        <echo message="   '${jacocoagent.lib}'"/>
         <echo message="   '${jpatest.2.common.plugins.dir}/org.eclipse.persistence.antlr_*.jar'"/>
         <echo message="   '${jpatest.2.common.plugins.dir}/org.eclipse.persistence.nosql_*.jar'"/>
         <echo message="   "/>
@@ -441,6 +444,7 @@
             <pathelement path="${jpatest.2.common.plugins.dir}/${restfulws.jar}"/>
             <pathelement path="${jpatest.2.common.plugins.dir}/${resource.jar}"/>
             <pathelement path="${junit.lib}"/>
+            <pathelement path="${jacocoagent.lib}"/>
             <fileset dir="${jpatest.2.common.plugins.dir}" includes="org.eclipse.persistence.antlr_*.jar"/>
             <fileset dir="${jpatest.2.common.plugins.dir}" includes="org.eclipse.persistence.nosql_*.jar"/>
             <!-- Needed for performance tests comparing with hibernate.>
@@ -463,6 +467,7 @@
         <echo message="   '${jpatest.2.common.plugins.dir}/${transaction.jar}'"/>
         <echo message="   '${jpatest.2.common.plugins.dir}/${restfulws.jar}'"/>
         <echo message="   '${junit.lib}'"/>
+        <echo message="   '${jacocoagent.lib}'"/>
         <echo message="   '${jpatest.2.common.plugins.dir}/org.eclipse.persistence.antlr_*.jar'"/>
         <echo message="   '${jpatest.2.common.plugins.dir}/org.eclipse.persistence.nosql_*.jar'"/>
         <echo message="   "/>
@@ -477,6 +482,7 @@
             <pathelement path="${jpatest.2.common.plugins.dir}/${transaction.jar}"/>
             <pathelement path="${jpatest.2.common.plugins.dir}/${restfulws.jar}"/>
             <pathelement path="${junit.lib}"/>
+            <pathelement path="${jacocoagent.lib}"/>
             <fileset dir="${jpatest.2.common.plugins.dir}" includes="org.eclipse.persistence.antlr_*.jar"/>
             <fileset dir="${jpatest.2.common.plugins.dir}" includes="org.eclipse.persistence.nosql_*.jar"/>
             <!-- Needed for performance tests comparing with hibernate.>
@@ -2142,6 +2148,7 @@
             <sysproperty key="pa.connection.password" value="${db.pwd}"/>
             <sysproperty key="pa.proxyuser" value="${pa.proxyuser}"/>
             <sysproperty key="pa.proxyuser2" value="${pa.proxyuser2}"/>
+            <jvmarg line="${additional.jvmargs}"/>
             <jvmarg value="${TEST_AGENT}"/>
             <jvmarg value="${TEST_WEAVING}"/>
             <jvmarg value="${TEST_WEAVING_OPTION}"/>
@@ -2152,7 +2159,6 @@
             <jvmarg value="-Ddb.url=${DB_URL}"/>
             <jvmarg value="-Ddb.user=${DB_USER}"/>
             <jvmarg value="-Ddb.pwd=${DB_PWD}"/>
-            <jvmarg line="${additional.jvmargs}"/>
             <jvmarg value="${jvmarg.db.platform.class}"/>
             <classpath>
                 <path refid="${RUN_PATH}"/>
@@ -2182,6 +2188,7 @@
             <sysproperty key="TEST_SERVER_PLATFORM" value="org.eclipse.persistence.testing.framework.server.SpringPlatform"/>
             <sysproperty key="proxy.user.name" value="${oracle.proxy.user}"/>
             <sysproperty key="run.metadata.cache.test.suite" value="${run.metadata.cache.test.suite}"/>
+            <jvmarg line="${additional.jvmargs}"/>
             <jvmarg value="${TEST_AGENT}"/>
             <jvmarg value="${TEST_WEAVING}"/>
             <jvmarg value="${ORM_TESTING}"/>
@@ -2192,7 +2199,6 @@
             <jvmarg value="-Ddb.user=${db.user}"/>
             <jvmarg value="-Ddb.pwd=${db.pwd}"/>
             <jvmarg value="${jvmarg.db.platform.class}"/>
-            <jvmarg line="${additional.jvmargs}"/>
             <jvmarg value="${jvmarg.db.platform.class}"/>
             <classpath>
                 <path refid="${RUN_PATH}"/>
@@ -2232,6 +2238,7 @@
              maxmemory="${max.heap.memory}"
              failonerror="false"
              dir="${run.dir}">
+            <jvmarg line="${additional.jvmargs}"/>
             <jvmarg value="${jvmarg.performance.baseline.version}"/>
             <jvmarg value="${TEST_AGENT}"/>
             <jvmarg value="${TEST_WEAVING}"/>
@@ -2241,7 +2248,6 @@
             <jvmarg value="-Ddb.user=${db.user}"/>
             <jvmarg value="-Ddb.pwd=${db.pwd}"/>
             <jvmarg value="-Ddb.platform=${db.platform}"/>
-            <jvmarg line="${additional.jvmargs}"/>
             <arg value="testmodel=${TEST_CLASS}"/>
             <arg value="regressionlog=../${report.dir}/test.log"/>
             <arg value="saveresults=${should.save.results}" />

@@ -94,6 +94,7 @@
     <property name="javax.el.lib" value="${extensions.depend.dir}/${javax.el.jar}"/>
     <property name="classmate.lib" value="${extensions.depend.dir}/${classmate.jar}"/>
     <property name="jmockit.lib" value="${extensions.depend.dir}/${jmockit.jar}"/>
+    <property name="jacocoagent.lib" value="${extensions.depend.dir}/${jacocoagent.jar}"/>
 
     <condition property="validate.jar.exists">
         <and>
@@ -153,6 +154,7 @@
         <pathelement path="${jaxb-impl.lib}"/>
         <pathelement path="${jaxb-core.lib}"/>
         <pathelement path="${jmockit.lib}"/>
+        <pathelement path="${jacocoagent.lib}"/>
         <pathelement path="${junit.lib}"/>
         <pathelement path="${validation-impl.lib}"/>
         <pathelement path="${jboss-logging.lib}"/>
@@ -190,6 +192,7 @@
         <pathelement path="${classes.dir}"/>
         <pathelement path="${resource.dir}"/>
         <pathelement path="${moxytest.2.core.dir}/target/${classes.dir}"/>
+        <pathelement path="${jacocoagent.lib}"/>
         <pathelement path="${jmockit.lib}"/>
         <pathelement path="${junit.lib}"/>
     </path>
@@ -218,6 +221,7 @@
     </path>
     <path id="jaxb.run.against.jar.path">
         <path refid="xml.parser.path"/>
+        <pathelement path="${jacocoagent.lib}"/>
         <pathelement path="${jmockit.lib}"/>
         <pathelement path="${junit.lib}"/>
         <pathelement path="${jaxb-api.lib}"/>
@@ -257,6 +261,7 @@
     </path>
     <path id="oxm.run.against.jar.path">
         <path refid="xml.parser.path"/>
+        <pathelement path="${jacocoagent.lib}"/>
         <pathelement path="${jmockit.lib}"/>
         <pathelement path="${junit.lib}"/>
         <pathelement path="${jaxb-api.lib}"/>
@@ -518,10 +523,13 @@
             <delete dir="${report.dir}/jaxb" includeEmptyDirs="true" failonerror="false"/>
             <mkdir dir="${report.dir}/jaxb"/>
             <mkdir dir="${resource.dir}/${tmp.dir}"/>
+            <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
+            <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
             <junit printsummary="yes" fork="true" dir="${resource.dir}" showoutput="yes" maxmemory="512m">
                 <!--<jvmarg value="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"/>-->
                 <jvmarg value="-ea"/>
                 <jvmarg value="-javaagent:${jmockit.lib}"/>
+                <jvmarg line="${additional.jvmargs}"/>
                 <env key="T_WORK" value="${tmp.dir}"/>
                 <sysproperty key="platformType" value="SAX"/>
                 <sysproperty key="metadataType" value="JAVA"/>
@@ -578,8 +586,11 @@
             <delete dir="${report.dir}/srg/jaxb" includeEmptyDirs="true" failonerror="false"/>
             <mkdir dir="${report.dir}/srg/jaxb"/>
             <mkdir dir="${resource.dir}/${tmp.dir}"/>
+            <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
+            <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
             <junit printsummary="yes" fork="true" dir="${resource.dir}" showoutput="yes" maxmemory="512m">
                 <jvmarg value="-ea"/>
+                <jvmarg line="${additional.jvmargs}"/>
                 <env key="T_WORK" value="${tmp.dir}"/>
                 <sysproperty key="platformType" value="SAX"/>
                 <sysproperty key="metadataType" value="JAVA"/>

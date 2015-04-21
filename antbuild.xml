@@ -87,7 +87,7 @@
 
         It may require some configuration of the build.properties to run.
     -->
-<project name="trunk" default="build" basedir=".">
+<project name="trunk" default="build" basedir="." xmlns:jacoco="antlib:org.jacoco.ant" xmlns:sonar="antlib:org.sonar.ant">
 
     <dirname  property="trunk.build.location_temp" file="${ant.file.trunk}"/>
     <pathconvert targetos="unix" property="trunk.build.location">
@@ -1560,7 +1560,7 @@
     <!-- Run nosql Tests -->
     <target name="test-nosql" description="run all nosql specific tests">
         <!-- No Mongodb installed on nightly build machine. Test execution won't work.  -->
-        <!-- ant antfile="antbuild.xml" dir="${eclipselink.extension.nosql.test}"      target="test"/ -->
+        <ant antfile="antbuild.xml" dir="${eclipselink.extension.nosql.test}"      target="test"/>
     </target>
     <!-- Run JPA LRG. -->
     <target name="test-jpa" description="run the jpa tests">
@@ -1636,6 +1636,94 @@
             description="run eclipselink osgi tests"/>
     <target name="test-osgi-moxy" description="run the moxy osgi tests">
         <ant antfile="antbuild.xml" dir="${eclipselink.moxy.test}" target="test-osgi"/>
+    </target>
+
+    <target name="init-coverage">
+        <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
+            <classpath path="${jacocoant.lib}"/>
+        </taskdef>
+    </target>
+
+    <!-- offline instrumentation -->
+    <target name="coverage-instrument" depends="init-coverage">
+        <jacoco:instrument destdir="target-instrumented">
+            <fileset dir="target">
+                <include name="org.eclipse.persistence.core_*.jar"/>
+                <include name="org.eclipse.persistence.dbws.builder_*.jar"/>
+                <include name="org.eclipse.persistence.dbws_*.jar"/>
+                <include name="org.eclipse.persistence.extension_*.jar"/>
+                <include name="org.eclipse.persistence.jpa.jpql_*.jar"/>
+                <include name="org.eclipse.persistence.jpa_*.jar"/>
+                <include name="org.eclipse.persistence.jpars_*.jar"/>
+                <include name="org.eclipse.persistence.moxy_*.jar"/>
+                <include name="org.eclipse.persistence.nosql_*.jar"/>
+                <include name="org.eclipse.persistence.sdo_*.jar"/>
+            </fileset>
+            <fileset dir="plugins">
+                <include name="org.eclipse.persistence.core_*.jar"/>
+                <include name="org.eclipse.persistence.dbws.builder_*.jar"/>
+                <include name="org.eclipse.persistence.dbws_*.jar"/>
+                <include name="org.eclipse.persistence.extension_*.jar"/>
+                <include name="org.eclipse.persistence.jpa.jpql_*.jar"/>
+                <include name="org.eclipse.persistence.jpa_*.jar"/>
+                <include name="org.eclipse.persistence.jpars_*.jar"/>
+                <include name="org.eclipse.persistence.moxy_*.jar"/>
+                <include name="org.eclipse.persistence.nosql_*.jar"/>
+                <include name="org.eclipse.persistence.oracle.nosql_*.jar"/>
+                <include name="org.eclipse.persistence.oracle_*.jar"/>
+                <include name="org.eclipse.persistence.sdo_*.jar"/>
+                <include name="eclipselink-moxy-dynamicxjc_*.jar"/>
+            </fileset>
+            <fileset dir="." includes="eclipselink.jar"/>
+        </jacoco:instrument>
+    </target>
+
+    <!--
+        How to collect coverage data:
+            1. Put jacocoagent.jar into extensions folder
+            2. export JACOCO_OPTS="-Dadditional.jvmargs='-javaagent:/Users/snajper/work/sources/eclipselink/extension.lib.external/jacocoagent.jar=destfile=/Users/snajper/work/sources/eclipselink/eclipselink.runtime/jacoco.out,append=true,includes=org.eclipse.persistence*,excludes=org.eclipse.persistence.internal.libraries*,sessionid=lrg,output=file'"
+            3. ant -f antbuild.xml -Dtest.properties=/Users/snajper/test.properties $JACOCO_OPTS clean build test-lrg
+            4. ant -f antbuild.xml coverage-report
+    -->
+
+    <target name="coverage-report" depends="init-coverage">
+        <unjar src="eclipselink.jar" dest="target/coverage-classes"/>
+        <delete dir="target/coverage-classes/org/eclipse/persistence/internal/libraries"/>
+        <jacoco:report>
+            <executiondata>
+                <file file="${jacoco.out}"/>
+            </executiondata>
+            <structure name="JaCoCo EclipseLink Code Coverage Report">
+                <classfiles>
+                    <fileset dir="target/coverage-classes"/>
+                </classfiles>
+                <sourcefiles encoding="UTF-8">
+                    <fileset dir="${eclipselink.core}/src"/>
+                    <fileset dir="${eclipselink.extension}/src"/>
+                    <fileset dir="${eclipselink.extension.nosql}/src"/>
+                    <fileset dir="${eclipselink.extension.oracle}/src"/>
+                    <fileset dir="${eclipselink.extension.oracle.nosql}/src"/>
+                    <fileset dir="${eclipselink.jpa}/src"/>
+                    <fileset dir="${eclipselink.hermes}/src"/>
+                    <fileset dir="${eclipselink.jpars}/src"/>
+                    <fileset dir="${eclipselink.moxy}/src"/>
+                    <fileset dir="${eclipselink.moxy.dynamicxjc}/src"/>
+                    <fileset dir="${eclipselink.sdo}/src"/>
+                    <fileset dir="${eclipselink.dbws}/src"/>
+                </sourcefiles>
+            </structure>
+            <html destdir="./coverage-report"/>
+            <!--xml destfile="${result.report.dir}/report.xml"/-->
+        </jacoco:report>
+        <delete dir="target/coverage-classes" deleteonexit="true"/>
+    </target>
+
+    <target name="sonar">
+        <property file="sonar-project.properties"/>
+        <taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml">
+            <classpath path="/Users/snajper/work/builds/sonar/sonar-ant-task-2.2.jar" />
+        </taskdef>
+        <sonar:sonar/>
     </target>
 
     <target name="generate-report">
