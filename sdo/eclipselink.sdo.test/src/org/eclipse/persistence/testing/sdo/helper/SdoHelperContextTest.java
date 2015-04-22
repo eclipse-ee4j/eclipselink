@@ -12,7 +12,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.helper;
 
-import commonj.sdo.helper.HelperContext;
 import junit.framework.TestCase;
 import org.eclipse.persistence.sdo.helper.SDOHelperContext;
 
@@ -23,12 +22,7 @@ public class SDOHelperContextTest extends TestCase {
 
     public void testNewContextGeneratedWithResolverReturned() {
         final SDOHelperContext foo = new SDOHelperContext("Foo");
-        SDOHelperContext.setHelperContextResolver(new SDOHelperContext.HelperContextResolver() {
-            @Override
-            public HelperContext getHelperContext(String id, ClassLoader classLoader) {
-                return foo;
-            }
-        });
+        SDOHelperContext.setHelperContextResolver((id, classLoader) -> foo);
 
         SDOHelperContext hc = (SDOHelperContext) SDOHelperContext.getHelperContext("foo");
         assertEquals("Expected helperContext generated with HelperContextResolver to be returned", hc, foo);
