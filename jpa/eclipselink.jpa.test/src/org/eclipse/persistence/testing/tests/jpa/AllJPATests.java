@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     04/22/2015 - Will Dazey
+ *       - 465235 : Find Bugs Fix: removed null variable args
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa;
 
@@ -38,7 +40,7 @@ public class AllJPATests extends TestModel {
             addTest(FullRegressionTestSuite.suite());
             addTest(RemoteEntityManagerTestSuite.suite());
             try {
-                addTest((Test)Class.forName("org.eclipse.persistence.testing.tests.jpa21.advanced.JPA21TestSuite").getMethod("suite", null).invoke(null, null));
+                addTest((Test)Class.forName("org.eclipse.persistence.testing.tests.jpa21.advanced.JPA21TestSuite").getMethod("suite").invoke(null));
             } catch (Exception exception) {
                 System.out.println("WARNING: " + exception);                
             }
