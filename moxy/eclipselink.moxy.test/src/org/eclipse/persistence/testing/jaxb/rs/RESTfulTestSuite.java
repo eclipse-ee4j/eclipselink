@@ -28,6 +28,7 @@ public class RESTfulTestSuite extends TestSuite {
         suite.addTestSuite(ListAdapterTestCases.class);
         suite.addTestSuite(MapAdapterTestCases.class);
         suite.addTestSuite(JAXBElementsGenericListTestCases.class);
+        suite.addTestSuite(MyArrayListTestCases.class);
         return suite;
     }
 
