@@ -138,6 +138,15 @@ public class MultitenantMetadata extends ORMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = m_includeCriteria != null ? m_includeCriteria.hashCode() : 0;
+        result = 31 * result + (m_tenantDiscriminatorColumns != null ? m_tenantDiscriminatorColumns.hashCode() : 0);
+        result = 31 * result + (m_type != null ? m_type.hashCode() : 0);
+        result = 31 * result + (m_tenantTableDiscriminator != null ? m_tenantTableDiscriminator.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      * Used for OX mapping.

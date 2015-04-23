@@ -87,6 +87,14 @@ public class DirectColumnMetadata extends MetadataColumn {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = m_nullable != null ? m_nullable.hashCode() : 0;
+        result = 31 * result + (m_updatable != null ? m_updatable.hashCode() : 0);
+        result = 31 * result + (m_insertable != null ? m_insertable.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      */

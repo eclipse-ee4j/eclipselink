@@ -89,6 +89,11 @@ public class EnumeratedMetadata extends MetadataConverter {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        return m_enumeratedType != null ? m_enumeratedType.hashCode() : 0;
+    }
+
     /**
      * INTERNAL:
      * Used for OX mapping.

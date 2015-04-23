@@ -113,6 +113,18 @@ public class PLSQLParameterMetadata extends ORMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = m_optional != null ? m_optional.hashCode() : 0;
+        result = 31 * result + (m_direction != null ? m_direction.hashCode() : 0);
+        result = 31 * result + (m_databaseType != null ? m_databaseType.hashCode() : 0);
+        result = 31 * result + (m_name != null ? m_name.hashCode() : 0);
+        result = 31 * result + (m_queryParameter != null ? m_queryParameter.hashCode() : 0);
+        result = 31 * result + (m_length != null ? m_length.hashCode() : 0);
+        result = 31 * result + (m_precision != null ? m_precision.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      * Used for OX mapping.

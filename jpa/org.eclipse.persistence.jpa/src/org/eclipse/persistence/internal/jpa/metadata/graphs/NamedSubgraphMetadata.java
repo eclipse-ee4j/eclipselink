@@ -97,6 +97,14 @@ public class NamedSubgraphMetadata extends ORMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = m_name != null ? m_name.hashCode() : 0;
+        result = 31 * result + (m_typeName != null ? m_typeName.hashCode() : 0);
+        result = 31 * result + (m_namedAttributeNodes != null ? m_namedAttributeNodes.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      * The unique identifier of named subgraph metadata.

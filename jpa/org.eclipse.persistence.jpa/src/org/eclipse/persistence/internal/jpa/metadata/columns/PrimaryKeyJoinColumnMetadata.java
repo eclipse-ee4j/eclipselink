@@ -72,4 +72,9 @@ public class PrimaryKeyJoinColumnMetadata extends RelationalColumnMetadata {
     public boolean equals(Object objectToCompare) {
         return super.equals(objectToCompare) && objectToCompare instanceof PrimaryKeyJoinColumnMetadata;
     }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
 }

@@ -103,6 +103,15 @@ public class TenantDiscriminatorColumnMetadata extends DiscriminatorColumnMetada
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (m_primaryKey != null ? m_primaryKey.hashCode() : 0);
+        result = 31 * result + (m_table != null ? m_table.hashCode() : 0);
+        result = 31 * result + (m_contextProperty != null ? m_contextProperty.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      * Used for OX mapping.

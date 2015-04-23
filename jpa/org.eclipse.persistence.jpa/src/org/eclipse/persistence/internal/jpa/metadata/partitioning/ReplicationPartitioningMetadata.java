@@ -81,6 +81,13 @@ public class ReplicationPartitioningMetadata extends AbstractPartitioningMetadat
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (connectionPools != null ? connectionPools.hashCode() : 0);
+        return result;
+    }
+
     public List<String> getConnectionPools() {
         return connectionPools;
     }

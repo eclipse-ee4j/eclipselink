@@ -123,6 +123,18 @@ public class QueryRedirectorsMetadata extends ORMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = defaultQueryRedirectorName != null ? defaultQueryRedirectorName.hashCode() : 0;
+        result = 31 * result + (defaultReadAllQueryRedirectorName != null ? defaultReadAllQueryRedirectorName.hashCode() : 0);
+        result = 31 * result + (defaultReadObjectQueryRedirectorName != null ? defaultReadObjectQueryRedirectorName.hashCode() : 0);
+        result = 31 * result + (defaultReportQueryRedirectorName != null ? defaultReportQueryRedirectorName.hashCode() : 0);
+        result = 31 * result + (defaultUpdateObjectQueryRedirectorName != null ? defaultUpdateObjectQueryRedirectorName.hashCode() : 0);
+        result = 31 * result + (defaultInsertObjectQueryRedirectorName != null ? defaultInsertObjectQueryRedirectorName.hashCode() : 0);
+        result = 31 * result + (defaultDeleteObjectQueryRedirectorName != null ? defaultDeleteObjectQueryRedirectorName.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      * Used for OX mapping.

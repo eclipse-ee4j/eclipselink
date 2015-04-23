@@ -68,6 +68,11 @@ public class AdditionalCriteriaMetadata extends ORMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        return m_criteria != null ? m_criteria.hashCode() : 0;
+    }
+
     /**
      * INTERNAL:
      * Used for OX mapping.

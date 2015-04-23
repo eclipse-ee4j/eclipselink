@@ -100,6 +100,13 @@ public class SecondaryTableMetadata extends TableMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = m_primaryKeyForeignKey != null ? m_primaryKeyForeignKey.hashCode() : 0;
+        result = 31 * result + (m_primaryKeyJoinColumns != null ? m_primaryKeyJoinColumns.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      */

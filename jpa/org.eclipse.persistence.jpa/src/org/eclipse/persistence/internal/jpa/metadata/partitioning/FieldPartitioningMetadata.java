@@ -94,6 +94,15 @@ public abstract class FieldPartitioningMetadata extends AbstractPartitioningMeta
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (unionUnpartitionableQueries != null ? unionUnpartitionableQueries.hashCode() : 0);
+        result = 31 * result + (partitionColumn != null ? partitionColumn.hashCode() : 0);
+        result = 31 * result + (partitionValueTypeName != null ? partitionValueTypeName.hashCode() : 0);
+        return result;
+    }
+
     /**
      * Set common fields into policy.
      * Should be called by subclasses.

@@ -177,6 +177,14 @@ public class EmbeddedAccessor extends MappingAccessor {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (m_converts != null ? m_converts.hashCode() : 0);
+        result = 31 * result + (m_associationOverrides != null ? m_associationOverrides.hashCode() : 0);
+        result = 31 * result + (m_attributeOverrides != null ? m_attributeOverrides.hashCode() : 0);
+        return result;
+    }
 
     /**
      * INTERNAL:

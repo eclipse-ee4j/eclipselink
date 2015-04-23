@@ -63,6 +63,13 @@ public abstract class OracleComplexTypeMetadata extends ComplexTypeMetadata {
                 valuesMatch(this.javaType, ((OracleComplexTypeMetadata) objectToCompare).getJavaType());
     }
 
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (javaType != null ? javaType.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      * Used for OX mapping.

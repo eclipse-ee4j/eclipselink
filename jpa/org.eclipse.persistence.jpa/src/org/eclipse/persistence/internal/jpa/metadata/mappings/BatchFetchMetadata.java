@@ -73,6 +73,13 @@ public class BatchFetchMetadata extends ORMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = m_size != null ? m_size.hashCode() : 0;
+        result = 31 * result + (m_type != null ? m_type.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      * Used for OX mapping.

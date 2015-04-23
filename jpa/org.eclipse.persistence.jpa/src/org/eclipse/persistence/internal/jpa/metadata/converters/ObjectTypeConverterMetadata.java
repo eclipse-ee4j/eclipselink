@@ -100,6 +100,14 @@ public class ObjectTypeConverterMetadata extends TypeConverterMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (m_conversionValues != null ? m_conversionValues.hashCode() : 0);
+        result = 31 * result + (m_defaultObjectValue != null ? m_defaultObjectValue.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      * Used for OX mapping.

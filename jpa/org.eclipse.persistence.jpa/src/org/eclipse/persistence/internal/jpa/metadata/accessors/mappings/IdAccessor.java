@@ -76,6 +76,11 @@ public class IdAccessor extends BasicAccessor {
         return super.equals(objectToCompare) && objectToCompare instanceof IdAccessor;
     }
 
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
     /**
      * INTERNAL:
      * Marks this accessor as part of the Id

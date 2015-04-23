@@ -53,6 +53,11 @@ public class ClassInstanceMetadata extends MetadataConverter {
         return super.equals(objectToCompare) && objectToCompare instanceof ClassInstanceMetadata;
     }
 
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
     /**
      * INTERNAL:
      * Every converter needs to be able to process themselves.

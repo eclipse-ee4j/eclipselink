@@ -73,6 +73,11 @@ public class VersionAccessor extends BasicAccessor {
         return super.equals(objectToCompare) && objectToCompare instanceof VersionAccessor;
     }
 
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
     /**
      * INTERNAL:
      * Returns true if the given class is a valid timestamp locking type.

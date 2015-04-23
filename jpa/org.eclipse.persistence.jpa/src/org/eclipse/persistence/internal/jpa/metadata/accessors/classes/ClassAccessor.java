@@ -660,6 +660,14 @@ public abstract class ClassAccessor extends MetadataAccessor {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        String javaClassName = getJavaClassName();
+        result = 31 * result + (javaClassName != null ? javaClassName.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      * Return true if this class accessor has been set to metadata complete.

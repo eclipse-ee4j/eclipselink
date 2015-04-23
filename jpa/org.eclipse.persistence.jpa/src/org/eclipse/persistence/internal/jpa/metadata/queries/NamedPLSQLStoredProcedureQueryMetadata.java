@@ -106,6 +106,14 @@ public class NamedPLSQLStoredProcedureQueryMetadata extends NamedNativeQueryMeta
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (m_parameters != null ? m_parameters.hashCode() : 0);
+        result = 31 * result + (m_procedureName != null ? m_procedureName.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      * Used for OX mapping.

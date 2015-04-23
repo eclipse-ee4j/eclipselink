@@ -78,6 +78,11 @@ public class ManyToOneAccessor extends ObjectAccessor {
         return super.equals(objectToCompare) && objectToCompare instanceof ManyToOneAccessor;
     }
 
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
     /**
      * INTERNAL:
      * Return the logging context for this accessor.

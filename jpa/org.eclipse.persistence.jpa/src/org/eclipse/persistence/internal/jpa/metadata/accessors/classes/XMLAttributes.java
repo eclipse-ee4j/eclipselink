@@ -169,6 +169,28 @@ public class XMLAttributes extends ORMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = m_embeddedId != null ? m_embeddedId.hashCode() : 0;
+        result = 31 * result + (m_basics != null ? m_basics.hashCode() : 0);
+        result = 31 * result + (m_basicCollections != null ? m_basicCollections.hashCode() : 0);
+        result = 31 * result + (m_basicMaps != null ? m_basicMaps.hashCode() : 0);
+        result = 31 * result + (m_elementCollections != null ? m_elementCollections.hashCode() : 0);
+        result = 31 * result + (m_embeddeds != null ? m_embeddeds.hashCode() : 0);
+        result = 31 * result + (m_ids != null ? m_ids.hashCode() : 0);
+        result = 31 * result + (m_manyToManys != null ? m_manyToManys.hashCode() : 0);
+        result = 31 * result + (m_manyToOnes != null ? m_manyToOnes.hashCode() : 0);
+        result = 31 * result + (m_oneToManys != null ? m_oneToManys.hashCode() : 0);
+        result = 31 * result + (m_oneToOnes != null ? m_oneToOnes.hashCode() : 0);
+        result = 31 * result + (m_variableOneToOnes != null ? m_variableOneToOnes.hashCode() : 0);
+        result = 31 * result + (m_transformations != null ? m_transformations.hashCode() : 0);
+        result = 31 * result + (m_transients != null ? m_transients.hashCode() : 0);
+        result = 31 * result + (m_versions != null ? m_versions.hashCode() : 0);
+        result = 31 * result + (m_structures != null ? m_structures.hashCode() : 0);
+        result = 31 * result + (m_arrays != null ? m_arrays.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      * This list is not cached and should not be cached since our accessors

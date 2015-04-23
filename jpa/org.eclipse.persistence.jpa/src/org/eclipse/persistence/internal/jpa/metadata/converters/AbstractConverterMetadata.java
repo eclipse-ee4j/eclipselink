@@ -72,6 +72,11 @@ public abstract class AbstractConverterMetadata extends MetadataConverter {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        return m_name != null ? m_name.hashCode() : 0;
+    }
+
     /**
      * INTERNAL:
      */

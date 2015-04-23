@@ -69,6 +69,11 @@ public abstract class OverrideMetadata extends ORMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        return m_name != null ? m_name.hashCode() : 0;
+    }
+
     /**
      * INTERNAL:
      * To satisfy the MetadataMergeable interface for subclasses and provide a

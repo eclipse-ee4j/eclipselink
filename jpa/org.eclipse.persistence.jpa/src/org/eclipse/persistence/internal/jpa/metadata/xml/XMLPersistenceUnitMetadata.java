@@ -79,6 +79,14 @@ public class XMLPersistenceUnitMetadata extends ORMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = m_xmlMappingMetadataComplete != null ? m_xmlMappingMetadataComplete.hashCode() : 0;
+        result = 31 * result + (m_excludeDefaultMappings != null ? m_excludeDefaultMappings.hashCode() : 0);
+        result = 31 * result + (m_persistenceUnitDefaults != null ? m_persistenceUnitDefaults.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      * Used for OX mapping.

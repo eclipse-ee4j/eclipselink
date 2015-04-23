@@ -120,6 +120,14 @@ public class TransformationAccessor extends BasicAccessor {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (m_readTransformer != null ? m_readTransformer.hashCode() : 0);
+        result = 31 * result + (m_writeTransformers != null ? m_writeTransformers.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      * Used for OX mapping.

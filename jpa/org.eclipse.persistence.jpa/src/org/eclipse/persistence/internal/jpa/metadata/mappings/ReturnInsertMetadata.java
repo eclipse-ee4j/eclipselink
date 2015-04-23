@@ -79,6 +79,11 @@ public class ReturnInsertMetadata extends ORMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        return m_returnOnly != null ? m_returnOnly.hashCode() : 0;
+    }
+
     /**
      * INTERNAL:
      */

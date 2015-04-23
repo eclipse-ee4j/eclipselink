@@ -75,6 +75,14 @@ public class PLSQLTableMetadata extends PLSQLComplexTypeMetadata {
         return super.equals(objectToCompare);
     }
 
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (nestedType != null ? nestedType.hashCode() : 0);
+        result = 31 * result + (isNestedTable != null ? isNestedTable.hashCode() : 0);
+        return result;
+    }
+
     /**
      * Indicates if the instance represents a Nested Table (as opposed to Varray).
      * Defaults to false, i.e. Varray.

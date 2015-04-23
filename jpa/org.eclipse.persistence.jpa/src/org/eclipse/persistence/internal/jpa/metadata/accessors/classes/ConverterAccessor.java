@@ -105,6 +105,11 @@ public class ConverterAccessor extends ORMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        return autoApply != null ? autoApply.hashCode() : 0;
+    }
+
     /**
      * INTERNAL:
      * Used for OX mapping.

@@ -73,6 +73,11 @@ public class AttributeOverrideMetadata extends OverrideMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        return m_column != null ? m_column.hashCode() : 0;
+    }
+
     /**
      * INTERNAL:
      * Used for OX mapping.

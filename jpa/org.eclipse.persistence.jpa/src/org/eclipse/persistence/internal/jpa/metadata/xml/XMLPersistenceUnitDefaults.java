@@ -112,6 +112,28 @@ public class XMLPersistenceUnitDefaults extends ORMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        AccessMethodsMetadata accessMethods = getAccessMethods();
+        Boolean cascadePersist = getCascadePersist();
+        Boolean delimitedIdentifiers = getDelimitedIdentifiers();
+        List<EntityListenerMetadata> entityListeners = getEntityListeners();
+        List<TenantDiscriminatorColumnMetadata> tenantDiscriminatorColumns = getTenantDiscriminatorColumns();
+        String access = getAccess();
+        String catalog = getCatalog();
+        String schema = getSchema();
+        
+        int result = accessMethods != null ? accessMethods.hashCode() : 0;
+        result = 31 * result + (cascadePersist != null ? cascadePersist.hashCode() : 0);
+        result = 31 * result + (delimitedIdentifiers != null ? delimitedIdentifiers.hashCode() : 0);
+        result = 31 * result + (entityListeners != null ? entityListeners.hashCode() : 0);
+        result = 31 * result + (tenantDiscriminatorColumns != null ? tenantDiscriminatorColumns.hashCode() : 0);
+        result = 31 * result + (access != null ? access.hashCode() : 0);
+        result = 31 * result + (catalog != null ? catalog.hashCode() : 0);
+        result = 31 * result + (schema != null ? schema.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      * Used for OX mapping.

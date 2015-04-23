@@ -91,6 +91,14 @@ public class ValuePartitioningMetadata extends FieldPartitioningMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (partitions != null ? partitions.hashCode() : 0);
+        result = 31 * result + (defaultConnectionPool != null ? defaultConnectionPool.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      */

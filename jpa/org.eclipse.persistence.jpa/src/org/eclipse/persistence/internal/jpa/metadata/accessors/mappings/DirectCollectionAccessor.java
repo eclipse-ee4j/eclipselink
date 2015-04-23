@@ -163,6 +163,17 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (m_batchFetch != null ? m_batchFetch.hashCode() : 0);
+        result = 31 * result + (m_cascadeOnDelete != null ? m_cascadeOnDelete.hashCode() : 0);
+        result = 31 * result + (m_nonCacheable != null ? m_nonCacheable.hashCode() : 0);
+        result = 31 * result + (m_joinFetch != null ? m_joinFetch.hashCode() : 0);
+        result = 31 * result + (m_collectionTable != null ? m_collectionTable.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      * Used for OX mapping.

@@ -89,6 +89,15 @@ public class TimeOfDayMetadata extends ORMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = m_hour != null ? m_hour.hashCode() : 0;
+        result = 31 * result + (m_millisecond != null ? m_millisecond.hashCode() : 0);
+        result = 31 * result + (m_minute != null ? m_minute.hashCode() : 0);
+        result = 31 * result + (m_second != null ? m_second.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      * Used for OX mapping.

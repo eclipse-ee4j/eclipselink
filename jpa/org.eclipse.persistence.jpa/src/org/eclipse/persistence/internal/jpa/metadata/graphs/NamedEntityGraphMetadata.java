@@ -114,6 +114,16 @@ public class NamedEntityGraphMetadata extends ORMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = m_name != null ? m_name.hashCode() : 0;
+        result = 31 * result + (m_includeAllAttributes != null ? m_includeAllAttributes.hashCode() : 0);
+        result = 31 * result + (m_namedAttributeNodes != null ? m_namedAttributeNodes.hashCode() : 0);
+        result = 31 * result + (m_subgraphs != null ? m_subgraphs.hashCode() : 0);
+        result = 31 * result + (m_subclassSubgraphs != null ? m_subclassSubgraphs.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      * Used for OX mapping.

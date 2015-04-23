@@ -82,6 +82,13 @@ public class CloneCopyPolicyMetadata extends CopyPolicyMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = methodName != null ? methodName.hashCode() : 0;
+        result = 31 * result + (workingCopyMethodName != null ? workingCopyMethodName.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      */

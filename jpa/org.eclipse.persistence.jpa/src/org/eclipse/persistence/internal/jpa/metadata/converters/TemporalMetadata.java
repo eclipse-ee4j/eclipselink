@@ -81,6 +81,11 @@ public class TemporalMetadata extends MetadataConverter {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        return m_temporalType != null ? m_temporalType.hashCode() : 0;
+    }
+
     /**
      * INTERNAL:
      * Used for OX mapping.

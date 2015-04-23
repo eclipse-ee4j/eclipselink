@@ -100,6 +100,15 @@ public class ArrayAccessor extends DirectAccessor {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (m_databaseType != null ? m_databaseType.hashCode() : 0);
+        result = 31 * result + (m_column != null ? m_column.hashCode() : 0);
+        result = 31 * result + (m_targetClassName != null ? m_targetClassName.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      * Used for OX mapping.

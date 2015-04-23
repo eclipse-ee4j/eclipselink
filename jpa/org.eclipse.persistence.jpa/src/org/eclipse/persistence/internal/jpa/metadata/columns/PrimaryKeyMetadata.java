@@ -103,6 +103,14 @@ public class PrimaryKeyMetadata extends ORMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = m_validation != null ? m_validation.hashCode() : 0;
+        result = 31 * result + (m_cacheKeyType != null ? m_cacheKeyType.hashCode() : 0);
+        result = 31 * result + (m_columns != null ? m_columns.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      * Used for OX mapping.

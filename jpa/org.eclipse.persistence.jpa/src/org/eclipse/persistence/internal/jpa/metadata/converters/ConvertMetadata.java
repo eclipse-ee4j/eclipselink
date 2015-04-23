@@ -111,6 +111,15 @@ public class ConvertMetadata extends ORMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = m_text != null ? m_text.hashCode() : 0;
+        result = 31 * result + (m_disableConversion != null ? m_disableConversion.hashCode() : 0);
+        result = 31 * result + (m_converterClassName != null ? m_converterClassName.hashCode() : 0);
+        result = 31 * result + (m_attributeName != null ? m_attributeName.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      * Used for OX mapping.

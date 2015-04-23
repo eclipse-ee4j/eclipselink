@@ -85,6 +85,14 @@ public class NamedAttributeNodeMetadata extends ORMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = m_name != null ? m_name.hashCode() : 0;
+        result = 31 * result + (m_subgraph != null ? m_subgraph.hashCode() : 0);
+        result = 31 * result + (m_keySubgraph != null ? m_keySubgraph.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      * The unique identifier of named attribute mode metadata.

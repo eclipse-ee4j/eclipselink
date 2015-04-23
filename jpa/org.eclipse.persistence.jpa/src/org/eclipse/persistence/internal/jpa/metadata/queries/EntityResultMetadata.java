@@ -112,6 +112,14 @@ public class EntityResultMetadata extends ORMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = m_entityClass != null ? m_entityClass.hashCode() : 0;
+        result = 31 * result + (m_fieldResults != null ? m_fieldResults.hashCode() : 0);
+        result = 31 * result + (m_discriminatorColumn != null ? m_discriminatorColumn.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      * Used for OX mapping.

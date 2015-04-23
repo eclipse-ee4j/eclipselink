@@ -85,6 +85,13 @@ public class CacheIndexMetadata extends ORMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = m_columnNames != null ? m_columnNames.hashCode() : 0;
+        result = 31 * result + (updateable != null ? updateable.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      * Used for OX mapping.

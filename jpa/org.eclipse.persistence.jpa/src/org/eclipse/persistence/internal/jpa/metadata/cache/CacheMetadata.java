@@ -152,6 +152,22 @@ public class CacheMetadata extends ORMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = m_alwaysRefresh != null ? m_alwaysRefresh.hashCode() : 0;
+        result = 31 * result + (m_disableHits != null ? m_disableHits.hashCode() : 0);
+        result = 31 * result + (m_shared != null ? m_shared.hashCode() : 0);
+        result = 31 * result + (m_isolation != null ? m_isolation.hashCode() : 0);
+        result = 31 * result + (m_refreshOnlyIfNewer != null ? m_refreshOnlyIfNewer.hashCode() : 0);
+        result = 31 * result + (m_coordinationType != null ? m_coordinationType.hashCode() : 0);
+        result = 31 * result + (m_databaseChangeNotificationType != null ? m_databaseChangeNotificationType.hashCode() : 0);
+        result = 31 * result + (m_type != null ? m_type.hashCode() : 0);
+        result = 31 * result + (m_expiry != null ? m_expiry.hashCode() : 0);
+        result = 31 * result + (m_size != null ? m_size.hashCode() : 0);
+        result = 31 * result + (m_expiryTimeOfDay != null ? m_expiryTimeOfDay.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      * Used for OX mapping.

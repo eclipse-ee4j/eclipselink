@@ -93,6 +93,11 @@ public class CollectionTableMetadata extends RelationalTableMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        return m_primaryKeyJoinColumns != null ? m_primaryKeyJoinColumns.hashCode() : 0;
+    }
+
     /**
      * INTERNAL:
      */

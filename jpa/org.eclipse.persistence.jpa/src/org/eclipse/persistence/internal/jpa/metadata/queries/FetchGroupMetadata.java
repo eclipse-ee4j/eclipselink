@@ -95,6 +95,14 @@ public class FetchGroupMetadata extends ORMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = m_fetchAttributes != null ? m_fetchAttributes.hashCode() : 0;
+        result = 31 * result + (m_name != null ? m_name.hashCode() : 0);
+        result = 31 * result + (m_load != null ? m_load.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      * Used for OX mapping.

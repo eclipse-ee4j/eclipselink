@@ -86,6 +86,11 @@ public class MapKeyMetadata extends ORMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        return m_name != null ? m_name.hashCode() : 0;
+    }
+
     /**
      * INTERNAL:
      * Return true if a name has been specified.

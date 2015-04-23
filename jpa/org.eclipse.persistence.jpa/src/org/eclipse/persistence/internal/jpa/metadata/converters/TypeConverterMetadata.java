@@ -107,6 +107,14 @@ public class TypeConverterMetadata extends AbstractConverterMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (m_dataTypeName != null ? m_dataTypeName.hashCode() : 0);
+        result = 31 * result + (m_objectTypeName != null ? m_objectTypeName.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      */

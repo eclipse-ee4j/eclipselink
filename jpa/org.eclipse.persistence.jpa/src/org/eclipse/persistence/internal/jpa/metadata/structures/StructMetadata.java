@@ -84,6 +84,13 @@ public class StructMetadata extends ORMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = name != null ? name.hashCode() : 0;
+        result = 31 * result + (fields != null ? fields.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      * Switch the descriptor to the correct type and set the structure name and

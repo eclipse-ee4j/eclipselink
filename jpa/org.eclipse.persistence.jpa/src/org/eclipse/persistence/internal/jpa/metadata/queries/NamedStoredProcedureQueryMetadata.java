@@ -157,6 +157,19 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (m_multipleResultSets != null ? m_multipleResultSets.hashCode() : 0);
+        result = 31 * result + (m_returnsResultSet != null ? m_returnsResultSet.hashCode() : 0);
+        result = 31 * result + (m_callByIndex != null ? m_callByIndex.hashCode() : 0);
+        result = 31 * result + (m_resultClassNames != null ? m_resultClassNames.hashCode() : 0);
+        result = 31 * result + (m_resultSetMappings != null ? m_resultSetMappings.hashCode() : 0);
+        result = 31 * result + (m_parameters != null ? m_parameters.hashCode() : 0);
+        result = 31 * result + (m_procedureName != null ? m_procedureName.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      * Used for OX mapping.

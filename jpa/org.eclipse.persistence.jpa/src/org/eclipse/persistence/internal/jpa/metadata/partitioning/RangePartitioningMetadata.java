@@ -102,6 +102,13 @@ public class RangePartitioningMetadata extends FieldPartitioningMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (partitions != null ? partitions.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      * Used for OX mapping.

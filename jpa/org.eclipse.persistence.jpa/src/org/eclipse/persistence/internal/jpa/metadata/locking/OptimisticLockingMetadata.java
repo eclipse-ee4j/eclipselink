@@ -98,6 +98,14 @@ public class OptimisticLockingMetadata extends ORMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = m_cascade != null ? m_cascade.hashCode() : 0;
+        result = 31 * result + (m_selectedColumns != null ? m_selectedColumns.hashCode() : 0);
+        result = 31 * result + (m_type != null ? m_type.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      * Used for OX mapping.

@@ -163,6 +163,19 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = m_className != null ? m_className.hashCode() : 0;
+        result = 31 * result + (m_postLoad != null ? m_postLoad.hashCode() : 0);
+        result = 31 * result + (m_postPersist != null ? m_postPersist.hashCode() : 0);
+        result = 31 * result + (m_postRemove != null ? m_postRemove.hashCode() : 0);
+        result = 31 * result + (m_postUpdate != null ? m_postUpdate.hashCode() : 0);
+        result = 31 * result + (m_prePersist != null ? m_prePersist.hashCode() : 0);
+        result = 31 * result + (m_preRemove != null ? m_preRemove.hashCode() : 0);
+        result = 31 * result + (m_preUpdate != null ? m_preUpdate.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      * Find the method in the list where method.getName() == methodName.

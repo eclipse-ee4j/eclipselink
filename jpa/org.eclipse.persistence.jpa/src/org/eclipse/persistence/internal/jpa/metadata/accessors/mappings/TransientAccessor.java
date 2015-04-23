@@ -53,6 +53,11 @@ public class TransientAccessor extends MappingAccessor {
         return super.equals(objectToCompare) && objectToCompare instanceof TransientAccessor;
     }
 
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
     /**
      * INTERNAL:
      * Return true if this accessor represents a transient mapping.

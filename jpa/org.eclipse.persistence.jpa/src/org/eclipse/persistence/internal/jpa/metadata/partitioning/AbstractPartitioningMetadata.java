@@ -78,6 +78,11 @@ public abstract class AbstractPartitioningMetadata extends ORMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        return name != null ? name.hashCode() : 0;
+    }
+
     /**
      * Require subclass to build policy.
      */

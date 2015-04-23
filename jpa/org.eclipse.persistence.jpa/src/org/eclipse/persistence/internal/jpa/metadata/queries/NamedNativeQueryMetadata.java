@@ -98,6 +98,13 @@ public class NamedNativeQueryMetadata extends NamedQueryMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = m_resultClass != null ? m_resultClass.hashCode() : 0;
+        result = 31 * result + (m_resultSetMapping != null ? m_resultSetMapping.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      */

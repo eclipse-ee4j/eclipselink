@@ -76,6 +76,14 @@ public class RangePartitionMetadata extends ORMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = connectionPool != null ? connectionPool.hashCode() : 0;
+        result = 31 * result + (startValue != null ? startValue.hashCode() : 0);
+        result = 31 * result + (endValue != null ? endValue.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      * Used for OX mapping.

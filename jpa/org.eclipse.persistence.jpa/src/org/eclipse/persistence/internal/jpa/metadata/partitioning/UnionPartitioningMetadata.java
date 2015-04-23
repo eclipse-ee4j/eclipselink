@@ -68,6 +68,13 @@ public class UnionPartitioningMetadata extends ReplicationPartitioningMetadata {
     }
 
     @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (replicateWrites != null ? replicateWrites.hashCode() : 0);
+        return result;
+    }
+
+    @Override
     public PartitioningPolicy buildPolicy() {
         UnionPartitioningPolicy policy = new UnionPartitioningPolicy();
         super.buildPolicy(policy);

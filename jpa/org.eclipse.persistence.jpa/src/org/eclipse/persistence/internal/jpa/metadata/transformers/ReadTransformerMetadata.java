@@ -97,6 +97,13 @@ public class ReadTransformerMetadata extends ORMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = m_transformerClassName != null ? m_transformerClassName.hashCode() : 0;
+        result = 31 * result + (m_method != null ? m_method.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      * Used for OX mapping.

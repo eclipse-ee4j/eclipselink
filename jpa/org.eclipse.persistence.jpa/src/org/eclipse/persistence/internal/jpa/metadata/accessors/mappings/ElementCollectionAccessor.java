@@ -422,6 +422,30 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (m_deleteAll != null ? m_deleteAll.hashCode() : 0);
+        result = 31 * result + (m_column != null ? m_column.hashCode() : 0);
+        result = 31 * result + (m_mapKeyColumn != null ? m_mapKeyColumn.hashCode() : 0);
+        result = 31 * result + (m_mapKeyEnumerated != null ? m_mapKeyEnumerated.hashCode() : 0);
+        result = 31 * result + (m_mapKeyForeignKey != null ? m_mapKeyForeignKey.hashCode() : 0);
+        result = 31 * result + (m_mapKeyConverts != null ? m_mapKeyConverts.hashCode() : 0);
+        result = 31 * result + (m_associationOverrides != null ? m_associationOverrides.hashCode() : 0);
+        result = 31 * result + (m_mapKeyAssociationOverrides != null ? m_mapKeyAssociationOverrides.hashCode() : 0);
+        result = 31 * result + (m_attributeOverrides != null ? m_attributeOverrides.hashCode() : 0);
+        result = 31 * result + (m_mapKeyAttributeOverrides != null ? m_mapKeyAttributeOverrides.hashCode() : 0);
+        result = 31 * result + (m_mapKeyJoinColumns != null ? m_mapKeyJoinColumns.hashCode() : 0);
+        result = 31 * result + (m_mapKey != null ? m_mapKey.hashCode() : 0);
+        result = 31 * result + (m_orderBy != null ? m_orderBy.hashCode() : 0);
+        result = 31 * result + (m_orderColumn != null ? m_orderColumn.hashCode() : 0);
+        result = 31 * result + (m_mapKeyClassName != null ? m_mapKeyClassName.hashCode() : 0);
+        result = 31 * result + (m_targetClassName != null ? m_targetClassName.hashCode() : 0);
+        result = 31 * result + (m_compositeMember != null ? m_compositeMember.hashCode() : 0);
+        result = 31 * result + (m_mapKeyTemporal != null ? m_mapKeyTemporal.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      * Used for OX mapping.

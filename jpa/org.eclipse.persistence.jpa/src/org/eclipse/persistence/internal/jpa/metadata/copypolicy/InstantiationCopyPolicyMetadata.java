@@ -64,6 +64,11 @@ public class InstantiationCopyPolicyMetadata extends CopyPolicyMetadata {
         return super.equals(objectToCompare) && objectToCompare instanceof InstantiationCopyPolicyMetadata;
     }
 
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
     /**
      * INTERNAL:
      */

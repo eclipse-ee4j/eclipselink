@@ -158,6 +158,11 @@ public class EmbeddedIdAccessor extends EmbeddedAccessor {
         return super.equals(objectToCompare) && objectToCompare instanceof EmbeddedIdAccessor;
     }
 
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
     /**
      * INTERNAL:
      */

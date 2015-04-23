@@ -87,6 +87,11 @@ public class ManyToManyAccessor extends CollectionAccessor {
         return super.equals(objectToCompare) && objectToCompare instanceof ManyToManyAccessor;
     }
 
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
     /**
      * INTERNAL:
      * Return the default table to hold the foreign key of a MapKey when

@@ -157,6 +157,19 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = m_optional != null ? m_optional.hashCode() : 0;
+        result = 31 * result + (m_jdbcType != null ? m_jdbcType.hashCode() : 0);
+        result = 31 * result + (m_type != null ? m_type.hashCode() : 0);
+        result = 31 * result + (m_direction != null ? m_direction.hashCode() : 0);
+        result = 31 * result + (m_mode != null ? m_mode.hashCode() : 0);
+        result = 31 * result + (m_jdbcTypeName != null ? m_jdbcTypeName.hashCode() : 0);
+        result = 31 * result + (m_name != null ? m_name.hashCode() : 0);
+        result = 31 * result + (m_queryParameter != null ? m_queryParameter.hashCode() : 0);
+        return result;
+    }
+
     /**
      * Returns the OracleArrayTypeMetadata instance for a given class name, or null
      * if none exists.

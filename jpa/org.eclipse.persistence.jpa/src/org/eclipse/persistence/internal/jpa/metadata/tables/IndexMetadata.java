@@ -125,6 +125,18 @@ public class IndexMetadata extends ORMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = m_unique != null ? m_unique.hashCode() : 0;
+        result = 31 * result + (m_name != null ? m_name.hashCode() : 0);
+        result = 31 * result + (m_schema != null ? m_schema.hashCode() : 0);
+        result = 31 * result + (m_catalog != null ? m_catalog.hashCode() : 0);
+        result = 31 * result + (m_table != null ? m_table.hashCode() : 0);
+        result = 31 * result + (m_columnList != null ? m_columnList.hashCode() : 0);
+        result = 31 * result + (m_columnNames != null ? m_columnNames.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      * Used for OX mapping.

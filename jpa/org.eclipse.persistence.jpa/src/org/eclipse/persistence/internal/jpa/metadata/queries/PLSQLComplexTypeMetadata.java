@@ -78,6 +78,14 @@ public abstract class PLSQLComplexTypeMetadata extends ComplexTypeMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (compatibleType != null ? compatibleType.hashCode() : 0);
+        result = 31 * result + (javaType != null ? javaType.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      * Used for OX mapping.

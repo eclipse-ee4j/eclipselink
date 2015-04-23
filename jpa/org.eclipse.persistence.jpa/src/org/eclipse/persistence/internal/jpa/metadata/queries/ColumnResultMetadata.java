@@ -83,6 +83,15 @@ public class ColumnResultMetadata extends ORMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        MetadataClass type = getType();
+        String name = getName();
+        int result = type != null ? type.hashCode() : 0;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      * Used for OX mapping.

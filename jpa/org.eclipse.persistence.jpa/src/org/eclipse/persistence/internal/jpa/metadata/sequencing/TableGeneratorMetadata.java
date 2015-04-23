@@ -119,6 +119,17 @@ public class TableGeneratorMetadata extends TableMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = m_allocationSize != null ? m_allocationSize.hashCode() : 0;
+        result = 31 * result + (m_initialValue != null ? m_initialValue.hashCode() : 0);
+        result = 31 * result + (m_generatorName != null ? m_generatorName.hashCode() : 0);
+        result = 31 * result + (m_pkColumnValue != null ? m_pkColumnValue.hashCode() : 0);
+        result = 31 * result + (m_pkColumnName != null ? m_pkColumnName.hashCode() : 0);
+        result = 31 * result + (m_valueColumnName != null ? m_valueColumnName.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      * Used for OX mapping.

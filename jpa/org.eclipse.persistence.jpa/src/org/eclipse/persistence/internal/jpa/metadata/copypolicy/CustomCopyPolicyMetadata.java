@@ -78,6 +78,11 @@ public class CustomCopyPolicyMetadata extends CopyPolicyMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        return copyPolicyClassName != null ? copyPolicyClassName.hashCode() : 0;
+    }
+
     /**
      * INTERNAL:
      */

@@ -85,6 +85,13 @@ public class StructConverterMetadata extends AbstractConverterMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (m_converter != null ? m_converter.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      * Used for OX mapping.

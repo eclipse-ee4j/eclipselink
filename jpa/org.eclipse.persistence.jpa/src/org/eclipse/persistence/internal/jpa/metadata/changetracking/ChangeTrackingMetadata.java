@@ -81,6 +81,11 @@ public class ChangeTrackingMetadata extends ORMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        return m_type != null ? m_type.hashCode() : 0;
+    }
+
     /**
      * INTERNAL:
      * Used for OX mapping.

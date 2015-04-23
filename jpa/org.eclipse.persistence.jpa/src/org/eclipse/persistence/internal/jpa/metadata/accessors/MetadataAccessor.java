@@ -232,6 +232,20 @@ public abstract class MetadataAccessor extends ORMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = m_accessMethods != null ? m_accessMethods.hashCode() : 0;
+        result = 31 * result + (m_converters != null ? m_converters.hashCode() : 0);
+        result = 31 * result + (m_objectTypeConverters != null ? m_objectTypeConverters.hashCode() : 0);
+        result = 31 * result + (m_structConverters != null ? m_structConverters.hashCode() : 0);
+        result = 31 * result + (m_typeConverters != null ? m_typeConverters.hashCode() : 0);
+        result = 31 * result + (m_serializedConverters != null ? m_serializedConverters.hashCode() : 0);
+        result = 31 * result + (m_properties != null ? m_properties.hashCode() : 0);
+        result = 31 * result + (m_access != null ? m_access.hashCode() : 0);
+        result = 31 * result + (m_name != null ? m_name.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      * Used for OX mapping.

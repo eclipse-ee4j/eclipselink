@@ -109,6 +109,11 @@ public class OneToManyAccessor extends CollectionAccessor {
         return super.equals(objectToCompare) && objectToCompare instanceof OneToManyAccessor;
     }
 
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
     /**
      * INTERNAL:
      *

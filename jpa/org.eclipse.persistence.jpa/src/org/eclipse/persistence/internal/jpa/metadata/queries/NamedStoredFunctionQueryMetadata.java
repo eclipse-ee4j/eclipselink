@@ -84,6 +84,13 @@ public class NamedStoredFunctionQueryMetadata extends NamedStoredProcedureQueryM
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (returnParameter != null ? returnParameter.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      * Used for OX mapping.

@@ -64,6 +64,11 @@ public class UuidGeneratorMetadata extends ORMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
     /**
      * INTERNAL:
      * To satisfy the abstract getIdentifier() method from ORMetadata.

@@ -103,6 +103,13 @@ public class AccessMethodsMetadata extends ORMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = getMethodName != null ? getMethodName.hashCode() : 0;
+        result = 31 * result + (setMethodName != null ? setMethodName.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      * Used for OX mapping.

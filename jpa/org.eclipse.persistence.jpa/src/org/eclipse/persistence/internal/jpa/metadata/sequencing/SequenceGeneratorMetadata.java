@@ -134,6 +134,17 @@ public class SequenceGeneratorMetadata extends ORMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = m_allocationSize != null ? m_allocationSize.hashCode() : 0;
+        result = 31 * result + (m_initialValue != null ? m_initialValue.hashCode() : 0);
+        result = 31 * result + (m_name != null ? m_name.hashCode() : 0);
+        result = 31 * result + (m_schema != null ? m_schema.hashCode() : 0);
+        result = 31 * result + (m_catalog != null ? m_catalog.hashCode() : 0);
+        result = 31 * result + (m_sequenceName != null ? m_sequenceName.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      * Used for OX mapping.

@@ -100,6 +100,14 @@ public abstract class RelationalColumnMetadata extends MetadataColumn {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (m_foreignKey != null ? m_foreignKey.hashCode() : 0);
+        result = 31 * result + (m_referencedColumnName != null ? m_referencedColumnName.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      * Used for OX mapping.

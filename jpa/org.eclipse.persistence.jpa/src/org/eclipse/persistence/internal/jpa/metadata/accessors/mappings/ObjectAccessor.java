@@ -208,6 +208,17 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (m_id != null ? m_id.hashCode() : 0);
+        result = 31 * result + (m_optional != null ? m_optional.hashCode() : 0);
+        result = 31 * result + (m_primaryKeyJoinColumns != null ? m_primaryKeyJoinColumns.hashCode() : 0);
+        result = 31 * result + (m_primaryKeyForeignKey != null ? m_primaryKeyForeignKey.hashCode() : 0);
+        result = 31 * result + (m_mapsId != null ? m_mapsId.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      * Return true is this accessor is a derived id accessor.

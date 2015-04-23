@@ -64,6 +64,11 @@ public abstract class ComplexTypeMetadata extends ORMetadata {
                 valuesMatch(this.name, ((ComplexTypeMetadata) objectToCompare).getName());
     }
 
+    @Override
+    public int hashCode() {
+        return name != null ? name.hashCode() : 0;
+    }
+
     /**
      * INTERNAL:
      * The unique identifier of named subgraph metadata.

@@ -236,6 +236,20 @@ public class BasicAccessor extends DirectAccessor {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (m_mutable != null ? m_mutable.hashCode() : 0);
+        result = 31 * result + (m_returnUpdate != null ? m_returnUpdate.hashCode() : 0);
+        result = 31 * result + (m_column != null ? m_column.hashCode() : 0);
+        result = 31 * result + (m_generatedValue != null ? m_generatedValue.hashCode() : 0);
+        result = 31 * result + (m_returnInsert != null ? m_returnInsert.hashCode() : 0);
+        result = 31 * result + (m_sequenceGenerator != null ? m_sequenceGenerator.hashCode() : 0);
+        result = 31 * result + (m_tableGenerator != null ? m_tableGenerator.hashCode() : 0);
+        result = 31 * result + (m_uuidGenerator != null ? m_uuidGenerator.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      * Used for OX mapping.

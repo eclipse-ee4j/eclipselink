@@ -53,6 +53,11 @@ public class DerivedIdClassAccessor extends EmbeddedAccessor {
         return super.equals(objectToCompare) && objectToCompare instanceof DerivedIdClassAccessor;
     }
 
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
     /**
      * INTERNAL:
      * Return true if this accessor is a derived id class accessor. That is,

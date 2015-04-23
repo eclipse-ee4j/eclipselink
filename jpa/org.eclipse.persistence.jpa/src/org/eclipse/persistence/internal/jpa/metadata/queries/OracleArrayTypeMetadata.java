@@ -63,6 +63,13 @@ public class OracleArrayTypeMetadata extends OracleComplexTypeMetadata {
                 valuesMatch(this.nestedType, ((OracleArrayTypeMetadata) objectToCompare).getNestedType());
     }
 
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (nestedType != null ? nestedType.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      * Used for OX mapping.

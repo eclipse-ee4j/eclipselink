@@ -76,6 +76,13 @@ public class HashPartitioningMetadata extends FieldPartitioningMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (connectionPools != null ? connectionPools.hashCode() : 0);
+        return result;
+    }
+
     /**
      * Used for OX mapping.
      */

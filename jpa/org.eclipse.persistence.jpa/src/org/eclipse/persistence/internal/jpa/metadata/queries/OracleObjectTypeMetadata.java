@@ -74,6 +74,13 @@ public class OracleObjectTypeMetadata extends OracleComplexTypeMetadata {
                 valuesMatch(this.fields, ((OracleObjectTypeMetadata) objectToCompare).getFields());
     }
 
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (fields != null ? fields.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      * Used for OX mapping.

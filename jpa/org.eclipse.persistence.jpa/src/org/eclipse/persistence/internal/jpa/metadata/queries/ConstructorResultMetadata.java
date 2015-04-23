@@ -90,6 +90,15 @@ public class ConstructorResultMetadata extends ORMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        MetadataClass targetClass = getTargetClass();
+        List<ColumnResultMetadata> columnResults = getColumnResults();
+        int result = targetClass != null ? targetClass.hashCode() : 0;
+        result = 31 * result + (columnResults != null ? columnResults.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      * Used for OX mapping.

@@ -185,6 +185,11 @@ public class XMLEntityMappings extends ORMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        return m_mappingFileNameOrURL != null ? m_mappingFileNameOrURL.hashCode() : 0;
+    }
+
     /**
      * INTERNAL:
      * Used for OX mapping.

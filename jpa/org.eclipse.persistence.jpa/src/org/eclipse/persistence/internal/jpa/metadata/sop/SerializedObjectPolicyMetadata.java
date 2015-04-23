@@ -80,6 +80,11 @@ public class SerializedObjectPolicyMetadata extends ORMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        return m_className != null ? m_className.hashCode() : 0;
+    }
+
     /**
      * INTERNAL
      * Used for OX mapping.

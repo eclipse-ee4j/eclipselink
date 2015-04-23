@@ -123,6 +123,17 @@ public class CascadeMetadata extends ORMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = m_cascadeAll != null ? m_cascadeAll.hashCode() : 0;
+        result = 31 * result + (m_cascadePersist != null ? m_cascadePersist.hashCode() : 0);
+        result = 31 * result + (m_cascadeMerge != null ? m_cascadeMerge.hashCode() : 0);
+        result = 31 * result + (m_cascadeRemove != null ? m_cascadeRemove.hashCode() : 0);
+        result = 31 * result + (m_cascadeRefresh != null ? m_cascadeRefresh.hashCode() : 0);
+        result = 31 * result + (m_cascadeDetach != null ? m_cascadeDetach.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      * Used for OX mapping.

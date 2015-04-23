@@ -161,6 +161,18 @@ public abstract class DirectAccessor extends MappingAccessor {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (m_optional != null ? m_optional.hashCode() : 0);
+        result = 31 * result + (m_enumerated != null ? m_enumerated.hashCode() : 0);
+        result = 31 * result + (m_converts != null ? m_converts.hashCode() : 0);
+        result = 31 * result + (m_lob != null ? m_lob.hashCode() : 0);
+        result = 31 * result + (m_fetch != null ? m_fetch.hashCode() : 0);
+        result = 31 * result + (m_temporal != null ? m_temporal.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      */

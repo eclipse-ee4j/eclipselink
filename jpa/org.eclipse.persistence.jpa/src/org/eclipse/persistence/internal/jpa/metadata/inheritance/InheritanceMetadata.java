@@ -182,6 +182,11 @@ public class InheritanceMetadata extends ORMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        return m_strategy != null ? m_strategy.hashCode() : 0;
+    }
+
     /**
      * INTERNAL:
      * Used for OX mapping.

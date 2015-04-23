@@ -66,6 +66,13 @@ public class PinnedPartitioningMetadata extends AbstractPartitioningMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (connectionPool != null ? connectionPool.hashCode() : 0);
+        return result;
+    }
+
     public String getConnectionPool() {
         return connectionPool;
     }

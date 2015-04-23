@@ -77,6 +77,11 @@ public class CacheInterceptorMetadata extends ORMetadata {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        return m_interceptorClassName != null ? m_interceptorClassName.hashCode() : 0;
+    }
+
     /**
      * INTERNAL
      * Used for OX mapping.

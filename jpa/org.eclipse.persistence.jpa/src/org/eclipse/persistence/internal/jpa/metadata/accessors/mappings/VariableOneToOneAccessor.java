@@ -177,6 +177,14 @@ public class VariableOneToOneAccessor extends ObjectAccessor {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (m_discriminatorColumn != null ? m_discriminatorColumn.hashCode() : 0);
+        result = 31 * result + (m_discriminatorClasses != null ? m_discriminatorClasses.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      * Used for OX mapping.

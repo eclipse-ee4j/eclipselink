@@ -295,10 +295,6 @@ public abstract class RelationshipAccessor extends MappingAccessor {
                 return false;
             }
 
-            if (! valuesMatch(m_batchFetch, relationshipAccessor.getBatchFetch())) {
-                return false;
-            }
-
             if (! valuesMatch(m_joinTable, relationshipAccessor.getJoinTable())) {
                 return false;
             }
@@ -315,6 +311,24 @@ public abstract class RelationshipAccessor extends MappingAccessor {
         }
 
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (m_orphanRemoval != null ? m_orphanRemoval.hashCode() : 0);
+        result = 31 * result + (m_nonCacheable != null ? m_nonCacheable.hashCode() : 0);
+        result = 31 * result + (m_privateOwned != null ? m_privateOwned.hashCode() : 0);
+        result = 31 * result + (m_batchFetch != null ? m_batchFetch.hashCode() : 0);
+        result = 31 * result + (m_cascade != null ? m_cascade.hashCode() : 0);
+        result = 31 * result + (m_foreignKey != null ? m_foreignKey.hashCode() : 0);
+        result = 31 * result + (m_joinTable != null ? m_joinTable.hashCode() : 0);
+        result = 31 * result + (m_joinColumns != null ? m_joinColumns.hashCode() : 0);
+        result = 31 * result + (m_fetch != null ? m_fetch.hashCode() : 0);
+        result = 31 * result + (m_mappedBy != null ? m_mappedBy.hashCode() : 0);
+        result = 31 * result + (m_joinFetch != null ? m_joinFetch.hashCode() : 0);
+        result = 31 * result + (m_targetEntityName != null ? m_targetEntityName.hashCode() : 0);
+        return result;
     }
 
     /**

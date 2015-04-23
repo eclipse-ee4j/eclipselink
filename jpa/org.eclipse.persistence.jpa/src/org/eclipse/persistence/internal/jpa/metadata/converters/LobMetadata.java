@@ -74,6 +74,11 @@ public class LobMetadata extends MetadataConverter {
         return super.equals(objectToCompare) && objectToCompare instanceof LobMetadata;
     }
 
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
     /**
      * INTERNAL:
      * Returns true if the given class is a valid blob type.

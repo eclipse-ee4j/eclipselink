@@ -114,6 +114,15 @@ public class BasicMapAccessor extends BasicCollectionAccessor {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (m_keyColumn != null ? m_keyColumn.hashCode() : 0);
+        result = 31 * result + (m_keyConverter != null ? m_keyConverter.hashCode() : 0);
+        result = 31 * result + (m_valueConverter != null ? m_valueConverter.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      */

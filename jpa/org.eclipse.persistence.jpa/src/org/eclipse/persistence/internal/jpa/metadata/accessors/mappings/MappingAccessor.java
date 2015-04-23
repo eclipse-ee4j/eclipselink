@@ -342,6 +342,17 @@ public abstract class MappingAccessor extends MetadataAccessor {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        ClassAccessor classAccessor = getClassAccessor();
+        String attributeType = getAttributeType();
+        result = 31 * result + (classAccessor != null ? classAccessor.hashCode() : 0);
+        result = 31 * result + (attributeType != null ? attributeType.hashCode() : 0);
+        result = 31 * result + (m_field != null ? m_field.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      * Return the annotation if it exists.
