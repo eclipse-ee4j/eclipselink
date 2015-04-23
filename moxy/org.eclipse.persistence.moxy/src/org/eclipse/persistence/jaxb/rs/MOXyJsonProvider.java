@@ -726,7 +726,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
         boolean isStringPresent = false;
 
         for (Class<?> clazz : domainClasses) {
-            if (!clazz.getName().startsWith("java.") && !clazz.getName().startsWith("javax.")) {
+            if (!clazz.getName().startsWith("java.") && !clazz.getName().startsWith("javax.") && !java.util.List.class.isAssignableFrom(clazz)) {
                 return clazz;
             } else if (clazz == String.class) {
                 isStringPresent = true;
