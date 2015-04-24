@@ -297,10 +297,10 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
      * null means there is none.
      */
     protected DatabaseQuery checkForCustomQuery(AbstractSession session, AbstractRecord translationRow) {
-        Boolean useCustomQuery = isCustomQueryUsed;
+        Boolean useCustomQuery = this.isCustomQueryUsed != null ? this.isCustomQueryUsed.booleanValue() : Boolean.FALSE;
 
         checkDescriptor(session);
-        if (useCustomQuery == null) {
+        if (this.isCustomQueryUsed == null) {
             // Check if user defined a custom query in the query manager.
             if (!this.isUserDefined) {
                 if (!isCallQuery()
@@ -331,18 +331,17 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
         }
 
         //#436871 - attempt to limit cases for race-condition
-        if (useCustomQuery != null && useCustomQuery.booleanValue()) {
+        if (this.isCustomQueryUsed = useCustomQuery) {
             ReadObjectQuery customQuery = this.descriptor.getQueryManager().getReadObjectQuery();
             if (this.accessors != null) {
                 customQuery = (ReadObjectQuery) customQuery.clone();
                 customQuery.setIsExecutionClone(true);
                 customQuery.setAccessors(this.accessors);
             }
-            isCustomQueryUsed = useCustomQuery;
             return customQuery;
+        } else {
+            return null;
         }
-        isCustomQueryUsed = useCustomQuery;
-        return null;
     }
 
     /**
