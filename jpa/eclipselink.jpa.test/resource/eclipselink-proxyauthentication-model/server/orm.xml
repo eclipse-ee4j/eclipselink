@@ -8,12 +8,14 @@
         <table name="%%dbUser%%.JPA_PROXY_EMPLOYEE"/>
         <attributes>
             <id name="id">
+                <generated-value strategy="TABLE" generator="JPA_PROXY_EMPLOYEE_TABLE_GENERATOR"/>
                 <table-generator name="JPA_PROXY_EMPLOYEE_TABLE_GENERATOR" 
                                  table="%%dbUser%%.PROXY_EMPLOYEE_SEQ"
                                  pk-column-name="SEQ_NAME"
                                  value-column-name="SEQ_COUNT"
                                  pk-column-value="PROXY_EMPLOYEE_SEQ"
                                  initial-value="5"/>
+                <column name="EMP_ID"/>
             </id>
         </attributes>
     </entity>
