@@ -40,7 +40,6 @@ public class QueryFrameworkTestSuite extends TestSuite {
         //Add new tests here, if any.
         addTest(new ServerSessionTestAdapter(new PessimisticLockNoLockJoinedTest()));
         addTest(new ReadAllNoDistinctTest());
-        addTest(ObjectLevelReadQueryTest.suite());
         addTest(new PartialAttributeTestWithJoinAttribute());
         addTest(new PartialAttributeDistinctOrderByTest());
         addTest(new FourPartialAttributeTestsWithJoinAttribute());

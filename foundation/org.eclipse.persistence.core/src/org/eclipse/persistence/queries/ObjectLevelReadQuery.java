@@ -467,79 +467,30 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
 
     /**
      * INTERNAL:
-     * Check and return custom query flag. Custom query flag value is initialized when stored value is {@code null}.
-     * Called from {@link #checkForCustomQuery(AbstractSession, AbstractRecord)} to retrieve custom query flag.
-     * @return Current custom query flag. Value shall never be {@code null}.
-     */
-    protected abstract Boolean checkCustomQueryFlag();
-
-    /**
-     * INTERNAL:
-     * Get custom read query from query manager.
-     * Called from {@link #checkForCustomQuery(AbstractSession, AbstractRecord)} to retrieve custom read query.
-     * @return Custom read query from query manager.
-     */
-    protected abstract ObjectLevelReadQuery getReadQuery();
-
-    /**
-     * INTERNAL:
-     * Check to see if a custom query should be used for this query.
-     * This is done before the query is copied and prepared/executed. Value of {@code null} means there is none.
-     * @param session        Current session.
-     * @param translationRow Database record (not used).
-     * @return Custom database query or {@code null} when custom database query is not set.
-     */
-    @Override
-    protected DatabaseQuery checkForCustomQuery(final AbstractSession session, final AbstractRecord translationRow) {
-        // Value of useCustomQuery will never be null.
-        final Boolean useCustomQuery = checkCustomQueryFlag();
-        checkDescriptor(session);
-
-        if (useCustomQuery.booleanValue()) {
-            final ObjectLevelReadQuery customQuery = getReadQuery();
-            // Clone and update query with accessors when exist, avoid NPE on custom query instance.
-            if (accessors != null && customQuery != null) {
-                final ObjectLevelReadQuery customQueryClone = (ObjectLevelReadQuery) customQuery.clone();
-                customQueryClone.setIsExecutionClone(true);
-                customQueryClone.setAccessors(accessors);
-                return customQueryClone;
-            } else {
-                // #436871 - Reduce window for race-condition by updating custom query flag.
-                isCustomQueryUsed = useCustomQuery;
-                return customQuery;
-            }
-        }
-        // #436871 - Reduce window for race-condition by updating custom query flag.
-        isCustomQueryUsed = useCustomQuery;
-        return null;
-    }
-
-    /**
-     * INTERNAL:
-     * Creates and returns a copy of this query.
-     * @return A clone of this instance.
+     * Clone the query
      */
     @Override
     public Object clone() {
-        final ObjectLevelReadQuery cloneQuery = (ObjectLevelReadQuery)super.clone();
+        ObjectLevelReadQuery cloneQuery = (ObjectLevelReadQuery)super.clone();
+
         // Must also clone the joined expressions as always joined attribute will be added
         // don't use setters as this will trigger unprepare.
-        if (joinedAttributeManager != null) {
-            cloneQuery.joinedAttributeManager = joinedAttributeManager.clone();
+        if (this.joinedAttributeManager != null) {
+            cloneQuery.joinedAttributeManager = this.joinedAttributeManager.clone();
             cloneQuery.joinedAttributeManager.setBaseQuery(cloneQuery);
         }
         if (this.batchFetchPolicy != null) {
-            cloneQuery.batchFetchPolicy = batchFetchPolicy.clone();
+            cloneQuery.batchFetchPolicy = this.batchFetchPolicy.clone();
         }
         if (this.nonFetchJoinAttributeExpressions != null){
-            cloneQuery.nonFetchJoinAttributeExpressions = new ArrayList<>(nonFetchJoinAttributeExpressions);
+            cloneQuery.nonFetchJoinAttributeExpressions = new ArrayList<Expression>(this.nonFetchJoinAttributeExpressions);
         }
         // Don't use setters as that will trigger unprepare
         if (this.orderByExpressions != null) {
-            cloneQuery.orderByExpressions = new ArrayList<>(this.orderByExpressions);
+            cloneQuery.orderByExpressions = new ArrayList<Expression>(this.orderByExpressions);
         }
         if (this.fetchGroup != null) {
-            cloneQuery.fetchGroup = fetchGroup.clone();
+            cloneQuery.fetchGroup = this.fetchGroup.clone();
             // don't clone immutable entityFetchGroup
         }
         return cloneQuery;
@@ -868,7 +819,6 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     /**
      * INTERNAL:
      * Ensure that the descriptor has been set.
-     * @param session Current session.
      */
     @Override
     public void checkDescriptor(AbstractSession session) throws QueryException {

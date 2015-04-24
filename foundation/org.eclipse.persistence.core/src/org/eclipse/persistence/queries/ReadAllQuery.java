@@ -240,47 +240,42 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
 
     /**
      * INTERNAL:
-     * Check and return custom query flag. Custom query flag value is initialized when stored value is {@code null}.
-     * @return Current custom query flag. Value will never be {@code null}.
+     * Check to see if a custom query should be used for this query.
+     * This is done before the query is copied and prepared/executed.
+     * null means there is none.
      */
     @Override
-    protected Boolean checkCustomQueryFlag() {
-        // #436871 - Use local copy to avoid NPE from concurrent modification.
-        final Boolean useCustomQuery = isCustomQueryUsed;
-        if (useCustomQuery != null) {
-            return useCustomQuery;
-        // Initialize custom query flag.
+    protected DatabaseQuery checkForCustomQuery(AbstractSession session, AbstractRecord translationRow) {
+        checkDescriptor(session);
+
+        // Check if user defined a custom query.
+        if (isCustomQueryUsed() == null) {
+            setIsCustomQueryUsed((!isUserDefined()) && isExpressionQuery() && (getSelectionCriteria() == null) && isDefaultPropertiesQuery() && (!hasOrderByExpressions()) && (this.descriptor.getQueryManager().hasReadAllQuery()));
+        }
+        if (isCustomQueryUsed().booleanValue()) {
+            ReadAllQuery customQuery = this.descriptor.getQueryManager().getReadAllQuery();
+            if (this.accessors != null) {
+                customQuery = (ReadAllQuery) customQuery.clone();
+                customQuery.setIsExecutionClone(true);
+                customQuery.setAccessors(this.accessors);
+            }
+            return customQuery;
         } else {
-            final boolean useCustomQueryValue =
-                    !isUserDefined() && isExpressionQuery() && getSelectionCriteria() == null
-                    && isDefaultPropertiesQuery() && (!hasOrderByExpressions())
-                    && descriptor.getQueryManager().hasReadAllQuery();
-            setIsCustomQueryUsed(useCustomQueryValue);
-            return Boolean.valueOf(useCustomQueryValue);
+            return null;
         }
     }
 
     /**
      * INTERNAL:
-     * Get custom all read query from query manager.
-     * Called from {@link #checkForCustomQuery(AbstractSession, AbstractRecord)} to retrieve custom read query.
-     * @return Custom all read query from query manager.
-     */
-    @Override
-    protected ObjectLevelReadQuery getReadQuery() {
-        return descriptor.getQueryManager().getReadAllQuery();
-    }
-
-    /**
-     * INTERNAL:
-     * Creates and returns a copy of this query.
-     * @return A clone of this instance.
+     * Clone the query.
      */
     @Override
     public Object clone() {
-        final ReadAllQuery cloneQuery = (ReadAllQuery)super.clone();
-        // Don't use setters as that will trigger unprepare.
-        cloneQuery.containerPolicy = containerPolicy.clone(cloneQuery);
+        ReadAllQuery cloneQuery = (ReadAllQuery)super.clone();
+
+        // Don't use setters as that will trigger unprepare
+        cloneQuery.containerPolicy = this.containerPolicy.clone(cloneQuery);
+
         return cloneQuery;
     }
 
