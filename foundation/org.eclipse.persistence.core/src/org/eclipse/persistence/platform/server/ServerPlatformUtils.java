@@ -10,6 +10,8 @@
  * Contributors:
  *     01/05/2015 Rick Curtis
  *       - 455683: Automatically detect target server
+ *     04/24/2015 Rick Curtis
+ *       - 465452: Throw ServerPlatformException rather than NPE on create null platformClass
  ******************************************************************************/
 package org.eclipse.persistence.platform.server;
 
@@ -89,14 +91,13 @@ public final class ServerPlatformUtils {
      * @param loader {@link ClassLoader} to look up given platformClass
      *
      * @return initialized instance of {@link ServerPlatform}
-     * @throws NullPointerException if platformClass is null
-     * @throws ServerPlatformException if supplied platformClass is not found or can not be initialized
+     * @throws ServerPlatformException if supplied platformClass is not found, can not be initialized, or is null.
      *
      * @see ServerPlatformBase#ServerPlatformBase(DatabaseSession)
      */
     public static ServerPlatform createServerPlatform(DatabaseSession session, String platformClass, ClassLoader loader) {
         if (platformClass == null) {
-            throw new NullPointerException();
+            throw ServerPlatformException.invalidServerPlatformClass(platformClass, null);
         }
         Class cls = null;
         try {
