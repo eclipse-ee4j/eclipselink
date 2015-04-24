@@ -1721,7 +1721,7 @@
     <target name="sonar">
         <property file="sonar-project.properties"/>
         <taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml">
-            <classpath path="/Users/snajper/work/builds/sonar/sonar-ant-task-2.2.jar" />
+            <classpath path="${sonarant.lib}" />
         </taskdef>
         <sonar:sonar/>
     </target>
