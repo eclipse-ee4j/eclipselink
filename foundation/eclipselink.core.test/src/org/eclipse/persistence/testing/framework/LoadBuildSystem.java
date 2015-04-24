@@ -89,10 +89,53 @@ public class LoadBuildSystem {
         } catch (Exception ignore) {}
     }
 
+    /**
+     * Creates MySQL tables used to store performance data.
+     */
     public void createTables() {
-        session.executeNonSelectingCall(new SQLCall("Create table LOADBUILD (id number(10), lbtimestamp date, lberrors number(10), fatalErrors number(10), loginChoice varchar2(100), os varchar2(100), toplink_version varchar(100), jvm varchar2(100), machine varchar2(100), numberOfTests number(10), lbuserName varchar2(50), primary key (id))"));
-        session.executeNonSelectingCall(new SQLCall("Create table RESULT (id number(10), description varchar2(2000), exception varchar2(2000), name varchar2(1000), outcome varchar2(100), test_time number(10), total_time number(10), summaryId number(10), lbuildId number(10), primary key (id))"));
-        session.executeNonSelectingCall(new SQLCall("Create table SUMMARY (id number(10), description varchar2(2000), setup_failures number(10), errors number(10), fatalErrors number(10), name varchar2(1000), passed number(10), problems number(10), setupException varchar2(2000), total_time number(10), totalTests number(10), warnings number(10), lbuildId number(10), parentId number(10), primary key (id))"));
+        session.executeNonSelectingCall(new SQLCall("Create table LOADBUILD (\n" +
+                "id int not null auto_increment, \n" +
+                "lbtimestamp date, \n" +
+                "lberrors int, \n" +
+                "fatalErrors int, \n" +
+                "loginChoice varchar(100), \n" +
+                "os varchar(100), \n" +
+                "toplink_version varchar(100), \n" +
+                "jvm varchar(100), \n" +
+                "machine varchar(100), \n" +
+                "numberOfTests int, \n" +
+                "lbuserName varchar(50), \n" +
+                "primary key (id))"));
+
+        session.executeNonSelectingCall(new SQLCall("Create table RESULT (\n" +
+                "id int not null auto_increment, \n" +
+                "description varchar(2000), \n" +
+                "exception varchar(2000), \n" +
+                "name varchar(1000), \n" +
+                "outcome varchar(100), \n" +
+                "test_time int, \n" +
+                "total_time int, \n" +
+                "summaryId int, \n" +
+                "lbuildId int, \n" +
+                "primary key (id))"));
+
+        session.executeNonSelectingCall(new SQLCall("Create table SUMMARY (\n" +
+                "id int not null auto_increment, \n" +
+                "description varchar(2000), \n" +
+                "setup_failures int, \n" +
+                "errors int, \n" +
+                "fatalErrors int, \n" +
+                "name varchar(1000), \n" +
+                "passed int, \n" +
+                "problems int, \n" +
+                "setupException varchar(2000), \n" +
+                "total_time int, \n" +
+                "totalTests int, \n" +
+                "warnings int, \n" +
+                "lbuildId int, \n" +
+                "parentId int, \n" +
+                "primary key (id))"));
+
         if (session.getPlatform().supportsUniqueKeyConstraints()
                 && !session.getPlatform().requiresUniqueConstraintCreationOnTableCreate()) {
             session.executeNonSelectingCall(new SQLCall("ALTER TABLE RESULT ADD CONSTRAINT FK_RESULT_summaryId FOREIGN KEY (summaryId) REFERENCES SUMMARY (id)"));
@@ -111,8 +154,6 @@ public class LoadBuildSystem {
         session.executeNonSelectingCall(new SQLCall(session.getPlatform().buildCreateIndex("SUMMARY", "IX_SUMMARY_lbuildId", "", false, "lbuildId")));
         session.executeNonSelectingCall(new SQLCall(session.getPlatform().buildCreateIndex("SUMMARY", "IX_SUMMARY_name", "", false, "name")));
         session.executeNonSelectingCall(new SQLCall(session.getPlatform().buildCreateIndex("SUMMARY", "IX_SUMMARY_parentId", "", false, "parentId")));
-        session.executeNonSelectingCall(new SQLCall("create sequence result_seq increment by 500 start with 1000"));
-        session.executeNonSelectingCall(new SQLCall("create sequence RESULTSUM_SEQ increment by 500 start with 1000"));
     }
 
     public void logout() {
@@ -164,7 +205,7 @@ public class LoadBuildSystem {
     public Vector readAllTestModelSummaries(org.eclipse.persistence.expressions.Expression expression) {
         ReadAllQuery query = new ReadAllQuery(TestResultsSummary.class, expression);
         query.addAscendingOrdering("name");
-        query.addOrdering(query.getExpressionBuilder().get("loadBuildSummary").get("timestamp").ascending());
+        //query.addOrdering(query.getExpressionBuilder().get("loadBuildSummary").get("timestamp").ascending());
         query.addJoinedAttribute("loadBuildSummary");
         return (Vector)session.executeQuery(query);
     }
@@ -175,13 +216,13 @@ public class LoadBuildSystem {
     public Vector readAllTests(org.eclipse.persistence.expressions.Expression expression) {
         ReadAllQuery query = new ReadAllQuery(TestResult.class, expression);
         query.addAscendingOrdering("name");
-        query.addOrdering(query.getExpressionBuilder().get("loadBuildSummary").get("timestamp").ascending());
+        //query.addOrdering(query.getExpressionBuilder().get("loadBuildSummary").get("timestamp").ascending());
         query.addJoinedAttribute("loadBuildSummary");
         return (Vector)session.executeQuery(query);
     }
 
     /**
-     * Save load build  and log messages toSsystem.Out
+     * Save load build  and log messages to System.out
      */
     public void saveLoadBuild() {
         boolean success = true;
@@ -202,7 +243,7 @@ public class LoadBuildSystem {
     }
 
     /**
-     * Save load build  and log messages to a  writer
+     * Save load build  and log messages to a Writer
      */
     public void saveLoadBuild(java.io.Writer log) {
         try {

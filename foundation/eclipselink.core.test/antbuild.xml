@@ -41,6 +41,8 @@
         - test : runs LRG
         - test-lrg : runs LRG
         - test-srg : runs SRG
+        - test-performance : runs performance tests
+        - create-perfdb-mysql : creates database tables needed to store performance tests data
 
         It requires some configuration of the build.properties and test.properties to run.
 -->
@@ -433,10 +435,67 @@
     </target>
 
     <!-- Runs performance tests. -->
-    <target name="test-performance">
+    <target name="test-performance" depends="check-performance-test-dependencies">
         <antcall target="run-test-prompt" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.performance.PerformanceTestModel"/>
         </antcall>
+    </target>
+
+    <!-- Checks that the following performance test properties are set:
+
+        eclipselink.perfdb.user         - performance DB user name (ex. root)
+        eclipselink.perfdb.pwd          - performance DB user password (ex. password)
+        eclipselink.perfdb.driver       - database driver (ex. com.mysql.jdbc.Driver)
+        eclipselink.perfdb.uri          - database URI (ex. jdbc:mysql://localhost:3306/perfdb)
+        eclipselink.perfdb.platform     - database platform (ex. org.eclipse.persistence.platform.database.MySQLPlatform)
+        eclipselink.perfdb.driver.jar   - database driver jar location (ex. /opt/jdk/mysql-connector-java-5.1.30-bin.jar)
+    -->
+    <target name="check-performance-test-dependencies">
+        <condition property="performance.test.condition">
+            <and>
+                <isset property="eclipselink.perfdb.user"/>
+                <isset property="eclipselink.perfdb.pwd"/>
+                <isset property="eclipselink.perfdb.driver"/>
+                <isset property="eclipselink.perfdb.uri"/>
+                <isset property="eclipselink.perfdb.platform"/>
+                <isset property="eclipselink.perfdb.driver.jar"/>
+            </and>
+        </condition>
+        <condition property="performance.test.msg" value="Performance tests prerequisites check PASSED:" else="Performance tests prerequisites check FAILED:">
+            <isset property="performance.test.condition"/>
+        </condition>
+        <condition property="eclipselink.perfdb.user.msg" value=" + eclipselink.perfdb.user = ${eclipselink.perfdb.user}" else=" - 'eclipselink.perfdb.user' property is not set">
+            <isset property="eclipselink.perfdb.user"/>
+        </condition>
+        <condition property="eclipselink.perfdb.pwd.msg" value=" + eclipselink.perfdb.pwd = ${eclipselink.perfdb.pwd}" else=" - 'eclipselink.perfdb.pwd' property is not set">
+            <isset property="eclipselink.perfdb.pwd"/>
+        </condition>
+        <condition property="eclipselink.perfdb.driver.msg" value=" + eclipselink.perfdb.driver = ${eclipselink.perfdb.driver}" else=" - 'eclipselink.perfdb.driver' property is not set">
+            <isset property="eclipselink.perfdb.driver"/>
+        </condition>
+        <condition property="eclipselink.perfdb.uri.msg" value=" + eclipselink.perfdb.uri = ${eclipselink.perfdb.uri}" else=" - 'eclipselink.perfdb.uri' property is not set">
+            <isset property="eclipselink.perfdb.uri"/>
+        </condition>
+        <condition property="eclipselink.perfdb.platform.msg" value=" + eclipselink.perfdb.platform = ${eclipselink.perfdb.platform}" else=" - 'eclipselink.perfdb.platform' property is not set">
+            <isset property="eclipselink.perfdb.platform"/>
+        </condition>
+        <condition property="eclipselink.perfdb.driver.jar.msg" value=" + eclipselink.perfdb.driver.jar = ${eclipselink.perfdb.driver.jar}" else=" - 'eclipselink.perfdb.driver.jar' property is not set">
+            <isset property="eclipselink.perfdb.driver.jar"/>
+        </condition>
+        <condition property="should.save.results.msg" value=" + should.save.results = ${should.save.results}" else=" - 'should.save.results' property is not set. Set it to 'true' to save performance data to the database.">
+            <isset property="should.save.results"/>
+        </condition>
+
+        <echo message="${performance.test.msg}"/>
+        <echo message="${eclipselink.perfdb.user.msg}"/>
+        <echo message="${eclipselink.perfdb.pwd.msg}"/>
+        <echo message="${eclipselink.perfdb.driver.msg}"/>
+        <echo message="${eclipselink.perfdb.uri.msg}"/>
+        <echo message="${eclipselink.perfdb.platform.msg}"/>
+        <echo message="${eclipselink.perfdb.driver.jar.msg}"/>
+        <echo message="${should.save.results.msg}"/>
+
+        <fail message="Performance test properties are missing." unless="performance.test.condition"/>
     </target>
 
     <!-- Runs concurrency tests. -->
@@ -580,5 +639,18 @@
                 <path refid="core_test.runtime.only.path"/>
             </classpath>
         </java>
+    </target>
+
+    <!-- Creates MySQL database tables for performance tests. -->
+    <target name="create-perfdb-mysql" depends="check-performance-test-dependencies">
+        <sql driver="${eclipselink.perfdb.driver}"
+             url="${eclipselink.perfdb.uri}"
+             userid="${eclipselink.perfdb.user}"
+             password="${eclipselink.perfdb.pwd}"
+             src="${core_test.build.location}/create_perfdb_tables_mysql.sql">
+            <classpath>
+                <pathelement location="${eclipselink.perfdb.driver.jar}"/>
+            </classpath>
+        </sql>
     </target>
 </project>

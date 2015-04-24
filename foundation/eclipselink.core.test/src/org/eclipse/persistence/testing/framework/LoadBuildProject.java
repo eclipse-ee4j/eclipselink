@@ -22,6 +22,20 @@ import org.eclipse.persistence.sequencing.NativeSequence;
  */
 public class LoadBuildProject extends org.eclipse.persistence.sessions.Project {
 
+    // DB connection properties
+    public final static String PROP_PERFDB_USER = "eclipselink.perfdb.user";
+    public final static String PROP_PERFDB_PWD = "eclipselink.perfdb.pwd";
+    public final static String PROP_PERFDB_DRIVER = "eclipselink.perfdb.driver";
+    public final static String PROP_PERFDB_URI = "eclipselink.perfdb.uri";
+    public final static String PROP_PERFDB_PLATFORM = "eclipselink.perfdb.platform";
+
+    // DB connection defaults
+    public final static String DFLT_PERFDB_USER = "root";
+    public final static String DFLT_PERFDB_PWD = "password";
+    public final static String DFLT_PERFDB_DRIVER = "com.mysql.jdbc.Driver";
+    public final static String DFLT_PERFDB_URI = "jdbc:mysql://localhost:3306/perfdb";
+    public final static String DFLT_PERFDB_PLATFORM = "org.eclipse.persistence.platform.database.MySQLPlatform";
+
     public LoadBuildProject() {
         applyPROJECT();
         applyLOGIN();
@@ -33,11 +47,12 @@ public class LoadBuildProject extends org.eclipse.persistence.sessions.Project {
     protected void applyLOGIN() {
         org.eclipse.persistence.sessions.DatabaseLogin login = new org.eclipse.persistence.sessions.DatabaseLogin();
 
-        login.setUserName("sys as sysdba");
-        login.setPassword("orasys9");
-        login.setDriverClassName("oracle.jdbc.OracleDriver");
-        login.setConnectionString("jdbc:oracle:thin:@ottvm074.ca.oracle.com:1521:toplink");
-        login.setPlatformClassName("org.eclipse.persistence.platform.database.OraclePlatform");
+        login.setUserName(System.getProperty(PROP_PERFDB_USER, DFLT_PERFDB_USER));
+        login.setPassword(System.getProperty(PROP_PERFDB_PWD, DFLT_PERFDB_PWD));
+        login.setDriverClassName(System.getProperty(PROP_PERFDB_DRIVER, DFLT_PERFDB_DRIVER));
+        login.setConnectionString(System.getProperty(PROP_PERFDB_URI, DFLT_PERFDB_URI));
+        login.setPlatformClassName(System.getProperty(PROP_PERFDB_PLATFORM, DFLT_PERFDB_PLATFORM));
+
         NativeSequence sequence = new NativeSequence();
         sequence.setPreallocationSize(500);
         login.setDefaultSequence(sequence);
@@ -152,8 +167,8 @@ public class LoadBuildProject extends org.eclipse.persistence.sessions.Project {
         descriptor.addPrimaryKeyFieldName("RESULT.id");
 
         // SECTION: PROPERTIES
-        descriptor.setSequenceNumberName("RESULT_SEQ");
-        descriptor.setSequenceNumberFieldName("id");
+        //descriptor.setSequenceNumberName("RESULT_SEQ");
+        //descriptor.setSequenceNumberFieldName("id");
 
         // SECTION: DIRECTTOFIELDMAPPING
         DirectToFieldMapping directtofieldmapping = new DirectToFieldMapping();
