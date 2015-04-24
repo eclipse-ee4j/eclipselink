@@ -219,7 +219,7 @@ public abstract class XMLMarshaller<
                 }
             }
         } else {
-            Field defaultRootField = (Field) descriptor.getDefaultRootElementField();
+            Field defaultRootField = descriptor.getDefaultRootElementField();
             if(defaultRootField != null){
                 rootFragment = defaultRootField.getXPathFragment();
             }
@@ -477,6 +477,7 @@ public abstract class XMLMarshaller<
         return marshalEmptyCollections;
     }
 
+    @Override
     public boolean isWrapperAsCollectionName() {
         return wrapperAsCollectionName;
     }
@@ -897,7 +898,6 @@ public abstract class XMLMarshaller<
         if (object instanceof Root) {
             isXMLRoot = true;
             Root xroot = (Root) object;
-            version = xroot.getXMLVersion() != null ? xroot.getXMLVersion() : version;
             encoding = xroot.getEncoding() != null ? xroot.getEncoding() : encoding;
         }
 
@@ -1101,11 +1101,7 @@ public abstract class XMLMarshaller<
     private void marshalStreamOrWriter(Object object, MarshalRecord marshalRecord, ABSTRACT_SESSION session, DESCRIPTOR descriptor, boolean isXMLRoot) {
         marshalRecord.setMarshaller(this);
 
-        String rootName = null;
-        String rootNamespace = null;
         if(isXMLRoot){
-            rootName = ((Root)object).getLocalName();
-            rootNamespace = ((Root)object).getNamespaceURI();
             if(session == null || descriptor == null){
                 try{
                     session = context.getSession(((Root)object).getObject());
@@ -1224,6 +1220,7 @@ public abstract class XMLMarshaller<
      * If the encoding is not set the default UTF-8 will be used
      * @param newEncoding the encoding to set on this XMLMarshaller
      */
+    @Override
     public void setEncoding(String newEncoding) {
         super.setEncoding(newEncoding);
         if(null != transformer) {

@@ -14,9 +14,9 @@ package org.eclipse.persistence.oxm.mappings;
 
 import java.util.Enumeration;
 import java.util.Vector;
+
 import javax.activation.DataHandler;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
+
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -43,6 +43,8 @@ import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.sessions.Session;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 /**
  * <p><b>Purpose:</b>Provide a mapping for a collection of binary data values that can be treated
@@ -91,10 +93,12 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
         mimeTypePolicy = new FixedMimeTypePolicy(null);
     }
 
+    @Override
     public boolean shouldInlineBinaryData() {
         return shouldInlineBinaryData;
     }
 
+    @Override
     public void setShouldInlineBinaryData(boolean b) {
         shouldInlineBinaryData = b;
     }
@@ -102,6 +106,7 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
     /**
      * INTERNAL
      */
+    @Override
     public String getMimeType(Object anObject) {
         if (mimeTypePolicy == null) {
             return null;
@@ -113,10 +118,12 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
     /**
      * INTERNAL
      */
+    @Override
     public String getMimeType() {
         return getMimeType(null);
     }
 
+    @Override
     public MimeTypePolicy getMimeTypePolicy() {
         return mimeTypePolicy;
     }
@@ -125,6 +132,7 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
      * Allow implementer to set the MimeTypePolicy class FixedMimeTypePolicy or AttributeMimeTypePolicy (dynamic)
      * @param mimeTypePolicy MimeTypePolicy
      */
+    @Override
     public void setMimeTypePolicy(MimeTypePolicy mimeTypePolicy) {
         this.mimeTypePolicy = mimeTypePolicy;
     }
@@ -138,14 +146,17 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
         mimeTypePolicy = new FixedMimeTypePolicy(mimeTypeString);
     }
 
+    @Override
     public boolean isSwaRef() {
         return isSwaRef;
     }
 
+    @Override
     public void setSwaRef(boolean swaRef) {
         isSwaRef = swaRef;
     }
 
+    @Override
     public boolean isAbstractCompositeDirectCollectionMapping() {
         return false;
     }
@@ -154,6 +165,7 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
     * Set the Mapping field name attribute to the given XPath String
     * @param xpathString String
     */
+    @Override
     public void setXPath(String xpathString) {
         XMLField field = new XMLField(xpathString);
         field.setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
@@ -163,7 +175,6 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
     @Override
     public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session, WriteType writeType) {
         XMLRecord record = (XMLRecord) row;
-        XMLMarshaller marshaller = record.getMarshaller();
         Object attributeValue = getAttributeValueFromObject(object);
 
         ContainerPolicy cp = this.getContainerPolicy();
@@ -327,8 +338,8 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
         return element;
     }
 
+    @Override
     public void writeSingleValue(Object value, Object parent, XMLRecord record, AbstractSession session) {
-        XMLMarshaller marshaller = record.getMarshaller();
         XMLField field = (XMLField) getField();
         NamespaceResolver resolver = field.getNamespaceResolver();
         boolean isAttribute = field.getLastXPathFragment().isAttribute();
@@ -369,6 +380,7 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
         record.add(field, valueToWrite);
     }
 
+    @Override
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected, Boolean[] wasCacheUsed) {
         ContainerPolicy cp = this.getContainerPolicy();
 

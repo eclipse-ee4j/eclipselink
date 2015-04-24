@@ -13,6 +13,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.nosql.adapters.mongo;
 
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,8 +36,8 @@ import com.mongodb.ServerAddress;
  * @since EclipseLink 2.4
  */
 public class MongoConnectionFactory implements ConnectionFactory {
-    protected Mongo mongo;
-    protected DB db;
+    protected transient Mongo mongo;
+    protected transient DB db;
 
     /**
      * Default constructor.
@@ -58,10 +59,12 @@ public class MongoConnectionFactory implements ConnectionFactory {
         this.db = db;
     }
 
+    @Override
     public Connection getConnection() throws ResourceException {
         return getConnection(new MongoJCAConnectionSpec());
     }
 
+    @Override
     public Connection getConnection(ConnectionSpec spec) throws ResourceException {
         MongoJCAConnectionSpec connectionSpec = (MongoJCAConnectionSpec)spec;
         DB db = this.db;
@@ -106,7 +109,7 @@ public class MongoConnectionFactory implements ConnectionFactory {
                 if (connectionSpec.getWriteConcern() != null) {
                     db.setWriteConcern(connectionSpec.getWriteConcern());
                 }
-            } catch (Exception exception) {
+            } catch (UnknownHostException exception) {
                 ResourceException resourceException = new ResourceException(exception.toString());
                 resourceException.initCause(exception);
                 throw resourceException;
@@ -116,18 +119,22 @@ public class MongoConnectionFactory implements ConnectionFactory {
         return new MongoConnection(db, isExternal, connectionSpec);
     }
 
+    @Override
     public ResourceAdapterMetaData getMetaData() {
         return new MongoAdapterMetaData();
     }
 
+    @Override
     public RecordFactory getRecordFactory() {
         return new MongoRecordFactory();
     }
 
+    @Override
     public Reference getReference() {
         return new Reference(getClass().getName());
     }
 
+    @Override
     public void setReference(Reference reference) {
     }
 

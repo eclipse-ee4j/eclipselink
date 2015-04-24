@@ -13,6 +13,23 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.resources.common;
 
+import java.io.InputStream;
+import java.lang.reflect.Method;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.stream.StreamSource;
+
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.Link;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.Parameter;
@@ -30,21 +47,6 @@ import org.eclipse.persistence.jpa.rs.util.HrefHelper;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
 import org.eclipse.persistence.jpa.rs.util.list.LinkList;
-
-import javax.naming.InitialContext;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.stream.StreamSource;
-import java.io.InputStream;
-import java.lang.reflect.Method;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Base class for persistent unit resources.
@@ -127,7 +129,7 @@ public abstract class AbstractPersistenceResource extends AbstractResource {
             Method method = ans.getClass().getMethod(call.getMethodName(), parameters);
             Object returnValue = method.invoke(ans, args);
             return Response.ok(new StreamingOutputMarshaller(null, returnValue, headers.getAcceptableMediaTypes())).build();
-        } catch (Exception e) {
+        } catch (JAXBException | NamingException | ReflectiveOperationException | RuntimeException e) {
             JPARSLogger.exception("exception_in_callSessionBeanInternal", new Object[]{version, headers.getMediaType(), uriInfo.getRequestUri().toASCIIString()}, e);
             throw JPARSException.exceptionOccurred(e);
         }

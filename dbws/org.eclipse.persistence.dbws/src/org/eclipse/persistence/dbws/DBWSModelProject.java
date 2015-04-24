@@ -14,14 +14,16 @@
 package org.eclipse.persistence.dbws;
 
 //javase imports
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Vector;
-import org.xml.sax.Attributes;
-
 // Java extension imports
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI;
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
+import static org.eclipse.persistence.internal.oxm.Constants.BOOLEAN_QNAME;
+import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.DEFAULT_SIMPLE_XML_FORMAT_TAG;
+import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.DEFAULT_SIMPLE_XML_TAG;
+
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Vector;
 
 // EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassExtractor;
@@ -37,8 +39,8 @@ import org.eclipse.persistence.internal.xr.Operation;
 import org.eclipse.persistence.internal.xr.Parameter;
 import org.eclipse.persistence.internal.xr.ProcedureArgument;
 import org.eclipse.persistence.internal.xr.ProcedureOutputArgument;
-import org.eclipse.persistence.internal.xr.QueryOperation;
 import org.eclipse.persistence.internal.xr.QNameTransformer;
+import org.eclipse.persistence.internal.xr.QueryOperation;
 import org.eclipse.persistence.internal.xr.Result;
 import org.eclipse.persistence.internal.xr.SQLQueryHandler;
 import org.eclipse.persistence.internal.xr.StoredFunctionQueryHandler;
@@ -61,14 +63,12 @@ import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.Record;
 import org.eclipse.persistence.sessions.Session;
-import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.DEFAULT_SIMPLE_XML_FORMAT_TAG;
-import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.DEFAULT_SIMPLE_XML_TAG;
-import static org.eclipse.persistence.oxm.XMLConstants.BOOLEAN_QNAME;
+import org.xml.sax.Attributes;
 
 @SuppressWarnings({"serial", "rawtypes"})
 public class DBWSModelProject extends Project {
 
-    public NamespaceResolver ns;
+    public transient NamespaceResolver ns;
 
     public DBWSModelProject() {
         setName("DBWSModelProject");
@@ -120,9 +120,11 @@ public class DBWSModelProject extends Project {
         XMLChoiceCollectionMapping operationsMapping = new XMLChoiceCollectionMapping();
         operationsMapping.setAttributeName("operations");
         operationsMapping.setAttributeAccessor(new AttributeAccessor() {
+            @Override
             public Object getAttributeValueFromObject(Object object) {
                 return ((XRServiceModel)object).getOperationsList();
             }
+            @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 Vector v = (Vector)value;
                 XRServiceModel dbwsModel = (XRServiceModel)object;

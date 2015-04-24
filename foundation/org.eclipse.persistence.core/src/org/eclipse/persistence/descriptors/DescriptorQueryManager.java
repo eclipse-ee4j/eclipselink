@@ -33,6 +33,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.expressions.Expression;
@@ -259,12 +260,13 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * INTERNAL:
      * Clone the query manager
      */
+    @Override
     public Object clone() {
         DescriptorQueryManager manager = null;
         try {
             manager = (DescriptorQueryManager)super.clone();
         } catch (Exception exception) {
-            ;
+            throw new AssertionError(exception);
         }
 
         // Bug 3037701 - clone the queries

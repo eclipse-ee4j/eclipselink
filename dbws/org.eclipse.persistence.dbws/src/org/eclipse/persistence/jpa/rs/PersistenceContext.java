@@ -14,6 +14,47 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs;
 
+import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.net.URI;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Query;
+import javax.persistence.RollbackException;
+import javax.persistence.spi.PersistenceUnitInfo;
+import javax.ws.rs.core.MediaType;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.ValidationEvent;
+import javax.xml.bind.ValidationEventHandler;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamWriter;
+import javax.xml.transform.stream.StreamSource;
+
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
@@ -73,43 +114,6 @@ import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.UnitOfWork;
-
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Query;
-import javax.persistence.RollbackException;
-import javax.persistence.spi.PersistenceUnitInfo;
-import javax.ws.rs.core.MediaType;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.ValidationEvent;
-import javax.xml.bind.ValidationEventHandler;
-import javax.xml.bind.annotation.adapters.XmlAdapter;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamWriter;
-import javax.xml.transform.stream.StreamSource;
-import java.beans.BeanInfo;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.net.URI;
-import java.security.AccessController;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * A wrapper around the JPA and JAXB artifacts used to persist an application.
@@ -259,7 +263,7 @@ public class PersistenceContext {
      */
     protected void addDynamicXMLMetadataSources(List<Object> metadataSources, AbstractSession session) {
         Set<String> packages = new HashSet<String>();
-        for (Class descriptorClass : session.getDescriptors().keySet()) {
+        for (Class<?> descriptorClass : session.getDescriptors().keySet()) {
             String packageName = "";
             int lastDotIndex = descriptorClass.getName().lastIndexOf('.');
             if (lastDotIndex > 0) {
@@ -634,7 +638,7 @@ public class PersistenceContext {
                     return value;
                 }
             }
-        } catch (Exception ex) {
+        } catch (IntrospectionException | PrivilegedActionException | IllegalAccessException | InvocationTargetException ex) {
             return null;
         }
         return null;
@@ -907,15 +911,16 @@ public class PersistenceContext {
         Query query = em.createNamedQuery(name);
         DatabaseQuery dbQuery = ((EJBQueryImpl<?>) query).getDatabaseQuery();
         if (parameters != null) {
-            Iterator i = parameters.keySet().iterator();
+            Iterator<?> i = parameters.entrySet().iterator();
             while (i.hasNext()) {
-                String key = (String) i.next();
+                Map.Entry<?, ?> entry = (Map.Entry<?, ?>) i.next();
+                String key = (String) entry.getKey();
                 Class parameterClass = null;
                 int index = dbQuery.getArguments().indexOf(key);
                 if (index >= 0) {
                     parameterClass = dbQuery.getArgumentTypes().get(index);
                 }
-                Object parameter = parameters.get(key);
+                Object parameter = entry.getValue();
                 if (parameterClass != null) {
                     parameter = ConversionManager.getDefaultManager().convertObject(parameter, parameterClass);
                 }
@@ -923,8 +928,8 @@ public class PersistenceContext {
             }
         }
         if (hints != null) {
-            for (String key : hints.keySet()) {
-                query.setHint(key, hints.get(key));
+            for (Map.Entry<String, ?> entry : hints.entrySet()) {
+                query.setHint(entry.getKey(), entry.getValue());
             }
         }
         return query;
@@ -945,15 +950,16 @@ public class PersistenceContext {
         Query query = em.createNamedQuery(name);
         DatabaseQuery dbQuery = ((EJBQueryImpl<?>) query).getDatabaseQuery();
         if (parameters != null) {
-            Iterator i = parameters.keySet().iterator();
+            Iterator<?> i = parameters.entrySet().iterator();
             while (i.hasNext()) {
-                String key = (String) i.next();
+                Map.Entry<?, ?> entry = (Map.Entry<?, ?>) i.next();
+                String key = (String) entry.getKey();
                 Class parameterClass = null;
                 int index = dbQuery.getArguments().indexOf(key);
                 if (index >= 0) {
                     parameterClass = dbQuery.getArgumentTypes().get(index);
                 }
-                Object parameter = parameters.get(key);
+                Object parameter = entry.getValue();
                 if (parameterClass != null) {
                     parameter = ConversionManager.getDefaultManager().convertObject(parameter, parameterClass);
                 }
@@ -961,8 +967,8 @@ public class PersistenceContext {
             }
         }
         if (hints != null) {
-            for (String key : hints.keySet()) {
-                query.setHint(key, hints.get(key));
+            for (Map.Entry<String, ?> entry : hints.entrySet()) {
+                query.setHint(entry.getKey(), entry.getValue());
             }
         }
         return query;
@@ -999,6 +1005,7 @@ public class PersistenceContext {
      *
      * @return the string
      */
+    @Override
     public String toString() {
         return "PersistenceContext(name:" + getName() + ", version:" + getVersion() + ", identityHashCode:" + System.identityHashCode(this) + ")";
     }
@@ -1394,7 +1401,7 @@ public class PersistenceContext {
                     }
                 }
             }
-        } catch (Exception ex) {
+        } catch (RuntimeException | ReflectiveOperationException ex) {
             ex.printStackTrace();
             throw JPARSException.exceptionOccurred(ex);
         }

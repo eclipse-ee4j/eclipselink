@@ -19,10 +19,10 @@ import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 import static javax.xml.soap.SOAPConstants.SOAP_1_2_PROTOCOL;
 import static javax.xml.soap.SOAPConstants.URI_NS_SOAP_1_1_ENVELOPE;
 import static javax.xml.soap.SOAPConstants.URI_NS_SOAP_1_2_ENVELOPE;
+import static org.eclipse.persistence.internal.oxm.Constants.BASE_64_BINARY;
+import static org.eclipse.persistence.internal.oxm.Constants.SCHEMA_INSTANCE_PREFIX;
+import static org.eclipse.persistence.internal.oxm.Constants.SCHEMA_PREFIX;
 import static org.eclipse.persistence.internal.xr.Util.SERVICE_NAMESPACE_PREFIX;
-import static org.eclipse.persistence.oxm.XMLConstants.BASE_64_BINARY;
-import static org.eclipse.persistence.oxm.XMLConstants.SCHEMA_PREFIX;
-import static org.eclipse.persistence.oxm.XMLConstants.SCHEMA_INSTANCE_PREFIX;
 
 import java.util.ArrayList;
 import java.util.HashMap;

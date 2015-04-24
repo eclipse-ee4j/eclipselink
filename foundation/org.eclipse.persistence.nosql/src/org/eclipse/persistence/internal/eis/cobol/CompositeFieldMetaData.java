@@ -12,7 +12,12 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.eis.cobol;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+
 import org.eclipse.persistence.internal.helper.DatabaseField;
 
 /**
@@ -45,6 +50,7 @@ public class CompositeFieldMetaData extends ElementaryFieldMetaData implements C
         initialize(fields);
     }
 
+    @Override
     protected void initialize() {
         myCompositeFields = new Vector();
     }
@@ -56,8 +62,9 @@ public class CompositeFieldMetaData extends ElementaryFieldMetaData implements C
     /**
     * performs a deep copy of all subordiate fields in the <code>myCompositeFields</code> attribute
     */
+    @Override
     public FieldMetaData deepCopy() {
-        CompositeFieldMetaData fieldCopy = new CompositeFieldMetaData(new String(myName), myRecord.getName());
+        CompositeFieldMetaData fieldCopy = new CompositeFieldMetaData(myName, myRecord.getName());
         fieldCopy.setIsFieldRedefine(isRedefine);
         fieldCopy.setDecimalPosition(decimalPosition);
         fieldCopy.setArraySize(myArraySize);
@@ -67,7 +74,7 @@ public class CompositeFieldMetaData extends ElementaryFieldMetaData implements C
         if (isFieldRedefine()) {
             fieldCopy.setFieldRedefined(myFieldRedefined.deepCopy());
         }
-        fieldCopy.setDependentFieldName(new String(myDependentFieldName));
+        fieldCopy.setDependentFieldName(myDependentFieldName);
         Enumeration fieldsEnum = myCompositeFields.elements();
         while (fieldsEnum.hasMoreElements()) {
             FieldMetaData field = (FieldMetaData)fieldsEnum.nextElement();
@@ -80,6 +87,7 @@ public class CompositeFieldMetaData extends ElementaryFieldMetaData implements C
     * overides <code>ElementaryFieldMetaData</code> to calculate the fields size from all the sizes
     * of its subordinate fields.
     */
+    @Override
     public int getSize() {
         Enumeration fieldsEnum = myCompositeFields.elements();
         int size = 0;
@@ -100,6 +108,7 @@ public class CompositeFieldMetaData extends ElementaryFieldMetaData implements C
     * we don't want to set the size for a composite field because its size is determined from its
     * subordinate fields.
     */
+    @Override
     public void setSize(int size) {
         //do nothing
     }
@@ -107,6 +116,7 @@ public class CompositeFieldMetaData extends ElementaryFieldMetaData implements C
     /**
     * a composite field can't have a decimal position
     */
+    @Override
     public boolean hasDecimal() {
         return false;
     }
@@ -114,6 +124,7 @@ public class CompositeFieldMetaData extends ElementaryFieldMetaData implements C
     /**
     * a composite field can't have a decimal position
     */
+    @Override
     public int getDecimalPosition() {
         return -1;
     }
@@ -128,6 +139,7 @@ public class CompositeFieldMetaData extends ElementaryFieldMetaData implements C
     /**
     * a composite field is by definition going to be composite
     */
+    @Override
     public boolean isComposite() {
         return true;
     }
@@ -135,6 +147,7 @@ public class CompositeFieldMetaData extends ElementaryFieldMetaData implements C
     /**
     * a composite field is by definition going to be composite
     */
+    @Override
     public int getType() {
         return FieldMetaData.COMPOSITE;
     }
@@ -142,6 +155,7 @@ public class CompositeFieldMetaData extends ElementaryFieldMetaData implements C
     /**
     * a composite field is by definition going to be composite, so this cannot be changed
     */
+    @Override
     public void setType(int type) {
         //do nothing
     }
@@ -149,6 +163,7 @@ public class CompositeFieldMetaData extends ElementaryFieldMetaData implements C
     /**
     * returns a collection of subordinate fields
     */
+    @Override
     public Vector getFields() {
         return myCompositeFields;
     }
@@ -156,6 +171,7 @@ public class CompositeFieldMetaData extends ElementaryFieldMetaData implements C
     /**
     * sets the composite field attribute to the new collection
     */
+    @Override
     public void setFields(Vector newCompositeFields) {
         myCompositeFields = newCompositeFields;
     }
@@ -163,6 +179,7 @@ public class CompositeFieldMetaData extends ElementaryFieldMetaData implements C
     /**
     * adds a field to the collection
     */
+    @Override
     public void addField(FieldMetaData newField) {
         myCompositeFields.addElement(newField);
     }
@@ -170,6 +187,7 @@ public class CompositeFieldMetaData extends ElementaryFieldMetaData implements C
     /**
     * returns the first subordinate field with a name matching the string in <code>fieldName</code>
     */
+    @Override
     public FieldMetaData getFieldNamed(String fieldName) {
         Enumeration fieldsEnum = getFields().elements();
         while (fieldsEnum.hasMoreElements()) {
@@ -184,6 +202,7 @@ public class CompositeFieldMetaData extends ElementaryFieldMetaData implements C
     /**
     * loops through the subordinate fields extracting the value from each.
     */
+    @Override
     public Object extractValueFromArray(byte[] recordData) {
         ArrayList fieldValue = new ArrayList(getFields().size());
         if (this.isArray()) {
@@ -220,6 +239,7 @@ public class CompositeFieldMetaData extends ElementaryFieldMetaData implements C
     /**
     * extracts the value from the record data for the field and writes it to the row.
     */
+    @Override
     public void writeOnRow(CobolRow row, byte[] recordData) {
         Object value;
 
@@ -239,6 +259,7 @@ public class CompositeFieldMetaData extends ElementaryFieldMetaData implements C
     /**
     * takes the value from the row for this field and writes it to the byte array
     */
+    @Override
     public void writeOnArray(CobolRow row, byte[] recordData) {
         Object obj = row.get(this.getName());
         List fieldValue = (List)obj;

@@ -54,6 +54,7 @@ public class MongoConnectionSpec extends EISConnectionSpec {
     /**
      * Connect with the specified properties and return the Connection.
      */
+    @Override
     public Connection connectToDataSource(EISAccessor accessor, Properties properties) throws DatabaseException, ValidationException {
         if ((this.connectionFactory == null) && (this.name == null)) {
             this.connectionFactory = new MongoConnectionFactory();
@@ -70,7 +71,7 @@ public class MongoConnectionSpec extends EISConnectionSpec {
                 if (host.indexOf(',') == -1) {
                     spec.getHosts().add(host);
                     if (port != null) {
-                        spec.getPorts().add(new Integer(port));
+                        spec.getPorts().add(Integer.valueOf(port));
                     }
                 } else {
                     int startIndex = 0;
@@ -89,7 +90,7 @@ public class MongoConnectionSpec extends EISConnectionSpec {
                             endIndex = port.length();
                         }
                         String nextPort = port.substring(startIndex, endIndex);
-                        spec.getPorts().add(new Integer(nextPort));
+                        spec.getPorts().add(Integer.valueOf(nextPort));
                         startIndex = endIndex + 1;
                     }
                 }

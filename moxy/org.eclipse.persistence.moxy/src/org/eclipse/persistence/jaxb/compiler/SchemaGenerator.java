@@ -558,7 +558,7 @@ public class SchemaGenerator {
             className = javaClass.getQualifiedName();
         }
         // check user defined types first
-        QName schemaType = (QName) userDefinedSchemaTypes.get(className);
+        QName schemaType = userDefinedSchemaTypes.get(className);
         if (schemaType == null) {
             schemaType = (QName) helper.getXMLToJavaTypeMap().get(javaClass.getRawName());
         }
@@ -843,7 +843,7 @@ public class SchemaGenerator {
                             element.setType(Constants.SCHEMA_PREFIX + COLON + schemaType.getLocalPart());
                         } else {
 
-                            TypeInfo type = (TypeInfo) this.typeInfo.get(javaClass.getQualifiedName());
+                            TypeInfo type = this.typeInfo.get(javaClass.getQualifiedName());
                             if (type != null) {
                                 String typeName = null;
                                 if (type.isComplexType()) {
@@ -1532,7 +1532,7 @@ public class SchemaGenerator {
     private AddToSchemaResult addXPathToSchema(Property property, TypeDefParticle compositor, Schema schema, boolean isChoice, ComplexType type) {
         // '.' xml-path requires special handling
         if (property.getXmlPath().equals(DOT)) {
-            TypeInfo info = (TypeInfo) typeInfo.get(property.getActualType().getQualifiedName());
+            TypeInfo info = typeInfo.get(property.getActualType().getQualifiedName());
             JavaClass infoClass = property.getActualType();
             addSelfProperties(infoClass, info, compositor, type);
             return null;
@@ -1553,7 +1553,7 @@ public class SchemaGenerator {
     private void addSelfProperties(JavaClass aJavaClass, TypeInfo info, TypeDefParticle compositor, ComplexType type) {
         // Recursively add all properties from aJavaClass and its superclasses, adding superclass properties first.
         if (aJavaClass.getSuperclass() != null) {
-            TypeInfo superInfo = (TypeInfo) typeInfo.get(aJavaClass.getSuperclass().getQualifiedName());
+            TypeInfo superInfo = typeInfo.get(aJavaClass.getSuperclass().getQualifiedName());
             if (superInfo != null) {
                 addSelfProperties(aJavaClass.getSuperclass(), superInfo, compositor, type);
             }
@@ -1652,7 +1652,7 @@ public class SchemaGenerator {
             attribute.setFixed(fixedValue);
         }
         // Check to see if it's a collection
-        TypeInfo info = (TypeInfo) typeInfo.get(property.getActualType().getQualifiedName());
+        TypeInfo info = typeInfo.get(property.getActualType().getQualifiedName());
         String typeName = getTypeNameForComponent(property, schema, property.getActualType(), attribute, false);
         if (isCollectionType(property)) {
             if(!property.isXmlList() && null != property.getXmlPath() && property.getXmlPath().contains("/")) {
@@ -2172,7 +2172,7 @@ public class SchemaGenerator {
     }
 
     private String getPackageName(TypeInfo typeInfo) {
-        if (null != typeInfo && null != typeInfo.getDescriptor() && null != typeInfo.getDescriptor() && null != typeInfo.getDescriptor().getJavaClass() && null != typeInfo.getDescriptor().getJavaClass().getPackage()) {
+        if (null != typeInfo && null != typeInfo.getDescriptor() && null != typeInfo.getDescriptor().getJavaClass() && null != typeInfo.getDescriptor().getJavaClass().getPackage()) {
             return typeInfo.getDescriptor().getJavaClass().getPackage().getName();
         }
         return null;
@@ -2196,18 +2196,21 @@ public class SchemaGenerator {
      */
     private static final class FacetVisitorHolder {
         private static final FacetVisitor<Void, Restriction> VISITOR = new FacetVisitor<Void, Restriction>() {
+            @Override
             public Void visit(DecimalMinFacet t, Restriction restriction) {
                 if (t.isInclusive())    restriction.setMinInclusive(t.getValue());
                 else                    restriction.setMinExclusive(t.getValue());
                 return null;
             }
 
+            @Override
             public Void visit(DecimalMaxFacet t, Restriction restriction) {
                 if (t.isInclusive())    restriction.setMaxInclusive(t.getValue());
                 else                    restriction.setMaxExclusive(t.getValue());
                 return null;
             }
 
+            @Override
             public Void visit(DigitsFacet t, Restriction restriction) {
                 int fraction = t.getFraction();
                 if (fraction > 0) {
@@ -2219,16 +2222,19 @@ public class SchemaGenerator {
                 return null;
             }
 
+            @Override
             public Void visit(MaxFacet t, Restriction restriction) {
                 restriction.setMaxInclusive(String.valueOf(t.getValue()));
                 return null;
             }
 
+            @Override
             public Void visit(MinFacet t, Restriction restriction) {
                 restriction.setMinInclusive(String.valueOf(t.getValue()));
                 return null;
             }
 
+            @Override
             public Void visit(PatternFacet t, Restriction restriction) {
                 String regex = t.getRegexp();
                 regex = introduceShorthands(regex);
@@ -2236,6 +2242,7 @@ public class SchemaGenerator {
                 return null;
             }
 
+            @Override
             public Void visit(PatternListFacet t, Restriction restriction) {
                 for (PatternFacet pf : t.getPatterns()) {
                     String regex = pf.getRegexp();
@@ -2245,6 +2252,7 @@ public class SchemaGenerator {
                 return null;
             }
 
+            @Override
             public Void visit(SizeFacet t, Restriction restriction) {
                 int minLength = t.getMin();
                 int maxLength = t.getMax();

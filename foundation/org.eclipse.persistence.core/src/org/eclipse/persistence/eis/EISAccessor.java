@@ -12,17 +12,24 @@
  ******************************************************************************/
 package org.eclipse.persistence.eis;
 
-import javax.resource.*;
-import javax.resource.cci.*;
+import javax.resource.ResourceException;
+import javax.resource.cci.Connection;
+import javax.resource.cci.ConnectionMetaData;
+import javax.resource.cci.Interaction;
+import javax.resource.cci.InteractionSpec;
+import javax.resource.cci.Record;
+import javax.resource.cci.RecordFactory;
+
+import org.eclipse.persistence.eis.interactions.EISInteraction;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceAccessor;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.queries.Call;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.queries.Call;
 import org.eclipse.persistence.sessions.SessionProfiler;
-import org.eclipse.persistence.eis.interactions.*;
 
 /**
  * <p><code>EISAccessor</code> is an implementation of the <code>Accessor</code>
@@ -54,6 +61,7 @@ public class EISAccessor extends DatasourceAccessor {
     /**
      *    Begin a local transaction.
      */
+    @Override
     protected void basicBeginTransaction(AbstractSession session) throws EISException {
         try {
             if (getEISPlatform().supportsLocalTransactions()) {
@@ -67,6 +75,7 @@ public class EISAccessor extends DatasourceAccessor {
     /**
      * Close the connection.
      */
+    @Override
     protected void closeDatasourceConnection() {
         try {
             getCCIConnection().close();
@@ -78,6 +87,7 @@ public class EISAccessor extends DatasourceAccessor {
     /**
      * Commit the local transaction.
      */
+    @Override
     protected void basicCommitTransaction(AbstractSession session) throws EISException {
         try {
             if (getEISPlatform().supportsLocalTransactions()) {
@@ -91,6 +101,7 @@ public class EISAccessor extends DatasourceAccessor {
     /**
      * If logging is turned on and the CCI implementation supports meta data then display connection info.
      */
+    @Override
     protected void buildConnectLog(AbstractSession session) {
         try {
             // Log connection information.
@@ -108,6 +119,7 @@ public class EISAccessor extends DatasourceAccessor {
     /**
      * Avoid super to have logging occur after possible manual auto-commit.
      */
+    @Override
     public Object executeCall(Call call, AbstractRecord translationRow, AbstractSession session) throws DatabaseException {
         return basicExecuteCall(call, translationRow, session);
     }
@@ -119,6 +131,7 @@ public class EISAccessor extends DatasourceAccessor {
      * The row will be empty if there are no parameters.
      * @return depending of the type either the row count, row or vector of rows.
      */
+    @Override
     public Object basicExecuteCall(Call call, AbstractRecord translationRow, AbstractSession session) throws DatabaseException {
         // If the login is null, then this accessor has never been connected.
         if (getLogin() == null) {
@@ -192,10 +205,12 @@ public class EISAccessor extends DatasourceAccessor {
             }
         } catch (ResourceException exception) {
             // Ensure each resource is released, but still ensure that the real exception is thrown.
-            try {
-                interaction.close();
-            } catch (Exception closeException) {
-                // Ignore error to avoid masking real exception.
+            if (interaction != null) {
+                try {
+                    interaction.close();
+                } catch (Exception closeException) {
+                    // Ignore error to avoid masking real exception.
+                }
             }
             try {
                 decrementCallCount();
@@ -213,7 +228,9 @@ public class EISAccessor extends DatasourceAccessor {
         } catch (RuntimeException exception) {
             try {// Ensure that the statement is closed, but still ensure that the real exception is thrown.
                 try {
-                    interaction.close();
+                    if (interaction != null) {
+                        interaction.close();
+                    }
                 } finally {
                     if (autoCommit) {
                         commitTransaction(session);
@@ -293,6 +310,7 @@ public class EISAccessor extends DatasourceAccessor {
     /**
      * Rollback the local transaction on the datasource.
      */
+    @Override
     public void basicRollbackTransaction(AbstractSession session) throws DatabaseException {
         try {
             if (getEISPlatform().supportsLocalTransactions()) {
@@ -306,6 +324,7 @@ public class EISAccessor extends DatasourceAccessor {
     /**
      * Return if the connection to the "data source" is connected.
      */
+    @Override
     protected boolean isDatasourceConnected() {
         return isConnected;
     }

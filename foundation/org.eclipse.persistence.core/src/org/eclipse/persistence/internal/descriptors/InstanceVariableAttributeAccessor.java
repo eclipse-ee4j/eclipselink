@@ -12,14 +12,17 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.descriptors;
 
-import java.lang.reflect.*;
+import java.lang.reflect.Field;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.internal.helper.ConversionManager;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedGetValueFromField;
+import org.eclipse.persistence.internal.security.PrivilegedSetValueInField;
 import org.eclipse.persistence.mappings.AttributeAccessor;
-import org.eclipse.persistence.internal.security.*;
 
 /**
  * <p><b>Purpose</b>: A wrapper class for handling cases when the domain object has instance variable
@@ -36,6 +39,7 @@ public class InstanceVariableAttributeAccessor extends AttributeAccessor {
     /**
      * Returns the class type of the attribute.
      */
+    @Override
     public Class getAttributeClass() {
         if (getAttributeField() == null) {
             return null;
@@ -62,6 +66,7 @@ public class InstanceVariableAttributeAccessor extends AttributeAccessor {
     /**
      * Returns the value of the attribute on the specified object.
      */
+    @Override
     public Object getAttributeValueFromObject(Object anObject) throws DescriptorException {
         try {
             // PERF: Direct variable access.
@@ -92,6 +97,7 @@ public class InstanceVariableAttributeAccessor extends AttributeAccessor {
     /**
      * instanceVariableName is converted to Field type.
      */
+    @Override
     public void initializeAttributes(Class theJavaClass) throws DescriptorException {
         if (getAttributeName() == null) {
             throw DescriptorException.attributeNameNotSpecified();
@@ -109,10 +115,12 @@ public class InstanceVariableAttributeAccessor extends AttributeAccessor {
      * Returns true if this attribute accessor has been initialized and now stores a reference to the
      * class's attribute.  An attribute accessor can become uninitialized on serialization.
      */
+    @Override
     public boolean isInitialized(){
         return this.attributeField !=  null;
     }
 
+    @Override
     public boolean isInstanceVariableAttributeAccessor() {
         return true;
     }
@@ -127,6 +135,7 @@ public class InstanceVariableAttributeAccessor extends AttributeAccessor {
     /**
      * Sets the value of the instance variable in the object to the value.
      */
+    @Override
     public void setAttributeValueInObject(Object anObject, Object value) throws DescriptorException {
          try {
             // PERF: Direct variable access.
@@ -155,7 +164,7 @@ public class InstanceVariableAttributeAccessor extends AttributeAccessor {
                             try {
                                 AccessController.doPrivileged(new PrivilegedSetValueInField(this.attributeField, anObject, ConversionManager.getDefaultManager().convertObject(Integer.valueOf(0), fieldClass)));
                             } catch (PrivilegedActionException exc) {
-                                throw DescriptorException.nullPointerWhileSettingValueThruInstanceVariableAccessor(getAttributeName(), value, exc.getException());
+                                throw DescriptorException.nullPointerWhileSettingValueThruInstanceVariableAccessor(getAttributeName(), null, exc.getException());
                                                         }
                         } else {
                             org.eclipse.persistence.internal.security.PrivilegedAccessHelper.setValueInField(this.attributeField, anObject, ConversionManager.getDefaultManager().convertObject(Integer.valueOf(0), fieldClass));
@@ -164,7 +173,7 @@ public class InstanceVariableAttributeAccessor extends AttributeAccessor {
                     return;
                 }
             } catch (IllegalAccessException accessException) {
-                throw DescriptorException.nullPointerWhileSettingValueThruInstanceVariableAccessor(getAttributeName(), value, exception);
+                throw DescriptorException.nullPointerWhileSettingValueThruInstanceVariableAccessor(getAttributeName(), null, exception);
             }
 
             // TODO: This code should be removed, it should not be required and may cause unwanted side-effects.
@@ -205,7 +214,7 @@ public class InstanceVariableAttributeAccessor extends AttributeAccessor {
                                 try {
                                     AccessController.doPrivileged(new PrivilegedSetValueInField(this.attributeField, anObject, ConversionManager.getDefaultManager().convertObject(Integer.valueOf(0), fieldClass)));
                                 } catch (PrivilegedActionException exc) {
-                                    throw DescriptorException.nullPointerWhileSettingValueThruInstanceVariableAccessor(getAttributeName(), value, exc.getException());
+                                    throw DescriptorException.nullPointerWhileSettingValueThruInstanceVariableAccessor(getAttributeName(), null, exc.getException());
                                 }
                             } else {
                                 org.eclipse.persistence.internal.security.PrivilegedAccessHelper.setValueInField(this.attributeField, anObject, ConversionManager.getDefaultManager().convertObject(Integer.valueOf(0), fieldClass));

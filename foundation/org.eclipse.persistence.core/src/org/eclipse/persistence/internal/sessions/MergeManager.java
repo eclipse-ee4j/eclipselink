@@ -813,7 +813,7 @@ public class MergeManager {
                     } else {
                         cacheKey.setObject(original);
                     }
-                    objectBuilder.mergeIntoObject(original, objectChangeSet, true, clone, this, targetSession, false, !descriptor.getCopyPolicy().buildsNewInstance(), true);
+                    objectBuilder.mergeIntoObject(original, null, true, clone, this, targetSession, false, !descriptor.getCopyPolicy().buildsNewInstance(), true);
 
                     if (!unitOfWork.isObjectRegistered(clone)){
                         // mark the instance in the cache as invalid as we may have just merged a stub if

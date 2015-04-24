@@ -12,10 +12,16 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.eis.adapters.xmlfile;
 
-import java.io.*;
-import java.util.*;
-import javax.resource.*;
-import javax.resource.cci.*;
+import java.io.File;
+import java.util.List;
+
+import javax.resource.ResourceException;
+import javax.resource.cci.Connection;
+import javax.resource.cci.Interaction;
+import javax.resource.cci.InteractionSpec;
+import javax.resource.cci.Record;
+import javax.resource.cci.ResourceWarning;
+
 import org.eclipse.persistence.eis.EISDOMRecord;
 import org.eclipse.persistence.eis.EISException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -40,9 +46,11 @@ public class XMLFileInteraction implements Interaction {
         this.connection = connection;
     }
 
+    @Override
     public void clearWarnings() {
     }
 
+    @Override
     public void close() {
     }
 
@@ -52,6 +60,7 @@ public class XMLFileInteraction implements Interaction {
      * The spec may also contain and XQuery/XPath to evaluate against the DOM.
      * The input is used for insert/update to contain the data (DOM) to insert into the file.
      */
+    @Override
     public Record execute(InteractionSpec spec, Record input) throws ResourceException {
         // Use auto-commit if not in a transaction
         boolean autocommit = false;
@@ -106,10 +115,8 @@ public class XMLFileInteraction implements Interaction {
             if (result instanceof List) {
                 List results = (List)result;
                 output.setDOM(output.createNewDocument("results"));
-                if (results != null) {
-                    for (int index = 0; index < results.size(); index++) {
-                        output.add(new DatabaseField("result"), results.get(index));
-                    }
+                for (int index = 0; index < results.size(); index++) {
+                    output.add(new DatabaseField("result"), results.get(index));
                 }
             } else {
                 output.setDOM(output.createNewDocument("results"));
@@ -184,6 +191,7 @@ public class XMLFileInteraction implements Interaction {
      * Execute the interaction and set the output into the output record.
      * Return true or false if the execute returned data (similar to row-count).
      */
+    @Override
     public boolean execute(InteractionSpec spec, Record input, Record output) throws ResourceException {
         EISDOMRecord result = (EISDOMRecord)execute(spec, input);
         if (result == null) {
@@ -193,10 +201,12 @@ public class XMLFileInteraction implements Interaction {
         return true;
     }
 
+    @Override
     public Connection getConnection() {
         return connection;
     }
 
+    @Override
     public ResourceWarning getWarnings() {
         return null;
     }

@@ -109,6 +109,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
      * Return the specified TimeZone used for all String to date object
      * conversions.
      */
+    @Override
     public TimeZone getTimeZone() {
         if (timeZone == null) {
             return TimeZone.getDefault();
@@ -150,9 +151,10 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
      * @param javaClass - the class that the object must be converted to
      * @return - the newly converted object
      */
+    @Override
     public Object convertObject(Object sourceObject, Class javaClass) throws ConversionException {
         if (sourceObject == null) {//Let the parent handle default null values
-            return super.convertObject(sourceObject, javaClass);
+            return super.convertObject(null, javaClass);
         } else if (javaClass == null || javaClass == CoreClassConstants.OBJECT || sourceObject.getClass() == javaClass) {
             return sourceObject;
         } else if (javaClass == CoreClassConstants.STRING) {
@@ -211,7 +213,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
         }
 
         if (sourceObject == null) {
-            return super.convertObject(sourceObject, javaClass);
+            return super.convertObject(null, javaClass);
         } else if ((sourceObject.getClass() == javaClass) || (javaClass == null) || (javaClass == CoreClassConstants.OBJECT)) {
             return sourceObject;
         } else if ((javaClass == CoreClassConstants.CALENDAR) || (javaClass == CoreClassConstants.GREGORIAN_CALENDAR)) {
@@ -351,6 +353,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
      *
      * @param sourceObject
      */
+    @Override
     protected Character convertObjectToChar(Object sourceObject) throws ConversionException {
         if (sourceObject == null || sourceObject.equals(Constants.EMPTY_STRING)) {
             return (char) 0;
@@ -397,6 +400,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
      * INTERNAL:
      * Converts given object to a Calendar object
      */
+    @Override
     protected Calendar convertObjectToCalendar(Object sourceObject) throws ConversionException {
         if (sourceObject instanceof String) {
             String sourceString = (String) sourceObject;
@@ -417,6 +421,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
      * INTERNAL:
      * Converts objects to their string representations.
      */
+    @Override
     protected String convertObjectToString(Object sourceObject) throws ConversionException {
         if (sourceObject instanceof Calendar) {
             return stringFromCalendar((Calendar) sourceObject);
@@ -474,7 +479,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
         if (sourceObject instanceof Character){
 
             if(isNumericQName(schemaTypeQName)){
-                return Integer.toString((int) (Character)sourceObject);
+                return Integer.toString((Character)sourceObject);
             } else {
                     if(sourceObject.equals((char) 0)) {
                         return Constants.EMPTY_STRING;
@@ -533,6 +538,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
         return super.convertObjectToCalendar(sourceObject);
     }
 
+    @Override
     protected java.sql.Date convertObjectToDate(Object sourceObject) throws ConversionException {
         Object o = sourceObject;
         if (sourceObject instanceof Calendar) {
@@ -550,6 +556,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
      *         NumberFormatException if the String does not contain a
      *        parsable double.
      */
+   @Override
    protected Double convertObjectToDouble(Object sourceObject) throws ConversionException {
        if (sourceObject instanceof String) {
            if(((String) sourceObject).length() == 0) {
@@ -572,6 +579,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     *         NumberFormatException if the String does not contain a
     *        parsable Float.
     */
+   @Override
    protected Float convertObjectToFloat(Object sourceObject) throws ConversionException {
        if (sourceObject instanceof String) {
            if(((String) sourceObject).length() == 0) {
@@ -591,6 +599,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     *         NumberFormatException if the String does not contain a
     *        parsable integer.
     */
+   @Override
    protected Integer convertObjectToInteger(Object sourceObject) throws ConversionException {
        if(sourceObject instanceof String) {
            String sourceString = (String) sourceObject;
@@ -610,6 +619,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     *        parsable long.
     *
     */
+  @Override
   protected Long convertObjectToLong(Object sourceObject) throws ConversionException {
       if(sourceObject instanceof String) {
           String sourceString = (String) sourceObject;
@@ -629,6 +639,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
    *     NumberFormatException if the String does not contain a
    *    parsable short.
    */
+  @Override
   protected Short convertObjectToShort(Object sourceObject) throws ConversionException {
       if(sourceObject instanceof String) {
           String sourceString = (String) sourceObject;
@@ -650,6 +661,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
    *     NumberFormatException if the String does not contain a
    *    parsable BigDecimal.
    */
+  @Override
   protected BigDecimal convertObjectToNumber(Object sourceObject) throws ConversionException {
       if(sourceObject instanceof String) {
           String sourceString = (String) sourceObject;
@@ -666,6 +678,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     * Build a valid instance of BigInteger from the provided sourceObject.
     *    @param sourceObject    Valid instance of String, BigDecimal, or any Number
     */
+   @Override
    protected BigInteger convertObjectToBigInteger(Object sourceObject) throws ConversionException {
        if(sourceObject instanceof String) {
            String sourceString = (String) sourceObject;
@@ -682,6 +695,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     * Build a valid instance of BigDecimal from the given sourceObject
     *    @param sourceObject    Valid instance of String, BigInteger, any Number
     */
+   @Override
    protected BigDecimal convertObjectToBigDecimal(Object sourceObject) throws ConversionException {
        if(sourceObject instanceof String) {
            String sourceString = (String) sourceObject;
@@ -714,6 +728,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     *        parsable byte.
     *
     */
+    @Override
     protected Byte convertObjectToByte(Object sourceObject) throws ConversionException {
         if(sourceObject instanceof String) {
             String sourceString = (String) sourceObject;
@@ -1850,6 +1865,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     /**
      * INTERNAL:
      */
+    @Override
     public Object clone() {
         XMLConversionManager clone = (XMLConversionManager) super.clone();
         return clone;

@@ -38,6 +38,7 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.security.AccessController;
+import java.security.PrivilegedActionException;
 import java.sql.Blob;
 import java.sql.Date;
 import java.sql.Time;
@@ -629,7 +630,9 @@ public class QueryOperation extends Operation {
                                 getStringMethod = PrivilegedAccessHelper.getDeclaredMethod(oracleSQLXML, GETSTRING_METHOD, new Class[] {});
                                 fieldValue = PrivilegedAccessHelper.invokeMethod(getStringMethod, fieldValue, new Object[] {});
                             }
-                        } catch (Exception x) {
+                        } catch (RuntimeException re) {
+                            throw re;
+                        } catch (ReflectiveOperationException | PrivilegedActionException x) {
                             // if the required resources are not available there's nothing we can do...
                         }
                     } else if (fieldValue.getClass().getName().equalsIgnoreCase(ORACLEOPAQUE_STR)) {
@@ -655,7 +658,9 @@ public class QueryOperation extends Operation {
                                 getStringMethod = PrivilegedAccessHelper.getDeclaredMethod(xmlTypeFactoryClass, GETSTRING_METHOD, new Class[] {oracleOPAQUE});
                                 fieldValue = PrivilegedAccessHelper.invokeMethod(getStringMethod, xmlTypeFactory, new Object[] {fieldValue});
                             }
-                        } catch (Exception x) {
+                        } catch (RuntimeException x) {
+                            throw x;
+                        } catch (ReflectiveOperationException | PrivilegedActionException e) {
                             // if the required resources are not available there's nothing we can do...
                         }
                     }

@@ -29,14 +29,14 @@ import org.eclipse.persistence.sessions.serializers.AbstractSerializer;
  */
 public class KryoSerializer extends AbstractSerializer {
     /** Kryo is not thread safe, so need thread local. */
-    ThreadLocal kryo;
-    Constructor kryoConstructor;
-    Constructor outputConstructor;
-    Constructor inputConstructor;
-    Method writeMethod;
-    Method readMethod;
-    Method inputCloseMethod;
-    Method outputCloseMethod;
+    transient ThreadLocal kryo;
+    transient Constructor kryoConstructor;
+    transient Constructor outputConstructor;
+    transient Constructor inputConstructor;
+    transient Method writeMethod;
+    transient Method readMethod;
+    transient Method inputCloseMethod;
+    transient Method outputCloseMethod;
 
     public KryoSerializer() {
         try {
@@ -56,6 +56,7 @@ public class KryoSerializer extends AbstractSerializer {
         }
     }
 
+    @Override
     public Class getType() {
         return byte[].class;
     }
@@ -73,6 +74,7 @@ public class KryoSerializer extends AbstractSerializer {
         return value;
     }
 
+    @Override
     public Object serialize(Object object, Session session) {
         try {
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -85,6 +87,7 @@ public class KryoSerializer extends AbstractSerializer {
         }
     }
 
+    @Override
     public Object deserialize(Object bytes, Session session) {
         try {
             ByteArrayInputStream stream = new ByteArrayInputStream((byte[])bytes);
@@ -97,6 +100,7 @@ public class KryoSerializer extends AbstractSerializer {
         }
     }
 
+    @Override
     public String toString() {
         return getClass().getSimpleName();
     }

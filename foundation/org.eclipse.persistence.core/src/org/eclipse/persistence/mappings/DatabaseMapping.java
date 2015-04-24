@@ -20,37 +20,69 @@
 package org.eclipse.persistence.mappings;
 
 import java.beans.PropertyChangeListener;
-
-import java.io.*;
-import java.util.*;
+import java.io.Serializable;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 
 import org.eclipse.persistence.core.mappings.CoreMapping;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.indirection.*;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
-import org.eclipse.persistence.internal.descriptors.*;
-import org.eclipse.persistence.internal.expressions.*;
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.descriptors.ClassNameConversionRequired;
+import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
+import org.eclipse.persistence.internal.descriptors.InstanceVariableAttributeAccessor;
+import org.eclipse.persistence.internal.descriptors.MethodAttributeAccessor;
+import org.eclipse.persistence.internal.expressions.ObjectExpression;
+import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
+import org.eclipse.persistence.internal.helper.ConversionManager;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.IdentityHashSet;
+import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
-import org.eclipse.persistence.internal.indirection.*;
-import org.eclipse.persistence.internal.queries.*;
+import org.eclipse.persistence.internal.indirection.DatabaseValueHolder;
+import org.eclipse.persistence.internal.queries.AttributeItem;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
+import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
-import org.eclipse.persistence.internal.sessions.remote.*;
-import org.eclipse.persistence.internal.sessions.*;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.ChangeRecord;
+import org.eclipse.persistence.internal.sessions.MergeManager;
+import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.internal.sessions.remote.RemoteSessionController;
+import org.eclipse.persistence.internal.sessions.remote.RemoteValueHolder;
 import org.eclipse.persistence.mappings.converters.Converter;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.sessions.remote.*;
+import org.eclipse.persistence.queries.DeleteObjectQuery;
+import org.eclipse.persistence.queries.ObjectBuildingQuery;
+import org.eclipse.persistence.queries.ObjectLevelModifyQuery;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.QueryByExamplePolicy;
+import org.eclipse.persistence.queries.WriteObjectQuery;
 import org.eclipse.persistence.sessions.CopyGroup;
 import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.sessions.remote.DistributedSession;
 
 /**
  * <p><b>Purpose</b>: Defines how an attribute of an object maps to and from the database
@@ -412,7 +444,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
                 List<String> valuePair = getUnconvertedProperties().get(propertyName);
                 String value = valuePair.get(0);
                 String valueTypeName = valuePair.get(1);
-                Class valueType = String.class;
+                Class valueType = null;
 
                 // Have to initialize the valueType now
                 try {
@@ -682,6 +714,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
      * INTERNAL:
      * Return the descriptor to which this mapping belongs
      */
+    @Override
     public ClassDescriptor getDescriptor() {
         return descriptor;
     }
@@ -976,6 +1009,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
      * INTERNAL:
      * Related mapping should implement this method to return true.
      */
+    @Override
     public boolean isCollectionMapping() {
         return false;
     }
@@ -1007,6 +1041,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
      * INTERNAL:
      * Related mapping should implement this method to return true.
      */
+    @Override
     public boolean isDirectToFieldMapping() {
         return false;
     }
@@ -1814,6 +1849,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
      * INTERNAL:
      * Print the mapping attribute name, this is used in error messages.
      */
+    @Override
     public String toString() {
         return getClass().getName() + "[" + getAttributeName() + "]";
     }

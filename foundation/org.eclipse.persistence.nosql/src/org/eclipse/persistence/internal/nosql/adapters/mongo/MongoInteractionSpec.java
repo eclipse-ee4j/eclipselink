@@ -12,7 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.nosql.adapters.mongo;
 
-import javax.resource.cci.*;
+import javax.resource.cci.InteractionSpec;
 
 import com.mongodb.ReadPreference;
 import com.mongodb.WriteConcern;
@@ -32,10 +32,10 @@ public class MongoInteractionSpec implements InteractionSpec {
     protected int options;
 
     /** Operation read preference. */
-    protected ReadPreference readPreference;
+    protected transient ReadPreference readPreference;
 
     /** Operation write concern. */
-    protected WriteConcern writeConcern;
+    protected transient WriteConcern writeConcern;
 
     /** Operation skip for finds, number of rows to skip. */
     protected int skip;
@@ -140,6 +140,7 @@ public class MongoInteractionSpec implements InteractionSpec {
         this.code = code;
     }
 
+    @Override
     public String toString() {
         return getClass().getSimpleName() + "(" + ")";
     }

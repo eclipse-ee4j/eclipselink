@@ -740,6 +740,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                                     if (this.session.getExternalTransactionController().getExceptionHandler() == null) {
                                         this.session.getExternalTransactionController().setExceptionHandler(new ExceptionHandler() {
 
+                                            @Override
                                             public Object handleException(RuntimeException exception) {
                                                 if (exception instanceof org.eclipse.persistence.exceptions.OptimisticLockException) {
                                                     throw new OptimisticLockException(exception);
@@ -1111,7 +1112,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 try {
                     manager = new RMIServerSessionManagerDispatcher(session);
                 } catch (RemoteException exception) {
-                    ValidationException.invalidValueForProperty(serverName, PersistenceUnitProperties.REMOTE_SERVER_NAME, exception);
+                    throw ValidationException.invalidValueForProperty(serverName, PersistenceUnitProperties.REMOTE_SERVER_NAME, exception);
                 }
                 // Put the local instance into the Registry
                 try {
@@ -1124,7 +1125,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 try {
                     Naming.rebind(serverName, manager);
                 } catch (Exception exception) {
-                    ValidationException.invalidValueForProperty(serverName, PersistenceUnitProperties.REMOTE_SERVER_NAME, exception);
+                    throw ValidationException.invalidValueForProperty(serverName, PersistenceUnitProperties.REMOTE_SERVER_NAME, exception);
                 }
             }
         }
@@ -3518,7 +3519,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             Class helperClass;
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                    helperClass = (Class) AccessController.doPrivileged(
+                    helperClass = AccessController.doPrivileged(
                             new PrivilegedClassForName(helperClassName, true, eclipseLinkClassLoader));
                 } else {
                     helperClass = PrivilegedAccessHelper.getClassForName(helperClassName, true, eclipseLinkClassLoader);
@@ -4030,6 +4031,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      *
      * @see refreshMetadata
      */
+    @Override
     public void triggerMetadataRefresh(Map properties){
         refreshMetadata(properties);
     }
@@ -4229,6 +4231,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      * @deprecated Extenders should now use
      *             {@link #writeDDLToFiles(SchemaManager, String, Object, Object, TableCreationType, Map)}
      */
+    @Deprecated
     protected void writeDDLToFiles(SchemaManager mgr, String appLocation, Object createDDLJdbc, Object dropDDLJdbc,
             TableCreationType ddlType) {
         writeDDLToFiles(mgr, appLocation, createDDLJdbc, dropDDLJdbc, ddlType, Collections.EMPTY_MAP);

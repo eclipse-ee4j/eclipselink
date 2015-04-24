@@ -14,6 +14,16 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.features;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import javax.ws.rs.core.UriInfo;
+import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
+
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.internal.weaving.PersistenceWeavedRest;
@@ -23,15 +33,6 @@ import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultListItem;
 import org.eclipse.persistence.jpa.rs.util.list.SimpleHomogeneousList;
 import org.eclipse.persistence.jpa.rs.util.list.SingleResultQueryList;
 import org.eclipse.persistence.mappings.DatabaseMapping;
-
-import javax.ws.rs.core.UriInfo;
-import javax.xml.bind.JAXBElement;
-import javax.xml.namespace.QName;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Response builder used in JPARS 1.0 and earlier versions.

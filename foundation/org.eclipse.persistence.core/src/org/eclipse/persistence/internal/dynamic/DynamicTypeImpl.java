@@ -178,7 +178,7 @@ public class DynamicTypeImpl implements DynamicType, Cloneable {
             if (mapping.isCollectionMapping() ||
                 (mapping.getAttributeClassification() != null &&
                  mapping.getAttributeClassification().isPrimitive())) {
-                throw DynamicException.invalidSetPropertyType(mapping, value);
+                throw DynamicException.invalidSetPropertyType(mapping, null);
             }
             return;
         }

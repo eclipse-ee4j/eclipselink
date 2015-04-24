@@ -12,9 +12,14 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.eis.cobol;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+
+import org.eclipse.persistence.internal.eis.cobol.helper.ByteConverter;
+import org.eclipse.persistence.internal.eis.cobol.helper.Helper;
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.eis.cobol.helper.*;
 
 /**
 * <b>Purpose</b>: This class defines the <code>FieldMetaData</code> interface it defines
@@ -101,8 +106,9 @@ public class ElementaryFieldMetaData implements FieldMetaData {
     /**
     * performs a deep copy of all the attributes of the field
     */
+    @Override
     public FieldMetaData deepCopy() {
-        FieldMetaData fieldCopy = new ElementaryFieldMetaData(new String(myName), myRecord.getName());
+        FieldMetaData fieldCopy = new ElementaryFieldMetaData(myName, myRecord.getName());
         fieldCopy.setIsFieldRedefine(isRedefine);
         fieldCopy.setDecimalPosition(decimalPosition);
         fieldCopy.setArraySize(myArraySize);
@@ -112,7 +118,7 @@ public class ElementaryFieldMetaData implements FieldMetaData {
         if (isFieldRedefine()) {
             fieldCopy.setFieldRedefined(myFieldRedefined.deepCopy());
         }
-        fieldCopy.setDependentFieldName(new String(myDependentFieldName));
+        fieldCopy.setDependentFieldName(myDependentFieldName);
         fieldCopy.setIsSigned(isSigned);
         return fieldCopy;
     }
@@ -120,6 +126,7 @@ public class ElementaryFieldMetaData implements FieldMetaData {
     /**
     * returns true if field is a signed numeric field
     */
+    @Override
     public boolean isSigned() {
         return isSigned;
     }
@@ -127,6 +134,7 @@ public class ElementaryFieldMetaData implements FieldMetaData {
     /**
     * setter for isSigned
     */
+    @Override
     public void setIsSigned(boolean signed) {
         isSigned = signed;
     }
@@ -134,6 +142,7 @@ public class ElementaryFieldMetaData implements FieldMetaData {
     /**
     * returns true if the field is a numeric field with a decimal marker
     */
+    @Override
     public boolean hasDecimal() {
         if (decimalPosition == -1) {
             return false;
@@ -145,6 +154,7 @@ public class ElementaryFieldMetaData implements FieldMetaData {
     /**
     * getter for decimalPosition
     */
+    @Override
     public int getDecimalPosition() {
         return decimalPosition;
     }
@@ -152,6 +162,7 @@ public class ElementaryFieldMetaData implements FieldMetaData {
     /**
     * setter for decimalPosition
     */
+    @Override
     public void setDecimalPosition(int newPosition) {
         decimalPosition = newPosition;
     }
@@ -159,6 +170,7 @@ public class ElementaryFieldMetaData implements FieldMetaData {
     /**
     * getter for myName
     */
+    @Override
     public String getName() {
         return myName;
     }
@@ -166,6 +178,7 @@ public class ElementaryFieldMetaData implements FieldMetaData {
     /**
     * setter for myName
     */
+    @Override
     public void setName(String newName) {
         myName = newName;
     }
@@ -173,6 +186,7 @@ public class ElementaryFieldMetaData implements FieldMetaData {
     /**
     * getter for myRecord
     */
+    @Override
     public RecordMetaData getRecord() {
         return myRecord;
     }
@@ -180,6 +194,7 @@ public class ElementaryFieldMetaData implements FieldMetaData {
     /**
     * setter for myRecord
     */
+    @Override
     public void setRecord(RecordMetaData newRecord) {
         myRecord = newRecord;
     }
@@ -188,6 +203,7 @@ public class ElementaryFieldMetaData implements FieldMetaData {
     * getter for mySize, multiplies field size my array size if field is an array to get
     * total size
     */
+    @Override
     public int getSize() {
 
         /*if(this.isArray())
@@ -199,6 +215,7 @@ public class ElementaryFieldMetaData implements FieldMetaData {
     /**
     * setter for mySize
     */
+    @Override
     public void setSize(int size) {
         mySize = size;
     }
@@ -206,6 +223,7 @@ public class ElementaryFieldMetaData implements FieldMetaData {
     /**
     * returns true if field is composite, since this is elementary, it always returns false
     */
+    @Override
     public boolean isComposite() {
         return false;
     }
@@ -220,6 +238,7 @@ public class ElementaryFieldMetaData implements FieldMetaData {
     /**
     * getter for myOffset
     */
+    @Override
     public int getOffset() {
         return myOffset;
     }
@@ -227,6 +246,7 @@ public class ElementaryFieldMetaData implements FieldMetaData {
     /**
     * setter for myOffset
     */
+    @Override
     public void setOffset(int offset) {
         myOffset = offset;
     }
@@ -234,6 +254,7 @@ public class ElementaryFieldMetaData implements FieldMetaData {
     /**
     * getter for myType
     */
+    @Override
     public int getType() {
         return myType;
     }
@@ -241,6 +262,7 @@ public class ElementaryFieldMetaData implements FieldMetaData {
     /**
     * setter for myType
     */
+    @Override
     public void setType(int type) {
         myType = type;
     }
@@ -248,6 +270,7 @@ public class ElementaryFieldMetaData implements FieldMetaData {
     /**
     * returns true if field is a redefine
     */
+    @Override
     public boolean isFieldRedefine() {
         return isRedefine;
     }
@@ -255,6 +278,7 @@ public class ElementaryFieldMetaData implements FieldMetaData {
     /**
     * setter for isRedefine
     */
+    @Override
     public void setIsFieldRedefine(boolean status) {
         isRedefine = status;
     }
@@ -262,6 +286,7 @@ public class ElementaryFieldMetaData implements FieldMetaData {
     /**
     * setter for myFieldRedefined
     */
+    @Override
     public void setFieldRedefined(FieldMetaData field) {
         myFieldRedefined = field;
         if (field != null) {
@@ -274,6 +299,7 @@ public class ElementaryFieldMetaData implements FieldMetaData {
     /**
     * getter for myFieldRedefined
     */
+    @Override
     public FieldMetaData getFieldRedefined() {
         return myFieldRedefined;
     }
@@ -281,6 +307,7 @@ public class ElementaryFieldMetaData implements FieldMetaData {
     /**
     * returns true if field is an array
     */
+    @Override
     public boolean isArray() {
         return (myArraySize > 0);
     }
@@ -288,6 +315,7 @@ public class ElementaryFieldMetaData implements FieldMetaData {
     /**
     * getter for array size
     */
+    @Override
     public int getArraySize() {
         return myArraySize;
     }
@@ -295,6 +323,7 @@ public class ElementaryFieldMetaData implements FieldMetaData {
     /**
     * setter for myArraySize
     */
+    @Override
     public void setArraySize(int newSize) {
         myArraySize = newSize;
     }
@@ -302,13 +331,15 @@ public class ElementaryFieldMetaData implements FieldMetaData {
     /**
     * returns true if this field has a dependent field
     */
+    @Override
     public boolean dependsOn() {
-        return (myDependentFieldName != "");
+        return (!myDependentFieldName.isEmpty());
     }
 
     /**
     * getter for myDependentFieldName
     */
+    @Override
     public String getDependentFieldName() {
         return myDependentFieldName;
     }
@@ -316,6 +347,7 @@ public class ElementaryFieldMetaData implements FieldMetaData {
     /**
     * setter for myDependentFieldName
     */
+    @Override
     public void setDependentFieldName(String fieldName) {
         myDependentFieldName = fieldName;
     }
@@ -324,6 +356,7 @@ public class ElementaryFieldMetaData implements FieldMetaData {
     * this method extracts and returns the value for the field, if the field is an
     * array, the value is an <code>Vector</code>
     */
+    @Override
     public Object extractValueFromArray(byte[] recordData) {
         Object value;
         if (this.isArray()) {
@@ -357,6 +390,7 @@ public class ElementaryFieldMetaData implements FieldMetaData {
     /**
     * this method will write its value to the row provided
     */
+    @Override
     public void writeOnRow(CobolRow row, byte[] recordData) {
         DatabaseField field = new DatabaseField(this.getName(), this.getRecord().getName());
         Object value;
@@ -379,6 +413,7 @@ public class ElementaryFieldMetaData implements FieldMetaData {
     /**
     * this method will write its value from the row to the record data byte array
     */
+    @Override
     public void writeOnArray(CobolRow row, byte[] recordData) {
         Object value = row.get(this.getName());
         ByteConverter converter;

@@ -16,26 +16,18 @@ package org.eclipse.persistence.platform.database;
 import java.io.IOException;
 import java.io.Serializable; // for javadoc only
 import java.io.Writer;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-
 import java.util.Collection;
 
-import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform; // for javadoc only
-
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-
 import org.eclipse.persistence.expressions.ExpressionOperator;
-
+import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform; // for javadoc only
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
-
-import org.eclipse.persistence.platform.database.H2Platform; // for javadoc only
-import org.eclipse.persistence.platform.database.InformixPlatform;
-
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.UpdateAllQuery; // for javadoc only
+// for javadoc only
 
 /**
  * An {@link InformixPlatform} that fixes many EclipseLink bugs
@@ -473,8 +465,6 @@ public class Informix11Platform extends InformixPlatform {
     case Types.LONGVARCHAR:
       if (resultSet != null) {
         returnValue = resultSet.getString(columnNumber);
-      } else {
-        returnValue = super.getObjectFromResultSet(resultSet, columnNumber, jdbcType, session);
       }
       break;
     default:

@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.deployment.xml.parser;
 
+import org.eclipse.persistence.platform.xml.XMLPlatformException;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -202,7 +203,7 @@ public class XPathEngine {
                 String val = ((Text)next).getNodeValue();
                 if (val != null) {
                     if (returnVal == null) {
-                        returnVal = new String();
+                        returnVal = "";
                     }
                     returnVal += val;
                 }

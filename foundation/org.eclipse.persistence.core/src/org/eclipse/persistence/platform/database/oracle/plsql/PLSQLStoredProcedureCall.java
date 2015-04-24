@@ -14,6 +14,17 @@
 package org.eclipse.persistence.platform.database.oracle.plsql;
 
 //javase imports
+import static java.lang.Integer.MIN_VALUE;
+import static org.eclipse.persistence.internal.helper.DatabaseType.DatabaseTypeHelper.databaseTypeHelper;
+import static org.eclipse.persistence.internal.helper.Helper.INDENT;
+import static org.eclipse.persistence.internal.helper.Helper.NL;
+import static org.eclipse.persistence.platform.database.jdbc.JDBCTypes.getDatabaseTypeForCode;
+import static org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQLType.PLSQLBoolean_IN_CONV;
+import static org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQLType.PLSQLBoolean_OUT_CONV;
+import static org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQLTypes.PLSQLBoolean;
+import static org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQLTypes.XMLType;
+
+import java.io.Serializable;
 import java.sql.CallableStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -27,7 +38,6 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
-import static java.lang.Integer.MIN_VALUE;
 
 // EclipseLink imports
 import org.eclipse.persistence.exceptions.QueryException;
@@ -43,14 +53,6 @@ import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField
 import org.eclipse.persistence.platform.database.oracle.jdbc.OracleArrayType;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.sessions.DatabaseRecord;
-import static org.eclipse.persistence.internal.helper.DatabaseType.DatabaseTypeHelper.databaseTypeHelper;
-import static org.eclipse.persistence.internal.helper.Helper.INDENT;
-import static org.eclipse.persistence.internal.helper.Helper.NL;
-import static org.eclipse.persistence.platform.database.jdbc.JDBCTypes.getDatabaseTypeForCode;
-import static org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQLType.PLSQLBoolean_IN_CONV;
-import static org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQLType.PLSQLBoolean_OUT_CONV;
-import static org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQLTypes.PLSQLBoolean;
-import static org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQLTypes.XMLType;
 /**
  * <b>Purpose</b>:
  * Generates an Anonymous PL/SQL block to invoke the specified Stored Procedure
@@ -854,7 +856,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
                 sb.append(getPl2SQLName((ComplexDatabaseType)collection.nestedType));
                 sb.append("(aPlsqlItem(I));");
             }
-            else if (collection.nestedType.equals(PLSQLBoolean)) {
+            else if (PLSQLBoolean.equals(collection.nestedType)) {
                 sb.append(PLSQLBoolean_OUT_CONV);
                 sb.append("(aPlsqlItem(I));");
             }
@@ -920,7 +922,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
                 sb.append(getSQL2PlName((ComplexDatabaseType)collection.nestedType));
                 sb.append("(aSqlItem(I));");
             }
-            else if (collection.nestedType.equals(PLSQLBoolean)) {
+            else if (PLSQLBoolean.equals(collection.nestedType)) {
                 sb.append("aPlsqlItem(I + 1 - aSqlItem.FIRST) := ");
                 sb.append(PLSQLBoolean_IN_CONV);
                 sb.append("(aSqlItem(I));");
@@ -1105,6 +1107,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         List<PLSQLargument> outArguments = getArguments(arguments, OUT);
         outArguments.addAll(getArguments(arguments, INOUT));
         Collections.sort(outArguments, new Comparator<PLSQLargument>() {
+            @Override
             public int compare(PLSQLargument o1, PLSQLargument o2) {
                 return o1.originalIndex - o2.originalIndex;
             }
@@ -1142,6 +1145,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         List<PLSQLargument> inArguments = getArguments(specifiedArguments, IN);
         inArguments.addAll(getArguments(specifiedArguments, INOUT));
         Collections.sort(inArguments, new Comparator<PLSQLargument>() {
+            @Override
             public int compare(PLSQLargument o1, PLSQLargument o2) {
                 return o1.inIndex - o2.inIndex;
             }
@@ -1157,6 +1161,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         List<PLSQLargument> outArguments = getArguments(specifiedArguments, OUT);
         outArguments.addAll(getArguments(specifiedArguments, INOUT));
         Collections.sort(outArguments, new Comparator<PLSQLargument>() {
+            @Override
             public int compare(PLSQLargument o1, PLSQLargument o2) {
                 return o1.outIndex - o2.outIndex;
             }
@@ -1265,7 +1270,8 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
      * the inIndex property.
      *
      */
-    static final class InArgComparer implements Comparator<PLSQLargument> {
+    static final class InArgComparer implements Comparator<PLSQLargument>, Serializable {
+        private static final long serialVersionUID = -4182293492217092689L;
         @Override
         public int compare(PLSQLargument arg0, PLSQLargument arg1) {
             if (arg0.inIndex < arg1.inIndex) {
@@ -1284,7 +1290,8 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
      * the outIndex property.
      *
      */
-    static final class OutArgComparer implements Comparator<PLSQLargument> {
+    static final class OutArgComparer implements Comparator<PLSQLargument>, Serializable {
+        private static final long serialVersionUID = -4182293492217092689L;
         @Override
         public int compare(PLSQLargument arg0, PLSQLargument arg1) {
             if (arg0.inIndex < arg1.outIndex) {

@@ -113,6 +113,7 @@ public class Helper extends CoreHelper implements Serializable {
      * Instead of setting the flag to true use:
      * session.getProject().setDefaultIdValidation(IdValidation.NULL)
      **/
+    @Deprecated
     public static boolean isZeroValidPrimaryKey = false;
 
     // settings to allow ascertaining attribute names from method names
@@ -498,7 +499,7 @@ public class Helper extends CoreHelper implements Serializable {
             return null;
         }
         // complex array component type case
-        if (aString.length() > 3 && (aString.startsWith("[L") & aString.endsWith(";"))) {
+        if (aString.length() > 3 && (aString.startsWith("[L") && aString.endsWith(";"))) {
             return aString.substring(2, aString.length() - 1);
         } else if (aString.startsWith("[")){
             Class primitiveClass = null;
@@ -2235,7 +2236,7 @@ public class Helper extends CoreHelper implements Serializable {
         if (list != null) {
             for (int i = 0; i < list.size(); i++) {
                 Object listObject = list.get(i);
-                if ((comparisonObjectIsNull & listObject == null) || (!comparisonObjectIsNull && comparisonObject.equals(listObject))) {
+                if ((comparisonObjectIsNull && listObject == null) || (!comparisonObjectIsNull && comparisonObject.equals(listObject))) {
                     instances++;
                 }
             }

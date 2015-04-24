@@ -432,7 +432,14 @@ public class BeanValidationPlugin extends Plugin {
             Integer digits = Integer.valueOf(facet.getValue().value);
             if (digits != null) {
                 XSFacet fractionDigits = simpleType.getFacet(FACET_FRACTIONDIGITS);
-                int fractionDigs = fractionDigits == null ? 0 : Integer.valueOf(fractionDigits.getValue().value);
+                int fractionDigs = 0;
+                if (fractionDigits != null) {
+                    try {
+                        fractionDigs = Integer.parseInt(fractionDigits.getValue().value);
+                    } catch (NumberFormatException nfe) {
+                        fractionDigs = 0;
+                    }
+                }
                 if (notAnnotated(fieldVar, digitsAnn))
                     a.put(fieldVar.annotate(digitsAnn).param("integer", (digits - fractionDigs)).param("fraction", fractionDigs), FacetType.totalDigits);
             }

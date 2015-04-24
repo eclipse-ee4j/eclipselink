@@ -14,24 +14,47 @@
  ******************************************************************************/
 package org.eclipse.persistence.mappings;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.expressions.*;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.exceptions.OptimisticLockException;
+import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.indirection.ValueHolder;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
-import org.eclipse.persistence.internal.descriptors.*;
+import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
+import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.descriptors.changetracking.ObjectChangeListener;
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.IdentityHashSet;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
-import org.eclipse.persistence.internal.indirection.*;
-import org.eclipse.persistence.internal.sessions.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.sessions.remote.*;
+import org.eclipse.persistence.internal.indirection.DatabaseValueHolder;
+import org.eclipse.persistence.internal.indirection.ProxyIndirectionPolicy;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.ChangeRecord;
+import org.eclipse.persistence.internal.sessions.MergeManager;
+import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
+import org.eclipse.persistence.internal.sessions.ObjectReferenceChangeRecord;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.queries.DeleteObjectQuery;
+import org.eclipse.persistence.queries.InsertObjectQuery;
+import org.eclipse.persistence.queries.ObjectBuildingQuery;
+import org.eclipse.persistence.queries.ObjectLevelModifyQuery;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.QueryByExamplePolicy;
+import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.queries.WriteObjectQuery;
 import org.eclipse.persistence.sessions.CopyGroup;
 import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.sessions.remote.DistributedSession;
 
 /**
  * <p><b>Purpose</b>: Abstract class for 1:1, variable 1:1 and reference mappings
@@ -792,16 +815,14 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
                 keyForObjectInMemory = getPrimaryKeyForObject(objectInMemory, session);
             }
             if ((keyForObjectInMemory == null) || !keyForObjectInDatabase.equals(keyForObjectInMemory)) {
-                if (objectFromDatabase != null) {
-                    if (this.isCascadeOnDeleteSetOnDatabase && !hasRelationTableMechanism() && session.isUnitOfWork()) {
-                        ((UnitOfWorkImpl)session).getCascadeDeleteObjects().add(objectFromDatabase);
-                    }
-                    DeleteObjectQuery deleteQuery = new DeleteObjectQuery();
-                    deleteQuery.setIsExecutionClone(true);
-                    deleteQuery.setObject(objectFromDatabase);
-                    deleteQuery.setCascadePolicy(query.getCascadePolicy());
-                    session.executeQuery(deleteQuery);
+                if (this.isCascadeOnDeleteSetOnDatabase && !hasRelationTableMechanism() && session.isUnitOfWork()) {
+                    ((UnitOfWorkImpl)session).getCascadeDeleteObjects().add(objectFromDatabase);
                 }
+                DeleteObjectQuery deleteQuery = new DeleteObjectQuery();
+                deleteQuery.setIsExecutionClone(true);
+                deleteQuery.setObject(objectFromDatabase);
+                deleteQuery.setCascadePolicy(query.getCascadePolicy());
+                session.executeQuery(deleteQuery);
             }
         }
 
@@ -1457,6 +1478,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * Update a ChangeRecord to replace the ChangeSet for the old entity with the changeSet for the new Entity.  This is
      * used when an Entity is merged into itself and the Entity reference new or detached entities.
      */
+    @Override
     public void updateChangeRecordForSelfMerge(ChangeRecord changeRecord, Object source, Object target, UnitOfWorkChangeSet parentUOWChangeSet, UnitOfWorkImpl unitOfWork){
         ((ObjectReferenceChangeRecord)changeRecord).setNewValue(((UnitOfWorkChangeSet)unitOfWork.getUnitOfWorkChangeSet()).findOrCreateLocalObjectChangeSet(target, referenceDescriptor, unitOfWork.isCloneNewObject(target)));
     }

@@ -18,11 +18,12 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.EnumSet;
 import java.util.Iterator;
-import org.eclipse.persistence.sessions.Session;
-import org.eclipse.persistence.mappings.DatabaseMapping;
+
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.sessions.Session;
 
 /**
  * <b>Purpose</b>: Object type converter is used to match a fixed number of
@@ -105,16 +106,16 @@ public class EnumTypeConverter extends ObjectTypeConverter {
      * that has been built with class names to a project with classes.
      * @param classLoader
      */
+    @Override
     public void convertClassNamesToClasses(ClassLoader classLoader) {
         super.convertClassNamesToClasses(classLoader);
 
         // convert if enumClass is null or if different classLoader
-        if (m_enumClass == null ||
-            (m_enumClass != null && !m_enumClass.getClassLoader().equals(classLoader))) {
+        if (m_enumClass == null || !m_enumClass.getClassLoader().equals(classLoader)) {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        m_enumClass = (Class)AccessController.doPrivileged(
+                        m_enumClass = AccessController.doPrivileged(
                             new PrivilegedClassForName(m_enumClassName, true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(
@@ -137,6 +138,7 @@ public class EnumTypeConverter extends ObjectTypeConverter {
      * Returns the corresponding attribute value for the specified field value.
      * Wraps the super method to return an Enum type from the string conversion.
      */
+    @Override
     public Object convertDataValueToObjectValue(Object fieldValue, Session session) {
         Object obj = super.convertDataValueToObjectValue(fieldValue, session);
 
@@ -153,6 +155,7 @@ public class EnumTypeConverter extends ObjectTypeConverter {
      * strings (names) so this method wraps the super method in that if
      * breaks down the enum to a string name before converting it.
      */
+    @Override
     public Object convertObjectValueToDataValue(Object attributeValue, Session session) {
         if (attributeValue == null) {
             return super.convertObjectValueToDataValue(null, session);

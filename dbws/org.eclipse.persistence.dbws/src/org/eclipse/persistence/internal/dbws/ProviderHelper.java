@@ -52,6 +52,7 @@ import javax.xml.soap.SOAPFactory;
 import javax.xml.soap.SOAPFault;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
@@ -252,33 +253,21 @@ public class ProviderHelper extends XRServiceFactory {
         // instance of DBWSAdapter (a sub-class of XRService)
         DBWSAdapter dbwsAdapter = (DBWSAdapter)xrService;
 
-        InputStream wsdlInputStream = initWSDLInputStream(parentClassLoader, sc);
         // get inline schema from WSDL - has additional types for the operations
-        try {
+        try (InputStream wsdlInputStream = initWSDLInputStream(parentClassLoader, sc)) {
             StringWriter sw = new StringWriter();
             StreamSource wsdlStreamSource = new StreamSource(wsdlInputStream);
             Transformer t = TransformerFactory.newInstance().newTransformer(new StreamSource(
                 new StringReader(MATCH_SCHEMA)));
             StreamResult streamResult = new StreamResult(sw);
             t.transform(wsdlStreamSource, streamResult);
-            sw.toString();
-            wsdlInputStream.close();
             SchemaModelProject schemaProject = new SchemaModelProject();
             XMLContext xmlContext2 = new XMLContext(schemaProject);
             unmarshaller = xmlContext2.createUnmarshaller();
             Schema extendedSchema = (Schema)unmarshaller.unmarshal(new StringReader(sw.toString()));
             dbwsAdapter.setExtendedSchema(extendedSchema);
-        }
-        catch (Exception e) {
+        } catch (IOException | TransformerException e) {
             // that's Ok, WSDL may not contain inline schema
-        }
-        finally {
-            try {
-                wsdlInputStream.close();
-            }
-            catch (IOException e) {
-                // ignore
-            }
         }
 
         // an Invocation needs a mapping for its parameters - use XMLAnyCollectionMapping +

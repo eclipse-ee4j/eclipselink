@@ -14,12 +14,16 @@ package org.eclipse.persistence.queries;
 
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
-import java.util.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.internal.helper.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Vector;
+
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
-import org.eclipse.persistence.exceptions.*;
 
 /**
 * <p><b>Purpose</b>:
@@ -272,7 +276,7 @@ public class QueryByExamplePolicy implements java.io.Serializable {
         excludeValue((long)0);
         excludeValue((byte)0);
         excludeValue(0.0f);
-        excludeValue(new String(""));
+        excludeValue("");
     }
 
     /**

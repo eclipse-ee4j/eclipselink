@@ -14,14 +14,60 @@
 package org.eclipse.persistence.internal.xr;
 
 //javase imports
+import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
+import static javax.xml.XMLConstants.NULL_NS_URI;
+import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
+import static org.eclipse.persistence.internal.oxm.Constants.ANY;
+import static org.eclipse.persistence.internal.oxm.Constants.ANY_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.ANY_SIMPLE_TYPE;
+import static org.eclipse.persistence.internal.oxm.Constants.ANY_SIMPLE_TYPE_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.BASE_64_BINARY;
+import static org.eclipse.persistence.internal.oxm.Constants.BASE_64_BINARY_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.BOOLEAN;
+import static org.eclipse.persistence.internal.oxm.Constants.BOOLEAN_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.BYTE;
+import static org.eclipse.persistence.internal.oxm.Constants.BYTE_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.DATE;
+import static org.eclipse.persistence.internal.oxm.Constants.DATE_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.DATE_TIME;
+import static org.eclipse.persistence.internal.oxm.Constants.DATE_TIME_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.DECIMAL;
+import static org.eclipse.persistence.internal.oxm.Constants.DECIMAL_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.DOUBLE;
+import static org.eclipse.persistence.internal.oxm.Constants.DOUBLE_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.FLOAT;
+import static org.eclipse.persistence.internal.oxm.Constants.FLOAT_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.HEX_BINARY;
+import static org.eclipse.persistence.internal.oxm.Constants.HEX_BINARY_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.INT;
+import static org.eclipse.persistence.internal.oxm.Constants.INTEGER;
+import static org.eclipse.persistence.internal.oxm.Constants.INTEGER_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.INT_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.LONG;
+import static org.eclipse.persistence.internal.oxm.Constants.LONG_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.QNAME_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.SHORT;
+import static org.eclipse.persistence.internal.oxm.Constants.SHORT_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.STRING;
+import static org.eclipse.persistence.internal.oxm.Constants.STRING_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.SWA_REF;
+import static org.eclipse.persistence.internal.oxm.Constants.SWA_REF_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.TIME;
+import static org.eclipse.persistence.internal.oxm.Constants.TIME_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.UNSIGNED_BYTE;
+import static org.eclipse.persistence.internal.oxm.Constants.UNSIGNED_BYTE_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.UNSIGNED_INT;
+import static org.eclipse.persistence.internal.oxm.Constants.UNSIGNED_INT_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.UNSIGNED_SHORT;
+import static org.eclipse.persistence.internal.oxm.Constants.UNSIGNED_SHORT_QNAME;
+
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 //java eXtension imports
 import javax.xml.namespace.QName;
-import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
-import static javax.xml.XMLConstants.NULL_NS_URI;
-import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 
 //EclipseLink imports
 import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
@@ -32,56 +78,12 @@ import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.sessions.Record;
 import org.eclipse.persistence.sessions.Session;
-import static org.eclipse.persistence.oxm.XMLConstants.ANY;
-import static org.eclipse.persistence.oxm.XMLConstants.ANY_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.ANY_SIMPLE_TYPE;
-import static org.eclipse.persistence.oxm.XMLConstants.ANY_SIMPLE_TYPE_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.BASE_64_BINARY;
-import static org.eclipse.persistence.oxm.XMLConstants.BASE_64_BINARY_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.BOOLEAN;
-import static org.eclipse.persistence.oxm.XMLConstants.BOOLEAN_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.BYTE;
-import static org.eclipse.persistence.oxm.XMLConstants.BYTE_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.DATE;
-import static org.eclipse.persistence.oxm.XMLConstants.DATE_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.DATE_TIME;
-import static org.eclipse.persistence.oxm.XMLConstants.DATE_TIME_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.DECIMAL;
-import static org.eclipse.persistence.oxm.XMLConstants.DECIMAL_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.DOUBLE;
-import static org.eclipse.persistence.oxm.XMLConstants.DOUBLE_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.FLOAT;
-import static org.eclipse.persistence.oxm.XMLConstants.FLOAT_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.HEX_BINARY;
-import static org.eclipse.persistence.oxm.XMLConstants.HEX_BINARY_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.INT;
-import static org.eclipse.persistence.oxm.XMLConstants.INTEGER;
-import static org.eclipse.persistence.oxm.XMLConstants.INTEGER_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.INT_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.LONG;
-import static org.eclipse.persistence.oxm.XMLConstants.LONG_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.QNAME_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.SHORT;
-import static org.eclipse.persistence.oxm.XMLConstants.SHORT_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.STRING;
-import static org.eclipse.persistence.oxm.XMLConstants.STRING_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.TIME;
-import static org.eclipse.persistence.oxm.XMLConstants.TIME_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.UNSIGNED_BYTE;
-import static org.eclipse.persistence.oxm.XMLConstants.UNSIGNED_BYTE_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.UNSIGNED_INT;
-import static org.eclipse.persistence.oxm.XMLConstants.UNSIGNED_INT_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.UNSIGNED_SHORT;
-import static org.eclipse.persistence.oxm.XMLConstants.UNSIGNED_SHORT_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.SWA_REF;
-import static org.eclipse.persistence.oxm.XMLConstants.SWA_REF_QNAME;
 
 public class QNameTransformer implements AttributeTransformer, FieldTransformer {
 
   public static final Map<String, QName> SCHEMA_QNAMES;
   static {
-      SCHEMA_QNAMES = new HashMap<String, QName>() {
+      SCHEMA_QNAMES = Collections.unmodifiableMap(new HashMap<String, QName>() {
           {
               put(ANY, ANY_QNAME);
               put(ANY_SIMPLE_TYPE, ANY_SIMPLE_TYPE_QNAME);
@@ -106,13 +108,13 @@ public class QNameTransformer implements AttributeTransformer, FieldTransformer 
               put(UNSIGNED_SHORT, UNSIGNED_SHORT_QNAME);
               put(SWA_REF, SWA_REF_QNAME);
           }
-      };
+      });
   }
   private static final char COLON = ':';
   private static final String DEFAULT_NAMESPACE_PREFIX = "";
 
   AbstractTransformationMapping transformationMapping;
-  private NamespaceResolver namespaceResolver;
+  private transient NamespaceResolver namespaceResolver;
   private String xPath;
 
   public QNameTransformer(String xPath) {
@@ -120,11 +122,13 @@ public class QNameTransformer implements AttributeTransformer, FieldTransformer 
       this.xPath = xPath;
   }
 
+  @Override
   public void initialize(AbstractTransformationMapping mapping) {
       transformationMapping = mapping;
       namespaceResolver = ((XMLDescriptor)mapping.getDescriptor()).getNamespaceResolver();
   }
 
+  @Override
   public Object buildAttributeValue(Record record, Object object, Session session) {
       if (null == record) {
           return null;
@@ -161,6 +165,7 @@ public class QNameTransformer implements AttributeTransformer, FieldTransformer 
       return qName;
   }
 
+  @Override
   public Object buildFieldValue(Object instance, String fieldName, Session session) {
       if (null == instance) {
           return null;

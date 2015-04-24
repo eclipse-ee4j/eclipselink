@@ -43,7 +43,6 @@ import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.queries.ValueReadQuery;
 import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
@@ -115,6 +114,7 @@ public final class HANAPlatform extends DatabasePlatform {
         return false;
     }
 
+    @Override
     public boolean requiresUniqueConstraintCreationOnTableCreate() {
         return true;
     }
@@ -172,7 +172,6 @@ public final class HANAPlatform extends DatabasePlatform {
     protected void printFieldTypeSize(Writer writer, FieldDefinition field,
             FieldTypeDefinition fieldType) throws IOException {
         String typeName = fieldType.getName();
-        Class javaFieldType = field.getType();
         if ("NVARCHAR".equals(typeName)) {
             if (field.getSize() > MAX_VARTYPE_LENGTH) {
                 fieldType = new FieldTypeDefinition("NCLOB", false);
@@ -319,6 +318,7 @@ public final class HANAPlatform extends DatabasePlatform {
         return ExpressionOperator.simpleTwoArgumentFunction(ExpressionOperator.Nvl, "IFNULL");
     }
 
+    @Override
     public void printSQLSelectStatement(DatabaseCall call, ExpressionSQLPrinter printer,
             SQLSelectStatement statement) {
         int max = 0;
@@ -352,6 +352,7 @@ public final class HANAPlatform extends DatabasePlatform {
         call.setIgnoreMaxResultsSetting(true);
     }
 
+    @Override
     public int computeMaxRowsForSQL(int firstResultIndex, int maxResults) {
         return maxResults - ((firstResultIndex >= 0) ? firstResultIndex : 0);
     }
@@ -497,6 +498,7 @@ public final class HANAPlatform extends DatabasePlatform {
         return false;
     }
 
+    @Override
     public boolean supportsStoredFunctions() {
         return false;
     }

@@ -68,6 +68,7 @@ public class PreLoginMappingAdapter extends SessionEventListener {
     /* (non-Javadoc)
      * @see org.eclipse.persistence.internal.jaxb.SessionEventListener#preLogin(org.eclipse.persistence.sessions.SessionEvent)
      */
+    @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void preLogin(SessionEvent event) {
         Project project = event.getSession().getProject();
@@ -200,12 +201,8 @@ public class PreLoginMappingAdapter extends SessionEventListener {
                             DatabaseMapping dbMapping = jpaDescriptor.getMappingForAttributeName(mapping.getAttributeName());
                             if ((dbMapping instanceof ForeignReferenceMapping)) {
                                 ForeignReferenceMapping jpaMapping = (ForeignReferenceMapping) dbMapping;
-                                if (jpaMapping != null) {
-                                    ClassDescriptor jaxbDescriptor = project.getDescriptorForAlias(jpaMapping.getDescriptor().getAlias());
-                                    if (jaxbDescriptor != null) {
-                                        convertMappingToXMLChoiceMapping(jaxbDescriptor, jpaMapping, cl, jpaSession);
-                                    }
-                                }
+                                ClassDescriptor jaxbDescriptor = project.getDescriptorForAlias(jpaMapping.getDescriptor().getAlias());
+                                convertMappingToXMLChoiceMapping(jaxbDescriptor, jpaMapping, cl, jpaSession);
                             }
                         } else if (mapping instanceof XMLCompositeObjectMapping) {
                             // Fix for Bug 403113 - JPA-RS Isn't Serializing an Embeddable defined in an ElementCollection to JSON Correctly
@@ -213,14 +210,12 @@ public class PreLoginMappingAdapter extends SessionEventListener {
                             // Based on (http://wiki.eclipse.org/EclipseLink/Examples/JPA/NoSQL#Step_2_:_Map_the_data),
                             // the mappedBy option on relationships is not supported for NoSQL data, so no need to add inverse mapping
                             XMLCompositeObjectMapping jpaMapping = (XMLCompositeObjectMapping) mapping;
-                            if (jpaMapping != null) {
-                                ClassDescriptor jaxbDescriptor = project.getDescriptorForAlias(jpaMapping.getDescriptor().getAlias());
-                                if (jaxbDescriptor != null) {
-                                    Class clazz = jpaMapping.getReferenceClass();
-                                    if (clazz != null) {
-                                        if ((jpaSession.getDescriptor(clazz) != null) && (jpaSession.getDescriptor(clazz).isEISDescriptor()))
-                                            convertMappingToXMLChoiceMapping(jaxbDescriptor, jpaMapping, cl, jpaSession);
-                                    }
+                            ClassDescriptor jaxbDescriptor = project.getDescriptorForAlias(jpaMapping.getDescriptor().getAlias());
+                            if (jaxbDescriptor != null) {
+                                Class clazz = jpaMapping.getReferenceClass();
+                                if (clazz != null) {
+                                    if ((jpaSession.getDescriptor(clazz) != null) && (jpaSession.getDescriptor(clazz).isEISDescriptor()))
+                                        convertMappingToXMLChoiceMapping(jaxbDescriptor, jpaMapping, cl, jpaSession);
                                 }
                             }
                         }

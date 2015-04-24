@@ -21,8 +21,10 @@ package org.eclipse.persistence.dynamic;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.Iterator;
-import org.w3c.dom.Document;
+
+import javax.persistence.Embeddable;
 
 //EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -53,8 +55,7 @@ import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.factories.XMLProjectReader;
 import org.eclipse.persistence.tools.schemaframework.SchemaManager;
-
-import javax.persistence.Embeddable;
+import org.w3c.dom.Document;
 
 /**
  * The EntityTypeBuilder is a factory class for creating and extending dynamic
@@ -286,8 +287,11 @@ public class DynamicTypeBuilder {
      * to DROP and CREATE the table. WARNING: This will cause data loss.
      */
     public OneToOneMapping addOneToOneMapping(String name, DynamicType refType, String... fkFieldNames) {
-        if (fkFieldNames == null || refType.getDescriptor().getPrimaryKeyFields().size() != fkFieldNames.length) {
-            throw new IllegalArgumentException("Invalid FK field names: " + fkFieldNames + " for target: " + refType);
+        if (fkFieldNames == null) {
+            throw new IllegalArgumentException("Invalid FK field names: 'null' for target: " + refType);
+        }
+        if (refType.getDescriptor().getPrimaryKeyFields().size() != fkFieldNames.length) {
+            throw new IllegalArgumentException("Invalid FK field names: " + Arrays.asList(fkFieldNames) + " for target: " + refType);
         }
 
         OneToOneMapping mapping = new OneToOneMapping();
@@ -320,8 +324,11 @@ public class DynamicTypeBuilder {
      *         the descriptor is already initialized.
      */
     public OneToManyMapping addOneToManyMapping(String name, DynamicType refType, String... fkFieldNames) {
-        if (fkFieldNames == null || getType().getDescriptor().getPrimaryKeyFields().size() != fkFieldNames.length) {
-            throw new IllegalArgumentException("Invalid FK field names: " + fkFieldNames + " for target: " + refType);
+        if (fkFieldNames == null) {
+            throw new IllegalArgumentException("Invalid FK field names: 'null' for target: " + refType);
+        }
+        if (getType().getDescriptor().getPrimaryKeyFields().size() != fkFieldNames.length) {
+            throw new IllegalArgumentException("Invalid FK field names: " + Arrays.asList(fkFieldNames) + " for target: " + refType);
         }
 
         OneToManyMapping mapping = new OneToManyMapping();
@@ -362,8 +369,11 @@ public class DynamicTypeBuilder {
      * @throws IllegalArgumentException
      */
     public DirectCollectionMapping addDirectCollectionMapping(String name, String targetTable, String valueColumn, Class<?> valueType, String... fkFieldNames) throws IllegalArgumentException {
-        if (fkFieldNames == null || getType().getDescriptor().getPrimaryKeyFields().size() != fkFieldNames.length) {
-            throw new IllegalArgumentException("Invalid FK field names: " + fkFieldNames + " for target: ");
+        if (fkFieldNames == null) {
+            throw new IllegalArgumentException("Invalid FK field names: 'null' for target: ");
+        }
+        if (getType().getDescriptor().getPrimaryKeyFields().size() != fkFieldNames.length) {
+            throw new IllegalArgumentException("Invalid FK field names: " + Arrays.asList(fkFieldNames) + " for target: ");
         }
 
         DirectCollectionMapping mapping = new DirectCollectionMapping();
@@ -509,7 +519,6 @@ public class DynamicTypeBuilder {
     public DynamicEnumBuilder addEnum(String fieldName, String className, String columnName,
         DynamicClassLoader dcl) {
         dcl.addEnum(className, (Object)null);
-        ClassDescriptor desc = getType().getDescriptor();
         AbstractDirectMapping adm = addDirectMappingForEnum(fieldName, className, columnName);
         return new DynamicEnumBuilder(className, adm, dcl);
     }

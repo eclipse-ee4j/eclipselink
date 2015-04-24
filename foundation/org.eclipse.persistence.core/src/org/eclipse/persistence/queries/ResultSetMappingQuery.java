@@ -22,10 +22,14 @@
  ******************************************************************************/
 package org.eclipse.persistence.queries;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
-import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
@@ -205,8 +209,8 @@ public class ResultSetMappingQuery extends ObjectBuildingQuery {
                     // We have a map keyed on named ref_cursors
                     Map recordsMap = (Map) records;
 
-                    for (Object cursor : recordsMap.keySet()) {
-                        results.add(buildObjectsFromRecords((List) recordsMap.get(cursor), getSQLResultSetMappings().get(recordIndex)));
+                    for (Object list : recordsMap.values()) {
+                        results.add(buildObjectsFromRecords((List) list, getSQLResultSetMappings().get(recordIndex)));
                         recordIndex++;
                     }
                 } else {
@@ -256,12 +260,12 @@ public class ResultSetMappingQuery extends ObjectBuildingQuery {
                     Object[] resultElement = new Object[mapping.getResults().size()];
                     DatabaseRecord record = (DatabaseRecord)iterator.next();
                     for (int i = 0; i < mapping.getResults().size(); i++) {
-                        resultElement[i] = ((SQLResult)mapping.getResults().get(i)).getValueFromRecord(record, this);
+                        resultElement[i] = mapping.getResults().get(i).getValueFromRecord(record, this);
                     }
                     results.add(resultElement);
                 } else if (mapping.getResults().size() == 1) {
                     DatabaseRecord record = (DatabaseRecord)iterator.next();
-                    results.add(((SQLResult)mapping.getResults().get(0)).getValueFromRecord(record, this));
+                    results.add(mapping.getResults().get(0).getValueFromRecord(record, this));
                 } else {
                     return results;
                 }
@@ -331,6 +335,7 @@ public class ResultSetMappingQuery extends ObjectBuildingQuery {
     /**
      * PUBLIC: Return true if this is a result set mapping query.
      */
+    @Override
     public boolean isResultSetMappingQuery() {
         return true;
     }

@@ -21,9 +21,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Vector;
-import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
 
@@ -73,6 +73,7 @@ import org.eclipse.persistence.internal.oxm.schema.model.SimpleType;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.EnumTypeConverter;
 import org.eclipse.persistence.oxm.XMLContext;
+import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.sessions.Project;
@@ -635,7 +636,7 @@ public class SchemaModelGenerator {
         Element elem = elementExistsInSequence(frag.getLocalName(), frag.getShortName(), seq);
         if (elem == null) {
             if (frag.getNamespaceURI() != null) {
-                elem = handleFragNamespace(frag, schemaForNamespace, workingSchema, properties, elem, schemaTypeString);
+                elem = handleFragNamespace(frag, schemaForNamespace, workingSchema, properties, null, schemaTypeString);
             } else {
                 elem = buildElement(frag, schemaTypeString, Occurs.ZERO, null);
             }
@@ -677,7 +678,7 @@ public class SchemaModelGenerator {
         Element elem = elementExistsInSequence(frag.getLocalName(), frag.getShortName(), seq);
         if (elem == null) {
             if (frag.getNamespaceURI() != null) {
-                elem = handleFragNamespace(frag, schemaForNamespace, workingSchema, properties, elem, schemaTypeString);
+                elem = handleFragNamespace(frag, schemaForNamespace, workingSchema, properties, null, schemaTypeString);
                 elem.setMaxOccurs(Occurs.UNBOUNDED);
             } else {
                 elem = buildElement(frag, schemaTypeString, Occurs.ZERO, Occurs.UNBOUNDED);
@@ -744,7 +745,7 @@ public class SchemaModelGenerator {
             Element elem = elementExistsInSequence(frag.getLocalName(), frag.getShortName(), seq);
             if (elem == null) {
                 if (frag.getNamespaceURI() != null) {
-                    elem = handleFragNamespace(frag, schemaForNamespace, workingSchema, properties, elem, schemaTypeString);
+                    elem = handleFragNamespace(frag, schemaForNamespace, workingSchema, properties, null, schemaTypeString);
                 } else {
                     elem = buildElement(frag, schemaTypeString, Occurs.ZERO, null);
                 }
@@ -855,7 +856,7 @@ public class SchemaModelGenerator {
 
         boolean isNillable = false;
         if (!collection) {
-            isNillable = ((CompositeObjectMapping) mapping).getNullPolicy().isNullRepresentedByXsiNil();
+            isNillable = mapping.getNullPolicy().isNullRepresentedByXsiNil();
         } else {
             isNillable = ((CompositeCollectionMapping) mapping).getNullPolicy().isNullRepresentedByXsiNil();
         }

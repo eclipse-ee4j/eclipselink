@@ -122,6 +122,7 @@ public class XMLMarshaller extends org.eclipse.persistence.internal.oxm.XMLMarsh
     * @param result the result to marshal the object to
     * @throws XMLMarshalException if an error occurred during marshalling
     */
+    @Override
     public void marshal(Object object, Result result) throws XMLMarshalException {
         if ((object == null) || (result == null)) {
             throw XMLMarshalException.nullArgumentException();
@@ -158,7 +159,7 @@ public class XMLMarshaller extends org.eclipse.persistence.internal.oxm.XMLMarsh
                     return;
                 }
             }
-            if(session == null || xmlDescriptor == null){
+            if(xmlDescriptor == null){
                 session = context.getSession(objectClass);
                 xmlDescriptor = getDescriptor(objectClass, session);
             }
@@ -285,6 +286,7 @@ public class XMLMarshaller extends org.eclipse.persistence.internal.oxm.XMLMarsh
     * @param descriptor the XMLDescriptor for the object being marshalled
     * @throws XMLMarshalException if an error occurred during marshalling
     */
+    @Override
     protected Document objectToXML(Object object, XMLDescriptor descriptor, boolean isXMLRoot) throws XMLMarshalException {
         AbstractSession session = context.getSession(descriptor);
         DocumentPreservationPolicy docPresPolicy = context.getDocumentPreservationPolicy(session);
@@ -303,6 +305,7 @@ public class XMLMarshaller extends org.eclipse.persistence.internal.oxm.XMLMarsh
         return super.objectToXML(object, descriptor, isXMLRoot);
     }
 
+    @Override
     protected Node objectToXMLNode(Object object, Node rootNode, AbstractSession session,XMLDescriptor descriptor, boolean isXMLRoot) throws XMLMarshalException {
         DocumentPreservationPolicy docPresPolicy = context.getDocumentPreservationPolicy(session);
         if (docPresPolicy != null && docPresPolicy.shouldPreserveDocument()) {
@@ -336,6 +339,7 @@ public class XMLMarshaller extends org.eclipse.persistence.internal.oxm.XMLMarsh
     * @throws XMLMarshalException if an error occurred during marshalling
     * @deprecated
     */
+    @Deprecated
     public Document objectToXML(Object object, Node parent) throws XMLMarshalException {
         return objectToXML(object, parent, null);
     }
@@ -443,7 +447,6 @@ public class XMLMarshaller extends org.eclipse.persistence.internal.oxm.XMLMarsh
 
             copyNamespaces(resolver, xmlRow.getNamespaceResolver());
             document = xmlRow.getDocument();
-            Element docElement = document.getDocumentElement();
             object = ((Root) object).getObject();
         }
 
@@ -505,6 +508,7 @@ public class XMLMarshaller extends org.eclipse.persistence.internal.oxm.XMLMarsh
      * NamespacePrefixMapper that can be used during marshal (instead of those set in the project meta data)
      * @since 2.3.3
      */
+    @Override
     public void setNamespacePrefixMapper(NamespacePrefixMapper mapper) {
         super.setNamespacePrefixMapper(mapper);
     }
@@ -514,6 +518,7 @@ public class XMLMarshaller extends org.eclipse.persistence.internal.oxm.XMLMarsh
      * @since 2.3.3
      * @return
      */
+    @Override
     public NamespacePrefixMapper getNamespacePrefixMapper() {
         return super.getNamespacePrefixMapper();
     }
@@ -564,6 +569,7 @@ public class XMLMarshaller extends org.eclipse.persistence.internal.oxm.XMLMarsh
      * @return json type configuration
      * @since 2.6.0
      */
+    @Override
     public JsonTypeConfiguration getJsonTypeConfiguration() {
         if (null == jsonTypeConfiguration) {
             jsonTypeConfiguration = new JsonTypeConfiguration();

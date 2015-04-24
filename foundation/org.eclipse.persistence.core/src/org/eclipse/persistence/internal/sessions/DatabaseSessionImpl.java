@@ -163,6 +163,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
     /**
      * Return the database event listener, this allows database events to invalidate the cache.
      */
+    @Override
     public DatabaseEventListener getDatabaseEventListener() {
         return databaseEventListener;
     }
@@ -171,6 +172,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * PUBLIC:
      * Set the database event listener, this allows database events to invalidate the cache.
      */
+    @Override
     public void setDatabaseEventListener(DatabaseEventListener databaseEventListener) {
         this.databaseEventListener = databaseEventListener;
     }
@@ -266,7 +268,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
                 getLogin().getPlatform().setDriverName(driverName);
             }
         } catch (EclipseLinkException classNotFound) {
-            if (platformName.indexOf("Oracle") != -1) {
+            if (platformName != null && platformName.indexOf("Oracle") != -1) {
                 // If we are running against Oracle, it is possible that we are
                 // running in an environment where
                 // the OracleXPlatform class can not be loaded. Try using
@@ -283,6 +285,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * Return  SequencingControl which used for sequencing setup and
      * customization including management of sequencing preallocation.
      */
+    @Override
     public SequencingControl getSequencingControl() {
         return getSequencingHome().getSequencingControl();
     }
@@ -291,6 +294,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * PUBLIC:
      * Return the Sequencing object used by the session.
      */
+    @Override
     public Sequencing getSequencing() {
         return getSequencingHome().getSequencing();
     }
@@ -327,6 +331,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * Called in the end of beforeCompletion of external transaction synchronization listener.
      * Close the managed sql connection corresponding to the external transaction.
      */
+    @Override
     public void releaseJTSConnection() {
         getAccessor().closeJTSConnection();
     }
@@ -380,6 +385,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * @see #addDescriptors(Vector)
      * @see #addDescriptors(org.eclipse.persistence.sessions.Project)
      */
+    @Override
     public void addDescriptor(ClassDescriptor descriptor) {
         // Reset cached data, as may be invalid later on.
         this.lastDescriptorAccessed = null;
@@ -394,6 +400,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * This method allows for a batch of descriptors to be added at once so that EclipseLink
      * can resolve the dependencies between the descriptors and perform initialization optimally.
      */
+    @Override
     public void addDescriptors(Collection descriptors) {
         // Reset cached data, as may be invalid later on.
         this.lastDescriptorAccessed = null;
@@ -407,6 +414,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * This can be used to combine the descriptors from multiple projects into a single session.
      * This can be called after the session has been connected as long as there are no external dependencies.
      */
+    @Override
     public void addDescriptors(org.eclipse.persistence.sessions.Project project) {
         // Reset cached data, as may be invalid later on.
         this.lastDescriptorAccessed = null;
@@ -425,6 +433,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      *
      * @see #addSequences(Collection)
      */
+    @Override
     public void addSequence(Sequence sequence) {
         getProject().getLogin().getDatasourcePlatform().addSequence(sequence, this.getSequencingHome().isConnected());
     }
@@ -463,6 +472,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      *
      * @see org.eclipse.persistence.platform.server.ServerPlatformBase
      */
+    @Override
     public ServerPlatform getServerPlatform() {
         return serverPlatform;
     }
@@ -486,6 +496,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      *
      * @see org.eclipse.persistence.platform.server.ServerPlatformBase
      */
+    @Override
     public void setServerPlatform(ServerPlatform newServerPlatform) {
         if (this.isLoggedIn) {
             throw ValidationException.serverPlatformIsReadOnlyAfterLogin(newServerPlatform.getClass().getName());
@@ -497,6 +508,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * INTERNAL:
      * Logout in case still connected.
      */
+    @Override
     protected void finalize() throws DatabaseException {
         if (isConnected()) {
             logout();
@@ -510,6 +522,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * NOTE: this must only be used for relational specific usage,
      * it will fail for non-relational datasources.
      */
+    @Override
     public DatabasePlatform getPlatform() {
         // PERF: Cache the platform.
         if (platform == null) {
@@ -527,6 +540,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * Return the database platform currently connected to.
      * The platform is used for database specific behavior.
      */
+    @Override
     public Platform getDatasourcePlatform() {
         // PERF: Cache the platform.
         if (platform == null) {
@@ -545,6 +559,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * for specified class.
      * The platform is used for database specific behavior.
      */
+    @Override
     public Platform getPlatform(Class domainClass) {
         // PERF: Cache the platform.
         if (platform == null) {
@@ -742,6 +757,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * INTERNAL:
      * Return if this session is a database session.
      */
+    @Override
     public boolean isDatabaseSession() {
         return true;
     }
@@ -750,6 +766,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * PUBLIC:
      * Returns true if Protected Entities should be built within this session
      */
+    @Override
     public boolean isProtectedSession(){
         return false;
     }
@@ -786,6 +803,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      *
      * @see #login(Login)
      */
+    @Override
     public void login() throws DatabaseException {
         preConnectDatasource();
         connect();
@@ -905,6 +923,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * This is the login that should be used if each user has their own id,
      * but all users share the same database configuration.
      */
+    @Override
     public void login(String userName, String password) throws DatabaseException {
         getDatasourceLogin().setUserName(userName);
         getDatasourceLogin().setPassword(password);
@@ -917,6 +936,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * The login may also the preset and the login() protocol called.
      * This is the login should only be used if each user has their own database configuration.
      */
+    @Override
     public void login(Login login) throws DatabaseException {
         setLogin(login);
         login();
@@ -930,6 +950,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * @exception DatabaseException the database will also raise an error if their is an active transaction,
      * or a general error occurs.
      */
+    @Override
     public void logout() throws DatabaseException {
         if (this.eventManager != null) {
             this.eventManager.preLogout(this);
@@ -1002,6 +1023,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * @exception OptimisticLockException if the object's descriptor is using optimistic locking and
      * the object has been updated or deleted by another user since it was last read.
      */
+    @Override
     public void writeAllObjects(Collection domainObjects) throws DatabaseException, OptimisticLockException {
         for (Iterator objectsEnum = domainObjects.iterator(); objectsEnum.hasNext();) {
             writeObject(objectsEnum.next());

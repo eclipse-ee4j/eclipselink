@@ -43,7 +43,7 @@ public class DynamicIdentityPolicy extends CMP3Policy {
     @Override
     protected KeyElementAccessor[] initializePrimaryKeyFields(Class keyClass, AbstractSession session) {
         if (keyClass == null && getDescriptor().getPrimaryKeyFields().size() > 1) {
-            KeyElementAccessor[] result = super.initializePrimaryKeyFields(keyClass, session);
+            KeyElementAccessor[] result = super.initializePrimaryKeyFields(null, session);
             this.pkClass = Object[].class;
             return result;
         } else {

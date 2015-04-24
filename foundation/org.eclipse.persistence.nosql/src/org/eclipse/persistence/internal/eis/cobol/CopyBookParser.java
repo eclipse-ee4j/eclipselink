@@ -12,9 +12,15 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.eis.cobol;
 
-import java.io.*;
-import java.util.*;
-import org.eclipse.persistence.internal.eis.cobol.helper.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Stack;
+import java.util.StringTokenizer;
+import java.util.Vector;
+
+import org.eclipse.persistence.internal.eis.cobol.helper.Helper;
 
 /**
 *   <p>
@@ -38,7 +44,7 @@ public class CopyBookParser {
     * Default constructor
     */
     public CopyBookParser() {
-        currentLine = new String();
+        currentLine = null;
         currentLineNumber = 0;
     }
 
@@ -84,7 +90,7 @@ public class CopyBookParser {
         Vector lineNums = new Vector();
 
         //first pass removes all non-record data and brings all lines together
-        while (lineTokenizer.hasMoreTokens() && !currentLine.equalsIgnoreCase("procedure division.")) {
+        while (lineTokenizer.hasMoreTokens() && !"procedure division.".equalsIgnoreCase(currentLine)) {
             currentLine = lineTokenizer.nextToken();
             currentLineNumber++;
             if (!currentLine.trim().startsWith("*") && (currentLine.trim().length() > 0)) {

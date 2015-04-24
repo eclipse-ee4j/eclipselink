@@ -19,6 +19,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryDeclaration.Type;
 import org.eclipse.persistence.jpa.jpql.LiteralType;
@@ -343,6 +344,8 @@ final class DeclarationResolver {
                         }
                     }
                 }
+                default:
+                    continue;
             }
         }
 

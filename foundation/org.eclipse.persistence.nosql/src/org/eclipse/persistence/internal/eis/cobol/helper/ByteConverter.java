@@ -12,8 +12,10 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.eis.cobol.helper;
 
-import java.io.*;
-import org.eclipse.persistence.internal.eis.cobol.*;
+import java.io.StringWriter;
+
+import org.eclipse.persistence.internal.eis.cobol.ByteArrayException;
+import org.eclipse.persistence.internal.eis.cobol.FieldMetaData;
 
 /**
 * <b>Purpose</b>: This class handles all the byte <-> string conversions.  It handles
@@ -355,7 +357,7 @@ public class ByteConverter {
     */
     protected String getStringFromBinaryData(int offset, int size) {
         boolean signed = this.getFieldMetaData().isSigned();
-        String sign = new String();
+        String sign = null;
         int total = 0;
 
         //check if it is signed and determine sign

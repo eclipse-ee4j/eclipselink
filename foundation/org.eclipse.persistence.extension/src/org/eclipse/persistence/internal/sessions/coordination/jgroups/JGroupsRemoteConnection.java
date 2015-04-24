@@ -17,7 +17,6 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.coordination.broadcast.BroadcastRemoteConnection;
 import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
 import org.eclipse.persistence.sessions.serializers.Serializer;
-
 import org.jgroups.JChannel;
 import org.jgroups.Message;
 import org.jgroups.ReceiverAdapter;
@@ -32,7 +31,10 @@ import org.jgroups.ReceiverAdapter;
  * @since EclipseLink 2.5
  */
 public class JGroupsRemoteConnection extends BroadcastRemoteConnection {
-    protected JChannel channel;
+
+    private static final long serialVersionUID = -2285543305296840902L;
+
+    protected transient JChannel channel;
     // indicates whether it's a local connection.
     protected boolean isLocal;
 
@@ -49,6 +51,7 @@ public class JGroupsRemoteConnection extends BroadcastRemoteConnection {
             if (isLocalConnectionBeingCreated) {
                 // it's a local connection
                 this.channel.setReceiver(new ReceiverAdapter() {
+                    @Override
                     public void receive(Message message) {
                         onMessage(message);
                     }
@@ -140,6 +143,7 @@ public class JGroupsRemoteConnection extends BroadcastRemoteConnection {
      * INTERNAL:
      * Indicates whether all the resources used by connection are freed after close method returns.
      */
+    @Override
     protected boolean areAllResourcesFreedOnClose() {
         return !isLocal();
     }
@@ -148,6 +152,7 @@ public class JGroupsRemoteConnection extends BroadcastRemoteConnection {
      * INTERNAL:
      * This method is called by close method.
      */
+    @Override
     protected void closeInternal() {
         if (areAllResourcesFreedOnClose() && this.channel != null) {
             this.channel.close();
@@ -168,6 +173,7 @@ public class JGroupsRemoteConnection extends BroadcastRemoteConnection {
      * INTERNAL:
      * Used for debug logging
      */
+    @Override
     protected void createDisplayString() {
         this.displayString = Helper.getShortClassName(this) + "[" + serviceId.toString() + "]";
     }
@@ -178,6 +184,7 @@ public class JGroupsRemoteConnection extends BroadcastRemoteConnection {
      * own ServiceId to avoid the processing of Commands with the same ServiceId.
      * Not required for JGroups.
      */
+    @Override
     protected boolean shouldCheckServiceId() {
         return false;
     }

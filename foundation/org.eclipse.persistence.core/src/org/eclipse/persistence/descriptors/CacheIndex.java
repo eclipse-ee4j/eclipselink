@@ -12,7 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.descriptors;
 
-import java.io.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,6 +56,11 @@ public class CacheIndex implements Cloneable, Serializable {
 
     public CacheIndex(List<DatabaseField> fields) {
         this.fields = fields;
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 
     /**
@@ -146,6 +151,7 @@ public class CacheIndex implements Cloneable, Serializable {
         this.fields = fields;
     }
 
+    @Override
     public String toString() {
         return "CacheIndex(" + getFields() + ")";
     }

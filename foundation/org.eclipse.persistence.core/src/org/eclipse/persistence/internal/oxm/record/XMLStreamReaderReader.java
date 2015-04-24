@@ -45,6 +45,7 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
         indexedAttributeList = new XMLStreamReaderAttributes();
     }
 
+    @Override
     public Locator getLocator(){
         if(locator == null){
             locator = new StreamReaderLocator(xmlStreamReader);
@@ -197,7 +198,6 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
                 break;
             }
             case XMLStreamReader.CDATA: {
-                char[] characters = xmlStreamReader.getText().toCharArray();
                 if(null == lexicalHandler) {
                     parseCharactersEvent(xmlStreamReader);
                 } else {
@@ -302,6 +302,7 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
         /**
          * Returns the public ID of this Locator.
          */
+        @Override
         public String getPublicId() {
             return this.reader.getLocation().getPublicId();
         }
@@ -309,6 +310,7 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
         /**
          * Returns the system ID of this Locator.
          */
+        @Override
         public String getSystemId() {
             return this.reader.getLocation().getSystemId();
         }
@@ -316,6 +318,7 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
         /**
          * Returns the line number of this Locator.
          */
+        @Override
         public int getLineNumber() {
             return this.reader.getLocation().getLineNumber();
         }
@@ -323,14 +326,17 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
         /**
          * Returns the column number of this Locator.
          */
+        @Override
         public int getColumnNumber() {
             return this.reader.getLocation().getColumnNumber();
         }
 
+        @Override
         public String getXMLVersion() {
             return null;
         }
 
+        @Override
         public String getEncoding() {
             return null;
         }

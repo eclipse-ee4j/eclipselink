@@ -625,7 +625,7 @@ public class XPathEngine <
         NamespaceResolver domResolver = new NamespaceResolver();
         domResolver.setDOM(parent);
         String existingPrefix = domResolver.resolveNamespaceURI(namespace);
-        String elementName = lastFragment.getShortName();
+        String elementName = nodeName;
         if(existingPrefix != null) {
             if(existingPrefix.length() > 0) {
                 elementName = existingPrefix + Constants.COLON + lastFragment.getLocalName();
@@ -714,8 +714,6 @@ public class XPathEngine <
     *
     */
     private Node createElement(Node parent, XPathFragment fragment, NamespaceResolver namespaceResolver, Node value) {
-        String elementName = fragment.getXPath();
-
         // The case of the parent being the document (element is the root) needs to be handled.
         // Document have no owner document, but are the document.
         Document document = parent.getOwnerDocument();

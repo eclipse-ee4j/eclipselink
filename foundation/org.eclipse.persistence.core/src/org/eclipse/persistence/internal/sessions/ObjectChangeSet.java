@@ -47,10 +47,14 @@ import org.eclipse.persistence.queries.ReadObjectQuery;
  */
 public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet>, org.eclipse.persistence.sessions.changesets.ObjectChangeSet {
     /** Allow change sets to be compared by changes for batching. */
-    public static class ObjectChangeSetComparator implements Comparator {
+    public static class ObjectChangeSetComparator implements Comparator, Serializable {
+
+        private static final long serialVersionUID = -7902750710186726851L;
+
         /**
          * Determine if the receiver is greater or less than the change set.
          */
+        @Override
         public int compare(Object object1, Object object2) {
             if (object1 == object2) {
                 return 0;
@@ -233,6 +237,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
     /**
      * Ensure change sets with the same primary key are equal.
      */
+    @Override
     public boolean equals(Object object) {
         if (object instanceof ObjectChangeSet) {
             return equals((ObjectChangeSet)object);
@@ -257,6 +262,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
     /**
      * Determine if the receiver is greater or less than the change set.
      */
+    @Override
     public int compareTo(ObjectChangeSet changeSet) {
         if (this == changeSet) {
             return 0;
@@ -292,6 +298,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
      * INTERNAL:
      * returns the change record for the specified attribute name
      */
+    @Override
     public org.eclipse.persistence.sessions.changesets.ChangeRecord getChangesForAttributeNamed(String attributeName) {
         return (ChangeRecord)this.getAttributesToChanges().get(attributeName);
     }
@@ -300,6 +307,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
      * ADVANCED:
      * This method will return a collection of the attributes changed in the object.
      */
+    @Override
     public List<String> getChangedAttributeNames() {
         List<String> names = new ArrayList<String>();
         for (org.eclipse.persistence.sessions.changesets.ChangeRecord changeRecord : getChanges()) {
@@ -312,6 +320,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
      * INTERNAL:
      * This method returns a reference to the collection of changes within this changeSet.
      */
+    @Override
     public List<org.eclipse.persistence.sessions.changesets.ChangeRecord> getChanges() {
         if (this.changes == null) {
             this.changes = new ArrayList<org.eclipse.persistence.sessions.changesets.ChangeRecord>();
@@ -334,6 +343,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
      * This method returns the class type that this changeSet Represents.
      * This requires the session to reload the class on serialization.
      */
+    @Override
     public Class getClassType(org.eclipse.persistence.sessions.Session session) {
         if (classType == null) {
             classType = (Class)((AbstractSession)session).getDatasourcePlatform().getConversionManager().convertObject(getClassName(), ClassConstants.CLASS);
@@ -346,6 +356,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
      * This method returns the class type that this changeSet Represents.
      * The class type should be used if the class is desired.
      */
+    @Override
     public String getClassName() {
         return className;
     }
@@ -362,6 +373,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
      * This method returns the key value that this object was stored under in it's
      * Respective hashmap.
      */
+    @Override
     public Object getOldKey() {
         return this.oldKey;
     }
@@ -370,6 +382,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
      * This method returns the key value that this object will be stored under in it's
      * Respective hashmap.
      */
+    @Override
     public Object getNewKey() {
         return this.newKey;
     }
@@ -378,6 +391,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
      * ADVANCED:
      * This method returns the primary keys for the object that this change set represents.
      */
+    @Override
     @Deprecated
     public Vector getPrimaryKeys() {
         if (this.id instanceof CacheId) {
@@ -392,6 +406,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
      * ADVANCED:
      * This method returns the primary key for the object that this change set represents.
      */
+    @Override
     public Object getId() {
         return this.id;
     }
@@ -571,6 +586,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
      * ADVANCED:
      * This method is used to return the parent UnitOfWorkChangeSet.
      */
+    @Override
     public org.eclipse.persistence.sessions.changesets.UnitOfWorkChangeSet getUOWChangeSet() {
         return unitOfWorkChangeSet;
     }
@@ -579,6 +595,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
      * INTERNAL:
      * This method is used to return the lock value of the object this changeSet represents.
      */
+    @Override
     public Object getWriteLockValue() {
         return writeLockValue;
     }
@@ -588,6 +605,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
      * This method will return true if the specified attribute has been changed.
      * @param attributeName the name of the attribute to search for.
      */
+    @Override
     public boolean hasChangeFor(String attributeName) {
         for (org.eclipse.persistence.sessions.changesets.ChangeRecord changeRecord : getChanges()) {
             if (changeRecord.getAttribute().equals(attributeName)) {
@@ -601,6 +619,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
      * ADVANCED:
      * Returns true if this particular changeSet has changes.
      */
+    @Override
     public boolean hasChanges() {
         // a change set must also be considered dirty if only the version number has been updated
         // and the version is not a mapped field.  This is required to propagate the change
@@ -681,6 +700,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
      * This method overrides the hashcode method.  If this set has a cacheKey then return the hashcode of the
      * cache key, otherwise return the identity hashcode of this object.
      */
+    @Override
     public int hashCode() {
         if (getId() == null) {
             //new objects are compared based on identity
@@ -709,6 +729,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
      * ADVANCED:
      * Returns true if this ObjectChangeSet represents a new object.
      */
+    @Override
     public boolean isNew() {
         return isNew;
     }
@@ -979,6 +1000,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
         return shouldBeDeleted;
     }
 
+    @Override
     public String toString() {
         return this.getClass().getSimpleName() + "(" + hashCode() + ", " + this.getClassName() + ")" + getChanges().toString();
     }
@@ -1298,6 +1320,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
      * Returns true if this ObjectChangeSet should be recalculated after changes in event
      * @return
      */
+    @Override
     public boolean shouldRecalculateAfterUpdateEvent() {
         return shouldRecalculateAfterUpdateEvent;
     }
@@ -1307,6 +1330,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
      * Set whether this ObjectChangeSet should be recalculated after changes in event
      * @return
      */
+    @Override
     public void setShouldRecalculateAfterUpdateEvent(boolean shouldRecalculateAfterUpdateEvent) {
         this.shouldRecalculateAfterUpdateEvent = shouldRecalculateAfterUpdateEvent;
     }

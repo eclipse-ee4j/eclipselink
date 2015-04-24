@@ -16,16 +16,18 @@
  ******************************************************************************/
 package org.eclipse.persistence.sessions.coordination;
 
-import java.util.Hashtable;
 import java.util.Enumeration;
+import java.util.Hashtable;
 import java.util.Map;
 
 import javax.naming.Context;
 import javax.naming.NamingException;
-import org.eclipse.persistence.exceptions.*;
+
+import org.eclipse.persistence.exceptions.CommunicationException;
+import org.eclipse.persistence.exceptions.RemoteCommandManagerException;
+import org.eclipse.persistence.internal.security.SecurableObjectHolder;
 import org.eclipse.persistence.internal.sessions.coordination.ConnectToHostCommand;
 import org.eclipse.persistence.internal.sessions.coordination.RemoteConnection;
-import org.eclipse.persistence.internal.security.SecurableObjectHolder;
 
 /**
  * <p>
@@ -319,7 +321,7 @@ public abstract class TransportManager {
      * Remove a remote connection from the list of connections to receive remote commands.
      */
     public void removeConnectionToExternalService(RemoteConnection connection) {
-        synchronized (connectionsToExternalServices) {
+        synchronized (this) {
             connectionsToExternalServices.remove(connection.getServiceId().getId());
             connection.close();
         }
@@ -330,7 +332,7 @@ public abstract class TransportManager {
      * Remove all remote connections from the list.
      */
     public void removeAllConnectionsToExternalServices() {
-        synchronized (connectionsToExternalServices) {
+        synchronized (this) {
             Enumeration connections = connectionsToExternalServices.elements();
             connectionsToExternalServices = new Hashtable(3);
 

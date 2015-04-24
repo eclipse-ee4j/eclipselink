@@ -14,6 +14,17 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs;
 
+import java.net.URI;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
@@ -24,16 +35,6 @@ import org.eclipse.persistence.jpa.Archive;
 import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
 import org.eclipse.persistence.jpa.rs.features.ServiceVersion;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
-
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-import java.net.URI;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Manages the PersistenceContexts that are used by a JPA-RS deployment.  Provides a single point to bootstrap
@@ -71,8 +72,7 @@ public class PersistenceFactoryBase implements PersistenceContextFactory {
     @Override
     public void close() {
         synchronized (this) {
-            for (String key : dynamicPersistenceContexts.keySet()) {
-                Set<PersistenceContext> contextSet = dynamicPersistenceContexts.get(key);
+            for (Set<PersistenceContext> contextSet : dynamicPersistenceContexts.values()) {
                 if (contextSet != null) {
                     for (PersistenceContext context : contextSet) {
                         context.stop();

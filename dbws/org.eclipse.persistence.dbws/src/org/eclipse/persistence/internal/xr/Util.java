@@ -14,19 +14,6 @@
 package org.eclipse.persistence.internal.xr;
 
 // Javase imports
-import java.sql.Types;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import org.w3c.dom.Document;
-
-// Java extension libraries
-import javax.xml.namespace.QName;
-
-// EclipseLink imports
-import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
-import org.eclipse.persistence.platform.xml.XMLPlatform;
-import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import static org.eclipse.persistence.internal.helper.ClassConstants.APBYTE;
 import static org.eclipse.persistence.internal.helper.ClassConstants.BIGDECIMAL;
 import static org.eclipse.persistence.internal.helper.ClassConstants.BIGINTEGER;
@@ -40,33 +27,48 @@ import static org.eclipse.persistence.internal.helper.ClassConstants.LONG;
 import static org.eclipse.persistence.internal.helper.ClassConstants.Object_Class;
 import static org.eclipse.persistence.internal.helper.ClassConstants.SHORT;
 import static org.eclipse.persistence.internal.helper.ClassConstants.STRING;
+import static org.eclipse.persistence.internal.oxm.Constants.ANY_SIMPLE_TYPE_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.BASE_64_BINARY_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.BOOLEAN_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.BYTE_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.DATE_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.DATE_TIME_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.DECIMAL_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.DOUBLE_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.DURATION_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.FLOAT_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.G_DAY_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.G_MONTH_DAY_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.G_MONTH_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.G_YEAR_MONTH_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.G_YEAR_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.HEX_BINARY_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.INTEGER_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.INT_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.LONG_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.QNAME_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.SHORT_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.STRING_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.TIME_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.UNSIGNED_BYTE_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.UNSIGNED_INT_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.UNSIGNED_SHORT_QNAME;
 import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.DEFAULT_SIMPLE_XML_FORMAT_TAG;
-import static org.eclipse.persistence.oxm.XMLConstants.ANY_SIMPLE_TYPE_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.BASE_64_BINARY_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.BOOLEAN_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.BYTE_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.DATE_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.DATE_TIME_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.DECIMAL_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.DOUBLE_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.DURATION_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.FLOAT_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.G_DAY_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.G_MONTH_DAY_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.G_MONTH_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.G_YEAR_MONTH_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.G_YEAR_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.HEX_BINARY_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.INTEGER_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.INT_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.LONG_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.QNAME_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.SHORT_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.STRING_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.TIME_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.UNSIGNED_BYTE_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.UNSIGNED_INT_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.UNSIGNED_SHORT_QNAME;
+
+import java.sql.Types;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+
+// Java extension libraries
+import javax.xml.namespace.QName;
+
+// EclipseLink imports
+import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
+import org.eclipse.persistence.platform.xml.XMLPlatform;
+import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
+import org.w3c.dom.Document;
 
 /**
  * <p><b>INTERNAL</b>: provides useful constants, SQL Column <-> to XML name mapping and
@@ -188,7 +190,7 @@ public class Util {
      */
     public static String xmlToSqlName(String name) {
 
-        String sqlName = new String();
+        String sqlName = "";
         int length = name.length();
         boolean unescapeMode = false;
         String hexString = null;
@@ -204,16 +206,24 @@ public class Util {
                 } else if (c == '_') {
                     // done with escape mode
                     unescapeMode = false;
-                    int i;
-                    int len;
-                    if (hexString != null && (len = hexString.length()) > 4) {
-                        char i1 = (char) (Integer.parseInt(hexString.substring(0, len - 4), 16));
-                        char i2 = (char) (Integer.parseInt(hexString.substring(len - 4), 16));
-                        sqlName += i1;
-                        sqlName += i2;
-                    } else if ((i = Integer.parseInt(hexString, 16)) == 0xffff) {
-                    } else {
-                        sqlName += (char) i;
+                    if (hexString != null) {
+                        int i;
+                        int len;
+                        if ((len = hexString.length()) > 4) {
+                            char i1 = (char) (Integer.parseInt(hexString.substring(0, len - 4), 16));
+                            char i2 = (char) (Integer.parseInt(hexString.substring(len - 4), 16));
+                            sqlName += i1;
+                            sqlName += i2;
+                        } else {
+                            try {
+                                i = Integer.parseInt(hexString, 16);
+                                if (i != 0xffff) {
+                                    sqlName += (char) i;
+                                }
+                            } catch (NumberFormatException nfe) {
+                                throw new RuntimeException(nfe);
+                            }
+                        }
                     }
                 } else {
                     // invalid char in escape sequence! write everything into
@@ -227,7 +237,7 @@ public class Util {
                     // found escape beginning _x
                     // go into unescape mode
                     unescapeMode = true;
-                    hexString = new String();
+                    hexString = "";
                     x++;
                 } else {
                     // just copy src char to destination
@@ -335,9 +345,8 @@ public class Util {
                     || (c == 0x0E5C) || (c == 0x0C04))
                     res = false;
                 else {
-                    res =
-                        Character.isLetter(c) || Character.isDigit(c) || c == '-' || c == '_'
-                            || c == '.';
+                    // Character.isLetter(c) || Character.isDigit(c) || '-' || '-' || '.'
+                    // is known to be true at this point
                     res = true;
                 }
             }
@@ -383,10 +392,12 @@ public class Util {
                     || (c == 0x03DD) || (c == 0x03E1) || (c == 0x040D) || (c == 0x0450)
                     || (c == 0x045D) || (c == 0x04EC) || (c == 0x04ED) || (c == 0x06B8)
                     || (c == 0x06BF) || (c == 0x06CF) || (c == 0x0E2F) || (c == 0x0EAF)
-                    || (c == 0x0F6A) || (c == 0x4CFF) || (c == 0x212F) || (c == 0x0587))
+                    || (c == 0x0F6A) || (c == 0x4CFF) || (c == 0x212F) || (c == 0x0587)) {
                     res = false;
-                else
-                    res = Character.isLetter(c) || c == '_';
+                } else {
+                    //Character.isLetter(c) || c == '_' is known to be true here
+                    res = true;
+                }
             }
         }
         return res;
@@ -419,7 +430,7 @@ public class Util {
     }
 
     public static Class<?> getClassFromJDBCType(String typeName, DatabasePlatform databasePlatform) {
-        Class<?> clz = (Class<?>)databasePlatform.getClassTypes().get(typeName);
+        Class<?> clz = databasePlatform.getClassTypes().get(typeName);
         if (clz == null) {
             return Object_Class;
         }
@@ -430,7 +441,7 @@ public class Util {
 
     public static final Map<QName, Class<?>> SCHEMA_2_CLASS;
     static {
-      SCHEMA_2_CLASS = new HashMap<QName, Class<?>>() {{
+      SCHEMA_2_CLASS = Collections.unmodifiableMap(new HashMap<QName, Class<?>>() {{
             put(ANY_SIMPLE_TYPE_QNAME,Object_Class);
             put(BASE_64_BINARY_QNAME, APBYTE);
             put(BOOLEAN_QNAME, BOOLEAN);
@@ -460,7 +471,7 @@ public class Util {
             put(UNSIGNED_BYTE_QNAME, SHORT);
             put(UNSIGNED_INT_QNAME, LONG);
             put(UNSIGNED_SHORT_QNAME, INTEGER);
-        }};
+        }});
     }
 
     /**

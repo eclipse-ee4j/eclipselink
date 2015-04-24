@@ -21,7 +21,6 @@ import org.eclipse.persistence.internal.oxm.mappings.VariableXPathCollectionMapp
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
-
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
 
@@ -78,7 +77,6 @@ public class XMLVariableXPathCollectionMappingNodeValue extends XMLVariableXPath
         if(marshalRecord.getMarshaller().isApplicationJSON()){
             List<XPathFragment> frags = new ArrayList();
             List<List> values = new ArrayList<List>();
-            List mixedValues = new ArrayList();
 
             //sort the elements. Results will be a list of xpathfragments and a corresponding list of
             //collections associated with those xpathfragments
@@ -136,18 +134,22 @@ public class XMLVariableXPathCollectionMappingNodeValue extends XMLVariableXPath
         return true;
     }
 
+    @Override
     public Object getContainerInstance() {
         return getContainerPolicy().containerInstance();
     }
 
+    @Override
     public void setContainerInstance(Object object, Object containerInstance) {
         mapping.setAttributeValueInObject(object, containerInstance);
     }
 
+    @Override
     public CoreContainerPolicy getContainerPolicy() {
         return mapping.getContainerPolicy();
     }
 
+    @Override
     public boolean isContainerValue() {
         return true;
     }

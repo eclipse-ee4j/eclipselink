@@ -104,6 +104,33 @@
         <Bug pattern="UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS"/>
     </Match>
 
+    <Match>
+        <Class name="org.eclipse.persistence.dynamic.DynamicClassLoader"/>
+        <Method name="findClass"/>
+        <Bug pattern="NP_NULL_PARAM_DEREF"/>
+    </Match>
+
+    <Match>
+        <Class name="org.eclipse.persistence.mappings.CollectionMapping"/>
+        <Method name="shouldUseLazyInstantiationForIndirectCollection"/>
+        <Bug pattern="NP_BOOLEAN_RETURN_NULL"/>
+    </Match>
+
+    <Match>
+        <Class name="org.eclipse.persistence.tools.weaving.jpa.StaticWeave"/>
+        <Method name="processCommandLine"/>
+        <Bug pattern="DM_EXIT"/>
+    </Match>
+
+    <Match>
+        <Or>
+            <!-- applies to LinkedHasMap.Entry<K, V>.before/after fields -->
+            <Class name="org.eclipse.persistence.jaxb.plugins.BeanValidationPlugin$RegexMutator$1"/>
+            <Class name="org.eclipse.persistence.jaxb.plugins.BeanValidationPlugin$RegexMutator$2"/>
+        </Or>
+        <Bug pattern="SE_BAD_FIELD"/>
+    </Match>
+
     <!-- Cloneable warnings -->
     <Match>
         <Or>

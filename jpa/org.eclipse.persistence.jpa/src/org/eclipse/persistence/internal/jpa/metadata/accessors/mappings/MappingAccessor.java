@@ -96,6 +96,13 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.EL_ACCESS_VIRTUAL;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ACCESS_FIELD;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ACCESS_PROPERTY;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_CONVERT;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_CONVERTS;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_FETCH_EAGER;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -161,13 +168,6 @@ import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.mappings.foundation.MapComponentMapping;
 import org.eclipse.persistence.mappings.foundation.MapKeyMapping;
-
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.EL_ACCESS_VIRTUAL;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ACCESS_FIELD;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ACCESS_PROPERTY;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_CONVERT;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_CONVERTS;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_FETCH_EAGER;
 
 /**
  * INTERNAL:
@@ -384,7 +384,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
             // 'record', the attribute name will be 'record.date'
             String dotNotationName = getAttributeName() + "." + name;
             if (getClassAccessor().isMappedSuperclass() && getDescriptor().hasAssociationOverrideFor(dotNotationName)) {
-                getLogger().logConfigMessage(getLogger().IGNORE_ASSOCIATION_OVERRIDE, name, getAttributeName(), getClassAccessor().getJavaClassName(), getJavaClassName());
+                getLogger().logConfigMessage(MetadataLogger.IGNORE_ASSOCIATION_OVERRIDE, name, getAttributeName(), getClassAccessor().getJavaClassName(), getJavaClassName());
                 associationOverridesMap.put(name, getDescriptor().getAssociationOverrideFor(dotNotationName));
             } else {
                 associationOverridesMap.put(name, associationOverride);
@@ -470,7 +470,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
             // attribute name will be 'record.date'
             String dotNotationName = getAttributeName() + "." + name;
             if (getClassAccessor().isMappedSuperclass() && getDescriptor().hasAttributeOverrideFor(dotNotationName)) {
-                getLogger().logConfigMessage(getLogger().IGNORE_ATTRIBUTE_OVERRIDE, name, getAttributeName(), getClassAccessor().getJavaClassName(), getJavaClassName());
+                getLogger().logConfigMessage(MetadataLogger.IGNORE_ATTRIBUTE_OVERRIDE, name, getAttributeName(), getClassAccessor().getJavaClassName(), getJavaClassName());
                 attributeOverridesMap.put(name, getDescriptor().getAttributeOverrideFor(dotNotationName));
             } else {
                 attributeOverridesMap.put(name, attributeOverride);

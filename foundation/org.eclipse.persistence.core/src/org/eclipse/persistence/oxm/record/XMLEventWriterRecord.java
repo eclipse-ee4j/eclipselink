@@ -57,6 +57,7 @@ public class XMLEventWriterRecord extends MarshalRecord {
         this.xmlEventWriter = anXMLEventWriter;
     }
 
+    @Override
     public void attribute(XPathFragment xPathFragment, NamespaceResolver namespaceResolver, String value) {
          String namespaceURI = xPathFragment.getNamespaceURI();
          XMLEvent event;
@@ -65,7 +66,7 @@ public class XMLEventWriterRecord extends MarshalRecord {
          } else {
              String prefix = getPrefixForFragment(xPathFragment);
              if(prefix == null) {
-                 event = xmlEventFactory.createAttribute(prefix, namespaceURI, xPathFragment.getLocalName(), value);
+                 event = xmlEventFactory.createAttribute(null, namespaceURI, xPathFragment.getLocalName(), value);
              } else {
                  if(xmlEventWriter.getNamespaceContext().getNamespaceURI(prefix) == null || !xmlEventWriter.getNamespaceContext().getNamespaceURI(prefix).equals(namespaceURI)) {
                      event = xmlEventFactory.createNamespace(prefix, namespaceURI);
@@ -91,6 +92,7 @@ public class XMLEventWriterRecord extends MarshalRecord {
          }
     }
 
+    @Override
     public void attribute(String namespaceURI, String localName, String name, String value) {
          XMLEvent event;
          if(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI.equals(namespaceURI)) {
@@ -169,6 +171,7 @@ public class XMLEventWriterRecord extends MarshalRecord {
         }
     }
 
+    @Override
     public void cdata(String value) {
         try {
             if(isStartElementOpen) {
@@ -181,6 +184,7 @@ public class XMLEventWriterRecord extends MarshalRecord {
        }
     }
 
+    @Override
     public void characters(String value) {
         try {
             if(isStartElementOpen) {
@@ -193,9 +197,11 @@ public class XMLEventWriterRecord extends MarshalRecord {
         }
     }
 
+    @Override
     public void closeStartElement() {
     }
 
+    @Override
     public void openStartElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
         super.openStartElement(xPathFragment, namespaceResolver);
         if (isStartElementOpen) {
@@ -213,6 +219,7 @@ public class XMLEventWriterRecord extends MarshalRecord {
         writePrefixMappings();
     }
 
+    @Override
     public void element(XPathFragment frag) {
         try {
             if(isStartElementOpen) {
@@ -232,6 +239,7 @@ public class XMLEventWriterRecord extends MarshalRecord {
         }
     }
 
+    @Override
     public void endDocument() {
         try {
             if(isStartElementOpen) {
@@ -245,6 +253,7 @@ public class XMLEventWriterRecord extends MarshalRecord {
         }
     }
 
+    @Override
     public void endElement(XPathFragment pathFragment, NamespaceResolver namespaceResolver) {
         if(isStartElementOpen) {
             openAndCloseStartElement();
@@ -261,6 +270,7 @@ public class XMLEventWriterRecord extends MarshalRecord {
         }
     }
 
+    @Override
     public void node(Node node, NamespaceResolver resolver, String uri, String name) {
         if(isStartElementOpen) {
             openAndCloseStartElement();
@@ -276,6 +286,7 @@ public class XMLEventWriterRecord extends MarshalRecord {
         }
     }
 
+    @Override
     public void startDocument(String encoding, String version) {
         try {
             xmlEventWriter.add(this.xmlEventFactory.createStartDocument(encoding, version, false));
@@ -284,6 +295,7 @@ public class XMLEventWriterRecord extends MarshalRecord {
         }
     }
 
+    @Override
     public void startPrefixMapping(String prefix, String namespaceUri) {
         if(null == this.prefixMapping) {
             this.prefixMapping = new HashMap<String, String>();
@@ -324,9 +336,11 @@ public class XMLEventWriterRecord extends MarshalRecord {
         }
     }
 
+    @Override
     public void namespaceDeclarations(NamespaceResolver namespaceResolver) {
     }
 
+    @Override
     public void startPrefixMappings(NamespaceResolver namespaceResolver) {
         this.namespaceResolver = namespaceResolver;
     }

@@ -25,11 +25,16 @@ import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.Context;
 import org.eclipse.persistence.internal.oxm.ConversionManager;
-import org.eclipse.persistence.internal.oxm.OXMSystemProperties;
 import org.eclipse.persistence.internal.oxm.Root;
 import org.eclipse.persistence.internal.oxm.Unmarshaller;
-import org.eclipse.persistence.internal.oxm.XPathQName;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
+import org.eclipse.persistence.internal.oxm.XPathQName;
+import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
+import org.eclipse.persistence.internal.oxm.mappings.Mapping;
+import org.eclipse.persistence.internal.oxm.mappings.UnmarshalKeepAsElementPolicy;
+import org.eclipse.persistence.internal.oxm.record.namespaces.StackUnmarshalNamespaceResolver;
+import org.eclipse.persistence.internal.oxm.record.namespaces.UnmarshalNamespaceResolver;
+import org.eclipse.persistence.internal.oxm.unmapped.UnmappedContentHandler;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.platform.xml.SAXDocumentBuilder;
@@ -39,13 +44,6 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.ext.Locator2;
-import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
-import org.eclipse.persistence.internal.oxm.mappings.Mapping;
-import org.eclipse.persistence.internal.oxm.mappings.UnmarshalKeepAsElementPolicy;
-import org.eclipse.persistence.internal.oxm.record.XMLReader;
-import org.eclipse.persistence.internal.oxm.record.namespaces.StackUnmarshalNamespaceResolver;
-import org.eclipse.persistence.internal.oxm.record.namespaces.UnmarshalNamespaceResolver;
-import org.eclipse.persistence.internal.oxm.unmapped.UnmappedContentHandler;
 
 /**
  * INTERNAL:
@@ -137,6 +135,7 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
         this.object = object;
     }
 
+    @Override
     public void setDocumentLocator(Locator locator) {
         if (locator instanceof Locator2) {
             this.locator = (Locator2)locator;
@@ -154,16 +153,20 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
         this.unmarshalNamespaceResolver = unmarshalNamespaceResolver;
     }
 
+    @Override
     public void startDocument() throws SAXException {
     }
 
+    @Override
     public void endDocument() throws SAXException {
     }
 
+    @Override
     public void startPrefixMapping(String prefix, String uri) throws SAXException {
         unmarshalNamespaceResolver.push(prefix, uri);
     }
 
+    @Override
     public void endPrefixMapping(String prefix) throws SAXException {
         unmarshalNamespaceResolver.pop(prefix);
     }
@@ -179,6 +182,7 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
         }
     }
 
+    @Override
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
         try {
             String name;
@@ -254,7 +258,7 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
                     tmpUnmarshalRecord.setXMLReader(this.getXMLReader());
                     tmpUnmarshalRecord.setAttributes(atts);
 
-                    Class classValue = xmlDescriptor.getInheritancePolicy().classFromRow(new org.eclipse.persistence.oxm.record.UnmarshalRecord(tmpUnmarshalRecord), (CoreAbstractSession) session);
+                    Class classValue = xmlDescriptor.getInheritancePolicy().classFromRow(new org.eclipse.persistence.oxm.record.UnmarshalRecord(tmpUnmarshalRecord), session);
                     if (classValue == null) {
                        // no xsi:type attribute - look for type indicator on the default root element
                        QName leafElementType = xmlDescriptor.getDefaultRootElementType();
@@ -325,7 +329,7 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
             }
 
             if (xmlDescriptor == null && primitiveWrapperClass != null) {
-                session = xmlContext.getSession(xmlDescriptor);
+                session = xmlContext.getSession((Descriptor) null);
                 rootRecord = unmarshaller.createRootUnmarshalRecord(primitiveWrapperClass);
                 rootRecord.setSession((CoreAbstractSession) unmarshaller.getContext().getSession());
             } else{
@@ -384,21 +388,27 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
         }
     }
 
+    @Override
     public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
     }
 
+    @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
     }
 
+    @Override
     public void characters(CharSequence characters) throws SAXException {
     }
 
+    @Override
     public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {
     }
 
+    @Override
     public void processingInstruction(String target, String data) throws SAXException {
     }
 
+    @Override
     public void skippedEntity(String name) throws SAXException {
     }
 

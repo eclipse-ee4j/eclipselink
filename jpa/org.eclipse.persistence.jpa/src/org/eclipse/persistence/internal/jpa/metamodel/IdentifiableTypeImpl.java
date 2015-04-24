@@ -110,6 +110,7 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
      *          type is not declared in the identifiable type or if
      *          the identifiable type has an id class
      */
+    @Override
     public <Y> SingularAttribute<X, Y> getDeclaredId(Class<Y> type) {
         /**
          * We throw an IAE in 3 cases
@@ -135,6 +136,7 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
      *  @throws IllegalArgumentException if version attribute of the
      *          type is not declared in the identifiable type
      */
+    @Override
     public <Y> SingularAttribute<X, Y> getDeclaredVersion(Class<Y> type) {
         /**
          * We throw an IAE in 3 cases
@@ -156,6 +158,7 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
      *  @throws IllegalArgumentException if the identifiable type
      *          does not have an id class
      */
+    @Override
     public Set<SingularAttribute<? super X, ?>> getIdClassAttributes() {
         // Get the list of IdClass attributes previously stored on the core project during metadata processing
         List<String> idClassNamesList = getMetamodel().getProject().getMetamodelIdClassMap()
@@ -181,6 +184,7 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
      *          type is not present in the identifiable type or if
      *          the identifiable type has an id class
      */
+    @Override
     public <Y> SingularAttribute<? super X, Y> getId(Class<Y> type) {
         // We assume that there is at most a single EmbeddedId
         SingularAttribute<? super X, Y> idAttribute = null;
@@ -194,7 +198,7 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
             for(SingularAttribute<? super X, ?> anAttribute : idAttributes) {
                 // Verify type is correct - relax restriction on null and Object.class (from same classLoader)
                 if(null == type || Object.class == type ||
-                        ((type != null) && (type.getCanonicalName().equals(anAttribute.getJavaType().getCanonicalName())))) {
+                        type.getCanonicalName().equals(anAttribute.getJavaType().getCanonicalName())) {
                     idAttribute = (SingularAttribute<? super X, Y>) anAttribute;
                 } else {
                     throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
@@ -210,6 +214,7 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
      *  Return the type that represents the type of the id.
      *  @return type of id
      */
+    @Override
     public Type<?> getIdType() {
         // NOTE: This code is another good reason to abstract out a PKPolicy on the descriptor
         CMPPolicy cmpPolicy = getDescriptor().getCMPPolicy();
@@ -255,6 +260,7 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
      *  or mapped superclass.
      *  @return supertype of identifiable type or null if no such supertype
      */
+    @Override
     public IdentifiableType<? super X> getSupertype() {
         return this.superType;
     }
@@ -267,6 +273,7 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
      *  @throws IllegalArgumentException if version attribute of the
      *          given type is not present in the identifiable type
      */
+    @Override
     public <Y> SingularAttribute<? super X, Y> getVersion(Class<Y> type) {
         // Lazy load the version attribute if it exists
         if(null == getVersion()) {
@@ -278,7 +285,7 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
             // Verify the type (Note: ClassLoaders do not have to be the same)
             // Relax restriction on null and Object.class (from same classLoader)
             if(null == type || Object.class == type ||
-                    ((type != null) && (type.getCanonicalName().equals(versionAttribute.getJavaType().getCanonicalName())))) {
+                    type.getCanonicalName().equals(versionAttribute.getJavaType().getCanonicalName())) {
                 return (SingularAttribute<? super X, Y>)versionAttribute;
             } else {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
@@ -310,6 +317,7 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
      *  @return boolean indicating whether or not the identifiable
      *           type has a single id attribute
      */
+    @Override
     public boolean hasSingleIdAttribute() {
         // The following section will return false for any multiple EmbeddableId as well as multiple Ids as part of an IdClass
         // Note: there will always be at least 1 Id for an IdentifiableType
@@ -358,6 +366,7 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
      *  @return boolean indicating whether or not the identifiable
      *           type has a version attribute
      */
+    @Override
     public boolean hasVersionAttribute() {
         // The versionAttribute is lazy loaded
         if(null != versionAttribute) {

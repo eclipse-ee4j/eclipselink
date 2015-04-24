@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.helper;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -23,7 +24,11 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
  * Avoid using this class as sun.misc is not part of many VM's like Netscapes.
  *
  */
-public class MappingCompare implements Comparator {
+public class MappingCompare implements Comparator, Serializable {
+
+    private static final long serialVersionUID = -2749222441763925989L;
+
+    @Override
     public int compare(Object arg1, Object arg2) {
         int arg1Value = ((DatabaseMapping)arg1).getWeight().intValue();
         int arg2Value = ((DatabaseMapping)arg2).getWeight().intValue();

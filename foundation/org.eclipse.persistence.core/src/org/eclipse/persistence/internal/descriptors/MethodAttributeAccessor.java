@@ -18,16 +18,21 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.descriptors;
 
-import java.lang.reflect.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.internal.helper.ConversionManager;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedGetMethodParameterTypes;
+import org.eclipse.persistence.internal.security.PrivilegedGetMethodReturnType;
+import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.AttributeAccessor;
-import org.eclipse.persistence.internal.security.*;
 
 /**
  * <p><b>Purpose</b>: A wrapper class for handling cases when the domain object attributes are
@@ -46,6 +51,7 @@ public class MethodAttributeAccessor extends AttributeAccessor {
     /**
      * Return the return type of the method accessor.
      */
+    @Override
     public Class getAttributeClass() {
         if (getGetMethod() == null) {
             return null;
@@ -57,6 +63,7 @@ public class MethodAttributeAccessor extends AttributeAccessor {
     /**
      * Gets the value of an instance variable in the object.
      */
+    @Override
     public Object getAttributeValueFromObject(Object anObject) throws DescriptorException {
         return getAttributeValueFromObject(anObject, (Object[]) null);
     }
@@ -177,6 +184,7 @@ public class MethodAttributeAccessor extends AttributeAccessor {
      * Set get and set method after creating these methods by using
      * get and set method names
      */
+    @Override
     public void initializeAttributes(Class theJavaClass) throws DescriptorException {
         initializeAttributes(theJavaClass, (Class[]) null);
     }
@@ -211,10 +219,12 @@ public class MethodAttributeAccessor extends AttributeAccessor {
      * Returns true if this attribute accessor has been initialized and now stores a reference to the
      * class's attribute.  An attribute accessor can become uninitialized on serialization.
      */
+    @Override
     public boolean isInitialized(){
         return (this.getMethod !=  null || isReadOnly()) && (this.setMethod != null || isWriteOnly());
     }
 
+    @Override
     public boolean isMethodAttributeAccessor() {
         return true;
     }
@@ -222,6 +232,7 @@ public class MethodAttributeAccessor extends AttributeAccessor {
     /**
      * Sets the value of the instance variable in the object to the value.
      */
+    @Override
     public void setAttributeValueInObject(Object domainObject, Object attributeValue) throws DescriptorException {
         setAttributeValueInObject(domainObject, attributeValue, new Object[] {attributeValue});
     }
@@ -290,9 +301,9 @@ public class MethodAttributeAccessor extends AttributeAccessor {
                         } catch (PrivilegedActionException exc) {
                             Exception throwableException = exc.getException();
                             if (throwableException instanceof IllegalAccessException) {
-                                throw DescriptorException.nullPointerWhileSettingValueThruInstanceVariableAccessor(getAttributeName(), attributeValue, throwableException);
+                                throw DescriptorException.nullPointerWhileSettingValueThruInstanceVariableAccessor(getAttributeName(), null, throwableException);
                             } else {
-                                throw DescriptorException.nullPointerWhileSettingValueThruInstanceVariableAccessor(getAttributeName(), attributeValue, throwableException);
+                                throw DescriptorException.nullPointerWhileSettingValueThruInstanceVariableAccessor(getAttributeName(), null, throwableException);
                              }
                         }
                     } else {

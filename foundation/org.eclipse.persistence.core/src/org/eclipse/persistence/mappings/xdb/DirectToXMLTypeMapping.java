@@ -21,9 +21,9 @@ import org.eclipse.persistence.internal.platform.database.XMLTypePlaceholder;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.platform.xml.XMLComparer;
+import org.eclipse.persistence.platform.xml.XMLParser;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.platform.xml.XMLTransformer;
-import org.eclipse.persistence.platform.xml.XMLParser;
 import org.eclipse.persistence.sessions.Session;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -60,6 +60,7 @@ public class DirectToXMLTypeMapping extends DirectToFieldMapping {
      * INTERNAL:
      * Default to mutable if mapped as a DOM.
      */
+    @Override
     public void preInitialize(AbstractSession session) throws DescriptorException {
         if (this.attributeClassification == null) {
             this.attributeClassification = getAttributeAccessor().getAttributeClass();
@@ -168,9 +169,6 @@ public class DirectToXMLTypeMapping extends DirectToFieldMapping {
     protected boolean compareObjectValues(Object firstValue, Object secondValue, AbstractSession session) {
         // PERF: Check identity before conversion.
         if (firstValue == secondValue) {
-            return true;
-        }
-        if ((firstValue == null) && (secondValue == null)) {
             return true;
         }
         if ((firstValue == null) || (secondValue == null)) {

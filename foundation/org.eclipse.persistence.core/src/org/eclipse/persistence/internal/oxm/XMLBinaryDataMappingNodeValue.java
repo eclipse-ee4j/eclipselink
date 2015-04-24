@@ -14,13 +14,11 @@ package org.eclipse.persistence.internal.oxm;
 
 import javax.activation.DataHandler;
 import javax.xml.namespace.QName;
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
+
 import org.eclipse.persistence.core.sessions.CoreSession;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
-import org.eclipse.persistence.internal.oxm.XMLBinaryDataHelper;
 import org.eclipse.persistence.internal.oxm.mappings.BinaryDataMapping;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.record.BinaryDataUnmarshalRecord;
@@ -30,6 +28,8 @@ import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.internal.oxm.record.deferred.BinaryMappingContentHandler;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
 
 /**
  * INTERNAL:
@@ -45,6 +45,7 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
         return (String) ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.STRING, schemaType);
     }
 
+    @Override
     public boolean isOwningNode(XPathFragment xPathFragment) {
         return (xPathFragment.getNextFragment() == null) || xPathFragment.isAttribute();
     }
@@ -53,10 +54,12 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
         this.xmlBinaryDataMapping = mapping;
     }
 
+    @Override
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver) {
         return marshal(xPathFragment, marshalRecord, object, session, namespaceResolver, ObjectMarshalContext.getInstance(), null);
     }
 
+    @Override
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext, XPathFragment rootFragment) {
         if (xmlBinaryDataMapping.isReadOnly()) {
             return false;
@@ -65,10 +68,12 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
         return this.marshalSingleValue(xPathFragment, marshalRecord, object, objectValue, session, namespaceResolver, marshalContext, rootFragment);
     }
 
+    @Override
     public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object objectValue, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         return marshalSingleValue(xPathFragment, marshalRecord, object, objectValue, session, namespaceResolver, marshalContext, null);
     }
 
+    @Override
     public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object objectValue,CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext, XPathFragment rootFragment) {
         XPathFragment xmlRootFrag = null;
 
@@ -232,12 +237,12 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
         return true;
     }
 
+    @Override
     public boolean startElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts) {
         try {
 
             unmarshalRecord.removeNullCapableValue(this);
             Field xmlField = (Field) xmlBinaryDataMapping.getField();
-            XPathFragment lastFragment = xmlField.getLastXPathFragment();
             BinaryMappingContentHandler handler = new BinaryMappingContentHandler(unmarshalRecord, this, this.xmlBinaryDataMapping);
             String qnameString = xPathFragment.getLocalName();
             if (xPathFragment.getPrefix() != null) {
@@ -253,6 +258,7 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
         }
     }
 
+    @Override
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord) {
         unmarshalRecord.resetStringBuffer();
     }
@@ -260,10 +266,9 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
     /**
      * Handle swaRef and inline attribute cases.
      */
+    @Override
     public void attribute(UnmarshalRecord unmarshalRecord, String URI, String localName, String value) {
         unmarshalRecord.removeNullCapableValue(this);
-        Field xmlField = (Field) xmlBinaryDataMapping.getField();
-        XPathFragment lastFragment = xmlField.getLastXPathFragment();
 
         Object fieldValue = null;
         if (xmlBinaryDataMapping.isSwaRef()) {
@@ -282,11 +287,13 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
         }
     }
 
+    @Override
     public void setNullValue(Object object, CoreSession session) {
         Object value = xmlBinaryDataMapping.getObjectValue(null, session);
         xmlBinaryDataMapping.setAttributeValueInObject(object, value);
     }
 
+    @Override
     public boolean isNullCapableValue() {
         return xmlBinaryDataMapping.getNullPolicy().getIsSetPerformedForAbsentNode();
     }
@@ -302,12 +309,14 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
         return this.xmlBinaryDataMapping;
     }
 
+    @Override
     public UnmarshalRecord buildSelfRecord(UnmarshalRecord unmarshalRecord, Attributes atts) {
         unmarshalRecord.removeNullCapableValue(this);
         BinaryDataUnmarshalRecord newRecord = new BinaryDataUnmarshalRecord(null, unmarshalRecord, this, xmlBinaryDataMapping);
         return newRecord;
     }
 
+    @Override
     public void endSelfNodeValue(UnmarshalRecord unmarshalRecord, UnmarshalRecord selfRecord, Attributes attributes) {
         unmarshalRecord.resetStringBuffer();
     }

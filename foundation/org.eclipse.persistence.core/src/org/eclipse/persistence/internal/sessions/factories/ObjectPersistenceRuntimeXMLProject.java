@@ -13,6 +13,9 @@
 package org.eclipse.persistence.internal.sessions.factories;
 
 // javase imports
+import static org.eclipse.persistence.sessions.factories.XMLProjectReader.SCHEMA_DIR;
+import static org.eclipse.persistence.sessions.factories.XMLProjectReader.TOPLINK_10_SCHEMA;
+
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.ArrayList;
@@ -207,8 +210,6 @@ import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.DatasourceLogin;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.Session;
-import static org.eclipse.persistence.sessions.factories.XMLProjectReader.SCHEMA_DIR;
-import static org.eclipse.persistence.sessions.factories.XMLProjectReader.TOPLINK_10_SCHEMA;
 
 /**
  * INTERNAL: Define the TopLink OX project and descriptor information to read a OracleAS TopLink 10<i>g</i> (10.0.3) project from an XML file. Note any changes must be reflected in the OPM XML schema.
@@ -443,6 +444,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         sourceToTargetKeyFieldAssociationsMapping.setReferenceClass(Association.class);
         // Handle translation of foreign key associations to hashtables.
         sourceToTargetKeyFieldAssociationsMapping.setAttributeAccessor(new AttributeAccessor() {
+            @Override
             public Object getAttributeValueFromObject(Object object) {
                 AggregateCollectionMapping mapping = (AggregateCollectionMapping)object;
                 List sourceFields = mapping.getSourceKeyFields();
@@ -454,6 +456,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                 return associations;
             }
 
+            @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 AggregateCollectionMapping mapping = (AggregateCollectionMapping)object;
                 List associations = (List)value;
@@ -498,6 +501,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         indirectionPolicyMapping.setReferenceClass(IndirectionPolicy.class);
         // Handle translation of NoIndirectionPolicy -> null.
         indirectionPolicyMapping.setAttributeAccessor(new AttributeAccessor() {
+            @Override
             public Object getAttributeValueFromObject(Object object) {
                 IndirectionPolicy policy = ((ForeignReferenceMapping)object).getIndirectionPolicy();
                 if (policy instanceof NoIndirectionPolicy) {
@@ -506,6 +510,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                 return policy;
             }
 
+            @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 IndirectionPolicy policy = (IndirectionPolicy)value;
                 if (value == null) {
@@ -565,6 +570,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         aggregateToSourceFieldNameAssociationsMapping.setReferenceClass(FieldTranslation.class);
         // Handle translation of fields associations string to field.
         aggregateToSourceFieldNameAssociationsMapping.setAttributeAccessor(new AttributeAccessor() {
+            @Override
             public Object getAttributeValueFromObject(Object object) {
                 /*bug 322233: AttributeOverrides and AssociationOverride
                  * changed getAggregateToSourceFieldAssociations to hold String->DatabaseField associations
@@ -582,6 +588,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                 return translations;
             }
 
+            @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 AggregateObjectMapping mapping = (AggregateObjectMapping)object;
                 Vector associations = (Vector)value;
@@ -725,6 +732,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
             private String oldOxmPrefix = oldPrefix + "ox.";
             private String newOxmPrefix = newPrefix + "oxm.";
 
+            @Override
             public Object convertObjectValueToDataValue(Object objectValue, Session session) {
                 if (objectValue == null) {
                     return null;
@@ -732,6 +740,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                 return objectValue.getClass().getName();
             }
 
+            @Override
             public Object convertDataValueToObjectValue(Object fieldValue, Session session) {
                 if(fieldValue == null) {
                     return null;
@@ -771,10 +780,12 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                 return attributeValue;
             }
 
+            @Override
             public boolean isMutable() {
                 return false;
             }
 
+            @Override
             public void initialize(DatabaseMapping mapping, Session session) {
                 this.platformList = new HashMap();
                 this.platformList.put("org.eclipse.persistence.internal.databaseaccess.AccessPlatform", "org.eclipse.persistence.platform.database.AccessPlatform");
@@ -1054,6 +1065,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         // Child value expressions need their backpointer to their local base set,
         // this is not persisted so must be hooked back up after loading.
         descriptor.getEventManager().addListener(new DescriptorEventAdapter() {
+            @Override
             public void postBuild(DescriptorEvent event) {
                 RelationExpression expression = (RelationExpression)event.getObject();
                 if ((expression.getFirstChild() != null) && (expression.getSecondChild() != null)) {
@@ -1217,6 +1229,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         // Child value expressions need their backpointer to their local base set,
         // this is not persisted so must be hooked back up after loading.
         descriptor.getEventManager().addListener(new DescriptorEventAdapter() {
+            @Override
             public void postBuild(DescriptorEvent event) {
                 FunctionExpression expression = (FunctionExpression)event.getObject();
                 for (int index = 0; index < expression.getChildren().size(); index++) {
@@ -1302,10 +1315,12 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         expressionMapping.setGetMethodName("getSelectionCriteria");
         expressionMapping.setSetMethodName("setSelectionCriteria");
         expressionMapping.setAttributeAccessor(new AttributeAccessor() {
+            @Override
             public Object getAttributeValueFromObject(Object object) {
                 return ((DatabaseQuery)object).getSelectionCriteria();
             }
 
+            @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 if (!(object instanceof ObjectLevelReadQuery)) {
                     return;
@@ -1326,6 +1341,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
 
         // Handle translation of argument lists to query-arguments.
         argumentsMapping.setAttributeAccessor(new AttributeAccessor() {
+            @Override
             public Object getAttributeValueFromObject(Object object) {
                 DatabaseQuery query = (DatabaseQuery)object;
                 List<String> arguments = query.getArguments();
@@ -1350,6 +1366,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                 return queryArguments;
             }
 
+            @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 DatabaseQuery query = (DatabaseQuery)object;
                 List queryArguments = (List)value;
@@ -1649,6 +1666,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         inMemoryQueryIndirectionPolicyMapping.setReferenceClass(InMemoryQueryIndirectionPolicy.class);
         // Handle translation of default to null.
         inMemoryQueryIndirectionPolicyMapping.setAttributeAccessor(new AttributeAccessor() {
+            @Override
             public Object getAttributeValueFromObject(Object object) {
                 InMemoryQueryIndirectionPolicy policy = ((ObjectLevelReadQuery)object).getInMemoryQueryIndirectionPolicy();
                 if (policy.shouldThrowIndirectionException()) {
@@ -1657,6 +1675,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                 return policy;
             }
 
+            @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 if (value == null) {
                     return;
@@ -2020,6 +2039,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         propertiesMapping.setAttributeName("properties");
         propertiesMapping.setReferenceClass(PropertyAssociation.class);
         propertiesMapping.setAttributeAccessor(new AttributeAccessor() {
+            @Override
             public Object getAttributeValueFromObject(Object object) {
                 DatabaseMapping mapping = (DatabaseMapping)object;
                 Vector propertyAssociations = new NonSynchronizedVector();
@@ -2033,6 +2053,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                 return propertyAssociations;
             }
 
+            @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 DatabaseMapping mapping = (DatabaseMapping)object;
                 Vector propertyAssociations = (Vector)value;
@@ -2391,6 +2412,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         propertiesMapping.setAttributeName("properties");
         propertiesMapping.setReferenceClass(PropertyAssociation.class);
         propertiesMapping.setAttributeAccessor(new AttributeAccessor() {
+            @Override
             public Object getAttributeValueFromObject(Object object) {
                 ClassDescriptor desc = (ClassDescriptor)object;
                 Vector propertyAssociations = new NonSynchronizedVector();
@@ -2404,6 +2426,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                 return propertyAssociations;
             }
 
+            @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 ClassDescriptor desc = (ClassDescriptor)object;
                 Vector propertyAssociations = (Vector)value;
@@ -2435,6 +2458,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
 
         XMLCompositeCollectionMapping multipleTablesPrimaryKey = new XMLCompositeCollectionMapping();
         multipleTablesPrimaryKey.setAttributeAccessor(new AttributeAccessor() {
+            @Override
             public Object getAttributeValueFromObject(Object object) {
                 ClassDescriptor mapping = (ClassDescriptor)object;
                 Vector associations = mapping.getMultipleTablePrimaryKeyAssociations();
@@ -2446,6 +2470,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                 return associations;
             }
 
+            @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 ClassDescriptor mapping = (ClassDescriptor)object;
                 Vector associations = (Vector)value;
@@ -2466,6 +2491,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         multipleTables.setReferenceClass(Association.class);
         multipleTables.setXPath(getPrimaryNamespaceXPath() + "multiple-table-foreign-keys/" + getSecondaryNamespaceXPath() + "field-reference");
         multipleTables.setAttributeAccessor(new AttributeAccessor() {
+            @Override
             public Object getAttributeValueFromObject(Object object) {
                 ClassDescriptor mapping = (ClassDescriptor)object;
                 Vector associations = mapping.getMultipleTableForeignKeyAssociations();
@@ -2477,6 +2503,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                 return associations;
             }
 
+            @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 ClassDescriptor mapping = (ClassDescriptor)object;
                 Vector associations = (Vector)value;
@@ -2520,6 +2547,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         indirectionPolicyMapping.setReferenceClass(IndirectionPolicy.class);
         // Handle translation of NoIndirectionPolicy -> null.
         indirectionPolicyMapping.setAttributeAccessor(new AttributeAccessor() {
+            @Override
             public Object getAttributeValueFromObject(Object object) {
                 IndirectionPolicy policy = ((ForeignReferenceMapping)object).getIndirectionPolicy();
                 if (policy instanceof NoIndirectionPolicy) {
@@ -2528,6 +2556,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                 return policy;
             }
 
+            @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 IndirectionPolicy policy = (IndirectionPolicy)value;
                 if (value == null) {
@@ -2569,6 +2598,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         sourceToReferenceKeyFieldAssociationsMapping.setReferenceClass(Association.class);
         // Handle translation of foreign key associations to hashtables.
         sourceToReferenceKeyFieldAssociationsMapping.setAttributeAccessor(new AttributeAccessor() {
+            @Override
             public Object getAttributeValueFromObject(Object object) {
                 List sourceFields = ((DirectCollectionMapping)object).getSourceKeyFields();
                 List referenceFields = ((DirectCollectionMapping)object).getReferenceKeyFields();
@@ -2579,6 +2609,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                 return associations;
             }
 
+            @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 DirectCollectionMapping mapping = (DirectCollectionMapping)object;
                 List associations = (List)value;
@@ -3178,6 +3209,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         sourceToRelationKeyFieldAssociationsMapping.setReferenceClass(Association.class);
         // Handle translation of foreign key associations to hashtables.
         sourceToRelationKeyFieldAssociationsMapping.setAttributeAccessor(new AttributeAccessor() {
+            @Override
             public Object getAttributeValueFromObject(Object object) {
                 List sourceFields = ((ManyToManyMapping)object).getSourceKeyFields();
                 List relationFields = ((ManyToManyMapping)object).getSourceRelationKeyFields();
@@ -3188,6 +3220,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                 return associations;
             }
 
+            @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 ManyToManyMapping mapping = (ManyToManyMapping)object;
                 List associations = (List)value;
@@ -3209,6 +3242,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         targetToRelationKeyFieldAssociationsMapping.setReferenceClass(Association.class);
         // Handle translation of foreign key associations to hashtables.
         targetToRelationKeyFieldAssociationsMapping.setAttributeAccessor(new AttributeAccessor() {
+            @Override
             public Object getAttributeValueFromObject(Object object) {
                 List targetFields = ((ManyToManyMapping)object).getTargetKeyFields();
                 List relationFields = ((ManyToManyMapping)object).getTargetRelationKeyFields();
@@ -3219,6 +3253,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                 return associations;
             }
 
+            @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 ManyToManyMapping mapping = (ManyToManyMapping)object;
                 List associations = (List)value;
@@ -3263,6 +3298,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         indirectionPolicyMapping.setReferenceClass(IndirectionPolicy.class);
         // Handle translation of NoIndirectionPolicy -> null.
         indirectionPolicyMapping.setAttributeAccessor(new AttributeAccessor() {
+            @Override
             public Object getAttributeValueFromObject(Object object) {
                 IndirectionPolicy policy = ((ForeignReferenceMapping)object).getIndirectionPolicy();
                 if (policy instanceof NoIndirectionPolicy) {
@@ -3271,6 +3307,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                 return policy;
             }
 
+            @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 IndirectionPolicy policy = (IndirectionPolicy)value;
                 if (value == null) {
@@ -3458,6 +3495,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         sourceToTargetKeyFieldAssociationsMapping.setReferenceClass(Association.class);
         // Handle translation of foreign key associations to hashtables.
         sourceToTargetKeyFieldAssociationsMapping.setAttributeAccessor(new AttributeAccessor() {
+            @Override
             public Object getAttributeValueFromObject(Object object) {
                 List sourceFields = ((OneToManyMapping)object).getSourceKeyFields();
                 List targetFields = ((OneToManyMapping)object).getTargetForeignKeyFields();
@@ -3468,6 +3506,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                 return associations;
             }
 
+            @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 OneToManyMapping mapping = (OneToManyMapping)object;
                 List associations = (List)value;
@@ -3512,6 +3551,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         indirectionPolicyMapping.setReferenceClass(IndirectionPolicy.class);
         // Handle translation of NoIndirectionPolicy -> null.
         indirectionPolicyMapping.setAttributeAccessor(new AttributeAccessor() {
+            @Override
             public Object getAttributeValueFromObject(Object object) {
                 IndirectionPolicy policy = ((ForeignReferenceMapping)object).getIndirectionPolicy();
                 if (policy instanceof NoIndirectionPolicy) {
@@ -3520,6 +3560,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                 return policy;
             }
 
+            @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 IndirectionPolicy policy = (IndirectionPolicy)value;
                 if (value == null) {
@@ -3554,6 +3595,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         sourceToTargetKeyFieldAssociationsMapping.setReferenceClass(Association.class);
         // Handle translation of foreign key associations to hashtables.
         sourceToTargetKeyFieldAssociationsMapping.setAttributeAccessor(new AttributeAccessor() {
+            @Override
             public Object getAttributeValueFromObject(Object object) {
                 Map sourceToTargetKeyFields = ((OneToOneMapping)object).getSourceToTargetKeyFields();
                 List associations = new ArrayList(sourceToTargetKeyFields.size());
@@ -3565,6 +3607,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                 return associations;
             }
 
+            @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 OneToOneMapping mapping = (OneToOneMapping)object;
                 List associations = (List)value;
@@ -3621,6 +3664,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         indirectionPolicyMapping.setReferenceClass(IndirectionPolicy.class);
         // Handle translation of NoIndirectionPolicy -> null.
         indirectionPolicyMapping.setAttributeAccessor(new AttributeAccessor() {
+            @Override
             public Object getAttributeValueFromObject(Object object) {
                 IndirectionPolicy policy = ((ForeignReferenceMapping)object).getIndirectionPolicy();
                 if (policy instanceof NoIndirectionPolicy) {
@@ -3629,6 +3673,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                 return policy;
             }
 
+            @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 IndirectionPolicy policy = (IndirectionPolicy)value;
                 if (value == null) {
@@ -4045,6 +4090,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         doesExistQueryMapping.setAttributeName("doesExistQuery");
         // Handle translation of default does-exist to null.
         doesExistQueryMapping.setAttributeAccessor(new AttributeAccessor() {
+            @Override
             public Object getAttributeValueFromObject(Object object) {
                 DoesExistQuery query = ((DescriptorQueryManager)object).getDoesExistQuery();
                 if ((!query.isCallQuery()) && query.shouldCheckCacheForDoesExist()) {
@@ -4053,6 +4099,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                 return query;
             }
 
+            @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 DoesExistQuery query = (DoesExistQuery)value;
                 if (value == null) {
@@ -4438,6 +4485,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         indirectionPolicyMapping.setReferenceClass(IndirectionPolicy.class);
         // Handle translation of NoIndirectionPolicy -> null.
         indirectionPolicyMapping.setAttributeAccessor(new AttributeAccessor() {
+            @Override
             public Object getAttributeValueFromObject(Object object) {
                 IndirectionPolicy policy = ((AbstractTransformationMapping)object).getIndirectionPolicy();
                 if (policy instanceof NoIndirectionPolicy) {
@@ -4446,6 +4494,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                 return policy;
             }
 
+            @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 IndirectionPolicy policy = (IndirectionPolicy)value;
                 if (value == null) {
@@ -4554,6 +4603,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         indirectionPolicyMapping.setReferenceClass(IndirectionPolicy.class);
         // Handle translation of NoIndirectionPolicy -> null.
         indirectionPolicyMapping.setAttributeAccessor(new AttributeAccessor() {
+            @Override
             public Object getAttributeValueFromObject(Object object) {
                 IndirectionPolicy policy = ((ForeignReferenceMapping)object).getIndirectionPolicy();
                 if (policy instanceof NoIndirectionPolicy) {
@@ -4562,6 +4612,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                 return policy;
             }
 
+            @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 IndirectionPolicy policy = (IndirectionPolicy)value;
                 if (value == null) {
@@ -4608,6 +4659,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         sourceFieldToTargetQueryKeyMapping.setSetMethodName("setSourceToTargetQueryKeyFieldAssociations");
         // Handle translation of query key associations string to field.
         sourceFieldToTargetQueryKeyMapping.setAttributeAccessor(new AttributeAccessor() {
+            @Override
             public Object getAttributeValueFromObject(Object object) {
                 VariableOneToOneMapping mapping = (VariableOneToOneMapping)object;
                 Vector associations = mapping.getSourceToTargetQueryKeyFieldAssociations();
@@ -4622,6 +4674,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                 return queryKeyReferences;
             }
 
+            @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 VariableOneToOneMapping mapping = (VariableOneToOneMapping)object;
                 Vector associations = (Vector)value;
@@ -5220,7 +5273,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         try {
             descriptor.setJavaClass(Class.forName("org.eclipse.persistence.eis.adapters.xmlfile.XMLFileSequence"));
         } catch (Exception missing) {
-            descriptor.setJavaClass(new DefaultSequence() {}.getClass());
+            descriptor.setJavaClass(DefaultSequence.class);
         }
 
         descriptor.getInheritancePolicy().setParentClass(Sequence.class);

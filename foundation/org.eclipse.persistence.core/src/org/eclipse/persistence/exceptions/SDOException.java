@@ -479,9 +479,9 @@ public class SDOException extends EclipseLinkException {
         Object[] args = {  };
         SDOException exception = null;
         if (e != null) {
-            exception = new SDOException(ExceptionMessageGenerator.buildMessage(SDOException.class, CONVERSION_ERROR, args));
-        } else {
             exception = new SDOException(ExceptionMessageGenerator.buildMessage(SDOException.class, CONVERSION_ERROR, args), e);
+        } else {
+            exception = new SDOException(ExceptionMessageGenerator.buildMessage(SDOException.class, CONVERSION_ERROR, args));
         }
         exception.setErrorCode(CONVERSION_ERROR);
         return exception;

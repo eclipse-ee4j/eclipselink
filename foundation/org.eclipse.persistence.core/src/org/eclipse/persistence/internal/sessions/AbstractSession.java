@@ -394,6 +394,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     /**
      * Return the Serializer to use by default for serialization.
      */
+    @Override
     public Serializer getSerializer() {
         return serializer;
     }
@@ -401,6 +402,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     /**
      * Set the Serializer to use by default for serialization.
      */
+    @Override
     public void setSerializer(Serializer serializer) {
         this.serializer = serializer;
     }
@@ -513,6 +515,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * INTERNAL:
      * Constructs a HistoricalSession given a valid AsOfClause.
      */
+    @Override
     public org.eclipse.persistence.sessions.Session acquireHistoricalSession(AsOfClause clause) throws ValidationException {
         if ((clause == null) || (clause.getValue() == null)) {
             throw ValidationException.cannotAcquireHistoricalSession();
@@ -531,6 +534,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      *
      * @see UnitOfWorkImpl
      */
+    @Override
     public UnitOfWorkImpl acquireUnitOfWork() {
         UnitOfWorkImpl unitOfWork = acquireNonSynchronizedUnitOfWork(getDefaultReferenceMode());
         unitOfWork.registerWithTransactionIfRequired();
@@ -565,6 +569,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * clone may be garbage collected.  If the clone
      * has uncommitted changes then those changes will be lost.
      */
+    @Override
     public UnitOfWorkImpl acquireUnitOfWork(ReferenceMode referenceMode) {
         UnitOfWorkImpl unitOfWork = acquireNonSynchronizedUnitOfWork(referenceMode);
         unitOfWork.registerWithTransactionIfRequired();
@@ -583,6 +588,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * INTERNAL:
      * Return all pre-defined not yet parsed EJBQL queries.
      */
+    @Override
     public void addJPAQuery(DatabaseQuery query) {
         getProject().addJPAQuery(query);
     }
@@ -638,6 +644,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * Add the query to the session queries with the given name.
      * This allows for common queries to be pre-defined, reused and executed by name.
      */
+    @Override
     public void addQuery(String name, DatabaseQuery query) {
         query.setName(name);
         addQuery(query, false);
@@ -922,6 +929,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * PUBLIC:
      * clear the integrityChecker. IntegrityChecker holds all the ClassDescriptor Exceptions.
      */
+    @Override
     public void clearIntegrityChecker() {
         setIntegrityChecker(null);
     }
@@ -946,6 +954,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * PUBLIC:
      * Clear the profiler, this will end the current profile operation.
      */
+    @Override
     public void clearProfile() {
         setProfiler(null);
     }
@@ -954,6 +963,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * INTERNAL:
      * Clones the descriptor
      */
+    @Override
     public Object clone() {
         // An alternative to this process should be found
         try {
@@ -1059,6 +1069,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * PUBLIC:
      * Return true if the pre-defined query is defined on the session.
      */
+    @Override
     public boolean containsQuery(String queryName) {
         return getQueries().containsKey(queryName);
     }
@@ -1074,6 +1085,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      *
      * @see #copy(Object, AttributeGroup)
      */
+    @Override
     public Object copy(Object originalObjectOrObjects) {
         return copy(originalObjectOrObjects, new CopyGroup());
     }
@@ -1089,6 +1101,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * then the object and all of its privately owned parts will be copied.
      * Otherwise only the attributes included into the group will be copied.
      */
+    @Override
     public Object copy(Object originalObjectOrObjects, AttributeGroup group) {
         if (originalObjectOrObjects == null) {
             return null;
@@ -1143,6 +1156,8 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * @deprecated since EclipseLink 2.1, replaced by copy(Object)
      * @see #copy(Object)
      */
+    @Deprecated
+    @Override
     public Object copyObject(Object original) {
         CopyGroup copyGroup = new CopyGroup();
         copyGroup.setShouldResetPrimaryKey(true);
@@ -1158,6 +1173,8 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * @deprecated since EclipseLink 2.1, replaced by copy(Object, AttributeGroup)
      * @see #copy(Object, AttributeGroup)
      */
+    @Deprecated
+    @Override
     public Object copyObject(Object original, ObjectCopyingPolicy policy) {
         return copy(original, policy);
     }
@@ -1360,6 +1377,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * Return if the object exists on the database or not.
      * This always checks existence on the database.
      */
+    @Override
     public boolean doesObjectExist(Object object) throws DatabaseException {
         DoesExistQuery query = new DoesExistQuery();
         query.setObject(object);
@@ -1372,6 +1390,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * PUBLIC:
      * Turn off logging
      */
+    @Override
     public void dontLogMessages() {
         setLogLevel(SessionLog.OFF);
     }
@@ -1380,6 +1399,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * INTERNAL:
      * End the operation timing.
      */
+    @Override
     public void endOperationProfile(String operationName) {
         if (this.isInProfile) {
             getProfiler().endOperationProfile(operationName);
@@ -1400,6 +1420,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * INTERNAL:
      * Updates the value of SessionProfiler state
      */
+    @Override
     public void updateProfile(String operationName, Object value) {
         if (this.isInProfile) {
             getProfiler().update(operationName, value);
@@ -1468,6 +1489,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * INTERNAL:
      * Updates the count of SessionProfiler event
      */
+    @Override
     public void incrementProfile(String operationName) {
         if (this.isInProfile) {
             getProfiler().occurred(operationName, this);
@@ -1543,6 +1565,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      *
      * @see #executeSelectingCall(Call)
      */
+    @Override
     public int executeNonSelectingCall(Call call) throws DatabaseException {
         DataModifyQuery query = new DataModifyQuery();
         query.setIsExecutionClone(true);
@@ -1564,6 +1587,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * Warning: Allowing an unverified SQL string to be passed into this
      * method makes your application vulnerable to SQL injection attacks.
      */
+    @Override
     public void executeNonSelectingSQL(String sqlString) throws DatabaseException {
         executeNonSelectingCall(new SQLCall(sqlString));
     }
@@ -1575,6 +1599,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      *
      * @see #addQuery(String, DatabaseQuery)
      */
+    @Override
     public Object executeQuery(String queryName) throws DatabaseException {
         DatabaseQuery query = getQuery(queryName);
 
@@ -1593,6 +1618,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      *
      * @see DescriptorQueryManager#addQuery(String, DatabaseQuery)
      */
+    @Override
     public Object executeQuery(String queryName, Class domainClass) throws DatabaseException {
         ClassDescriptor descriptor = getDescriptor(domainClass);
 
@@ -1617,6 +1643,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      *
      * @see DescriptorQueryManager#addQuery(String, DatabaseQuery)
      */
+    @Override
     public Object executeQuery(String queryName, Class domainClass, Object arg1) throws DatabaseException {
         Vector argumentValues = new Vector();
         argumentValues.addElement(arg1);
@@ -1631,6 +1658,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      *
      * @see DescriptorQueryManager#addQuery(String, DatabaseQuery)
      */
+    @Override
     public Object executeQuery(String queryName, Class domainClass, Object arg1, Object arg2) throws DatabaseException {
         Vector argumentValues = new Vector();
         argumentValues.addElement(arg1);
@@ -1646,6 +1674,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      *
      * @see DescriptorQueryManager#addQuery(String, DatabaseQuery)
      */
+    @Override
     public Object executeQuery(String queryName, Class domainClass, Object arg1, Object arg2, Object arg3) throws DatabaseException {
         Vector argumentValues = new Vector();
         argumentValues.addElement(arg1);
@@ -1662,6 +1691,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      *
      * @see DescriptorQueryManager#addQuery(String, DatabaseQuery)
      */
+    @Override
     public Object executeQuery(String queryName, Class domainClass, List argumentValues) throws DatabaseException {
         if (argumentValues instanceof Vector) {
             return executeQuery(queryName, domainClass, (Vector)argumentValues);
@@ -1701,6 +1731,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      *
      * @see #addQuery(String, DatabaseQuery)
      */
+    @Override
     public Object executeQuery(String queryName, Object arg1) throws DatabaseException {
         Vector argumentValues = new Vector();
         argumentValues.addElement(arg1);
@@ -1714,6 +1745,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      *
      * @see #addQuery(String, DatabaseQuery)
      */
+    @Override
     public Object executeQuery(String queryName, Object arg1, Object arg2) throws DatabaseException {
         Vector argumentValues = new Vector();
         argumentValues.addElement(arg1);
@@ -1728,6 +1760,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      *
      * @see #addQuery(String, DatabaseQuery)
      */
+    @Override
     public Object executeQuery(String queryName, Object arg1, Object arg2, Object arg3) throws DatabaseException {
         Vector argumentValues = new Vector();
         argumentValues.addElement(arg1);
@@ -1743,6 +1776,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      *
      * @see #addQuery(String, DatabaseQuery)
      */
+    @Override
     public Object executeQuery(String queryName, List argumentValues) throws DatabaseException {
         if (argumentValues instanceof Vector) {
             return executeQuery(queryName, (Vector)argumentValues);
@@ -1777,6 +1811,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      *
      * @see DatabaseQuery
      */
+    @Override
     public Object executeQuery(DatabaseQuery query) throws DatabaseException {
         return executeQuery(query, EmptyRecord.getEmptyRecord());
     }
@@ -1786,6 +1821,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * Return the results from executing the database query.
      * The query arguments are passed in as a List of argument values in the same order as the query arguments.
      */
+    @Override
     public Object executeQuery(DatabaseQuery query, List argumentValues) throws DatabaseException {
         if (query == null) {
             throw QueryException.queryNotDefined();
@@ -1940,6 +1976,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      *
      * @see #executeNonSelectingCall(Call)
      */
+    @Override
     public Vector executeSelectingCall(Call call) throws DatabaseException {
         DataReadQuery query = new DataReadQuery();
         query.setCall(call);
@@ -1959,6 +1996,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      *
      * @see #executeSelectingCall(Call)
      */
+    @Override
     public Vector executeSQL(String sqlString) throws DatabaseException {
         return executeSelectingCall(new SQLCall(sqlString));
     }
@@ -2113,6 +2151,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * Return the active session for the current active external (JTS) transaction.
      * This should only be used with JTS and will return the session if no external transaction exists.
      */
+    @Override
     public org.eclipse.persistence.sessions.Session getActiveSession() {
         org.eclipse.persistence.sessions.Session activeSession = getActiveUnitOfWork();
         if (activeSession == null) {
@@ -2127,6 +2166,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * Return the active unit of work for the current active external (JTS) transaction.
      * This should only be used with JTS and will return null if no external transaction exists.
      */
+    @Override
     public org.eclipse.persistence.sessions.UnitOfWork getActiveUnitOfWork() {
         if (hasExternalTransactionController()) {
             return getExternalTransactionController().getActiveUnitOfWork();
@@ -2161,6 +2201,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * <code>null</code> if no clause set, or this a regular session.
      * @see #acquireHistoricalSession(org.eclipse.persistence.history.AsOfClause)
      */
+    @Override
     public AsOfClause getAsOfClause() {
         return null;
     }
@@ -2351,6 +2392,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * new class. If a descriptor does not exist for the Class parameter, null is returned.
      * If the passed Class parameter is null, then null will be returned.
      */
+    @Override
     public ClassDescriptor getClassDescriptor(Class theClass) {
         if (theClass == null) {
             return null;
@@ -2364,6 +2406,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * If a descriptor does not exist for the Object parameter, null is returned.
      * If the passed Object parameter is null, then null will be returned.
      */
+    @Override
     public ClassDescriptor getClassDescriptor(Object domainObject) {
         if (domainObject == null) {
             return null;
@@ -2376,6 +2419,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * Return the descriptor for  the alias.
      * UnitOfWork delegates this to the parent
      */
+    @Override
     public ClassDescriptor getClassDescriptorForAlias(String alias) {
         return project.getDescriptorForAlias(alias);
     }
@@ -2387,6 +2431,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * by one of the classes stored in the map, that descriptor will be stored under the
      * new class. If the passed Class is null, null will be returned.
      */
+    @Override
     public ClassDescriptor getDescriptor(Class theClass) {
         if (theClass == null) {
             return null;
@@ -2450,6 +2495,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * Return the descriptor specified for the object's class.
      * If the passed Object is null, null will be returned.
      */
+    @Override
     public ClassDescriptor getDescriptor(Object domainObject) {
         if (domainObject == null) {
             return null;
@@ -2465,6 +2511,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * PUBLIC:
      * Return the descriptor for  the alias
      */
+    @Override
     public ClassDescriptor getDescriptorForAlias(String alias) {
         // If we have a descriptors list return our sessions descriptor and
         // not that of the project since we may be dealing with a multitenant
@@ -2500,6 +2547,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * Return the event manager.
      * The event manager can be used to register for various session events.
      */
+    @Override
     public SessionEventManager getEventManager() {
         if (eventManager == null) {
             synchronized (this) {
@@ -2532,6 +2580,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * PUBLIC:
      * Return the ExceptionHandler.Exception handler can catch errors that occur on queries or during database access.
      */
+    @Override
     public ExceptionHandler getExceptionHandler() {
         return exceptionHandler;
     }
@@ -2544,6 +2593,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      *
      * @see org.eclipse.persistence.transaction.JTATransactionController
      */
+    @Override
     public ExternalTransactionController getExternalTransactionController() {
         return externalTransactionController;
     }
@@ -2554,6 +2604,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * This will return an object which implements an interface which exposes all public
      * IdentityMap functions.
      */
+    @Override
     public org.eclipse.persistence.sessions.IdentityMapAccessor getIdentityMapAccessor() {
         return identityMapAccessor;
     }
@@ -2570,6 +2621,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * PUBLIC:
      * Returns the integrityChecker.IntegrityChecker holds all the ClassDescriptor Exceptions.
      */
+    @Override
     public IntegrityChecker getIntegrityChecker() {
         // BUG# 2700595 - Lazily create an IntegrityChecker if one has not already been created.
         if (integrityChecker == null) {
@@ -2583,6 +2635,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * ADVANCED:
      * Return all pre-defined not yet parsed JPQL queries.
      */
+    @Override
     public List<DatabaseQuery> getJPAQueries() {
         return getProject().getJPAQueries();
     }
@@ -2603,6 +2656,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      *
      * @see #logMessages()
      */
+    @Override
     public Writer getLog() {
         return getSessionLog().getWriter();
     }
@@ -2663,6 +2717,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * to support non-relational datasources,
      * if DatabaseLogin API is required it will need to be cast.
      */
+    @Override
     public DatabaseLogin getLogin() {
         try {
             return (DatabaseLogin)getDatasourceLogin();
@@ -2676,6 +2731,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * Return the login, the login holds any database connection information given.
      * This return the Login interface and may need to be cast to the datasource specific implementation.
      */
+    @Override
     public Login getDatasourceLogin() {
         if (this.project == null) {
             return null;
@@ -2715,6 +2771,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * Return the name of the session.
      * This is used with the session broker, or to give the session a more meaningful name.
      */
+    @Override
     public String getName() {
         return name;
     }
@@ -2723,6 +2780,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * ADVANCED:
      * Return the sequnce number from the database
      */
+    @Override
     public Number getNextSequenceNumberValue(Class domainClass) {
         return (Number)getSequencing().getNextValue(domainClass);
     }
@@ -2792,6 +2850,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * NOTE: this must only be used for relational specific usage,
      * it will fail for non-relational datasources.
      */
+    @Override
     public DatabasePlatform getPlatform() {
         // PERF: Cache the platform.
         if (platform == null) {
@@ -2830,6 +2889,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * accessing the server platform from within EclipseLink's other sessions types
      * (ie not DatabaseSession)
      */
+    @Override
     public ServerPlatform getServerPlatform() {
         return null;
     }
@@ -2855,6 +2915,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * The profiler is a tool that can be used to determine performance bottlenecks.
      * The profiler can be queries to print summaries and configure for logging purposes.
      */
+    @Override
     public SessionProfiler getProfiler() {
         return profiler;
     }
@@ -2863,6 +2924,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * PUBLIC:
      * Return the project, the project holds configuartion information including the descriptors.
      */
+    @Override
     public org.eclipse.persistence.sessions.Project getProject() {
         return project;
     }
@@ -2871,6 +2933,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * ADVANCED:
      * Allow for user defined properties.
      */
+    @Override
     public Map getProperties() {
         if (properties == null) {
             properties = new HashMap(5);
@@ -2906,6 +2969,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * ADVANCED:
      * Returns the user defined property.
      */
+    @Override
     public Object getProperty(String name) {
         if(this.properties==null){
             return null;
@@ -2917,6 +2981,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * ADVANCED:
      * Return all pre-defined queries.
      */
+    @Override
     public Map<String, List<DatabaseQuery>> getQueries() {
         // PERF: lazy init, not normally required.
         if (queries == null) {
@@ -2961,6 +3026,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * Return the query from the session pre-defined queries with the given name.
      * This allows for common queries to be pre-defined, reused and executed by name.
      */
+    @Override
     public DatabaseQuery getQuery(String name) {
         return getQuery(name, null);
     }
@@ -2974,6 +3040,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      *
      * @see #getQuery(String)
      */
+    @Override
     public DatabaseQuery getQuery(String name, List arguments) {
         if (arguments instanceof Vector) {
             return getQuery(name, (Vector)arguments);
@@ -3088,6 +3155,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      *
      * @see #logMessages()
      */
+    @Override
     public SessionLog getSessionLog() {
         if (sessionLog == null) {
             setSessionLog(new DefaultSessionLog());
@@ -3139,6 +3207,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * PUBLIC:
      * Allow any WARNING level exceptions that occur within EclipseLink to be logged and handled by the exception handler.
      */
+    @Override
     public Object handleException(RuntimeException exception) throws RuntimeException {
         if ((exception instanceof EclipseLinkException)) {
             EclipseLinkException eclipseLinkException = (EclipseLinkException)exception;
@@ -3187,6 +3256,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * ADVANCED:
      * Return true if a descriptor exists for the given class.
      */
+    @Override
     public boolean hasDescriptor(Class theClass) {
         if (theClass == null) {
             return false;
@@ -3199,6 +3269,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * PUBLIC:
      * Return if an exception handler is present.
      */
+    @Override
     public boolean hasExceptionHandler() {
         if (exceptionHandler == null) {
             return false;
@@ -3213,6 +3284,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * servers.
      * @see org.eclipse.persistence.transaction.JTATransactionController
      */
+    @Override
     public boolean hasExternalTransactionController() {
         return externalTransactionController != null;
     }
@@ -3302,6 +3374,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * PUBLIC:
      * Return if this session is a client session.
      */
+    @Override
     public boolean isClientSession() {
         return false;
     }
@@ -3326,6 +3399,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * PUBLIC:
      * Return if this session is connected to the database.
      */
+    @Override
     public boolean isConnected() {
         if (getAccessor() == null) {
             return false;
@@ -3338,6 +3412,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * PUBLIC:
      * Return if this session is a database session.
      */
+    @Override
     public boolean isDatabaseSession() {
         return false;
     }
@@ -3346,6 +3421,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * PUBLIC:
      * Return if this session is a distributed session.
      */
+    @Override
     public boolean isDistributedSession() {
         return false;
     }
@@ -3354,6 +3430,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * PUBLIC:
      * Return if a profiler is being used.
      */
+    @Override
     public boolean isInProfile() {
         return isInProfile;
     }
@@ -3380,6 +3457,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * The allows certain finalizers such as in ClientSession to be enabled.
      * These are disable by default for performance reasons.
      */
+    @Override
     public boolean isFinalizersEnabled() {
         return isFinalizersEnabled;
     }
@@ -3407,6 +3485,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * The allows certain finalizers such as in ClientSession to be enabled.
      * These are disable by default for performance reasons.
      */
+    @Override
     public void setIsFinalizersEnabled(boolean isFinalizersEnabled) {
         this.isFinalizersEnabled = isFinalizersEnabled;
     }
@@ -3440,6 +3519,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * PUBLIC:
      * Return if this session is remote.
      */
+    @Override
     public boolean isRemoteSession() {
         return false;
     }
@@ -3448,6 +3528,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * PUBLIC:
      * Return if this session is a unit of work.
      */
+    @Override
     public boolean isRemoteUnitOfWork() {
         return false;
     }
@@ -3456,6 +3537,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * PUBLIC:
      * Return if this session is a server session.
      */
+    @Override
     public boolean isServerSession() {
         return false;
     }
@@ -3464,6 +3546,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * PUBLIC:
      * Return if this session is a session broker.
      */
+    @Override
     public boolean isSessionBroker() {
         return false;
     }
@@ -3480,6 +3563,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * PUBLIC:
      * Return if this session is a unit of work.
      */
+    @Override
     public boolean isUnitOfWork() {
         return false;
     }
@@ -3488,6 +3572,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * ADVANCED:
      * Extract and return the primary key from the object.
      */
+    @Override
     public Object getId(Object domainObject) throws ValidationException {
         ClassDescriptor descriptor = getDescriptor(domainObject);
         return keyFromObject(domainObject, descriptor);
@@ -3499,6 +3584,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * @deprecated since EclipseLink 2.1, replaced by getId(Object)
      * @see #getId(Object)
      */
+    @Override
     @Deprecated
     public Vector keyFromObject(Object domainObject) throws ValidationException {
         ClassDescriptor descriptor = getDescriptor(domainObject);
@@ -3524,6 +3610,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * PUBLIC:
      * Log the log entry.
      */
+    @Override
     public void log(SessionLogEntry entry) {
         if (this.isLoggingOff) {
             return;
@@ -3539,6 +3626,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     /**
      * Log a untranslated message to the EclipseLink log at FINER level.
      */
+    @Override
     public void logMessage(String message) {
         if (this.isLoggingOff) {
             return;
@@ -3572,6 +3660,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * @see ReadAllQuery
      * @see #readAllObjects(Class, Expression)
      */
+    @Override
     public Vector readAllObjects(Class domainClass) throws DatabaseException {
         ReadAllQuery query = new ReadAllQuery();
         query.setIsExecutionClone(true);
@@ -3605,6 +3694,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * example: session.readAllObjects(Employee.class, new SQLCall("SELECT * FROM EMPLOYEE"));
      * @see Call
      */
+    @Override
     public Vector readAllObjects(Class referenceClass, Call aCall) throws DatabaseException {
         ReadAllQuery raq = new ReadAllQuery();
         raq.setReferenceClass(referenceClass);
@@ -3620,6 +3710,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      *
      * @see ReadAllQuery
      */
+    @Override
     public Vector readAllObjects(Class domainClass, Expression expression) throws DatabaseException {
         ReadAllQuery query = new ReadAllQuery();
         query.setReferenceClass(domainClass);
@@ -3637,6 +3728,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * @see ReadObjectQuery
      * @see #readAllObjects(Class, Expression)
      */
+    @Override
     public Object readObject(Class domainClass) throws DatabaseException {
         ReadObjectQuery query = new ReadObjectQuery();
         query.setReferenceClass(domainClass);
@@ -3671,6 +3763,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * @see SQLCall
      * @see JPQLCall
      */
+    @Override
     public Object readObject(Class domainClass, Call aCall) throws DatabaseException {
         ReadObjectQuery query = new ReadObjectQuery();
         query.setReferenceClass(domainClass);
@@ -3686,6 +3779,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      *
      * @see ReadObjectQuery
      */
+    @Override
     public Object readObject(Class domainClass, Expression expression) throws DatabaseException {
         ReadObjectQuery query = new ReadObjectQuery();
         query.setReferenceClass(domainClass);
@@ -3700,6 +3794,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * This will read the object from the database with the same primary key as the object
      * or null if no object is found.
      */
+    @Override
     public Object readObject(Object object) throws DatabaseException {
         ReadObjectQuery query = new ReadObjectQuery();
         query.setSelectionObject(object);
@@ -3742,6 +3837,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * Caution should be used when using this to make sure the application has no un commited
      * changes to the object.
      */
+    @Override
     public Object refreshObject(Object object) throws DatabaseException {
         return refreshAndLockObject(object, ObjectBuildingQuery.NO_LOCK);
     }
@@ -3751,6 +3847,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * Release the session.
      * This does nothing by default, but allows for other sessions such as the ClientSession to do something.
      */
+    @Override
     public void release() {
     }
 
@@ -3768,6 +3865,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * PUBLIC:
      * Remove the user defined property.
      */
+    @Override
     public void removeProperty(String property) {
         getProperties().remove(property);
     }
@@ -3778,6 +3876,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      *
      * @see #removeQuery(String, Vector)
      */
+    @Override
     public void removeQuery(String queryName) {
         getQueries().remove(queryName);
     }
@@ -3912,6 +4011,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * Set the exceptionHandler.
      * Exception handler can catch errors that occur on queries or during database access.
      */
+    @Override
     public void setExceptionHandler(ExceptionHandler exceptionHandler) {
         this.exceptionHandler = exceptionHandler;
     }
@@ -3919,6 +4019,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     /**
      * Used for JTS integration internally by ServerPlatform.
      */
+    @Override
     public void setExternalTransactionController(ExternalTransactionController externalTransactionController) {
         this.externalTransactionController = externalTransactionController;
         if (externalTransactionController == null) {
@@ -3933,6 +4034,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * PUBLIC:
      * set the integrityChecker. IntegrityChecker holds all the ClassDescriptor Exceptions.
      */
+    @Override
     public void setIntegrityChecker(IntegrityChecker integrityChecker) {
         this.integrityChecker = integrityChecker;
     }
@@ -3953,6 +4055,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      *
      * @see #logMessages()
      */
+    @Override
     public void setLog(Writer log) {
         getSessionLog().setWriter(log);
     }
@@ -3987,6 +4090,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * Set the name of the session.
      * This is used with the session broker.
      */
+    @Override
     public void setName(String name) {
         this.name = name;
     }
@@ -4012,6 +4116,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * This timeout will apply to any queries that do not have a timeout set,
      * and that do not have a default timeout defined in their descriptor.
      */
+    @Override
     public void setQueryTimeoutDefault(int queryTimeoutDefault) {
         this.queryTimeoutDefault = queryTimeoutDefault;
     }
@@ -4021,6 +4126,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * Set the profiler for the session.
      * This allows for performance operations to be profiled.
      */
+    @Override
     public void setProfiler(SessionProfiler profiler) {
         this.profiler = profiler;
         if (profiler != null) {
@@ -4049,7 +4155,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     public void setProperties(Map<Object, Object> propertiesMap) {
         if (null == propertiesMap) {
             // Keep current behavior and set properties map to null
-            properties = propertiesMap;
+            properties = null;
         } else {
             /*
              * Bug# 219097 Clone as (HashMap) possible immutable maps to avoid
@@ -4066,6 +4172,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     /**
      * PUBLIC: Allow for user defined properties.
      */
+    @Override
     public void setProperty(String propertyName, Object propertyValue) {
         getProperties().put(propertyName, propertyValue);
     }
@@ -4087,6 +4194,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      *
      * @see #logMessage(String)
      */
+    @Override
     public void setSessionLog(SessionLog sessionLog) {
         this.isLoggingOff = false;
         this.sessionLog = sessionLog;
@@ -4121,6 +4229,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * PUBLIC:
      * Return if logging is enabled (false if log level is OFF)
      */
+    @Override
     public boolean shouldLogMessages() {
         if (this.isLoggingOff) {
             return false;
@@ -4136,6 +4245,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * INTERNAL:
      * Start the operation timing.
      */
+    @Override
     public void startOperationProfile(String operationName) {
         if (this.isInProfile) {
             getProfiler().startOperationProfile(operationName);
@@ -4155,6 +4265,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     /**
      * Print the connection status with the session.
      */
+    @Override
     public String toString() {
         StringWriter writer = new StringWriter();
         writer.write(getSessionTypeString() + "(" + Helper.cr() + "\t" + getAccessor() + Helper.cr() + "\t" + getDatasourcePlatform() + ")");
@@ -4198,6 +4309,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * An object identity problem is when an object in the cache references an object not in the cache.
      * This method will validate that all cached objects are in a correct state.
      */
+    @Override
     public void validateCache() {
         getIdentityMapAccessorInstance().validateCache();
     }
@@ -4297,6 +4409,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
       * any remote session or application. Since this is a EclipseLink session we can
       * always assume that the object that we receive here will be a Command object.
       */
+    @Override
     public void processCommand(Object command) {
         ((Command)command).executeWithSession(this);
     }
@@ -4376,6 +4489,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * @return The CommandManager instance that controls the remote command
      * service for this session
      */
+    @Override
     public CommandManager getCommandManager() {
         return commandManager;
     }
@@ -4390,6 +4504,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * @param mgr The CommandManager instance to control the remote command
      * service for this session
      */
+    @Override
     public void setCommandManager(CommandManager mgr) {
         commandManager = mgr;
     }
@@ -4432,6 +4547,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * in will be one of the constants LOG_ERROR, LOG_WARNING, LOG_INFO, and LOG_DEBUG
      * defined in the CommandProcessor interface.
      */
+    @Override
     public boolean shouldLogMessages(int logLevel) {
         if (this.isLoggingOff) {
             return false;
@@ -4460,6 +4576,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * of the constants LOG_ERROR, LOG_WARNING, LOG_INFO, and LOG_DEBUG defined in the
      * CommandProcessor interface.
      */
+    @Override
     public void logMessage(int logLevel, String message) {
         if (this.isLoggingOff) {
             return;
@@ -4498,6 +4615,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * @param category  the string representation of a EclipseLink category, e.g. "sql", "transaction" ...
      * </p>
      */
+    @Override
     public int getLogLevel(String category) {
         return getSessionLog().getLevel(category);
     }
@@ -4510,6 +4628,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * @return the log level
      * </p>
      */
+    @Override
     public int getLogLevel() {
         return getSessionLog().getLevel();
     }
@@ -4523,6 +4642,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * @param level     the new log level
      * </p>
      */
+    @Override
     public void setLogLevel(int level) {
         this.isLoggingOff = false;
         getSessionLog().setLevel(level);
@@ -4550,6 +4670,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * @param category  the string representation of a EclipseLink category
      * </p>
      */
+    @Override
     public boolean shouldLog(int Level, String category) {
         if (this.isLoggingOff) {
             return false;
@@ -4939,6 +5060,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * PUBLIC:
      * Allow any SEVERE level exceptions that occur within EclipseLink to be logged and handled by the exception handler.
      */
+    @Override
     public Object handleSevere(RuntimeException exception) throws RuntimeException {
         logThrowable(SessionLog.SEVERE, null, exception);
         if (hasExceptionHandler()) {
@@ -5113,6 +5235,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      *  managed objects.
      *  @see org.eclipse.persistence.config.ReferenceMode
      */
+    @Override
     public ReferenceMode getDefaultReferenceMode() {
         return defaultReferenceMode;
     }
@@ -5122,6 +5245,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      *  managed objects.
      *  @see org.eclipse.persistence.config.ReferenceMode
      */
+   @Override
    public void setDefaultReferenceMode(ReferenceMode defaultReferenceMode) {
         this.defaultReferenceMode = defaultReferenceMode;
     }
@@ -5220,6 +5344,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     * PUBLIC:
     * Return the session's partitioning policy.
     */
+   @Override
    public PartitioningPolicy getPartitioningPolicy() {
        return partitioningPolicy;
    }
@@ -5231,6 +5356,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     * or across a database cluster such as Oracle RAC.
     * Partitioning can provide improved scalability by allowing multiple database machines to service requests.
     */
+   @Override
    public void setPartitioningPolicy(PartitioningPolicy partitioningPolicy) {
        this.partitioningPolicy = partitioningPolicy;
    }

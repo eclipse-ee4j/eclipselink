@@ -12,9 +12,10 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.eis.adapters.xmlfile;
 
-import javax.resource.cci.*;
+import javax.resource.cci.InteractionSpec;
+
 import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.w3c.dom.*;
+import org.w3c.dom.Element;
 
 /**
  * Interaction spec for XML file JCA adapter.
@@ -25,12 +26,12 @@ import org.w3c.dom.*;
  * @since OracleAS TopLink 10<i>g</i> (10.0.3)
  */
 public class XMLFileInteractionSpec implements InteractionSpec {
-    protected NamespaceResolver namespaceResolver;
+    protected transient NamespaceResolver namespaceResolver;
     protected String xPath;
     protected String xQuery;
     protected int interactionType;
     protected String fileName;
-    protected Element dom;
+    protected transient Element dom;
 
     /** Type constants for defining interaction type. */
     public static final int INSERT = 0;
@@ -136,6 +137,7 @@ public class XMLFileInteractionSpec implements InteractionSpec {
         this.dom = dom;
     }
 
+    @Override
     public String toString() {
         return "XMLFileInteractionSpec(" + getFileName() + ":" + getXQuery() + ")";
     }

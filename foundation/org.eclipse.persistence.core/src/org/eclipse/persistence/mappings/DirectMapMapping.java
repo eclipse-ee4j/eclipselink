@@ -16,12 +16,19 @@
  ******************************************************************************/
 package org.eclipse.persistence.mappings;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
 import org.eclipse.persistence.descriptors.changetracking.MapChangeEvent;
-import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.indirection.IndirectCollection;
@@ -30,16 +37,36 @@ import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.descriptors.changetracking.AttributeChangeListener;
 import org.eclipse.persistence.internal.descriptors.changetracking.ObjectChangeListener;
-import org.eclipse.persistence.internal.expressions.*;
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.expressions.SQLDeleteStatement;
+import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
-import org.eclipse.persistence.internal.indirection.*;
-import org.eclipse.persistence.internal.queries.*;
-import org.eclipse.persistence.internal.sessions.*;
-import org.eclipse.persistence.sessions.DatabaseRecord;
-import org.eclipse.persistence.mappings.converters.*;
+import org.eclipse.persistence.internal.indirection.TransparentIndirectionPolicy;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
+import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
+import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.ChangeRecord;
+import org.eclipse.persistence.internal.sessions.DirectMapChangeRecord;
+import org.eclipse.persistence.internal.sessions.MergeManager;
+import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.mappings.converters.Converter;
+import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
+import org.eclipse.persistence.mappings.converters.SerializedObjectConverter;
+import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
 import org.eclipse.persistence.mappings.foundation.MapComponentMapping;
-import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.queries.DataReadQuery;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.DeleteObjectQuery;
+import org.eclipse.persistence.queries.DirectReadQuery;
+import org.eclipse.persistence.queries.ObjectBuildingQuery;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.queries.WriteObjectQuery;
+import org.eclipse.persistence.sessions.DatabaseRecord;
 
 /**
  * Mapping for a collection of key-value pairs.
@@ -77,6 +104,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      * This must be a MappedKeyMapContainerPolicy policy.
      * Set the valueMapping for the policy.
      */
+    @Override
     public void setContainerPolicy(ContainerPolicy containerPolicy) {
         super.setContainerPolicy(containerPolicy);
         ((MappedKeyMapContainerPolicy)containerPolicy).setValueMapping(this);
@@ -287,8 +315,6 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
         }
 
         Map cloneObjectCollection = (Map)getRealCollectionAttributeValueFromObject(clone, session);
-        HashMap originalKeyValues = new HashMap(10);
-        HashMap cloneKeyValues = new HashMap(10);
 
         Map backUpCollection = null;
 
@@ -342,6 +368,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      * INTERNAL
      * Called when a DatabaseMapping is used to map the key in a collection.  Returns the key.
      */
+    @Override
     public Object createMapComponentFromRow(AbstractRecord dbRow, ObjectBuildingQuery query, CacheKey parentCacheKey, AbstractSession session, boolean isTargetProtected){
         Object key = dbRow.get(getDirectField());
         if (getValueConverter() != null){
@@ -928,6 +955,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      * <p>The container class must implements (directly or indirectly) the Map interface.
      * <p>Note: Do not use both useMapClass(Class concreteClass), useTransparentMap().  The last use of one of the two methods will override the previous one.
      */
+    @Override
     public void useMapClass(Class concreteClass) {
         if (!Helper.classImplementsInterface(concreteClass, ClassConstants.Map_Class)) {
             throw DescriptorException.illegalContainerClass(concreteClass);

@@ -103,6 +103,11 @@ public class JPAEntityListenerHolder implements SerializableDescriptorEventHolde
         return entityListenerClassInstance;
     }
 
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+
     public void convertToSerializableMethods(java.util.Hashtable<String,java.util.List<Method>> methods) {
         this.serializableMethods = new java.util.Hashtable();
         for (String event: methods.keySet()){

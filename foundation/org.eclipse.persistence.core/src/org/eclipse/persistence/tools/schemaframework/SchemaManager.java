@@ -35,7 +35,6 @@ import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sequencing.Sequencing;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
-import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.sequencing.DefaultSequence;
 import org.eclipse.persistence.sequencing.NativeSequence;
@@ -588,6 +587,7 @@ public class SchemaManager {
      * INTERNAL:
      * Close the schema writer when the schema manger is garbage collected
      */
+    @Override
     public void finalize() {
         try {
             this.closeDDLWriter();
@@ -1047,11 +1047,11 @@ public class SchemaManager {
      * Iterate over the schemas that need to be dropped.
      */
     public void dropDatabaseSchemas() {
-        for (String databaseSchema : dropDatabaseSchemas.keySet()) {
+        for (DatabaseObjectDefinition dod : dropDatabaseSchemas.values()) {
             if (shouldWriteToDatabase()) {
-                dropDatabaseSchemas.get(databaseSchema).dropDatabaseSchemaOnDatabase(getSession());
+                dod.dropDatabaseSchemaOnDatabase(getSession());
             } else {
-                dropDatabaseSchemas.get(databaseSchema).dropDatabaseSchema(getSession(), getDropSchemaWriter());
+                dod.dropDatabaseSchema(getSession(), getDropSchemaWriter());
                 appendToDDLWriter(getDropSchemaWriter(), "\n");
             }
         }

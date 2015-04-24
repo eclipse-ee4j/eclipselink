@@ -58,6 +58,22 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ASSOCIATION_OVERRIDE;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ASSOCIATION_OVERRIDES;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ATTRIBUTE_OVERRIDE;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ATTRIBUTE_OVERRIDES;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_COLLECTION_TABLE;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_COLUMN;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_MAP_KEY;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_MAP_KEY_CLASS;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_MAP_KEY_COLUMN;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_MAP_KEY_ENUMERATED;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_MAP_KEY_JOIN_COLUMN;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_MAP_KEY_JOIN_COLUMNS;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_MAP_KEY_TEMPORAL;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ORDER_BY;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ORDER_COLUMN;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -99,22 +115,6 @@ import org.eclipse.persistence.mappings.EmbeddableMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractCompositeCollectionMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
-
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ATTRIBUTE_OVERRIDE;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ATTRIBUTE_OVERRIDES;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ASSOCIATION_OVERRIDE;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ASSOCIATION_OVERRIDES;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_COLLECTION_TABLE;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_COLUMN;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_MAP_KEY;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_MAP_KEY_CLASS;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_MAP_KEY_COLUMN;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_MAP_KEY_ENUMERATED;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_MAP_KEY_JOIN_COLUMN;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_MAP_KEY_JOIN_COLUMNS;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_MAP_KEY_TEMPORAL;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ORDER_BY;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ORDER_COLUMN;
 
 /**
  * An element collection accessor.
@@ -496,6 +496,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
      * and Entity is used as the MapKey
      * @return
      */
+    @Override
     protected DatabaseTable getDefaultTableForEntityMapKey(){
         return getCollectionTable().getDatabaseTable();
     }
@@ -549,6 +550,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
      * INTERNAL:
      * Return the map key class on this element collection accessor.
      */
+    @Override
     public MetadataClass getMapKeyClass() {
         return m_mapKeyClass;
     }
@@ -559,6 +561,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
      * class to support an auto-apply jpa converter. Per the spec auto-apply
      * converters are applied against basics only.
      */
+    @Override
     public MetadataClass getMapKeyClassWithGenerics() {
         return getMapKeyClass();
     }
@@ -567,6 +570,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
      * INTERNAL:
      * Used for OX mapping.
      */
+    @Override
     public List<AssociationOverrideMetadata> getMapKeyAssociationOverrides() {
         return m_mapKeyAssociationOverrides;
     }
@@ -575,6 +579,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
      * INTERNAL:
      * Used for OX mapping.
      */
+    @Override
     public List<AttributeOverrideMetadata> getMapKeyAttributeOverrides() {
         return m_mapKeyAttributeOverrides;
     }
@@ -591,6 +596,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
      * INTERNAL:
      * Used for OX mapping.
      */
+    @Override
     public ColumnMetadata getMapKeyColumn() {
         return m_mapKeyColumn;
     }
@@ -598,6 +604,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
     /**
      * INTERNAL:
      */
+    @Override
     public String getMapKeyConvert() {
         return m_mapKeyConvert;
     }
@@ -606,6 +613,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
      * INTERNAL:
      * Used for OX mapping.
      */
+    @Override
     public List<ConvertMetadata> getMapKeyConverts() {
         return m_mapKeyConverts;
     }
@@ -622,6 +630,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
      * INTERNAL:
      * Used for OX mapping.
      */
+    @Override
     public ForeignKeyMetadata getMapKeyForeignKey() {
         return m_mapKeyForeignKey;
     }
@@ -630,6 +639,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
      * INTERNAL:
      * Used for OX mapping.
      */
+    @Override
     public List<JoinColumnMetadata> getMapKeyJoinColumns() {
         return m_mapKeyJoinColumns;
     }
@@ -689,7 +699,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
                     throw ValidationException.unableToDetermineTargetClass(getAttributeName(), getJavaClass());
                 } else {
                     // Log the defaulting contextual reference class.
-                    getLogger().logConfigMessage(getLogger().ELEMENT_COLLECTION_MAPPING_REFERENCE_CLASS, getAnnotatedElement(), m_referenceClass);
+                    getLogger().logConfigMessage(MetadataLogger.ELEMENT_COLLECTION_MAPPING_REFERENCE_CLASS, getAnnotatedElement(), m_referenceClass);
                 }
             }
         }
@@ -1123,6 +1133,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
     /**
      * INTERNAL:
      */
+    @Override
     public void setMapKeyClass(MetadataClass mapKeyClass) {
         m_mapKeyClass = mapKeyClass;
     }

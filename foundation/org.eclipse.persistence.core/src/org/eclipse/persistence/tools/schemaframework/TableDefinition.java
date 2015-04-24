@@ -403,6 +403,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * INTERNAL:
      * Return the create table statement.
      */
+    @Override
     public Writer buildCreationWriter(AbstractSession session, Writer writer) throws ValidationException {
         try {
             writer.write(getCreationPrefix() + getFullName() + " (");
@@ -447,6 +448,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * INTERNAL:
      * Return the drop table statement.
      */
+    @Override
     public Writer buildDeletionWriter(AbstractSession session, Writer writer) throws ValidationException {
         try {
             writer.write("DROP TABLE " + getFullName() + session.getPlatform().getDropCascadeString());
@@ -783,6 +785,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * PUBLIC:
      * Performs a deep copy of this table definition.
      */
+    @Override
     public Object clone() {
         TableDefinition clone = (TableDefinition)super.clone();
         if (fields != null) {
@@ -821,7 +824,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
             return;
         }
         for (UniqueKeyConstraint uniqueKey : getUniqueKeys()) {
-            buildUniqueConstraintCreationWriter(session, uniqueKey, schemaWriter).toString();
+            buildUniqueConstraintCreationWriter(session, uniqueKey, schemaWriter);
             writeLineSeperator(session, schemaWriter);
         }
     }
@@ -835,7 +838,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
         if (session.getPlatform().supportsForeignKeyConstraints()) {
             for (ForeignKeyConstraint foreignKey : getForeignKeyMap().values()) {
                 if (! foreignKey.disableForeignKey()) {
-                    buildConstraintCreationWriter(session, foreignKey, schemaWriter).toString();
+                    buildConstraintCreationWriter(session, foreignKey, schemaWriter);
                     writeLineSeperator(session, schemaWriter);
                 }
             }
@@ -1165,39 +1168,37 @@ public class TableDefinition extends DatabaseObjectDefinition {
             // indices for columns in foreign key constraint declarations
             for (ForeignKeyConstraint foreignKey : getForeignKeys()) {
                 if (!foreignKey.isDisableForeignKey()) {
-                    if (!foreignKey.isDisableForeignKey()) {
-                        // Do not re-index pk.
-                        boolean alreadyIndexed = false;
-                        List<String> primaryKeys = getPrimaryKeyFieldNames();
-                        if ((primaryKeys.size() == foreignKey.getSourceFields().size())
-                                && primaryKeys.containsAll(foreignKey.getSourceFields())) {
+                    // Do not re-index pk.
+                    boolean alreadyIndexed = false;
+                    List<String> primaryKeys = getPrimaryKeyFieldNames();
+                    if ((primaryKeys.size() == foreignKey.getSourceFields().size())
+                            && primaryKeys.containsAll(foreignKey.getSourceFields())) {
+                        alreadyIndexed = true;
+                    }
+                    // Also check unique fields.
+                    if (foreignKey.getSourceFields().size() == 1) {
+                        FieldDefinition field = getField(foreignKey.getSourceFields().get(0));
+                        if ((field != null) && field.isUnique()) {
                             alreadyIndexed = true;
                         }
-                        // Also check unique fields.
-                        if (foreignKey.getSourceFields().size() == 1) {
-                            FieldDefinition field = getField(foreignKey.getSourceFields().get(0));
-                            if ((field != null) && field.isUnique()) {
-                                alreadyIndexed = true;
-                            }
+                    }
+                    for (UniqueKeyConstraint uniqueConstraint : getUniqueKeys()) {
+                        if ((uniqueConstraint.getSourceFields().size() == foreignKey.getSourceFields().size())
+                                && uniqueConstraint.getSourceFields().containsAll(foreignKey.getSourceFields())) {
+                            alreadyIndexed = true;
                         }
-                        for (UniqueKeyConstraint uniqueConstraint : getUniqueKeys()) {
-                            if ((uniqueConstraint.getSourceFields().size() == foreignKey.getSourceFields().size())
-                                    && uniqueConstraint.getSourceFields().containsAll(foreignKey.getSourceFields())) {
-                                alreadyIndexed = true;
+                    }
+                    if (!alreadyIndexed) {
+                        IndexDefinition index = buildIndex(session, foreignKey.getName(), foreignKey.getSourceFields(), false);
+                        if (writer == null) {
+                            try {
+                                index.dropFromDatabase(session);
+                            } catch (Exception notThere) {
+                                //ignore
                             }
-                        }
-                        if (!alreadyIndexed) {
-                            IndexDefinition index = buildIndex(session, foreignKey.getName(), foreignKey.getSourceFields(), false);
-                            if (writer == null) {
-                                try {
-                                    index.dropFromDatabase(session);
-                                } catch (Exception notThere) {
-                                    //ignore
-                                }
-                            } else {
-                                index.buildDeletionWriter(session, writer);
-                                writeLineSeperator(session, writer);
-                            }
+                        } else {
+                            index.buildDeletionWriter(session, writer);
+                            writeLineSeperator(session, writer);
                         }
                     }
                 }
@@ -1309,6 +1310,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * @param session
      * @param createSchemaWriter
      */
+    @Override
     public void postCreateObject(AbstractSession session, Writer createSchemaWriter, boolean createSQLFiles){
         // create indices on table's primary and unique keys (if required)
         setCreateSQLFiles(createSQLFiles);
@@ -1320,6 +1322,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * @param session
      * @param dropSchemaWriter
      */
+    @Override
     public void preDropObject(AbstractSession session, Writer dropSchemaWriter, boolean createSQLFiles) {
         // drop indices on table's primary and unique keys (if required)
         setCreateSQLFiles(createSQLFiles);
@@ -1376,6 +1379,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * INTERNAL:
      * Subclasses who care should override this method.
      */
+    @Override
     public boolean shouldCreateVPDCalls(AbstractSession session) {
         if (createVPDCalls) {
             if (! session.getPlatform().supportsVPD()) {

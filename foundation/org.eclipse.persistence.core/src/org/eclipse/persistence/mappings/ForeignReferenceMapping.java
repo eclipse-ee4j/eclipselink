@@ -357,6 +357,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * INTERNAL:
      * Require for cloning, the part must be cloned.
      */
+    @Override
     public abstract Object buildCloneForPartObject(Object attributeValue, Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession, Integer refreshCascade, boolean isExisting, boolean isFromSharedCache);
 
     /**
@@ -445,6 +446,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * from a row as opposed to building the original from the row, putting it in
      * the shared cache, and then cloning the original.
      */
+    @Override
     public DatabaseValueHolder createCloneValueHolder(ValueHolderInterface attributeValue, Object original, Object clone, AbstractRecord row, AbstractSession cloningSession, boolean buildDirectlyFromRow) {
         return cloningSession.createCloneQueryValueHolder(attributeValue, clone, row, this);
     }
@@ -670,6 +672,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * This method is used to store the FK fields that can be cached that correspond to noncacheable mappings
      * the FK field values will be used to re-issue the query when cloning the shared cache entity
      */
+    @Override
     public abstract void collectQueryParameters(Set<DatabaseField> cacheFields);
 
     /**
@@ -1159,6 +1162,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * Return the referenceDescriptor. This is a descriptor which is associated with
      * the reference class.
      */
+    @Override
     public ClassDescriptor getReferenceDescriptor() {
         if (referenceDescriptor == null) {
             if (getTempSession() == null) {
@@ -1176,6 +1180,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * Return the relationshipPartner mapping for this bi-directional mapping. If the relationshipPartner is null then
      * this is a uni-directional mapping.
      */
+    @Override
     public DatabaseMapping getRelationshipPartner() {
         if ((this.relationshipPartner == null) && (this.relationshipPartnerAttributeName != null)) {
             setRelationshipPartner(getReferenceDescriptor().getObjectBuilder().getMappingForAttributeName(getRelationshipPartnerAttributeName()));
@@ -1426,6 +1431,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * INTERNAL:
      * Return if this mapping supports joining.
      */
+    @Override
     public boolean isJoiningSupported() {
         return false;
     }
@@ -2093,6 +2099,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * Used to signal that this mapping references a protected/isolated entity and requires
      * special merge/object building behaviour.
      */
+    @Override
     public void setIsCacheable(boolean cacheable) {
         this.isCacheable = cacheable;
     }
@@ -2402,7 +2409,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         ObjectLevelReadQuery nestedQuery = null;
         // This is also call for partial object reading.
         if (joinManager == null) {
-            nestedQuery = prepareNestedJoins(joinManager, sourceQuery, executionSession);
+            nestedQuery = prepareNestedJoins(null, sourceQuery, executionSession);
             nestedQuery.setSession(executionSession);
             nestedQuery.setPrefetchedCacheKeys(sourceQuery.getPrefetchedCacheKeys());
             return nestedQuery;

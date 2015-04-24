@@ -90,6 +90,7 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T>, Serializab
      *  the attribute was declared.
      *  @return declaring type
      */
+    @Override
     public ManagedType<X> getDeclaringType() {
         return getManagedTypeImpl();
     }
@@ -109,6 +110,7 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T>, Serializab
      *
      * @return corresponding java.lang.reflect.Member
      */
+    @Override
     public Member getJavaMember() {
         AttributeAccessor accessor = getMapping().getAttributeAccessor();
         if (accessor.isMethodAttributeAccessor()) {
@@ -158,23 +160,21 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T>, Serializab
             if(null == aMember) {
                 // 316991: Handle Embeddable types
                 // If field level access - perform a getDeclaredField call
-                if(null == aMember) {
-                    // Field level access
-                    // Check declaredFields in the case where we have no getMethod or getMethodName
-                    try {
-                        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                            aMember = AccessController.doPrivileged(new PrivilegedGetDeclaredField(
-                                this.getManagedTypeImpl().getJavaType(), mapping.getAttributeName(), false));
-                        } else {
-                            aMember = PrivilegedAccessHelper.getDeclaredField(
-                                this.getManagedTypeImpl().getJavaType(), mapping.getAttributeName(), false);
-                        }
-                        // Exceptions are to be ignored for reflective calls - if the methodName is also null - it will catch here
-                    } catch (PrivilegedActionException pae) {
-                        //pae.printStackTrace();
-                    } catch (NoSuchFieldException nsfe) {
-                        //nsfe.printStackTrace();
+                // Field level access
+                // Check declaredFields in the case where we have no getMethod or getMethodName
+                try {
+                    if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                        aMember = AccessController.doPrivileged(new PrivilegedGetDeclaredField(
+                            this.getManagedTypeImpl().getJavaType(), mapping.getAttributeName(), false));
+                    } else {
+                        aMember = PrivilegedAccessHelper.getDeclaredField(
+                            this.getManagedTypeImpl().getJavaType(), mapping.getAttributeName(), false);
                     }
+                    // Exceptions are to be ignored for reflective calls - if the methodName is also null - it will catch here
+                } catch (PrivilegedActionException pae) {
+                    //pae.printStackTrace();
+                } catch (NoSuchFieldException nsfe) {
+                    //nsfe.printStackTrace();
                 }
             }
         }
@@ -191,6 +191,7 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T>, Serializab
      *  Return the Java type of the represented attribute.
      *  @return Java type
      */
+    @Override
     public abstract Class<T> getJavaType();
 
     /**
@@ -225,6 +226,7 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T>, Serializab
      * Return the name of the attribute.
      * @return name
      */
+    @Override
     public String getName() {
         return this.getMapping().getAttributeName();
     }
@@ -233,6 +235,7 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T>, Serializab
      *  Return the persistent attribute type for the attribute.
      *  @return persistent attribute type
      */
+    @Override
     public Attribute.PersistentAttributeType getPersistentAttributeType() {
         /**
          * process the following mappings by referencing the Core API Mapping.
@@ -283,6 +286,7 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T>, Serializab
      *  @return whether boolean indicating whether attribute
      *          corresponds to an association
      */
+    @Override
     public boolean isAssociation() {
         // If the mapping a relationship to another entity.
         return getMapping().isForeignReferenceMapping() && !getMapping().isDirectCollectionMapping()
@@ -297,6 +301,7 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T>, Serializab
      *  AbstractCompositeDirectCollectionMapping and their subclasses
      *
      */
+    @Override
     public boolean isCollection() {
         return getMapping().isCollectionMapping();
     }

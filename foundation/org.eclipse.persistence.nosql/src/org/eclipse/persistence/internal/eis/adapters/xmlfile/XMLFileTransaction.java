@@ -12,10 +12,18 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.eis.adapters.xmlfile;
 
-import java.io.*;
-import java.util.*;
-import javax.resource.*;
-import javax.resource.cci.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.Reader;
+import java.io.Writer;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import javax.resource.ResourceException;
+import javax.resource.cci.LocalTransaction;
+
 import org.eclipse.persistence.eis.EISDOMRecord;
 
 /**
@@ -41,6 +49,7 @@ public class XMLFileTransaction implements LocalTransaction {
     /**
      * Record that a transaction has begun.
      */
+    @Override
     public void begin() {
         this.isInTransaction = true;
         this.domFiles = new HashMap(10);
@@ -56,6 +65,7 @@ public class XMLFileTransaction implements LocalTransaction {
     /**
      * Write each of the transactional DOM records back to their files.
      */
+    @Override
     public void commit() throws ResourceException {
         try {
             // store any dom to their files
@@ -64,10 +74,10 @@ public class XMLFileTransaction implements LocalTransaction {
                 String fileName = (String)entry.getKey();
                 EISDOMRecord record = (EISDOMRecord)entry.getValue();
 
-                Writer fileWriter = new FileWriter(fileName);
-                record.transformToWriter(fileWriter);
-                fileWriter.flush();
-                fileWriter.close();
+                try (Writer fileWriter = new FileWriter(fileName)) {
+                    record.transformToWriter(fileWriter);
+                    fileWriter.flush();
+                }
             }
         } catch (Exception exception) {
             throw new ResourceException(exception.toString());
@@ -79,6 +89,7 @@ public class XMLFileTransaction implements LocalTransaction {
     /**
      * Throw away each of the DOM records in the transactional cache.
      */
+    @Override
     public void rollback() {
         // throw away doms
         this.domFiles = new HashMap(10);

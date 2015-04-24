@@ -53,6 +53,7 @@ public class HashPartitioningPolicy extends FieldPartitioningPolicy {
      * INTERNAL:
      * Default the connection pools to all pools if unset.
      */
+    @Override
     public void initialize(AbstractSession session) {
         super.initialize(session);
         if (getConnectionPools().isEmpty() && session.isServerSession()) {
@@ -89,6 +90,7 @@ public class HashPartitioningPolicy extends FieldPartitioningPolicy {
      * INTERNAL:
      * Get a connection from one of the pools in a round robin rotation fashion.
      */
+    @Override
     public List<Accessor> getConnectionsForQuery(AbstractSession session, DatabaseQuery query, AbstractRecord arguments) {
         Object value = arguments.get(this.partitionField);
         if (value == null) {
@@ -104,7 +106,7 @@ public class HashPartitioningPolicy extends FieldPartitioningPolicy {
                 return null;
             }
         }
-        int index = Math.abs(value.hashCode()) % this.connectionPools.size();
+        int index = computePartitionId(value);
         if (session.getPlatform().hasPartitioningCallback()) {
             // UCP support.
             session.getPlatform().getPartitioningCallback().setPartitionId(index);
@@ -127,7 +129,7 @@ public class HashPartitioningPolicy extends FieldPartitioningPolicy {
         if (value == null) {
             return;
         }
-        int index = Math.abs(value.hashCode()) % this.connectionPools.size();
+        int index = computePartitionId(value);
         if (session.getPlatform().hasPartitioningCallback()) {
             // UCP support.
             session.getPlatform().getPartitioningCallback().setPartitionId(index);
@@ -135,5 +137,13 @@ public class HashPartitioningPolicy extends FieldPartitioningPolicy {
             String poolName = this.connectionPools.get(index);
             getAccessor(poolName, session, null, false);
         }
+    }
+
+    //defend against Math.abs(Integer.MIN_VALUE) == Integer.MIN_VALUE
+    private int computePartitionId(Object o) {
+        int hashCode = o.hashCode();
+        return (hashCode == Integer.MIN_VALUE
+                ? Integer.MAX_VALUE : Math.abs(hashCode))
+                % this.connectionPools.size();
     }
 }

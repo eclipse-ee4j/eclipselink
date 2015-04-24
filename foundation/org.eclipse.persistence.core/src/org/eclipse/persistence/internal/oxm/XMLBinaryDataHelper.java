@@ -322,10 +322,7 @@ public class XMLBinaryDataHelper {
     public String stringFromImage(Image image, QName schemaTypeQName, CoreAbstractSession session) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
-            String mimeType = null;
-            if ((mimeType == null) || mimeType.startsWith("image/*")) {
-                mimeType = "image/png";
-            }
+            String mimeType = "image/png";
             Iterator itr = ImageIO.getImageWritersByMIMEType(mimeType);
             if (itr.hasNext()) {
                 ImageWriter w = (ImageWriter) itr.next();

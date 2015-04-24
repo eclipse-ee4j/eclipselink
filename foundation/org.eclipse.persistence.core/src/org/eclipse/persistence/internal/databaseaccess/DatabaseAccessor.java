@@ -166,6 +166,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
      * @see org.eclipse.persistence.internal.helper.LOBValueWriter
      * @see org.eclipse.persistence.internal.queries.CallQueryMechanism#insertObject()
      */
+    @Override
     public void flushSelectCalls(AbstractSession session) {
         if (lobWriter != null) {
             lobWriter.buildAndExecuteSelectCalls(session);
@@ -215,6 +216,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
      * This should be set to the session's platform, not the connections
      * which may not be configured correctly.
      */
+    @Override
     public void setDatasourcePlatform(DatasourcePlatform platform) {
         super.setDatasourcePlatform(platform);
         // lobWriter may have been left from a different platform type.
@@ -250,6 +252,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
     /**
      * If logging is turned on and the JDBC implementation supports meta data then display connection info.
      */
+    @Override
     protected void buildConnectLog(AbstractSession session) {
         try {
             // Log connection information.
@@ -814,6 +817,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
     protected Vector buildThreadCursoredResult(final DatabaseCall dbCall, final ResultSet resultSet, final Statement statement, final ResultSetMetaData metaData, final AbstractSession session) {
         final ThreadCursoredList results = new ThreadCursoredList(20);
         Runnable runnable = new Runnable() {
+            @Override
             public void run() {
                 try {
                     session.startOperationProfile(SessionProfiler.RowFetch, dbCall.getQuery(), SessionProfiler.ALL);
@@ -946,7 +950,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
             if (dbCall != null) {
                 releaseStatement(statement, dbCall.getSQLString(), dbCall, session);
             } else {
-                closeStatement(statement, session, dbCall);
+                closeStatement(statement, session, null);
             }
         } catch (SQLException exception) {
             DatabaseException commException = processExceptionForCommError(session, exception, dbCall);
@@ -1160,6 +1164,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
      * @param columnNamePattern a column name pattern
      * @return a Vector of DatabaseRows.
      */
+    @Override
     public Vector getColumnInfo(String catalog, String schema, String tableName, String columnName, AbstractSession session) throws DatabaseException {
         if (session.shouldLog(SessionLog.FINEST, SessionLog.QUERY)) {// Avoid printing if no logging required.
             Object[] args = { catalog, schema, tableName, columnName };
@@ -1227,6 +1232,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
      * and retrieve data from, a data source.
      * @see java.sql.Connection
      */
+    @Override
     public Connection getConnection() throws DatabaseException {
         return (Connection)this.datasourceConnection;
     }
@@ -1450,6 +1456,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
      * @param types a list of table types to include; null returns all types
      * @return a Vector of DatabaseRows.
      */
+    @Override
     public Vector getTableInfo(String catalog, String schema, String tableName, String[] types, AbstractSession session) throws DatabaseException {
         if (session.shouldLog(SessionLog.FINEST, SessionLog.QUERY)) {// Avoid printing if no logging required.
             Object[] args = { catalog, schema, tableName };
@@ -1487,6 +1494,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
     /**
      *    Return true if the receiver is currently connected to a data source. Return false otherwise.
      */
+    @Override
     public boolean isDatasourceConnected() {
         try {
             return !getConnection().isClosed();
@@ -1626,6 +1634,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
      * Note: Connections that are participating in transactions will not be refreshed.^M
      * Added for bug 3046465 to ensure the statement cache is cleared
      */
+    @Override
     protected void reconnect(AbstractSession session) {
         clearStatementCache(session);
         super.reconnect(session);
@@ -1692,6 +1701,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
     /**
      * Rollback a transaction on the database. This means toggling the auto-commit option.
      */
+    @Override
     public void rollbackTransaction(AbstractSession session) throws DatabaseException {
         getActiveBatchWritingMechanism(session).clear();
         super.rollbackTransaction(session);
@@ -1700,6 +1710,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
     /**
      * Rollback a transaction on the database. This means toggling the auto-commit option.
      */
+    @Override
     public void basicRollbackTransaction(AbstractSession session) throws DatabaseException {
         try {
             if (getPlatform().supportsAutoCommit()) {
@@ -1791,6 +1802,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
         return sortedFields;
     }
 
+    @Override
     public String toString() {
         StringWriter writer = new StringWriter();
         writer.write("DatabaseAccessor(");
@@ -1837,6 +1849,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
      * from commitTransaction and may be called from writeChanges.   Its main
      * purpose is to ensure that the batched statements have been executed
      */
+    @Override
     public void writesCompleted(AbstractSession session) {
         if (isConnected && isInBatchWritingMode(session)) {
             getActiveBatchWritingMechanism(session).executeBatchedStatements(session);

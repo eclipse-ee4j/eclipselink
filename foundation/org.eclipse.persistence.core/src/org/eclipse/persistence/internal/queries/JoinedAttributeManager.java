@@ -14,28 +14,28 @@ package org.eclipse.persistence.internal.queries;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.expressions.BaseExpression;
-import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
+import org.eclipse.persistence.internal.expressions.ForUpdateOfClause;
 import org.eclipse.persistence.internal.expressions.ObjectExpression;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
+import org.eclipse.persistence.internal.helper.NonSynchronizedSubVector;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.CollectionMapping;
-import org.eclipse.persistence.mappings.ForeignReferenceMapping;
-import org.eclipse.persistence.internal.sessions.AbstractRecord;
-import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
-import org.eclipse.persistence.internal.expressions.ForUpdateOfClause;
-import org.eclipse.persistence.exceptions.QueryException;
-import org.eclipse.persistence.internal.helper.NonSynchronizedSubVector;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.queries.Cursor;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
@@ -167,6 +167,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
     /**
      * Clones the Joined Attribute Manager.  Generally called from Query.clone().
      */
+    @Override
     public JoinedAttributeManager clone(){
         JoinedAttributeManager joinManager = null;
         try {

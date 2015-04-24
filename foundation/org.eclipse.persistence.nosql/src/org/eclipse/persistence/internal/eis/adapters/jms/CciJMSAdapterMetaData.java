@@ -14,7 +14,7 @@ package org.eclipse.persistence.internal.eis.adapters.jms;
 
 
 // JDK imports
-import javax.resource.cci.*;
+import javax.resource.cci.ResourceAdapterMetaData;
 
 // TopLink imports
 import org.eclipse.persistence.Version;
@@ -39,6 +39,7 @@ public class CciJMSAdapterMetaData implements ResourceAdapterMetaData {
      *
      * @return the name of the adapter
      */
+    @Override
     public String getAdapterName() {
         return "Oracle JMS JCA Adapter";
     }
@@ -48,6 +49,7 @@ public class CciJMSAdapterMetaData implements ResourceAdapterMetaData {
      *
      * @return the name of the adapter
      */
+    @Override
     public String getAdapterShortDescription() {
         return "Oracle JMS JCA adapter.";
     }
@@ -57,6 +59,7 @@ public class CciJMSAdapterMetaData implements ResourceAdapterMetaData {
      *
      * @return the name of the adapter vendor
      */
+    @Override
     public String getAdapterVendorName() {
         return "Oracle";
     }
@@ -66,6 +69,7 @@ public class CciJMSAdapterMetaData implements ResourceAdapterMetaData {
      *
      * @return the version of the adapter
      */
+    @Override
     public String getAdapterVersion() {
         return Version.getVersion();
     }
@@ -75,8 +79,9 @@ public class CciJMSAdapterMetaData implements ResourceAdapterMetaData {
      *
      * @return supported interaction specifications
      */
+    @Override
     public String[] getInteractionSpecsSupported() {
-        String[] specs = new String[2];
+        String[] specs = new String[3];
         specs[0] = "org.eclipse.persistence.internal.adapters.eis.jms.CciJMSSendInteractionSpec";
         specs[1] = "org.eclipse.persistence.internal.adapters.eis.jms.CciJMSReceiveInteractionSpec";
         specs[2] = "org.eclipse.persistence.internal.adapters.eis.jms.CciJMSSendReceiveInteractionSpec";
@@ -88,6 +93,7 @@ public class CciJMSAdapterMetaData implements ResourceAdapterMetaData {
      *
      * @return the spec version of the adapter
      */
+    @Override
     public String getSpecVersion() {
         return "1.5";
     }
@@ -98,6 +104,7 @@ public class CciJMSAdapterMetaData implements ResourceAdapterMetaData {
      *
      * @return true if an execute can be performed with both an input and output record, false otherwise
      */
+    @Override
     public boolean supportsExecuteWithInputAndOutputRecord() {
         return true;
     }
@@ -107,6 +114,7 @@ public class CciJMSAdapterMetaData implements ResourceAdapterMetaData {
      *
      * @return true if an execute can be performed with only an input record, false otherwise
      */
+    @Override
     public boolean supportsExecuteWithInputRecordOnly() {
         return true;
     }
@@ -116,6 +124,7 @@ public class CciJMSAdapterMetaData implements ResourceAdapterMetaData {
      *
      * @return true if local transaction demarcation is supported, false otherwise
      */
+    @Override
     public boolean supportsLocalTransactionDemarcation() {
         return true;
     }

@@ -11,6 +11,20 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.resources.common;
 
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.eis.mappings.EISCompositeCollectionMapping;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
@@ -36,19 +50,6 @@ import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
-
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * @author gonural
@@ -217,8 +218,7 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
     private void addQueries(List<Query> queryList, PersistenceContext context, String javaClassName) {
         Map<String, List<DatabaseQuery>> queries = context.getServerSession().getQueries();
         List<DatabaseQuery> returnQueries = new ArrayList<DatabaseQuery>();
-        for (String key : queries.keySet()) {
-            List<DatabaseQuery> keyQueries = queries.get(key);
+        for (List<DatabaseQuery> keyQueries : queries.values()) {
             Iterator<DatabaseQuery> queryIterator = keyQueries.iterator();
             while (queryIterator.hasNext()) {
                 DatabaseQuery query = queryIterator.next();

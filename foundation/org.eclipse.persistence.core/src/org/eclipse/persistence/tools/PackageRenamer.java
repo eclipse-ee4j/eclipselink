@@ -12,8 +12,22 @@
  ******************************************************************************/
 package org.eclipse.persistence.tools;
 
-import java.util.*;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.Objects;
+import java.util.Properties;
+import java.util.Vector;
 
 /**
  * This class performs package renaming. It demonstrates the following:
@@ -119,14 +133,13 @@ public class PackageRenamer {
      */
     public void binaryCopy(File inFile, File outFile) throws FileNotFoundException, IOException {
         byte[] buf = new byte[BUFSIZ];
-        FileInputStream in = new FileInputStream(inFile);
-        FileOutputStream out = new FileOutputStream(outFile);
-        int nBytesRead;
-        while ((nBytesRead = in.read(buf)) != -1) {
-            out.write(buf, 0, nBytesRead);
+        try (FileInputStream in = new FileInputStream(inFile);
+             FileOutputStream out = new FileOutputStream(outFile);) {
+            int nBytesRead;
+            while ((nBytesRead = in.read(buf)) != -1) {
+                out.write(buf, 0, nBytesRead);
+            }
         }
-        in.close();
-        out.close();
     }
 
     protected boolean bufferContainsNullChar(byte[] buffer, int bufferLength) {
@@ -154,7 +167,8 @@ public class PackageRenamer {
         File aDirFile = new File(aDirString);
 
         if (aDirFile.exists()) {
-            if (aDirFile.listFiles().length != 0) {
+            File[] dirContent = aDirFile.listFiles();
+            if (dirContent != null && dirContent.length != 0) {
                 throw new PackageRenamerException("Output Directory:" + CR + "  '" + aDirString + "'" + CR + "exists and is not empty.");
             }
         }
@@ -628,6 +642,7 @@ public class PackageRenamer {
      *            The source root directory to traverse
      */
     public void traverseSourceDirectory(java.io.File aDirectoryString) {
+        Objects.requireNonNull(aDirectoryString);
         java.io.File[] filesAndDirectories = aDirectoryString.listFiles();
 
         for (int i = 0; i < filesAndDirectories.length; i++) {

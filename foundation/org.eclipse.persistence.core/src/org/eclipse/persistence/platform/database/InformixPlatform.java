@@ -16,16 +16,18 @@
  *****************************************************************************/
 package org.eclipse.persistence.platform.database;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Hashtable;
 
-import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.queries.ValueReadQuery;
 import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 
 /**
@@ -42,7 +44,6 @@ public class InformixPlatform extends org.eclipse.persistence.platform.database.
 
     @Override
     public void initializeConnectionData(Connection connection) throws SQLException {
-        DatabaseMetaData dmd = connection.getMetaData();
 
         // Wasn't able to find a driver that would support passing unicode values
         this.driverSupportsNationalCharacterVarying = false;

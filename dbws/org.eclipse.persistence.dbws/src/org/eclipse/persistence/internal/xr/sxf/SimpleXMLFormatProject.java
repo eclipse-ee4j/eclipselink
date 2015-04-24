@@ -18,6 +18,9 @@ package org.eclipse.persistence.internal.xr.sxf;
 // Java extension imports
 
 // EclipseLink imports
+import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.DEFAULT_SIMPLE_XML_FORMAT_TAG;
+import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.DEFAULT_SIMPLE_XML_TAG;
+
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLDescriptor;
@@ -27,13 +30,11 @@ import org.eclipse.persistence.oxm.platform.DOMPlatform;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.oxm.schema.XMLSchemaURLReference;
 import org.eclipse.persistence.sessions.Project;
-import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.DEFAULT_SIMPLE_XML_FORMAT_TAG;
-import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.DEFAULT_SIMPLE_XML_TAG;
 
 @SuppressWarnings("serial")
 public class SimpleXMLFormatProject extends Project {
 
-    private NamespaceResolver ns;
+    private transient NamespaceResolver ns;
 
     public SimpleXMLFormatProject() {
         ns = new NamespaceResolver();
@@ -42,6 +43,7 @@ public class SimpleXMLFormatProject extends Project {
         addDescriptor(buildXRRowSetModelDescriptor());
     }
 
+    @Override
     public void applyLogin() {
         XMLLogin login = new XMLLogin();
         login.setPlatform(new DOMPlatform());

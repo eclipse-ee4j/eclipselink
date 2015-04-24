@@ -19,6 +19,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Objects;
 import java.util.Vector;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
@@ -85,17 +86,17 @@ public class FileUtil {
      * @out: output stream
      */
     public static void copy(InputStream in, OutputStream out) throws IOException {
-        byte[] buffer = new byte[512];
-        while (true) {
-            int bytesRead = in.read(buffer);
-            if (bytesRead == -1) {
-                break;
-            }
+        try (InputStream i = in; OutputStream  o = out;) {
+            byte[] buffer = new byte[512];
+            while (true) {
+                int bytesRead = i.read(buffer);
+                if (bytesRead == -1) {
+                    break;
+                }
 
-            out.write(buffer, 0, bytesRead);
+                o.write(buffer, 0, bytesRead);
+            }
         }
-        in.close();
-        out.close();
     }
 
     /* Jar a given directory
@@ -213,6 +214,7 @@ public class FileUtil {
      * @File: directory or file
      */
     public static void delete(File file) {
+        Objects.requireNonNull(file);
         if (!file.exists()) {
             return;
         }

@@ -105,6 +105,7 @@ public class NamespaceResolver implements XMLNamespaceResolver {
      * @param  prefix The prefix to lookup a namespace URI for
      * @return The namespace URI associated with the specified prefix
      */
+    @Override
     public String resolveNamespacePrefix(String prefix) {
         if (null == prefix || prefix.length() == 0) {
             return defaultNamespaceURI;
@@ -295,7 +296,7 @@ public class NamespaceResolver implements XMLNamespaceResolver {
 
     public void setDefaultNamespaceURI(String namespaceUri) {
         if(namespaceUri == null){
-            defaultNamespaceURI = namespaceUri;
+            defaultNamespaceURI = null;
         }else{
             defaultNamespaceURI = namespaceUri.intern();
         }
@@ -318,6 +319,7 @@ public class NamespaceResolver implements XMLNamespaceResolver {
             this.iterator = iterator;
         }
 
+        @Override
         public boolean hasMoreElements() {
             if(null == iterator) {
                 return false;
@@ -325,6 +327,7 @@ public class NamespaceResolver implements XMLNamespaceResolver {
             return iterator.hasNext();
         }
 
+        @Override
         public Object nextElement() {
             return iterator.next();
         }

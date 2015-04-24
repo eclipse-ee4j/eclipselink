@@ -64,41 +64,37 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_FETCH_EAGER;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ID;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_MAPS_ID;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PRIMARY_KEY_JOIN_COLUMN;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PRIMARY_KEY_JOIN_COLUMNS;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotatedElement;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
-
 import org.eclipse.persistence.internal.jpa.metadata.columns.AssociationOverrideMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.ForeignKeyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyForeignKeyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
-
-import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
-
-import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.helper.DatabaseTable;
-
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.EmbeddableMapping;
 import org.eclipse.persistence.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.mappings.RelationTableMechanism;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
-
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_FETCH_EAGER;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ID;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_MAPS_ID;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PRIMARY_KEY_JOIN_COLUMN;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PRIMARY_KEY_JOIN_COLUMNS;
 
 /**
  * INTERNAL:
@@ -241,6 +237,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
      * INTERNAL:
      * Return the default fetch type for an object mapping.
      */
+    @Override
     public String getDefaultFetchType() {
         return JPA_FETCH_EAGER;
     }
@@ -480,7 +477,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
             // They have a pk class
             String pkClassName = getDescriptor().getPKClassName();
             if (pkClassName == null){
-                throw ValidationException.invalidCompositePKSpecification(getJavaClass(), pkClassName);
+                throw ValidationException.invalidCompositePKSpecification(getJavaClass(), null);
             }
 
             if (pkClassName.equals(referencePKClassName)){

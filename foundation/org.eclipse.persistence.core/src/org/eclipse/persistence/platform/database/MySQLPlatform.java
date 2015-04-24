@@ -620,6 +620,7 @@ public class MySQLPlatform extends DatabasePlatform {
      * @see #getStartDelimiter()
      * @see #getEndDelimiter()
      */
+    @Deprecated
     @Override
     public String getIdentifierQuoteCharacter() {
         return "`";
@@ -720,10 +721,8 @@ public class MySQLPlatform extends DatabasePlatform {
     @Override
     public void printSQLSelectStatement(DatabaseCall call, ExpressionSQLPrinter printer, SQLSelectStatement statement) {
         int max = 0;
-        int firstRow = 0;
         if (statement.getQuery() != null) {
             max = statement.getQuery().getMaxRows();
-            firstRow = statement.getQuery().getFirstResult();
         }
 
         if (max <= 0 || !(this.shouldUseRownumFiltering())) {

@@ -14,6 +14,16 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.resources.common;
 
+import java.util.List;
+import java.util.Map;
+
+import javax.persistence.Query;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
+
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
@@ -33,15 +43,6 @@ import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ReportQuery;
-
-import javax.persistence.Query;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-import javax.xml.bind.JAXBElement;
-import javax.xml.namespace.QName;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Base class for query resource.
@@ -180,6 +181,6 @@ public abstract class AbstractQueryResource extends AbstractResource {
             Object list = responseBuilder.buildReadAllQueryResponse(context, queryParams, results, uriInfo);
             return Response.ok(new StreamingOutputMarshaller(context, list, headers.getAcceptableMediaTypes(), fieldsFilter)).build();
         }
-        return Response.ok(new StreamingOutputMarshaller(context, results, headers.getAcceptableMediaTypes(), fieldsFilter)).build();
+        return Response.ok(new StreamingOutputMarshaller(context, null, headers.getAcceptableMediaTypes(), fieldsFilter)).build();
     }
 }

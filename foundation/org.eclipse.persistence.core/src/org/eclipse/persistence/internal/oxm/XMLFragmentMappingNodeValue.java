@@ -15,12 +15,6 @@ package org.eclipse.persistence.internal.oxm;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-
 import org.eclipse.persistence.core.sessions.CoreSession;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
@@ -30,6 +24,11 @@ import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
 
 /**
  * INTERNAL:
@@ -47,23 +46,28 @@ public class XMLFragmentMappingNodeValue extends MappingNodeValue implements Nul
         this.selfMapping = XPathFragment.SELF_XPATH.equals(xmlFragmentMapping.getXPath());
     }
 
+    @Override
     public boolean isOwningNode(XPathFragment xPathFragment) {
         return xPathFragment.getNextFragment() == null;
     }
 
+    @Override
     public void setNullValue(Object object, CoreSession session) {
         Object value = xmlFragmentMapping.getObjectValue(null, session);
         xmlFragmentMapping.setAttributeValueInObject(object, value);
     }
 
+    @Override
     public boolean isNullCapableValue() {
         return true;
     }
 
+    @Override
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver) {
         return marshal(xPathFragment, marshalRecord, object, session, namespaceResolver, ObjectMarshalContext.getInstance());
     }
 
+    @Override
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         if (xmlFragmentMapping.isReadOnly()) {
             return false;
@@ -95,7 +99,7 @@ public class XMLFragmentMappingNodeValue extends MappingNodeValue implements Nul
                         stringBuilder.append(prefix);
                         stringBuilder.append(':');
                         stringBuilder.append(qualifiedName);
-                        qualifiedName = prefix + ':' + qualifiedName;
+                        qualifiedName = stringBuilder.toString();
                     }
                 }
                 marshalRecord.attribute(namespaceURI, localName, qualifiedName, attribute.getNodeValue());
@@ -104,6 +108,7 @@ public class XMLFragmentMappingNodeValue extends MappingNodeValue implements Nul
         return true;
     }
 
+    @Override
     public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object attributeValue, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         marshalRecord.openStartGroupingElements(namespaceResolver);
         if (!(attributeValue instanceof Node)) {
@@ -114,7 +119,7 @@ public class XMLFragmentMappingNodeValue extends MappingNodeValue implements Nul
             NodeList childNodes = nodeValue.getChildNodes();
             for(int x=0,childNodesLength=childNodes.getLength(); x<childNodesLength; x++) {
                 Node node = childNodes.item(x);
-                marshalRecord.node(childNodes.item(x), namespaceResolver);
+                marshalRecord.node(node, namespaceResolver);
             }
         } else {
             marshalRecord.node((Node)attributeValue, namespaceResolver);
@@ -122,6 +127,7 @@ public class XMLFragmentMappingNodeValue extends MappingNodeValue implements Nul
         return true;
     }
 
+    @Override
     public boolean startElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts) {
         unmarshalRecord.removeNullCapableValue(this);
         SAXFragmentBuilder builder = unmarshalRecord.getFragmentBuilder();
@@ -150,6 +156,7 @@ public class XMLFragmentMappingNodeValue extends MappingNodeValue implements Nul
         return true;
     }
 
+    @Override
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord) {
         unmarshalRecord.removeNullCapableValue(this);
         XPathFragment lastFrag = ((Field)xmlFragmentMapping.getField()).getLastXPathFragment();
@@ -169,6 +176,7 @@ public class XMLFragmentMappingNodeValue extends MappingNodeValue implements Nul
         this.endElement(XPathFragment.SELF_FRAGMENT, unmarshalRecord);
     }
 
+    @Override
     public void attribute(UnmarshalRecord unmarshalRecord, String namespaceURI, String localName, String value) {
         unmarshalRecord.removeNullCapableValue(this);
         if(namespaceURI == null) {
@@ -179,6 +187,7 @@ public class XMLFragmentMappingNodeValue extends MappingNodeValue implements Nul
         xmlFragmentMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), attributeValue);
     }
 
+    @Override
     public FragmentMapping getMapping() {
         return xmlFragmentMapping;
     }

@@ -13,12 +13,17 @@
 
 package org.eclipse.persistence.platform.database.oracle.plsql;
 
+import static java.sql.Types.OTHER;
+import static java.sql.Types.STRUCT;
+import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.IN;
+import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.INOUT;
+import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.OUT;
+import static org.eclipse.persistence.internal.helper.DatabaseType.DatabaseTypeHelper.databaseTypeHelper;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
-import static java.sql.Types.OTHER;
-import static java.sql.Types.STRUCT;
 
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.internal.helper.ComplexDatabaseType;
@@ -28,10 +33,6 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.sessions.DatabaseRecord;
-import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.IN;
-import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.INOUT;
-import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.OUT;
-import static org.eclipse.persistence.internal.helper.DatabaseType.DatabaseTypeHelper.databaseTypeHelper;
 
 /**
  * <b>PUBLIC</b>: describe an Oracle PL/SQL Record type
@@ -57,6 +58,7 @@ public class PLSQLrecord extends ComplexDatabaseType implements OraclePLSQLType,
         return clone;
     }
 
+    @Override
     public boolean isRecord() {
         return true;
     }
@@ -68,6 +70,7 @@ public class PLSQLrecord extends ComplexDatabaseType implements OraclePLSQLType,
         return fields;
     }
 
+    @Override
     public int getSqlCode() {
         if (hasCompatibleType()) {
             return STRUCT;
@@ -90,6 +93,7 @@ public class PLSQLrecord extends ComplexDatabaseType implements OraclePLSQLType,
         fields.add(new PLSQLargument(fieldName, -1, IN, databaseType, length));
     }
 
+    @Override
     public int computeInIndex(PLSQLargument inArg, int newIndex, ListIterator<PLSQLargument> iterator) {
         if (hasCompatibleType()) {
             return super.computeInIndex(inArg, newIndex, iterator);
@@ -105,6 +109,7 @@ public class PLSQLrecord extends ComplexDatabaseType implements OraclePLSQLType,
         }
     }
 
+    @Override
     public int computeOutIndex(PLSQLargument outArg, int newIndex,
         ListIterator<PLSQLargument> iterator) {
         if (hasCompatibleType()) {
@@ -122,6 +127,7 @@ public class PLSQLrecord extends ComplexDatabaseType implements OraclePLSQLType,
         }
     }
 
+    @Override
     public void buildInDeclare(StringBuilder sb, PLSQLargument inArg) {
         if (hasCompatibleType()) {
             super.buildInDeclare(sb, inArg);
@@ -137,6 +143,7 @@ public class PLSQLrecord extends ComplexDatabaseType implements OraclePLSQLType,
         }
     }
 
+    @Override
     public void buildOutDeclare(StringBuilder sb, PLSQLargument outArg) {
         if (hasCompatibleType()) {
             super.buildOutDeclare(sb, outArg);
@@ -152,12 +159,13 @@ public class PLSQLrecord extends ComplexDatabaseType implements OraclePLSQLType,
         }
     }
 
+    @Override
     public void buildBeginBlock(StringBuilder sb, PLSQLargument arg, PLSQLStoredProcedureCall call) {
         if (hasCompatibleType()) {
             super.buildBeginBlock(sb, arg, call);
         } else {
             String target = databaseTypeHelper.buildTarget(arg);
-            if (arg.direction == IN | arg.direction == INOUT) {
+            if (arg.direction == IN || arg.direction == INOUT) {
                 for (PLSQLargument f : fields) {
                     sb.append("  ");
                     sb.append(target);
@@ -172,6 +180,7 @@ public class PLSQLrecord extends ComplexDatabaseType implements OraclePLSQLType,
         }
     }
 
+    @Override
     public void buildOutAssignment(StringBuilder sb, PLSQLargument outArg, PLSQLStoredProcedureCall call) {
         if (hasCompatibleType()) {
             super.buildOutAssignment(sb, outArg, call);
@@ -190,6 +199,7 @@ public class PLSQLrecord extends ComplexDatabaseType implements OraclePLSQLType,
         }
     }
 
+    @Override
     public void translate(PLSQLargument arg, AbstractRecord translationRow,
             AbstractRecord copyOfTranslationRow, List<DatabaseField> copyOfTranslationFields,
             List<DatabaseField> translationRowFields, List translationRowValues,
@@ -205,6 +215,7 @@ public class PLSQLrecord extends ComplexDatabaseType implements OraclePLSQLType,
         }
     }
 
+    @Override
     public void buildOutputRow(PLSQLargument outArg, AbstractRecord outputRow,
                 DatabaseRecord newOutputRow, List<DatabaseField> outputRowFields, List outputRowValues) {
         if (hasCompatibleType()) {
@@ -217,6 +228,7 @@ public class PLSQLrecord extends ComplexDatabaseType implements OraclePLSQLType,
         }
     }
 
+    @Override
     public void logParameter(StringBuilder sb, Integer direction, PLSQLargument arg,
                 AbstractRecord translationRow, DatabasePlatform platform) {
         if (hasCompatibleType()) {

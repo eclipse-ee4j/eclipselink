@@ -14,32 +14,53 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.identitymaps;
 
+import java.io.PrintWriter;
+import java.io.Serializable;
+import java.io.StringWriter;
+import java.lang.reflect.Constructor;
 import java.security.AccessController;
-import java.util.*;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.io.*;
-import java.lang.reflect.*;
 
 import org.eclipse.persistence.config.ReferenceMode;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.descriptors.*;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.internal.localization.*;
-import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.sessions.SessionProfiler;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.descriptors.CacheIndex;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy;
+import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.exceptions.EclipseLinkException;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.ConcurrencyManager;
+import org.eclipse.persistence.internal.helper.DeferredLockManager;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.helper.InvalidObject;
+import org.eclipse.persistence.internal.helper.WriteLockManager;
+import org.eclipse.persistence.internal.localization.LoggingLocalization;
+import org.eclipse.persistence.internal.localization.TraceLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
 import org.eclipse.persistence.internal.security.PrivilegedInvokeConstructor;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
-import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.descriptors.CacheIndex;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.queries.InMemoryQueryIndirectionPolicy;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReadQuery;
+import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.SessionProfiler;
 
 /**
  * <p><b>Purpose</b>: Maintain identity maps for domain classes mapped with EclipseLink.
@@ -135,7 +156,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
      */
     public CacheKey acquireLock(Object primaryKey, Class domainClass, boolean forMerge, ClassDescriptor descriptor, boolean isCacheCheckComplete) {
         if (primaryKey == null) {
-            CacheKey cacheKey = new CacheKey(primaryKey);
+            CacheKey cacheKey = new CacheKey(null);
             cacheKey.acquire();
             return cacheKey;
         }
@@ -166,7 +187,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
      */
     public CacheKey acquireLockNoWait(Object primaryKey, Class domainClass, boolean forMerge, ClassDescriptor descriptor) {
         if (primaryKey == null) {
-            CacheKey cacheKey = new CacheKey(primaryKey);
+            CacheKey cacheKey = new CacheKey(null);
             cacheKey.acquire();
             return cacheKey;
         }
@@ -197,7 +218,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
      */
     public CacheKey acquireLockWithWait(Object primaryKey, Class domainClass, boolean forMerge, ClassDescriptor descriptor, int wait) {
         if (primaryKey == null) {
-            CacheKey cacheKey = new CacheKey(primaryKey);
+            CacheKey cacheKey = new CacheKey(null);
             cacheKey.acquire();
             return cacheKey;
         }
@@ -256,7 +277,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
      */
     public CacheKey acquireReadLockOnCacheKey(Object primaryKey, Class domainClass, ClassDescriptor descriptor) {
         if (primaryKey == null) {
-            CacheKey cacheKey = new CacheKey(primaryKey);
+            CacheKey cacheKey = new CacheKey(null);
             cacheKey.acquireReadLock();
             return cacheKey;
         }
@@ -286,7 +307,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
      */
     public CacheKey acquireReadLockOnCacheKeyNoWait(Object primaryKey, Class domainClass, ClassDescriptor descriptor) {
         if (primaryKey == null) {
-            CacheKey cacheKey = new CacheKey(primaryKey);
+            CacheKey cacheKey = new CacheKey(null);
             cacheKey.acquireReadLock();
             return cacheKey;
         }
@@ -404,6 +425,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
      * INTERNAL:
      * Clones itself, used for uow commit and resume on failure.
      */
+    @Override
     public Object clone() {
         IdentityMapManager manager = null;
         try {

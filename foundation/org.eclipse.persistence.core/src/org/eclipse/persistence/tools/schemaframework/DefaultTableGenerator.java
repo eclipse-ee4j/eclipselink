@@ -33,8 +33,8 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -63,12 +63,16 @@ import org.eclipse.persistence.mappings.AggregateObjectMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectCollectionMapping;
 import org.eclipse.persistence.mappings.DirectMapMapping;
+import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.ManyToManyMapping;
 import org.eclipse.persistence.mappings.OneToManyMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.mappings.RelationTableMechanism;
 import org.eclipse.persistence.mappings.TransformationMapping;
+import org.eclipse.persistence.mappings.converters.Converter;
+import org.eclipse.persistence.mappings.converters.SerializedObjectConverter;
+import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescriptor;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.sequencing.DefaultSequence;
@@ -78,10 +82,6 @@ import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.server.ServerSession;
-import org.eclipse.persistence.mappings.DirectToFieldMapping;
-import org.eclipse.persistence.mappings.converters.Converter;
-import org.eclipse.persistence.mappings.converters.SerializedObjectConverter;
-import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
 
 /**
  * DefaultTableGenerator is a utility class used to generate a default table schema for a EclipseLink project object.
@@ -711,9 +711,9 @@ public class DefaultTableGenerator {
         List<DatabaseField> fkFields = new ArrayList<DatabaseField>();
         List<DatabaseField> targetFields = new ArrayList<DatabaseField>();
 
-        for (DatabaseField fkField : srcFields.keySet()) {
-            fkFields.add(fkField);
-            targetFields.add(srcFields.get(fkField));
+        for (Map.Entry<DatabaseField, DatabaseField> field : srcFields.entrySet()) {
+            fkFields.add(field.getKey());
+            targetFields.add(field.getValue());
         }
         addJoinColumnsFkConstraint(fkFields, targetFields, cascadeOnDelete);
     }
@@ -883,9 +883,9 @@ public class DefaultTableGenerator {
                 List<DatabaseField> fkFields = new ArrayList<DatabaseField>();
                 List<DatabaseField> pkFields = new ArrayList<DatabaseField>();
 
-                for (DatabaseField pkField : srcFields.keySet()) {
-                    pkFields.add(pkField);
-                    fkFields.add(srcFields.get(pkField));
+                for (Map.Entry<DatabaseField, DatabaseField> field : srcFields.entrySet()) {
+                    pkFields.add(field.getKey());
+                    fkFields.add(field.getValue());
                 }
                 addJoinColumnsFkConstraint(fkFields, pkFields, descriptor.isCascadeOnDeleteSetOnDatabaseOnSecondaryTables());
             }

@@ -196,6 +196,7 @@ public class CoreAttributeItem<ATTRIBUTE_GROUP extends CoreAttributeGroup> imple
         }
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (this != obj) {
             if(obj == null) {
@@ -266,7 +267,7 @@ public class CoreAttributeItem<ATTRIBUTE_GROUP extends CoreAttributeGroup> imple
         while(result == null && !type.equals(CoreClassConstants.OBJECT)){
             type = type.getSuperclass();
             if (type == null){
-                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("subclass_sought_not_a_managed_type", new Object[]{type, this.attributeName}));
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("subclass_sought_not_a_managed_type", new Object[]{null, this.attributeName}));
             }
             result = this.subGroups.get(type);
         }
@@ -292,7 +293,7 @@ public class CoreAttributeItem<ATTRIBUTE_GROUP extends CoreAttributeGroup> imple
         while(result == null && !type.equals(CoreClassConstants.OBJECT)){
             type = type.getSuperclass();
             if (type == null){
-                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("subclass_sought_not_a_managed_type", new Object[]{type, this.attributeName}));
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("subclass_sought_not_a_managed_type", new Object[]{null, this.attributeName}));
             }
             result = this.keyGroups.get(type);
         }
@@ -335,6 +336,7 @@ public class CoreAttributeItem<ATTRIBUTE_GROUP extends CoreAttributeGroup> imple
         this.addSubGroup(group);
     }
 
+    @Override
     public String toString() {
         return getClass().getSimpleName() + "(" + getAttributeName() + ")" + (this.subGroups!=null ? " => " + this.subGroups.toString() : "") + (this.keyGroups!=null ? " => " + this.keyGroups.toString() : "");
     }

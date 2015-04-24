@@ -105,6 +105,9 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata;
 
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ACCESS_FIELD;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ACCESS_PROPERTY;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -115,18 +118,19 @@ import org.eclipse.persistence.annotations.ExistenceType;
 import org.eclipse.persistence.config.CacheIsolationType;
 import org.eclipse.persistence.descriptors.CMPPolicy;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.DescriptorEventListener;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.descriptors.ReturningPolicy;
-import org.eclipse.persistence.descriptors.DescriptorEventListener;
 import org.eclipse.persistence.descriptors.SingleTableMultitenantPolicy;
-
 import org.eclipse.persistence.exceptions.ValidationException;
-
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.internal.descriptors.VirtualAttributeMethodInfo;
-
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.CMP3Policy;
-
+import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.PropertyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EmbeddableAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
@@ -137,25 +141,13 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingA
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ObjectAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.RelationshipAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.PropertyMetadata;
-
 import org.eclipse.persistence.internal.jpa.metadata.columns.AssociationOverrideMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.AttributeOverrideMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.TenantDiscriminatorColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.ConvertMetadata;
-
 import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListener;
 import org.eclipse.persistence.internal.jpa.metadata.mappings.AccessMethodsMetadata;
-
-import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.helper.DatabaseTable;
-import org.eclipse.persistence.internal.helper.Helper;
-
 import org.eclipse.persistence.mappings.DatabaseMapping;
-
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ACCESS_PROPERTY;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ACCESS_FIELD;
 
 /**
  * INTERNAL:
@@ -442,7 +434,7 @@ public class MetadataDescriptor {
             MappingAccessor existingAccessor = m_mappingAccessors.get(accessor.getAttributeName());
             String existingAccessType = existingAccessor.usesPropertyAccess() ? JPA_ACCESS_PROPERTY : JPA_ACCESS_FIELD;
             String accessType = accessor.usesPropertyAccess() ? JPA_ACCESS_PROPERTY : JPA_ACCESS_FIELD;
-            getLogger().logWarningMessage(getLogger().INVERSE_ACCESS_TYPE_MAPPING_OVERRIDE, accessor.getJavaClass().getName(), existingAccessor.getAnnotatedElementName(), existingAccessType, accessor.getAnnotatedElementName(), accessType);
+            getLogger().logWarningMessage(MetadataLogger.INVERSE_ACCESS_TYPE_MAPPING_OVERRIDE, accessor.getJavaClass().getName(), existingAccessor.getAnnotatedElementName(), existingAccessType, accessor.getAnnotatedElementName(), accessType);
         }
 
         m_mappingAccessors.put(accessor.getAttributeName(), accessor);
@@ -938,7 +930,7 @@ public class MetadataDescriptor {
                     // If the attribute name employs the dot notation, rip off
                     // the first  bit (up to the first dot and keep burying down
                     // the embeddables)
-                    String subAttributeName = new String(fieldOrPropertyName);
+                    String subAttributeName = fieldOrPropertyName;
                     if (subAttributeName.contains(".")) {
                        subAttributeName = subAttributeName.substring(fieldOrPropertyName.indexOf(".") + 1);
                     }

@@ -102,6 +102,25 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata;
 
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_EMBEDDABLE;
+
+import java.lang.reflect.Method;
+import java.security.AccessController;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.persistence.SharedCacheMode;
+import javax.persistence.spi.PersistenceUnitInfo;
+
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.dynamic.DynamicType;
@@ -147,24 +166,6 @@ import org.eclipse.persistence.queries.AttributeGroup;
 import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sessions.DatasourceLogin;
 import org.eclipse.persistence.sessions.Project;
-
-import javax.persistence.SharedCacheMode;
-import javax.persistence.spi.PersistenceUnitInfo;
-import java.lang.reflect.Method;
-import java.security.AccessController;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_EMBEDDABLE;
 
 /**
  * INTERNAL:
@@ -1896,7 +1897,7 @@ public class MetadataProject {
 
         // Build a fully qualified name and set it on the table.
         // schema, attach it if specified
-        String tableName = new String(name);
+        String tableName = name;
         if (! schema.equals("")) {
             tableName = schema + "." + tableName;
         }

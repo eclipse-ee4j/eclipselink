@@ -145,12 +145,13 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * Clone the login.
      * This also clones the platform as it is internal to the login.
      */
+    @Override
     public DatasourceLogin clone() {
         DatasourceLogin clone = null;
         try {
             clone = (DatasourceLogin)super.clone();
         } catch (Exception exception) {
-            // should not happen...do nothing
+            throw new AssertionError(exception);
         }
         if (getConnector() != null) {
             clone.setConnector((Connector)getConnector().clone());
@@ -164,6 +165,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * INTERNAL:
      * Connect to the datasource, and return the driver level connection object.
      */
+    @Override
     public Object connectToDatasource(Accessor accessor, Session session) throws DatabaseException {
         return getConnector().connect(prepareProperties(properties), session);
     }
@@ -201,6 +203,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * NOTE: this must only be used for relational specific usage and will not work for
      * non-relational datasources.
      */
+    @Override
     public DatabasePlatform getPlatform() {
         try {
             return (DatabasePlatform)getDatasourcePlatform();
@@ -214,6 +217,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * Return the datasource platform specific information.
      * This allows EclipseLink to configure certain advanced features for the datasource desired.
      */
+    @Override
     public Platform getDatasourcePlatform() {
         if (this.platform == null) {
             this.platform = new DatasourcePlatform();
@@ -239,6 +243,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * NOTE: Do not set the password directly by getting the properties and
      * setting the "password" property directly. Use the method DatabaseLogin.setPassword(String).
      */
+    @Override
     public Object getProperty(String name) {
         return getProperties().get(name);
     }
@@ -251,6 +256,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * This should only be used if all of the tables have the same qualifier.
      * It can also be set on each descriptor when the table name is specified.
      */
+    @Override
     public String getTableQualifier() {
         return getDatasourcePlatform().getTableQualifier();
     }
@@ -261,6 +267,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * Some databases do not require a user name or the user is obtained from the OS,
      * in this case the user name not be specified.
      */
+    @Override
     public String getUserName() {
         return properties.getProperty("user");
     }
@@ -276,6 +283,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * this feature can be turned off. Turning this feature off will prevent EclipseLink from being able to
      * retry queries in the case of database failure.
      */
+    @Override
     public boolean isConnectionHealthValidatedOnError(){
         return false;
     }
@@ -394,6 +402,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
     /**
      * Set the password.
      */
+    @Override
     public void setPassword(String password) {
         if (password != null) {
             // PERF: Do not encrypt empty string.
@@ -414,6 +423,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
     /**
      * Return the password. It will be encrypted.
      */
+    @Override
     public String getPassword() {
         // Bug 4117441 - Secure programming practices, store password in char[]
         Object password = properties.get("password");
@@ -457,6 +467,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * Set the database platform specific information.
      * This allows EclipseLink to configure certain advanced features for the database desired.
      */
+    @Override
     public void setPlatform(Platform platform) {
         setDatasourcePlatform(platform);
     }
@@ -466,6 +477,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * Set the database platform specific information.
      * This allows EclipseLink to configure certain advanced features for the database desired.
      */
+    @Override
     public void setDatasourcePlatform(Platform platform) {
         this.platform = platform;
     }
@@ -576,6 +588,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * The properties are additional, driver-specific, connection information
      * to be passed to the JDBC driver.
      */
+    @Override
     public void setProperties(Properties properties) {
         this.properties = properties;
     }
@@ -585,6 +598,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * Some JDBC drivers require additional, driver-specific, properties.
      * Add the specified property to those to be passed to the JDBC driver.
      */
+    @Override
     public void setProperty(String propertyName, Object propertyValue) {
         properties.put(propertyName, propertyValue);
     }
@@ -614,6 +628,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * Some databases do not require a user name or the user is obtained from the OS,
      * in this case this should not be specified.
      */
+    @Override
     public void setUserName(String name) {
         if (name != null) {
             setProperty("user", name);
@@ -664,6 +679,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * INTERNAL:
      * Used for cache isolation.
      */
+    @Override
     public boolean shouldAllowConcurrentReadWrite() {
         return this.cacheTransactionIsolation == CONCURRENT_READ_WRITE;
     }
@@ -672,6 +688,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * INTERNAL:
      * Used for cache isolation.
      */
+    @Override
     public boolean shouldSynchronizedReadOnWrite() {
         return this.cacheTransactionIsolation == SYNCHRONIZED_READ_ON_WRITE;
     }
@@ -681,6 +698,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * Used for Cache Isolation.  Causes EclipseLink to lock at the class level on
      * cache updates.
      */
+    @Override
     public boolean shouldSynchronizeWrites() {
         return this.cacheTransactionIsolation == SYNCHRONIZED_WRITE;
     }
@@ -690,6 +708,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * Used for Cache Isolation.  Causes EclipseLink to lock at the object level on
      * cache updates and cache access.
      */
+    @Override
     public boolean shouldSynchronizeObjectLevelReadWrite(){
         return this.cacheTransactionIsolation == SYNCRONIZED_OBJECT_LEVEL_READ_WRITE;
     }
@@ -699,6 +718,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * Used for Cache Isolation.  Causes EclipseLink to lock at the object level on
      * cache updates and cache access, based on database transaction.
      */
+    @Override
     public boolean shouldSynchronizeObjectLevelReadWriteDatabase(){
         return this.cacheTransactionIsolation == SYNCRONIZED_OBJECT_LEVEL_READ_WRITE_DATABASE;
     }
@@ -711,6 +731,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * @see #useExternalConnectionPooling()
      * @see #dontUseExternalConnectionPooling()
      */
+    @Override
     public boolean shouldUseExternalConnectionPooling() {
         return usesExternalConnectionPooling;
     }
@@ -722,6 +743,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * @see #useExternalTransactionController()
      * @see #dontUseExternalTransactionController()
      */
+    @Override
     public boolean shouldUseExternalTransactionController() {
         return usesExternalTransactionController;
     }
@@ -752,6 +774,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * PUBLIC:
      * Print all of the connection information.
      */
+    @Override
     public String toString() {
         StringWriter stringWriter = new StringWriter();
         PrintWriter writer = new PrintWriter(stringWriter);
