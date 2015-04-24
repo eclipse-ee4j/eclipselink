@@ -511,7 +511,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<BeerConsumer> cq = qb.createQuery(BeerConsumer.class);
             Root<BeerConsumer> root = cq.from(BeerConsumer.class);
-            Join blueLightJoin = qb.treat(root.join("blueBeersToConsume"), BlueLight.class);
+            Join blueLightJoin = qb.treat((Join<Object, Object>) root.join("blueBeersToConsume"), BlueLight.class);
             cq.where(qb.equal(blueLightJoin.get("discount"), 10));
 
             List resultList = em.createQuery(cq).getResultList();
@@ -562,7 +562,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Company> cq = qb.createQuery(Company.class);
             Root<Company> root = cq.from(Company.class);
-            Join boatJoin = qb.treat(root.join("vehicles"), Boat.class);
+            Join boatJoin = qb.treat((Join<Object, Object>) root.join("vehicles"), Boat.class);
             cq.where(qb.or(qb.equal(boatJoin.get("model"), "speed"), qb.equal(boatJoin.get("model"), "fishing")));
 
             List resultList = em.createQuery(cq).getResultList();
@@ -613,8 +613,8 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Company> cq = qb.createQuery(Company.class);
             Root<Company> root = cq.from(Company.class);
-            Join b = qb.treat(root.join("vehicles", JoinType.LEFT), Boat.class);
-            Join f = qb.treat(root.join("vehicles", JoinType.LEFT), FueledVehicle.class);
+            Join b = qb.treat((Join<Object, Object>) root.join("vehicles", JoinType.LEFT), Boat.class);
+            Join f = qb.treat((Join<Object, Object>) root.join("vehicles", JoinType.LEFT), FueledVehicle.class);
             cq.where(qb.or(qb.equal(b.get("model"), "fishing"), qb.equal(f.get("fuelType"), "unleaded")));
 
             List resultList = em.createQuery(cq).getResultList();
@@ -677,7 +677,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             CriteriaQuery<Company> cq = qb.createQuery(Company.class);
             cq.distinct(true);
             Root<Company> root = cq.from(Company.class);
-            Join b = qb.treat(root.join("vehicles", JoinType.LEFT), Bus.class);
+            Join b = qb.treat((Join<Object, Object>) root.join("vehicles", JoinType.LEFT), Bus.class);
             cq.where(qb.equal(b.get("busDriver").get("name"), "Driver"));
 
             List resultList = em.createQuery(cq).getResultList();
@@ -726,8 +726,8 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             CriteriaQuery<Person> cq = qb.createQuery(Person.class);
             cq.distinct(true);
             Root<Person> root = cq.from(Person.class);
-            Join s = qb.treat(root.join("car", JoinType.LEFT), SportsCar.class);
-            Join j = qb.treat(root.join("car", JoinType.LEFT), Jalopy.class);
+            Join s = qb.treat((Join<Object, Object>) root.join("car", JoinType.LEFT), SportsCar.class);
+            Join j = qb.treat((Join<Object, Object>) root.join("car", JoinType.LEFT), Jalopy.class);
             cq.where(qb.or(qb.equal(s.get("maxSpeed"), 200), qb.equal(j.get("percentRust"), 20)));
 
             List resultList = em.createQuery(cq).getResultList();
@@ -778,7 +778,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Number> cq = qb.createQuery(Number.class);
             Root<Employee> root = cq.from(Employee.class);
-            Join l = qb.treat(root.join("projects"), LargeProject.class);
+            Join l = qb.treat((Join<Object, Object>) root.join("projects"), LargeProject.class);
             cq.select(qb.max(l.get("budget")));
 
             List resultList = em.createQuery(cq).getResultList();
@@ -835,7 +835,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             Root<Employee> root = cq.from(Employee.class);
             Subquery<Number> sq = cq.subquery(Number.class);
             Root<Employee> sRoot = sq.from(Employee.class);
-            Join l = qb.treat(root.join("projects"), LargeProject.class);
+            Join l = qb.treat((Join<Object, Object>) root.join("projects"), LargeProject.class);
             sq.select(qb.max(l.get("budget")));
             cq.where(qb.gt(root.<Number>get("salary"), sq));
 
@@ -882,7 +882,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             CriteriaQuery<Person> cq = qb.createQuery(Person.class);
             Root<Person> root = cq.from(Person.class);
             root.fetch("car");
-            Join s = qb.treat(root.join("car"), SportsCar.class);
+            Join s = qb.treat((Join<Object, Object>) root.join("car"), SportsCar.class);
             cq.where(qb.equal(s.get("maxSpeed"), 200));
 
             List resultList = em.createQuery(cq).getResultList();
@@ -1019,7 +1019,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Person> cq = qb.createQuery(Person.class);
             Root<Person> root = cq.from(Person.class);
-            Join s = qb.treat(root.join("car"), SportsCar.class);
+            Join s = qb.treat((Join<Object, Object>) root.join("car"), SportsCar.class);
             cq.select(s.get("maxSpeed"));
 
             List resultList = em.createQuery(cq).getResultList();
@@ -1067,7 +1067,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Bus> cq = qb.createQuery(Bus.class);
             Root<Bus> root = cq.from(Bus.class);
-            Join b = qb.treat(root.join("tires"), PerformanceTireInfo.class);
+            Join b = qb.treat((Join<Object, Object>) root.join("tires"), PerformanceTireInfo.class);
             cq.select(b.get("speedRating"));
 
             List resultList = em.createQuery(cq).getResultList();
@@ -1164,7 +1164,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Bus> cq = qb.createQuery(Bus.class);
             Root<Bus> root = cq.from(Bus.class);
-            Join b = qb.treat(root.join("tires"), PerformanceTireInfo.class);
+            Join b = qb.treat((Join<Object, Object>) root.join("tires"), PerformanceTireInfo.class);
             cq.where(qb.greaterThan(qb.treat(root.get("tires"), PerformanceTireInfo.class).<Integer>get("speedRating"), 100));
 
             List resultList = em.createQuery(cq).getResultList();
@@ -1328,7 +1328,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Person> cq = qb.createQuery(Person.class);
             Root<Person> root = cq.from(Person.class);
-            Join b = qb.treat(root.join("car"), SportsCar.class);
+            Join b = qb.treat((Join<Object, Object>) root.join("car"), SportsCar.class);
             Join u = b.join("user");
             cq.select(u);
 
