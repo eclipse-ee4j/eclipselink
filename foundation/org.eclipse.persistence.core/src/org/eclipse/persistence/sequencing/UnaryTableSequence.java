@@ -79,6 +79,14 @@ public class UnaryTableSequence extends QuerySequence {
         }
     }
 
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        String counterFieldName = getCounterFieldName();
+        result = 31 * result + (counterFieldName != null ? counterFieldName.hashCode() : 0);
+        return result;
+    }
+
     public void setCounterFieldName(String name) {
         this.counterFieldName = name;
     }

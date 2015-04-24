@@ -97,6 +97,20 @@ public class QuerySequence extends StandardSequence {
         }
     }
 
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        ValueReadQuery selectQuery = getSelectQuery();
+        DataModifyQuery updateQuery = getUpdateQuery();        
+        result = 31 * result + (selectQuery != null ? selectQuery.hashCode() : 0);
+        result = 31 * result + (updateQuery != null ? updateQuery.hashCode() : 0);
+        result = 31 * result + (shouldAcquireValueAfterInsert() ? 1 : 0);
+        result = 31 * result + (shouldUseTransaction() ? 1 : 0);
+        result = 31 * result + (shouldSkipUpdate() ? 1 : 0);
+        result = 31 * result + (shouldSelectBeforeUpdate() ? 1 : 0);
+        return result;
+    }
+
     /**
     * PUBLIC:
     */

@@ -14,6 +14,8 @@ package org.eclipse.persistence.sdo;
 
 import commonj.sdo.DataObject;
 import commonj.sdo.Property;
+
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -260,5 +262,17 @@ public class DefaultValueStore implements ValueStore {
             }
         }
         return true;
+    }
+
+    @Override
+    public int hashCode() {
+        Object[] typePropertyValues = getTypePropertyValues();
+        boolean[] typePropertiesIsSetStatus = getTypePropertiesIsSetStatus();
+        Map openContentValues = getOpenContentValues();
+        int result = dataObject != null ? dataObject.hashCode() : 0;
+        result = 31 * result + (typePropertyValues != null ? Arrays.hashCode(typePropertyValues) : 0);
+        result = 31 * result + (typePropertiesIsSetStatus != null ? Arrays.hashCode(typePropertiesIsSetStatus) : 0);
+        result = 31 * result + (openContentValues != null ? openContentValues.hashCode() : 0);
+        return result;
     }
 }

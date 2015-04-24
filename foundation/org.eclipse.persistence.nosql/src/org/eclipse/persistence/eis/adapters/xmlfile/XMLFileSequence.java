@@ -44,6 +44,11 @@ public class XMLFileSequence extends EISSequence {
         }
     }
 
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
     /**
      * Support sequencing through sequence file.
      */

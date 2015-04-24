@@ -236,6 +236,11 @@ public class XPathNode {
         }
     }
 
+    @Override
+    public int hashCode() {
+        return xPathFragment != null ? xPathFragment.hashCode() : 0;
+    }
+
     public XPathNode addChild(XPathFragment anXPathFragment, NodeValue aNodeValue, NamespaceResolver namespaceResolver) {
         if (null != anXPathFragment && anXPathFragment.nameIsText()) {
             if (aNodeValue.isOwningNode(anXPathFragment)) {

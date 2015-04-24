@@ -248,6 +248,13 @@ public class CoreAttributeItem<ATTRIBUTE_GROUP extends CoreAttributeGroup> imple
         return true;
     }
 
+    @Override
+    public int hashCode() {
+        int result = subGroups != null ? subGroups.hashCode() : 0;
+        result = 31 * result + (keyGroups != null ? keyGroups.hashCode() : 0);
+        return result;
+    }
+
     public String getAttributeName() {
         return this.attributeName;
     }

@@ -50,4 +50,10 @@ public class XPathPredicate {
         return value.equals(test.getValue());
     }
 
+    @Override
+    public int hashCode() {
+        int result = xPathFragment != null ? xPathFragment.hashCode() : 0;
+        result = 31 * result + (value != null ? value.hashCode() : 0);
+        return result;
+    }
 }

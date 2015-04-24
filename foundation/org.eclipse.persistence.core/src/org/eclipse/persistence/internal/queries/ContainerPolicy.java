@@ -401,6 +401,11 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
         return (object != null) && (getClass().equals(object.getClass()));
     }
 
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
     /**
      * INTERNAL:
      * Cascade DiscoverAndPersistUnregisteredNewObjects to any mappings managed by the container policy.  Be default, this is a no-op, but

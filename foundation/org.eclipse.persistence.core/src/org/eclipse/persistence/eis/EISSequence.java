@@ -46,4 +46,9 @@ public class EISSequence extends QuerySequence {
             return false;
         }
     }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
 }

@@ -458,6 +458,15 @@ public class ReportQueryResult implements Serializable, Map {
         return true;
     }
 
+    @Override
+    public int hashCode() {
+        List<Object> results = getResults();
+        Object id = getId();
+        int result = results != null ? results.hashCode() : 0;
+        result = 31 * result + (id != null ? id.hashCode() : 0);
+        return result;
+    }
+
     /**
      * PUBLIC:
      * Return the value for given item name.

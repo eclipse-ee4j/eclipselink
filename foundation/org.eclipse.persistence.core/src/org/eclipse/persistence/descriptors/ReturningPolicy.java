@@ -488,6 +488,22 @@ public class ReturningPolicy implements Serializable, Cloneable {
             }
             return true;
         }
+
+        @Override
+        public int hashCode() {
+            DatabaseField field = getField();
+            Class type = field != null ? field.getType() : null;
+            boolean isInsert = isInsert();
+            boolean isInsertModeReturnOnly = isInsertModeReturnOnly();
+            boolean isUpdate = isUpdate();
+
+            int result = field != null ? field.hashCode() : 0;
+            result = 31 * result + (type != null ? type.hashCode() : 0);
+            result = 31 * result + (isInsert ? 1 : 0);
+            result = 31 * result + (isInsertModeReturnOnly ? 1 : 0);
+            result = 31 * result + (isUpdate ? 1 : 0);
+            return result;
+        }
     }
 
     /**

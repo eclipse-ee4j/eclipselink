@@ -80,6 +80,14 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
         return super.equals(object) && getContainerClass().equals(((InterfaceContainerPolicy)object).getContainerClass());
     }
 
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        Class containerClass = getContainerClass();
+        result = 31 * result + (containerClass != null ? containerClass.hashCode() : 0);
+        return result;
+    }
+
     /**
      * INTERNAL:
      * Return a clone of the specified container.

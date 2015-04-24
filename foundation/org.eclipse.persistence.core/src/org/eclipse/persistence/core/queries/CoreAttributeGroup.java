@@ -391,6 +391,14 @@ public class CoreAttributeGroup<
         }
     }
 
+    @Override
+    public int hashCode() {
+        Map<String, ATTRIBUTE_ITEM> items = getItems();
+        int result = superClassGroup != null ? superClassGroup.hashCode() : 0;
+        result = 31 * result + (items != null ? items.hashCode() : 0);
+        return result;
+    }
+
     public CoreAttributeGroup findGroup(DESCRIPTOR type){
         if (this.type == null || this.type.equals(type.getJavaClass())){
             return this;

@@ -180,6 +180,13 @@ public class AttributeItem extends CoreAttributeItem<AttributeGroup> implements 
         return true;
     }
 
+    @Override
+    public int hashCode() {
+        int result = subGroups != null ? subGroups.hashCode() : 0;
+        result = 31 * result + (keyGroups != null ? keyGroups.hashCode() : 0);
+        return result;
+    }
+
     public AttributeGroup getGroup() {
         return super.getGroup();
     }

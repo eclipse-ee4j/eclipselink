@@ -123,6 +123,18 @@ public class TableSequence extends QuerySequence {
         }
     }
 
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        String tableName = getTableName();
+        String counterFieldName = getCounterFieldName();
+        String nameFieldName = getNameFieldName();        
+        result = 31 * result + (tableName != null ? tableName.hashCode() : 0);
+        result = 31 * result + (counterFieldName != null ? counterFieldName.hashCode() : 0);
+        result = 31 * result + (nameFieldName != null ? nameFieldName.hashCode() : 0);
+        return result;
+    }
+
     public String getCounterFieldName() {
         return counterFieldName;
     }

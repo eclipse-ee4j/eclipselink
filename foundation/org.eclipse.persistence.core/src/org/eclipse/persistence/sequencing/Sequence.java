@@ -155,6 +155,14 @@ public abstract class Sequence implements Serializable, Cloneable {
         return seq1.getName().equals(seq2.getName()) && (seq1.getPreallocationSize() == seq2.getPreallocationSize());
     }
 
+    @Override
+    public int hashCode() {
+        String name = getName();
+        int result = name != null ? name.hashCode() : 0;
+        result = 31 * result + getPreallocationSize();
+        return result;
+    }
+
     protected void setDatasourcePlatform(Platform platform) {
         this.platform = platform;
     }

@@ -25,8 +25,6 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  * default sequencing mechanism but override the pre-allocation size.
  */
 public class DefaultSequence extends Sequence {
-    protected Sequence defaultSequence;
-
     public DefaultSequence() {
         super();
     }
@@ -83,6 +81,11 @@ public class DefaultSequence extends Sequence {
         } else {
             return false;
         }
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 
     /**
