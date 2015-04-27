@@ -33,17 +33,21 @@ import java.util.Map;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceException;
-import javax.persistence.spi.*;
+import javax.persistence.spi.ClassTransformer;
+import javax.persistence.spi.LoadState;
+import javax.persistence.spi.PersistenceUnitInfo;
+import javax.persistence.spi.ProviderUtil;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.exceptions.PersistenceUnitLoadingException;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider;
 import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
+import org.eclipse.persistence.internal.jpa.deployment.JPAInitializer;
 import org.eclipse.persistence.internal.jpa.deployment.JavaSECMPInitializer;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
 import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
-import org.eclipse.persistence.internal.jpa.deployment.JPAInitializer;
 import org.eclipse.persistence.internal.weaving.PersistenceWeaved;
 
 /**
@@ -174,6 +178,7 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
      * @return EntityManagerFactory for the persistence unit,
      * or null if the provider is not the right provider
      */
+    @Override
     public EntityManagerFactory createEntityManagerFactory(String emName, Map properties){
         Map nonNullProperties = (properties == null) ? new HashMap() : properties;
 
@@ -205,6 +210,7 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
      *
      * @since Java Persistence 2.1
      */
+    @Override
     public void generateSchema(PersistenceUnitInfo info, Map properties) {
         if (checkForProviderProperty(properties)) {
             // Bug 458462 - Generate the DDL and then close. This method is
@@ -231,6 +237,7 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
      *
      * @since Java Persistence 2.1
      */
+    @Override
     public boolean generateSchema(String persistenceUnitName, Map properties) {
         String puName = (persistenceUnitName == null) ? "" : persistenceUnitName;
         Map nonNullProperties = (properties == null) ? new HashMap() : properties;
@@ -301,6 +308,7 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
      * @param properties A Map of integration-level properties for use
      * by the persistence provider.
      */
+    @Override
     public EntityManagerFactory createContainerEntityManagerFactory(PersistenceUnitInfo info, Map properties) {
         return createContainerEntityManagerFactoryImpl(info, properties, true);
     }
@@ -311,6 +319,11 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
         
         Map nonNullProperties = (properties == null) ? new HashMap() : properties;
         
+        String forceTargetServer = EntityManagerFactoryProvider.getConfigPropertyAsString(SystemProperties.ENFORCE_TARGET_SERVER, null);
+        if ("true".equalsIgnoreCase(forceTargetServer)) {
+            nonNullProperties.remove(PersistenceUnitProperties.TARGET_SERVER);
+        }
+
         EntityManagerSetupImpl emSetupImpl = null;
         if (EntityManagerSetupImpl.mustBeCompositeMember(info)) {
             // persistence unit cannot be used standalone (only as a composite member).
@@ -389,6 +402,7 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
      *
      * @since Java Persistence 2.0
      */
+    @Override
     public ProviderUtil getProviderUtil(){
         return this;
     }
@@ -413,6 +427,7 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
      *        to be determined
      * @return load status of the attribute
      */
+    @Override
     public LoadState isLoadedWithoutReference(Object entity, String attributeName){
         if (entity instanceof PersistenceWeaved){
             return isLoadedWithReference(entity, attributeName);
@@ -442,6 +457,7 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
      *        to be determined
      * @return load status of the attribute
      */
+    @Override
     public LoadState isLoadedWithReference(Object entity, String attributeName){
         Iterator<EntityManagerSetupImpl> setups = EntityManagerFactoryProvider.getEmSetupImpls().values().iterator();
         while (setups.hasNext()){
@@ -478,6 +494,7 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
      * @param entity whose loaded status is to be determined
      * @return load status of the entity
      */
+    @Override
     public LoadState isLoaded(Object entity){
         if (entity instanceof PersistenceWeaved){
             return isLoadedWithReference(entity, null);

@@ -26,65 +26,111 @@ import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.Vector;
-import java.util.Iterator;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Time;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.Vector;
 
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.FlushModeType;
+import javax.persistence.LockModeType;
 import javax.persistence.NoResultException;
+import javax.persistence.OptimisticLockException;
 import javax.persistence.Persistence;
+import javax.persistence.PersistenceException;
 import javax.persistence.PersistenceUnitUtil;
 import javax.persistence.PessimisticLockScope;
 import javax.persistence.Query;
+import javax.persistence.RollbackException;
 import javax.persistence.TemporalType;
 import javax.persistence.TransactionRequiredException;
-import javax.persistence.LockModeType;
-import javax.persistence.PersistenceException;
-import javax.persistence.OptimisticLockException;
-import javax.persistence.RollbackException;
 import javax.persistence.TypedQuery;
 import javax.persistence.spi.LoadState;
 import javax.persistence.spi.ProviderUtil;
 import javax.sql.DataSource;
 
-import junit.framework.*;
+import junit.framework.AssertionFailedError;
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
 import org.eclipse.persistence.annotations.IdValidation;
+import org.eclipse.persistence.config.CacheUsage;
+import org.eclipse.persistence.config.CacheUsageIndirectionPolicy;
+import org.eclipse.persistence.config.CascadePolicy;
 import org.eclipse.persistence.config.EntityManagerProperties;
 import org.eclipse.persistence.config.ExclusiveConnectionMode;
-import org.eclipse.persistence.indirection.IndirectContainer;
+import org.eclipse.persistence.config.HintValues;
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.config.PessimisticLock;
+import org.eclipse.persistence.config.QueryHints;
+import org.eclipse.persistence.config.QueryType;
+import org.eclipse.persistence.config.ResultSetConcurrency;
+import org.eclipse.persistence.config.ResultSetType;
+import org.eclipse.persistence.config.ResultType;
+import org.eclipse.persistence.config.SessionCustomizer;
+import org.eclipse.persistence.config.SystemProperties;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.DescriptorQueryManager;
+import org.eclipse.persistence.descriptors.InheritancePolicy;
+import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
+import org.eclipse.persistence.exceptions.EclipseLinkException;
+import org.eclipse.persistence.exceptions.IntegrityException;
+import org.eclipse.persistence.exceptions.PersistenceUnitLoadingException;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.indirection.IndirectList;
-import org.eclipse.persistence.indirection.ValueHolderInterface;
+import org.eclipse.persistence.internal.databaseaccess.Accessor;
+import org.eclipse.persistence.internal.descriptors.PersistenceEntity;
+import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.indirection.BatchValueHolder;
 import org.eclipse.persistence.internal.indirection.QueryBasedValueHolder;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
-import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
+import org.eclipse.persistence.internal.jpa.deployment.JPAInitializer;
+import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
+import org.eclipse.persistence.internal.jpa.jdbc.DataSourceImpl;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.RepeatableWriteUnitOfWork;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.internal.weaving.PersistenceWeaved;
+import org.eclipse.persistence.internal.weaving.PersistenceWeavedLazy;
+import org.eclipse.persistence.jpa.JpaEntityManager;
+import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
+import org.eclipse.persistence.jpa.JpaHelper;
+import org.eclipse.persistence.jpa.JpaQuery;
+import org.eclipse.persistence.jpa.PersistenceProvider;
+import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.platform.server.ServerPlatform;
+import org.eclipse.persistence.platform.server.ServerPlatformBase;
+import org.eclipse.persistence.platform.server.was.WebSphere_7_Platform;
 import org.eclipse.persistence.queries.CursoredStreamPolicy;
 import org.eclipse.persistence.queries.DataModifyQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.FetchGroup;
+import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.eclipse.persistence.queries.InMemoryQueryIndirectionPolicy;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
@@ -95,7 +141,17 @@ import org.eclipse.persistence.queries.ScrollableCursorPolicy;
 import org.eclipse.persistence.queries.ValueReadQuery;
 import org.eclipse.persistence.sequencing.NativeSequence;
 import org.eclipse.persistence.sequencing.Sequence;
+import org.eclipse.persistence.sessions.Connector;
+import org.eclipse.persistence.sessions.CopyGroup;
+import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.DatasourceLogin;
+import org.eclipse.persistence.sessions.DefaultConnector;
+import org.eclipse.persistence.sessions.JNDIConnector;
+import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.SessionEvent;
+import org.eclipse.persistence.sessions.SessionEventAdapter;
+import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.sessions.changesets.ChangeRecord;
 import org.eclipse.persistence.sessions.changesets.ObjectChangeSet;
 import org.eclipse.persistence.sessions.changesets.UnitOfWorkChangeSet;
@@ -104,71 +160,56 @@ import org.eclipse.persistence.sessions.server.ConnectionPolicy;
 import org.eclipse.persistence.sessions.server.ConnectionPool;
 import org.eclipse.persistence.sessions.server.ReadConnectionPool;
 import org.eclipse.persistence.sessions.server.ServerSession;
-import org.eclipse.persistence.exceptions.EclipseLinkException;
-import org.eclipse.persistence.exceptions.IntegrityException;
-import org.eclipse.persistence.exceptions.PersistenceUnitLoadingException;
-import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.tools.schemaframework.PopulationManager;
-import org.eclipse.persistence.tools.schemaframework.SequenceObjectDefinition;
-import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
-import org.eclipse.persistence.jpa.JpaHelper;
-import org.eclipse.persistence.jpa.JpaQuery;
-import org.eclipse.persistence.jpa.PersistenceProvider;
-import org.eclipse.persistence.exceptions.QueryException;
-import org.eclipse.persistence.expressions.Expression;
-import org.eclipse.persistence.expressions.ExpressionBuilder;
-import org.eclipse.persistence.sessions.Connector;
-import org.eclipse.persistence.sessions.CopyGroup;
-import org.eclipse.persistence.sessions.DatabaseLogin;
-import org.eclipse.persistence.sessions.DatasourceLogin;
-import org.eclipse.persistence.sessions.DefaultConnector;
-import org.eclipse.persistence.sessions.JNDIConnector;
-import org.eclipse.persistence.sessions.Session;
-import org.eclipse.persistence.sessions.SessionEvent;
-import org.eclipse.persistence.sessions.SessionEventAdapter;
-import org.eclipse.persistence.sessions.UnitOfWork;
-import org.eclipse.persistence.jpa.JpaEntityManager;
-import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.mappings.OneToManyMapping;
-import org.eclipse.persistence.config.CacheUsage;
-import org.eclipse.persistence.config.CacheUsageIndirectionPolicy;
-import org.eclipse.persistence.config.CascadePolicy;
-import org.eclipse.persistence.config.HintValues;
-import org.eclipse.persistence.config.QueryHints;
-import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.config.PessimisticLock;
-import org.eclipse.persistence.config.QueryType;
-import org.eclipse.persistence.config.ResultSetConcurrency;
-import org.eclipse.persistence.config.ResultSetType;
-import org.eclipse.persistence.config.ResultType;
-import org.eclipse.persistence.config.SessionCustomizer;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.descriptors.DescriptorQueryManager;
-import org.eclipse.persistence.descriptors.InheritancePolicy;
-import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
-import org.eclipse.persistence.internal.databaseaccess.Accessor;
-import org.eclipse.persistence.internal.descriptors.PersistenceEntity;
-import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
-import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
-import org.eclipse.persistence.internal.jpa.jdbc.DataSourceImpl;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.internal.sessions.RepeatableWriteUnitOfWork;
-import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
-import org.eclipse.persistence.internal.weaving.PersistenceWeaved;
-import org.eclipse.persistence.internal.weaving.PersistenceWeavedLazy;
-import org.eclipse.persistence.queries.FetchGroupTracker;
-import org.eclipse.persistence.platform.server.was.WebSphere_7_Platform;
 import org.eclipse.persistence.testing.framework.ConnectionWrapper;
 import org.eclipse.persistence.testing.framework.DriverWrapper;
 import org.eclipse.persistence.testing.framework.QuerySQLTracker;
+import org.eclipse.persistence.testing.framework.TestProblemException;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
-import org.eclipse.persistence.testing.framework.TestProblemException;
-import org.eclipse.persistence.testing.models.jpa.advanced.*;
+import org.eclipse.persistence.testing.models.jpa.advanced.Address;
+import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
+import org.eclipse.persistence.testing.models.jpa.advanced.Bungalow;
+import org.eclipse.persistence.testing.models.jpa.advanced.Buyer;
+import org.eclipse.persistence.testing.models.jpa.advanced.Canoe;
+import org.eclipse.persistence.testing.models.jpa.advanced.Customer;
+import org.eclipse.persistence.testing.models.jpa.advanced.Customizer;
+import org.eclipse.persistence.testing.models.jpa.advanced.Dealer;
+import org.eclipse.persistence.testing.models.jpa.advanced.Department;
+import org.eclipse.persistence.testing.models.jpa.advanced.Door;
+import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
+import org.eclipse.persistence.testing.models.jpa.advanced.EmployeeHolder;
+import org.eclipse.persistence.testing.models.jpa.advanced.EmployeeListener;
+import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
+import org.eclipse.persistence.testing.models.jpa.advanced.EmploymentPeriod;
+import org.eclipse.persistence.testing.models.jpa.advanced.Equipment;
+import org.eclipse.persistence.testing.models.jpa.advanced.EquipmentCode;
+import org.eclipse.persistence.testing.models.jpa.advanced.FormerEmployment;
+import org.eclipse.persistence.testing.models.jpa.advanced.GoldBuyer;
+import org.eclipse.persistence.testing.models.jpa.advanced.Golfer;
+import org.eclipse.persistence.testing.models.jpa.advanced.GolferPK;
+import org.eclipse.persistence.testing.models.jpa.advanced.Hinge;
+import org.eclipse.persistence.testing.models.jpa.advanced.HugeProject;
+import org.eclipse.persistence.testing.models.jpa.advanced.Lake;
+import org.eclipse.persistence.testing.models.jpa.advanced.LargeProject;
+import org.eclipse.persistence.testing.models.jpa.advanced.Man;
+import org.eclipse.persistence.testing.models.jpa.advanced.NonEntity;
+import org.eclipse.persistence.testing.models.jpa.advanced.PartnerLink;
+import org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber;
+import org.eclipse.persistence.testing.models.jpa.advanced.PlatinumBuyer;
+import org.eclipse.persistence.testing.models.jpa.advanced.Project;
+import org.eclipse.persistence.testing.models.jpa.advanced.ReadOnlyIsolated;
+import org.eclipse.persistence.testing.models.jpa.advanced.Room;
+import org.eclipse.persistence.testing.models.jpa.advanced.SmallProject;
+import org.eclipse.persistence.testing.models.jpa.advanced.SpecialHugeProject;
+import org.eclipse.persistence.testing.models.jpa.advanced.SuperLargeProject;
+import org.eclipse.persistence.testing.models.jpa.advanced.Vegetable;
+import org.eclipse.persistence.testing.models.jpa.advanced.VegetablePK;
+import org.eclipse.persistence.testing.models.jpa.advanced.Woman;
+import org.eclipse.persistence.testing.models.jpa.advanced.WorldRank;
 import org.eclipse.persistence.testing.models.jpa.relationships.CustomerCollection;
 import org.eclipse.persistence.testing.tests.feature.TestDataSource;
 import org.eclipse.persistence.testing.tests.jpa.unit.EMFProviderTest;
+import org.eclipse.persistence.tools.schemaframework.SequenceObjectDefinition;
 import org.junit.Assert;
 
 /**
@@ -194,6 +235,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTestSuite(EMFProviderTest.class);
         suite.addTest(new EntityManagerJUnitTestSuite("testSetup"));
         List<String> tests = new ArrayList<String>();
+        tests.add("testEMFTargetServerEnforcing");
         tests.add("testSettingDetachedObject");
         tests.add("testMultipleExistenceChecksForDetachedObjects");
         tests.add("testMergeOfEntityWithDetachedReferences");
@@ -1992,7 +2034,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     
                     HashMap<String, Object> properties = new HashMap<String, Object>();
                     properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 5);
-                    Employee employee2 = (Employee)em2.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC_READ, properties);
+                    Employee employee2 = em2.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC_READ, properties);
                     employee2.setFirstName("Invalid Lock Employee");
                     commitTransaction(em2);
                 } catch (PersistenceException ex) {
@@ -2045,7 +2087,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     
                     HashMap<String, Object> properties = new HashMap<String, Object>();
                     properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 5);
-                    Employee employee2 = (Employee)em2.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC_WRITE, properties);
+                    Employee employee2 = em2.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC_WRITE, properties);
                     employee2.setFirstName("Invalid Lock Employee");
                     commitTransaction(em2);
                 } catch (PersistenceException ex) {
@@ -2149,6 +2191,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 
                 Runnable runnable = new Runnable() {
 
+                    @Override
                     public void run() {
                         EntityManager em2 = createEntityManager();
                         
@@ -2216,6 +2259,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             this.em = em;
             this.timeToWait = timeToWait;
         }
+        @Override
         public void run() {
             try {
                 isWaiting = true;
@@ -3155,7 +3199,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
           Employee e1=em.find(Employee.class,empId);
           e1.setFirstName("testfind");
           queryhints.put(QueryHints.REFRESH, "TRUE");
-          Employee e2= (Employee)em.find(Employee.class, empId, queryhints);
+          Employee e2= em.find(Employee.class, empId, queryhints);
           assertFalse(e2.getFirstName().equals("testfind"));
           em.flush();
         } finally{
@@ -5349,7 +5393,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         Employee emp = new Employee("Bob", "Bob");
 
         try {
-            List<Address> results = (List<Address>) em.createQuery("Select a from Address a").getResultList();
+            List<Address> results = em.createQuery("Select a from Address a").getResultList();
             beginTransaction(em);
             em.persist(emp);
             em.persist(dept1);
@@ -8300,20 +8344,35 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     // At first tried to use JTATransactionController class, but that introduced dependencies 
     // on javax.transaction package (and therefore failed in gf entity persistence tests).
     static class DummyExternalTransactionController extends org.eclipse.persistence.transaction.AbstractTransactionController {
+        @Override
         public boolean isRolledBack_impl(Object status){return false;}
+        @Override
         protected void registerSynchronization_impl(org.eclipse.persistence.transaction.AbstractSynchronizationListener listener, Object txn) throws Exception{}
+        @Override
         protected Object getTransaction_impl() throws Exception {return null;}
+        @Override
         protected Object getTransactionKey_impl(Object transaction) throws Exception {return null;}
+        @Override
         protected Object getTransactionStatus_impl() throws Exception {return null;}
+        @Override
         protected void beginTransaction_impl() throws Exception{}
+        @Override
         protected void commitTransaction_impl() throws Exception{}
+        @Override
         protected void rollbackTransaction_impl() throws Exception{}
+        @Override
         protected void markTransactionForRollback_impl() throws Exception{}
+        @Override
         protected boolean canBeginTransaction_impl(Object status){return false;}
+        @Override
         protected boolean canCommitTransaction_impl(Object status){return false;}
+        @Override
         protected boolean canRollbackTransaction_impl(Object status){return false;}
+        @Override
         protected boolean canIssueSQLToDatabase_impl(Object status){return false;}
+        @Override
         protected boolean canMergeUnitOfWork_impl(Object status){return false;}
+        @Override
         protected String statusToString_impl(Object status){return "";}
     }
     // gf2074: EM.clear throws NPE (JTA case)
@@ -9382,6 +9441,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     static class AcquireReleaseListener extends SessionEventAdapter {
         HashSet<Accessor> acquiredReadConnections = new HashSet(); 
         HashSet<Accessor> acquiredWriteConnections = new HashSet(); 
+        @Override
         public void postAcquireConnection(SessionEvent event) {
             Accessor accessor = (Accessor)event.getResult();
             Session session = event.getSession();
@@ -9393,6 +9453,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 ((ClientSession)session).log(SessionLog.FINEST, SessionLog.CONNECTION, "AcquireReleaseListener.acquireWriteConnection: " + nAcquredWriteConnections(), (Object[])null, accessor, false);
             }
         }
+        @Override
         public void preReleaseConnection(SessionEvent event) {
             Accessor accessor = (Accessor)event.getResult();
             Session session = event.getSession();
@@ -9694,6 +9755,28 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
     }
     
+    public void testEMFTargetServerEnforcing() {
+        EntityManagerFactory emf = null;
+        try {
+            System.setProperty(SystemProperties.ENFORCE_TARGET_SERVER, "true");
+            Map<String, String> properties = new HashMap<>(JUnitTestCaseHelper.getDatabaseProperties());
+            properties.put(PersistenceUnitProperties.TARGET_SERVER, Platform.class.getName());
+            properties.put(PersistenceUnitProperties.SESSION_NAME, "dummy-default-session");
+            PersistenceProvider provider = new PersistenceProvider();
+            JPAInitializer initializer = provider.getInitializer(getPersistenceUnitName(), properties);
+            SEPersistenceUnitInfo sePUImpl = initializer.findPersistenceUnitInfo(getPersistenceUnitName(), properties);
+            emf = provider.createContainerEntityManagerFactory(sePUImpl, properties);
+            ServerPlatform server = ((JpaEntityManagerFactory)emf).getServerSession().getServerPlatform();
+            assertNotNull(server);
+            assertFalse("server should be overridden", server instanceof Platform);
+        } finally {
+            System.clearProperty(SystemProperties.ENFORCE_TARGET_SERVER);
+            if (emf != null) {
+                emf.close();
+            }
+        }
+    }
+
     // Bug 332683 - Problems with ClientSession connections
     // testPostAcquirePreReleaseEvents tests verifies that postAcquireConnection and preReleaseConnection events are risen correctly.
     // The test is run in two configurations: with Internal and External connection pools.
@@ -9703,6 +9786,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     //    persist and commit  vs   read, begin transaction, persist, commit  vs  uow.beginEarlyTransaction, persist, commit.  
     static class AcquireRepair_ReleaseBreak_Listener extends SessionEventAdapter {
         HashSet<Accessor> acquiredConnections = new HashSet();
+        @Override
         public void postAcquireConnection(SessionEvent event) {
             Accessor accessor = (Accessor)event.getResult();
             if(acquiredConnections.contains(accessor)) {
@@ -9714,6 +9798,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             ((AbstractSession)event.getSession()).log(SessionLog.FINEST, SessionLog.CONNECTION, "AcquireRepair_ReleaseBreak_Listener.postAcquireConnection: repairConnection;", (Object[])null, accessor, false);
             ((ConnectionWrapper)accessor.getConnection()).repairConnection();
         }
+        @Override
         public void preReleaseConnection(SessionEvent event) {
             Accessor accessor = (Accessor)event.getResult();
             if(!acquiredConnections.contains(accessor)) {
@@ -10505,6 +10590,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
     public static class SessionNameCustomizer implements SessionCustomizer {
         static ServerSession ss;
+        @Override
         public void customize(Session session) throws Exception {
             ss = (ServerSession)session;
         }
@@ -11089,7 +11175,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     
         public void testSettingDetachedObject() {
             EntityManager em = createEntityManager();
-                List<Address> results = (List<Address>) em.createQuery("Select a from Address a").getResultList();
+                List<Address> results = em.createQuery("Select a from Address a").getResultList();
                 Department dept1 = new Department("Dept1");
                 Department dept2 = new Department("Dept2");
                 beginTransaction(em);
@@ -11386,6 +11472,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     //  Bug 307433 - Regression in Auditing Support when using defaults.
     public static class ChangeRecordKeepOldValueListener extends SessionEventAdapter {
         public UnitOfWorkChangeSet uowChangeSet;
+        @Override
         public void postCalculateUnitOfWorkChangeSet(SessionEvent event) {
             uowChangeSet = (UnitOfWorkChangeSet)event.getProperty("UnitOfWorkChangeSet");
         }
@@ -12192,7 +12279,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         em.persist(emp);
         commitTransaction(em);
         beginTransaction(em);
-        emp = (Employee)em.find(Employee.class, emp.getId());
+        emp = em.find(Employee.class, emp.getId());
         em.remove(emp);
         commitTransaction(em);
         
@@ -12489,27 +12576,35 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         query.getResultList();
         em.close();
         Runnable[] runnables = {
-            new Runnable() {public void run(){
+            new Runnable() {
+            @Override
+            public void run(){
                 EntityManager em = createEntityManager();
                 Query query = em.createQuery("SELECT e FROM Employee e");
                 query.getResultList();
                 em.close();
             };},
-            new Runnable() {public void run(){
+            new Runnable() {
+            @Override
+            public void run(){
                 EntityManager em = createEntityManager();
                 Query query = em.createQuery("SELECT e FROM Employee e");
                 query.setHint(QueryHints.FETCH, "e.manager");
                 query.getResultList();
                 em.close();
             };},
-            new Runnable() {public void run(){
+            new Runnable() {
+            @Override
+            public void run(){
                 EntityManager em = createEntityManager();
                 Query query = em.createQuery("SELECT e FROM Employee e");
                 query.setHint(QueryHints.FETCH, "e.address");
                 query.getResultList();
                 em.close();
             };},
-            new Runnable() {public void run(){
+            new Runnable() {
+            @Override
+            public void run(){
                 EntityManager em = createEntityManager();
                 Query query = em.createQuery("SELECT e FROM Employee e");
                 query.setHint(QueryHints.FETCH, "e.manager");
@@ -12517,7 +12612,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 query.getResultList();
                 em.close();
             };},
-            new Runnable() {public void run(){
+            new Runnable() {
+            @Override
+            public void run(){
                 EntityManager em = createEntityManager();
                 Query query = em.createQuery("SELECT e FROM Employee e");
                 query.setHint(QueryHints.FETCH, "e.manager");
@@ -12526,7 +12623,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 query.getResultList();
                 em.close();
             };},
-            new Runnable() {public void run(){
+            new Runnable() {
+            @Override
+            public void run(){
                 EntityManager em = createEntityManager();
                 Query query = em.createQuery("SELECT e FROM Employee e");
                 query.setHint(QueryHints.FETCH, "e.address");
@@ -12535,28 +12634,36 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 query.getResultList();
                 em.close();
             };},
-            new Runnable() {public void run(){
+            new Runnable() {
+            @Override
+            public void run(){
                 EntityManager em = createEntityManager();
                 Query query = em.createQuery("SELECT e FROM Employee e");
                 query.setHint(QueryHints.FETCH, "e.managedEmployees");
                 query.getResultList();
                 em.close();
             };},
-            new Runnable() {public void run(){
+            new Runnable() {
+            @Override
+            public void run(){
                 EntityManager em = createEntityManager();
                 Query query = em.createQuery("SELECT e FROM Employee e");
                 query.setHint(QueryHints.FETCH, "e.responsibilities");
                 query.getResultList();
                 em.close();
             };},
-            new Runnable() {public void run(){
+            new Runnable() {
+            @Override
+            public void run(){
                 EntityManager em = createEntityManager();
                 Query query = em.createQuery("SELECT e FROM Employee e");
                 query.setHint(QueryHints.FETCH, "e.phoneNumbers");
                 query.getResultList();
                 em.close();
             };},
-            new Runnable() {public void run(){
+            new Runnable() {
+            @Override
+            public void run(){
                 EntityManager em = createEntityManager();
                 Query query = em.createQuery("SELECT e FROM Employee e");
                 query.setHint(QueryHints.FETCH, "e.dealers");
@@ -12599,6 +12706,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     public static class TableQualifierSessionCustomizer implements SessionCustomizer {
         public static Map<String, String> database_properties = JUnitTestCaseHelper.getDatabaseProperties();
         
+        @Override
         public void customize(Session session) throws Exception {
             String schema = getCurrentSchemaName(session);
             session.getPlatform().setTableQualifier(schema);
@@ -12768,4 +12876,15 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
     }
     
+    public static final class Platform extends ServerPlatformBase {
+
+        public Platform(DatabaseSession newDatabaseSession) {
+            super(newDatabaseSession);
+        }
+
+        @Override
+        public Class getExternalTransactionControllerClass() {
+            return null;
+        }
+    }
 }

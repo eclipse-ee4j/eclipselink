@@ -57,7 +57,6 @@ public class SystemProperties {
      * 
      * This can also be set in code statically through ConcurrencyManager.setShouldTrackStack(true)
      */
-
     public static final String RECORD_STACK_ON_LOCK = "eclipselink.cache.record-stack-on-lock";
     
     /**
@@ -66,6 +65,11 @@ public class SystemProperties {
      * EclipseLink these attributes would have been ignored but as of this
      * release they will be processed into the expression.
      */
-    
     public static final String DO_NOT_PROCESS_XTOMANY_FOR_QBE = "eclipselink.query.query-by-example.ignore-xtomany";
+
+    /**
+     * This system property can be set to override target server platform set by the Java EE container
+     * with the one either set in persistence.xml or auto detected.
+     */
+    public static final String ENFORCE_TARGET_SERVER = "eclipselink.target-server.enforce";
 }
