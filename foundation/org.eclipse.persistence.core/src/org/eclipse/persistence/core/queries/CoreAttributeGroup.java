@@ -393,9 +393,8 @@ public class CoreAttributeGroup<
 
     @Override
     public int hashCode() {
-        Map<String, ATTRIBUTE_ITEM> items = getItems();
         int result = superClassGroup != null ? superClassGroup.hashCode() : 0;
-        result = 31 * result + (items != null ? items.hashCode() : 0);
+        result = 31 * result + getItems().hashCode();
         return result;
     }
 
@@ -515,6 +514,7 @@ public class CoreAttributeGroup<
 
     /**
      * INTERNAL:
+     * @return Non-null Map of attributes in the group mapped to their AttributeItems
      */
     public Map<String, ATTRIBUTE_ITEM> getItems() {
         if (this.items == null) {

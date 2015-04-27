@@ -141,7 +141,7 @@ public class DefaultValueStore implements ValueStore {
 
     /**
      * INTERNAL:
-     * @return Map of values for open content properties
+     * @return Non-null Map of values for open content properties
      */
     public Map getOpenContentValues() {
         if (openContentValues == null) {
@@ -268,11 +268,10 @@ public class DefaultValueStore implements ValueStore {
     public int hashCode() {
         Object[] typePropertyValues = getTypePropertyValues();
         boolean[] typePropertiesIsSetStatus = getTypePropertiesIsSetStatus();
-        Map openContentValues = getOpenContentValues();
         int result = dataObject != null ? dataObject.hashCode() : 0;
         result = 31 * result + (typePropertyValues != null ? Arrays.hashCode(typePropertyValues) : 0);
         result = 31 * result + (typePropertiesIsSetStatus != null ? Arrays.hashCode(typePropertiesIsSetStatus) : 0);
-        result = 31 * result + (openContentValues != null ? openContentValues.hashCode() : 0);
+        result = 31 * result + getOpenContentValues().hashCode();
         return result;
     }
 }
