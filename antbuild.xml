@@ -39,6 +39,7 @@
 *     egwin  - rework to standardize antcall conventions and fix multiple target builds.
 *     tkraus - additional JDK, Ant and JDBC driver check, conditional Oracle extensions tests build
 *     mvalovy - OSGi tests
+*     Rick Curtis - Add jse bucket to lrg-test
 #******************************************************************************/-->
 <!-- =============================================================================
 *  General Comments
@@ -78,6 +79,7 @@
         - test-core : runs core tests
         - test-core-srg : runs core SRG
         - test-jpa : runs JPA tests
+        - test-jpa-jse : runs JPA JSE tests
         - test-moxy : runs MOXY tests
         - test-moxy-srg : runs MOXY SRG
         - test-jaxb : runs MOXY jaxb tests
@@ -1533,9 +1535,8 @@
             depends="clear-db, test-core-srg, test-jpa21-srg, test-jpars, test-moxy-srg, test-sdo-srg, test-dbws-srg, test-dbws-builder-srg, generate-report"
             />
     <target name="test-lrg" description="run all the LRG test suites"
-            depends="clear-db, test-core, test-jpa21, test-wdf, test-jpars, test-moxy, test-sdo, test-dbws, test-dbws-builder, test-osgi, generate-report"
-            />
-
+            depends="clear-db, test-core, test-jpa21, test-jpa-jse, test-wdf, test-jpars, test-moxy, test-sdo, test-dbws, test-dbws-builder, test-osgi, generate-report"
+            />    
     <!-- Run clear-db -->
     <target name="clear-db" description="run the core tests">
         <ant antfile="antbuild.xml" dir="${eclipselink.core.test}" target="clear-database"/>
@@ -1636,6 +1637,10 @@
             description="run eclipselink osgi tests"/>
     <target name="test-osgi-moxy" description="run the moxy osgi tests">
         <ant antfile="antbuild.xml" dir="${eclipselink.moxy.test}" target="test-osgi"/>
+    </target>
+    <!-- run JSE tests -->
+    <target name="test-jpa-jse" description="run the JPA JSE tests">
+        <ant antfile="antbuild.xml" dir="${eclipselink.jpa.test.jse}" target="test-no-report"/>
     </target>
 
     <target name="init-coverage">

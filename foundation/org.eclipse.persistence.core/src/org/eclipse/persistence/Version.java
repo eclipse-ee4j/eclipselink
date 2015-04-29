@@ -25,9 +25,6 @@ import org.eclipse.persistence.internal.helper.JavaSEPlatform;
  * @since 1.0,
  */
 public class Version {
-    // The current copyright info for EclipseLink.
-    private static final String CopyrightString = "Copyright (c) 1998, 2014 Oracle.  All rights reserved.";
-
     // The current version of EclipseLink.
     // This will be used by all product components and included in exceptions.
     private static String product = "Eclipse Persistence Services";

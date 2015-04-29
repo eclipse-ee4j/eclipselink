@@ -9,38 +9,38 @@
 * Contributors:
 *     Rick Curtis- initial API and implementation
 #******************************************************************************/-->
-<project name="eclipselink.jpa.test.jse" default="test" basedir=".">
-    <property name="classes.dir" value="./classes" />
-    <property name="reports.dir" value="./reports" />
-
-    <property name="base.dir" value="../.."/>
-    <property name="plugins.dir" value="${base.dir}/plugins"/>
-
-    <property name="jpa.base.dir" value="../"/>
-    <property name="jpa.plugins.dir" value="${jpa.base.dir}/plugins"/>
+<project name="eclipselink.jpa.test.jse" default="test" basedir=".">   
+    <property name="jse.el.root"            value="${basedir}/../.."/>
+    <property name="jse.jpa.root"           value="${basedir}/.."/>
+    
+    <property name="jse.src.dir"            value="${basedir}/src"/>
+    <property name="jse.classes.dir"        value="${basedir}/classes" />
+    <!-- Use common property name to allow override -->
+    <property name="reports.dir"            value="${basedir}/reports" />
+    
+    <property name="jse.el.plugins.dir"     value="${jse.el.root}/plugins"/>
+    <property name="jse.jpa.plugins.dir"    value="${jse.jpa.root}/plugins"/>
 
     <!-- Not sure if there is a better way to refer to dependencies? -->
-    <property name="eclipselink.jar" value="${base.dir}/eclipselink.jar"/>
-    <property name="javax.transaction" value="${plugins.dir}/javax.transaction_1.1.0.v201002051055.jar"/>
-    <property name="javax.validation" value="${plugins.dir}/javax.validation_1.1.0.v201304101302.jar"/>
-    <property name="javax.persistence" value="${jpa.plugins.dir}/javax.persistence_2.1.0.v201304241213.jar"/>
-
+    <property name="jse.eclipselink.jar" value="${jse.el.root}/eclipselink.jar"/>
+    <property name="javax.transaction" value="${jse.el.plugins.dir}/javax.transaction_1.1.0.v201002051055.jar"/>
+    <property name="javax.validation" value="${jse.el.plugins.dir}/javax.validation_1.1.0.v201304101302.jar"/>
+    <property name="javax.persistence" value="${jse.jpa.plugins.dir}/javax.persistence_2.1.0.v201304241213.jar"/>
+   
     <property file="${user.home}/build.properties"/>
     <property file="./antbuild.properties" />
     <property file="./test.properties" />
 
-    <path id="compile.path">
-        <pathelement path="${eclipselink.jar}" />
-
+    <path id="compile.jse.path">
+        <pathelement path="${jse.el.root}/eclipselink.jar" />
         <pathelement path="${javax.transaction}" />
         <pathelement path="${javax.validation}" />
         <pathelement path="${javax.persistence}" />
         <pathelement path="${junit.lib}" />
     </path>
-    <path id="run.path">
-        <pathelement path="${classes.dir}" />
-        <pathelement path="${eclipselink.jar}" />
-
+    <path id="run.jse.path">
+        <pathelement path="${jse.classes.dir}" />
+        <pathelement path="${jse.eclipselink.jar}" />
         <pathelement path="${javax.transaction}" />
         <pathelement path="${javax.validation}" />
         <pathelement path="${javax.persistence}" />
@@ -48,30 +48,45 @@
         <pathelement path="${jdbc.driver.jar}" />
     </path>
 
-    <target name="test" depends="compile, weave">
+    <pathconvert property="jse.compile.cp" refid="compile.jse.path"/>
+    <pathconvert property="jse.run.cp" refid="run.jse.path"/>
+    
+    <echo message="jse.el.root                      = ${jse.el.root}"/>
+    <echo message="jse.jpa.root                     = ${jse.jpa.root}"/>
+    <echo message="jse.eclipselink.jar              = ${jse.eclipselink.jar}"/>
+    <echo message="jse.classes.dir                  = ${jse.classes.dir}"/>
+    <echo message="jse.src.dir                      = ${jse.src.dir}"/>
+    <echo message="compile classpath                = ${jse.compile.cp}"/>
+    <echo message="run classpath                    = ${jse.run.cp}"/>   
+    <echo message="report dir                       = ${reports.dir}"/>
+    <echo message="basedir                          = ${basedir}"/>
 
-
+    <target name="test-no-report" depends="test-run"/>
+    <target name="test" depends="test-run, test-report"/>
+    
+    <target name="test-run" depends="compile, weave">
         <mkdir dir="${reports.dir}"/>
-
-        <junit printsummary="on" haltonfailure="false" failureproperty="fail">
-
+        <junit printsummary="on" haltonfailure="false" failureproperty="fail" fork="yes" dir="${jse.classes.dir}" forkmode="once">
             <sysproperty key="javax.persistence.jdbc.url" value="${db.url}"/>
             <sysproperty key="javax.persistence.jdbc.driver" value="${db.driver}"/>
             <sysproperty key="javax.persistence.jdbc.user" value="${db.user}"/>
             <sysproperty key="javax.persistence.jdbc.password" value="${db.pwd}"/>
             <classpath>
-                <path refid="run.path" />
+                <path refid="run.jse.path" />
             </classpath>
 
             <formatter type="xml"/>
 
-            <batchtest fork="no" todir="${reports.dir}">
-                <fileset dir="${src.dir}">
+            <batchtest todir="${reports.dir}">
+                <fileset dir="${jse.src.dir}">
                     <include name="**/Test*.java"/>
                 </fileset>
             </batchtest>
 
         </junit>
+    </target>
+    
+    <target name="test-report">
         <junitreport todir="./reports">
           <fileset dir="./reports">
             <include name="TEST-*.xml"/>
@@ -87,48 +102,32 @@
     We can cross that bridge when / if it is needed.
     -->
     <target name="weave">
-        <weave source="${classes.dir}" target="${classes.dir}" loglevel="OFF">
+        <weave source="${jse.classes.dir}" target="${jse.classes.dir}" loglevel="WARNING">
             <classpath>
-                <path refid="compile.path" />
+                <path refid="compile.jse.path" />
             </classpath>
         </weave>
     </target>
 
     <target name="compile">
-        <mkdir dir="${classes.dir}"/>
-        <copy todir="${classes.dir}/META-INF">
-            <fileset dir="${src.dir}/META-INF" includes="**/*" excludes=".git*"/>
+        <mkdir dir="${jse.classes.dir}"/>
+        <copy todir="${jse.classes.dir}/META-INF">
+            <fileset dir="${jse.src.dir}/META-INF" includes="**/*" excludes=".git*"/>
         </copy>
 
-
-        <config-compile-path/>
-        <javac debug="true" destdir="${classes.dir}" includeantruntime="false" source="${javac.version}" target="${javac.version}">
-            <classpath refid="compile.path"/>
+        <javac debug="true" destdir="${jse.classes.dir}" includeantruntime="false" source="${javac.version}" target="${javac.version}">
+            <classpath refid="compile.jse.path"/>
             <src path="src"/>
         </javac>
     </target>
     <target name="clean">
-        <delete dir="${classes.dir}" />
+        <delete dir="${jse.classes.dir}" />
         <delete dir="${reports.dir}" />
     </target>
 
-    <macrodef name="config-compile-path">
-        <sequential>
-            <path id="compile.path">
-                <pathelement path="${eclipselink.jar}" />
-
-                <pathelement path="${javax.transaction}" />
-                <pathelement path="${javax.validation}" />
-                <pathelement path="${javax.persistence}" />
-                <pathelement path="${junit.lib}" />
-            </path>
-        </sequential>
-    </macrodef>
-
-
     <taskdef name="weave" classname="org.eclipse.persistence.tools.weaving.jpa.StaticWeaveAntTask">
         <classpath>
-            <path refid="compile.path" />
+            <path refid="compile.jse.path" />
         </classpath>
     </taskdef>
 </project>
