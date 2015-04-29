@@ -12,9 +12,10 @@
  ******************************************************************************/
 package org.eclipse.persistence.eis.adapters.xmlfile;
 
-import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.eis.EISSequence;
-import org.eclipse.persistence.eis.interactions.*;
+import org.eclipse.persistence.eis.interactions.XQueryInteraction;
+import org.eclipse.persistence.queries.DataModifyQuery;
+import org.eclipse.persistence.queries.ValueReadQuery;
 
 /**
  * Provides sequence support for EISPlatform
@@ -36,6 +37,7 @@ public class XMLFileSequence extends EISSequence {
         super(name, size);
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof XMLFileSequence) {
             return equalNameAndSize(this, (XMLFileSequence)obj);
@@ -46,12 +48,14 @@ public class XMLFileSequence extends EISSequence {
 
     @Override
     public int hashCode() {
-        return super.hashCode();
+        String n = getName();
+        return 17 * (n != null ? n.hashCode() : 0) + getPreallocationSize() * 5;
     }
 
     /**
      * Support sequencing through sequence file.
      */
+    @Override
     protected ValueReadQuery buildSelectQuery() {
         ValueReadQuery query = new ValueReadQuery();
         query.addArgument("sequence-name");
@@ -67,6 +71,7 @@ public class XMLFileSequence extends EISSequence {
     /**
      * Support sequencing through sequence file.
      */
+    @Override
     protected DataModifyQuery buildUpdateQuery() {
         DataModifyQuery query = new DataModifyQuery();
         query.addArgument("sequence-name");

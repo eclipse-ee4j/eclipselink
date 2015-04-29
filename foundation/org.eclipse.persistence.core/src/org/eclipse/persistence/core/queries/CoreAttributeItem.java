@@ -125,8 +125,7 @@ public class CoreAttributeItem<ATTRIBUTE_GROUP extends CoreAttributeGroup> imple
         try {
             clone = (CoreAttributeItem) super.clone();
         } catch (CloneNotSupportedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new AssertionError(e);
         }
         clone.attributeName = this.attributeName;
         if (this.group != null){
@@ -297,12 +296,13 @@ public class CoreAttributeItem<ATTRIBUTE_GROUP extends CoreAttributeGroup> imple
             return null;
         }
         ATTRIBUTE_GROUP result = this.keyGroups.get(type);
-        while(result == null && !type.equals(CoreClassConstants.OBJECT)){
-            type = type.getSuperclass();
-            if (type == null){
-                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("subclass_sought_not_a_managed_type", new Object[]{null, this.attributeName}));
+        Class currentType = type;
+        while(result == null && !currentType.equals(CoreClassConstants.OBJECT)){
+            currentType = currentType.getSuperclass();
+            if (currentType == null){
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("subclass_sought_not_a_managed_type", new Object[]{type, this.attributeName}));
             }
-            result = this.keyGroups.get(type);
+            result = this.keyGroups.get(currentType);
         }
         return result;
     }

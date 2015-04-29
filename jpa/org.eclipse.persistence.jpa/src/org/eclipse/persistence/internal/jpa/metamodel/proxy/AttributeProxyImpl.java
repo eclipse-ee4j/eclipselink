@@ -34,7 +34,7 @@ import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 public class AttributeProxyImpl<X, T> implements Attribute<X, T>, Serializable {
 
     protected Attribute<X, T> attribute = null;
-    protected Set<WeakReference<EntityManagerFactoryImpl>> factories = new HashSet<WeakReference<EntityManagerFactoryImpl>>();
+    protected transient Set<WeakReference<EntityManagerFactoryImpl>> factories = new HashSet<WeakReference<EntityManagerFactoryImpl>>();
 
     public synchronized Attribute<X, T> getAttribute(){
         if (attribute == null){
@@ -60,8 +60,8 @@ public class AttributeProxyImpl<X, T> implements Attribute<X, T>, Serializable {
 
     public synchronized void addFactory(EntityManagerFactoryImpl factory){
         for (WeakReference<EntityManagerFactoryImpl> factoryRef: factories){
-
-            if (factoryRef.get() != null && factoryRef.get().equals(factory)){
+            EntityManagerFactoryImpl fImpl = factoryRef.get();
+            if (fImpl != null && fImpl.equals(factory)) {
                 return;
             }
         }

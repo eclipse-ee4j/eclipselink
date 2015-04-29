@@ -664,17 +664,8 @@ public class Helper extends CoreHelper implements Serializable {
     public static Map concatenateMaps(Map first, Map second) {
         Map concatenation = new HashMap(first.size() + second.size() + 4);
 
-        for (Iterator keys = first.keySet().iterator(); keys.hasNext();) {
-            Object key = keys.next();
-            Object value = first.get(key);
-            concatenation.put(key, value);
-        }
-
-        for (Iterator keys = second.keySet().iterator(); keys.hasNext();) {
-            Object key = keys.next();
-            Object value = second.get(key);
-            concatenation.put(key, value);
-        }
+        concatenation.putAll(first);
+        concatenation.putAll(second);
 
         return concatenation;
     }

@@ -23,6 +23,10 @@
         <Bug pattern="NM_SAME_SIMPLE_NAME_AS_SUPERCLASS"/>
     </Match>
 
+    <Match>
+        <Bug pattern="NM_SAME_SIMPLE_NAME_AS_INTERFACE"/>
+    </Match>
+
     <!--
         As designed, minor issue, unimportant code
     -->
@@ -48,6 +52,43 @@
             <Class name="org.eclipse.persistence.internal.helper.WriteLockManager"/>
             <Class name="org.eclipse.persistence.jpa.rs.service.JPARSPersistenceContextFactoryProvider"/>
         </Or>
+        <Bug pattern="MS_SHOULD_BE_FINAL"/>
+    </Match>
+
+    <Match>
+        <Class name="org.eclipse.persistence.jaxb.compiler.CompilerHelper"/>
+        <or>
+            <Field name="ACCESSOR_FACTORY_ANNOTATION_CLASS"/>
+            <Field name="ACCESSOR_FACTORY_VALUE_METHOD"/>
+            <Field name="INTERNAL_ACCESSOR_FACTORY_ANNOTATION_CLASS"/>
+            <Field name="INTERNAL_ACCESSOR_FACTORY_VALUE_METHOD"/>
+            <Field name="XML_LOCATION_ANNOTATION_CLASS"/>
+            <Field name="INTERNAL_XML_LOCATION_ANNOTATION_CLASS"/>
+        </or>
+        <Bug pattern="MS_SHOULD_BE_REFACTORED_TO_BE_FINAL"/>
+    </Match>
+
+    <Match>
+        <Class name="org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataFactory"/>
+        <Field name="ALLOW_JDK"/>
+        <Bug pattern="MS_SHOULD_BE_FINAL"/>
+    </Match>
+
+    <Match>
+        <Class name="org.eclipse.persistence.internal.jpa.transaction.TransactionImpl"/>
+        <Field name="DUMP_AFTER_COMPLETION_ERRORS"/>
+        <Bug pattern="MS_SHOULD_BE_FINAL"/>
+    </Match>
+
+    <Match>
+        <Class name="org.eclipse.persistence.internal.jpa.weaving.ClassWeaver"/>
+        <Field name="isJAXBOnPath"/>
+        <Bug pattern="MS_SHOULD_BE_FINAL"/>
+    </Match>
+
+    <Match>
+        <Class name="org.eclipse.persistence.tools.dbws.XRPackager"/>
+        <Field name="__nullStream"/>
         <Bug pattern="MS_SHOULD_BE_FINAL"/>
     </Match>
 
@@ -81,6 +122,15 @@
     </Match>
 
     <Match>
+        <!-- custom logic in equals -->
+        <Or>
+            <Class name="org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass"/>
+            <Class name="org.eclipse.persistence.internal.jpa.querydef.ParameterExpressionImpl"/>
+        </Or>
+        <Bug pattern="EQ_CHECK_FOR_OPERAND_NOT_COMPATIBLE_WITH_THIS"/>
+    </Match>
+
+    <Match>
         <Or>
             <Class name="org.eclipse.persistence.jpa.jpql.tools.model.query.AbstractStateObject"/>
         </Or>
@@ -94,6 +144,19 @@
             <Class name="org.eclipse.persistence.platform.server.JMXServerPlatformBase"/>
             <Class name="org.eclipse.persistence.services.ClassSummaryDetailBase"/>
         </Or>
+        <Bug pattern="MS_SHOULD_BE_FINAL"/>
+    </Match>
+
+    <Match>
+        <Class name="org.eclipse.persistence.expressions.ExpressionBuilder"/>
+        <Method name="registerIn"/>
+        <Bug pattern="DMI_COLLECTIONS_SHOULD_NOT_CONTAIN_THEMSELVES"/>
+    </Match>
+
+    <Match>
+        <!-- to be overridden in subclasses -->
+        <Class name="org.eclipse.persistence.services.RuntimeServices"/>
+        <Field name="PLATFORM_NAME"/>
         <Bug pattern="MS_SHOULD_BE_FINAL"/>
     </Match>
 
@@ -114,6 +177,37 @@
         <Class name="org.eclipse.persistence.mappings.CollectionMapping"/>
         <Method name="shouldUseLazyInstantiationForIndirectCollection"/>
         <Bug pattern="NP_BOOLEAN_RETURN_NULL"/>
+    </Match>
+
+    <Match>
+        <Class name="org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl"/>
+        <Method name="isLoaded"/>
+        <Bug pattern="NP_BOOLEAN_RETURN_NULL"/>
+    </Match>
+
+    <Match>
+        <Class name="org.eclipse.persistence.internal.jpa.EntityManagerImpl"/>
+        <Method name="isPropertyValueToBeUpdated"/>
+        <Bug pattern="NP_BOOLEAN_RETURN_NULL"/>
+    </Match>
+
+    <Match>
+        <Class name="org.eclipse.persistence.internal.jpa.querydef.PredicateImpl"/>
+        <Method name="getJunctionValue"/>
+        <Bug pattern="NP_BOOLEAN_RETURN_NULL"/>
+    </Match>
+
+    <Match>
+        <!-- comparing jar file urls -->
+        <Class name="org.eclipse.persistence.internal.jpa.metadata.MetadataProcessor"/>
+        <Method name="loadStandardMappingFiles"/>
+        <Bug pattern="DMI_COLLECTION_OF_URLS"/>
+    </Match>
+
+    <Match>
+        <Class name="org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider"/>
+        <Field name="emSetupImpls"/>
+        <Bug pattern="MS_MUTABLE_COLLECTION"/>
     </Match>
 
     <Match>

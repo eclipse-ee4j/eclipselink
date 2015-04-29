@@ -865,7 +865,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
         // in a persitence.xml or passed into the create EMF call).
         if (getProperties().containsKey(PersistenceUnitProperties.MULTITENANT_SHARED_EMF)) {
             String value = (String) getProperties().get(PersistenceUnitProperties.MULTITENANT_SHARED_EMF);
-            if (! new Boolean(value)) {
+            if (!Boolean.valueOf(value)) {
                 for (String property : getMultitenantContextProperties()) {
                     if (! getProperties().containsKey(property)) {
                         throw ValidationException.multitenantContextPropertyForNonSharedEMFNotSpecified(property);

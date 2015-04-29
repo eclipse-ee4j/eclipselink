@@ -578,8 +578,7 @@ public class SchemaGenerator {
     }
 
     public void populateSchemaTypes() {
-        for (String javaClassName : typeInfo.keySet()) {
-            TypeInfo info = typeInfo.get(javaClassName);
+        for (TypeInfo info : typeInfo.values()) {
             if (info.isComplexType()) {
                 if (info.getSchema() != null) {
                     List<Property> props = info.getNonTransientPropertiesInPropOrder();

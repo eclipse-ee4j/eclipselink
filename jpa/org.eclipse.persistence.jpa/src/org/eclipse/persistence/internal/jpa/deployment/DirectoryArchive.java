@@ -12,14 +12,18 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.deployment;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 import java.util.logging.Level;
-import java.net.URL;
-import java.net.MalformedURLException;
+import java.util.logging.Logger;
 
 import org.eclipse.persistence.jpa.Archive;
 
@@ -76,37 +80,45 @@ public class DirectoryArchive extends ArchiveBase implements Archive {
 
     private void init(File top, File directory) {
         File[] dirFiles = directory.listFiles();
-        for (File file : dirFiles) {
-            if (file.isDirectory()) {
-                continue; // exclude dir entries
-            }
+        if (dirFiles != null) {
+            for (File file : dirFiles) {
+                if (file.isDirectory()) {
+                    continue; // exclude dir entries
+                }
 
-            // add only the relative path from the top.
-            // note: we use unix style path
-            String entryName = file.getPath().replace(File.separator, "/") // NOI18N
+                // add only the relative path from the top.
+                // note: we use unix style path
+                String entryName = file.getPath().replace(File.separator, "/") // NOI18N
                     .substring(top.getPath().length() + 1);
-            entries.add(entryName);
-        }
-        File[] subDirs = directory.listFiles(new FileFilter() {
-            public boolean accept(File pathname) {
-                return pathname.isDirectory();
+                entries.add(entryName);
             }
-        });
-        for (File subDir : subDirs) {
-            init(top, subDir); // recursion
+            File[] subDirs = directory.listFiles(new FileFilter() {
+                @Override
+                public boolean accept(File pathname) {
+                    return pathname.isDirectory();
+                }
+            });
+            if (subDirs != null) {
+                for (File subDir : subDirs) {
+                    init(top, subDir); // recursion
+                }
+            }
         }
     }
 
+    @Override
     public Iterator<String> getEntries() {
         return entries.iterator();
     }
 
+    @Override
     public InputStream getEntry(String entryPath) throws IOException {
         File f = getFile(entryPath);
         InputStream is = f.exists() ? new FileInputStream(f) : null;
         return is;
     }
 
+    @Override
     public URL getEntryAsURL(String entryPath) throws IOException {
         File f = getFile(entryPath);
         URL url = f.exists() ? f.toURI().toURL() : null;
@@ -118,6 +130,7 @@ public class DirectoryArchive extends ArchiveBase implements Archive {
         return f;
     }
 
+    @Override
     public void close() {
         // nothing to close. it's caller's responsibility to close
         // any InputStream returned by getEntry().

@@ -31,28 +31,32 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.persistence.annotations.CacheKeyType;
-import org.eclipse.persistence.descriptors.*;
+import org.eclipse.persistence.descriptors.CMPPolicy;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.helper.ConversionManager;
-import org.eclipse.persistence.internal.localization.ExceptionLocalization;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.mappings.ObjectReferenceMapping;
-import org.eclipse.persistence.mappings.foundation.AbstractColumnMapping;
-import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.indirection.WeavedObjectBasicIndirectionPolicy;
+import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedGetField;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
+import org.eclipse.persistence.internal.security.PrivilegedGetField;
 import org.eclipse.persistence.internal.security.PrivilegedGetMethod;
 import org.eclipse.persistence.internal.security.PrivilegedGetValueFromField;
-import org.eclipse.persistence.internal.security.PrivilegedSetValueInField;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
+import org.eclipse.persistence.internal.security.PrivilegedSetValueInField;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
+import org.eclipse.persistence.mappings.foundation.AbstractColumnMapping;
 
 /**
  * Defines primary key extraction code for use in JPA. A descriptor should have a CMP3Policy
@@ -174,6 +178,7 @@ public class CMP3Policy extends CMPPolicy {
      * INTERNAL:
      * Return the java Class representing the primary key class name
      */
+    @Override
     public Class getPKClass() {
         return this.pkClass;
     }
@@ -545,6 +550,7 @@ public class CMP3Policy extends CMPPolicy {
      * INTERNAL:
      * @return Returns the keyClassFields.
      */
+    @Override
     protected KeyElementAccessor[] getKeyClassFields() {
         return this.keyClassFields;
     }
@@ -563,18 +569,22 @@ public class CMP3Policy extends CMPPolicy {
             this.isNestedAccessor = isNestedAccessor;
         }
 
+        @Override
         public String getAttributeName() {
             return this.attributeName;
         }
 
+        @Override
         public DatabaseField getDatabaseField() {
             return this.databaseField;
         }
 
+        @Override
         public DatabaseMapping getMapping() {
             return this.mapping;
         }
 
+        @Override
         public boolean isNestedAccessor() {
             return isNestedAccessor;
         }
@@ -598,6 +608,7 @@ public class CMP3Policy extends CMPPolicy {
             this.policy = policy;
         }
 
+        @Override
         public Object getValue(Object object, AbstractSession session) {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
@@ -619,6 +630,7 @@ public class CMP3Policy extends CMPPolicy {
             }
         }
 
+        @Override
         public void setValue(Object object, Object value) {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
@@ -647,7 +659,7 @@ public class CMP3Policy extends CMPPolicy {
      * This class will be used when the element of the keyclass is a field
      */
     private static final class FieldAccessor extends CommonAccessor implements Serializable {
-        private final Field field;
+        private transient final Field field;
         private final CMPPolicy policy;
 
         public FieldAccessor(CMPPolicy policy, Field field, String attributeName, DatabaseField databaseField, DatabaseMapping mapping, boolean isNestedAccessor) {
@@ -656,6 +668,7 @@ public class CMP3Policy extends CMPPolicy {
             this.policy = policy;
         }
 
+         @Override
          public Object getValue(Object object, AbstractSession session) {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
@@ -671,6 +684,7 @@ public class CMP3Policy extends CMPPolicy {
             }
         }
 
+        @Override
         public void setValue(Object object, Object value) {
             try {
                 Field pkField = null;
@@ -702,10 +716,12 @@ public class CMP3Policy extends CMPPolicy {
             super(attributeName, databaseField, mapping, isNestedAccessor);
         }
 
+        @Override
         public Object getValue(Object object, AbstractSession session) {
         return mapping.getRealAttributeValueFromObject(object, session);
         }
 
+        @Override
         public void setValue(Object object, Object value) {
         mapping.setRealAttributeValueInObject(object, value);
         }

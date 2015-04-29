@@ -97,7 +97,7 @@ public final class ServerPlatformUtils {
      */
     public static ServerPlatform createServerPlatform(DatabaseSession session, String platformClass, ClassLoader loader) {
         if (platformClass == null) {
-            throw ServerPlatformException.invalidServerPlatformClass(platformClass, null);
+            throw ServerPlatformException.invalidServerPlatformClass(null, null);
         }
         Class cls = null;
         try {

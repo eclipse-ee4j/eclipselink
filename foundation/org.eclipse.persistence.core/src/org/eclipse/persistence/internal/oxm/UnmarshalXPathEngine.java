@@ -24,6 +24,7 @@ import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.platform.xml.XMLNamespaceResolver;
 import org.eclipse.persistence.platform.xml.XMLNodeList;
 import org.eclipse.persistence.platform.xml.XMLPlatform;
+import org.eclipse.persistence.platform.xml.XMLPlatformException;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
@@ -422,7 +423,7 @@ public class UnmarshalXPathEngine <
         if (n == null && nullPolicy != null) {
             if (nullPolicy.valueIsNull((Element) contextNode)) {
                 if (nullPolicy.getMarshalNullRepresentation() != XMLNullRepresentationType.ABSENT_NODE) {
-                    xmlNodeList.add(n);
+                    xmlNodeList.add(null);
                 }
             } else {
                 xmlNodeList.add(contextNode.getOwnerDocument().createTextNode(Constants.EMPTY_STRING));

@@ -20,21 +20,20 @@ package org.eclipse.persistence.internal.jpa.metadata.listeners;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
-
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.DescriptorEventAdapter;
 import org.eclipse.persistence.descriptors.DescriptorEventManager;
-
 import org.eclipse.persistence.exceptions.ValidationException;
-
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
@@ -65,9 +64,23 @@ public class EntityListener extends DescriptorEventAdapter {
     private Class m_entityClass;
     private Hashtable<String, List<Method>> m_methods;
     private Hashtable<String, Hashtable<Integer, Boolean>> m_overriddenEvents;
-    private static Hashtable<Integer, String> m_eventStrings;
+    private static final Map<Integer, String> m_eventStrings;
     private AbstractSession owningSession;
 
+    static {
+        // For quick look up of equivalent event strings from event codes.
+        Map<Integer, String> mappings = new HashMap<Integer, String>(9);
+        mappings.put(Integer.valueOf(DescriptorEventManager.PostBuildEvent), POST_BUILD);
+        mappings.put(Integer.valueOf(DescriptorEventManager.PostCloneEvent), POST_CLONE);
+        mappings.put(Integer.valueOf(DescriptorEventManager.PostDeleteEvent), POST_DELETE);
+        mappings.put(Integer.valueOf(DescriptorEventManager.PostInsertEvent), POST_INSERT);
+        mappings.put(Integer.valueOf(DescriptorEventManager.PostRefreshEvent), POST_REFRESH);
+        mappings.put(Integer.valueOf(DescriptorEventManager.PostUpdateEvent), POST_UPDATE);
+        mappings.put(Integer.valueOf(DescriptorEventManager.PrePersistEvent), PRE_PERSIST);
+        mappings.put(Integer.valueOf(DescriptorEventManager.PreRemoveEvent), PRE_REMOVE);
+        mappings.put(Integer.valueOf(DescriptorEventManager.PreUpdateWithChangesEvent), PRE_UPDATE_WITH_CHANGES);
+        m_eventStrings = Collections.unmodifiableMap(mappings);
+    }
     /**
      * INTERNAL:
      */
@@ -78,20 +91,6 @@ public class EntityListener extends DescriptorEventAdapter {
         // Remember which events are overridden in subclasses. Overriden events
         // must be built for each subclass chain.
         m_overriddenEvents = new Hashtable<String, Hashtable<Integer, Boolean>>();
-
-        // For quick look up of equivalent event strings from event codes.
-        if (m_eventStrings == null) {
-            m_eventStrings = new Hashtable<Integer, String>();
-            m_eventStrings.put(Integer.valueOf(DescriptorEventManager.PostBuildEvent), POST_BUILD);
-            m_eventStrings.put(Integer.valueOf(DescriptorEventManager.PostCloneEvent), POST_CLONE);
-            m_eventStrings.put(Integer.valueOf(DescriptorEventManager.PostDeleteEvent), POST_DELETE);
-            m_eventStrings.put(Integer.valueOf(DescriptorEventManager.PostInsertEvent), POST_INSERT);
-            m_eventStrings.put(Integer.valueOf(DescriptorEventManager.PostRefreshEvent), POST_REFRESH);
-            m_eventStrings.put(Integer.valueOf(DescriptorEventManager.PostUpdateEvent), POST_UPDATE);
-            m_eventStrings.put(Integer.valueOf(DescriptorEventManager.PrePersistEvent), PRE_PERSIST);
-            m_eventStrings.put(Integer.valueOf(DescriptorEventManager.PreRemoveEvent), PRE_REMOVE);
-            m_eventStrings.put(Integer.valueOf(DescriptorEventManager.PreUpdateWithChangesEvent), PRE_UPDATE_WITH_CHANGES);
-        }
     }
 
     public EntityListener(Class listenerClass, Class entityClass){
@@ -357,6 +356,7 @@ public class EntityListener extends DescriptorEventAdapter {
      * Return true if listener has a lifecycle callback method that is
      * overridden in a subclass.
      */
+    @Override
     public boolean isOverriddenEvent(DescriptorEvent event, Vector eventManagers) {
         int eventCode = event.getEventCode();
         String forSubclass = event.getDescriptor().getJavaClassName();
@@ -403,6 +403,7 @@ public class EntityListener extends DescriptorEventAdapter {
     /**
      * INTERNAL:
      */
+    @Override
     public void postBuild(DescriptorEvent event) {
         invokeMethod(POST_BUILD, event);
     }
@@ -410,6 +411,7 @@ public class EntityListener extends DescriptorEventAdapter {
     /**
      * INTERNAL:
      */
+    @Override
     public void postClone(DescriptorEvent event) {
         invokeMethod(POST_CLONE, event);
     }
@@ -417,6 +419,7 @@ public class EntityListener extends DescriptorEventAdapter {
     /**
      * INTERNAL:
      */
+    @Override
     public void postDelete(DescriptorEvent event) {
         invokeMethod(POST_DELETE, event);
     }
@@ -424,6 +427,7 @@ public class EntityListener extends DescriptorEventAdapter {
     /**
      * INTERNAL:
      */
+    @Override
     public void postInsert(DescriptorEvent event) {
         invokeMethod(POST_INSERT, event);
     }
@@ -431,6 +435,7 @@ public class EntityListener extends DescriptorEventAdapter {
     /**
      * INTERNAL:
      */
+    @Override
     public void postRefresh(DescriptorEvent event) {
         invokeMethod(POST_REFRESH, event);
     }
@@ -438,6 +443,7 @@ public class EntityListener extends DescriptorEventAdapter {
     /**
      * INTERNAL:
      */
+    @Override
     public void postUpdate(DescriptorEvent event) {
         invokeMethod(POST_UPDATE, event);
     }
@@ -445,6 +451,7 @@ public class EntityListener extends DescriptorEventAdapter {
     /**
      * INTERNAL:
      */
+    @Override
     public void prePersist(DescriptorEvent event) {
         invokeMethod(PRE_PERSIST, event);
     }
@@ -452,6 +459,7 @@ public class EntityListener extends DescriptorEventAdapter {
     /**
      * INTERNAL:
      */
+    @Override
     public void preRemove(DescriptorEvent event) {
         invokeMethod(PRE_REMOVE, event);
     }
@@ -459,6 +467,7 @@ public class EntityListener extends DescriptorEventAdapter {
     /**
      * INTERNAL:
      */
+    @Override
     public void preUpdateWithChanges(DescriptorEvent event) {
         invokeMethod(PRE_UPDATE_WITH_CHANGES, event);
     }
@@ -530,6 +539,7 @@ public class EntityListener extends DescriptorEventAdapter {
      * INTERNAL:
      * Used in the debugger.
      */
+    @Override
     public String toString() {
         return getEntityClass().getName();
     }

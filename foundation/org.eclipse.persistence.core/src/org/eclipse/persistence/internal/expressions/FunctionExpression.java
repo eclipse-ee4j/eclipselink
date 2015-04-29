@@ -12,15 +12,26 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.expressions;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.history.*;
-import org.eclipse.persistence.internal.databaseaccess.*;
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.expressions.ExpressionOperator;
+import org.eclipse.persistence.history.AsOfClause;
+import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -53,6 +64,7 @@ public class FunctionExpression extends BaseExpression {
      * This is used to allow dynamic expression's SQL to be cached.
      * This must be over written by each subclass.
      */
+    @Override
     public boolean equals(Object object) {
         if (this == object) {
             return true;
@@ -83,6 +95,7 @@ public class FunctionExpression extends BaseExpression {
      * Compute a consistent hash-code for the expression.
      * This is used to allow dynamic expression's SQL to be cached.
      */
+    @Override
     public int computeHashCode() {
         int hashCode = super.computeHashCode();
         if (this.operator != null) {
@@ -104,19 +117,23 @@ public class FunctionExpression extends BaseExpression {
      * INTERNAL:
      * Find the alias for a given table
      */
+    @Override
     public DatabaseTable aliasForTable(DatabaseTable table) {
         return getBaseExpression().aliasForTable(table);
     }
 
+    @Override
     public Expression asOf(AsOfClause clause) {
         final AsOfClause finalClause = clause;
         ExpressionIterator iterator = new ExpressionIterator() {
+            @Override
             public void iterate(Expression each) {
                 if (each.isDataExpression()) {
                     each.asOf(finalClause);
                 }
             }
 
+            @Override
             public boolean shouldIterateOverSubSelects() {
                 return true;
             }
@@ -128,6 +145,7 @@ public class FunctionExpression extends BaseExpression {
     /**
      * INTERNAL:
      */
+    @Override
     public Expression create(Expression base, Object singleArgument, ExpressionOperator anOperator) {
         baseExpression = base;
         addChild(base);
@@ -148,6 +166,7 @@ public class FunctionExpression extends BaseExpression {
      * INTERNAL:
      * added for Trim support.  TRIM([trim_character FROM] string_primary)
      */
+    @Override
     public Expression createWithBaseLast(Expression base, Object singleArgument, ExpressionOperator anOperator) {
         baseExpression = base;
         Expression localBase = base;
@@ -190,6 +209,7 @@ public class FunctionExpression extends BaseExpression {
      * INTERNAL:
      * Used for debug printing.
      */
+    @Override
     public String descriptionOfNodeType() {
         return "Function";
     }
@@ -200,6 +220,7 @@ public class FunctionExpression extends BaseExpression {
      * This is used for in-memory querying.
      * If the expression in not able to determine if the object conform throw a not supported exception.
      */
+    @Override
     public boolean doesConform(Object object, AbstractSession session, AbstractRecord translationRow, int valueHolderPolicy, boolean isObjectUnregistered) {
         int selector = this.operator.getSelector();
 
@@ -298,6 +319,7 @@ public class FunctionExpression extends BaseExpression {
         return getBaseExpression().getSelectionFields(query);
     }
 
+    @Override
     public ExpressionOperator getOperator() {
         return operator;
     }
@@ -331,6 +353,7 @@ public class FunctionExpression extends BaseExpression {
         }
     }
 
+    @Override
     public boolean isFunctionExpression() {
         return true;
     }
@@ -358,6 +381,7 @@ public class FunctionExpression extends BaseExpression {
      * INTERNAL:
      * For iterating using an inner class
      */
+    @Override
     public void iterateOn(ExpressionIterator iterator) {
         super.iterateOn(iterator);
         for (Enumeration childrenEnum = this.children.elements(); childrenEnum.hasMoreElements();) {
@@ -372,6 +396,7 @@ public class FunctionExpression extends BaseExpression {
      * Also compute printing information such as outer joins.
      * This checks for object isNull, notNull, in and notIn comparisons.
      */
+    @Override
     public Expression normalize(ExpressionNormalizer normalizer) {
         //This method has no validation but we should still make the method call for consistency
         //bug # 2956674
@@ -513,6 +538,7 @@ public class FunctionExpression extends BaseExpression {
      * INTERNAL:
      * Used for cloning.
      */
+    @Override
     protected void postCopyIn(Map alreadyDone) {
         super.postCopyIn(alreadyDone);
         Vector oldChildren = children;
@@ -526,6 +552,7 @@ public class FunctionExpression extends BaseExpression {
      * INTERNAL:
      * Print SQL using the operator.
      */
+    @Override
     public void printSQL(ExpressionSQLPrinter printer) {
         // If all children are parameters, some databases don't allow binding.
         if (printer.getPlatform().isDynamicSQLRequiredForFunctions() && !this.children.isEmpty()) {
@@ -549,6 +576,7 @@ public class FunctionExpression extends BaseExpression {
      * INTERNAL:
      * Print java for project class generation
      */
+    @Override
     public void printJava(ExpressionJavaPrinter printer) {
         ExpressionOperator realOperator = getPlatformOperator(printer.getPlatform());
         realOperator.printJavaCollection(this.children, printer);
@@ -559,6 +587,7 @@ public class FunctionExpression extends BaseExpression {
      * This expression is built on a different base than the one we want. Rebuild it and
      * return the root of the new tree
      */
+    @Override
     public Expression rebuildOn(Expression newBase) {
         Expression newLocalBase = getBaseExpression().rebuildOn(newBase);
         Vector newChildren = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(this.children.size());
@@ -577,6 +606,7 @@ public class FunctionExpression extends BaseExpression {
      * built using a builder that is not attached to the query.  This happens in case of an Exists
      * call using a new ExpressionBuilder().  This builder needs to be replaced with one from the query.
      */
+    @Override
     public void resetPlaceHolderBuilder(ExpressionBuilder queryBuilder){
         getBaseExpression().resetPlaceHolderBuilder(queryBuilder);
         for (int i = this.children.size()-1; i > 0; i--) {// Skip the first one, since it's also the base
@@ -585,6 +615,7 @@ public class FunctionExpression extends BaseExpression {
     }
     // Set the local base expression, ie the one on the other side of the operator
     // Most types will ignore this, since they don't need it.
+    @Override
     public void setLocalBase(Expression exp) {
         getBaseExpression().setLocalBase(exp);
     }
@@ -626,6 +657,7 @@ public class FunctionExpression extends BaseExpression {
      * Return the value for in memory comparison.
      * This is only valid for valueable expressions.
      */
+    @Override
     public Object valueFromObject(Object object, AbstractSession session, AbstractRecord translationRow, int valueHolderPolicy, boolean isObjectUnregistered) {
         Object baseValue = getBaseExpression().valueFromObject(object, session, translationRow, valueHolderPolicy, isObjectUnregistered);
         Vector arguments = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(this.children.size());
@@ -642,7 +674,7 @@ public class FunctionExpression extends BaseExpression {
                      valuesToCompare.hasMoreElements();) {
                 Object baseObject = valuesToCompare.nextElement();
                 if (baseObject == null) {
-                    baseVector.addElement(baseObject);
+                    baseVector.addElement(null);
                 } else {
                     baseVector.addElement(this.operator.applyFunction(baseObject, arguments));
                 }
@@ -662,6 +694,7 @@ public class FunctionExpression extends BaseExpression {
      * INTERNAL:
      * Used to print a debug form of the expression tree.
      */
+    @Override
     public void writeDescriptionOn(BufferedWriter writer) throws IOException {
         writer.write(operator.toString());
     }
@@ -721,6 +754,7 @@ public class FunctionExpression extends BaseExpression {
      * INTERNAL:
      * Used in SQL printing.
      */
+    @Override
     public void writeSubexpressionsTo(BufferedWriter writer, int indent) throws IOException {
         if (baseExpression != null) {
             baseExpression.toString(writer, indent);

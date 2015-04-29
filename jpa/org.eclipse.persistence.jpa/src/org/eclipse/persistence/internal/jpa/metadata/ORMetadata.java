@@ -46,6 +46,7 @@
 package org.eclipse.persistence.internal.jpa.metadata;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -115,10 +116,10 @@ public abstract class ORMetadata {
     private String m_xmlElement;
 
     // Lookup of classname to Class to resolve primitive classes
-    protected static Map<String, Class> primitiveClasses = null;
+    private static final Map<String, Class> primitiveClasses = Collections.unmodifiableMap(getPrimitiveClassesMap());
 
     // Lookup of boxed types of primitive classes.
-    protected static Map<String, String> boxedTypes = null;
+    private static final Map<String, String> boxedTypes = Collections.unmodifiableMap(getBoxedTypesMap());
 
     /**
      * INTERNAL:
@@ -221,28 +222,8 @@ public abstract class ORMetadata {
      * Quick lookup of a primitive boxed type.
      */
     protected String getBoxedType(String type) {
-        if (boxedTypes == null){
-            boxedTypes = new HashMap<String, String>();
-            boxedTypes.put("void", Void.class.getName());
-            boxedTypes.put("boolean", Boolean.class.getName());
-            boxedTypes.put("byte", Byte.class.getName());
-            boxedTypes.put("char", Character.class.getName());
-            boxedTypes.put("double", Double.class.getName());
-            boxedTypes.put("float", Float.class.getName());
-            boxedTypes.put("int", Integer.class.getName());
-            boxedTypes.put("long", Long.class.getName());
-            boxedTypes.put("short", Short.class.getName());
-            boxedTypes.put("byte[]", new Byte[0].getClass().getName());
-            boxedTypes.put("char[]", new Character[0].getClass().getName());
-            boxedTypes.put("boolean[]", new Boolean[0].getClass().getName());
-            boxedTypes.put("double[]", new Double[0].getClass().getName());
-            boxedTypes.put("float[]", new Float[0].getClass().getName());
-            boxedTypes.put("int[]", new Integer[0].getClass().getName());
-            boxedTypes.put("long[]", new Long[0].getClass().getName());
-            boxedTypes.put("short[]", new Short[0].getClass().getName());
-        }
-
-        return (boxedTypes.containsKey(type)) ? boxedTypes.get(type) : type;
+        String value = boxedTypes.get(type);
+        return (value != null) ? value : type;
     }
 
     /**
@@ -454,38 +435,6 @@ public abstract class ORMetadata {
      * INTERNAL:
      */
     protected Class getPrimitiveClassForName(String className){
-        if (primitiveClasses == null){
-            primitiveClasses = new HashMap<String, Class>();
-            primitiveClasses.put("", void.class);
-            primitiveClasses.put("void", void.class);
-            primitiveClasses.put("Boolean", Boolean.class);
-            primitiveClasses.put("Byte", Byte.class);
-            primitiveClasses.put("Character", Character.class);
-            primitiveClasses.put("Double", Double.class);
-            primitiveClasses.put("Float", Float.class);
-            primitiveClasses.put("Integer", Integer.class);
-            primitiveClasses.put("Long", Long.class);
-            primitiveClasses.put("Number", Number.class);
-            primitiveClasses.put("Short", Short.class);
-            primitiveClasses.put("String", String.class);
-            primitiveClasses.put("boolean", boolean.class);
-            primitiveClasses.put("byte", byte.class);
-            primitiveClasses.put("char", char.class);
-            primitiveClasses.put("double", double.class);
-            primitiveClasses.put("float", float.class);
-            primitiveClasses.put("int", int.class);
-            primitiveClasses.put("long", long.class);
-            primitiveClasses.put("short", short.class);
-            primitiveClasses.put("byte[]", new byte[0].getClass());
-            primitiveClasses.put("char[]", new char[0].getClass());
-            primitiveClasses.put("boolean[]", new boolean[0].getClass());
-            primitiveClasses.put("double[]", new double[0].getClass());
-            primitiveClasses.put("float[]", new float[0].getClass());
-            primitiveClasses.put("int[]", new int[0].getClass());
-            primitiveClasses.put("long[]", new long[0].getClass());
-            primitiveClasses.put("short[]", new short[0].getClass());
-        }
-
         return (className == null) ? void.class : primitiveClasses.get(className);
     }
 
@@ -927,6 +876,61 @@ public abstract class ORMetadata {
         } else {
             return value1.equals(value2);
         }
+    }
+
+    private static Map<String, Class> getPrimitiveClassesMap() {
+        Map<String, Class> mappings = new HashMap<>(28);
+        mappings.put("", void.class);
+        mappings.put("void", void.class);
+        mappings.put("Boolean", Boolean.class);
+        mappings.put("Byte", Byte.class);
+        mappings.put("Character", Character.class);
+        mappings.put("Double", Double.class);
+        mappings.put("Float", Float.class);
+        mappings.put("Integer", Integer.class);
+        mappings.put("Long", Long.class);
+        mappings.put("Number", Number.class);
+        mappings.put("Short", Short.class);
+        mappings.put("String", String.class);
+        mappings.put("boolean", boolean.class);
+        mappings.put("byte", byte.class);
+        mappings.put("char", char.class);
+        mappings.put("double", double.class);
+        mappings.put("float", float.class);
+        mappings.put("int", int.class);
+        mappings.put("long", long.class);
+        mappings.put("short", short.class);
+        mappings.put("byte[]", new byte[0].getClass());
+        mappings.put("char[]", new char[0].getClass());
+        mappings.put("boolean[]", new boolean[0].getClass());
+        mappings.put("double[]", new double[0].getClass());
+        mappings.put("float[]", new float[0].getClass());
+        mappings.put("int[]", new int[0].getClass());
+        mappings.put("long[]", new long[0].getClass());
+        mappings.put("short[]", new short[0].getClass());
+        return mappings;
+    }
+
+    private static Map<String, String> getBoxedTypesMap() {
+        Map<String, String> mappings = new HashMap<>(17);
+        mappings.put("void", Void.class.getName());
+        mappings.put("boolean", Boolean.class.getName());
+        mappings.put("byte", Byte.class.getName());
+        mappings.put("char", Character.class.getName());
+        mappings.put("double", Double.class.getName());
+        mappings.put("float", Float.class.getName());
+        mappings.put("int", Integer.class.getName());
+        mappings.put("long", Long.class.getName());
+        mappings.put("short", Short.class.getName());
+        mappings.put("byte[]", new Byte[0].getClass().getName());
+        mappings.put("char[]", new Character[0].getClass().getName());
+        mappings.put("boolean[]", new Boolean[0].getClass().getName());
+        mappings.put("double[]", new Double[0].getClass().getName());
+        mappings.put("float[]", new Float[0].getClass().getName());
+        mappings.put("int[]", new Integer[0].getClass().getName());
+        mappings.put("long[]", new Long[0].getClass().getName());
+        mappings.put("short[]", new Short[0].getClass().getName());
+        return mappings;
     }
 
     // Made static final for performance reasons.

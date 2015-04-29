@@ -244,7 +244,7 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
 
         // Single Key support using any Java class - built in or user defined
         // There already is an instance of the PKclass on the policy
-        if (cmpPolicy.isCMP3Policy()) {
+        if (cmpPolicy != null && cmpPolicy.isCMP3Policy()) {
             // BasicType, EntityType or IdentifiableType are handled here, lookup the class in the types map and create a wrapper if it does not exist yet
             return this.getMetamodel().getType(((CMP3Policy) cmpPolicy).getPKClass());
         }

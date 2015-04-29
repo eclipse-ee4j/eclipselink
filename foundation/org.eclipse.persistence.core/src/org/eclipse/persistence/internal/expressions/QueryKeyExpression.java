@@ -14,24 +14,46 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.expressions;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
-import org.eclipse.persistence.mappings.*;
-import org.eclipse.persistence.mappings.foundation.AbstractColumnMapping;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.mappings.querykeys.*;
 import org.eclipse.persistence.internal.queries.MapContainerPolicy;
 import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
-import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.mappings.AggregateMapping;
+import org.eclipse.persistence.mappings.AggregateObjectMapping;
+import org.eclipse.persistence.mappings.CollectionMapping;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.DirectCollectionMapping;
+import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+import org.eclipse.persistence.mappings.ManyToManyMapping;
+import org.eclipse.persistence.mappings.ObjectReferenceMapping;
+import org.eclipse.persistence.mappings.OneToOneMapping;
+import org.eclipse.persistence.mappings.foundation.AbstractColumnMapping;
+import org.eclipse.persistence.mappings.querykeys.DirectQueryKey;
+import org.eclipse.persistence.mappings.querykeys.ForeignReferenceQueryKey;
+import org.eclipse.persistence.mappings.querykeys.QueryKey;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.InMemoryQueryIndirectionPolicy;
+import org.eclipse.persistence.queries.ReadQuery;
 
 /**
  * Represents expression on query keys or mappings.
@@ -1078,7 +1100,7 @@ public class QueryKeyExpression extends ObjectExpression {
                          valuesToIterate.hasMoreElements();) {
                     Object vectorObject = valuesToIterate.nextElement();
                     if (vectorObject == null) {
-                        comparisonVector.addElement(vectorObject);
+                        comparisonVector.addElement(null);
                     } else {
                         Object valueOrValues = valuesFromCollection(vectorObject, session, valueHolderPolicy, isObjectUnregistered);
 
@@ -1437,6 +1459,7 @@ public class QueryKeyExpression extends ObjectExpression {
      *
      * @return DatabaseTable
      */
+    @Override
     public DatabaseTable getRelationTable() {
         if(getMapping() != null) {
             if(getMapping().isManyToManyMapping()) {

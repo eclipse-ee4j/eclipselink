@@ -101,8 +101,8 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
     public static final String VIRTUAL_GETTER_SIGNATURE = "(" + ClassWeaver.STRING_SIGNATURE + ")" + ClassWeaver.OBJECT_SIGNATURE;
     public static final String VIRTUAL_SETTER_SIGNATURE = "(" + ClassWeaver.STRING_SIGNATURE + ClassWeaver.OBJECT_SIGNATURE + ")" + ClassWeaver.OBJECT_SIGNATURE;
 
-    /** Store if JAXB is no the classpath. */
-    protected static Boolean isJAXBOnPath;
+    /** Store if JAXB is on the classpath, true since Java SE 6 */
+    protected static Boolean isJAXBOnPath = true;
 
     public static final String LINK_SIGNATURE = "Lorg/eclipse/persistence/internal/jpa/rs/metadata/model/Link;";
     public static final String ITEM_LINKS_SIGNATURE = "Lorg/eclipse/persistence/internal/jpa/rs/metadata/model/ItemLinks;";
@@ -201,14 +201,6 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
      * XmlTransient annotation is added).
      */
     public static boolean isJAXBOnPath() {
-        isJAXBOnPath = true;
-        if (isJAXBOnPath == null) {
-            try {
-                Class.forName("javax.xml.bind.annotation.XmlTransient");
-            } catch (Exception notThere) {
-                isJAXBOnPath = false;
-            }
-        }
         return isJAXBOnPath;
     }
 
@@ -1362,6 +1354,7 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
      * Visit the end of the class byte codes. Add any new methods or variables
      * to the end.
      */
+    @Override
     public void visitEnd() {
         if (!alreadyWeaved) {
 

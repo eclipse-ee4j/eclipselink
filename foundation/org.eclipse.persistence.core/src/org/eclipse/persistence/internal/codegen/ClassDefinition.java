@@ -12,8 +12,17 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.codegen;
 
-import java.util.*;
-import org.eclipse.persistence.internal.helper.*;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.Vector;
+
+import org.eclipse.persistence.internal.helper.Helper;
 
 /**
  * INTERNAL:
@@ -59,18 +68,15 @@ public class ClassDefinition extends CodeDefinition {
     }
 
     private void addImports(Map typeNameMap) {
-        for (Iterator shortNameIt = typeNameMap.keySet().iterator(); shortNameIt.hasNext();) {
-            String shortName = (String)shortNameIt.next();
-            Set packageNames = (Set)typeNameMap.get(shortName);
+        for (Map.Entry<String, Set<String>> entry : (Set<Map.Entry<String, Set<String>>>) typeNameMap.entrySet()) {
+            String shortName = entry.getKey();
+            Set<String> packageNames = entry.getValue();
 
             if (packageNames.size() > 1) {
                 continue;
             }
 
-            for (Iterator packageNameIt = ((Set)typeNameMap.get(shortName)).iterator();
-                     packageNameIt.hasNext();) {
-                String packageName = (String)packageNameIt.next();
-
+            for (String packageName : packageNames) {
                 if (!packageName.equals(JAVA_LANG_PACKAGE_NAME) && !packageName.equals(getPackageName()) && !packageName.equals("")) {
                     addImport(packageName + "." + shortName);
                 }
@@ -233,6 +239,7 @@ public class ClassDefinition extends CodeDefinition {
         Object[] methodArray = Helper.arrayFromVector(getMethods());
 
         Comparator comparison = new Comparator() {
+            @Override
             public int compare(Object first, Object second) {
                 if (((MethodDefinition)first).isConstructor()) {
                     return -1;
@@ -257,6 +264,7 @@ public class ClassDefinition extends CodeDefinition {
     /**
      * Write the code out to the generator's stream.
      */
+    @Override
     public void write(CodeGenerator generator) {
         if (getPackageName().length() > 0) {
             generator.write("package ");
@@ -280,6 +288,7 @@ public class ClassDefinition extends CodeDefinition {
     /**
      * Write the code out to the generator's stream.
      */
+    @Override
     public void writeBody(CodeGenerator generator) {
         sortMethods();
 

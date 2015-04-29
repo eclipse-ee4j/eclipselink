@@ -20,6 +20,7 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Vector;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
@@ -28,7 +29,6 @@ import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
 
 /**
  * @author cdelahun
@@ -57,6 +57,7 @@ public class ClassTypeExpression extends DataExpression {
      * INTERNAL:
      * Used for debug printing.
      */
+    @Override
     public String descriptionOfNodeType() {
         return "Class For Inheritance";
     }
@@ -90,6 +91,7 @@ public class ClassTypeExpression extends DataExpression {
         }
     }
 
+    @Override
     public void validateNode() {
 
         ClassDescriptor descriptor = getContainingDescriptor();
@@ -108,6 +110,7 @@ public class ClassTypeExpression extends DataExpression {
      * This is only valid for value expressions.
      * Pulled from QueryKeyExpression valueFromObject
      */
+    @Override
     public Object valueFromObject(Object object, AbstractSession session, AbstractRecord translationRow, int valueHolderPolicy, boolean isObjectUnregistered) {
         // The expression may be across a relationship, in which case it must be traversed.
         if ((!getBaseExpression().isExpressionBuilder()) && getBaseExpression().isQueryKeyExpression()) {
@@ -127,7 +130,7 @@ public class ClassTypeExpression extends DataExpression {
                          valuesToIterate.hasMoreElements();) {
                     Object vectorObject = valuesToIterate.nextElement();
                     if (vectorObject == null) {
-                        comparisonVector.addElement(vectorObject);
+                        comparisonVector.addElement(null);
                     } else {
                         Object valueOrValues = typeValueFromObject(vectorObject, session);
 
@@ -152,6 +155,7 @@ public class ClassTypeExpression extends DataExpression {
      * INTERNAL:
      * Used to print a debug form of the expression tree.
      */
+    @Override
     public void writeDescriptionOn(BufferedWriter writer) throws IOException {
         writer.write("TYPE");
         writer.write(tableAliasesDescription());
@@ -160,6 +164,7 @@ public class ClassTypeExpression extends DataExpression {
     /**
      * INTERNAL:
      */
+    @Override
     public DatabaseField getField() {
         if (field == null) {
             ClassDescriptor descriptor = getContainingDescriptor();
@@ -178,6 +183,7 @@ public class ClassTypeExpression extends DataExpression {
      * objectValue is a Class or collection of Class objects and the returned value is the database representation
      * Example:  ObjectValue=LargeProject returns "L".
      */
+    @Override
     public Object getFieldValue(Object objectValue, AbstractSession session) {
         if (objectValue ==null){
             return null;
@@ -218,6 +224,7 @@ public class ClassTypeExpression extends DataExpression {
      * Like QueryKeyExpression, return the descriptor for the class type used, null if one can't be determined yet.
      * Should only be called when a session is already set.
      */
+    @Override
     public ClassDescriptor getContainingDescriptor() {
         return ((ObjectExpression)getBaseExpression()).getDescriptor();
 
@@ -239,6 +246,7 @@ public class ClassTypeExpression extends DataExpression {
         }
     }
 
+    @Override
     public boolean isClassTypeExpression(){
         return true;
     }
@@ -246,6 +254,7 @@ public class ClassTypeExpression extends DataExpression {
     /**
      * INTERNAL:
      */
+    @Override
     public boolean isAttribute() {
         return true;
     }
@@ -279,6 +288,7 @@ public class ClassTypeExpression extends DataExpression {
      * INTERNAL:
      * Return the field appropriately aliased
      */
+    @Override
     public DatabaseField getAliasedField() {
         if (aliasedField == null) {
             initializeAliasedField();
@@ -305,6 +315,7 @@ public class ClassTypeExpression extends DataExpression {
      * INTERNAL:
      * Return all the fields
      */
+    @Override
     public Vector getFields() {
         Vector result = new Vector(1);
         DatabaseField field = getField();

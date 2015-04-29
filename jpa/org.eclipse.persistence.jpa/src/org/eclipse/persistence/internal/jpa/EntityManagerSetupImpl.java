@@ -3162,7 +3162,9 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 }
             }
             getDatabaseSession().setTuner(tuner);
-            tuner.tunePreDeploy(m);
+            if (tuner != null) {
+                tuner.tunePreDeploy(m);
+            }
         }
     }
 
