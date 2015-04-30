@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 2013, 2015 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -13,6 +13,13 @@
  *       - JPARS 2.0 related changes
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.features.paging;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriInfo;
+import javax.xml.bind.JAXBElement;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.ItemLinks;
@@ -29,14 +36,6 @@ import org.eclipse.persistence.jpa.rs.util.list.ReadAllQueryResultCollection;
 import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultCollection;
 import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultListItem;
 
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriInfo;
-import javax.xml.bind.JAXBElement;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-
 /**
  * FeatureResponseBuilder implementation used for pageable collections. Used in JPARS 2.0.
  *
@@ -44,7 +43,6 @@ import java.util.Vector;
  * @since EclipseLink 2.6.0.
  */
 public class PagingResponseBuilder extends FeatureResponseBuilderImpl {
-    private static final String NO_PREVIOUS_CHUNK = "-1";
 
     /**
      * {@inheritDoc}
@@ -72,34 +70,18 @@ public class PagingResponseBuilder extends FeatureResponseBuilderImpl {
      */
     @Override
     public Object buildAttributeResponse(PersistenceContext context, Map<String, Object> queryParams, String attribute, Object results, UriInfo uriInfo) {
-        if (results instanceof Collection) {
-            if (containsDomainObjects(results)) {
-                final List<Object> items = (Vector)results;
-                if ((items != null) && (!items.isEmpty())) {
-                    ReadAllQueryResultCollection response = new ReadAllQueryResultCollection();
-                    response.setItems(items);
-                    return populatePagedCollectionLinks(queryParams, uriInfo, response);
-                }
-            }
+        if (results instanceof List) {
+            ReadAllQueryResultCollection response = new ReadAllQueryResultCollection();
+            response.setItems((List<Object>) results);
+            return populatePagedCollectionLinks(queryParams, uriInfo, response);
         }
         return results;
-    }
-
-    @SuppressWarnings("rawtypes")
-    private boolean containsDomainObjects(Object object) {
-        Collection collection = (Collection) object;
-        for (Object collectionItem : collection) {
-            if (PersistenceWeavedRest.class.isAssignableFrom(collectionItem.getClass())) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private Object populatePagedReadAllQueryItemLinks(PersistenceContext context, Object result) {
         // populate links for the entity
         ClassDescriptor descriptor = context.getJAXBDescriptorForClass(result.getClass());
-        if ((result instanceof PersistenceWeavedRest) && (descriptor != null) && (context != null)) {
+        if ((result instanceof PersistenceWeavedRest) && (descriptor != null)) {
             final PersistenceWeavedRest entity = (PersistenceWeavedRest) result;
             final String href = HrefHelper.buildEntityHref(context, descriptor.getAlias(), IdHelper.stringifyId(result, descriptor.getAlias(), context));
 
@@ -131,7 +113,7 @@ public class PagingResponseBuilder extends FeatureResponseBuilderImpl {
                 resultCollection.setCount(actualCount - 1);
 
                 // next link
-                // The uri might have other query/matrix parameters, just replace the limit and offset 
+                // The uri might have other query/matrix parameters, just replace the limit and offset
                 // for next and prev links and leave the rest untouched
                 uriBuilder.replaceQueryParam(QueryParameters.JPARS_PAGING_OFFSET, String.valueOf(limit + offset));
                 itemLinksBuilder.addNext(uriBuilder.build().toString());
@@ -180,9 +162,6 @@ public class PagingResponseBuilder extends FeatureResponseBuilderImpl {
         for (Object result : results) {
             ReportQueryResultListItem queryResultListItem = new ReportQueryResultListItem();
             List<JAXBElement> jaxbFields = createShellJAXBElementList(reportItems, result);
-            if (jaxbFields == null) {
-                return null;
-            }
             // We don't have a way of determining self links for the report query responses
             // so, no links array will be inserted into individual items in the response
             queryResultListItem.setFields(jaxbFields);

@@ -393,6 +393,31 @@ public class ServerPageableTest extends BaseJparsTest {
     }
 
     @Test
+    public void testPageableFieldOffsetGtCount() throws URISyntaxException {
+        final Map<String, String> hints = new HashMap<>(1);
+        hints.put("offset", "10");
+
+        final String queryResult = RestUtils.restFindAttribute(context, 1, Basket.class.getSimpleName(), "basketItems", null, hints, MediaType.APPLICATION_JSON_TYPE);
+        logger.info(queryResult);
+        assertNotNull("Query all basket items failed.", queryResult);
+
+        // Empty response
+        assertFalse(queryResult.contains("Item1"));
+        assertFalse(queryResult.contains("Item2"));
+        assertFalse(queryResult.contains("Item3"));
+        assertFalse(queryResult.contains("Item4"));
+        assertFalse(queryResult.contains("Item5"));
+
+        // Check links
+        assertFalse(checkLinkJson(queryResult, "next"));
+        assertFalse(checkLinkJson(queryResult, "prev"));
+        assertTrue(checkLinkJson(queryResult, "self", "/entity/Basket/1/basketItems?offset=10"));
+
+        // Check items (limit = 2, offset = 10, count = 0, hasMore = false)
+        checkItemsJson(queryResult, 2, 10, 0, false);
+    }
+
+    @Test
     public void testPageableFieldLastPage() throws URISyntaxException {
         // Get the last page (offset=3)
         final Map<String, String> hints = new HashMap<>(1);
