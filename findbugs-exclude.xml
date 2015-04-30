@@ -225,6 +225,13 @@
         <Bug pattern="SE_BAD_FIELD"/>
     </Match>
 
+    <Match>
+        <!-- This is safe since the real barrier is "private static volatile boolean firstTime = true;" -->
+        <Class name="org.eclipse.persistence.jaxb.ValidationXMLReader"/>
+        <Method name="call"/>
+        <Bug pattern="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD"/>
+    </Match>
+
     <!-- Cloneable warnings -->
     <Match>
         <Or>
@@ -252,5 +259,6 @@
         </Or>
         <Bug pattern="CN_IMPLEMENTS_CLONE_BUT_NOT_CLONEABLE"/>
     </Match>
+    <!-- End of Cloneable warnings -->
 
 </FindBugsFilter>
