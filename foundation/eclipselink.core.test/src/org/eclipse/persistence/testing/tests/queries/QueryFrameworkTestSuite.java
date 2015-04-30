@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -12,16 +12,38 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.queries;
 
-import java.util.*;
-import org.eclipse.persistence.testing.models.employee.domain.*;
-import org.eclipse.persistence.testing.models.employee.domain.Project;
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.internal.sessions.*;
-import org.eclipse.persistence.queries.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.Vector;
+
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.queries.ComplexQueryResult;
+import org.eclipse.persistence.queries.Cursor;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.MethodBaseQueryRedirector;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.QueryRedirector;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.queries.ReportQuery;
+import org.eclipse.persistence.queries.ScrollableCursorPolicy;
+import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.Record;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.tests.clientserver.*;
+import org.eclipse.persistence.sessions.UnitOfWork;
+import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.testing.framework.TestSuite;
+import org.eclipse.persistence.testing.models.employee.domain.Employee;
+import org.eclipse.persistence.testing.models.employee.domain.EmployeePopulator;
+import org.eclipse.persistence.testing.models.employee.domain.LargeProject;
+import org.eclipse.persistence.testing.models.employee.domain.Project;
+import org.eclipse.persistence.testing.tests.clientserver.ServerSessionTestAdapter;
 import org.eclipse.persistence.tools.schemaframework.PopulationManager;
 
 public class QueryFrameworkTestSuite extends TestSuite {
@@ -40,6 +62,8 @@ public class QueryFrameworkTestSuite extends TestSuite {
         //Add new tests here, if any.
         addTest(new ServerSessionTestAdapter(new PessimisticLockNoLockJoinedTest()));
         addTest(new ReadAllNoDistinctTest());
+        addTest(new ObjectLevelReadQueryTest.CustomQueryRaceConditionsInReadAllQueryTest());
+        addTest(new ObjectLevelReadQueryTest.CustomQueryRaceConditionsInReadObjectQueryTest());
         addTest(new PartialAttributeTestWithJoinAttribute());
         addTest(new PartialAttributeDistinctOrderByTest());
         addTest(new FourPartialAttributeTestsWithJoinAttribute());

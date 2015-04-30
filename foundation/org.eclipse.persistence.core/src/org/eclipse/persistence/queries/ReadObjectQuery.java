@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -18,26 +18,41 @@
  ******************************************************************************/  
 package org.eclipse.persistence.queries;
 
-import java.util.*;
-import java.sql.*;
-import org.eclipse.persistence.internal.databaseaccess.*;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Arrays;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
+
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.internal.databaseaccess.Accessor;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
+import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
+import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
+import org.eclipse.persistence.internal.helper.InvalidObject;
+import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.indirection.ProxyIndirectionPolicy;
-import org.eclipse.persistence.internal.descriptors.*;
 import org.eclipse.persistence.internal.queries.DatasourceCallQueryMechanism;
-import org.eclipse.persistence.internal.sessions.remote.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.ResultSetRecord;
 import org.eclipse.persistence.internal.sessions.SimpleResultSetRecord;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.expressions.*;
+import org.eclipse.persistence.internal.sessions.remote.RemoteSessionController;
+import org.eclipse.persistence.internal.sessions.remote.Transporter;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.SessionProfiler;
-import org.eclipse.persistence.sessions.remote.*;
+import org.eclipse.persistence.sessions.remote.DistributedSession;
 import org.eclipse.persistence.tools.profiler.QueryMonitor;
 
 /**
@@ -297,10 +312,10 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
      * null means there is none.
      */
     protected DatabaseQuery checkForCustomQuery(AbstractSession session, AbstractRecord translationRow) {
-        Boolean useCustomQuery = this.isCustomQueryUsed != null ? this.isCustomQueryUsed.booleanValue() : Boolean.FALSE;
+        Boolean useCustomQuery = isCustomQueryUsed;
 
         checkDescriptor(session);
-        if (this.isCustomQueryUsed == null) {
+        if (useCustomQuery == null) {
             // Check if user defined a custom query in the query manager.
             if (!this.isUserDefined) {
                 if (!isCallQuery()
@@ -331,17 +346,18 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
         }
 
         //#436871 - attempt to limit cases for race-condition
-        if (this.isCustomQueryUsed = useCustomQuery) {
+        if (useCustomQuery != null && useCustomQuery.booleanValue()) {
             ReadObjectQuery customQuery = this.descriptor.getQueryManager().getReadObjectQuery();
             if (this.accessors != null) {
                 customQuery = (ReadObjectQuery) customQuery.clone();
                 customQuery.setIsExecutionClone(true);
                 customQuery.setAccessors(this.accessors);
             }
+            isCustomQueryUsed = useCustomQuery;
             return customQuery;
-        } else {
-            return null;
         }
+        isCustomQueryUsed = useCustomQuery;
+        return null;
     }
 
     /**

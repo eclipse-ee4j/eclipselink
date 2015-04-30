@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -16,30 +16,44 @@
  ******************************************************************************/
 package org.eclipse.persistence.queries;
 
-import java.util.*;
-import java.sql.*;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
-import org.eclipse.persistence.internal.databaseaccess.*;
-import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
+import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
-import org.eclipse.persistence.internal.queries.*;
-import org.eclipse.persistence.internal.sessions.remote.*;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.InvalidObject;
+import org.eclipse.persistence.internal.helper.ThreadCursoredList;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
+import org.eclipse.persistence.internal.queries.DatasourceCallQueryMechanism;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.ResultSetRecord;
 import org.eclipse.persistence.internal.sessions.SimpleResultSetRecord;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.expressions.*;
+import org.eclipse.persistence.internal.sessions.remote.RemoteSessionController;
+import org.eclipse.persistence.internal.sessions.remote.Transporter;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.SessionProfiler;
-import org.eclipse.persistence.sessions.remote.*;
+import org.eclipse.persistence.sessions.remote.DistributedSession;
 import org.eclipse.persistence.tools.profiler.QueryMonitor;
-
-import static org.eclipse.persistence.queries.ReadAllQuery.Direction.CHILD_TO_PARENT;
-import static org.eclipse.persistence.queries.ReadAllQuery.Direction.PARENT_TO_CHILD;
 
 /**
  * <p><b>Purpose</b>:
@@ -246,23 +260,27 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
      */
     @Override
     protected DatabaseQuery checkForCustomQuery(AbstractSession session, AbstractRecord translationRow) {
-        checkDescriptor(session);
+        Boolean useCustomQuery = isCustomQueryUsed;
 
+        checkDescriptor(session);
         // Check if user defined a custom query.
-        if (isCustomQueryUsed() == null) {
+        if (useCustomQuery == null) {
             setIsCustomQueryUsed((!isUserDefined()) && isExpressionQuery() && (getSelectionCriteria() == null) && isDefaultPropertiesQuery() && (!hasOrderByExpressions()) && (this.descriptor.getQueryManager().hasReadAllQuery()));
+            // Value of isCustomQueryUsed is updated by setIsCustomQueryUsed method.
+            useCustomQuery = isCustomQueryUsed;
         }
-        if (isCustomQueryUsed().booleanValue()) {
+        if (useCustomQuery != null && useCustomQuery.booleanValue()) {
             ReadAllQuery customQuery = this.descriptor.getQueryManager().getReadAllQuery();
             if (this.accessors != null) {
                 customQuery = (ReadAllQuery) customQuery.clone();
                 customQuery.setIsExecutionClone(true);
                 customQuery.setAccessors(this.accessors);
             }
+            isCustomQueryUsed = useCustomQuery;
             return customQuery;
-        } else {
-            return null;
         }
+        isCustomQueryUsed = useCustomQuery;
+        return null;
     }
 
     /**
