@@ -111,11 +111,6 @@ public class PredicateImpl extends CompoundExpressionImpl implements Predicate {
     }
 
     @Override
-    public boolean isPredicate(){
-        return true;
-    }
-
-    @Override
     public boolean isCompoundExpression(){
         return false;
     }

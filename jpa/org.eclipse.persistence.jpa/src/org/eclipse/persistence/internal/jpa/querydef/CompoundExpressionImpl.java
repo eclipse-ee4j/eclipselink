@@ -98,8 +98,12 @@ public class CompoundExpressionImpl extends FunctionExpressionImpl<Boolean> impl
         expr.setIsNegated(true);
         return expr;
     }
-
-
+    
+    @Override
+    public boolean isPredicate(){
+        return true;
+    }
+    
     protected void setIsNegated(boolean isNegated){
         this.isNegated = isNegated;
     }
