@@ -71,26 +71,11 @@ public class PagingResponseBuilder extends FeatureResponseBuilderImpl {
     @Override
     public Object buildAttributeResponse(PersistenceContext context, Map<String, Object> queryParams, String attribute, Object results, UriInfo uriInfo) {
         if (results instanceof List) {
-            final List<Object> items = (List<Object>) results;
-            if (containsDomainObjects(items)) {
-                if (!items.isEmpty()) {
-                    ReadAllQueryResultCollection response = new ReadAllQueryResultCollection();
-                    response.setItems(items);
-                    return populatePagedCollectionLinks(queryParams, uriInfo, response);
-                }
-            }
+            ReadAllQueryResultCollection response = new ReadAllQueryResultCollection();
+            response.setItems((List<Object>) results);
+            return populatePagedCollectionLinks(queryParams, uriInfo, response);
         }
         return results;
-    }
-
-    @SuppressWarnings("rawtypes")
-    private boolean containsDomainObjects(List object) {
-        for (Object collectionItem : object) {
-            if (PersistenceWeavedRest.class.isAssignableFrom(collectionItem.getClass())) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private Object populatePagedReadAllQueryItemLinks(PersistenceContext context, Object result) {
