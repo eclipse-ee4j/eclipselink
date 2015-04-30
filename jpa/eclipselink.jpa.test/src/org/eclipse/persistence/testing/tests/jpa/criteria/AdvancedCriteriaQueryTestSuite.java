@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -56,6 +56,7 @@ import org.eclipse.persistence.config.QueryType;
 import org.eclipse.persistence.config.ResultSetConcurrency;
 import org.eclipse.persistence.config.ResultSetType;
 import org.eclipse.persistence.config.ResultType;
+import org.eclipse.persistence.internal.jpa.querydef.CompoundExpressionImpl;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.JpaCriteriaBuilder;
 import org.eclipse.persistence.jpa.JpaQuery;
@@ -167,6 +168,8 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testFromToExpression"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testUnusedJoinDoesNotAffectOtherJoins"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testUnusedJoinDoesNotAffectFetchJoin"));
+        // Bug 464833
+        suite.addTest(new AdvancedCriteriaQueryTestSuite("testGetRestrictionReturningCorrectPredicate"));
         
         return suite;
     }
@@ -1797,6 +1800,44 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             assertFalse ("No results found", result.isEmpty());
             long count = (Long)em.createQuery("Select count(e) from Employee e ").getSingleResult();
             assertTrue("Incorrect number of results returned", result.size() == count);
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
+    }
+    
+    /**
+     * Bug 464833 - Criteria API: calling getRestriction() on a query returns Predicate with incorrect expression
+     * An incorrect expression is observed when calling getRestriction() on an existing query to obtain an existing Predicate. 
+     * Tests: Validate that an existing Predicate (obtained with criteriaQuery.getRestriction()) has correct child expressions.  
+     */
+    public void testGetRestrictionReturningCorrectPredicate() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try {
+            CriteriaBuilder builder = em.getCriteriaBuilder();
+            CriteriaQuery<Employee> criteriaQuery = builder.createQuery(Employee.class);
+            Root<Employee> root = criteriaQuery.from(Employee.class);
+            
+            // simple case - construct a predicate
+            criteriaQuery.where(builder.equal(root.get("firstName"), "Bob"));
+            TypedQuery<Employee> query1 = em.createQuery(criteriaQuery);
+            
+            List<Employee> results1 = query1.getResultList();
+            long count1 = (Long)em.createQuery("select count(e) from Employee e where e.firstName = 'Bob'").getSingleResult();
+            
+            // validate the expressions on the Predicate returned from CriteriaQuery getRestriction()
+            Predicate predicate = criteriaQuery.getRestriction();
+            
+            // for the current example, the Predicate returned is expected to be a CompoundExpressionImpl
+            assertNotNull("Predicate should be non-null", predicate);
+            assertTrue("Invalid predicate type returned: " + predicate.getClass().getName(), predicate instanceof CompoundExpressionImpl);
+            CompoundExpressionImpl compoundExpression = (CompoundExpressionImpl)predicate;
+            
+            // The where has two child expressions representing:
+            // 1) a path (query key) for "firstName" and 2) an expression (constant) for "Bob".
+            List<Expression<?>> expressions = compoundExpression.getChildExpressions();
+            assertSame("Predicate should have two child expressions", 2, expressions.size());
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
