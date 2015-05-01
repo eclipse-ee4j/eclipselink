@@ -37,3 +37,5 @@ utils/eclipselink.utils.workbench.test/logs/
 utils/eclipselink.utils.workbench/logs/
 test_*.properties
 .sonar
+/coverage-report/
+/jacoco.out
