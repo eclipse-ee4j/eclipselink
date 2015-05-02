@@ -1201,10 +1201,18 @@ public class Helper extends CoreHelper implements Serializable {
                 usedOutputPath = outputPath + File.separator;
             }
             File file = new File(usedOutputPath + directoryName);
-            file.mkdirs();
+            if (!file.exists()) {
+                if (!file.mkdirs()) {
+                    AbstractSessionLog.getLog().log(SessionLog.FINE, SessionLog.WEAVER,
+                            "weaver_not_overwriting", file);
+                }
+            }
             file = new File(file, token + ".class");
             if (!file.exists()) {
-                file.createNewFile();
+                if (!file.createNewFile()) {
+                    AbstractSessionLog.getLog().log(SessionLog.FINE, SessionLog.WEAVER,
+                            "weaver_not_overwriting", file);
+                }
             } else {
                 if (!System.getProperty(
                         SystemProperties.WEAVING_SHOULD_OVERWRITE, "false")

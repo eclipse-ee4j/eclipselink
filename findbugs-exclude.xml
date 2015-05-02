@@ -28,6 +28,13 @@
     </Match>
 
     <!--
+        Antlr generated parser
+    -->
+    <Match>
+        <Package name="~org.eclipse.persistence.internal.jpa.parsing.jpql.antlr.*" />
+    </Match>
+
+    <!--
         As designed, minor issue, unimportant code
     -->
     <Match>

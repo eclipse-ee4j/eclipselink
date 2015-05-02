@@ -1350,7 +1350,6 @@ public class SchemaModelGenerator {
     protected Schema buildNewSchema(String uri, NamespaceResolver nr, int schemaCount, SchemaModelGeneratorProperties properties) {
         Schema schema = new Schema();
         schema.setName(SCHEMA_FILE_NAME + schemaCount + SCHEMA_FILE_EXT);
-        schemaCount++;
 
         String defaultNamespace = null;
         if (nr != null) {

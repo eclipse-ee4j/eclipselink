@@ -12,16 +12,31 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.databaseaccess;
 
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.exceptions.ConversionException;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.expressions.ExpressionOperator;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.ConversionManager;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.sequencing.*;
+import org.eclipse.persistence.queries.Call;
+import org.eclipse.persistence.queries.DataModifyQuery;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.SQLCall;
+import org.eclipse.persistence.queries.ValueReadQuery;
+import org.eclipse.persistence.sequencing.DefaultSequence;
+import org.eclipse.persistence.sequencing.QuerySequence;
+import org.eclipse.persistence.sequencing.Sequence;
 
 /**
  * DatasourcePlatform is private to TopLink. It encapsulates behavior specific to a datasource platform
@@ -96,6 +111,7 @@ public class DatasourcePlatform implements Platform {
      * Add the parameter.
      * Convert the parameter to a string and write it.
      */
+    @Override
     public void appendParameter(Call call, Writer writer, Object parameter) {
         String parameterValue = (String)getConversionManager().convertObject(parameter, ClassConstants.STRING);
         if (parameterValue == null) {
@@ -111,6 +127,7 @@ public class DatasourcePlatform implements Platform {
     /**
      * Allow for the platform to handle the representation of parameters specially.
      */
+    @Override
     public Object getCustomModifyValueForCall(Call call, Object value, DatabaseField field, boolean shouldBind) {
         return value;
     }
@@ -123,10 +140,12 @@ public class DatasourcePlatform implements Platform {
      * kept in sync: shouldCustomModifyInDatabaseCall should return true if and only if the field
      * is handled by customModifyInDatabaseCall.
      */
+    @Override
     public boolean shouldUseCustomModifyForCall(DatabaseField field) {
         return false;
     }
 
+    @Override
     public Object clone() {
         try {
             DatasourcePlatform clone = (DatasourcePlatform)super.clone();
@@ -175,6 +194,7 @@ public class DatasourcePlatform implements Platform {
      * @exception - ConversionException, all exceptions will be thrown as this type.
      * @return - the newly converted object
      */
+    @Override
     public Object convertObject(Object sourceObject, Class javaClass) throws ConversionException {
         return getConversionManager().convertObject(sourceObject, javaClass);
     }
@@ -182,6 +202,7 @@ public class DatasourcePlatform implements Platform {
     /**
      * Copy the state into the new platform.
      */
+    @Override
     public void copyInto(Platform platform) {
         if (!(platform instanceof DatasourcePlatform)) {
             return;
@@ -201,6 +222,7 @@ public class DatasourcePlatform implements Platform {
     /**
      * The platform hold its own instance of conversion manager to allow customization.
      */
+    @Override
     public ConversionManager getConversionManager() {
         // Lazy init for serialization.
         if (conversionManager == null) {
@@ -213,6 +235,7 @@ public class DatasourcePlatform implements Platform {
     /**
      * The platform hold its own instance of conversion manager to allow customization.
      */
+    @Override
     public void setConversionManager(ConversionManager conversionManager) {
         this.conversionManager = conversionManager;
     }
@@ -223,6 +246,7 @@ public class DatasourcePlatform implements Platform {
      * Some databases use different delimiters for the beginning and end of the value.
      * This delimiter indicates the end of the value.
      */
+    @Override
     public String getEndDelimiter() {
         return endDelimiter;
     }
@@ -282,6 +306,7 @@ public class DatasourcePlatform implements Platform {
      * Some databases use different delimiters for the beginning and end of the value.
      * This delimiter indicates the start of the value.
      */
+    @Override
     public String getStartDelimiter() {
         return startDelimiter;
     }
@@ -300,6 +325,7 @@ public class DatasourcePlatform implements Platform {
      * Return the qualifier for the table. Required by some
      * databases such as Oracle and DB2
      */
+    @Override
     public String getTableQualifier() {
         return tableQualifier;
     }
@@ -307,6 +333,7 @@ public class DatasourcePlatform implements Platform {
     /**
      * Answer the timestamp from the server.
      */
+    @Override
     public java.sql.Timestamp getTimestampFromServer(AbstractSession session, String sessionName) {
         if (getTimestampQuery() == null) {
             return new java.sql.Timestamp(System.currentTimeMillis());
@@ -321,6 +348,7 @@ public class DatasourcePlatform implements Platform {
      * query that will return the timestamp from the server.
      * return null if the time should be the local time.
      */
+    @Override
     public ValueReadQuery getTimestampQuery() {
         return timestampQuery;
     }
@@ -453,58 +481,72 @@ public class DatasourcePlatform implements Platform {
 
     }
 
+    @Override
     public boolean isAccess() {
         return false;
     }
 
+    @Override
     public boolean isAttunity() {
         return false;
     }
 
+    @Override
     public boolean isCloudscape() {
         return false;
     }
 
+    @Override
     public boolean isDerby() {
         return false;
     }
 
+    @Override
     public boolean isDB2() {
         return false;
     }
 
-     public boolean isHANA() {
-         return false;
-     }
+    @Override
+    public boolean isHANA() {
+        return false;
+    }
 
+    @Override
     public boolean isH2() {
         return false;
     }
 
+    @Override
     public boolean isDBase() {
         return false;
     }
 
+    @Override
     public boolean isHSQL() {
         return false;
     }
 
+    @Override
     public boolean isInformix() {
         return false;
     }
 
+    @Override
     public boolean isMySQL() {
         return false;
     }
 
+    @Override
     public boolean isODBC() {
         return false;
     }
 
+    @Override
     public boolean isOracle() {
         return false;
     }
 
+    @Override
     public boolean isOracle9() {
         return false;
     }
@@ -513,14 +555,17 @@ public class DatasourcePlatform implements Platform {
         return false;
     }
 
+    @Override
     public boolean isPostgreSQL(){
         return false;
     }
 
+    @Override
     public boolean isPointBase() {
         return false;
     }
 
+    @Override
     public boolean isSQLAnywhere() {
         return false;
     }
@@ -529,26 +574,32 @@ public class DatasourcePlatform implements Platform {
         return false;
     }
 
+    @Override
     public boolean isSQLServer() {
         return false;
     }
 
+    @Override
     public boolean isSybase() {
         return false;
     }
 
+    @Override
     public boolean isSymfoware() {
         return false;
     }
 
+    @Override
     public boolean isTimesTen() {
         return false;
     }
 
+    @Override
     public boolean isTimesTen7() {
         return false;
     }
 
+    @Override
     public boolean isMaxDB() {
         return false;
     }
@@ -556,6 +607,7 @@ public class DatasourcePlatform implements Platform {
     /**
      * Allow the platform to initialize itself after login/init.
      */
+    @Override
     public void initialize() {
 
     }
@@ -586,6 +638,7 @@ public class DatasourcePlatform implements Platform {
      * Set the qualifier for the table. Required by some
      * databases such as Oracle and DB2
      */
+    @Override
     public void setTableQualifier(String qualifier) {
         tableQualifier = qualifier;
     }
@@ -594,6 +647,7 @@ public class DatasourcePlatform implements Platform {
      * Can override the default query for returning a timestamp from the server.
      * See: getTimestampFromServer
      */
+    @Override
     public void setTimestampQuery(ValueReadQuery tsQuery) {
         timestampQuery = tsQuery;
     }
@@ -610,6 +664,7 @@ public class DatasourcePlatform implements Platform {
         }
     }
 
+    @Override
     public String toString() {
         return Helper.getShortClassName(this.getClass());
     }
@@ -637,6 +692,7 @@ public class DatasourcePlatform implements Platform {
     /**
      * Get default sequence
      */
+    @Override
     public Sequence getDefaultSequence() {
         if (!hasDefaultSequence()) {
             setDefaultSequence(createPlatformDefaultSequence());
@@ -655,6 +711,7 @@ public class DatasourcePlatform implements Platform {
      * Set default sequence. In case the passed sequence is of type DefaultSequence - use platformDefaultSequence
      * with name and size of the passed sequence.
      */
+    @Override
     public void setDefaultSequence(Sequence sequence) {
         if (sequence instanceof DefaultSequence) {
             Sequence platformDefaultSequence = createPlatformDefaultSequence();
@@ -673,6 +730,7 @@ public class DatasourcePlatform implements Platform {
     /**
      * Add sequence corresponding to the name
      */
+    @Override
     public void addSequence(Sequence sequence) {
         addSequence(sequence, false);
     }
@@ -684,6 +742,7 @@ public class DatasourcePlatform implements Platform {
      * If the session is connected then the sequence is added only
      * if there is no sequence with the same name already in use.
      */
+    @Override
     public void addSequence(Sequence sequence, boolean isSessionConnected) {
         synchronized(sequencesLock) {
             if (isSessionConnected) {
@@ -709,6 +768,7 @@ public class DatasourcePlatform implements Platform {
     /**
      * Get sequence corresponding to the name
      */
+    @Override
     public Sequence getSequence(String seqName) {
         if (seqName == null) {
             return getDefaultSequence();
@@ -733,6 +793,7 @@ public class DatasourcePlatform implements Platform {
      * Remove sequence corresponding to name.
      * Doesn't remove default sequence.
      */
+    @Override
     public Sequence removeSequence(String seqName) {
         if (this.sequences != null) {
             synchronized(sequencesLock) {
@@ -746,6 +807,7 @@ public class DatasourcePlatform implements Platform {
     /**
      * Remove all sequences, but the default one.
      */
+    @Override
     public void removeAllSequences() {
         this.sequences = null;
     }
@@ -754,6 +816,7 @@ public class DatasourcePlatform implements Platform {
      * INTERNAL:
      * Returns a map of sequence names to Sequences (may be null).
      */
+    @Override
     public Map getSequences() {
         return this.sequences;
     }
@@ -762,6 +825,7 @@ public class DatasourcePlatform implements Platform {
      * INTERNAL:
      * Used only for writing into XML or Java.
      */
+    @Override
     public Map getSequencesToWrite() {
         if ((getSequences() == null) || getSequences().isEmpty()) {
             return null;
@@ -782,6 +846,7 @@ public class DatasourcePlatform implements Platform {
      * INTERNAL:
      * Used only for writing into XML or Java.
      */
+    @Override
     public Sequence getDefaultSequenceToWrite() {
         if (usesPlatformDefaultSequence()) {
             return null;
@@ -794,6 +859,7 @@ public class DatasourcePlatform implements Platform {
      * INTERNAL:
      * Sets sequences - for XML support only
      */
+    @Override
     public void setSequences(Map sequences) {
         this.sequences = sequences;
     }
@@ -802,6 +868,7 @@ public class DatasourcePlatform implements Platform {
      * INTERNAL:
      * Indicates whether defaultSequence is the same as platform default sequence.
      */
+    @Override
     public boolean usesPlatformDefaultSequence() {
         if (!hasDefaultSequence()) {
             return true;
@@ -819,6 +886,7 @@ public class DatasourcePlatform implements Platform {
      * @see getEndDelimiter()
      * @return The quote character for this platform
      */
+    @Deprecated
     public String getIdentifierQuoteCharacter() {
         return "";
     }

@@ -32,6 +32,7 @@ import javax.persistence.Query;
 import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaBuilder.In;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Fetch;
@@ -42,7 +43,6 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
-import javax.persistence.criteria.CriteriaBuilder.In;
 import javax.persistence.metamodel.EmbeddableType;
 import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.Metamodel;
@@ -71,10 +71,8 @@ import org.eclipse.persistence.testing.models.jpa.advanced.Dealer;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmploymentPeriod;
-import org.eclipse.persistence.testing.models.jpa.advanced.LargeProject;
 import org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber;
 import org.eclipse.persistence.testing.models.jpa.advanced.Project;
-import org.eclipse.persistence.testing.models.jpa.advanced.SmallProject;
 import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitDomainObjectComparer;
 
 /**
@@ -98,12 +96,14 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
 
     // This method is run at the start of EVERY test case method.
 
+    @Override
     public void setUp() {
 
     }
 
     // This method is run at the end of EVERY test case method.
 
+    @Override
     public void tearDown() {
         clearCache();
     }
@@ -132,6 +132,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testWhereUsingOrWithPredicates"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testVerySimpleJoin"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testGroupByHaving"));
+        suite.addTest(new AdvancedCriteriaQueryTestSuite("testGroupByHaving2"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testAlternateSelection"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testSubqueryExists"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testSubqueryNotExists"));
@@ -294,7 +295,28 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
     public void testGroupByHaving(){
         EntityManager em = createEntityManager();
 
-        em.createQuery("Select e.address, count(e) from Employee e group by e.address having count(e.address) < 3").getResultList();
+        List<Object> jpqlResult = em.createQuery("Select e.address, count(e) from Employee e group by e.address having count(e.address) < 3").getResultList();
+        beginTransaction(em);
+        try {
+            Metamodel mm = em.getMetamodel();
+            CriteriaBuilder qbuilder = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery = qbuilder.createQuery();
+            Root<Employee> customer = cquery.from(Employee.class);
+            cquery.multiselect(customer.get("address"), qbuilder.count(customer));
+            cquery.groupBy(customer.get("address"));
+            cquery.having(qbuilder.lt(qbuilder.count(customer.get("address")), 3));
+            List<Object> result = em.createQuery(cquery).getResultList();
+            assertTrue(comparer.compareObjects(jpqlResult, result));
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
+    }
+
+    public void testGroupByHaving2(){
+        EntityManager em = createEntityManager();
+
+        List<Object> jpqlResult = em.createQuery("Select e.period, count(e) from Employee e group by e.period having count(e.period) > 3").getResultList();
         beginTransaction(em);
         try {
             Metamodel mm = em.getMetamodel();
@@ -303,8 +325,11 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             Root<Employee> customer = cquery.from(Employee.class);
             EntityType<Employee> Customer_ = customer.getModel();
             EmbeddableType<EmploymentPeriod> Country_ = mm.embeddable(EmploymentPeriod.class);
-            cquery.multiselect(customer.get(Customer_.getSingularAttribute("period", EmploymentPeriod.class)), qbuilder.count(customer)).groupBy(customer.get(Customer_.getSingularAttribute("period", EmploymentPeriod.class))).having(qbuilder.gt(qbuilder.count(customer.get(Customer_.getSingularAttribute("period", EmploymentPeriod.class))), 3));
+            cquery.multiselect(customer.get(Customer_.getSingularAttribute("period", EmploymentPeriod.class)), qbuilder.count(customer));
+            cquery.groupBy(customer.get(Customer_.getSingularAttribute("period", EmploymentPeriod.class)));
+            cquery.having(qbuilder.gt(qbuilder.count(customer.get(Customer_.getSingularAttribute("period", EmploymentPeriod.class))), 3));
             List<Object> result = em.createQuery(cquery).getResultList();
+            assertTrue(comparer.compareObjects(jpqlResult, result));
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);

@@ -14,12 +14,12 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.deployment;
 
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.lang.instrument.Instrumentation;
 import java.lang.reflect.Constructor;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.ProtectionDomain;
@@ -28,18 +28,18 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.persistence.logging.AbstractSessionLog;
+import javax.persistence.PersistenceException;
+import javax.persistence.spi.ClassTransformer;
+import javax.persistence.spi.PersistenceUnitInfo;
+
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.exceptions.EntityManagerSetupException;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
 import org.eclipse.persistence.internal.security.PrivilegedInvokeConstructor;
-import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.exceptions.EntityManagerSetupException;
+import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
-
-import javax.persistence.PersistenceException;
-import javax.persistence.spi.ClassTransformer;
-import javax.persistence.spi.PersistenceUnitInfo;
 
 /**
  * INTERNAL:
@@ -63,8 +63,8 @@ public class JavaSECMPInitializer extends JPAInitializer {
     protected static boolean isInitialized;
     // Singleton corresponding to the main class loader. Created only if agent is used.
     protected static JavaSECMPInitializer initializer;
-    // Used as a lock in getJavaSECMPInitializer. Don't substitute for Boolean.TRUE.
-    protected static Boolean initializationLock = new Boolean(true);
+    // Used as a lock in getJavaSECMPInitializer.
+    private static final Object initializationLock = new Object();
 
     public static boolean isInContainer() {
         return isInContainer;
@@ -131,6 +131,7 @@ public class JavaSECMPInitializer extends JPAInitializer {
      * Check whether weaving is possible and update the properties and variable as appropriate
      * @param properties The list of properties to check for weaving and update if weaving is not needed
      */
+    @Override
     public void checkWeaving(Map properties){
         String weaving = EntityManagerFactoryProvider.getConfigPropertyAsString(PersistenceUnitProperties.WEAVING, properties, null);
         // Check usesAgent instead of globalInstrumentation!=null because globalInstrumentation is set to null after initialization,
@@ -153,10 +154,12 @@ public class JavaSECMPInitializer extends JPAInitializer {
      * thrown away.  This allows classes to be introspected prior to loading them
      * with application's main class loader enabling weaving.
      */
+    @Override
     protected ClassLoader createTempLoader(Collection col) {
         return createTempLoader(col, true);
     }
 
+    @Override
     protected ClassLoader createTempLoader(Collection col, boolean shouldOverrideLoadClassForCollectionMembers) {
         if (!shouldCreateInternalLoader) {
             return Thread.currentThread().getContextClassLoader();
@@ -239,11 +242,13 @@ public class JavaSECMPInitializer extends JPAInitializer {
      * @param transformer
      * @param persistenceUnitInfo
      */
+    @Override
     public void registerTransformer(final ClassTransformer transformer, PersistenceUnitInfo persistenceUnitInfo, Map properties){
         if ((transformer != null) && (globalInstrumentation != null)) {
             AbstractSessionLog.getLog().log(SessionLog.FINER, SessionLog.WEAVER, "cmp_init_register_transformer", persistenceUnitInfo.getPersistenceUnitName());
             globalInstrumentation.addTransformer(new ClassFileTransformer() {
                 // adapt ClassTransformer to ClassFileTransformer interface
+                @Override
                 public byte[] transform(
                         ClassLoader loader, String className,
                         Class<?> classBeingRedefined,
@@ -266,6 +271,7 @@ public class JavaSECMPInitializer extends JPAInitializer {
      * may have the same name: that could happen if they are loaded by different classloaders;
      * the common case is the same persistence unit jar deployed in several applications.
      */
+    @Override
     public boolean isPersistenceUnitUniquelyDefinedByName() {
         return usesAgent;
     }
@@ -309,6 +315,7 @@ public class JavaSECMPInitializer extends JPAInitializer {
         boolean shouldOverrideLoadClassForCollectionMembers;
 
         //added to resolved gf #589 - without this, the orm.xml url would be returned twice
+        @Override
         public Enumeration<URL> getResources(String name) throws java.io.IOException {
             return this.getParent().getResources(name);
         }
@@ -338,6 +345,7 @@ public class JavaSECMPInitializer extends JPAInitializer {
             }
         }
 
+        @Override
         protected synchronized Class loadClass(String name, boolean resolve) throws ClassNotFoundException {
             if (shouldOverrideLoadClass(name)) {
                 // First, check if the class has already been loaded.

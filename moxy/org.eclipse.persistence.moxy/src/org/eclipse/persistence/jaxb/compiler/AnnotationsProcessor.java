@@ -1423,7 +1423,7 @@ public final class AnnotationsProcessor {
         if (boundType != null) {
             info.addPackageLevelAdapterClass(adapterClass, boundType);
         } else {
-            getLogger().logWarning(JAXBMetadataLogger.INVALID_BOUND_TYPE, new Object[] { boundType, adapterClass });
+            getLogger().logWarning(JAXBMetadataLogger.INVALID_BOUND_TYPE, new Object[] { null, adapterClass });
         }
     }
 
@@ -3026,7 +3026,7 @@ public final class AnnotationsProcessor {
                 // character, if necessary
                 propertyName = Introspector.decapitalize(propertyName);
 
-                JavaClass[] paramTypes = { (JavaClass) getMethod.getReturnType() };
+                JavaClass[] paramTypes = { getMethod.getReturnType() };
                 setMethod = cls.getDeclaredMethod(setMethodName, paramTypes);
 
                 if (setMethod == null) {
@@ -3131,7 +3131,7 @@ public final class AnnotationsProcessor {
 
             JavaClass ptype = null;
             if (getMethod != null) {
-                ptype = (JavaClass) getMethod.getReturnType();
+                ptype = getMethod.getReturnType();
             } else {
                 ptype = setMethod.getParameterTypes()[0];
             }
@@ -3246,7 +3246,7 @@ public final class AnnotationsProcessor {
             // use the field.
             HashMap<String, Property> fieldPropertyMap = getPropertyMapFromArrayList(publicFieldProperties);
             for (Property publicMethodProperty : publicMethodProperties) {
-                Property next = (Property) publicMethodProperty;
+                Property next = publicMethodProperty;
                 Property fieldProp = fieldPropertyMap.get(next.getPropertyName());
                 if (fieldProp == null) {
                     publicFieldProperties.add(next);
@@ -4765,6 +4765,7 @@ public final class AnnotationsProcessor {
      *
      */
     private static final class PropertyComparitor implements Comparator<Property> {
+        @Override
         public int compare(Property p1, Property p2) {
             return p1.getPropertyName().compareTo(p2.getPropertyName());
         }

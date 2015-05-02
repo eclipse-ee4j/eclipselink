@@ -134,28 +134,28 @@ public class TimeOfDayMetadata extends ORMetadata {
      * INTERNAL:
      */
     public Integer processHour() {
-        return (m_hour == null) ? 0 : m_hour;
+        return (m_hour == null) ? Integer.valueOf(0) : m_hour;
     }
 
     /**
      * INTERNAL:
      */
     public Integer processMillisecond() {
-        return (m_millisecond == null) ? 0 : m_millisecond;
+        return (m_millisecond == null) ? Integer.valueOf(0) : m_millisecond;
     }
 
     /**
      * INTERNAL:
      */
     public Integer processMinute() {
-        return (m_minute == null) ? 0 : m_minute;
+        return (m_minute == null) ? Integer.valueOf(0) : m_minute;
     }
 
     /**
      * INTERNAL:
      */
     public Integer processSecond() {
-        return (m_second == null) ? 0 : m_second;
+        return (m_second == null) ? Integer.valueOf(0) : m_second;
     }
 
     /**

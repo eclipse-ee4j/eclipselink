@@ -35,7 +35,7 @@ import org.eclipse.persistence.queries.ConstructorReportItem;
  */
 public class ConstructorSelectionImpl extends CompoundSelectionImpl {
 
-    protected Constructor constructor;
+    protected transient Constructor constructor;
     protected Class[] constructorArgTypes;
 
     public ConstructorSelectionImpl(Class javaType, Selection[] subSelections) {
@@ -61,6 +61,7 @@ public class ConstructorSelectionImpl extends CompoundSelectionImpl {
 
     }
 
+    @Override
     public boolean isConstructor(){
         return true;
     }

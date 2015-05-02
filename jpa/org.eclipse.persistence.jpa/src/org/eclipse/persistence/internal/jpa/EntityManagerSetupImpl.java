@@ -2232,7 +2232,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 this.session.setCommandManager(rcm);
                 this.session.setShouldPropagateChanges(true);
             }
-        } catch (Exception exception) {
+        } catch (ReflectiveOperationException | NumberFormatException exception) {
             this.session.handleException(ValidationException.invalidValueForProperty(value, property, exception));
         }
     }

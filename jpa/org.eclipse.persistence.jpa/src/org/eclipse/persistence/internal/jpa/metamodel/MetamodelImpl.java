@@ -139,11 +139,12 @@ public class MetamodelImpl implements Metamodel, Serializable {
      *  @return the metamodel embeddable type
      *  @throws IllegalArgumentException if not an embeddable class
      */
+    @Override
     public <X> EmbeddableType<X> embeddable(Class<X> clazz) {
         String key = clazz == null ? null : clazz.getName();
-        Object aType = this.embeddables.get(key);
-        if(!(aType instanceof EmbeddableType)) { // will only be true for null or non-metamodel types - as the map only stores EmbeddableType values
-            entityEmbeddableManagedTypeNotFound(embeddables, aType, clazz, "Embeddable", "EmbeddableType");
+        EmbeddableTypeImpl<?> aType = this.embeddables.get(key);
+        if(aType == null) {
+            entityEmbeddableManagedTypeNotFound(embeddables, null, clazz, "Embeddable", "EmbeddableType");
         }
         return (EmbeddableType<X>) aType;
     }
@@ -191,11 +192,12 @@ public class MetamodelImpl implements Metamodel, Serializable {
      *  @return the metamodel entity type
      *  @throws IllegalArgumentException if not an entity
      */
+    @Override
     public <X> EntityType<X> entity(Class<X> clazz) {
         String key = clazz == null ? null : clazz.getName();
-        Object aType = this.entities.get(key);
-        if(!(aType instanceof EntityType)) { // will only be true for null or non-metamodel types - as the map only stores EntityType values
-            entityEmbeddableManagedTypeNotFound(entities, aType, clazz, "Entity", "EntityType");
+        EntityTypeImpl<?> aType = this.entities.get(key);
+        if(aType == null) {
+            entityEmbeddableManagedTypeNotFound(entities, null, clazz, "Entity", "EntityType");
         }
         return (EntityType<X>) aType;
     }
@@ -217,6 +219,7 @@ public class MetamodelImpl implements Metamodel, Serializable {
      * Return the metamodel embeddable types.
      * @return the metamodel embeddable types
      */
+    @Override
     public Set<EmbeddableType<?>> getEmbeddables() {
         return new LinkedHashSet<EmbeddableType<?>>(this.embeddables.values());
     }
@@ -225,6 +228,7 @@ public class MetamodelImpl implements Metamodel, Serializable {
      * Return the metamodel entity types.
      * @return the metamodel entity types
      */
+    @Override
     public Set<EntityType<?>> getEntities() {
         return new LinkedHashSet<EntityType<?>>(this.entities.values());
     }
@@ -240,6 +244,7 @@ public class MetamodelImpl implements Metamodel, Serializable {
      *  Return the metamodel managed types.
      *  @return the metamodel managed types
      */
+    @Override
     public Set<ManagedType<?>> getManagedTypes() {
         return new LinkedHashSet<ManagedType<?>>(this.managedTypes.values());
     }
@@ -510,13 +515,14 @@ public class MetamodelImpl implements Metamodel, Serializable {
      *  @return the metamodel managed type
      *  @throws IllegalArgumentException if not a managed class
      */
+    @Override
     public <X> ManagedType<X> managedType(Class<X> clazz) {
         String key = clazz == null ? null : clazz.getName();
-        Object aType = this.managedTypes.get(key);
+        ManagedTypeImpl<?> aType = this.managedTypes.get(key);
         // Throw an IAE exception if the returned type is not a ManagedType
         // For any clazz that resolves to a BasicType - use getType(clazz) in implementations when you are expecting a BasicType
-        if(!(aType instanceof ManagedType)) { // will only be true for null or non-metamodel types - as entities and embeddables are managedTypes
-            entityEmbeddableManagedTypeNotFound(managedTypes, aType, clazz, "Managed", "ManagedType");
+        if (aType == null) {
+            entityEmbeddableManagedTypeNotFound(managedTypes, null, clazz, "Managed", "ManagedType");
         }
         return (ManagedType<X>) aType;
     }

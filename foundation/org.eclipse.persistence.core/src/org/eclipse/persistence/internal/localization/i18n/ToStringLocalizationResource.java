@@ -71,6 +71,8 @@ public class ToStringLocalizationResource extends ListResourceBundle {
                                            { "unknown", "unknown" },
                                            { "connector", "connector" },
                                            { "staticweave_processor_unknown_outcome", "Weaving classes stored in a directory and outputting to a JAR often leads to unexpected results." },
+                                           { "staticweave_processor_dir_not_created", "Cannot create directory '{0}'."},
+                                           { "staticweave_processor_file_not_created", "Cannot create file '{0}'." },
 
                                            { "staticweave_commandline_help_message_1of19", "  Usage: StaticWeave [options] source target" },
                                            { "staticweave_commandline_help_message_2of19", "  Options:" },
@@ -109,6 +111,7 @@ public class ToStringLocalizationResource extends ListResourceBundle {
     /**
      * Return the lookup table.
      */
+    @Override
     protected Object[][] getContents() {
         return contents;
     }

@@ -1187,7 +1187,7 @@ public class SchemaGenerator {
                         }
                     } else {
                         //may need to add an import
-                        addImportIfRequired(workingSchema, fragSchema, fragUri);
+                        addImportIfRequired(workingSchema, null, fragUri);
                     }
                     // add the attribute ref to the current element
                     String attributeRefName;
@@ -1540,11 +1540,6 @@ public class SchemaGenerator {
         Field xfld = new XMLField(property.getXmlPath());
         xfld.setNamespaceResolver(schema.getNamespaceResolver());
         xfld.initialize();
-        AddToSchemaResult result = new AddToSchemaResult(compositor, schema);
-        if(compositor == null) {
-            //complex type with simple content
-            result.simpleContentType = type;
-        }
         // build the schema components for the xml-path
         return buildSchemaComponentsForXPath(xfld.getXPathFragment(), new AddToSchemaResult(compositor, schema), isChoice, property);
     }

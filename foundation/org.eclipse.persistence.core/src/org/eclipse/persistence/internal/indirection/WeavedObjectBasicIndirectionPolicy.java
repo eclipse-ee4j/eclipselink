@@ -13,7 +13,12 @@
 package org.eclipse.persistence.internal.indirection;
 
 import java.beans.PropertyChangeListener;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 
+import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.indirection.WeavedAttributeValueHolderInterface;
@@ -21,13 +26,6 @@ import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-
-import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 
 /**
  * A WeavedObjectBasicIndirectionPolicy is used by OneToOne mappings that are LAZY through weaving
@@ -70,6 +68,7 @@ public class WeavedObjectBasicIndirectionPolicy extends BasicIndirectionPolicy {
      * also call the initial setter method to coordinate the values of the valueholder with
      * the underlying data.
      */
+    @Override
     public Object getRealAttributeValueFromObject(Object object, Object attribute) {
         boolean wasInstantiated = attribute != null && attribute instanceof ValueHolderInterface && ((ValueHolderInterface)attribute).isInstantiated();
         Object value = super.getRealAttributeValueFromObject(object, attribute);
@@ -149,6 +148,7 @@ public class WeavedObjectBasicIndirectionPolicy extends BasicIndirectionPolicy {
      * In this case, place the value inside the target's ValueHolder.
      * Change tracking will be turned off when this method is called
      */
+    @Override
     public void setRealAttributeValueInObject(Object target, Object attributeValue) {
         setRealAttributeValueInObject(target, attributeValue, false);
     }
@@ -158,6 +158,7 @@ public class WeavedObjectBasicIndirectionPolicy extends BasicIndirectionPolicy {
      * In this case, place the value inside the target's ValueHolder.
      * if trackChanges is true, set the value in the object as if the user was setting it.  Allow change tracking to pick up the change.
      */
+    @Override
     public void setRealAttributeValueInObject(Object target, Object attributeValue, boolean trackChanges) {
         // If the target object is using change tracking, it must be disable first to avoid thinking the value changed.
         PropertyChangeListener listener = null;
@@ -209,6 +210,7 @@ public class WeavedObjectBasicIndirectionPolicy extends BasicIndirectionPolicy {
         return this.hasUsedMethodAccess;
     }
 
+    @Override
     public boolean isWeavedObjectBasicIndirectionPolicy() {
         return true;
     }

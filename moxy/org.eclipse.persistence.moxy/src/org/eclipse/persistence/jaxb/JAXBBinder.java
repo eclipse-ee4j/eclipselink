@@ -56,6 +56,7 @@ public class JAXBBinder extends Binder {
         this.xmlBinder.setErrorHandler(new JAXBErrorHandler(JAXBContext.DEFAULT_VALIDATION_EVENT_HANDLER));
     }
 
+    @Override
     public void marshal(Object obj, Object xmlNode) throws MarshalException {
         if (null == obj || null == xmlNode) {
             throw new IllegalArgumentException();
@@ -77,6 +78,7 @@ public class JAXBBinder extends Binder {
         }
     }
 
+    @Override
     public Object unmarshal(Object obj) throws JAXBException {
         if (null == obj) {
             throw new IllegalArgumentException();
@@ -98,19 +100,21 @@ public class JAXBBinder extends Binder {
         }
     }
 
+    @Override
     public JAXBElement unmarshal(Object obj, Class javaClass) throws JAXBException  {
         if (null == obj || null == javaClass) {
             throw new IllegalArgumentException();
         }
 
         try {
-            Root xmlRoot = (Root) xmlBinder.unmarshal((Node) obj, javaClass);
+            Root xmlRoot = xmlBinder.unmarshal((Node) obj, javaClass);
             return new JAXBElement(new QName(xmlRoot.getNamespaceURI(), xmlRoot.getLocalName()), javaClass, xmlRoot.getObject());
         } catch (Exception e) {
             throw new UnmarshalException(e);
         }
     }
 
+    @Override
     public Object getXMLNode(Object obj) {
         if (null == obj) {
             throw new IllegalArgumentException();
@@ -122,10 +126,12 @@ public class JAXBBinder extends Binder {
         return xmlBinder.getXMLNode(obj);
     }
 
+    @Override
     public Object updateXML(Object obj) {
         return updateXML(obj, getXMLNode(obj));
     }
 
+    @Override
     public Object updateXML(Object obj, Object xmlNode) {
         if (null == obj || null == xmlNode) {
             throw new IllegalArgumentException();
@@ -138,6 +144,7 @@ public class JAXBBinder extends Binder {
         return xmlNode;
     }
 
+    @Override
     public Object getJAXBNode(Object obj) {
         if (null == obj) {
             throw new IllegalArgumentException();
@@ -146,6 +153,7 @@ public class JAXBBinder extends Binder {
         return xmlBinder.getObject((Node) obj);
     }
 
+    @Override
     public Object updateJAXB(Object obj) throws JAXBException {
         if (null == obj) {
             throw new IllegalArgumentException();
@@ -191,14 +199,17 @@ public class JAXBBinder extends Binder {
 
     // ============
 
+    @Override
     public void setSchema(Schema schema) {
         this.xmlBinder.setSchema(schema);
     }
 
+    @Override
     public Schema getSchema() {
         return this.xmlBinder.getSchema();
     }
 
+    @Override
     public void setEventHandler(ValidationEventHandler newValidationEventHandler) throws JAXBException {
         if (null == newValidationEventHandler) {
             xmlBinder.setErrorHandler(new JAXBErrorHandler(JAXBContext.DEFAULT_VALIDATION_EVENT_HANDLER));
@@ -207,11 +218,13 @@ public class JAXBBinder extends Binder {
         }
     }
 
+    @Override
     public ValidationEventHandler getEventHandler() {
         JAXBErrorHandler jaxbErrorHandler = (JAXBErrorHandler) xmlBinder.getErrorHandler();
         return jaxbErrorHandler.getValidationEventHandler();
     }
 
+    @Override
     public Object getProperty(String propName) throws PropertyException {
         if (null == propName) {
             throw new IllegalArgumentException();
@@ -236,9 +249,10 @@ public class JAXBBinder extends Binder {
         throw new PropertyException(propName);
     }
 
+    @Override
     public void setProperty(String propName, Object value) throws PropertyException {
         if (null == propName) {
-            throw new IllegalArgumentException(propName);
+            throw new IllegalArgumentException((String)null);
         }
 
         String valueString = (value == null) ? null : value.toString();

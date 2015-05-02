@@ -42,6 +42,7 @@ import org.eclipse.persistence.internal.indirection.IndirectionPolicy;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
+import org.eclipse.persistence.internal.sessions.coordination.MetadataRefreshCommand;
 import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
@@ -55,7 +56,6 @@ import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.UnitOfWork.CommitOrderType;
 import org.eclipse.persistence.sessions.broker.SessionBroker;
 import org.eclipse.persistence.sessions.coordination.CommandManager;
-import org.eclipse.persistence.internal.sessions.coordination.MetadataRefreshCommand;
 import org.eclipse.persistence.sessions.factories.SessionManager;
 import org.eclipse.persistence.sessions.server.Server;
 import org.eclipse.persistence.sessions.server.ServerSession;
@@ -213,6 +213,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
      * EntityMangers will continue to function with the old metadata, but new factories will use the new metadata.
      * @param properties
      */
+    @Override
     public void refreshMetadata(Map properties){
         EntityManagerSetupImpl setupImpl = delegate.getSetupImpl();
         if (setupImpl == null){
@@ -264,6 +265,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
      * construction
      * TODO: should throw IllegalStateException if not SessionBroker
      */
+    @Override
     public SessionBroker getSessionBroker() {
         return delegate.getSessionBroker();
     }
@@ -274,6 +276,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
      * partially constructed session stored in our setupImpl and completes its
      * construction
      */
+    @Override
     public ServerSession getServerSession() {
         return delegate.getServerSession();
     }
@@ -284,6 +287,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
      * throw an {@link IllegalStateException}, except for {@link #isOpen}, which
      * will return <code>false</code>.
      */
+    @Override
     public synchronized void close() {
         delegate.close();
     }
@@ -292,6 +296,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
      * Indicates whether or not this factory is open. Returns <code>true</code>
      * until a call to {@link #close} is made.
      */
+    @Override
     public boolean isOpen() {
         return delegate.isOpen();
     }
@@ -299,6 +304,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
     /**
      * PUBLIC: Returns an EntityManager for this deployment.
      */
+    @Override
     public EntityManager createEntityManager() {
         return createEntityManagerImpl(null, null);
     }
@@ -306,14 +312,17 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
     /**
      * PUBLIC: Returns an EntityManager for this deployment.
      */
+    @Override
     public EntityManager createEntityManager(Map properties) {
         return createEntityManagerImpl(properties, null);
     }
 
+    @Override
     public EntityManager createEntityManager(SynchronizationType synchronizationType) {
         return createEntityManagerImpl(null, synchronizationType);
     }
 
+    @Override
     public EntityManager createEntityManager(SynchronizationType synchronizationType, Map map) {
         return createEntityManagerImpl(map, synchronizationType);
     }
@@ -344,16 +353,13 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
      * to refresh will not affect that metadata on this EntityManagerFactory.
      * @return
      */
+    @Override
     public EntityManagerFactoryDelegate unwrap(){
         return delegate;
     }
 
     protected void verifyOpen() {
         delegate.verifyOpen();
-    }
-
-    protected void finalize() throws Throwable {
-        delegate = null;
     }
 
     /**
@@ -440,6 +446,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
      * @throws IllegalStateException
      *             if the entity manager factory has been closed.
      */
+    @Override
     public PersistenceUnitUtil getPersistenceUnitUtil() {
         return delegate.getPersistenceUnitUtil();
     }
@@ -512,6 +519,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
      * @see javax.persistence.EntityManagerFactory#getCache()
      * @since Java Persistence 2.0
      */
+    @Override
     public Cache getCache() {
         return delegate.getCache();
     }
@@ -520,10 +528,12 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
      * @see javax.persistence.EntityManagerFactory#getProperties()
      * @since Java Persistence API 2.0
      */
+    @Override
     public Map<String, Object> getProperties() {
         return delegate.getProperties();
     }
 
+    @Override
     public DatabaseSessionImpl getDatabaseSession() {
         return delegate.getDatabaseSession();
     }
@@ -531,6 +541,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
      * @see javax.persistence.EntityManagerFactory#getCriteriaBuilder()
      * @since Java Persistence 2.0
      */
+    @Override
     public CriteriaBuilder getCriteriaBuilder() {
         return delegate.getCriteriaBuilder();
     }
@@ -545,6 +556,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
      * @see javax.persistence.EntityManagerFactory#getMetamodel()
      * @since Java Persistence 2.0
      */
+    @Override
     public Metamodel getMetamodel() {
         return delegate.getMetamodel();
     }
@@ -572,6 +584,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
      * @return false if entity's state has not been loaded or if the attribute
      *         state has not been loaded, otherwise true
      */
+    @Override
     public boolean isLoaded(Object entity, String attributeName) {
         return delegate.isLoaded(entity, attributeName);
     }
@@ -589,6 +602,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
      *            whose load state is to be determined
      * @return false if the entity has not been loaded, else true.
      */
+    @Override
     public boolean isLoaded(Object entity) {
         return delegate.isLoaded(entity);
     }
@@ -603,6 +617,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
      * @throws IllegalStateException
      *             if the entity is found not to be an entity.
      */
+    @Override
     public Object getIdentifier(Object entity) {
         return delegate.getIdentifier(entity);
     }
@@ -621,6 +636,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
         delegate.setCommitOrder(commitOrder);
     }
 
+    @Override
     public void addNamedQuery(String name, Query query) {
         QueryImpl queryImpl = query.unwrap(QueryImpl.class);
         DatabaseQuery unwrapped = (DatabaseQuery) queryImpl.getDatabaseQueryInternal().clone();
@@ -634,6 +650,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
         this.getServerSession().addQuery(name, unwrapped, true);
     }
 
+    @Override
     public <T> T unwrap(Class<T> cls) {
         if (cls.equals(JpaEntityManagerFactory.class) || cls.equals(EntityManagerFactoryImpl.class)) {
             return (T) this;
@@ -651,6 +668,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
         throw new PersistenceException(ExceptionLocalization.buildMessage("unable_to_unwrap_jpa", new String[]{EntityManagerFactory.class.getName(),cls.getName()}));
     }
 
+    @Override
     public <T> void addNamedEntityGraph(String graphName, EntityGraph<T> entityGraph) {
         AttributeGroup group = ((EntityGraphImpl)entityGraph).getAttributeGroup().clone();
         group.setName(graphName);
