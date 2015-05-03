@@ -1,0 +1,43 @@
+apply plugin: 'java'
+
+jar {
+    baseName = 'org.eclipse.persistence.jsonb'
+    version =  '0.1.0'
+}
+
+compileJava {
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+sourceSets {
+    perf
+}
+
+dependencies {
+    compile group: 'javax.json.bind', name: 'javax.json.bind-api', version: '0.1-SNAPSHOT'
+    compile group: 'javax.json', name: 'javax.json-api', version: '1.0'
+}
+
+dependencies {
+    perfCompile project
+    perfCompile 'org.openjdk.jmh:jmh-core:0.9.3'
+    perfCompile 'org.openjdk.jmh:jmh-generator-annprocess:0.9.3'
+}
+
+task perf(type: JavaExec) {
+    group 'Application'
+    description 'Execute the benchmark timing of this project'
+    main 'org.openjdk.jmh.Main'
+    classpath = sourceSets.perf.runtimeClasspath
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.3'
+}
+

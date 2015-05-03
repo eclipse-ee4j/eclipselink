@@ -39,3 +39,5 @@ test_*.properties
 .sonar
 /coverage-report/
 /jacoco.out
+jsonb/.gradle
+jsonb/gradle
