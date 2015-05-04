@@ -148,14 +148,12 @@ public class PreLoginMappingAdapter extends SessionEventListener {
                             DatabaseMapping dbMapping = jpaDescriptor.getMappingForAttributeName(mapping.getAttributeName());
                             if ((dbMapping != null) && (dbMapping instanceof ForeignReferenceMapping)) {
                                 ForeignReferenceMapping jpaMapping = (ForeignReferenceMapping) dbMapping;
-                                if (jpaMapping != null) {
-                                    if (jpaMapping.getMappedBy() != null) {
-                                        ClassDescriptor inverseDescriptor = project.getDescriptorForAlias(jpaMapping.getReferenceDescriptor().getAlias());
-                                        if (inverseDescriptor != null) {
-                                            DatabaseMapping inverseMapping = inverseDescriptor.getMappingForAttributeName(jpaMapping.getMappedBy());
-                                            if (inverseMapping != null) {
-                                                convertMappingToXMLInverseReferenceMapping(inverseDescriptor, inverseMapping, jpaMapping);
-                                            }
+                                if (jpaMapping.getMappedBy() != null) {
+                                    ClassDescriptor inverseDescriptor = project.getDescriptorForAlias(jpaMapping.getReferenceDescriptor().getAlias());
+                                    if (inverseDescriptor != null) {
+                                        DatabaseMapping inverseMapping = inverseDescriptor.getMappingForAttributeName(jpaMapping.getMappedBy());
+                                        if (inverseMapping != null) {
+                                            convertMappingToXMLInverseReferenceMapping(inverseDescriptor, inverseMapping, jpaMapping);
                                         }
                                     }
                                 }
@@ -177,7 +175,7 @@ public class PreLoginMappingAdapter extends SessionEventListener {
                         if (value instanceof Class) {
                             subClassToInstantiate = (Class) value;
                             isAbstract = Modifier.isAbstract(subClassToInstantiate.getModifiers());
-                            if ((subClassToInstantiate != null) && (!isAbstract)) {
+                            if (!isAbstract) {
                                 InstantiationPolicy instantiationPolicy = new InstantiationPolicy();
                                 instantiationPolicy.useFactoryInstantiationPolicy(new ConcreteSubclassFactory(subClassToInstantiate), "createConcreteSubclass");
                                 descriptor.setInstantiationPolicy(instantiationPolicy);

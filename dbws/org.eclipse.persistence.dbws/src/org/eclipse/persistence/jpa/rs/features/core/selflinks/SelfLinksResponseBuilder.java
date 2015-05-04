@@ -69,9 +69,6 @@ public class SelfLinksResponseBuilder extends FeatureResponseBuilderImpl {
         for (Object result : results) {
             ReportQueryResultListItem queryResultListItem = new ReportQueryResultListItem();
             List<JAXBElement> jaxbFields = createShellJAXBElementList(items, result);
-            if (jaxbFields == null) {
-                return null;
-            }
             generateLinksInElementsList(context, jaxbFields);
             queryResultListItem.setFields(jaxbFields);
             response.addItem(queryResultListItem);
@@ -87,9 +84,6 @@ public class SelfLinksResponseBuilder extends FeatureResponseBuilderImpl {
     public Object buildSingleResultQueryResponse(PersistenceContext context, Map<String, Object> queryParams, Object result, List<ReportItem> items, UriInfo uriInfo) {
         final SingleResultQueryResult response = new SingleResultQueryResult();
         final List<JAXBElement> fields = createShellJAXBElementList(items, result);
-        if (fields == null) {
-            return null;
-        }
 
         // If there are entities in fields insert links there
         generateLinksInElementsList(context, fields);

@@ -95,7 +95,7 @@ public class ReferenceAdapter<T extends PersistenceWeavedRest> extends XmlAdapte
         }
 
         PersistenceWeavedRest persistenceWeavedRest = null;
-        Link link = null;
+        Link link;
 
         if (object instanceof PersistenceWeavedRest) {
             persistenceWeavedRest = (PersistenceWeavedRest) object;
@@ -106,7 +106,7 @@ public class ReferenceAdapter<T extends PersistenceWeavedRest> extends XmlAdapte
             return null;
         }
 
-        if ((null == link) || ((link != null) && (link.getHref() == null))) {
+        if (null == link || link.getHref() == null) {
             if (persistenceWeavedRest != null) {
                 ClassDescriptor descriptor = context.getJAXBDescriptorForClass(persistenceWeavedRest.getClass());
                 if (persistenceWeavedRest instanceof FetchGroupTracker && JpaHelper.getDatabaseSession(context.getEmf()).doesObjectExist(persistenceWeavedRest)) {

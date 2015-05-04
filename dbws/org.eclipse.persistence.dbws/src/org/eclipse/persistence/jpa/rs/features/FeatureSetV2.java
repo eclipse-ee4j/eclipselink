@@ -115,6 +115,6 @@ public class FeatureSetV2 implements FeatureSet {
      */
     @Override
     public SessionEventListener getSessionEventListener(AbstractSession session) {
-        return new PreLoginMappingAdapterV2(session);
+        return new PreLoginMappingAdapterV2();
     }
 }
