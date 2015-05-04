@@ -132,6 +132,7 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
             while (objects.hasNext()) {
                 K o = objects.next();
                 objects.remove();
+                // should remove this to not fire same event twice
                 this.raiseRemoveChangeEvent(o, this.get(o));
             }
         } else {
@@ -840,6 +841,9 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
                     Map.Entry entry = (Map.Entry)iterator.next();
                     if (entry.getValue().equals(o)){
                         IndirectMap.this.raiseRemoveChangeEvent(entry.getKey(), entry.getValue());
+                        //should remove the element here
+                        //entryIt.remove();
+                        //return true;
                     }
                     return true;    
                 }

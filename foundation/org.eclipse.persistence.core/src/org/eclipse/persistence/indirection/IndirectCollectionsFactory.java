@@ -16,6 +16,8 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Collection;
 import java.util.Map;
+
+import org.eclipse.persistence.internal.helper.JavaSEPlatform;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.logging.AbstractSessionLog;
@@ -184,35 +186,38 @@ public final class IndirectCollectionsFactory {
      * of {@link IndirectCollection}s
      */
     private static IndirectCollectionsProvider getProvider() {
-        try {
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                final Class support = AccessController.doPrivileged(new PrivilegedClassForName(JDK8_SUPPORT_PROVIDER, true, IndirectCollectionsFactory.class.getClassLoader()));
-                return AccessController.doPrivileged(new PrivilegedAction<IndirectCollectionsProvider>() {
+        //try this on JDK 8+ only (see bug 464096)
+        if (JavaSEPlatform.CURRENT.atLeast(JavaSEPlatform.v1_8)) {
+            try {
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                    final Class support = AccessController.doPrivileged(new PrivilegedClassForName(JDK8_SUPPORT_PROVIDER, true, IndirectCollectionsFactory.class.getClassLoader()));
+                    return AccessController.doPrivileged(new PrivilegedAction<IndirectCollectionsProvider>() {
 
-                    @Override
-                    public IndirectCollectionsProvider run() {
-                        try {
-                            return (IndirectCollectionsProvider) support.newInstance();
-                        } catch (InstantiationException | IllegalAccessException ex) {
-                            throw new RuntimeException(ex);
+                        @Override
+                        public IndirectCollectionsProvider run() {
+                            try {
+                                return (IndirectCollectionsProvider) support.newInstance();
+                            } catch (InstantiationException | IllegalAccessException ex) {
+                                throw new RuntimeException(ex);
+                            }
                         }
-                    }
-                });
-            } else {
-                Class support = PrivilegedAccessHelper.getClassForName(JDK8_SUPPORT_PROVIDER, true, IndirectCollectionsFactory.class.getClassLoader());
-                return (IndirectCollectionsProvider) PrivilegedAccessHelper.newInstanceFromClass(support);
+                    });
+                } else {
+                    Class support = PrivilegedAccessHelper.getClassForName(JDK8_SUPPORT_PROVIDER, true, IndirectCollectionsFactory.class.getClassLoader());
+                    return (IndirectCollectionsProvider) PrivilegedAccessHelper.newInstanceFromClass(support);
+                }
+            } catch (Throwable t) {
+                SessionLogEntry sle = new SessionLogEntry(null, t);
+                sle.setMessage("IndirectCollections: Using JDK 7 compatible APIs.");
+                sle.setLevel(SessionLog.FINEST);
+                sle.setNameSpace(SessionLog.MISC);
+                //avoid printing date as that would cause an attempt to access
+                //a field of this class which has not been initialized yet
+                //see DefaultSessionLog.getDateString->ConversionManager.convertObject
+                //    ->ClassConstants
+                sle.setDate(null);
+                AbstractSessionLog.getLog().log(sle);
             }
-        } catch (Throwable t) {
-            SessionLogEntry sle = new SessionLogEntry(null, t);
-            sle.setMessage("IndirectCollections: Using JDK 7 compatible APIs.");
-            sle.setLevel(SessionLog.FINEST);
-            sle.setNameSpace(SessionLog.MISC);
-            //avoid printing date as that would cause an attempt to access
-            //a field of this class which has not been initialized yet
-            //see DefaultSessionLog.getDateString->ConversionManager.convertObject
-            //    ->ClassConstants
-            sle.setDate(null);
-            AbstractSessionLog.getLog().log(sle);
         }
 
         return new DefaultProvider();

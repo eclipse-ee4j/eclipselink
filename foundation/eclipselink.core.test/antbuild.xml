@@ -261,10 +261,16 @@
     <target name="compile" depends="init_paths" description="compile EclipseLink core tests">
         <!-- fail message="Cannot find junit: '${junit.lib}'." unless="junit.jar.exist"/ -->
         <!-- fail message="Cannot find persistence: '${core_test.2.common.plugins.dir}/${unsigned.persistence10.jar}'." unless="persistence.bundle.exist"/ -->
+        <condition property="test.compile.excludes" value="**/jdk8/**">
+            <not>
+                <available classname="java.util.Spliterator" classpathref="core_test.compile.path"/>
+            </not>
+        </condition>
         <mkdir dir="${core_test.classes.dir}"/>
         <javac srcdir="${core_test.src.dir}"
                destdir="${core_test.classes.dir}"
                includes="org/eclipse/persistence/**, deprecated/**, java/sql/**"
+               excludes="${test.compile.excludes}"
                debug="${javac.debug}"
                debuglevel="${javac.debuglevel}"
                encoding="UTF-8"
