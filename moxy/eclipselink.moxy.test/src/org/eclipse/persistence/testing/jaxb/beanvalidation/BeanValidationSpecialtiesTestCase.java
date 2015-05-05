@@ -16,6 +16,7 @@ import org.eclipse.persistence.exceptions.BeanValidationException;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.JAXBMarshaller;
+import org.eclipse.persistence.testing.jaxb.beanvalidation.dom.Employee;
 import org.eclipse.persistence.testing.jaxb.beanvalidation.special.ConstructorAnnotatedEmployee;
 import org.eclipse.persistence.testing.jaxb.beanvalidation.special.CustomAnnotatedEmployee;
 import org.eclipse.persistence.testing.jaxb.beanvalidation.special.MethodAnnotatedEmployee;
@@ -33,6 +34,11 @@ import javax.validation.ValidatorFactory;
 import javax.validation.executable.ExecutableValidator;
 import javax.validation.metadata.BeanDescriptor;
 import javax.validation.metadata.ConstraintDescriptor;
+import javax.xml.bind.SchemaOutputResolver;
+import javax.xml.transform.Result;
+import javax.xml.transform.stream.StreamResult;
+import java.io.File;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -40,6 +46,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+
+import static org.eclipse.persistence.testing.jaxb.beanvalidation.ContentComparator.equalsXML;
 
 /**
  * Test case storing non-standard tests, i.e. those that didn't fit neither in
@@ -52,6 +60,43 @@ public class BeanValidationSpecialtiesTestCase extends junit.framework.TestCase 
 
     private static final String NOT_NULL_MESSAGE = "{javax.validation.constraints.NotNull.message}";
     private static final String CUSTOM_ANNOTATION_MESSAGE = "{org.eclipse.persistence.moxy.CustomAnnotation.message}";
+
+    private static final String GENERATOR_SCHEMA =
+            "org/eclipse/persistence/testing/jaxb/beanvalidation/generator/schema.xsd";
+    private static final String GENERATOR_SCHEMA_WITH_FACETS =
+            "org/eclipse/persistence/testing/jaxb/beanvalidation/generator/schema_with_facets.xsd";
+
+    private static final String JAXB_SERVICE_TEMPLATE = "META-INF/services/javax.xml.bind.JAXBContext_template";
+    private static final String JAXB_SERVICE_ACTIVE = "META-INF/services/javax.xml.bind.JAXBContext";
+
+    public void testGenerator() throws Exception {
+
+
+        try {
+
+            File file = new File(JAXB_SERVICE_TEMPLATE);
+            assertTrue(file.renameTo(new File(JAXB_SERVICE_ACTIVE)));
+
+            Map<String, Object> props = new HashMap<>();
+            props.put(JAXBContextProperties.BEAN_VALIDATION_FACETS, true);
+            javax.xml.bind.JAXBContext jaxbContext = javax.xml.bind.JAXBContext.newInstance(new Class[] {Employee.class},
+                    props);
+
+            SchemaOutputResolver sor = new MySchemaOutputResolver();
+            jaxbContext.generateSchema(sor);
+
+            assertTrue(equalsXML(new File(GENERATOR_SCHEMA), new File(GENERATOR_SCHEMA_WITH_FACETS)));
+
+        } finally {
+            //noinspection ResultOfMethodCallIgnored
+            File file = new File(JAXB_SERVICE_ACTIVE);
+            assertTrue("JAXB Service template was not properly renamed back to 'META-INF/services/javax.xml.bind" +
+                    ".JAXBContext_template. DO that manually.'", file.renameTo(new File(JAXB_SERVICE_TEMPLATE)));
+            assertTrue("Generated schema '" + GENERATOR_SCHEMA + "' was not deleted properly. DO that manually.", new
+                    File(GENERATOR_SCHEMA).delete());
+        }
+
+    }
 
     /**
      * Tests that we do not skip validation on classes that do not have any bean validation annotations but have a
@@ -158,6 +203,18 @@ public class BeanValidationSpecialtiesTestCase extends junit.framework.TestCase 
         Set<? extends ConstraintViolation<?>> violations = marshaller.getConstraintViolations();
 
         assertFalse(violations.isEmpty());
+    }
+
+    private static class MySchemaOutputResolver extends SchemaOutputResolver {
+
+        @Override
+        public Result createOutput(String uri, String suggestedFileName) throws IOException {
+            File file = new File(GENERATOR_SCHEMA);
+            StreamResult result = new StreamResult(file);
+            result.setSystemId(file.toURI().toURL().toString());
+            return result;
+        }
+
     }
 
     /**

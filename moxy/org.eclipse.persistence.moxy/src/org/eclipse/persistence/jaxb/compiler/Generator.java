@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Logger;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.SchemaOutputResolver;
@@ -62,6 +63,9 @@ import org.eclipse.persistence.sessions.Project;
  *  @see SchemaGenerator
  */
 public class Generator {
+
+    private static final Logger LOGGER = Logger.getLogger(Generator.class.getName());
+
     private AnnotationsProcessor annotationsProcessor;
     private SchemaGenerator schemaGenerator;
     private MappingsGenerator mappingsGenerator;
@@ -69,7 +73,6 @@ public class Generator {
     private Map<Type, TypeMappingInfo> typeToTypeMappingInfo;
 
     /**
-     * This is the preferred constructor.
      * This constructor creates a Helper using the JavaModelInput
      * instance's JavaModel. Annotations are processed here as well.
      *
@@ -77,7 +80,7 @@ public class Generator {
      */
     public Generator(JavaModelInput jModelInput) {
         helper = new Helper(jModelInput.getJavaModel());
-        if (jModelInput instanceof JavaModelInputImpl) helper.setFacets(((JavaModelInputImpl) jModelInput).isFacets());
+        configureFacetsGeneration(jModelInput);
         annotationsProcessor = new AnnotationsProcessor(helper);
         schemaGenerator = new SchemaGenerator(helper);
         mappingsGenerator = new MappingsGenerator(helper);
@@ -97,6 +100,7 @@ public class Generator {
      */
     public Generator(JavaModelInput jModelInput, Map<String, XmlBindings> xmlBindings, ClassLoader cLoader, String defaultTargetNamespace, boolean enableXmlAccessorFactory) {
         helper = new Helper(jModelInput.getJavaModel());
+        configureFacetsGeneration(jModelInput);
         annotationsProcessor = new AnnotationsProcessor(helper);
         annotationsProcessor.setXmlAccessorFactorySupport(enableXmlAccessorFactory);
         annotationsProcessor.setDefaultTargetNamespace(defaultTargetNamespace);
@@ -118,6 +122,7 @@ public class Generator {
      */
     public Generator(JavaModelInput jModelInput, TypeMappingInfo[] typeMappingInfos, JavaClass[] javaClasses, Map<Type, TypeMappingInfo> typeToTypeMappingInfo, String defaultTargetNamespace) {
         helper = new Helper(jModelInput.getJavaModel());
+        configureFacetsGeneration(jModelInput);
         annotationsProcessor = new AnnotationsProcessor(helper);
         annotationsProcessor.setDefaultTargetNamespace(defaultTargetNamespace);
         schemaGenerator = new SchemaGenerator(helper);
@@ -144,6 +149,7 @@ public class Generator {
      */
     public Generator(JavaModelInput jModelInput, TypeMappingInfo[] typeMappingInfos, JavaClass[] javaClasses, Map<Type, TypeMappingInfo> typeToTypeMappingInfo, Map<String, XmlBindings> xmlBindings, ClassLoader cLoader, String defaultTargetNamespace, boolean enableXmlAccessorFactory) {
         helper = new Helper(jModelInput.getJavaModel());
+        configureFacetsGeneration(jModelInput);
         annotationsProcessor = new AnnotationsProcessor(helper);
         annotationsProcessor.setXmlAccessorFactorySupport(enableXmlAccessorFactory);
         annotationsProcessor.setDefaultTargetNamespace(defaultTargetNamespace);
@@ -306,6 +312,16 @@ public class Generator {
 
     public Map<Type, TypeMappingInfo> getTypeToTypeMappingInfo() {
         return this.typeToTypeMappingInfo;
+    }
+
+    private void configureFacetsGeneration(JavaModelInput jModelInput) {
+        if (jModelInput instanceof JavaModelInputImpl) {
+            helper.setFacets(((JavaModelInputImpl) jModelInput).isFacets());
+        } else {
+            String msg = "MOXy BV: Facets generation could not be configured. EclipseLink's JavaModelInputImpl was " +
+                    "not detected, instead JavaModelInput is of class:" + jModelInput.getClass();
+            LOGGER.warning(msg);
+        }
     }
 
 }

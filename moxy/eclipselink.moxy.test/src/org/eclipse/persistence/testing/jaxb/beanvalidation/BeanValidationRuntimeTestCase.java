@@ -20,10 +20,10 @@ import org.eclipse.persistence.jaxb.JAXBMarshaller;
 import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
-import org.eclipse.persistence.testing.jaxb.beanvalidation.rt_dom.Department;
-import org.eclipse.persistence.testing.jaxb.beanvalidation.rt_dom.Drivers;
-import org.eclipse.persistence.testing.jaxb.beanvalidation.rt_dom.DrivingLicense;
-import org.eclipse.persistence.testing.jaxb.beanvalidation.rt_dom.Employee;
+import org.eclipse.persistence.testing.jaxb.beanvalidation.dom.Department;
+import org.eclipse.persistence.testing.jaxb.beanvalidation.dom.Drivers;
+import org.eclipse.persistence.testing.jaxb.beanvalidation.dom.DrivingLicense;
+import org.eclipse.persistence.testing.jaxb.beanvalidation.dom.Employee;
 import org.junit.After;
 import org.junit.Before;
 

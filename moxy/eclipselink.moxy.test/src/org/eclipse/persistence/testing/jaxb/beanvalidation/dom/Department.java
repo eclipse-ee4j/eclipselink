@@ -10,11 +10,15 @@
  * Contributors:
  *     Marcel Valovy - 2.6 - initial implementation
  ******************************************************************************/
-package org.eclipse.persistence.testing.jaxb.beanvalidation.rt_dom;
+package org.eclipse.persistence.testing.jaxb.beanvalidation.dom;
+
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * BeanValidation Group 'Drivers.class'.
+ * @author Marcel Valovy - marcel.valovy@oracle.com
+ * @since 2.6
  */
-public interface Drivers {
-
+@XmlRootElement
+public enum Department {
+    RDBMS, JavaSE, JavaEE, Sales, Support
 }
