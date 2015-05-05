@@ -42,7 +42,7 @@ public class PersistenceUnitProcessorTest extends JUnitTestCase {
         Assert.assertEquals(
                 "file:/C:/Oracle/Middleware/Oracle_Home/wlserver/samples/domains/mydomain/servers/myserver/tmp/_WL_user/eclipselink-advanced-model/y986my/eclipselink-advanced-model_ejb.jar",
                 PersistenceUnitProcessor.computePURootURL(
-                        new URL("zip", "", -1, "C:/Oracle/Middleware/Oracle_Home/wlserver/samples/domains/mydomain/servers/myserver/tmp/_WL_user/eclipselink-advanced-model/y986my/eclipselink-advanced-model_ejb.jar!/META-INF/persistence.xml", dummyZipHandler),
+                        new URL("zip", "", -1, "/C:/Oracle/Middleware/Oracle_Home/wlserver/samples/domains/mydomain/servers/myserver/tmp/_WL_user/eclipselink-advanced-model/y986my/eclipselink-advanced-model_ejb.jar!/META-INF/persistence.xml", dummyZipHandler),
                         "META-INF/persistence.xml"
                 ).toString()
         );
@@ -50,7 +50,7 @@ public class PersistenceUnitProcessorTest extends JUnitTestCase {
         Assert.assertEquals(
                 "file:/C:/Program Files/Middleware/Oracle_Home/wlserver/samples/domains/mydomain/servers/myserver/tmp/_WL_user/eclipselink-advanced-model/y986my/eclipselink-advanced-model_ejb.jar", 
                 PersistenceUnitProcessor.computePURootURL(
-                        new URL("zip", "", -1, "C:/Program Files/Middleware/Oracle_Home/wlserver/samples/domains/mydomain/servers/myserver/tmp/_WL_user/eclipselink-advanced-model/y986my/eclipselink-advanced-model_ejb.jar!/META-INF/persistence.xml", dummyZipHandler), 
+                        new URL("zip", "", -1, "/C:/Program Files/Middleware/Oracle_Home/wlserver/samples/domains/mydomain/servers/myserver/tmp/_WL_user/eclipselink-advanced-model/y986my/eclipselink-advanced-model_ejb.jar!/META-INF/persistence.xml", dummyZipHandler), 
                         "META-INF/persistence.xml"
                 ).toString()
         );
@@ -58,7 +58,7 @@ public class PersistenceUnitProcessorTest extends JUnitTestCase {
         Assert.assertEquals(
                 "file:/C:/Program.Files/Middleware/Oracle_Home/wlserver/samples/domains/mydomain/servers/myserver/tmp/_WL_user/eclipselink-advanced-model/y986my/eclipselink-advanced-model_ejb.jar", 
                 PersistenceUnitProcessor.computePURootURL(
-                        new URL("zip", "", -1, "C:/Program.Files/Middleware/Oracle_Home/wlserver/samples/domains/mydomain/servers/myserver/tmp/_WL_user/eclipselink-advanced-model/y986my/eclipselink-advanced-model_ejb.jar!/META-INF/persistence.xml", dummyZipHandler), 
+                        new URL("zip", "", -1, "/C:/Program.Files/Middleware/Oracle_Home/wlserver/samples/domains/mydomain/servers/myserver/tmp/_WL_user/eclipselink-advanced-model/y986my/eclipselink-advanced-model_ejb.jar!/META-INF/persistence.xml", dummyZipHandler), 
                         "META-INF/persistence.xml"
                 ).toString()
         );
