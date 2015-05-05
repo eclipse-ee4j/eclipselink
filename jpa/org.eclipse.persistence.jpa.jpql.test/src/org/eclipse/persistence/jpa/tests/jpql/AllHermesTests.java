@@ -108,14 +108,14 @@ public final class AllHermesTests {
     public static class EclipseLinkTestSuite {
     }
 
-    static class HermesDefaultTestSuite extends DefaultTestSuite {
+    public static class HermesDefaultTestSuite extends DefaultTestSuite {
         @JPQLQueryTestHelperTestHelper
         static JPQLQueryTestHelper buildQueryTestHelper() {
             return new DefaultJavaJPQLQueryTestHelper();
         }
     }
 
-    static final class HermesEclipseLinkTestSuite extends EclipseLinkTestSuite {
+    public static final class HermesEclipseLinkTestSuite extends EclipseLinkTestSuite {
         @JPQLQueryTestHelperTestHelper
         static JPQLQueryTestHelper buildQueryTestHelper() {
             return new EclipseLinkJavaJPQLQueryTestHelper();

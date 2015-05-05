@@ -25,6 +25,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.eclipse.persistence.jpa.jpql.tools.model.AbstractActualJPQLQueryFormatter;
 import org.eclipse.persistence.jpa.jpql.tools.model.BaseJPQLQueryFormatter;
 import org.eclipse.persistence.jpa.jpql.tools.model.IJPQLQueryBuilder;
@@ -132,6 +133,7 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
 
     private static DescriptionBuilder buildJPQLGrammarTestHelperDescriptionBuilder() {
         return new DescriptionBuilder() {
+            @Override
             public String toString(Object object) {
                 return object.toString();
             }
@@ -140,6 +142,7 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
 
     private static DescriptionBuilder buildJPQLQueryBuilderTestHelperDescriptionBuilder() {
         return new DescriptionBuilder() {
+            @Override
             public String toString(Object object) {
                 IJPQLQueryBuilder builder = (IJPQLQueryBuilder) object;
                 StringBuilder sb = new StringBuilder();
@@ -154,6 +157,7 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
 
     private static DescriptionBuilder buildJPQLQueryFormatterTestHelperDescriptionBuilder() {
         return new DescriptionBuilder() {
+            @Override
             public String toString(Object object) {
                 BaseJPQLQueryFormatter formatter = (BaseJPQLQueryFormatter) object;
                 StringBuilder sb = new StringBuilder();
@@ -173,6 +177,7 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
 
     private static DescriptionBuilder buildJPQLQueryHelperTestHelperDescriptionBuilder() {
         return new DescriptionBuilder() {
+            @Override
             public String toString(Object object) {
                 return object.getClass().getSimpleName();
             }
@@ -181,6 +186,7 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
 
     private static DescriptionBuilder buildJPQLQueryTestHelperTestHelperDescriptionBuilder() {
         return new DescriptionBuilder() {
+            @Override
             public String toString(Object object) {
                 return object.getClass().getSimpleName();
             }
@@ -254,6 +260,7 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
 
     private Comparator<Runner> buildRunnerComparator() {
         return new Comparator<Runner>() {
+            @Override
             public int compare(Runner runner1, Runner runner2) {
                 String displayName1 = runner1.getDescription().getDisplayName();
                 String displayName2 = runner1.getDescription().getDisplayName();
@@ -509,6 +516,7 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
 
         private Comparator<FrameworkMethod> buildMethodComparator() {
             return new Comparator<FrameworkMethod>() {
+                @Override
                 public int compare(FrameworkMethod method1, FrameworkMethod method2) {
                     return method1.getName().compareTo(method2.getName());
                 }
@@ -537,7 +545,7 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
 
         @Override
         protected List<FrameworkMethod> getChildren() {
-            List<FrameworkMethod> methods = super.getChildren();
+            List<FrameworkMethod> methods = new ArrayList<>(super.getChildren());
             Collections.sort(methods, buildMethodComparator());
             return methods;
         }
