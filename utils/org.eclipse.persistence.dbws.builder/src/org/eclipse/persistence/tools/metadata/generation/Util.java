@@ -268,7 +268,7 @@ public class Util {
      * Return the JDBC type name for a given JDBC type code.
      */
     public static String getJDBCTypeNameFromType(int jdbcType) {
-        String typeName = OTHER_STR;
+        String typeName = null;
         switch (jdbcType) {
             case Types.NUMERIC:
                 typeName = NUMERIC_STR;
@@ -336,6 +336,9 @@ public class Util {
             case Types.ROWID:
                 typeName = ROWID_STR;
                 break;
+            default:
+                typeName = OTHER_STR;
+                break;
         }
         return typeName;
     }
@@ -353,7 +356,7 @@ public class Util {
      * be returned if the DatabasePlatform returns null.
      */
     public static Class<?> getClassFromJDBCTypeName(String typeName, DatabasePlatform databasePlatform) {
-        Class<?> clz = (Class<?>)databasePlatform.getClassTypes().get(typeName);
+        Class<?> clz = databasePlatform.getClassTypes().get(typeName);
         if (clz == null) {
             return Object_Class;
         }

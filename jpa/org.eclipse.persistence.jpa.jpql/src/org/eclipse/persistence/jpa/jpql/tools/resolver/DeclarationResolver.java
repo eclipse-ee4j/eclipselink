@@ -19,6 +19,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.LiteralType;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractExpressionVisitor;
@@ -441,6 +442,9 @@ public class DeclarationResolver extends Resolver {
                         }
                     }
                 }
+
+                default:
+                    continue;
             }
         }
 
@@ -837,7 +841,7 @@ public class DeclarationResolver extends Resolver {
         }
     }
 
-    protected class QualifyRangeDeclarationVisitor extends AbstractExpressionVisitor {
+    protected static class QualifyRangeDeclarationVisitor extends AbstractExpressionVisitor {
 
         /**
          * The new {@link Declaration}.

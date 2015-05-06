@@ -58,6 +58,7 @@ import static org.eclipse.persistence.tools.metadata.generation.Util.isArgPLSQLS
 import static org.eclipse.persistence.tools.metadata.generation.Util.processTypeName;
 
 import java.security.AccessController;
+import java.security.PrivilegedActionException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
@@ -1112,7 +1113,7 @@ public class JPAMetadataGenerator {
                 platformClass = PrivilegedAccessHelper.getClassForName(platformClassName);
             }
             dbPlatform = (DatabasePlatform) Helper.getInstanceFromClass(platformClass);
-        } catch (Exception e) {
+        } catch (PrivilegedActionException | ClassNotFoundException | NullPointerException e) {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     platformClass = AccessController.doPrivileged(new PrivilegedClassForName(DEFAULT_PLATFORM));
@@ -1120,7 +1121,7 @@ public class JPAMetadataGenerator {
                     platformClass = PrivilegedAccessHelper.getClassForName(DEFAULT_PLATFORM);
                 }
                 dbPlatform = (DatabasePlatform) Helper.getInstanceFromClass(platformClass);
-            } catch (Exception ex) {
+            } catch (PrivilegedActionException | ClassNotFoundException ex) {
                 // at this point we can't load the default Oracle11Platform, so null will be returned
             }
         }

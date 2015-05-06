@@ -20,6 +20,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import org.eclipse.persistence.jpa.jpql.utility.filter.Filter;
 import org.eclipse.persistence.jpa.jpql.utility.filter.NullFilter;
 import org.eclipse.persistence.jpa.jpql.utility.iterable.ArrayIterable;
@@ -155,6 +156,7 @@ public abstract class JPQLQueryBNF {
 
     private static Filter<JPQLQueryBNF> buildNonCompoundFilter() {
         return new Filter<JPQLQueryBNF>() {
+            @Override
             public boolean accept(JPQLQueryBNF queryBNF) {
                 return !queryBNF.isCompound();
             }
@@ -234,7 +236,7 @@ public abstract class JPQLQueryBNF {
         }
     }
 
-    private Boolean calculateHandleAggregate(Set<JPQLQueryBNF> queryBNFs) {
+    private boolean calculateHandleAggregate(Set<JPQLQueryBNF> queryBNFs) {
 
         if (handleAggregate != null) {
             return handleAggregate;
@@ -242,17 +244,17 @@ public abstract class JPQLQueryBNF {
 
         for (JPQLQueryBNF queryBNF : getChildren()) {
             if ((queryBNF != this) && queryBNFs.add(queryBNF)) {
-                Boolean result = queryBNF.calculateHandleAggregate(queryBNFs);
-                if (result == Boolean.TRUE) {
-                    return result;
+                boolean result = queryBNF.calculateHandleAggregate(queryBNFs);
+                if (result) {
+                    return true;
                 }
             }
         }
 
-        return Boolean.FALSE;
+        return false;
     }
 
-    private Boolean calculateHandleCollection(Set<JPQLQueryBNF> queryBNFs) {
+    private boolean calculateHandleCollection(Set<JPQLQueryBNF> queryBNFs) {
 
         if (handleCollection != null) {
             return handleCollection;
@@ -260,14 +262,14 @@ public abstract class JPQLQueryBNF {
 
         for (JPQLQueryBNF queryBNF : getChildren()) {
             if ((queryBNF != this) && queryBNFs.add(queryBNF)) {
-                Boolean result = queryBNF.calculateHandleCollection(queryBNFs);
-                if (result == Boolean.TRUE) {
-                    return result;
+                boolean result = queryBNF.calculateHandleCollection(queryBNFs);
+                if (result) {
+                    return true;
                 }
             }
         }
 
-        return Boolean.FALSE;
+        return false;
     }
 
     /**
@@ -497,7 +499,7 @@ public abstract class JPQLQueryBNF {
     public boolean hasChild(String queryBNFId) {
 
         for (JPQLQueryBNF child : getChildren()) {
-            if (child.getId() == queryBNFId) {
+            if (child.getId().equals(queryBNFId)) {
                 return true;
             }
         }

@@ -13,6 +13,30 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.tools;
 
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.BETWEEN;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.DELETE_FROM;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.IN;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.INNER_JOIN;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.INNER_JOIN_FETCH;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.IS_EMPTY;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.IS_NOT_EMPTY;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.IS_NOT_NULL;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.IS_NULL;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.JOIN;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.JOIN_FETCH;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.LEFT_JOIN;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.LEFT_JOIN_FETCH;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.LEFT_OUTER_JOIN;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.LEFT_OUTER_JOIN_FETCH;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.MEMBER;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.MEMBER_OF;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.NOT_BETWEEN;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.NOT_IN;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.NOT_MEMBER;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.NOT_MEMBER_OF;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.SELECT;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.UPDATE;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -21,6 +45,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.WordParser;
 import org.eclipse.persistence.jpa.jpql.parser.IdentifierRole;
@@ -30,7 +55,6 @@ import org.eclipse.persistence.jpa.jpql.tools.spi.IMapping;
 import org.eclipse.persistence.jpa.jpql.tools.spi.IType;
 import org.eclipse.persistence.jpa.jpql.tools.utility.XmlEscapeCharacterConverter;
 import org.eclipse.persistence.jpa.jpql.tools.utility.iterable.SnapshotCloneIterable;
-import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
 /**
  * The default implementation of {@link ContentAssistProposals} which stores the valid proposals.
@@ -215,6 +239,7 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
     /**
      * {@inheritDoc}
      */
+    @Override
     public Iterable<IEntity> abstractSchemaTypes() {
         return new SnapshotCloneIterable<IEntity>(entities);
     }
@@ -300,6 +325,7 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
     /**
      * {@inheritDoc}
      */
+    @Override
     public Result buildEscapedQuery(String jpqlQuery, String proposal, int position, boolean insert) {
 
         Result result = buildQuery(jpqlQuery, proposal, position, insert);
@@ -439,6 +465,7 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
     /**
      * {@inheritDoc}
      */
+    @Override
     public Result buildQuery(String jpqlQuery, String proposal, int position, boolean insert) {
 
         // Nothing to replace
@@ -463,6 +490,7 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
     /**
      * {@inheritDoc}
      */
+    @Override
     public ResultQuery buildXmlQuery(String jpqlQuery, String proposal, int position, boolean insert) {
 
         // Nothing to replace
@@ -497,6 +525,7 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
     /**
      * {@inheritDoc}
      */
+    @Override
     public Iterable<String> classNames() {
         if (classNamePrefix == null) {
             return Collections.emptyList();
@@ -507,6 +536,7 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
     /**
      * {@inheritDoc}
      */
+    @Override
     public Iterable<String> columnNames() {
         if (tableName == null) {
             return Collections.emptyList();
@@ -517,6 +547,7 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
     /**
      * {@inheritDoc}
      */
+    @Override
     public Iterable<EnumProposals> enumConstant() {
         return new SnapshotCloneIterable<EnumProposals>(enumProposals.values());
     }
@@ -524,6 +555,7 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
     /**
      * {@inheritDoc}
      */
+    @Override
     public IEntity getAbstractSchemaType(String identificationVariable) {
         return rangeIdentificationVariables.get(identificationVariable);
     }
@@ -542,6 +574,7 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
     /**
      * {@inheritDoc}
      */
+    @Override
     public ClassType getClassType() {
         return classType;
     }
@@ -570,6 +603,7 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
     /**
      * {@inheritDoc}
      */
+    @Override
     public IdentifierRole getIdentifierRole(String identifier) {
         return jpqlGrammar.getExpressionRegistry().getIdentifierRole(identifier);
     }
@@ -599,6 +633,7 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean hasProposals() {
         return !mappings.isEmpty()                ||
                !entities.isEmpty()                ||
@@ -614,6 +649,7 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
     /**
      * {@inheritDoc}
      */
+    @Override
     public Iterable<String> identificationVariables() {
         List<String> variables = new ArrayList<String>(identificationVariables.size() + rangeIdentificationVariables.size());
         variables.addAll(identificationVariables);
@@ -624,6 +660,7 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
     /**
      * {@inheritDoc}
      */
+    @Override
     public Iterable<String> identifiers() {
         return new SnapshotCloneIterable<String>(identifiers);
     }
@@ -714,6 +751,7 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
     /**
      * {@inheritDoc}
      */
+    @Override
     public Iterable<IMapping> mappings() {
         return new SnapshotCloneIterable<IMapping>(mappings);
     }
@@ -782,6 +820,7 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
     /**
      * {@inheritDoc}
      */
+    @Override
     public Iterable<String> tableNames() {
         if (tableNamePrefix == null) {
             return Collections.emptyList();
@@ -876,7 +915,7 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
         return sb.toString();
     }
 
-    private class DefaultEnumProposals implements EnumProposals {
+    private static final class DefaultEnumProposals implements EnumProposals {
 
         private Set<String> constants;
         private IType enumType;
@@ -890,6 +929,7 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
         /**
          * {@inheritDoc}
          */
+        @Override
         public Iterable<String> enumConstants() {
             return new SnapshotCloneIterable<String>(constants);
         }
@@ -897,6 +937,7 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
         /**
          * {@inheritDoc}
          */
+        @Override
         public IType enumType() {
             return enumType;
         }
@@ -908,7 +949,7 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
      * @see ContentAssistProposals#buildEscapedQuery(String, String, int, boolean)
      * @see ContentAssistProposals#buildQuery(String, String, int, boolean)
      */
-    private final class Result implements ResultQuery {
+    private static final class Result implements ResultQuery {
 
         /**
          * The new JPQL query after insertion of the proposal.
@@ -935,6 +976,7 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
         /**
          * {@inheritDoc}
          */
+        @Override
         public int getPosition() {
             return position;
         }
@@ -942,6 +984,7 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
         /**
          * {@inheritDoc}
          */
+        @Override
         public String getQuery() {
             return jpqlQuery;
         }

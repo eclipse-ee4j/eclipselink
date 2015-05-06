@@ -13,10 +13,41 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.tools;
 
+import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.AbsExpression_InvalidNumericExpression;
+import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.AvgFunction_InvalidNumericExpression;
+import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.BetweenExpression_WrongType;
+import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.CollectionMemberExpression_Embeddable;
+import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.ComparisonExpression_WrongComparisonType;
+import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.ConcatExpression_Expression_WrongType;
+import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.ConstructorExpression_UndefinedConstructor;
+import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.ConstructorExpression_UnknownType;
+import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.CountFunction_DistinctEmbeddable;
+import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.EncapsulatedIdentificationVariableExpression_NotMapValued;
+import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.IdentificationVariable_EntityName;
+import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.LengthExpression_WrongType;
+import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.LocateExpression_FirstExpression_WrongType;
+import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.LocateExpression_SecondExpression_WrongType;
+import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.LocateExpression_ThirdExpression_WrongType;
+import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.LowerExpression_WrongType;
+import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.ModExpression_FirstExpression_WrongType;
+import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.ModExpression_SecondExpression_WrongType;
+import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.NotExpression_WrongType;
+import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.NullComparisonExpression_InvalidType;
+import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.SqrtExpression_WrongType;
+import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.SubstringExpression_FirstExpression_WrongType;
+import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.SubstringExpression_SecondExpression_WrongType;
+import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.SubstringExpression_ThirdExpression_WrongType;
+import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.SumFunction_WrongType;
+import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.UpdateItem_NotAssignable;
+import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.UpdateItem_NotResolvable;
+import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.UpdateItem_NullNotAssignableToPrimitive;
+import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.UpperExpression_WrongType;
+
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.eclipse.persistence.jpa.jpql.AbstractSemanticValidator;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.ITypeHelper;
@@ -89,7 +120,6 @@ import org.eclipse.persistence.jpa.jpql.parser.UpdateClause;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateItem;
 import org.eclipse.persistence.jpa.jpql.parser.UpperExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ValueExpression;
-import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
 
 /**
  * This validator is responsible to gather the problems found in a JPQL query by validating the
@@ -237,7 +267,7 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
                 validator = constructor.newInstance(this);
                 validators.put(validatorClass, validator);
             }
-            catch (Exception e) { /* Never happens */ }
+            catch (ReflectiveOperationException e) { /* Never happens */ }
         }
         return validator;
     }
@@ -1260,7 +1290,7 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
         }
     }
 
-    protected class NullValueVisitor extends AbstractExpressionVisitor {
+    protected static class NullValueVisitor extends AbstractExpressionVisitor {
 
         /**
          * Determines whether the {@link Expression} visited represents {@link Expression#NULL}.
@@ -1453,7 +1483,7 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
         }
     }
 
-    protected class ResultVariableInOrderByVisitor extends AbstractExpressionVisitor {
+    protected static class ResultVariableInOrderByVisitor extends AbstractExpressionVisitor {
 
         public boolean result;
 
@@ -1633,7 +1663,7 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
         }
     }
 
-    protected class UpdateClauseAbstractSchemaNameFinder extends AbstractExpressionVisitor {
+    protected static class UpdateClauseAbstractSchemaNameFinder extends AbstractExpressionVisitor {
 
         protected AbstractSchemaName expression;
 

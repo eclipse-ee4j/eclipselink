@@ -16,6 +16,51 @@ import static java.sql.Types.ARRAY;
 import static java.sql.Types.OTHER;
 import static java.sql.Types.STRUCT;
 import static java.util.logging.Level.FINEST;
+// EclipseLink imports
+import static org.eclipse.persistence.internal.helper.ClassConstants.Object_Class;
+import static org.eclipse.persistence.internal.oxm.Constants.ANY_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.COLON;
+import static org.eclipse.persistence.internal.oxm.Constants.DATE_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.DOT;
+import static org.eclipse.persistence.internal.oxm.Constants.EMPTY_STRING;
+import static org.eclipse.persistence.internal.oxm.Constants.INT;
+import static org.eclipse.persistence.internal.oxm.Constants.SCHEMA_INSTANCE_PREFIX;
+import static org.eclipse.persistence.internal.oxm.Constants.SCHEMA_PREFIX;
+import static org.eclipse.persistence.internal.oxm.Constants.TEXT;
+import static org.eclipse.persistence.internal.xr.Util.SXF_QNAME;
+import static org.eclipse.persistence.internal.xr.Util.getClassFromJDBCType;
+import static org.eclipse.persistence.internal.xr.Util.getJDBCTypeForTypeName;
+import static org.eclipse.persistence.internal.xr.XRDynamicClassLoader.COLLECTION_WRAPPER_SUFFIX;
+import static org.eclipse.persistence.oxm.XMLConstants.SCHEMA_INSTANCE_URL;
+import static org.eclipse.persistence.oxm.XMLConstants.SCHEMA_URL;
+import static org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType.XSI_NIL;
+import static org.eclipse.persistence.tools.dbws.Util.APP_OCTET_STREAM;
+import static org.eclipse.persistence.tools.dbws.Util.AT_SIGN;
+import static org.eclipse.persistence.tools.dbws.Util.BUILDING_QUERYOP_FOR;
+import static org.eclipse.persistence.tools.dbws.Util.CLOSE_PAREN;
+import static org.eclipse.persistence.tools.dbws.Util.CURSOR_OF_STR;
+import static org.eclipse.persistence.tools.dbws.Util.CURSOR_STR;
+import static org.eclipse.persistence.tools.dbws.Util.OPEN_PAREN;
+import static org.eclipse.persistence.tools.dbws.Util.PERCENT;
+import static org.eclipse.persistence.tools.dbws.Util.SLASH;
+import static org.eclipse.persistence.tools.dbws.Util.SXF_QNAME_CURSOR;
+import static org.eclipse.persistence.tools.dbws.Util.TOPLEVEL;
+import static org.eclipse.persistence.tools.dbws.Util.TYPE_STR;
+import static org.eclipse.persistence.tools.dbws.Util.UNDERSCORE;
+import static org.eclipse.persistence.tools.dbws.Util.XMLTYPE_STR;
+import static org.eclipse.persistence.tools.dbws.Util.buildCustomQName;
+import static org.eclipse.persistence.tools.dbws.Util.getAttributeClassForDatabaseType;
+import static org.eclipse.persistence.tools.dbws.Util.getGeneratedAlias;
+import static org.eclipse.persistence.tools.dbws.Util.getGeneratedJavaClassName;
+import static org.eclipse.persistence.tools.dbws.Util.getXMLTypeFromJDBCType;
+import static org.eclipse.persistence.tools.dbws.Util.hasComplexArgs;
+import static org.eclipse.persistence.tools.dbws.Util.hasPLSQLCursorArg;
+import static org.eclipse.persistence.tools.dbws.Util.qNameFromString;
+import static org.eclipse.persistence.tools.dbws.Util.shouldSetJavaType;
+import static org.eclipse.persistence.tools.dbws.Util.sqlMatch;
+import static org.eclipse.persistence.tools.oracleddl.metadata.ArgumentTypeDirection.IN;
+import static org.eclipse.persistence.tools.oracleddl.metadata.ArgumentTypeDirection.INOUT;
+import static org.eclipse.persistence.tools.oracleddl.metadata.ArgumentTypeDirection.OUT;
 
 import java.sql.Array;
 import java.sql.Struct;
@@ -31,53 +76,6 @@ import java.util.Vector;
 import java.util.logging.Level;
 
 import javax.xml.namespace.QName;
-
-
-// EclipseLink imports
-import static org.eclipse.persistence.internal.helper.ClassConstants.Object_Class;
-import static org.eclipse.persistence.internal.xr.Util.SXF_QNAME;
-import static org.eclipse.persistence.internal.xr.Util.getJDBCTypeForTypeName;
-import static org.eclipse.persistence.internal.xr.Util.getClassFromJDBCType;
-import static org.eclipse.persistence.internal.xr.XRDynamicClassLoader.COLLECTION_WRAPPER_SUFFIX;
-import static org.eclipse.persistence.oxm.XMLConstants.ANY_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.COLON;
-import static org.eclipse.persistence.oxm.XMLConstants.DATE_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.DOT;
-import static org.eclipse.persistence.oxm.XMLConstants.EMPTY_STRING;
-import static org.eclipse.persistence.oxm.XMLConstants.INT;
-import static org.eclipse.persistence.oxm.XMLConstants.SCHEMA_INSTANCE_PREFIX;
-import static org.eclipse.persistence.oxm.XMLConstants.SCHEMA_INSTANCE_URL;
-import static org.eclipse.persistence.oxm.XMLConstants.SCHEMA_PREFIX;
-import static org.eclipse.persistence.oxm.XMLConstants.SCHEMA_URL;
-import static org.eclipse.persistence.oxm.XMLConstants.TEXT;
-import static org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType.XSI_NIL;
-import static org.eclipse.persistence.tools.dbws.Util.SXF_QNAME_CURSOR;
-import static org.eclipse.persistence.tools.dbws.Util.buildCustomQName;
-import static org.eclipse.persistence.tools.dbws.Util.getAttributeClassForDatabaseType;
-import static org.eclipse.persistence.tools.dbws.Util.getGeneratedJavaClassName;
-import static org.eclipse.persistence.tools.dbws.Util.getGeneratedAlias;
-import static org.eclipse.persistence.tools.dbws.Util.getXMLTypeFromJDBCType;
-import static org.eclipse.persistence.tools.dbws.Util.hasPLSQLCursorArg;
-import static org.eclipse.persistence.tools.dbws.Util.hasComplexArgs;
-import static org.eclipse.persistence.tools.dbws.Util.qNameFromString;
-import static org.eclipse.persistence.tools.dbws.Util.shouldSetJavaType;
-import static org.eclipse.persistence.tools.dbws.Util.sqlMatch;
-import static org.eclipse.persistence.tools.dbws.Util.APP_OCTET_STREAM;
-import static org.eclipse.persistence.tools.dbws.Util.AT_SIGN;
-import static org.eclipse.persistence.tools.dbws.Util.BUILDING_QUERYOP_FOR;
-import static org.eclipse.persistence.tools.dbws.Util.CLOSE_PAREN;
-import static org.eclipse.persistence.tools.dbws.Util.CURSOR_STR;
-import static org.eclipse.persistence.tools.dbws.Util.CURSOR_OF_STR;
-import static org.eclipse.persistence.tools.dbws.Util.OPEN_PAREN;
-import static org.eclipse.persistence.tools.dbws.Util.PERCENT;
-import static org.eclipse.persistence.tools.dbws.Util.UNDERSCORE;
-import static org.eclipse.persistence.tools.dbws.Util.SLASH;
-import static org.eclipse.persistence.tools.dbws.Util.TOPLEVEL;
-import static org.eclipse.persistence.tools.dbws.Util.TYPE_STR;
-import static org.eclipse.persistence.tools.dbws.Util.XMLTYPE_STR;
-import static org.eclipse.persistence.tools.oracleddl.metadata.ArgumentTypeDirection.IN;
-import static org.eclipse.persistence.tools.oracleddl.metadata.ArgumentTypeDirection.INOUT;
-import static org.eclipse.persistence.tools.oracleddl.metadata.ArgumentTypeDirection.OUT;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -168,6 +166,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
      * Indicates if this helper instance contains one or more
      * TableType instances in TableType List "dbTables".
      */
+    @Override
     public boolean hasTables() {
         return dbTables.size() == 0 ? false : true;
     }
@@ -210,6 +209,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
     /**
      * Builds query operations for a given ProcedureOperationModel.
      */
+    @Override
     public void buildProcedureOperation(ProcedureOperationModel procedureOperationModel) {
         for (ProcedureType storedProcedure : procedureOperationModel.getDbStoredProcedures()) {
             boolean hasComplexArgs = hasComplexArgs(storedProcedure);
@@ -583,6 +583,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
     /**
      * Generates a List<TableType> based on a given set of patterns.
      */
+    @Override
     protected List<TableType> loadTables(List<String> catalogPatterns, List<String> schemaPatterns, List<String> tableNamePatterns) {
         try {
             return dtBuilder.buildTables(dbwsBuilder.getConnection(), schemaPatterns, tableNamePatterns);
@@ -620,6 +621,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
     /**
      * Generates a List<ProcedureType> based on a given set of patterns.
      */
+    @Override
     protected List<ProcedureType> loadProcedures(List<String> catalogPatterns, List<String> schemaPatterns, List<String> procedureNamePatterns) {
         List<ProcedureType> allProcsAndFuncs = new ArrayList<ProcedureType>();
         List<String> topLevelSchemaPatterns = new ArrayList<String>();
@@ -666,9 +668,9 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                 //unravel map
                 List<String> schemaPats = new ArrayList<String>();
                 List<String> packagePats = new ArrayList<String>();
-                for (String schema : packagePatterns.keySet()) {
-                    Set<String> packageNames = packagePatterns.get(schema);
-                    for (String packageName : packageNames) {
+                for (Map.Entry<String, Set<String>> entry : packagePatterns.entrySet()) {
+                    String schema = entry.getKey();
+                    for (String packageName : entry.getValue()) {
                         schemaPats.add(schema);
                         packagePats.add(packageName);
                     }
@@ -720,6 +722,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
     /**
      * Create OR/OX projects for complex types, i.e. PLSQLTypes, VArray, etc.
      */
+    @Override
     public void addToOROXProjectsForComplexTypes(List<CompositeDatabaseType> types, Project orProject, Project oxProject) {
         for (DatabaseType dbType : types) {
             String name;
@@ -1255,6 +1258,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
      * Build a Query for the given ProcedureType instance and add
      * it to the given OR project's list of queries.
      */
+    @Override
     @SuppressWarnings({ "rawtypes", "unchecked" })
     protected void buildQueryForProcedureType(ProcedureType procType, Project orProject, Project oxProject, ProcedureOperationModel opModel, boolean hasPLSQLArgs) {
         // if there are one or more PL/SQL args, then we need a PLSQLStoredProcedureCall

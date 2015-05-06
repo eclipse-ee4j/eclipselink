@@ -460,7 +460,7 @@ public final class WordParser {
                     if (character == 'p' || character == 'P') {
                         powerParsed = true;
                     }
-                    else if (powerParsed && (character == '+' || character == '+')) {
+                    else if (powerParsed && (character == '+' || character == '-')) {
                         continue;
                     }
                     else if (isWordSeparator(character)) {
@@ -721,7 +721,7 @@ public final class WordParser {
 
             if (character == '-' ||
                 character == '+' ||
-                character == '+' ||
+                character == '*' ||
                 character == '/') {
 
                 return null;

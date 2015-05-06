@@ -20,6 +20,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import org.eclipse.persistence.jpa.jpql.parser.AbstractExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractTraverseParentVisitor;
@@ -377,7 +378,7 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
      * the given BNF
      */
     protected JPQLQueryBNFValidator getJPQLQueryBNFValidator(JPQLQueryBNF queryBNF) {
-        JPQLQueryBNFValidator validator = validators.get(queryBNF);
+        JPQLQueryBNFValidator validator = validators.get(queryBNF.getId());
         if (validator == null) {
             validator = new JPQLQueryBNFValidator(queryBNF);
             validators.put(queryBNF.getId(), validator);

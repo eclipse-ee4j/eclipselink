@@ -14,23 +14,19 @@
 package org.eclipse.persistence.tools.dbws;
 
 //javase imports
-import java.io.OutputStream;
-import java.sql.Types;
-import java.util.List;
-import java.util.regex.Pattern;
 import static java.sql.Types.BIGINT;
-import static java.sql.Types.NCHAR;
 import static java.sql.Types.CHAR;
 import static java.sql.Types.CLOB;
-import static java.sql.Types.NCLOB;
-import static java.sql.Types.NVARCHAR;
 import static java.sql.Types.DATE;
 import static java.sql.Types.DECIMAL;
 import static java.sql.Types.DOUBLE;
 import static java.sql.Types.FLOAT;
 import static java.sql.Types.INTEGER;
 import static java.sql.Types.LONGVARCHAR;
+import static java.sql.Types.NCHAR;
+import static java.sql.Types.NCLOB;
 import static java.sql.Types.NUMERIC;
+import static java.sql.Types.NVARCHAR;
 import static java.sql.Types.REAL;
 import static java.sql.Types.ROWID;
 import static java.sql.Types.SMALLINT;
@@ -38,12 +34,40 @@ import static java.sql.Types.TIME;
 import static java.sql.Types.TIMESTAMP;
 import static java.sql.Types.TINYINT;
 import static java.sql.Types.VARCHAR;
-
-//java eXtension imports
-import javax.xml.namespace.QName;
 import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
 import static javax.xml.XMLConstants.NULL_NS_URI;
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
+import static org.eclipse.persistence.internal.helper.ClassConstants.BIGDECIMAL;
+import static org.eclipse.persistence.internal.helper.ClassConstants.BOOLEAN;
+import static org.eclipse.persistence.internal.helper.ClassConstants.JavaSqlDate_Class;
+import static org.eclipse.persistence.internal.helper.ClassConstants.STRING;
+import static org.eclipse.persistence.internal.oxm.Constants.BASE_64_BINARY_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.COLON;
+import static org.eclipse.persistence.internal.oxm.Constants.DATE_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.DATE_TIME_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.DECIMAL_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.DOUBLE_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.EMPTY_STRING;
+import static org.eclipse.persistence.internal.oxm.Constants.INTEGER_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.INT_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.SCHEMA_PREFIX;
+import static org.eclipse.persistence.internal.oxm.Constants.STRING_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.TIME_QNAME;
+import static org.eclipse.persistence.internal.xr.QNameTransformer.SCHEMA_QNAMES;
+import static org.eclipse.persistence.internal.xr.Util.OPAQUE;
+import static org.eclipse.persistence.internal.xr.XRDynamicClassLoader.COLLECTION_WRAPPER_SUFFIX;
+import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.DEFAULT_SIMPLE_XML_FORMAT_TAG;
+import static org.eclipse.persistence.tools.dbws.XRPackager.__nullStream;
+import static org.eclipse.persistence.tools.oracleddl.metadata.ArgumentTypeDirection.INOUT;
+import static org.eclipse.persistence.tools.oracleddl.metadata.ArgumentTypeDirection.OUT;
+
+import java.io.OutputStream;
+import java.sql.Types;
+import java.util.List;
+import java.util.regex.Pattern;
+
+//java eXtension imports
+import javax.xml.namespace.QName;
 
 //EclipseLink imports
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
@@ -59,29 +83,6 @@ import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.schema.XMLSchemaURLReference;
-
-import static org.eclipse.persistence.internal.helper.ClassConstants.BIGDECIMAL;
-import static org.eclipse.persistence.internal.helper.ClassConstants.BOOLEAN;
-import static org.eclipse.persistence.internal.helper.ClassConstants.JavaSqlDate_Class;
-import static org.eclipse.persistence.internal.helper.ClassConstants.STRING;
-import static org.eclipse.persistence.internal.xr.QNameTransformer.SCHEMA_QNAMES;
-import static org.eclipse.persistence.internal.xr.Util.OPAQUE;
-import static org.eclipse.persistence.internal.xr.XRDynamicClassLoader.COLLECTION_WRAPPER_SUFFIX;
-import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.DEFAULT_SIMPLE_XML_FORMAT_TAG;
-import static org.eclipse.persistence.oxm.XMLConstants.BASE_64_BINARY_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.COLON;
-import static org.eclipse.persistence.oxm.XMLConstants.DATE_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.DATE_TIME_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.DECIMAL_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.DOUBLE_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.EMPTY_STRING;
-import static org.eclipse.persistence.oxm.XMLConstants.INT_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.INTEGER_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.SCHEMA_PREFIX;
-import static org.eclipse.persistence.oxm.XMLConstants.STRING_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.TIME_QNAME;
-import static org.eclipse.persistence.tools.dbws.XRPackager.__nullStream;
-
 //DDL parser imports
 import org.eclipse.persistence.tools.oracleddl.metadata.ArgumentType;
 import org.eclipse.persistence.tools.oracleddl.metadata.BinaryType;
@@ -103,9 +104,6 @@ import org.eclipse.persistence.tools.oracleddl.metadata.RealType;
 import org.eclipse.persistence.tools.oracleddl.metadata.ScalarDatabaseTypeEnum;
 import org.eclipse.persistence.tools.oracleddl.metadata.TimeStampType;
 import org.eclipse.persistence.tools.oracleddl.metadata.VarChar2Type;
-
-import static org.eclipse.persistence.tools.oracleddl.metadata.ArgumentTypeDirection.INOUT;
-import static org.eclipse.persistence.tools.oracleddl.metadata.ArgumentTypeDirection.OUT;
 
 public class Util {
 
@@ -334,7 +332,7 @@ public class Util {
      * Return the JDBC type name for a given JDBC type code.
      */
     public static String getJDBCTypeNameFromType(int jdbcType) {
-        String typeName = OTHER_STR;
+        String typeName = null;
         switch (jdbcType) {
             case Types.NUMERIC:
                 typeName = NUMERIC_STR;
@@ -401,6 +399,9 @@ public class Util {
                 break;
             case Types.ROWID:
                 typeName = ROWID_STR;
+                break;
+            default:
+                typeName = OTHER_STR;
                 break;
         }
         return typeName;
@@ -526,7 +527,7 @@ public class Util {
      *
      */
     public static String getClassNameForType(int jdbcType) {
-        String typeName = ClassConstants.STRING.getName();
+        String typeName = null;
         switch (jdbcType) {
             case Types.NUMERIC:
                 typeName = ClassConstants.NUMBER.getName();
@@ -583,6 +584,8 @@ public class Util {
                 typeName = OPAQUE_CLS_STR;
                 break;
             default:
+                typeName = ClassConstants.STRING.getName();
+                break;
         }
         return typeName;
     }
@@ -594,7 +597,7 @@ public class Util {
      *
      */
     public static DatabaseType buildTypeForJDBCType(int jdbcType, int precision, int scale) {
-        DatabaseType type = new VarChar2Type();
+        DatabaseType type = null;
         switch (jdbcType) {
             case Types.BINARY:
                 type = new BinaryType();
@@ -644,6 +647,9 @@ public class Util {
                 break;
             case Types.VARBINARY:
                 type = new RawType();
+                break;
+            default:
+                type = new VarChar2Type();
                 break;
         }
         return type;

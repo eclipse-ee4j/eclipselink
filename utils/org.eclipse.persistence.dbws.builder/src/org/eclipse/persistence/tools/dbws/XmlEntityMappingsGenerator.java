@@ -12,6 +12,31 @@
  ******************************************************************************/
 package org.eclipse.persistence.tools.dbws;
 
+import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.IN;
+import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.INOUT;
+import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.OUT;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.EL_ACCESS_VIRTUAL;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PARAMETER_IN;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PARAMETER_INOUT;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PARAMETER_OUT;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PARAMETER_REF_CURSOR;
+import static org.eclipse.persistence.internal.xr.XRDynamicClassLoader.COLLECTION_WRAPPER_SUFFIX;
+import static org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQLTypes.PLSQLBoolean;
+import static org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQLTypes.XMLType;
+import static org.eclipse.persistence.tools.dbws.Util.BOOLEAN_STR;
+import static org.eclipse.persistence.tools.dbws.Util.DOT;
+import static org.eclipse.persistence.tools.dbws.Util.PERCENT;
+import static org.eclipse.persistence.tools.dbws.Util.ROWTYPE_STR;
+import static org.eclipse.persistence.tools.dbws.Util.UNDERSCORE;
+import static org.eclipse.persistence.tools.dbws.Util.VARCHAR2_STR;
+import static org.eclipse.persistence.tools.dbws.Util.VARCHAR_STR;
+import static org.eclipse.persistence.tools.dbws.Util.XMLTYPE_STR;
+import static org.eclipse.persistence.tools.dbws.Util._TYPE_STR;
+import static org.eclipse.persistence.tools.dbws.Util.getGeneratedAlias;
+import static org.eclipse.persistence.tools.dbws.Util.getJDBCTypeFromTypeName;
+import static org.eclipse.persistence.tools.dbws.Util.getOraclePLSQLTypeForName;
+import static org.eclipse.persistence.tools.dbws.Util.isArgPLSQLScalar;
+
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -61,7 +86,6 @@ import org.eclipse.persistence.mappings.structures.ObjectArrayMapping;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescriptor;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
 import org.eclipse.persistence.mappings.structures.StructureMapping;
-import org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQLTypes;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredFunctionCall;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredProcedureCall;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLargument;
@@ -77,32 +101,6 @@ import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLCollectionType;
 import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLRecordType;
 import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLType;
 import org.eclipse.persistence.tools.oracleddl.metadata.VArrayType;
-
-import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.IN;
-import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.INOUT;
-import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.OUT;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.EL_ACCESS_VIRTUAL;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PARAMETER_IN;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PARAMETER_INOUT;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PARAMETER_OUT;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PARAMETER_REF_CURSOR;
-import static org.eclipse.persistence.internal.xr.XRDynamicClassLoader.COLLECTION_WRAPPER_SUFFIX;
-import static org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQLTypes.PLSQLBoolean;
-import static org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQLTypes.XMLType;
-import static org.eclipse.persistence.tools.dbws.Util._TYPE_STR;
-import static org.eclipse.persistence.tools.dbws.Util.BOOLEAN_STR;
-import static org.eclipse.persistence.tools.dbws.Util.DOT;
-import static org.eclipse.persistence.tools.dbws.Util.PERCENT;
-import static org.eclipse.persistence.tools.dbws.Util.ROWTYPE_STR;
-import static org.eclipse.persistence.tools.dbws.Util.UNDERSCORE;
-import static org.eclipse.persistence.tools.dbws.Util.VARCHAR_STR;
-import static org.eclipse.persistence.tools.dbws.Util.VARCHAR2_STR;
-import static org.eclipse.persistence.tools.dbws.Util.XMLTYPE_STR;
-
-import static org.eclipse.persistence.tools.dbws.Util.getGeneratedAlias;
-import static org.eclipse.persistence.tools.dbws.Util.getJDBCTypeFromTypeName;
-import static org.eclipse.persistence.tools.dbws.Util.getOraclePLSQLTypeForName;
-import static org.eclipse.persistence.tools.dbws.Util.isArgPLSQLScalar;
 
 /**
  * This class is responsible for generating an XMLEntityMappings instance based
@@ -274,12 +272,12 @@ public class XmlEntityMappingsGenerator {
                             // first arg is the return arg
                             metadata.setReturnParameter(param);
                             // handle CURSOR types - want name/value pairs returned
-                            if ((Integer) types.get(i) == 8) {
+                            if (types.get(i) == 8) {
                                 addQueryHint(metadata);
                             }
                         } else {
                             param.setName(arg.getName());
-                            param.setMode(getParameterModeAsString((Integer)types.get(i)));
+                            param.setMode(getParameterModeAsString(types.get(i)));
                             params.add(param);
                         }
                     }
@@ -357,10 +355,10 @@ public class XmlEntityMappingsGenerator {
                             param.setJdbcTypeName(((ObjectRelationalDatabaseField) arg).getSqlTypeName());
                         }
 
-                        param.setMode(getParameterModeAsString((Integer) types.get(i)));
+                        param.setMode(getParameterModeAsString(types.get(i)));
 
                         // handle CURSOR types - want name/value pairs returned
-                        if ((Integer) types.get(i) == 8) {
+                        if (types.get(i) == 8) {
                             addQueryHint(metadata);
                         }
 
@@ -457,9 +455,6 @@ public class XmlEntityMappingsGenerator {
                         NamedNativeQueryMetadata crudQuery = new NamedNativeQueryMetadata();
                         crudQuery.setName(opName);
                         crudQuery.setQuery(crudSql);
-                        if (namedNatQueries == null) {
-                            namedNatQueries = new ArrayList<NamedNativeQueryMetadata>();
-                        }
                         namedNatQueries.add(crudQuery);
                     }
                 }
