@@ -12,6 +12,8 @@
  *       - 458877 : Add national character support
  *     03/06/2015-2.7.0 Dalia Abo Sheasha
  *       - 461607: PropertiesUtils does not process methods with String parameters correctly.
+ *     05/06/2015-2.7.0 Rick Curtis
+ *       - 466626: Fix bug in getMethods() when Java 2 security is enabled.
  ******************************************************************************/
 package org.eclipse.persistence.config;
 
@@ -22,7 +24,7 @@ import java.util.List;
 
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredMethods;
+import org.eclipse.persistence.internal.security.PrivilegedGetMethods;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 
 /**
@@ -134,7 +136,7 @@ public class PropertiesUtils {
 
     private static Method[] getMethods(Class<?> cls) {
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-            return AccessController.doPrivileged(new PrivilegedGetDeclaredMethods(cls));
+            return AccessController.doPrivileged(new PrivilegedGetMethods(cls));
         }
         return PrivilegedAccessHelper.getMethods(cls);
     }
