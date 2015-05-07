@@ -4,14 +4,16 @@
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     02/19/2015 - Rick Curtis  
+ *     02/19/2015 - Rick Curtis
  *       - 458877 : Add national character support
  *     03/06/2015-2.7.0 Dalia Abo Sheasha
  *       - 461607: PropertiesUtils does not process methods with String parameters correctly.
+ *     05/06/2015-2.7.0 Rick Curtis
+ *       - 466626: Fix bug in getMethods() when Java 2 security is enabled.
  ******************************************************************************/
 package org.eclipse.persistence.config;
 
@@ -22,7 +24,7 @@ import java.util.List;
 
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredMethods;
+import org.eclipse.persistence.internal.security.PrivilegedGetMethods;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 
 /**
@@ -34,9 +36,9 @@ public class PropertiesUtils {
     /**
      * Attempts to parse and then set the provided kvs String into the
      * appropriate set method on the provided instance.
-     * 
+     *
      * Note: Keys and values cannot contain '=' or ','
-     * 
+     *
      * @param instance
      *            An JavaBean instance
      * @param propertyName
@@ -61,7 +63,7 @@ public class PropertiesUtils {
         String[] t = kv.split("=");
 
         if (t.length != 2) {
-            // We must have a single key and a single value. Die otherwise.
+            // We must have a single key and a single value.
             throw ConversionException.couldNotTranslatePropertiesIntoObject(instance, propertyName, kv, null);
         }
         String methodName = "set" + t[0].trim();
@@ -134,7 +136,7 @@ public class PropertiesUtils {
 
     private static Method[] getMethods(Class<?> cls) {
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-            return AccessController.doPrivileged(new PrivilegedGetDeclaredMethods(cls));
+            return AccessController.doPrivileged(new PrivilegedGetMethods(cls));
         }
         return PrivilegedAccessHelper.getMethods(cls);
     }
