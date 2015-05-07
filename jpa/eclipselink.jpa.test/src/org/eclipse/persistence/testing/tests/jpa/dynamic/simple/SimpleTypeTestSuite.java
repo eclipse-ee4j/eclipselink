@@ -18,23 +18,17 @@
 package org.eclipse.persistence.testing.tests.jpa.dynamic.simple;
 
 //javase imports
+import static org.eclipse.persistence.testing.tests.jpa.dynamic.DynamicTestHelper.DYNAMIC_PERSISTENCE_NAME;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Calendar;
 
 //java eXtensions
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-
-//JUnit4 imports
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeTrue;
 
 //EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -48,10 +42,14 @@ import org.eclipse.persistence.jpa.dynamic.JPADynamicHelper;
 import org.eclipse.persistence.jpa.dynamic.JPADynamicTypeBuilder;
 import org.eclipse.persistence.sessions.IdentityMapAccessor;
 import org.eclipse.persistence.sessions.server.Server;
-
 //domain-specific (testing) imports
 import org.eclipse.persistence.testing.tests.jpa.dynamic.DynamicTestHelper;
-import static org.eclipse.persistence.testing.tests.jpa.dynamic.DynamicTestHelper.DYNAMIC_PERSISTENCE_NAME;
+//JUnit4 imports
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 public class SimpleTypeTestSuite {
 
@@ -135,7 +133,7 @@ public class SimpleTypeTestSuite {
         assertFalse(cache.containsObjectInIdentityMap(simpleInstance));
         EntityManager em = emf.createEntityManager();
         assertFalse(em.contains(simpleInstance));
-        simpleInstance = (DynamicEntity) em.merge(simpleInstance);
+        simpleInstance = em.merge(simpleInstance);
         assertTrue(em.contains(simpleInstance));
         em.close();
     }
@@ -181,9 +179,9 @@ public class SimpleTypeTestSuite {
         assertEquals(1, ((Number) em.createQuery("SELECT COUNT(s) FROM Simple s").getSingleResult()).intValue());
         DynamicEntity foundEntity = find(em, 1);
         assertNotNull(foundEntity);
-        assertEquals(simpleInstance.get("id"), foundEntity.get("id"));
+        assertEquals(simpleInstance.<Number>get("id"), foundEntity.<Number>get("id"));
         assertEquals(simpleInstance.get("value1"), foundEntity.get("value1"));
-        assertEquals(simpleInstance.get("value2"), foundEntity.get("value2"));
+        assertEquals(simpleInstance.<Boolean>get("value2"), foundEntity.<Boolean>get("value2"));
         em.close();
         return simpleInstance;
     }
