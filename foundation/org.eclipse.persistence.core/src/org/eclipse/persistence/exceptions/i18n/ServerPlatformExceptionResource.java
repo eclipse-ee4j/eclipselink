@@ -18,7 +18,7 @@ public class ServerPlatformExceptionResource extends ListResourceBundle {
 
     static final Object[][] contents = {
         { "63001", "Server platform class {0} not found." },
-        { "63002", "Server platform class is invalid: {0}" }
+        { "63002", "Server platform class is invalid: " }
     };
 
     /**
