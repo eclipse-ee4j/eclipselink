@@ -51,6 +51,7 @@ public class LobJUnitTestCase extends JUnitTestCase {
         suite.addTest(new LobJUnitTestCase("testUpdate"));
         suite.addTest(new LobJUnitTestCase("testDelete"));
         suite.addTest(new LobJUnitTestCase("testMerge"));
+        suite.addTest(new LobJUnitTestCase("testRetrieveLazyBasicAfterTxnReadCommit"));
 
         return suite;
     }
@@ -194,6 +195,57 @@ public class LobJUnitTestCase extends JUnitTestCase {
             throw e;
         }
         closeEntityManager(em);
+    }
+
+    //Bug#465051 : Lazy basic attribute not getting loaded
+    public void testRetrieveLazyBasicAfterTxnReadCommit() {
+        
+        Image image = null;
+
+        try {
+            EntityManager em = createEntityManager();
+            beginTransaction(em);
+            image = new Image();
+            image.setId(1);
+            image.setAudio(new byte[] {1,2}); //Lazy basic
+            image.setPicture(new Byte[] {3,4}); //Needed to create a changeset in next txn
+            em.persist(image);
+            int imageId = image.getId();
+            
+            commitTransaction(em);
+            //clear cache
+            clearCache();
+            
+            // Create new entity manager to avoid extended uow of work cache hits.
+            em = createEntityManager();
+            beginTransaction(em);
+            //delete to begin txn
+            em.createQuery("DELETE FROM Image i WHERE i.id > " + imageId).executeUpdate();
+            //read within transaction
+            image = em.find(Image.class, imageId);
+            image.setPicture(new Byte[] {6,7});
+            
+            commitTransaction(em);
+            
+            //read with a new entity manager
+            em = createEntityManager();
+            image = em.find(Image.class, imageId);
+            assertNotNull("lazy basic entity audio is null ", image.getAudio());
+            
+        } finally {
+            // clean up test data
+            if (image != null) {
+                EntityManager em = createEntityManager();
+                image = em.find(Image.class, image.getId());
+                if (image != null) {
+                    beginTransaction(em);
+                    image = em.merge(image);
+                    em.remove(image);
+                    commitTransaction(em);
+                }
+                closeEntityManager(em);
+            }
+        }
     }
 
     public static void main(String[] args) {

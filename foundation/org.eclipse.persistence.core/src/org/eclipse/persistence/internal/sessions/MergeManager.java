@@ -834,7 +834,8 @@ public class MergeManager {
                     }
                     if (!objectChangeSet.isNew()) {
                         // #5 read in uow, #9 grid
-                        objectBuilder.mergeIntoObject(original, objectChangeSet, true, clone, this, targetSession, false, !descriptor.getCopyPolicy().buildsNewInstance(), false);
+                        //Bug#465051 : fetchGroupManager needs to be set with fetchGroup so that subsequent access can determine if lazy basics were fetched
+                        objectBuilder.mergeIntoObject(original, objectChangeSet, true, clone, this, targetSession, false, !descriptor.getCopyPolicy().buildsNewInstance(), true);
                         if (!unitOfWork.isObjectRegistered(clone)){
                             // mark the instance in the cache as invalid as we may have just merged a stub if
                             // a detached stub was referenced by a managed entity
