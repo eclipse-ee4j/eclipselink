@@ -17,33 +17,30 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.dynamic.simple;
 
+import static org.eclipse.persistence.testing.tests.jpa.dynamic.DynamicTestHelper.DYNAMIC_PERSISTENCE_NAME;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+
 //javase imports
 import java.util.Calendar;
 
 //java eXtensions
 import javax.persistence.EntityManager;
 
-//JUnit4 imports
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assume.assumeTrue;
-
 //EclipseLink imports
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.dynamic.DynamicTypeBuilder;
-import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.dynamic.DynamicIdentityPolicy;
 import org.eclipse.persistence.jpa.dynamic.JPADynamicHelper;
 import org.eclipse.persistence.jpa.dynamic.JPADynamicTypeBuilder;
-
 //domain-specific (testing) imports
 import org.eclipse.persistence.testing.tests.jpa.dynamic.DynamicTestHelper;
-import static org.eclipse.persistence.testing.tests.jpa.dynamic.DynamicTestHelper.DYNAMIC_PERSISTENCE_NAME;
+//JUnit4 imports
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 public class SimpleTypeCompositeKeyTestSuite extends SimpleTypeTestSuite {
 
@@ -116,16 +113,16 @@ public class SimpleTypeCompositeKeyTestSuite extends SimpleTypeTestSuite {
         assertEquals(1, ((Number)em.createQuery("SELECT COUNT(s) FROM Simple s").getSingleResult()).intValue());
         DynamicEntity foundEntity = find(em, 1);
         assertNotNull(foundEntity);
-        assertEquals(simpleInstance.get("id1"), foundEntity.get("id1"));
-        assertEquals(simpleInstance.get("id2"), foundEntity.get("id2"));
+        assertEquals(simpleInstance.<Number>get("id1"), foundEntity.<Number>get("id1"));
+        assertEquals(simpleInstance.<Number>get("id2"), foundEntity.<Number>get("id2"));
         assertEquals(simpleInstance.get("value1"), foundEntity.get("value1"));
-        assertEquals(simpleInstance.get("value2"), foundEntity.get("value2"));
+        assertEquals(simpleInstance.<Boolean>get("value2"), foundEntity.<Boolean>get("value2"));
         em.close();
         return simpleInstance;
     }
 
     @Override
     protected DynamicEntity find(EntityManager em, Object id) {
-        return (DynamicEntity)em.find(simpleType.getJavaClass(), new Object[] { id, id });
+        return em.find(simpleType.getJavaClass(), new Object[] { id, id });
     }
 }

@@ -13,7 +13,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.querydef;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -44,8 +43,9 @@ import org.eclipse.persistence.expressions.ExpressionBuilder;
  * @author gyorke
  * @since EclipseLink 1.2
  */
-public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T> implements AbstractQuery<T>, Serializable{
+public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T> implements AbstractQuery<T> {
 
+    private static final long serialVersionUID = -5270020290752637882L;
 
     protected ResultType queryResult;
     protected boolean distinct;
@@ -73,6 +73,7 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
      * @param grouping  list of zero or more grouping expressions
      * @return the modified query
      */
+    @Override
     public AbstractQuery<T> groupBy(List<Expression<?>> grouping){
         this.groupBy = grouping;
         return this;
@@ -89,6 +90,7 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
      *            zero or more grouping expressions
      * @return the modified query
      */
+    @Override
     public AbstractQuery<T> groupBy(Expression<?>... grouping){
         this.groupBy = new ArrayList<Expression<?>>();
         for (Expression<?> exp : grouping){
@@ -105,6 +107,7 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
      *            a simple or compound boolean expression
      * @return the modified query
      */
+    @Override
     public AbstractQuery<T> having(Expression<Boolean> restriction){
         if (((InternalExpression)restriction).isCompoundExpression() || ((InternalExpression)restriction).isPredicate()){
             this.havingClause = (Predicate) restriction;
@@ -125,6 +128,7 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
      *            zero or more restriction predicates
      * @return the modified query
      */
+    @Override
     public AbstractQuery<T> having(Predicate... restrictions){
         if (restrictions != null && restrictions.length > 0) {
             Predicate conjunction = this.queryBuilder.conjunction();
@@ -151,11 +155,13 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
      *            retained
      * @return the modified query.
      */
+    @Override
     public AbstractQuery<T> distinct(boolean distinct){
         this.distinct= distinct;
         return this;
     }
 
+    @Override
     protected org.eclipse.persistence.expressions.Expression getBaseExpression() {
         if (this.roots.isEmpty()) {
             return new ExpressionBuilder();
@@ -168,6 +174,7 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
      * Return a list of the grouping expressions
      * @return the list of grouping expressions
      */
+    @Override
     public List<Expression<?>> getGroupList(){
         if (this.groupBy == null){
             this.groupBy = new ArrayList<Expression<?>>();
@@ -181,6 +188,7 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
      *
      * @return having clause predicate
      */
+    @Override
     public Predicate getGroupRestriction(){
         return this.havingClause;
     }
@@ -190,10 +198,12 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
      *
      * @return the set of query roots
      */
+    @Override
     public Set<Root<?>> getRoots(){
         return this.roots;
     }
 
+    @Override
     protected void integrateRoot(RootImpl root) {
         if (!this.roots.contains(root)) {
             this.roots.add(root);
@@ -206,12 +216,13 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
      * @return boolean indicating whether duplicate query results must be
      *         eliminated
      */
+    @Override
     public boolean isDistinct(){
         return this.distinct;
     }
 
     protected void findJoins(FromImpl root) {
-        root.findJoins((AbstractQueryImpl)this);
+        root.findJoins(this);
     }
 
     protected void findRootAndParameters(Selection<?> selection) {
@@ -230,6 +241,7 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
      *            metamodel entity representing the entity of type X
      * @return query root corresponding to the given entity
      */
+    @Override
     public <X> Root<X> from(EntityType<X> entity) {
         return this.internalFrom(entity);
     }
@@ -242,6 +254,7 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
      *            the entity class
      * @return query root corresponding to the given entity
      */
+    @Override
     public <X> Root<X> from(Class<X> entityClass) {
         return this.internalFrom(entityClass);
     }
@@ -257,6 +270,7 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
      *            a simple or compound boolean expression
      * @return the modified query
      */
+    @Override
     public AbstractQuery<T> where(Expression<Boolean> restriction){
         return (AbstractQuery<T>)super.where(restriction);
     }
@@ -273,6 +287,7 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
      *            zero or more restriction predicates
      * @return the modified query
      */
+    @Override
     public AbstractQuery<T> where(Predicate... restrictions) {
         return (AbstractQuery<T>) super.where(restrictions);
     }

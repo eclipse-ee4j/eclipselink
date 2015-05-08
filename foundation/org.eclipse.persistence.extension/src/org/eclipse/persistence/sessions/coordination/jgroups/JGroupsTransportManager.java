@@ -57,7 +57,12 @@ public class JGroupsTransportManager extends BroadcastTransportManager {
      */
     protected JGroupsRemoteConnection createConnection(boolean isLocalConnectionBeingCreated) throws RemoteCommandManagerException {
         try {
-            JChannel channel = new JChannel();
+            JChannel channel;
+            if (configFile != null && !configFile.isEmpty()) {
+                channel = new JChannel(configFile);
+            } else {
+                channel = new JChannel();
+            }
             channel.connect(this.rcm.getChannel());
             channel.setDiscardOwnMessages(true);
             return new JGroupsRemoteConnection(this.rcm, channel, isLocalConnectionBeingCreated);
@@ -149,8 +154,13 @@ public class JGroupsTransportManager extends BroadcastTransportManager {
      * PUBLIC:
      * Set the JGroups config xml file name.
      */
+    @Deprecated
     public void setConfigFile(String configFile) {
         this.configFile = configFile;
     }
-
+     
+    @Override
+    public void setConfig(String config) {
+        configFile = config;
+    }
 }

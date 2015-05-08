@@ -143,7 +143,7 @@ public class XJCJavaAnnotationImpl implements JavaAnnotation {
                     Object objValue = PrivilegedAccessHelper.getValueFromField(valueField, xjcValue);
                     if (objValue instanceof JStringLiteral) {
                         JStringLiteral value = (JStringLiteral) objValue;
-                        String stringValue = value == null ? null : value.str;
+                        String stringValue = value.str;
                         components.put(key.toString(), stringValue);
                     } else if (objValue.getClass().getName().contains("JAtom")) {
                         // e.g. XmlElement.required = JAtom
@@ -209,10 +209,12 @@ public class XJCJavaAnnotationImpl implements JavaAnnotation {
     /**
      * Not supported.
      */
+    @Override
     public Map<Object, Object> getComponents() {
         throw new UnsupportedOperationException("getComponents");
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public String getName() {
         try {

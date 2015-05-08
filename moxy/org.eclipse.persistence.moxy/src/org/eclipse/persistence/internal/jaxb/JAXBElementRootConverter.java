@@ -46,16 +46,19 @@ public class JAXBElementRootConverter implements XMLConverter {
         this.nestedConverter = nestedConverter;
     }
 
+    @Override
     public void initialize(DatabaseMapping mapping, Session session) {
         if(null != nestedConverter) {
             nestedConverter.initialize(mapping, session);
         }
     }
 
+    @Override
     public Object convertDataValueToObjectValue(Object dataValue, Session session) {
         return this.convertDataValueToObjectValue(dataValue, session, null);
     }
 
+    @Override
     public Object convertDataValueToObjectValue(Object dataValue, Session session, XMLUnmarshaller unmarshaller) {
         if(null != nestedConverter) {
             dataValue = nestedConverter.convertDataValueToObjectValue(dataValue, session, unmarshaller);
@@ -67,7 +70,7 @@ public class JAXBElementRootConverter implements XMLConverter {
             QName name = new QName(root.getNamespaceURI(), root.getLocalName());
             dataValue = root.getObject();
             if(null == dataValue) {
-                return createJAXBElement(name, Object.class, dataValue);
+                return createJAXBElement(name, Object.class, null);
             }else{
                 return createJAXBElement(name, declaredType, dataValue);
             }
@@ -75,10 +78,12 @@ public class JAXBElementRootConverter implements XMLConverter {
         return dataValue;
     }
 
+    @Override
     public Object convertObjectValueToDataValue(Object objectValue, Session session) {
         return this.convertObjectValueToDataValue(objectValue, session, null);
     }
 
+    @Override
     public Object convertObjectValueToDataValue(Object objectValue, Session session, XMLMarshaller marshaller) {
         if(null != nestedConverter) {
             objectValue = nestedConverter.convertObjectValueToDataValue(objectValue, session, marshaller);
@@ -100,6 +105,7 @@ public class JAXBElementRootConverter implements XMLConverter {
         return objectValue;
     }
 
+    @Override
     public boolean isMutable() {
         return false;
     }

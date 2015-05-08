@@ -749,6 +749,7 @@ public class CoreAttributeGroup<
         this.name = name;
     }
 
+    @Override
     public String toString() {
         String className = StringHelper.nonNullString(getClass().getSimpleName());
         String name = StringHelper.nonNullString(getName());
@@ -787,15 +788,19 @@ public class CoreAttributeGroup<
         Collection<ATTRIBUTE_ITEM> values = this.items.values();
         length += (values != null && values.size() > 0
                 ?  (values.size() - 1) * FIELD_SEP.length() : 0);
-        for (Iterator<ATTRIBUTE_ITEM> it = values.iterator(); it.hasNext();) {
-            length += it.next().toStringNoClassName().length();
+        if (values != null) {
+            for (Iterator<ATTRIBUTE_ITEM> it = values.iterator(); it.hasNext();) {
+                length += it.next().toStringNoClassName().length();
+            }
         }
         // Build string to be returned
         StringBuilder str = new StringBuilder(length > 0 ? length : 0);
-        for (Iterator<ATTRIBUTE_ITEM> it = values.iterator(); it.hasNext();) {
-            str.append(it.next().toStringNoClassName());
-            if (it.hasNext()) {
-                str.append(FIELD_SEP);
+        if (values != null) {
+            for (Iterator<ATTRIBUTE_ITEM> it = values.iterator(); it.hasNext();) {
+                str.append(it.next().toStringNoClassName());
+                if (it.hasNext()) {
+                    str.append(FIELD_SEP);
+                }
             }
         }
         if (this.superClassGroup != null) {

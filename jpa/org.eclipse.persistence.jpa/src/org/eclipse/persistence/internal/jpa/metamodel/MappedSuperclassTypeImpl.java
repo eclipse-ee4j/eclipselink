@@ -104,7 +104,7 @@ public class MappedSuperclassTypeImpl<X> extends IdentifiableTypeImpl<X> impleme
                inheritingTypeMembers = inheritingType.getMembers();
             }
 
-            if(inheritingTypeMembers.containsKey(name)) {
+            if(inheritingTypeMembers != null && inheritingTypeMembers.containsKey(name)) {
                inheritedAttribute = (AttributeImpl)inheritingType.getAttribute(name);
                break;
             }
@@ -117,10 +117,12 @@ public class MappedSuperclassTypeImpl<X> extends IdentifiableTypeImpl<X> impleme
      *  Return the persistence type.
      *  @return persistence type
      */
+    @Override
     public javax.persistence.metamodel.Type.PersistenceType getPersistenceType() {
         return PersistenceType.MAPPED_SUPERCLASS;
     }
 
+    @Override
     protected void initialize(){
         /**
          * Set the javaClass on the descriptor for the current classLoader (normally done in MetadataProject.addMetamodelMappedSuperclass).

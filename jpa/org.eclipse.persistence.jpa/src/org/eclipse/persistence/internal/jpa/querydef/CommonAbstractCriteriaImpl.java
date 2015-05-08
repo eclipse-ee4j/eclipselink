@@ -13,6 +13,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.querydef;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -44,7 +45,9 @@ import org.eclipse.persistence.queries.DatabaseQuery;
  * @author Chris Delahunt
  * @since EclipseLink 2.5
  */
-public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCriteria {
+public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCriteria, Serializable {
+
+    private static final long serialVersionUID = -2729946665208116620L;
 
     protected Metamodel metamodel;
     protected Expression<Boolean> where;
@@ -64,6 +67,7 @@ public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCri
      *
      * @return where clause predicate
      */
+    @Override
     public Predicate getRestriction(){
         if (this.where == null) {
             return null;
@@ -154,6 +158,7 @@ public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCri
      *
      * @return subquery corresponding to the query
      */
+    @Override
     public <U> Subquery<U> subquery(Class<U> type) {
         return new SubQueryImpl<U>(metamodel, type, queryBuilder, this);
     }

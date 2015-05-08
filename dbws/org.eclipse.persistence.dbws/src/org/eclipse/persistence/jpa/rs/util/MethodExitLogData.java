@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.util;
 
+import java.util.Arrays;
+
 public class MethodExitLogData {
     private Object[] result;
 
@@ -22,7 +24,9 @@ public class MethodExitLogData {
      */
     public MethodExitLogData(Object[] result) {
         super();
-        this.result = result;
+        if (result != null) {
+            this.result = Arrays.copyOf(result, result.length);
+        }
     }
 
     /* (non-Javadoc)

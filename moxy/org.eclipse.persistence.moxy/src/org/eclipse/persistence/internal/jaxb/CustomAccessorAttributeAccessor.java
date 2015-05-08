@@ -31,8 +31,8 @@ import org.eclipse.persistence.mappings.AttributeAccessor;
 public class CustomAccessorAttributeAccessor extends AttributeAccessor {
 
     private Object accessor;
-    private Method getMethod;
-    private Method setMethod;
+    private transient Method getMethod;
+    private transient Method setMethod;
 
     public CustomAccessorAttributeAccessor(Object accessor) {
         this.accessor = accessor;
@@ -47,6 +47,7 @@ public class CustomAccessorAttributeAccessor extends AttributeAccessor {
         }
     }
 
+    @Override
     public Object getAttributeValueFromObject(Object object) throws DescriptorException {
         try {
             return PrivilegedAccessHelper.invokeMethod(getMethod, accessor, new Object[]{object});
@@ -55,6 +56,7 @@ public class CustomAccessorAttributeAccessor extends AttributeAccessor {
         }
     }
 
+    @Override
     public void setAttributeValueInObject(Object object, Object value) throws DescriptorException {
         try {
             PrivilegedAccessHelper.invokeMethod(setMethod, accessor, new Object[]{object, value});

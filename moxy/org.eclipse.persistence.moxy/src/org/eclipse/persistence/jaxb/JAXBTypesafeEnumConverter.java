@@ -12,12 +12,13 @@
  ******************************************************************************/
 package org.eclipse.persistence.jaxb;
 
+import java.lang.reflect.Method;
+
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.sessions.Session;
-import java.lang.reflect.Method;
 
 /**
  * <b>Purpose</b>: JAXBTypesafeEnumConverter is used to allow mapping to type safe
@@ -29,7 +30,7 @@ import java.lang.reflect.Method;
 public class JAXBTypesafeEnumConverter implements Converter {
     String enumClassName;
     Class enumClass;
-    Method fromStringMethod;
+    transient Method fromStringMethod;
 
     /**
     * PUBLIC:
@@ -42,6 +43,7 @@ public class JAXBTypesafeEnumConverter implements Converter {
     * INTERNAL:
     * Return the attribute value.
     */
+    @Override
     public Object convertObjectValueToDataValue(Object objectValue, Session session) {
         return objectValue;
     }
@@ -51,6 +53,7 @@ public class JAXBTypesafeEnumConverter implements Converter {
     * The fromString value on the enum class must be invoked with the field value
      * specified as an argument.  The result returned should be an instance of the enum class.
     */
+    @Override
     public Object convertDataValueToObjectValue(Object dataValue, Session session) {
         Object result = null;
 
@@ -63,6 +66,7 @@ public class JAXBTypesafeEnumConverter implements Converter {
         return result;
     }
 
+    @Override
     public boolean isMutable() {
         return true;
     }
@@ -71,6 +75,7 @@ public class JAXBTypesafeEnumConverter implements Converter {
       * INTERNAL:
       * Set the enum class.
       */
+    @Override
     public void initialize(DatabaseMapping mapping, Session session) {
         if (getEnumClass() == null) {
             if (getEnumClassName() == null) {

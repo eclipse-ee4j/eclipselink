@@ -246,7 +246,7 @@ public class DynamicJAXBContextFactory {
             throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.xsdImportNotSource());
         }
 
-        DynamicJAXBContext ctx = new DynamicJAXBContext(new SchemaContextInput(schemaDOM, resolver, properties, classLoader));
+        DynamicJAXBContext ctx = new DynamicJAXBContext(new SchemaContextInput(schemaDOM, null, properties, classLoader));
         fixDateTimeConversion(ctx);
         return ctx;
     }

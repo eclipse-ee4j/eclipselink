@@ -232,7 +232,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
             if ((mapping != null) && (mapping instanceof ForeignReferenceMapping)) {
                 final ForeignReferenceMapping jpaMapping = (ForeignReferenceMapping) mapping;
                 final Object attributeValue = mapping.getAttributeAccessor().getAttributeValueFromObject(entity);
-                if (jpaMapping != null && jpaMapping.isCascadePersist()) {
+                if (jpaMapping.isCascadePersist()) {
                     if (jpaMapping.getMappedBy() != null) {
                         final ClassDescriptor inverseDescriptor = context.getDescriptor(jpaMapping.getReferenceDescriptor().getAlias());
                         if (inverseDescriptor != null) {

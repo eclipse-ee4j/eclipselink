@@ -13,7 +13,48 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.tools.model;
 
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.AND;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.AS;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.BETWEEN;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.CASE;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.COALESCE;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.CONCAT;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.DELETE;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.DISTINCT;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.DIVISION;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.ELSE;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.EMPTY;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.END;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.EQUAL;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.ESCAPE;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.EXISTS;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.FROM;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.FUNC;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.GROUP_BY;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.HAVING;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.IN;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.IS;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.LIKE;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.MEMBER;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.MINUS;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.MULTIPLICATION;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.NEW;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.NOT;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.NULL;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.OF;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.OR;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.ORDER_BY;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.PLUS;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.SELECT;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.SET;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.THEN;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.TREAT;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.UPDATE;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.WHEN;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.WHERE;
+
 import java.util.ListIterator;
+
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractDoubleEncapsulatedExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractFromClause;
@@ -157,7 +198,6 @@ import org.eclipse.persistence.jpa.jpql.tools.model.query.UpperExpressionStateOb
 import org.eclipse.persistence.jpa.jpql.tools.model.query.ValueExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.WhenClauseStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.WhereClauseStateObject;
-import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
 /**
  * This {@link IJPQLQueryFormatter} is used to generate a string representation of a {@link
@@ -679,6 +719,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(AbsExpressionStateObject stateObject) {
         toStringSingleEncapsulated(stateObject);
     }
@@ -686,6 +727,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(AbstractSchemaNameStateObject stateObject) {
         toStringSimpleStateObject(stateObject);
     }
@@ -693,6 +735,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(AdditionExpressionStateObject stateObject) {
         toStringCompound(stateObject, PLUS);
     }
@@ -700,6 +743,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(AllOrAnyExpressionStateObject stateObject) {
         toStringSingleEncapsulated(stateObject);
     }
@@ -707,6 +751,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(AndExpressionStateObject stateObject) {
         toStringCompound(stateObject, AND);
     }
@@ -714,6 +759,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(ArithmeticFactorStateObject stateObject) {
 
         if (stateObject.isDecorated()) {
@@ -731,6 +777,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(AvgFunctionStateObject stateObject) {
         toStringAggregateFunction(stateObject);
     }
@@ -738,6 +785,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(BadExpressionStateObject stateObject) {
         toStringSimpleStateObject(stateObject);
     }
@@ -745,6 +793,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(BetweenExpressionStateObject stateObject) {
 
         if (stateObject.isDecorated()) {
@@ -800,6 +849,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(CaseExpressionStateObject stateObject) {
 
         if (stateObject.isDecorated()) {
@@ -861,6 +911,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(CoalesceExpressionStateObject stateObject) {
 
         if (stateObject.isDecorated()) {
@@ -892,6 +943,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(CollectionMemberDeclarationStateObject stateObject) {
 
         if (stateObject.isDecorated()) {
@@ -948,6 +1000,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(CollectionMemberExpressionStateObject stateObject) {
 
         if (stateObject.isDecorated()) {
@@ -992,6 +1045,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(CollectionValuedPathExpressionStateObject stateObject) {
         toStringPathExpression(stateObject);
     }
@@ -999,6 +1053,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(ComparisonExpressionStateObject stateObject) {
         toStringCompound(stateObject, stateObject.getIdentifier());
     }
@@ -1006,6 +1061,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(ConcatExpressionStateObject stateObject) {
 
         if (stateObject.isDecorated()) {
@@ -1034,6 +1090,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(ConstructorExpressionStateObject stateObject) {
 
         if (stateObject.isDecorated()) {
@@ -1069,6 +1126,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(CountFunctionStateObject stateObject) {
         toStringAggregateFunction(stateObject);
     }
@@ -1076,6 +1134,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(DateTimeStateObject stateObject) {
 
         if (stateObject.isDecorated()) {
@@ -1090,6 +1149,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(DeleteClauseStateObject stateObject) {
 
         if (stateObject.isDecorated()) {
@@ -1122,6 +1182,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(DeleteStatementStateObject stateObject) {
         toStringModifyStatement(stateObject);
     }
@@ -1129,6 +1190,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(DerivedPathIdentificationVariableDeclarationStateObject stateObject) {
         toStringIdentificationVariableDeclaration(stateObject);
     }
@@ -1136,6 +1198,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(DerivedPathVariableDeclarationStateObject stateObject) {
         toStringRangeVariableDeclaration(stateObject);
     }
@@ -1143,6 +1206,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(DivisionExpressionStateObject stateObject) {
         toStringCompound(stateObject, DIVISION);
     }
@@ -1150,6 +1214,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(EmptyCollectionComparisonExpressionStateObject stateObject) {
 
         if (stateObject.isDecorated()) {
@@ -1179,6 +1244,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(EntityTypeLiteralStateObject stateObject) {
         toStringSimpleStateObject(stateObject);
     }
@@ -1186,6 +1252,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(EntryExpressionStateObject stateObject) {
         toStringEncapsulatedIdentificationVariable(stateObject);
     }
@@ -1193,6 +1260,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(EnumTypeStateObject stateObject) {
         toStringSimpleStateObject(stateObject);
     }
@@ -1200,6 +1268,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(ExistsExpressionStateObject stateObject) {
 
         if (stateObject.isDecorated()) {
@@ -1243,6 +1312,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(FromClauseStateObject stateObject) {
         toStringFromClause(stateObject);
     }
@@ -1250,6 +1320,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(FunctionExpressionStateObject stateObject) {
 
         if (stateObject.isDecorated()) {
@@ -1296,6 +1367,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(GroupByClauseStateObject stateObject) {
 
         if (stateObject.isDecorated()) {
@@ -1321,6 +1393,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(HavingClauseStateObject stateObject) {
 
         if (stateObject.isDecorated()) {
@@ -1348,6 +1421,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(IdentificationVariableDeclarationStateObject stateObject) {
         toStringIdentificationVariableDeclaration(stateObject);
     }
@@ -1355,6 +1429,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(IdentificationVariableStateObject stateObject) {
         toStringSimpleStateObject(stateObject);
     }
@@ -1362,6 +1437,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(IndexExpressionStateObject stateObject) {
         toStringEncapsulatedIdentificationVariable(stateObject);
     }
@@ -1369,6 +1445,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(InExpressionStateObject stateObject) {
 
         if (stateObject.isDecorated()) {
@@ -1411,6 +1488,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(InputParameterStateObject stateObject) {
         toStringSimpleStateObject(stateObject);
     }
@@ -1418,6 +1496,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(JoinStateObject stateObject) {
 
         if (stateObject.isDecorated()) {
@@ -1467,6 +1546,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(JPQLQueryStateObject stateObject) {
 
         if (stateObject.isDecorated()) {
@@ -1480,6 +1560,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(KeyExpressionStateObject stateObject) {
         toStringEncapsulatedIdentificationVariable(stateObject);
     }
@@ -1487,6 +1568,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(KeywordExpressionStateObject stateObject) {
 
         if (stateObject.isDecorated()) {
@@ -1501,6 +1583,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(LengthExpressionStateObject stateObject) {
         toStringSingleEncapsulated(stateObject);
     }
@@ -1508,6 +1591,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(LikeExpressionStateObject stateObject) {
 
         if (stateObject.isDecorated()) {
@@ -1568,6 +1652,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(LocateExpressionStateObject stateObject) {
         toStringTripleEncapsulated(stateObject);
     }
@@ -1575,6 +1660,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(LowerExpressionStateObject stateObject) {
         toStringSingleEncapsulated(stateObject);
     }
@@ -1582,6 +1668,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(MaxFunctionStateObject stateObject) {
         toStringAggregateFunction(stateObject);
     }
@@ -1589,6 +1676,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(MinFunctionStateObject stateObject) {
         toStringAggregateFunction(stateObject);
     }
@@ -1596,6 +1684,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(ModExpressionStateObject stateObject) {
         toStringDoubleEncapsulated(stateObject);
     }
@@ -1603,6 +1692,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(MultiplicationExpressionStateObject stateObject) {
         toStringCompound(stateObject, MULTIPLICATION);
     }
@@ -1610,6 +1700,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(NotExpressionStateObject stateObject) {
 
         if (stateObject.isDecorated()) {
@@ -1635,6 +1726,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(NullComparisonExpressionStateObject stateObject) {
 
         if (stateObject.isDecorated()) {
@@ -1667,6 +1759,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(NullIfExpressionStateObject stateObject) {
         toStringDoubleEncapsulated(stateObject);
     }
@@ -1674,6 +1767,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(NumericLiteralStateObject stateObject) {
         toStringSimpleStateObject(stateObject);
     }
@@ -1681,6 +1775,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(ObjectExpressionStateObject stateObject) {
         toStringEncapsulatedIdentificationVariable(stateObject);
     }
@@ -1688,6 +1783,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(OrderByClauseStateObject stateObject) {
 
         if (stateObject.isDecorated()) {
@@ -1713,6 +1809,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(OrderByItemStateObject stateObject) {
 
         if (stateObject.isDecorated()) {
@@ -1748,6 +1845,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(OrExpressionStateObject stateObject) {
         toStringCompound(stateObject, OR);
     }
@@ -1755,6 +1853,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(RangeVariableDeclarationStateObject stateObject) {
         toStringRangeVariableDeclaration(stateObject);
     }
@@ -1762,6 +1861,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(ResultVariableStateObject stateObject) {
 
         if (stateObject.isDecorated()) {
@@ -1804,6 +1904,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(SelectClauseStateObject stateObject) {
 
         if (stateObject.isDecorated()) {
@@ -1838,6 +1939,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(SelectStatementStateObject stateObject) {
 
         if (stateObject.isDecorated()) {
@@ -1866,6 +1968,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(SimpleFromClauseStateObject stateObject) {
         toStringFromClause(stateObject);
     }
@@ -1873,6 +1976,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(SimpleSelectClauseStateObject stateObject) {
 
         if (stateObject.isDecorated()) {
@@ -1907,6 +2011,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(SimpleSelectStatementStateObject stateObject) {
 
         if (stateObject.isDecorated()) {
@@ -1920,6 +2025,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(SizeExpressionStateObject stateObject) {
         toStringSingleEncapsulated(stateObject);
     }
@@ -1927,6 +2033,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(SqrtExpressionStateObject stateObject) {
         toStringSingleEncapsulated(stateObject);
     }
@@ -1934,6 +2041,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(StateFieldPathExpressionStateObject stateObject) {
         toStringPathExpression(stateObject);
     }
@@ -1941,6 +2049,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(StringLiteralStateObject stateObject) {
         toStringSimpleStateObject(stateObject);
     }
@@ -1948,6 +2057,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(SubExpressionStateObject stateObject) {
         toStringSingleEncapsulated(stateObject);
     }
@@ -1955,6 +2065,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(SubstringExpressionStateObject stateObject) {
         toStringTripleEncapsulated(stateObject);
     }
@@ -1962,6 +2073,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(SubtractionExpressionStateObject stateObject) {
         toStringCompound(stateObject, MINUS);
     }
@@ -1969,6 +2081,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(SumFunctionStateObject stateObject) {
         toStringAggregateFunction(stateObject);
     }
@@ -1976,6 +2089,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(TreatExpressionStateObject stateObject) {
 
         if (stateObject.isDecorated()) {
@@ -2022,6 +2136,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(TrimExpressionStateObject stateObject) {
 
         if (stateObject.isDecorated()) {
@@ -2034,7 +2149,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
             appendIdentifier((expression != null) ? expression.getActualIdentifier() : stateObject.getIdentifier(), stateObject.getIdentifier());
 
             // '('
-            if (shouldOutput(expression) || expression.hasLeftParenthesis()) {
+            if (shouldOutput(expression) || ( expression != null && expression.hasLeftParenthesis())) {
                 writer.append(LEFT_PARENTHESIS);
             }
             else if ((expression != null) && expression.hasSpaceAfterIdentifier()) {
@@ -2092,6 +2207,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(TypeExpressionStateObject stateObject) {
         toStringSingleEncapsulated(stateObject);
     }
@@ -2099,6 +2215,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(UnknownExpressionStateObject stateObject) {
         toStringSimpleStateObject(stateObject);
     }
@@ -2106,6 +2223,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(UpdateClauseStateObject stateObject) {
 
         if (stateObject.isDecorated()) {
@@ -2147,6 +2265,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(UpdateItemStateObject stateObject) {
 
         if (stateObject.isDecorated()) {
@@ -2181,6 +2300,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(UpdateStatementStateObject stateObject) {
         toStringModifyStatement(stateObject);
     }
@@ -2188,6 +2308,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(UpperExpressionStateObject stateObject) {
         toStringSingleEncapsulated(stateObject);
     }
@@ -2195,6 +2316,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(ValueExpressionStateObject stateObject) {
         toStringEncapsulatedIdentificationVariable(stateObject);
     }
@@ -2202,6 +2324,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(WhenClauseStateObject stateObject) {
 
         if (stateObject.isDecorated()) {
@@ -2245,6 +2368,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(WhereClauseStateObject stateObject) {
 
         if (stateObject.isDecorated()) {

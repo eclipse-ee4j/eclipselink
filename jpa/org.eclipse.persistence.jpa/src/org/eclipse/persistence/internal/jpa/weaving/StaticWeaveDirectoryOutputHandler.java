@@ -22,6 +22,8 @@ import java.net.URL;
 import java.util.jar.JarEntry;
 
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.localization.ToStringLocalization;
+import org.eclipse.persistence.logging.AbstractSessionLog;
 
 /**
  * The class provides a set of methods to pack passed-in entries into the sepcified archive file.
@@ -46,10 +48,14 @@ public class StaticWeaveDirectoryOutputHandler extends AbstractStaticWeaveOutput
      * @param dirPath
      * @throws IOException
      */
+    @Override
     public void addDirEntry(String dirPath)throws IOException {
        File file = new File(this.target.getPath()+File.separator+dirPath).getAbsoluteFile();
        if (!file.exists()){
-           file.mkdirs();
+           if (!file.mkdirs()) {
+               AbstractSessionLog.getLog().log(AbstractSessionLog.FINE, AbstractSessionLog.WEAVER,
+                       ToStringLocalization.buildMessage("staticweave_processor_dir_not_created", new Object[] {file}));
+           }
        }
     }
 
@@ -59,12 +65,16 @@ public class StaticWeaveDirectoryOutputHandler extends AbstractStaticWeaveOutput
      * @param entryBytes
      * @throws IOException
      */
+    @Override
     public void addEntry(JarEntry targetEntry,byte[] entryBytes)throws IOException{
         FileOutputStream fos = null;
         try {
             File target  = new File(this.target.getPath()+targetEntry.getName()).getAbsoluteFile();
             if(!target.exists()) {
-                target.createNewFile();
+                if (!target.createNewFile()) {
+                    AbstractSessionLog.getLog().log(AbstractSessionLog.FINE, AbstractSessionLog.WEAVER,
+                            ToStringLocalization.buildMessage("staticweave_processor_file_not_created", new Object[] {target}));
+                }
             }
             fos = new FileOutputStream(target);
             fos.write(entryBytes);
@@ -79,10 +89,14 @@ public class StaticWeaveDirectoryOutputHandler extends AbstractStaticWeaveOutput
      * @param entry
      * @throws IOException
      */
+    @Override
     public void addEntry(InputStream jis,JarEntry entry) throws IOException,URISyntaxException {
         File target  = new File(this.target.getPath()+entry.getName()).getAbsoluteFile();
         if(!target.exists()) {
-            target.createNewFile();
+            if (!target.createNewFile()) {
+                AbstractSessionLog.getLog().log(AbstractSessionLog.FINE, AbstractSessionLog.WEAVER,
+                        ToStringLocalization.buildMessage("staticweave_processor_file_not_created", new Object[] {target}));
+            }
         }
         FileInputStream fis = null;
         FileOutputStream fos = null;

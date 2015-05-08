@@ -50,7 +50,7 @@ public class ConstructorResult extends SQLResult {
     /** Stored the column results of this constructor result */
     protected List<ColumnResult> columnResults;
 
-    protected Constructor constructor;
+    protected transient Constructor constructor;
     protected Class[] constructorArgTypes;
 
     /**
@@ -102,6 +102,7 @@ public class ConstructorResult extends SQLResult {
      * with class names to a project with classes.
      * @param classLoader
      */
+    @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){
         super.convertClassNamesToClasses(classLoader);
 
@@ -213,6 +214,7 @@ public class ConstructorResult extends SQLResult {
     /**
      * Return true if this is a constructor result.
      */
+    @Override
     public boolean isConstructorResult(){
         return true;
     }

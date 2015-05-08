@@ -10,7 +10,7 @@
  * Contributors:
  *     Marcel Valovy - 2.6 - initial implementation
  ******************************************************************************/
-package org.eclipse.persistence.testing.jaxb.beanvalidation.rt_dom;
+package org.eclipse.persistence.testing.jaxb.beanvalidation.dom;
 
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Future;

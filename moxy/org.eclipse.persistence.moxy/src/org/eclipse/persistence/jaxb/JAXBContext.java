@@ -165,6 +165,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
       * encountering a fatal error.
       */
     protected static final ValidationEventHandler DEFAULT_VALIDATION_EVENT_HANDLER = new ValidationEventHandler() {
+        @Override
         public boolean handleEvent(ValidationEvent event) {
             return event.getSeverity() < ValidationEvent.FATAL_ERROR;
         }
@@ -314,6 +315,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      *
      * @param outputResolver Class that decides where the schema file (of the given namespace URI) will be written
      */
+    @Override
     public void generateSchema(SchemaOutputResolver outputResolver)  {
         if(outputResolver instanceof JsonSchemaOutputResolver) {
             generateJsonSchema(outputResolver, ((JsonSchemaOutputResolver)outputResolver).getRootClass());
@@ -378,6 +380,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      * Create a JAXBMarshaller.  The JAXBMarshaller is used to convert Java objects
      * to XML.
      */
+    @Override
     public JAXBMarshaller createMarshaller() throws javax.xml.bind.JAXBException {
         return contextState.createMarshaller(this);
     }
@@ -386,6 +389,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      * Create a JAXBUnmarshaller.  The JAXBUnmarshaller is used to convert XML into
      * Java objects.
      */
+    @Override
     public JAXBUnmarshaller createUnmarshaller() throws javax.xml.bind.JAXBException {
         return contextState.createUnmarshaller(this);
     }
@@ -394,6 +398,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      * Create a JAXBValidator.  The JAXBValidator is used to validate Java objects against
      * an XSD.
      */
+    @Override
     public JAXBValidator createValidator() {
         return new JAXBValidator(getXMLContext().createValidator());
     }
@@ -401,6 +406,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     /**
      * Create a JAXBBinder.  The JAXBBinder is used to preserve unmapped XML Data.
      */
+    @Override
     public JAXBBinder createBinder() {
         return contextState.createBinder(this);
     }
@@ -410,6 +416,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      *
      * @param nodeClass The DOM Node class to use
      */
+    @Override
     public <T> JAXBBinder createBinder(Class<T> nodeClass) {
         if (nodeClass.getName().equals("org.w3c.dom.Node")) {
             return contextState.createBinder(this);
@@ -422,6 +429,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      * Creates a JAXBIntrospector object.  The JAXBIntrospector allows the user to
      * access certain pieces of metadata about an instance of a JAXB bound class.
      */
+    @Override
     public JAXBIntrospector createJAXBIntrospector() {
         return new JAXBIntrospector(getXMLContext());
     }
@@ -1042,6 +1050,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             });
         }
 
+        @Override
         protected JAXBContextState createContextState() throws javax.xml.bind.JAXBException {
             // Check properties map for eclipselink-oxm.xml entries
             Map<String, XmlBindings> xmlBindings = JAXBContextFactory.getXmlBindingsFromProperties(properties, classLoader);
@@ -1473,8 +1482,8 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             //Add any types that we didn't generate descriptors for (built in types)
             if (boundTypes != null) {
                 for (TypeMappingInfo next : this.boundTypes) {
-                    if (this.typeToSchemaType.get(next) == null) {
-                        Type nextType = next.getType();
+                    Type nextType = next.getType();
+                    if (this.typeToSchemaType.get(nextType) == null) {
                         QName name = getSchemaTypeForTypeMappingInfo(nextType);
                         if (name != null) {
                             this.typeToSchemaType.put(nextType, name);

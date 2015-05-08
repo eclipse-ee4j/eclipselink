@@ -122,6 +122,7 @@ public class TestRunModel extends TestModel {
             tests.add("org.eclipse.persistence.testing.tests.optimization.queryandsqlcounting.QueryAndSQLCountingTestModel");
             tests.add("org.eclipse.persistence.testing.tests.identitymaps.cache.CacheIdentityMapTestModel");
             tests.add("org.eclipse.persistence.testing.tests.failover.FailoverTestModel");
+            tests.add("org.eclipse.persistence.testing.tests.distributedservers.rcm.jgroups.JGroupsDistributedServersModel");
         }
 
         // ** All new tests should be in light, unless they require specific db/config support
@@ -148,7 +149,6 @@ public class TestRunModel extends TestModel {
             tests.add("org.eclipse.persistence.testing.tests.remote.suncorba.SunCORBARemoteModel");
             tests.add("org.eclipse.persistence.testing.tests.distributedservers.DistributedSessionBrokerServersModel");
             tests.add("org.eclipse.persistence.testing.tests.distributedservers.rcm.RCMDistributedServersModel");
-            tests.add("org.eclipse.persistence.testing.tests.distributedservers.rcm.jgroups.JGroupsDistributedServersModel");
 
             // Can take a long time, can deadlock.
             tests.add("org.eclipse.persistence.testing.tests.clientserver.ClientServerTestModel");

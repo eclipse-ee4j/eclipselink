@@ -18,15 +18,12 @@
 package org.eclipse.persistence.testing.tests.jpa.dynamic.simple.sequencing;
 
 //java eXtension imports
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-
-//JUnit4 imports
-import org.junit.Assert;
-import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 
 //EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -37,6 +34,9 @@ import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.dynamic.JPADynamicHelper;
 import org.eclipse.persistence.sessions.IdentityMapAccessor;
 import org.eclipse.persistence.sessions.server.Server;
+//JUnit4 imports
+import org.junit.Assert;
+import org.junit.Test;
 
 //domain-specific (testing) imports
 
@@ -72,10 +72,10 @@ public abstract class BaseSequencingTestSuite  {
         assertTrue(cache.containsObjectInIdentityMap(simpleInstance));
         em.clear();
         cache.initializeAllIdentityMaps();
-        DynamicEntity findResult = (DynamicEntity)em.find(simpleType.getJavaClass(), 1);
+        DynamicEntity findResult = em.find(simpleType.getJavaClass(), 1);
         assertNotNull(findResult);
-        assertEquals(simpleInstance.get("id"), findResult.get("id"));
-        assertEquals(simpleInstance.get("value1"), findResult.get("value1"));
+        assertEquals(simpleInstance.<Number>get("id"), findResult.<Number>get("id"));
+        assertEquals(simpleInstance.<String>get("value1"), findResult.<String>get("value1"));
         em.close();
     }
 
@@ -93,12 +93,12 @@ public abstract class BaseSequencingTestSuite  {
         assertTrue(cache.containsObjectInIdentityMap(simpleInstance2));
         em.clear();
         cache.initializeAllIdentityMaps();
-        DynamicEntity findResult1 = (DynamicEntity)em.find(simpleType.getJavaClass(), 1);
-        DynamicEntity findResult2 = (DynamicEntity)em.find(simpleType.getJavaClass(), 2);
+        DynamicEntity findResult1 = em.find(simpleType.getJavaClass(), 1);
+        DynamicEntity findResult2 = em.find(simpleType.getJavaClass(), 2);
         assertNotNull(findResult1);
         assertNotNull(findResult2);
-        assertEquals(simpleInstance1.get("id"), findResult1.get("id"));
-        assertEquals(simpleInstance2.get("value1"), findResult2.get("value1"));
+        assertEquals(simpleInstance1.<Number>get("id"), findResult1.<Number>get("id"));
+        assertEquals(simpleInstance2.<String>get("value1"), findResult2.<String>get("value1"));
         em.close();
     }
 

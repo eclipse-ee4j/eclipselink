@@ -36,8 +36,14 @@
  ******************************************************************************/
 package org.eclipse.persistence.sessions;
 
-import java.util.*;
-import java.io.*;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 import org.eclipse.persistence.annotations.IdValidation;
 import org.eclipse.persistence.config.CacheIsolationType;
@@ -45,15 +51,19 @@ import org.eclipse.persistence.core.sessions.CoreProject;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.MultitenantPolicy;
 import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
+import org.eclipse.persistence.internal.helper.ConcurrentFixedCache;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
+import org.eclipse.persistence.internal.identitymaps.AbstractIdentityMap;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.identitymaps.AbstractIdentityMap;
 import org.eclipse.persistence.queries.AttributeGroup;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.QueryResultsCachePolicy;
 import org.eclipse.persistence.queries.SQLResultSetMapping;
-import org.eclipse.persistence.sessions.server.*;
+import org.eclipse.persistence.sessions.server.ConnectionPolicy;
+import org.eclipse.persistence.sessions.server.Server;
+import org.eclipse.persistence.sessions.server.ServerSession;
 
 /**
  * <b>Purpose</b>: Maintain all of the EclipseLink configuration information for a system.
@@ -366,6 +376,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      * PUBLIC:
      * Add the descriptor to the project.
      */
+    @Override
     public void addDescriptor(ClassDescriptor descriptor) {
         getOrderedDescriptors().add(descriptor);
         String alias = descriptor.getAlias();
@@ -507,6 +518,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      * Convert all the class-name-based settings in this project to actual class-based settings.
      * This will also reset any class references to the version of the class from the class loader.
      */
+    @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){
         Iterator ordered = orderedDescriptors.iterator();
         while (ordered.hasNext()){
@@ -571,6 +583,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      * INTERNAL:
      * Clones the descriptor
      */
+    @Override
     public Project clone() {
         try {
             return (Project) super.clone();
@@ -586,6 +599,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      * and add descriptors from other projects.  The Session interface however should be used for
      * reading and writing once connected for complete portability.
      */
+    @Override
     public DatabaseSession createDatabaseSession() {
         return new DatabaseSessionImpl(this);
     }
@@ -703,6 +717,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      * PUBLIC:
      * Return the descriptor specified for the class.
      */
+    @Override
     public ClassDescriptor getDescriptor(Class theClass) {
         if (theClass == null) {
             return null;
@@ -730,6 +745,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      * Return the descriptors in the order added.
      * Used to maintain consistent order in XML.
      */
+    @Override
     public List<ClassDescriptor> getOrderedDescriptors() {
         return orderedDescriptors;
     }
@@ -1068,6 +1084,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      * PUBLIC:
      * Set the login to be used to connect to the database for this project.
      */
+    @Override
     public void setLogin(Login datasourceLogin) {
         this.datasourceLogin = datasourceLogin;
     }
@@ -1091,6 +1108,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     /**
      * INTERNAL:
      */
+    @Override
     public String toString() {
         return Helper.getShortClassName(getClass()) + "(" + getName() + ")";
     }

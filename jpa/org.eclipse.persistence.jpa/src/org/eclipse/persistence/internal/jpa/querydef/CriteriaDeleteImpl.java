@@ -13,8 +13,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.querydef;
 
-import java.io.Serializable;
-
 import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
@@ -39,8 +37,10 @@ import org.eclipse.persistence.queries.DatabaseQuery;
  * @author Chris Delahunt
  * @since EclipseLink 2.5
  */
-public class CriteriaDeleteImpl<T> extends CommonAbstractCriteriaImpl<T> implements
-        CriteriaDelete<T>, Serializable {
+public class CriteriaDeleteImpl<T> extends CommonAbstractCriteriaImpl<T> implements CriteriaDelete<T> {
+
+    private static final long serialVersionUID = -3858349449764066901L;
+
     protected Root<T> root;
 
     public CriteriaDeleteImpl(Metamodel metamodel, CriteriaBuilderImpl queryBuilder, Class<T> resultType){
@@ -77,12 +77,14 @@ public class CriteriaDeleteImpl<T> extends CommonAbstractCriteriaImpl<T> impleme
         return (CriteriaDelete<T>)super.where(restrictions);
     }
 
+    @Override
     protected void integrateRoot(RootImpl root) {
         if (this.root !=root) {
             this.root =root;
         }
     }
 
+    @Override
     protected org.eclipse.persistence.expressions.Expression getBaseExpression() {
         if (this.root == null) {
             return new ExpressionBuilder();
@@ -91,6 +93,7 @@ public class CriteriaDeleteImpl<T> extends CommonAbstractCriteriaImpl<T> impleme
         }
     }
 
+    @Override
     protected DatabaseQuery getDatabaseQuery() {
         org.eclipse.persistence.queries.DeleteAllQuery query = new org.eclipse.persistence.queries.DeleteAllQuery(this.queryType, getBaseExpression());
         query.setShouldDeferExecutionInUOW(false);

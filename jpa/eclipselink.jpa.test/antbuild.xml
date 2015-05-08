@@ -1648,6 +1648,16 @@
             <param name="RUN_PATH" value="run.weaver.classpath"/>
             <param name="DB_URL" value="${db.url}"/>
         </antcall>
+        <antcall target="run-test" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.dynamic.AllTests"/>
+            <param name="TEST_AGENT" value="${test.agent}"/>
+            <param name="TEST_WEAVING" value="${test.weaving}"/>
+            <param name="TEST_WEAVING_OPTION" value="${test.weaving.option}"/>
+            <param name="ORM_TESTING" value="-Dorm.testing=eclipselink"/>
+            <param name="RUN_PATH" value="run.extended.classpath"/>
+            <param name="DB_URL" value="${db.url}"/>
+        </antcall>
+        <antcall target="test-remote-jpa" inheritRefs="true"/>
         <antcall target="run-bean-validation-tests" inheritRefs="true"/>
         <antcall target="oracle-test" inheritRefs="true"/>
         <antcall target="generate-report" inheritRefs="true"/>

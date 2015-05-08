@@ -28,6 +28,13 @@
     </Match>
 
     <!--
+        Antlr generated parser
+    -->
+    <Match>
+        <Package name="~org.eclipse.persistence.internal.jpa.parsing.jpql.antlr.*" />
+    </Match>
+
+    <!--
         As designed, minor issue, unimportant code
     -->
     <Match>
@@ -101,6 +108,19 @@
         <Package name="~(?s)^((?!internal).)*"/>
         <Bug pattern="SE_NO_SERIALVERSIONID"/>
     </Match>
+
+    <Match>
+        <Class name="_dbws.ProviderListener"/>
+        <Method name="contextInitialized"/>
+        <Bug pattern="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD"/>
+    </Match>
+
+    <Match>
+        <Class name="org.eclipse.persistence.internal.xr.Util"/>
+        <Field name="META_INF_PATHS"/>
+        <Bug pattern="MS_MUTABLE_ARRAY"/>
+    </Match>
+
 
     <!--
         As designed, not an error
@@ -260,5 +280,52 @@
         <Bug pattern="CN_IMPLEMENTS_CLONE_BUT_NOT_CLONEABLE"/>
     </Match>
     <!-- End of Cloneable warnings -->
+
+    <!--
+        JPQL (Hermes) Parser "by design" warnings
+    -->
+    <Match>
+        <Package name="~org.eclipse.persistence.jpa.jpql.*" />
+        <Bug pattern="ES_COMPARING_STRINGS_WITH_EQ"/>
+    </Match>
+
+    <Match>
+        <!-- defined in javadoc -->
+        <Class name="org.eclipse.persistence.jpa.jpql.WordParser"/>
+        <Method name="startsWithDigit"/>
+        <Bug pattern="NP_BOOLEAN_RETURN_NULL"/>
+    </Match>
+
+    <Match>
+        <!-- works with WordParser.startsWithDigit -->
+        <Class name="org.eclipse.persistence.jpa.jpql.parser.ArithmeticExpressionFactory"/>
+        <Method name="buildExpression"/>
+        <Bug pattern="RC_REF_COMPARISON_BAD_PRACTICE_BOOLEAN"/>
+    </Match>
+
+    <Match>
+        <!-- defined in javadoc -->
+        <Class name="org.eclipse.persistence.jpa.jpql.AbstractSemanticValidator"/>
+        <Method name="validateThirdPartyStateFieldPathExpression"/>
+        <Bug pattern="NP_BOOLEAN_RETURN_NULL"/>
+    </Match>
+
+    <Match>
+        <Class name="org.eclipse.persistence.jpa.jpql.tools.AbstractContentAssistVisitor"/>
+        <Method name="isCompoundFunction"/>
+        <Bug pattern="ES_COMPARING_PARAMETER_STRING_WITH_EQ"/>
+    </Match>
+
+    <Match>
+        <Class name="org.eclipse.persistence.jpa.jpql.tools.resolver.DeclarationResolver"/>
+        <Method name="isCollectionIdentificationVariableImp"/>
+        <Or>
+            <!-- false positive: case statement does not contain 'break;' -->
+            <Bug pattern="SF_SWITCH_NO_DEFAULT"/>
+            <!-- check for return value from the method
+                 which can be overwridden in a subclass   -->
+            <Bug pattern="RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE"/>
+        </Or>
+    </Match>
 
 </FindBugsFilter>

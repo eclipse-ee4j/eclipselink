@@ -16,6 +16,7 @@ package org.eclipse.persistence.jpa.jpql.tools.model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
 import org.eclipse.persistence.jpa.jpql.LiteralType;
 import org.eclipse.persistence.jpa.jpql.LiteralVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.AbsExpression;
@@ -1866,6 +1867,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
         /**
          * {@inheritDoc}
          */
+        @Override
         public AbstractIdentificationVariableDeclarationStateObject buildStateObject(S parent, Expression expression) {
             try {
                 this.parent = parent;
@@ -1946,6 +1948,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
         /**
          * {@inheritDoc}
          */
+        @Override
         public T buildStateObject(P parent, Expression expression) {
 
             try {
@@ -2003,7 +2006,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
         }
     }
 
-    protected class CollectionExpressionVisitor extends AnonymousExpressionVisitor {
+    protected static class CollectionExpressionVisitor extends AnonymousExpressionVisitor {
 
         List<Expression> children;
 
@@ -2033,7 +2036,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
         }
     }
 
-    protected class CollectionMemberDeclarationBuilder extends AbstractTraverseChildrenVisitor
+    protected static class CollectionMemberDeclarationBuilder extends AbstractTraverseChildrenVisitor
                                                        implements IBuilder<CollectionMemberDeclarationStateObject, AbstractFromClauseStateObject> {
 
         protected AbstractFromClauseStateObject parent;
@@ -2042,6 +2045,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
         /**
          * {@inheritDoc}
          */
+        @Override
         public CollectionMemberDeclarationStateObject buildStateObject(AbstractFromClauseStateObject parent,
                                                                        Expression expression) {
 
@@ -2103,6 +2107,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
         /**
          * {@inheritDoc}
          */
+        @Override
         public DeleteStatementStateObject buildStateObject(JPQLQueryStateObject parent,
                                                            Expression expression) {
 
@@ -2190,6 +2195,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
         /**
          * {@inheritDoc}
          */
+        @Override
         public JoinStateObject buildStateObject(AbstractIdentificationVariableDeclarationStateObject parent,
                                                 Expression expression) {
 
@@ -2296,6 +2302,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
         /**
          * {@inheritDoc}
          */
+        @Override
         public StateObject buildStateObject(SelectClauseStateObject parent, Expression expression) {
 
             try {
@@ -2535,6 +2542,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
         /**
          * {@inheritDoc}
          */
+        @Override
         public UpdateStatementStateObject buildStateObject(JPQLQueryStateObject parent,
                                                            Expression expression) {
 
@@ -2684,6 +2692,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
         /**
          * {@inheritDoc}
          */
+        @Override
         public CaseExpressionStateObject buildStateObject(CaseExpressionStateObject parent,
                                                           Expression expression) {
 

@@ -406,7 +406,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
     public void setPassword(String password) {
         if (password != null) {
             // PERF: Do not encrypt empty string.
-            if (password == "") {
+            if (password.isEmpty()) {
                 setProperty("password", "");
             } else {
                 // first call to get will initialize the securable object

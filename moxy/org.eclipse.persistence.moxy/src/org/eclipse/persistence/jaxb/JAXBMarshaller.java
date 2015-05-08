@@ -53,7 +53,6 @@ import org.eclipse.persistence.internal.jaxb.ObjectGraphImpl;
 import org.eclipse.persistence.internal.jaxb.WrappedValue;
 import org.eclipse.persistence.internal.jaxb.many.ManyValue;
 import org.eclipse.persistence.internal.oxm.Constants;
-import org.eclipse.persistence.internal.oxm.JsonTypeConfiguration;
 import org.eclipse.persistence.internal.oxm.Root;
 import org.eclipse.persistence.internal.oxm.record.namespaces.MapNamespacePrefixMapper;
 import org.eclipse.persistence.internal.oxm.record.namespaces.NamespacePrefixMapperWrapper;
@@ -232,6 +231,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         return xmlroot;
     }
 
+    @Override
     public XmlAdapter getAdapter(Class javaClass) {
         HashMap result = (HashMap) xmlMarshaller.getProperty(XML_JAVATYPE_ADAPTERS);
         if (result == null) {
@@ -240,6 +240,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         return (XmlAdapter) result.get(javaClass);
     }
 
+    @Override
     public AttachmentMarshaller getAttachmentMarshaller() {
         if (xmlMarshaller.getAttachmentMarshaller() == null) {
             return null;
@@ -247,10 +248,12 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         return ((AttachmentMarshallerAdapter) xmlMarshaller.getAttachmentMarshaller()).getAttachmentMarshaller();
     }
 
+    @Override
     public ValidationEventHandler getEventHandler() throws JAXBException {
         return validationEventHandler;
     }
 
+    @Override
     public Marshaller.Listener getListener() {
         XMLMarshalListener xmlMarshalListener = xmlMarshaller.getMarshalListener();
         if(null != xmlMarshalListener) {
@@ -259,6 +262,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         return null;
     }
 
+    @Override
     public Node getNode(Object object) throws JAXBException {
         throw new UnsupportedOperationException();
     }
@@ -268,6 +272,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
      * property will result in a javax.xml.bind.PropertyException
      * @see org.eclipse.persistence.jaxb.MarshallerProperties
      */
+    @Override
     public Object getProperty(String key) throws PropertyException {
         if (key == null) {
             throw new IllegalArgumentException();
@@ -339,10 +344,12 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         throw new PropertyException(key);
     }
 
+    @Override
     public Schema getSchema() {
         return xmlMarshaller.getSchema();
     }
 
+    @Override
     public void marshal(Object object, ContentHandler contentHandler) throws JAXBException {
         if (object == null || contentHandler == null) {
             throw new IllegalArgumentException();
@@ -382,6 +389,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         return object;
     }
 
+    @Override
     public void marshal(Object object, XMLEventWriter eventWriter) throws JAXBException {
         if (object == null || eventWriter == null) {
             throw new IllegalArgumentException();
@@ -438,6 +446,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         }
     }
 
+    @Override
     public void marshal(Object object, Node node) throws JAXBException {
         if (object == null || node == null) {
             throw new IllegalArgumentException();
@@ -466,6 +475,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         }
     }
 
+    @Override
     public void marshal(Object object, OutputStream outputStream) throws JAXBException {
         if (object == null || outputStream == null) {
             throw new IllegalArgumentException();
@@ -494,6 +504,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         }
     }
 
+    @Override
     public void marshal(Object object, File file) throws JAXBException {
         try {
             FileOutputStream outputStream = new FileOutputStream(file);
@@ -509,6 +520,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         }
     }
 
+    @Override
     public void marshal(Object object, Result result) throws JAXBException {
         if (object == null || result == null) {
             throw new IllegalArgumentException();
@@ -552,6 +564,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         }
     }
 
+    @Override
     public void marshal(Object object, XMLStreamWriter streamWriter) throws JAXBException {
         if (object == null || streamWriter == null) {
             throw new IllegalArgumentException();
@@ -660,7 +673,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         if(jaxbContext.getTypeMappingInfoToGeneratedType().size() > 0){
             Class generatedClass = jaxbContext.getTypeMappingInfoToGeneratedType().get(typeMappingInfo);
             if(generatedClass != null && object == null && wrapperElement != null) {
-            return wrapObjectInXMLRoot(wrapperElement, object, typeMappingInfo);
+            return wrapObjectInXMLRoot(wrapperElement, null, typeMappingInfo);
             }
 
             if (generatedClass != null && WrappedValue.class.isAssignableFrom(generatedClass)) {
@@ -711,6 +724,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         return xmlroot;
     }
 
+    @Override
     public void marshal(Object object, Writer writer) throws JAXBException {
         if (object == null || writer == null) {
             throw new IllegalArgumentException();
@@ -779,6 +793,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         }
     }
 
+    @Override
     public void setAdapter(Class javaClass, XmlAdapter adapter) {
         HashMap result = (HashMap) xmlMarshaller.getProperty(XML_JAVATYPE_ADAPTERS);
         if (result == null) {
@@ -788,10 +803,12 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         result.put(javaClass, adapter);
     }
 
+    @Override
     public void setAdapter(XmlAdapter adapter) {
         setAdapter(adapter.getClass(), adapter);
     }
 
+    @Override
     public void setAttachmentMarshaller(AttachmentMarshaller attachmentMarshaller) {
         if (attachmentMarshaller == null) {
             xmlMarshaller.setAttachmentMarshaller(null);
@@ -800,6 +817,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         }
     }
 
+    @Override
     public void setEventHandler(ValidationEventHandler newValidationEventHandler) throws JAXBException {
         if (null == newValidationEventHandler) {
             validationEventHandler = JAXBContext.DEFAULT_VALIDATION_EVENT_HANDLER;
@@ -809,6 +827,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         xmlMarshaller.setErrorHandler(new JAXBErrorHandler(validationEventHandler));
     }
 
+    @Override
     public void setListener(Marshaller.Listener listener) {
         if(xmlMarshaller.getMarshalListener() == null) {
             xmlMarshaller.setMarshalListener(new JAXBMarshalListener(jaxbContext, this));
@@ -831,6 +850,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
      * property will result in a javax.xml.bind.PropertyException
      * @see org.eclipse.persistence.jaxb.MarshallerProperties
      */
+    @Override
     public void setProperty(String key, Object value) throws PropertyException {
         try {
             if (key == null) {
@@ -968,6 +988,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         }
     }
 
+    @Override
     public void setSchema(Schema schema) {
         this.xmlMarshaller.setSchema(schema);
     }

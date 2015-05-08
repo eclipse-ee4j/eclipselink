@@ -28,15 +28,14 @@ import java.util.Iterator;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 
+import org.eclipse.persistence.exceptions.StaticWeaveException;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.deployment.ArchiveFactoryImpl;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
-import org.eclipse.persistence.exceptions.StaticWeaveException;
-import org.eclipse.persistence.internal.localization.ToStringLocalization;
 import org.eclipse.persistence.internal.jpa.weaving.AbstractStaticWeaveOutputHandler;
-import org.eclipse.persistence.tools.weaving.jpa.StaticWeaveClassTransformer;
 import org.eclipse.persistence.internal.jpa.weaving.StaticWeaveDirectoryOutputHandler;
 import org.eclipse.persistence.internal.jpa.weaving.StaticWeaveJAROutputHandler;
+import org.eclipse.persistence.internal.localization.ToStringLocalization;
 import org.eclipse.persistence.jpa.Archive;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.DefaultSessionLog;
@@ -211,15 +210,19 @@ public class StaticWeaveProcessor {
         //two possibilities, the location either is not directory or the location dose not exist.
         //Therefore pre-build of the directory target is required. Pre-build for the file(JAR) target
         //is not required since it gets built automatically by opening outputstream.
-        if(!(new File(targetURI)).exists()){
+        File targetDir = new File(targetURI);
+        if(!targetDir.exists()){
             if(!targetURI.toString().endsWith(".jar")){
-                (new File(targetURI)).mkdirs();
+                if (!targetDir.mkdirs()) {
+                    AbstractSessionLog.getLog().log(AbstractSessionLog.FINE, AbstractSessionLog.WEAVER,
+                            ToStringLocalization.buildMessage("staticweave_processor_dir_not_created", new Object[]{targetDir}));
+                }
                 //if directory fails to build, which may leads to unknown outcome since it will
                 //be treated as single file in the class StaticWeaveHandler and automatically gets built
                 //by outputstream.
 
                 //re-assign URL.
-                target = (new File(targetURI)).toURL();
+                target = targetDir.toURL();
             }
         }
     }

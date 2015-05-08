@@ -12,6 +12,19 @@
  ******************************************************************************/
 package org.eclipse.persistence.tools.dbws.oracle;
 
+import static org.eclipse.persistence.internal.helper.Helper.NL;
+import static org.eclipse.persistence.tools.dbws.Util.COMMA;
+import static org.eclipse.persistence.tools.dbws.Util.FLOAT_STR;
+import static org.eclipse.persistence.tools.dbws.Util.INTEGER_STR;
+import static org.eclipse.persistence.tools.dbws.Util.NUMERIC_STR;
+import static org.eclipse.persistence.tools.dbws.Util.OTHER_STR;
+import static org.eclipse.persistence.tools.dbws.Util.PERCENT;
+import static org.eclipse.persistence.tools.dbws.Util.SEMICOLON;
+import static org.eclipse.persistence.tools.dbws.Util.SINGLE_SPACE;
+import static org.eclipse.persistence.tools.dbws.Util.UNDERSCORE;
+import static org.eclipse.persistence.tools.dbws.Util.getJDBCTypeFromTypeName;
+import static org.eclipse.persistence.tools.dbws.Util.getJDBCTypeNameFromType;
+
 //javase imports
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,18 +52,6 @@ import org.eclipse.persistence.tools.oracleddl.metadata.TableType;
 import org.eclipse.persistence.tools.oracleddl.metadata.VarChar2Type;
 import org.eclipse.persistence.tools.oracleddl.metadata.VarCharType;
 import org.eclipse.persistence.tools.oracleddl.metadata.visit.BaseDatabaseTypeVisitor;
-import static org.eclipse.persistence.internal.helper.Helper.NL;
-import static org.eclipse.persistence.tools.dbws.Util.COMMA;
-import static org.eclipse.persistence.tools.dbws.Util.FLOAT_STR;
-import static org.eclipse.persistence.tools.dbws.Util.INTEGER_STR;
-import static org.eclipse.persistence.tools.dbws.Util.NUMERIC_STR;
-import static org.eclipse.persistence.tools.dbws.Util.OTHER_STR;
-import static org.eclipse.persistence.tools.dbws.Util.PERCENT;
-import static org.eclipse.persistence.tools.dbws.Util.SEMICOLON;
-import static org.eclipse.persistence.tools.dbws.Util.SINGLE_SPACE;
-import static org.eclipse.persistence.tools.dbws.Util.UNDERSCORE;
-import static org.eclipse.persistence.tools.dbws.Util.getJDBCTypeFromTypeName;
-import static org.eclipse.persistence.tools.dbws.Util.getJDBCTypeNameFromType;
 
 public class ShadowDDLGenerator {
 
@@ -100,7 +101,7 @@ public class ShadowDDLGenerator {
         return rowTYPEType.getTypeName().replace(PERCENT, UNDERSCORE);
     }
 
-    class CountROWTYPETypesVisitor extends BaseDatabaseTypeVisitor {
+    static class CountROWTYPETypesVisitor extends BaseDatabaseTypeVisitor {
         Map<String, Integer> rowTYPETypeCounts = new HashMap<String, Integer>();
         int initialRowTYPETypeCount = 0;
         @Override
@@ -438,7 +439,7 @@ public class ShadowDDLGenerator {
             return shadowTypeName;
         }
     }
-    class DDLWrapper {
+    static class DDLWrapper {
         String ddl;
         boolean finished = false;
         @Override

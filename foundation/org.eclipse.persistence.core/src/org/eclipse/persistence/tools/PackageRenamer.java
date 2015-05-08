@@ -644,7 +644,10 @@ public class PackageRenamer {
     public void traverseSourceDirectory(java.io.File aDirectoryString) {
         Objects.requireNonNull(aDirectoryString);
         java.io.File[] filesAndDirectories = aDirectoryString.listFiles();
-
+        if (filesAndDirectories == null) {
+            //no content, nothing to work with
+            return;
+        }
         for (int i = 0; i < filesAndDirectories.length; i++) {
             java.io.File fileOrDirectory = filesAndDirectories[i];
             if (fileOrDirectory.isDirectory()) {

@@ -33,38 +33,74 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.sessions;
 
-import java.util.*;
-import java.io.*;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 
-import org.eclipse.persistence.indirection.ValueHolderInterface;
-import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.annotations.CacheKeyType;
 import org.eclipse.persistence.config.ReferenceMode;
-import org.eclipse.persistence.descriptors.*;
-import org.eclipse.persistence.internal.descriptors.*;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.DescriptorEvent;
+import org.eclipse.persistence.descriptors.DescriptorEventManager;
+import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackingPolicy;
+import org.eclipse.persistence.descriptors.changetracking.ObjectChangePolicy;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.exceptions.EclipseLinkException;
+import org.eclipse.persistence.exceptions.OptimisticLockException;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
+import org.eclipse.persistence.internal.databaseaccess.Accessor;
+import org.eclipse.persistence.internal.databaseaccess.DatasourceAccessor;
+import org.eclipse.persistence.internal.databaseaccess.Platform;
+import org.eclipse.persistence.internal.descriptors.CascadeLockingPolicy;
+import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator.CascadeCondition;
-import org.eclipse.persistence.internal.localization.ExceptionLocalization;
-import org.eclipse.persistence.platform.server.ServerPlatform;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.internal.identitymaps.*;
+import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
+import org.eclipse.persistence.internal.descriptors.PersistenceEntity;
+import org.eclipse.persistence.internal.helper.ConcurrencyManager;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.helper.IdentityHashSet;
+import org.eclipse.persistence.internal.helper.IdentityWeakHashMap;
+import org.eclipse.persistence.internal.identitymaps.CacheId;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.identitymaps.IdentityMapManager;
 import org.eclipse.persistence.internal.indirection.DatabaseValueHolder;
 import org.eclipse.persistence.internal.indirection.UnitOfWorkQueryValueHolder;
 import org.eclipse.persistence.internal.indirection.UnitOfWorkTransformerValueHolder;
-import org.eclipse.persistence.internal.databaseaccess.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.internal.localization.ExceptionLocalization;
+import org.eclipse.persistence.internal.localization.LoggingLocalization;
 import org.eclipse.persistence.internal.sequencing.Sequencing;
-import org.eclipse.persistence.sessions.coordination.MergeChangeSetCommand;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
-import org.eclipse.persistence.internal.localization.LoggingLocalization;
+import org.eclipse.persistence.platform.server.ServerPlatform;
+import org.eclipse.persistence.queries.Call;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.DeleteObjectQuery;
+import org.eclipse.persistence.queries.DoesExistQuery;
+import org.eclipse.persistence.queries.InMemoryQueryIndirectionPolicy;
+import org.eclipse.persistence.queries.ModifyAllQuery;
+import org.eclipse.persistence.queries.ObjectBuildingQuery;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.SessionProfiler;
-import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackingPolicy;
-import org.eclipse.persistence.descriptors.changetracking.ObjectChangePolicy;
+import org.eclipse.persistence.sessions.coordination.MergeChangeSetCommand;
 
 /**
  * Implementation of org.eclipse.persistence.sessions.UnitOfWork
@@ -358,6 +394,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * INTERNAL:
      * Acquires a special historical session for reading objects as of a past time.
      */
+    @Override
     public org.eclipse.persistence.sessions.Session acquireHistoricalSession(org.eclipse.persistence.history.AsOfClause clause) throws ValidationException {
         throw ValidationException.cannotAcquireHistoricalSession();
     }
@@ -372,6 +409,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
        *
        * @see UnitOfWorkImpl
        */
+    @Override
     public UnitOfWorkImpl acquireUnitOfWork() {
         UnitOfWorkImpl uow = super.acquireUnitOfWork();
         uow.discoverAllUnregisteredNewObjectsInParent();
@@ -421,6 +459,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Adds the given Java class to the receiver's set of read-only classes.
      * Cannot be called after objects have been registered in the unit of work.
      */
+    @Override
     public void addReadOnlyClass(Class theClass) throws ValidationException {
         if (!canChangeReadOnlySet()) {
             throw ValidationException.cannotModifyReadOnlyClassesSetAfterUsingUnitOfWork();
@@ -443,6 +482,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Adds the classes in the given Vector to the existing set of read-only classes.
      * Cannot be called after objects have been registered in the unit of work.
      */
+    @Override
     public void addReadOnlyClasses(Collection classes) {
         for (Iterator iterator = classes.iterator(); iterator.hasNext();) {
             Class theClass = (Class)iterator.next();
@@ -465,6 +505,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * It can be used if the application requires to use the object id before the object exists on the database.
      * Normally all ids are assigned during the commit automatically.
      */
+    @Override
     public void assignSequenceNumber(Object object) throws DatabaseException {
         ClassDescriptor descriptor = getDescriptor(object);
         Object implementation = descriptor.getObjectBuilder().unwrapObject(object, this);
@@ -502,6 +543,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * It can be used if the application requires to use the object id before the object exists on the database.
      * Normally all ids are assigned during the commit automatically.
      */
+    @Override
     public void assignSequenceNumbers() throws DatabaseException {
         // This should be done outside of a transaction to ensure optimal concurrency and deadlock avoidance in the sequence table.
         // discoverAllUnregisteredNewObjects() should be called no matter whether sequencing used
@@ -567,6 +609,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * @see #commit()
      * @see #release()
      */
+    @Override
     public void beginEarlyTransaction() throws DatabaseException {
         beginTransaction();
         setWasTransactionBegunPrematurely(true);
@@ -577,6 +620,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * This is internal to the uow, transactions should not be used explicitly in a uow.
      * The uow shares its parents transactions.
      */
+    @Override
     public void beginTransaction() throws DatabaseException {
         this.parent.beginTransaction();
     }
@@ -808,7 +852,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             existQuery.setPrimaryKey(primaryKey);
             existQuery.setDescriptor(descriptor);
             existQuery.setIsExecutionClone(true);
-            exists = ((Boolean)executeQuery(existQuery)).booleanValue();
+            exists = (Boolean)executeQuery(existQuery);
         }
         if (exists) {
             //we know if it exists or not, now find or register it
@@ -1078,6 +1122,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * @see #commitAndResume()
      * @see #release()
      */
+    @Override
     public void commit() throws DatabaseException, OptimisticLockException {
         //CR#2189 throwing exception if UOW try to commit again(XC)
         if (!isActive()) {
@@ -1135,6 +1180,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * @see #commit()
      * @see #release()
      */
+    @Override
     public void commitAndResume() throws DatabaseException, OptimisticLockException {
         //CR#2189 throwing exception if UOW try to commit again(XC)
         if (!isActive()) {
@@ -1236,6 +1282,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * @see #commit()
      * @see #release()
      */
+    @Override
     public void commitAndResumeOnFailure() throws DatabaseException, OptimisticLockException {
         // First clone the identity map, on failure replace the clone back as the cache.
         IdentityMapManager failureManager = (IdentityMapManager)getIdentityMapAccessorInstance().getIdentityMapManager().clone();
@@ -1596,6 +1643,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * This is internal to the uow, transactions should not be used explicitly in a uow.
      * The uow shares its parents transactions.
      */
+    @Override
     public void commitTransaction() throws DatabaseException {
         this.parent.commitTransaction();
     }
@@ -1670,6 +1718,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Copy the read only classes from the unit of work.
      */
     // Added Nov 8, 2000 JED for Patch 2.5.1.8, Ref: Prs 24502
+    @Override
     public Vector copyReadOnlyClasses() {
         return new Vector(getReadOnlyClasses());
     }
@@ -1688,6 +1737,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * @see #mergeClone(Object)
      * @see #shallowMergeClone(Object)
      */
+    @Override
     public Object deepMergeClone(Object rmiClone) {
         return mergeClone(rmiClone, MergeManager.CASCADE_ALL_PARTS, false);
     }
@@ -1701,6 +1751,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * @see #revertObject(Object)
      * @see #shallowRevertObject(Object)
      */
+    @Override
     public Object deepRevertObject(Object clone) {
         return revertObject(clone, MergeManager.CASCADE_ALL_PARTS);
     }
@@ -1712,6 +1763,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Delete object can also be used, but will result in inserting the object and then deleting it.
      * The method should be used carefully because it will delete all the reachable parts.
      */
+    @Override
     public void deepUnregisterObject(Object clone) {
         unregisterObject(clone, DescriptorIterator.CascadeAllParts);
     }
@@ -1759,6 +1811,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     public void discoverUnregisteredNewObjects(Map clones, final Map knownNewObjects, final Map unregisteredExistingObjects, Map visitedObjects) {
         // This define an inner class for process the iteration operation, don't be scared, its just an inner class.
         DescriptorIterator iterator = new DescriptorIterator() {
+            @Override
             public void iterate(Object object) {
                 // If the object is read-only then do not continue the traversal.
                 if (isClassReadOnly(object.getClass(), this.getCurrentDescriptor())) {
@@ -1790,6 +1843,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 }
             }
 
+            @Override
             public void iterateReferenceObjectForMapping(Object referenceObject, DatabaseMapping mapping) {
                 super.iterateReferenceObjectForMapping(referenceObject, mapping);
                 if (mapping.isCandidateForPrivateOwnedRemoval()) {
@@ -1822,6 +1876,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * advanced situation where the application requires/desires to violate clone identity in the unit of work.
      * It is strongly suggested that clone identity not be violate in the unit of work.
      */
+    @Override
     public void dontPerformValidation() {
         setValidationLevel(None);
     }
@@ -1831,6 +1886,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Override From session.  Get the accessor based on the query, and execute call,
      * this is here for session broker.
      */
+    @Override
     public Object executeCall(Call call, AbstractRecord translationRow, DatabaseQuery query) throws DatabaseException {
         Collection<Accessor> accessors = query.getSession().getAccessors(call, translationRow, query);
         query.setAccessors(accessors);
@@ -1856,6 +1912,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * If shouldModifyVersionField is false,
      * "UPDATE EMPLOYEE SET VERSION = 1 WHERE EMP_ID = 9 AND VERSION = 1"
      */
+    @Override
     public void forceUpdateToVersionField(Object lockObject, boolean shouldModifyVersionField) {
         ClassDescriptor descriptor = getDescriptor(lockObject);
         if (descriptor == null) {
@@ -1887,6 +1944,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * The commit manager is used to resolve referential integrity on commits of multiple objects.
      * The commit manage is lazy init from parent.
      */
+    @Override
     public CommitManager getCommitManager() {
         // PERF: lazy init, not always required for release/commit with no changes.
         if (this.commitManager == null) {
@@ -1901,6 +1959,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * INTERNAL:
      * Return the connections to use for the query execution.
      */
+    @Override
     public Collection<Accessor> getAccessors(Call call, AbstractRecord translationRow, DatabaseQuery query) {
         return this.parent.getAccessors(call, translationRow, query);
     }
@@ -1910,6 +1969,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Return the active unit of work for the current active external (JTS) transaction.
      * This should only be used with JTS and will return null if no external transaction exists.
      */
+    @Override
     public org.eclipse.persistence.sessions.UnitOfWork getActiveUnitOfWork() {
 
         /* Steven Vo:  CR# 2517
@@ -2063,6 +2123,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * A valid changeSet, with sequencenumbers can be collected from the UnitOfWork after the commit
      * is complete by calling unitOfWork.getUnitOfWorkChangeSet()
      */
+    @Override
     public org.eclipse.persistence.sessions.changesets.UnitOfWorkChangeSet getCurrentChanges() {
         Map allObjects = collectAndPrepareObjectsForNestedMerge();
         return calculateChanges(allObjects, new UnitOfWorkChangeSet(this), false, false);
@@ -2082,6 +2143,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * @param terminalOnly return the last session in the chain where the Enitity is stored.
      * @return Session with the required IdentityMap
      */
+    @Override
     public AbstractSession getParentIdentityMapSession(ClassDescriptor descriptor, boolean canReturnSelf, boolean terminalOnly) {
         if (canReturnSelf && !terminalOnly) {
             return this;
@@ -2105,6 +2167,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * @return a session with a live accessor
      * @param query may store session name or reference class for brokers case
      */
+    @Override
     public AbstractSession getExecutionSession(DatabaseQuery query) {
         // This optimization is only for when executing with a ClientSession in
         // transaction.  In that case log with the UnitOfWork instead of the
@@ -2244,6 +2307,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      *
      * @see org.eclipse.persistence.sessions.Project#setDefaultReadOnlyClasses(Vector)
      */
+    @Override
     public Vector getDefaultReadOnlyClasses() {
         return this.parent.getDefaultReadOnlyClasses();
     }
@@ -2383,6 +2447,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * INTERNAL:
      * Return the Sequencing object used by the session.
      */
+    @Override
     public Sequencing getSequencing() {
         return this.parent.getSequencing();
     }
@@ -2393,6 +2458,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * accessing the server platform from within EclipseLink's other sessions types
      * (i.e. not DatabaseSession)
      */
+    @Override
     public ServerPlatform getServerPlatform() {
         return this.parent.getServerPlatform();
     }
@@ -2408,6 +2474,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * non-deferred UnitOfWork, or that their ClientSession is an
      * IsolatedClientSession.
      */
+    @Override
     public String getSessionTypeString() {
         return "UnitOfWork";
     }
@@ -2437,6 +2504,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Called in the end of beforeCompletion of external transaction synchronization listener.
      * Close the managed sql connection corresponding to the external transaction.
      */
+    @Override
     public void releaseJTSConnection() {
         this.parent.releaseJTSConnection();
     }
@@ -2544,6 +2612,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * ADVANCED:
      * Return the original version of the object(clone) from the parent's identity map.
      */
+    @Override
     public Object getOriginalVersionOfObject(Object workingClone) {
         // Can be null when called from the mappings.
         if (workingClone == null) {
@@ -2658,6 +2727,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Return the parent.
      * This is a unit of work if nested, otherwise a database session or client session.
      */
+    @Override
     public AbstractSession getParent() {
         return parent;
     }
@@ -2667,6 +2737,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Search for and return the user defined property from this UOW, if it not found then search for the property
      * from parent.
      */
+    @Override
     public Object getProperty(String name){
         Object propertyValue = super.getProperties().get(name);
         if (propertyValue == null) {
@@ -2679,6 +2750,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * INTERNAL:
      * Return the platform for a particular class.
      */
+    @Override
     public Platform getPlatform(Class domainClass) {
         return this.parent.getPlatform(domainClass);
     }
@@ -2696,6 +2768,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Return the query from the session pre-defined queries with the given name.
      * This allows for common queries to be pre-defined, reused and executed by name.
      */
+    @Override
     public DatabaseQuery getQuery(String name, Vector arguments) {
         DatabaseQuery query = super.getQuery(name, arguments);
         if (query == null) {
@@ -2710,6 +2783,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Return the query from the session pre-defined queries with the given name.
      * This allows for common queries to be pre-defined, reused and executed by name.
      */
+    @Override
     public DatabaseQuery getQuery(String name) {
         DatabaseQuery query = super.getQuery(name);
         if (query == null) {
@@ -2723,6 +2797,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * ADVANCED:
      * Returns the set of read-only classes in this UnitOfWork.
      */
+    @Override
     public Set getReadOnlyClasses() {
         if (this.readOnlyClasses == null) {
             this.readOnlyClasses = new HashSet();
@@ -2787,6 +2862,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Returns the currentChangeSet from the UnitOfWork.
      * This is only valid after the UnitOfWOrk has committed successfully
      */
+    @Override
     public org.eclipse.persistence.sessions.changesets.UnitOfWorkChangeSet getUnitOfWorkChangeSet() {
         return unitOfWorkChangeSet;
     }
@@ -2840,6 +2916,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * advanced situation where the application requires/desires to violate clone identity in the unit of work.
      * It is strongly suggested that clone identity not be violate in the unit of work.
      */
+    @Override
     public int getValidationLevel() {
         return validationLevel;
     }
@@ -2849,6 +2926,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * The Unit of work is capable of preprocessing to determine if any on the clone have been changed.
      * This is computationally expensive and should be avoided on large object graphs.
      */
+    @Override
     public boolean hasChanges() {
         if (hasNewObjects()) {
             return true;
@@ -2883,6 +2961,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Set up the IdentityMapManager.  This method allows subclasses of Session to override
      * the default IdentityMapManager functionality.
      */
+    @Override
     public void initializeIdentityMapAccessor() {
         this.identityMapAccessor = new UnitOfWorkIdentityMapAccessor(this, new IdentityMapManager(this));
     }
@@ -2892,6 +2971,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Return the results from executing the database query.
      * the arguments should be a database row with raw data values.
      */
+    @Override
     public Object internalExecuteQuery(DatabaseQuery query, AbstractRecord databaseRow) throws DatabaseException, QueryException {
         Object result = query.executeInUnitOfWork(this, databaseRow);
         executeDeferredEvents();
@@ -2948,6 +3028,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * PUBLIC:
      * Return if the unit of work is active. (i.e. has not been released).
      */
+    @Override
     public boolean isActive() {
         return this.lifecycle != Death;
     }
@@ -2957,6 +3038,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Checks to see if the specified class or descriptor is read-only or not in this UnitOfWork.
      * @return boolean, true if the class is read-only, false otherwise.
      */
+    @Override
     public boolean isClassReadOnly(Class theClass, ClassDescriptor descriptor) {
         if ((descriptor != null) && (descriptor.shouldBeReadOnly())) {
             return true;
@@ -3014,6 +3096,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * PUBLIC:
      * Return whether the session currently has a database transaction in progress.
      */
+    @Override
     public boolean isInTransaction() {
         return this.parent.isInTransaction();
     }
@@ -3048,6 +3131,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * PUBLIC:
      * Return whether this session is a nested unit of work or not.
      */
+    @Override
     public boolean isNestedUnitOfWork() {
         return isNestedUnitOfWork;
     }
@@ -3103,6 +3187,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * ADVANCED:
      * Return whether the clone object is already registered.
      */
+    @Override
     public boolean isObjectRegistered(Object clone) {
         if (getCloneMapping().containsKey(clone)) {
             return true;
@@ -3188,6 +3273,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * PUBLIC:
      * Return if this session is a unit of work.
      */
+    @Override
     public boolean isUnitOfWork() {
         return true;
     }
@@ -3366,6 +3452,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * @see #shallowMergeClone(Object)
      * @see #deepMergeClone(Object)
      */
+    @Override
     public Object mergeClone(Object rmiClone) {
         return mergeClone(rmiClone, MergeManager.CASCADE_PRIVATE_PARTS, false);
     }
@@ -3432,6 +3519,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * @see #shallowMergeClone(Object)
      * @see #deepMergeClone(Object)
      */
+    @Override
     public Object mergeCloneWithReferences(Object rmiClone) {
         return this.mergeCloneWithReferences(rmiClone, MergeManager.CASCADE_PRIVATE_PARTS);
     }
@@ -3531,6 +3619,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Return a new instance of the class registered in this unit of work.
      * This can be used to ensure that new objects are registered correctly.
      */
+    @Override
     public Object newInstance(Class theClass) {
         //CR#2272
         logDebugMessage(theClass, "new_instance");
@@ -3633,6 +3722,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * advanced situation where the application requires/desires to violate clone identity in the unit of work.
      * It is strongly suggested that clone identity not be violate in the unit of work.
      */
+    @Override
     public void performFullValidation() {
         setValidationLevel(Full);
 
@@ -3648,6 +3738,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * advanced situation where the application requires/desires to violate clone identity in the unit of work.
      * It is strongly suggested that clone identity not be violate in the unit of work.
      */
+    @Override
     public void performPartialValidation() {
         setValidationLevel(Partial);
     }
@@ -3730,6 +3821,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Print the objects in the unit of work.
      * The output of this method will be logged to this unit of work's SessionLog at SEVERE level.
      */
+    @Override
     public void printRegisteredObjects() {
         if (shouldLog(SessionLog.SEVERE, SessionLog.CACHE)) {
             basicPrintRegisteredObjects();
@@ -3828,6 +3920,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * @return is the clones of the original objects, the return value must be used for editing.
      * Editing the original is not allowed in the unit of work.
      */
+    @Override
     public Vector registerAllObjects(Collection domainObjects) {
         Vector clones = new Vector(domainObjects.size());
         for (Iterator objectsEnum = domainObjects.iterator(); objectsEnum.hasNext();) {
@@ -3864,6 +3957,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * @return The clone of the original object, the return value must be used for editing.
      * Editing the original is not allowed in the unit of work.
      */
+    @Override
     public Object registerExistingObject(Object existingObject) {
         return this.registerExistingObject(existingObject, false);
     }
@@ -4061,6 +4155,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      *
      * @see #registerObject(Object)
      */
+    @Override
     public Object registerNewObject(Object newObject) {
         if (newObject == null) {
             return null;
@@ -4344,6 +4439,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      *
      * ** Editing the original is not allowed in the unit of work. **
      */
+    @Override
     public Object registerObject(Object object) {
         if (object == null) {
             return null;
@@ -4449,6 +4545,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      *
      * @see #commit()
      */
+    @Override
     public void release() {
         if (isDead()) {
             return;
@@ -4499,6 +4596,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * cannot have a subset of its parent's set of read-only classes.
      * Also removes classes which are read only because their descriptors are readonly
      */
+    @Override
     public void removeAllReadOnlyClasses() throws ValidationException {
         if (this.isNestedUnitOfWork) {
             throw ValidationException.cannotRemoveFromReadOnlyClassesInNestedUnitOfWork();
@@ -4511,6 +4609,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Remove optimistic read lock from the object
      * See forceUpdateToVersionField(Object)
      */
+    @Override
     public void removeForceUpdateToVersionField(Object lockObject) {
         getOptimisticReadLockObjects().remove(lockObject);
     }
@@ -4540,6 +4639,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Removes a Class from the receiver's set of read-only classes.
      * It is illegal to try to send this method to a nested UnitOfWork.
      */
+    @Override
     public void removeReadOnlyClass(Class theClass) throws ValidationException {
         if (!canChangeReadOnlySet()) {
             throw ValidationException.cannotModifyReadOnlyClassesSetAfterUsingUnitOfWork();
@@ -4562,6 +4662,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * @see #commitAndResume()
      * @see #release()
      */
+    @Override
     public void revertAndResume() {
         if (isAfterWriteChangesButBeforeCommit()) {
             throw ValidationException.illegalOperationForUnitOfWorkLifecycle(this.lifecycle, "revertAndResume");
@@ -4622,6 +4723,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * @see #shallowRevertObject(Object)
      * @see #deepRevertObject(Object)
      */
+    @Override
     public Object revertObject(Object clone) {
         return revertObject(clone, MergeManager.CASCADE_PRIVATE_PARTS);
     }
@@ -4663,6 +4765,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * This is internal to the uow, transactions should not be used explicitly in a uow.
      * The uow shares its parents transactions.
      */
+    @Override
     public void rollbackTransaction() throws DatabaseException {
         incrementProfile(SessionProfiler.UowRollbacks);
         this.parent.rollbackTransaction();
@@ -4939,6 +5042,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * New objects cannot be cached unless they have a valid assigned primary key before being registered.
      * New object with non-null invalid primary keys such as 0 or '' can cause problems and should not be used with this option.
      */
+    @Override
     public void setShouldNewObjectsBeCached(boolean shouldNewObjectsBeCached) {
         this.shouldNewObjectsBeCached = shouldNewObjectsBeCached;
     }
@@ -4948,6 +5052,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * By default deletes are performed last in a unit of work.
      * Sometimes you may want to have the deletes performed before other actions.
      */
+    @Override
     public void setShouldPerformDeletesFirst(boolean shouldPerformDeletesFirst) {
         this.shouldPerformDeletesFirst = shouldPerformDeletesFirst;
     }
@@ -4960,6 +5065,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      *    DO_NOT_THROW_CONFORM_EXCEPTIONS = 0;
      *    THROW_ALL_CONFORM_EXCEPTIONS = 1;
      */
+    @Override
     public void setShouldThrowConformExceptions(int shouldThrowExceptions) {
         this.shouldThrowConformExceptions = shouldThrowExceptions;
     }
@@ -4976,6 +5082,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * INTERNAL:
      * Set isSynchronized flag to indicate that this session is a synchronized unit of work.
      */
+    @Override
     public void setSynchronized(boolean synched) {
         super.setSynchronized(synched);
         this.parent.setSynchronized(synched);
@@ -5022,6 +5129,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * advanced situation where the application requires/desires to violate clone identity in the unit of work.
      * It is strongly suggested that clone identity not be violate in the unit of work.
      */
+    @Override
     public void setValidationLevel(int validationLevel) {
         this.validationLevel = validationLevel;
     }
@@ -5052,6 +5160,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * @see #mergeClone(Object)
      * @see #deepMergeClone(Object)
      */
+    @Override
     public Object shallowMergeClone(Object rmiClone) {
         return mergeClone(rmiClone, MergeManager.NO_CASCADE, false);
     }
@@ -5065,6 +5174,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * @see #revertObject(Object)
      * @see #deepRevertObject(Object)
      */
+    @Override
     public Object shallowRevertObject(Object clone) {
         return revertObject(clone, MergeManager.NO_CASCADE);
     }
@@ -5076,6 +5186,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Delete object can also be used, but will result in inserting the object and then deleting it.
      * The method will only unregister the clone, none of its parts.
      */
+    @Override
     public void shallowUnregisterObject(Object clone) {
         unregisterObject(clone, DescriptorIterator.NoCascading);
     }
@@ -5099,6 +5210,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * New objects cannot be cached unless they have a valid assigned primary key before being registered.
      * New object with non-null invalid primary keys such as 0 or '' can cause problems and should not be used with this option.
      */
+    @Override
     public boolean shouldNewObjectsBeCached() {
         return shouldNewObjectsBeCached;
     }
@@ -5123,6 +5235,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * any object is deleted. If this flag is set to true, deletes will be
      * performed before inserts and updates
      */
+    @Override
     public boolean shouldPerformDeletesFirst() {
         return shouldPerformDeletesFirst;
     }
@@ -5137,6 +5250,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * advanced situation where the application requires/desires to violate clone identity in the unit of work.
      * It is strongly suggested that clone identity not be violate in the unit of work.
      */
+    @Override
     public boolean shouldPerformFullValidation() {
         return getValidationLevel() == Full;
     }
@@ -5151,6 +5265,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * advanced situation where the application requires/desires to violate clone identity in the unit of work.
      * It is strongly suggested that clone identity not be violated in the unit of work.
      */
+    @Override
     public boolean shouldPerformNoValidation() {
         return getValidationLevel() == None;
     }
@@ -5165,6 +5280,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * advanced situation where the application requires/desires to violate clone identity in the unit of work.
      * It is strongly suggested that clone identity not be violate in the unit of work.
      */
+    @Override
     public boolean shouldPerformPartialValidation() {
         return getValidationLevel() == Partial;
     }
@@ -5326,6 +5442,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Delete object can also be used, but will result in inserting the object and then deleting it.
      * The method will only unregister the object and its privately owned parts
      */
+    @Override
     public void unregisterObject(Object clone) {
         unregisterObject(clone, DescriptorIterator.CascadePrivateParts);
     }
@@ -5356,6 +5473,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
         // This define an inner class for process the itteration operation, don't be scared, its just an inner class.
         DescriptorIterator iterator = new DescriptorIterator() {
+            @Override
             public void iterate(Object object) {
                 if (isClassReadOnly(object.getClass(), getCurrentDescriptor())) {
                     setShouldBreak(true);
@@ -5397,6 +5515,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         iterator.setCascadeDepth(cascadeDepth);
         if (forDetach){
             CascadeCondition detached = iterator.new CascadeCondition(){
+                @Override
                 public boolean shouldNotCascade(DatabaseMapping mapping){
                     return ! (mapping.isForeignReferenceMapping() && ((ForeignReferenceMapping)mapping).isCascadeDetach());
                 }
@@ -5485,10 +5604,12 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * an error if not,  it will contain the full stack of object references in the error message.
      * If you call this method after each register or change you perform it will pin-point where the error was made.
      */
+    @Override
     public void validateObjectSpace() {
         log(SessionLog.FINER, SessionLog.TRANSACTION, "validate_object_space");
         // This define an inner class for process the iteration operation, don't be scared, its just an inner class.
         DescriptorIterator iterator = new DescriptorIterator() {
+            @Override
             public void iterate(Object object) {
                 try {
                     if (isClassReadOnly(object.getClass(), getCurrentDescriptor())) {
@@ -5554,6 +5675,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * <p>
      * Use to commit a UnitOfWork in two stages.
      */
+    @Override
     public void writeChanges() {
         if (!isActive()) {
             throw ValidationException.inActiveUnitOfWork("writeChanges");
@@ -5588,6 +5710,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * completed.  This notification can be used for such thing as flushing the
      * batch mechanism
      */
+    @Override
     public void writesCompleted() {
         this.parent.writesCompleted();
     }
@@ -5720,6 +5843,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * INTERNAL:
      * Release the read connection to the read connection pool.
      */
+    @Override
     public void releaseReadConnection(Accessor connection) {
         //bug 4668234 -- used to only release connections on server sessions but should always release
         this.parent.releaseReadConnection(connection);
@@ -5861,6 +5985,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * The instance will be lazy when it does not exist in the cache, and supports fetch groups.
      * @param primaryKey - The primary key of the object, either as a List, singleton, IdClass or an instance of the object.
      */
+    @Override
     public Object getReference(Class theClass, Object id) {
         ClassDescriptor descriptor = getDescriptor(theClass);
         if (descriptor == null || descriptor.isDescriptorTypeAggregate()) {
@@ -5970,6 +6095,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * ADVANCED:
      * Return if updates should be ordered by primary key to avoid possible database deadlocks.
      */
+    @Override
     public boolean shouldOrderUpdates() {
         return this.commitOrder != CommitOrderType.NONE;
     }
@@ -5978,6 +6104,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * ADVANCED:
      * Set updates should be ordered by primary key to avoid possible database deadlocks.
      */
+    @Override
     public void setShouldOrderUpdates(boolean shouldOrderUpdates) {
         if (shouldOrderUpdates) {
             this.commitOrder = CommitOrderType.ID;
@@ -6041,6 +6168,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * ADVANCED:
      * Return the commit order.
      */
+    @Override
     public CommitOrderType getCommitOrder() {
         return commitOrder;
     }
@@ -6049,6 +6177,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * ADVANCED:
      * Set the commit order.
      */
+    @Override
     public void setCommitOrder(CommitOrderType order) {
         this.commitOrder = order;
     }

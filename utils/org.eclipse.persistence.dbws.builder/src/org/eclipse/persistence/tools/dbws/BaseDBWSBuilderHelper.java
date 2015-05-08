@@ -13,6 +13,68 @@
 package org.eclipse.persistence.tools.dbws;
 
 //javase imports
+import static java.util.logging.Level.FINE;
+import static java.util.logging.Level.FINEST;
+import static java.util.logging.Level.SEVERE;
+import static org.eclipse.persistence.internal.helper.ClassConstants.APBYTE;
+import static org.eclipse.persistence.internal.oxm.Constants.BASE_64_BINARY_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.EMPTY_STRING;
+import static org.eclipse.persistence.internal.oxm.Constants.XML_MIME_URL;
+import static org.eclipse.persistence.internal.oxm.schema.SchemaModelGeneratorProperties.ELEMENT_FORM_QUALIFIED_KEY;
+import static org.eclipse.persistence.internal.xr.Util.DBWS_OR_LABEL;
+import static org.eclipse.persistence.internal.xr.Util.DBWS_OX_LABEL;
+import static org.eclipse.persistence.internal.xr.Util.DBWS_WSDL;
+import static org.eclipse.persistence.internal.xr.Util.DEFAULT_ATTACHMENT_MIMETYPE;
+import static org.eclipse.persistence.internal.xr.Util.PK_QUERYNAME;
+import static org.eclipse.persistence.internal.xr.Util.TARGET_NAMESPACE_PREFIX;
+import static org.eclipse.persistence.internal.xr.Util.getClassFromJDBCType;
+import static org.eclipse.persistence.internal.xr.XRDynamicClassLoader.COLLECTION_WRAPPER_SUFFIX;
+import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.DEFAULT_SIMPLE_XML_FORMAT_TAG;
+import static org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType.XSI_NIL;
+import static org.eclipse.persistence.tools.dbws.NamingConventionTransformer.ElementStyle.ATTRIBUTE;
+import static org.eclipse.persistence.tools.dbws.NamingConventionTransformer.ElementStyle.ELEMENT;
+import static org.eclipse.persistence.tools.dbws.NamingConventionTransformer.ElementStyle.NONE;
+import static org.eclipse.persistence.tools.dbws.Util.AT_SIGN;
+import static org.eclipse.persistence.tools.dbws.Util.CHAR_STR;
+import static org.eclipse.persistence.tools.dbws.Util.CLOSE_BRACKET;
+import static org.eclipse.persistence.tools.dbws.Util.CLOSE_SQUARE_BRACKET;
+import static org.eclipse.persistence.tools.dbws.Util.COMMA;
+import static org.eclipse.persistence.tools.dbws.Util.CREATE_OPERATION_NAME;
+import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_CLASS_FILE;
+import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_SOURCE_FILE;
+import static org.eclipse.persistence.tools.dbws.Util.DECIMAL_STR;
+import static org.eclipse.persistence.tools.dbws.Util.DOT;
+import static org.eclipse.persistence.tools.dbws.Util.FINDALL_QUERYNAME;
+import static org.eclipse.persistence.tools.dbws.Util.OPEN_BRACKET;
+import static org.eclipse.persistence.tools.dbws.Util.OPEN_SQUARE_BRACKET;
+import static org.eclipse.persistence.tools.dbws.Util.PERCENT;
+import static org.eclipse.persistence.tools.dbws.Util.REMOVE_OPERATION_NAME;
+import static org.eclipse.persistence.tools.dbws.Util.ROWTYPE_STR;
+import static org.eclipse.persistence.tools.dbws.Util.SINGLE_SPACE;
+import static org.eclipse.persistence.tools.dbws.Util.SLASH_TEXT;
+import static org.eclipse.persistence.tools.dbws.Util.THE_INSTANCE_NAME;
+import static org.eclipse.persistence.tools.dbws.Util.TYPE_STR;
+import static org.eclipse.persistence.tools.dbws.Util.UNDERSCORE;
+import static org.eclipse.persistence.tools.dbws.Util.UPDATE_OPERATION_NAME;
+import static org.eclipse.persistence.tools.dbws.Util.WSI_SWAREF_PREFIX;
+import static org.eclipse.persistence.tools.dbws.Util.WSI_SWAREF_URI;
+import static org.eclipse.persistence.tools.dbws.Util.WSI_SWAREF_XSD;
+import static org.eclipse.persistence.tools.dbws.Util.WSI_SWAREF_XSD_FILE;
+import static org.eclipse.persistence.tools.dbws.Util.XML_MIME_PREFIX;
+import static org.eclipse.persistence.tools.dbws.Util.addSimpleXMLFormat;
+import static org.eclipse.persistence.tools.dbws.Util.buildORDescriptor;
+import static org.eclipse.persistence.tools.dbws.Util.buildOXDescriptor;
+import static org.eclipse.persistence.tools.dbws.Util.buildTypeForJDBCType;
+import static org.eclipse.persistence.tools.dbws.Util.getGeneratedJavaClassName;
+import static org.eclipse.persistence.tools.dbws.Util.getGeneratedWrapperClassName;
+import static org.eclipse.persistence.tools.dbws.Util.getJDBCTypeFromTypeName;
+import static org.eclipse.persistence.tools.dbws.Util.getJDBCTypeNameFromType;
+import static org.eclipse.persistence.tools.dbws.Util.getXMLTypeFromJDBCType;
+import static org.eclipse.persistence.tools.dbws.Util.hasPLSQLArgs;
+import static org.eclipse.persistence.tools.dbws.Util.isNullStream;
+import static org.eclipse.persistence.tools.dbws.Util.requiresSimpleXMLFormat;
+import static org.eclipse.persistence.tools.dbws.Util.sqlMatch;
+
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -30,12 +92,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 import java.util.logging.Level;
-
-import static java.util.logging.Level.FINE;
-import static java.util.logging.Level.FINEST;
-import static java.util.logging.Level.SEVERE;
 
 //java eXtension imports
 import javax.wsdl.WSDLException;
@@ -55,7 +112,6 @@ import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.descriptors.DescriptorHelper;
 import org.eclipse.persistence.internal.helper.ComplexDatabaseType;
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.helper.StringHelper;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappingsWriter;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
@@ -84,7 +140,6 @@ import org.eclipse.persistence.internal.xr.XmlBindingsModel;
 import org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat;
 import org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormatProject;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
-import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
@@ -113,66 +168,6 @@ import org.eclipse.persistence.sessions.factories.XMLProjectWriter;
 import org.eclipse.persistence.tools.dbws.NamingConventionTransformer.ElementStyle;
 import org.eclipse.persistence.tools.dbws.jdbc.DbColumn;
 import org.eclipse.persistence.tools.dbws.jdbc.DbTable;
-
-import static org.eclipse.persistence.internal.helper.ClassConstants.APBYTE;
-import static org.eclipse.persistence.internal.oxm.schema.SchemaModelGeneratorProperties.ELEMENT_FORM_QUALIFIED_KEY;
-import static org.eclipse.persistence.internal.xr.Util.DBWS_OR_LABEL;
-import static org.eclipse.persistence.internal.xr.Util.DBWS_OX_LABEL;
-import static org.eclipse.persistence.internal.xr.Util.DBWS_WSDL;
-import static org.eclipse.persistence.internal.xr.Util.DEFAULT_ATTACHMENT_MIMETYPE;
-import static org.eclipse.persistence.internal.xr.Util.PK_QUERYNAME;
-import static org.eclipse.persistence.internal.xr.Util.TARGET_NAMESPACE_PREFIX;
-import static org.eclipse.persistence.internal.xr.Util.getClassFromJDBCType;
-import static org.eclipse.persistence.internal.xr.XRDynamicClassLoader.COLLECTION_WRAPPER_SUFFIX;
-import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.DEFAULT_SIMPLE_XML_FORMAT_TAG;
-import static org.eclipse.persistence.oxm.XMLConstants.BASE_64_BINARY_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.EMPTY_STRING;
-import static org.eclipse.persistence.oxm.XMLConstants.XML_MIME_URL;
-import static org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType.XSI_NIL;
-import static org.eclipse.persistence.tools.dbws.NamingConventionTransformer.ElementStyle.ATTRIBUTE;
-import static org.eclipse.persistence.tools.dbws.NamingConventionTransformer.ElementStyle.ELEMENT;
-import static org.eclipse.persistence.tools.dbws.NamingConventionTransformer.ElementStyle.NONE;
-import static org.eclipse.persistence.tools.dbws.Util.AT_SIGN;
-import static org.eclipse.persistence.tools.dbws.Util.COMMA;
-import static org.eclipse.persistence.tools.dbws.Util.CHAR_STR;
-import static org.eclipse.persistence.tools.dbws.Util.DECIMAL_STR;
-import static org.eclipse.persistence.tools.dbws.Util.CREATE_OPERATION_NAME;
-import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_CLASS_FILE;
-import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_SOURCE_FILE;
-import static org.eclipse.persistence.tools.dbws.Util.DOT;
-import static org.eclipse.persistence.tools.dbws.Util.FINDALL_QUERYNAME;
-import static org.eclipse.persistence.tools.dbws.Util.PERCENT;
-import static org.eclipse.persistence.tools.dbws.Util.REMOVE_OPERATION_NAME;
-import static org.eclipse.persistence.tools.dbws.Util.ROWTYPE_STR;
-import static org.eclipse.persistence.tools.dbws.Util.SLASH_TEXT;
-import static org.eclipse.persistence.tools.dbws.Util.SINGLE_SPACE;
-import static org.eclipse.persistence.tools.dbws.Util.CLOSE_BRACKET;
-import static org.eclipse.persistence.tools.dbws.Util.OPEN_BRACKET;
-import static org.eclipse.persistence.tools.dbws.Util.CLOSE_SQUARE_BRACKET;
-import static org.eclipse.persistence.tools.dbws.Util.OPEN_SQUARE_BRACKET;
-import static org.eclipse.persistence.tools.dbws.Util.THE_INSTANCE_NAME;
-import static org.eclipse.persistence.tools.dbws.Util.TYPE_STR;
-import static org.eclipse.persistence.tools.dbws.Util.UNDERSCORE;
-import static org.eclipse.persistence.tools.dbws.Util.UPDATE_OPERATION_NAME;
-import static org.eclipse.persistence.tools.dbws.Util.WSI_SWAREF_PREFIX;
-import static org.eclipse.persistence.tools.dbws.Util.WSI_SWAREF_URI;
-import static org.eclipse.persistence.tools.dbws.Util.WSI_SWAREF_XSD_FILE;
-import static org.eclipse.persistence.tools.dbws.Util.WSI_SWAREF_XSD;
-import static org.eclipse.persistence.tools.dbws.Util.XML_MIME_PREFIX;
-import static org.eclipse.persistence.tools.dbws.Util.addSimpleXMLFormat;
-import static org.eclipse.persistence.tools.dbws.Util.buildORDescriptor;
-import static org.eclipse.persistence.tools.dbws.Util.buildOXDescriptor;
-import static org.eclipse.persistence.tools.dbws.Util.buildTypeForJDBCType;
-import static org.eclipse.persistence.tools.dbws.Util.getJDBCTypeFromTypeName;
-import static org.eclipse.persistence.tools.dbws.Util.getJDBCTypeNameFromType;
-import static org.eclipse.persistence.tools.dbws.Util.getXMLTypeFromJDBCType;
-import static org.eclipse.persistence.tools.dbws.Util.getGeneratedJavaClassName;
-import static org.eclipse.persistence.tools.dbws.Util.getGeneratedWrapperClassName;
-import static org.eclipse.persistence.tools.dbws.Util.hasPLSQLArgs;
-import static org.eclipse.persistence.tools.dbws.Util.isNullStream;
-import static org.eclipse.persistence.tools.dbws.Util.requiresSimpleXMLFormat;
-import static org.eclipse.persistence.tools.dbws.Util.sqlMatch;
-
 //DDL parser imports
 import org.eclipse.persistence.tools.oracleddl.metadata.ArgumentType;
 import org.eclipse.persistence.tools.oracleddl.metadata.CompositeDatabaseType;
@@ -1011,14 +1006,11 @@ public abstract class BaseDBWSBuilderHelper {
         } catch (SQLException sqlException) {
             throw new IllegalStateException("failure executing secondary SQL: " + secondarySql, sqlException);
         }
-        if (resultSet != null) {
-            try {
-                return resultSet.getMetaData();
-            } catch (SQLException sqlException) {
-                throw new IllegalStateException("failure retrieving resultSet metadata", sqlException);
-            }
+        try {
+            return resultSet.getMetaData();
+        } catch (SQLException sqlException) {
+            throw new IllegalStateException("failure retrieving resultSet metadata", sqlException);
         }
-        return null;
     }
 
     protected static DirectToFieldMapping setUpDirectToFieldMapping(RelationalDescriptor desc, String columnName, NamingConventionTransformer nct, Class<?> attributeClass, int jdbcType, boolean isPk) {

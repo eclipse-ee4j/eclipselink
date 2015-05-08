@@ -433,10 +433,9 @@ public class PersistenceContext {
      * Finalize.
      */
     @Override
-    public void finalize() {
-        this.emf.close();
-        this.emf = null;
-        this.jaxbContext = null;
+    protected void finalize() throws Throwable {
+        emf.close();
+        super.finalize();
     }
 
     /**

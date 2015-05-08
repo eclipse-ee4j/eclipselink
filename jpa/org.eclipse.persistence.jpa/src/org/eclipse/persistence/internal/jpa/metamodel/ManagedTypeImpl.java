@@ -70,9 +70,9 @@ import javax.persistence.metamodel.ListAttribute;
 import javax.persistence.metamodel.ManagedType;
 import javax.persistence.metamodel.MapAttribute;
 import javax.persistence.metamodel.PluralAttribute;
+import javax.persistence.metamodel.PluralAttribute.CollectionType;
 import javax.persistence.metamodel.SetAttribute;
 import javax.persistence.metamodel.SingularAttribute;
-import javax.persistence.metamodel.PluralAttribute.CollectionType;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.descriptors.InstanceVariableAttributeAccessor;
@@ -143,6 +143,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      *  @throws IllegalArgumentException if attribute of the given
      *          name is not present in the managed type
      */
+    @Override
     public Attribute<X, ?> getAttribute(String name) {
         if(!members.containsKey(name)) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
@@ -155,6 +156,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
     /**
      *  Return the attributes of the managed type.
      */
+    @Override
     public Set<Attribute<? super X, ?>> getAttributes() {
         // We return a new Set instead of directly returning the Collection of values from the members HashMap
         return new LinkedHashSet<Attribute<? super X, ?>>(this.members.values());
@@ -169,6 +171,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      *  @throws IllegalArgumentException if attribute of the given
      *          name is not present in the managed type
      */
+    @Override
     public CollectionAttribute<? super X, ?> getCollection(String name) {
         // Get the named collection from the set directly
         /*
@@ -197,6 +200,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      *  @throws IllegalArgumentException if attribute of the given
      *          name and type is not present in the managed type
      */
+    @Override
     public <E> CollectionAttribute<? super X, E> getCollection(String name, Class<E> elementType) {
         // We do not use getCollection(name) so that we can catch a possible CCE on the wrong attribute type
         Attribute<? super X, E> anAttribute = (Attribute<? super X, E>)this.members.get(name);
@@ -215,6 +219,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      *  Return all collection-valued attributes of the managed type.
      *  @return collection valued attributes
      */
+    @Override
     public Set<PluralAttribute<? super X, ?, ?>> getPluralAttributes() {
         // Get all attributes and filter only for PluralAttributes
         Set<Attribute<? super X, ?>> allAttributes = this.getAttributes();
@@ -278,6 +283,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      *  @throws IllegalArgumentException if attribute of the given
      *          name is not declared in the managed type
      */
+    @Override
     public Attribute<X, ?> getDeclaredAttribute(String name){
         return getDeclaredAttribute(name, false);
     }
@@ -314,6 +320,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
     /**
      *  Return the attributes declared by the managed type.
      */
+    @Override
     public Set<Attribute<X, ?>> getDeclaredAttributes() {
         // return only the set of attributes declared on this class - not via inheritance
         // Get all attributes and filter only for declared attributes
@@ -323,7 +330,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
         for(Attribute<X, ?> anAttribute : allAttributes) {
             // Check the inheritance hierarchy for higher declarations
             if(this.isAttributeDeclaredOnlyInLeafType(anAttribute.getName())) {
-                declaredAttributes.add((Attribute<X, ?>)anAttribute);
+                declaredAttributes.add(anAttribute);
             }
         }
         return declaredAttributes;
@@ -337,6 +344,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      *  @throws IllegalArgumentException if attribute of the given
      *          name is not declared in the managed type
      */
+    @Override
     public CollectionAttribute<X, ?> getDeclaredCollection(String name) {
         // return only a collection declared on this class - not via inheritance
         // Handles UC1 and UC2
@@ -360,6 +368,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      *  @throws IllegalArgumentException if attribute of the given
      *          name and type is not declared in the managed type
      */
+    @Override
     public <E> CollectionAttribute<X, E> getDeclaredCollection(String name, Class<E> elementType) {
         // return only a collection declared on this class - not via inheritance
         // Handles UC1 and UC2
@@ -376,6 +385,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      *  managed type.
      *  @return declared collection valued attributes
      */
+    @Override
     public Set<PluralAttribute<X, ?, ?>> getDeclaredPluralAttributes() {
         // It is evident from the fact that we have only getAttributes(), getPluralAttributes() and getSingularAttributes() that a Collection is a superset of all Set, List and even Map
         // return only a set of collections declared on this class - not via inheritance
@@ -458,6 +468,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      *  @throws IllegalArgumentException if attribute of the given
      *          name and type is not declared in the managed type
      */
+    @Override
     public <E> ListAttribute<X, E> getDeclaredList(String name, Class<E> elementType) {
         // get the attribute parameterized by <Owning type, return Type> - throw an IAE if not found (no need to check hierarchy)
         // Handles UC1 and UC2
@@ -477,6 +488,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      *  @throws IllegalArgumentException if attribute of the given
      *          name is not declared in the managed type
      */
+    @Override
     public ListAttribute<X, ?> getDeclaredList(String name) {
         // return only a List declared on this class - not via inheritance
         // Handles UC1 and UC2
@@ -496,6 +508,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      *  @throws IllegalArgumentException if attribute of the given
      *          name is not present in the managed type
      */
+    @Override
     public MapAttribute<X, ?, ?> getDeclaredMap(String name) {
         // return only a map declared on this class - not via inheritance
         // Handles UC1 and UC2
@@ -519,6 +532,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      *  @throws IllegalArgumentException if attribute of the given
      *          name and type is not present in the managed type
      */
+    @Override
     public <K, V> MapAttribute<X, K, V> getDeclaredMap(String name, Class<K> keyType, Class<V> valueType) {
         // return only a map declared on this class - not via inheritance
         // Handles UC1 and UC2
@@ -539,6 +553,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      *  @throws IllegalArgumentException if attribute of the given
      *          name is not declared in the managed type
      */
+    @Override
     public SetAttribute<X, ?> getDeclaredSet(String name) {
         // return only a set declared on this class - not via inheritance
         // Handles UC1 and UC2
@@ -561,6 +576,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      *  @throws IllegalArgumentException if attribute of the given
      *          name and type is not declared in the managed type
      */
+    @Override
     public <E> SetAttribute<X, E> getDeclaredSet(String name, Class<E> elementType) {
         // return only a set declared on this class - not via inheritance
         // Handles UC1 and UC2
@@ -582,6 +598,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      *  @throws IllegalArgumentException if attribute of the given
      *          name is not declared in the managed type
      */
+    @Override
     public SingularAttribute<X, ?> getDeclaredSingularAttribute(String name) {
         // return only a SingularAttribute declared on this class - not via inheritance
         // Handles UC1 and UC2
@@ -604,6 +621,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      *  @throws IllegalArgumentException if attribute of the given
      *          name and type is not declared in the managed type
      */
+    @Override
     public <Y> SingularAttribute<X, Y> getDeclaredSingularAttribute(String name, Class<Y> type) {
         // return only a SingularAttribute declared on this class - not via inheritance
         // Handles UC1 and UC2
@@ -620,6 +638,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      *  type.
      *  @return declared single-valued attributes
      */
+    @Override
     public Set<SingularAttribute<X, ?>> getDeclaredSingularAttributes() {
         // return the set of SingularAttributes declared on this class - not via inheritance
         // Get all attributes and filter only for declared attributes
@@ -652,6 +671,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      *  @throws IllegalArgumentException if attribute of the given
      *          name is not present in the managed type
      */
+    @Override
     public ListAttribute<? super X, ?> getList(String name) {
         return getList(name, true);
     }
@@ -723,6 +743,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      *  @throws IllegalArgumentException if attribute of the given
      *          name and type is not present in the managed type
      */
+    @Override
     public <E> ListAttribute<? super X, E> getList(String name, Class<E> elementType) {
         // We do not use getList(name) so that we can catch a possible CCE on the wrong attribute type
         ListAttribute<? super X, E> anAttribute = (ListAttribute<? super X, E>)this.members.get(name);
@@ -734,7 +755,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
             // Throw appropriate IAException if required
             verifyAttributeTypeAndReturnType(anAttribute, elementType, CollectionType.LIST);
         }
-        return (ListAttribute<? super X, E>)anAttribute;
+        return anAttribute;
 
     }
 
@@ -768,6 +789,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      *  @throws IllegalArgumentException if attribute of the given
      *          name is not present in the managed type
      */
+    @Override
     public MapAttribute<? super X, ?, ?> getMap(String name) {
         /*
          * Note: We do not perform type checking on the get(name)
@@ -796,6 +818,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      *  @throws IllegalArgumentException if attribute of the given
      *          name and type is not present in the managed type
      */
+    @Override
     public <K, V> MapAttribute<? super X, K, V> getMap(String name, Class<K> keyType, Class<V> valueType) {
         MapAttribute<? super X, K, V> anAttribute = (MapAttribute<? super X, K, V>)this.getMap(name);
         Class<V> aClass = anAttribute.getElementType().getJavaType();
@@ -833,6 +856,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      *  @throws IllegalArgumentException if attribute of the given
      *          name is not present in the managed type
      */
+    @Override
     public SetAttribute<? super X, ?> getSet(String name) {
         /*
          * Note: We do not perform type checking on the get(name)
@@ -858,6 +882,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      *  @throws IllegalArgumentException if attribute of the given
      *          name and type is not present in the managed type
      */
+    @Override
     public <E> SetAttribute<? super X, E> getSet(String name, Class<E> elementType) {
         SetAttribute<? super X, E> anAttribute = (SetAttribute<? super X, E>)getSet(name);
         Class<E> aClass = anAttribute.getElementType().getJavaType();
@@ -877,6 +902,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      *  @throws IllegalArgumentException if attribute of the given
      *          name is not present in the managed type
      */
+    @Override
     public SingularAttribute<? super X, ?> getSingularAttribute(String name) {
         Attribute<X, ?> anAttribute = getMembers().get(name);
         if(null == anAttribute) {
@@ -959,6 +985,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      *  @throws IllegalArgumentException if attribute of the given
      *          name and type is not present in the managed type
      */
+    @Override
     public <Y> SingularAttribute<? super X, Y> getSingularAttribute(String name, Class<Y> type) {
         SingularAttribute<? super X, Y> anAttribute = (SingularAttribute<? super X, Y>)getSingularAttribute(name);
         Class<Y> aClass = anAttribute.getType().getJavaType();
@@ -975,6 +1002,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      *  Return the single-valued attributes of the managed type.
      *  @return single-valued attributes
      */
+    @Override
     public Set<SingularAttribute<? super X, ?>> getSingularAttributes() {
         // Iterate the members set for attributes of type SingularAttribute
         Set singularAttributeSet = new LinkedHashSet<SingularAttribute<? super X, ?>>();
@@ -1074,17 +1102,8 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
                return false;
            } else {
                // UC1.4 (when caller is firstLevel.supertype) - the immediate mappedSuperclass may not have the attribute if another one up the chain of rmappedSuperclasses declares it
-               if(null == aSuperTypeAttribute) {
-                   // UC 1.5: keep searching a possible chain of mappedSuperclasses or entities
-                   return aSuperType.isAttributeDeclaredOnlyInLeafType(attributeName, firstLevelAttribute);
-               } else {
-                   // superType does not contain the attribute - check that the current attribute and the first differ
-                   if(anAttribute != firstLevelAttribute) {
-                       return false;
-                   } else {
-                       return true;
-                   }
-               }
+               // UC 1.5: keep searching a possible chain of mappedSuperclasses or entities
+               return aSuperType.isAttributeDeclaredOnlyInLeafType(attributeName, firstLevelAttribute);
            }
         }
     }

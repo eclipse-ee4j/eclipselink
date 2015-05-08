@@ -30,15 +30,10 @@ import org.eclipse.persistence.sessions.SessionEvent;
  */
 public class PreLoginMappingAdapterV2 extends SessionEventListener {
 
-    protected AbstractSession jpaSession;
-
     /**
      * Instantiates a new pre login mapping adapter.
-     *
-     * @param jpaSession the jpa session
      */
-    public PreLoginMappingAdapterV2(AbstractSession jpaSession) {
-        this.jpaSession = jpaSession;
+    public PreLoginMappingAdapterV2() {
     }
 
     /**

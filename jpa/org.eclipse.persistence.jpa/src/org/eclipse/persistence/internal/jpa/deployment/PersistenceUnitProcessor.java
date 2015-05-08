@@ -16,6 +16,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.deployment;
 
+import java.io.File;
 import java.net.URL;
 import java.net.URISyntaxException;
 import java.net.JarURLConnection;
@@ -184,7 +185,7 @@ public class PersistenceUnitProcessor {
             if (separator == -1) {
                 separator = spec.length() - 1;
             }
-            result = new URL("file", "", spec.substring(0, separator++));
+            result = new File(spec.substring(0, separator++)).toURL();
         } else if("wsjar".equals(protocol)) { // NOI18N
             // e.g. wsjar:file:/tmp/a_ear/b.jar!/META-INF/persistence.xml
             // but WS gives use jar:file:..., so we need to match it.

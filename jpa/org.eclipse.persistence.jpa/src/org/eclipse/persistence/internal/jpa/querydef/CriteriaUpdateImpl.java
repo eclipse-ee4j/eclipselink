@@ -13,8 +13,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.querydef;
 
-import java.io.Serializable;
-
 import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Path;
@@ -41,7 +39,10 @@ import org.eclipse.persistence.queries.UpdateAllQuery;
  * @author Chris Delahunt
  * @since EclipseLink 2.5
  */
-public class CriteriaUpdateImpl<T> extends CommonAbstractCriteriaImpl<T> implements CriteriaUpdate<T>, Serializable {
+public class CriteriaUpdateImpl<T> extends CommonAbstractCriteriaImpl<T> implements CriteriaUpdate<T> {
+
+    private static final long serialVersionUID = 5069513243268181150L;
+
     protected Root<T> root;
     protected UpdateAllQuery query;
 
@@ -120,16 +121,19 @@ public class CriteriaUpdateImpl<T> extends CommonAbstractCriteriaImpl<T> impleme
         return (CriteriaUpdate<T>)super.where(restrictions);
     }
 
+    @Override
     protected void integrateRoot(RootImpl root) {
         if (this.root != root) {
             this.root = root;
         }
     }
 
+    @Override
     protected org.eclipse.persistence.expressions.Expression getBaseExpression() {
         return query.getExpressionBuilder();
     }
 
+    @Override
     protected DatabaseQuery getDatabaseQuery() {
         return (DatabaseQuery)query.clone();
     }

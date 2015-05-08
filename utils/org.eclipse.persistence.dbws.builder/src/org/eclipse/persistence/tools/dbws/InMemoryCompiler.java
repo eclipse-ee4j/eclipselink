@@ -26,13 +26,13 @@ import javax.tools.DiagnosticCollector;
 import javax.tools.FileObject;
 import javax.tools.ForwardingJavaFileManager;
 import javax.tools.JavaCompiler;
+import javax.tools.JavaCompiler.CompilationTask;
 import javax.tools.JavaFileManager;
 import javax.tools.JavaFileObject;
+import javax.tools.JavaFileObject.Kind;
 import javax.tools.SimpleJavaFileObject;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
-import javax.tools.JavaCompiler.CompilationTask;
-import javax.tools.JavaFileObject.Kind;
 
 /**
 * <p>
@@ -82,7 +82,7 @@ public class InMemoryCompiler {
     }
 
     // wrapper class - not really a 'FileObject', uses in-memory string 'source'
-    class JavaSourceFromString extends SimpleJavaFileObject {
+    static class JavaSourceFromString extends SimpleJavaFileObject {
         CharSequence source;
         JavaSourceFromString(String name, CharSequence source) {
             // URI trick from SimpleJavaFileObject constructor - it only recognizes
@@ -98,7 +98,7 @@ public class InMemoryCompiler {
     }
 
     // wrapper class - not really a 'FileObject', uses in-memory ByteArrayOutputStream 'bos'
-    class ByteArrayJavaFileObject extends SimpleJavaFileObject {
+    static class ByteArrayJavaFileObject extends SimpleJavaFileObject {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         public ByteArrayJavaFileObject(String name) {
             // URI trick from SimpleJavaFileObject constructor - it only recognizes
@@ -115,7 +115,7 @@ public class InMemoryCompiler {
         }
     }
     // wrapper class - compiler will use this 'FileManager' to manage compiler output
-    class ByteArrayFileManager extends ForwardingJavaFileManager<JavaFileManager> {
+    static class ByteArrayFileManager extends ForwardingJavaFileManager<JavaFileManager> {
         ByteArrayJavaFileObject bajfo;
         ByteArrayFileManager(StandardJavaFileManager sjfm, ByteArrayJavaFileObject bajfo) {
             super(sjfm);

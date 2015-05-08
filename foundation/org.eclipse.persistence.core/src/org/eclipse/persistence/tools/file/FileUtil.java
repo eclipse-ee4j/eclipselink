@@ -28,6 +28,8 @@ import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
 
 /**
  * INTERNAL:
@@ -55,9 +57,15 @@ public class FileUtil {
 
         if (!outputPathFile.exists()) {
             if (outputPathFile.isDirectory()) {
-                outputPathFile.mkdirs();
+                if (!outputPathFile.mkdirs()) {
+                    AbstractSessionLog.getLog().log(SessionLog.FINE, SessionLog.MISC,
+                            "Cannot create directory '{0}'", new Object[] {outputPathFile}, false);
+                }
             } else {
-                new File(outputPathFile.getParent()).mkdirs();
+                if (!outputPathFile.getParentFile().mkdirs()) {
+                    AbstractSessionLog.getLog().log(SessionLog.FINE, SessionLog.MISC,
+                            "Cannot create directory '{0}'", new Object[] {outputPathFile}, false);
+                }
             }
         }
 
@@ -73,7 +81,10 @@ public class FileUtil {
             File parent = new File(out.getParent());
 
             if (!parent.exists()) {
-                parent.mkdirs();
+                if (!parent.mkdirs()) {
+                    AbstractSessionLog.getLog().log(SessionLog.FINE, SessionLog.MISC,
+                            "Cannot create directory '{0}'", new Object[] {outputPathFile}, false);
+                }
             }
 
             copy(new FileInputStream(in), new FileOutputStream(out));
@@ -113,7 +124,10 @@ public class FileUtil {
 
         File jar = new File(jarFileName);
         if (!jar.exists()) {
-            new File(jar.getParent()).mkdirs();
+            if (!jar.getParentFile().mkdirs()) {
+                AbstractSessionLog.getLog().log(SessionLog.FINE, SessionLog.MISC,
+                        "Cannot create directory '{0}'", new Object[] {jar.getParentFile()}, false);
+            }
         }
         JarOutputStream jarOut = null;
         try {
@@ -188,8 +202,10 @@ public class FileUtil {
         if (file.isDirectory()) {
             String[] entries = file.list();
 
-            for (int i = 0; i < entries.length; i++) {
-                findFilesHelper(new File(file, entries[i]), filteredExtensions, result);
+            if (entries != null) {
+                for (int i = 0; i < entries.length; i++) {
+                    findFilesHelper(new File(file, entries[i]), filteredExtensions, result);
+                }
             }
         } else {
             // add everything if no filtered extension
@@ -222,8 +238,11 @@ public class FileUtil {
         if (file.isDirectory()) {
             String[] entries = file.list();
 
-            if (entries.length == 0) {
-                file.delete();
+            if (entries == null || entries.length == 0) {
+                if (!file.delete()) {
+                    AbstractSessionLog.getLog().log(SessionLog.FINE, SessionLog.MISC,
+                            "Cannot delete file '{0}'.", new Object[] {file}, false);
+                }
 
             } else {
                 for (int i = 0; i < entries.length; i++) {
@@ -231,12 +250,19 @@ public class FileUtil {
                 }
 
                 // delete directory after its containing files were deleted
-                if (file.list().length == 0) {
-                    file.delete();
+                String[] content = file.list();
+                if (content == null || content.length == 0) {
+                    if (!file.delete()) {
+                        AbstractSessionLog.getLog().log(SessionLog.FINE, SessionLog.MISC,
+                                "Cannot delete file '{0}'.", new Object[] {file}, false);
+                    }
                 }
             }
         } else {
-            file.delete();
+            if (!file.delete()) {
+                AbstractSessionLog.getLog().log(SessionLog.FINE, SessionLog.MISC,
+                        "Cannot delete file '{0}'.", new Object[] {file}, false);
+            }
         }
     }
 }

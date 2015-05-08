@@ -50,7 +50,7 @@ public class IdHelper {
         DatabaseSession session = app.getServerSession();
         ClassDescriptor descriptor = app.getDescriptor(entityName);
         List<DatabaseMapping> pkMappings = descriptor.getObjectBuilder().getPrimaryKeyMappings();
-        List<SortableKey> pkIndices = new ArrayList<SortableKey>();
+        List<SortableKey> pkIndices = new ArrayList<>();
         int index = 0;
         int multitenantPKMappings = 0;
         for (DatabaseMapping mapping : pkMappings) {
@@ -105,7 +105,7 @@ public class IdHelper {
         if (pkMappings.isEmpty()) {
             return "";
         }
-        List<SortableKey> pkIndices = new ArrayList<SortableKey>();
+        List<SortableKey> pkIndices = new ArrayList<>();
         int index = 0;
         for (DatabaseMapping mapping : pkMappings) {
             pkIndices.add(new SortableKey(mapping, index));
@@ -240,7 +240,7 @@ public class IdHelper {
         return pkIndices;
     }
 
-    public static class SortableKey implements Comparable<SortableKey> {
+    private static class SortableKey implements Comparable<SortableKey> {
         private DatabaseMapping mapping;
         private int index;
 
@@ -251,7 +251,33 @@ public class IdHelper {
 
         @Override
         public int compareTo(SortableKey o) {
-            return mapping.getAttributeName().compareTo(o.getMapping().getAttributeName());
+            if (this.equals(o)) {
+                return 0;
+            } else if (mapping.getAttributeName().equals(o.getMapping().getAttributeName())) {
+                return Integer.compare(index, o.getIndex());
+            } else {
+                return mapping.getAttributeName().compareTo(o.getMapping().getAttributeName());
+            }
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            SortableKey that = (SortableKey) o;
+
+            if (index != that.index) return false;
+            if (!mapping.equals(that.mapping)) return false;
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = mapping.hashCode();
+            result = 31 * result + index;
+            return result;
         }
 
         public DatabaseMapping getMapping() {

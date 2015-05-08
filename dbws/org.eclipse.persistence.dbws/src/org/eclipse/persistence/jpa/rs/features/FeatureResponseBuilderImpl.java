@@ -16,6 +16,7 @@ package org.eclipse.persistence.jpa.rs.features;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +25,6 @@ import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
-import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.internal.weaving.PersistenceWeavedRest;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
@@ -32,7 +32,6 @@ import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultList;
 import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultListItem;
 import org.eclipse.persistence.jpa.rs.util.list.SimpleHomogeneousList;
 import org.eclipse.persistence.jpa.rs.util.list.SingleResultQueryList;
-import org.eclipse.persistence.mappings.DatabaseMapping;
 
 /**
  * Response builder used in JPARS 1.0 and earlier versions.
@@ -87,10 +86,6 @@ public class FeatureResponseBuilderImpl implements FeatureResponseBuilder {
     public Object buildSingleResultQueryResponse(PersistenceContext context, Map<String, Object> queryParams, Object result, List<ReportItem> items, UriInfo uriInfo) {
         final SingleResultQueryList response = new SingleResultQueryList();
         final List<JAXBElement> fields = new FeatureResponseBuilderImpl().createShellJAXBElementList(items, result);
-        if (fields == null) {
-            return null;
-        }
-
         response.setFields(fields);
         return response;
     }
@@ -108,9 +103,6 @@ public class FeatureResponseBuilderImpl implements FeatureResponseBuilder {
         for (Object result : results) {
             ReportQueryResultListItem queryResultListItem = new ReportQueryResultListItem();
             List<JAXBElement> jaxbFields = createShellJAXBElementList(reportItems, result);
-            if (jaxbFields == null) {
-                return null;
-            }
             queryResultListItem.setFields(jaxbFields);
             response.addItem(queryResultListItem);
         }
@@ -122,36 +114,23 @@ public class FeatureResponseBuilderImpl implements FeatureResponseBuilder {
      *
      * @param reportItems the report items
      * @param record the record
-     * @return the list
+     * @return the list. Returns an empty list if reportItems is null or empty.
      */
     public List<JAXBElement> createShellJAXBElementList(List<ReportItem> reportItems, Object record) {
-        List<JAXBElement> jaxbElements = new ArrayList<JAXBElement>(reportItems.size());
-        if ((reportItems != null) && (reportItems.size() > 0)) {
-            for (int index = 0; index < reportItems.size(); index++) {
-                ReportItem reportItem = reportItems.get(index);
-                Object reportItemValue = record;
-                if (record instanceof Object[]) {
-                    reportItemValue = ((Object[]) record)[index];
-                }
-                Class reportItemValueType = null;
-                if (reportItemValue != null) {
-                    reportItemValueType = reportItemValue.getClass();
-                    if (reportItemValueType == null) {
-                        // try other paths to determine the type of the report item
-                        DatabaseMapping dbMapping = reportItem.getMapping();
-                        if (dbMapping != null) {
-                            reportItemValueType = dbMapping.getAttributeClassification();
-                        } else {
-                            ClassDescriptor desc = reportItem.getDescriptor();
-                            if (desc != null) {
-                                reportItemValueType = desc.getJavaClass();
-                            }
-                        }
-                    }
+        if (reportItems == null || reportItems.size() == 0) {
+            return Collections.emptyList();
+        }
 
-                    JAXBElement element = new JAXBElement(new QName(reportItem.getName()), reportItemValueType, reportItemValue);
-                    jaxbElements.add(reportItem.getResultIndex(), element);
-                }
+        List<JAXBElement> jaxbElements = new ArrayList<>(reportItems.size());
+        for (int index = 0; index < reportItems.size(); index++) {
+            ReportItem reportItem = reportItems.get(index);
+            Object reportItemValue = record;
+            if (record instanceof Object[]) {
+                reportItemValue = ((Object[]) record)[index];
+            }
+            if (reportItemValue != null) {
+                JAXBElement element = new JAXBElement(new QName(reportItem.getName()), reportItemValue.getClass(), reportItemValue);
+                jaxbElements.add(reportItem.getResultIndex(), element);
             }
         }
         return jaxbElements;

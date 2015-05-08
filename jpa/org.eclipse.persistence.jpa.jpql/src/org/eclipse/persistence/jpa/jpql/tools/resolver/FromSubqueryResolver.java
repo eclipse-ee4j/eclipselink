@@ -13,9 +13,13 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.tools.resolver;
 
+import static org.eclipse.persistence.jpa.jpql.LiteralType.PATH_EXPRESSION_LAST_PATH;
+import static org.eclipse.persistence.jpa.jpql.LiteralType.RESULT_VARIABLE;
+
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.parser.AbsExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractEclipseLinkExpressionVisitor;
@@ -52,7 +56,6 @@ import org.eclipse.persistence.jpa.jpql.tools.spi.IMappingType;
 import org.eclipse.persistence.jpa.jpql.tools.spi.IType;
 import org.eclipse.persistence.jpa.jpql.tools.spi.ITypeDeclaration;
 import org.eclipse.persistence.jpa.jpql.tools.utility.iterable.SnapshotCloneIterable;
-import static org.eclipse.persistence.jpa.jpql.LiteralType.*;
 
 /**
  * This {@link Resolver} wraps a subquery that is used as the "root" object in a query's declaration.
@@ -150,12 +153,14 @@ public class FromSubqueryResolver extends Resolver {
         /**
          * {@inheritDoc}
          */
+        @Override
         public void accept(IManagedTypeVisitor visitor) {
         }
 
         /**
          * {@inheritDoc}
          */
+        @Override
         public int compareTo(IManagedType managedType) {
             return getType().getName().compareTo(managedType.getType().getName());
         }
@@ -163,6 +168,7 @@ public class FromSubqueryResolver extends Resolver {
         /**
          * {@inheritDoc}
          */
+        @Override
         public IMapping getMappingNamed(String name) {
             initializeMappings();
             return mappings.get(name);
@@ -171,6 +177,7 @@ public class FromSubqueryResolver extends Resolver {
         /**
          * {@inheritDoc}
          */
+        @Override
         public IManagedTypeProvider getProvider() {
             return FromSubqueryResolver.this.getProvider();
         }
@@ -178,6 +185,7 @@ public class FromSubqueryResolver extends Resolver {
         /**
          * {@inheritDoc}
          */
+        @Override
         public IType getType() {
             return getProvider().getTypeRepository().getType(IType.UNRESOLVABLE_TYPE);
         }
@@ -199,6 +207,7 @@ public class FromSubqueryResolver extends Resolver {
         /**
          * {@inheritDoc}
          */
+        @Override
         public Iterable<IMapping> mappings() {
             initializeMappings();
             return new SnapshotCloneIterable<IMapping>(mappings.values());
@@ -208,7 +217,7 @@ public class FromSubqueryResolver extends Resolver {
     /**
      * This virtual {@link IMapping} wraps one of the select items.
      */
-    protected class VirtualMapping implements IMapping {
+    protected static class VirtualMapping implements IMapping {
 
         private MappingType mappingType;
         private String name;
@@ -230,6 +239,7 @@ public class FromSubqueryResolver extends Resolver {
         /**
          * {@inheritDoc}
          */
+        @Override
         public int compareTo(IMapping mapping) {
             return getName().compareTo(mapping.getName());
         }
@@ -237,6 +247,7 @@ public class FromSubqueryResolver extends Resolver {
         /**
          * {@inheritDoc}
          */
+        @Override
         public int getMappingType() {
             IMapping mapping = resolver.getMapping();
             return (mapping != null) ? mapping.getMappingType() : IMappingType.TRANSIENT;
@@ -245,6 +256,7 @@ public class FromSubqueryResolver extends Resolver {
         /**
          * {@inheritDoc}
          */
+        @Override
         public String getName() {
             return name;
         }
@@ -252,6 +264,7 @@ public class FromSubqueryResolver extends Resolver {
         /**
          * {@inheritDoc}
          */
+        @Override
         public IManagedType getParent() {
             return parent;
         }
@@ -259,6 +272,7 @@ public class FromSubqueryResolver extends Resolver {
         /**
          * {@inheritDoc}
          */
+        @Override
         public IType getType() {
             return resolver.getType();
         }
@@ -266,6 +280,7 @@ public class FromSubqueryResolver extends Resolver {
         /**
          * {@inheritDoc}
          */
+        @Override
         public ITypeDeclaration getTypeDeclaration() {
             return resolver.getTypeDeclaration();
         }
@@ -273,6 +288,7 @@ public class FromSubqueryResolver extends Resolver {
         /**
          * {@inheritDoc}
          */
+        @Override
         public boolean hasAnnotation(Class<? extends Annotation> annotationType) {
             // TODO: Can we do this???
             return getType().hasAnnotation(annotationType);
@@ -281,6 +297,7 @@ public class FromSubqueryResolver extends Resolver {
         /**
          * {@inheritDoc}
          */
+        @Override
         public boolean isCollection() {
             IMapping mapping = resolver.getMapping();
             return (mapping != null) ? mapping.isCollection() : false;
@@ -289,6 +306,7 @@ public class FromSubqueryResolver extends Resolver {
         /**
          * {@inheritDoc}
          */
+        @Override
         public boolean isProperty() {
             IMapping mapping = resolver.getMapping();
             return (mapping != null) ? mapping.isProperty() : (mappingType == MappingType.PROPERTY);
@@ -297,6 +315,7 @@ public class FromSubqueryResolver extends Resolver {
         /**
          * {@inheritDoc}
          */
+        @Override
         public boolean isRelationship() {
             IMapping mapping = resolver.getMapping();
             return (mapping != null) ? mapping.isRelationship() : (mappingType == MappingType.RELATIONSHIP);
@@ -305,6 +324,7 @@ public class FromSubqueryResolver extends Resolver {
         /**
          * {@inheritDoc}
          */
+        @Override
         public boolean isTransient() {
             IMapping mapping = resolver.getMapping();
             return (mapping != null) ? mapping.isTransient() : false;

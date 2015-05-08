@@ -26,7 +26,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa;
 
-import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.security.AccessController;
@@ -658,8 +657,8 @@ public class CMP3Policy extends CMPPolicy {
      * INTERNAL:
      * This class will be used when the element of the keyclass is a field
      */
-    private static final class FieldAccessor extends CommonAccessor implements Serializable {
-        private transient final Field field;
+    private static final class FieldAccessor extends CommonAccessor {
+        private final Field field;
         private final CMPPolicy policy;
 
         public FieldAccessor(CMPPolicy policy, Field field, String attributeName, DatabaseField databaseField, DatabaseMapping mapping, boolean isNestedAccessor) {
