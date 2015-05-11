@@ -12,10 +12,11 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
-import org.eclipse.persistence.testing.tests.jpa.advanced.compositepk.AdvancedCompositePKJunitTest;
-
-import junit.framework.TestSuite;
 import junit.framework.Test;
+import junit.framework.TestSuite;
+
+import org.eclipse.persistence.testing.tests.jpa.IsolatedHashMapTest;
+import org.eclipse.persistence.testing.tests.jpa.advanced.compositepk.AdvancedCompositePKJunitTest;
 
 /**
  * Suite of all advanced test suites.
@@ -25,6 +26,7 @@ public class AdvancedTestSuite extends TestSuite {
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("AdvancedTestSuite");
+        suite.addTest(IsolatedHashMapTest.suite());
         suite.addTest(CallbackEventJUnitTestSuite.suite());
         suite.addTest(EntityManagerJUnitTestSuite.suite());
         suite.addTest(SQLResultSetMappingTestSuite.suite());

@@ -12,13 +12,14 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
+import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.tests.jpa.IsolatedHashMapTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.compositepk.AdvancedCompositePKJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.fetchgroup.AdvancedFetchGroupJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.complexaggregate.ComplexAggregateTestSuite;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
-
-import junit.framework.TestSuite;
-import junit.framework.Test;
 
 /**
  * <p><b>Purpose</b>: To collect the tests that will run against Application Server only.
@@ -28,6 +29,7 @@ public class AdvancedServerTestSuite extends TestSuite {
         JUnitTestCase.initializePlatform();
         TestSuite suite = new TestSuite();
         suite.setName("Advanced ServerTestSuite");
+        suite.addTest(IsolatedHashMapTest.suite());
         if (System.getProperty("run.metadata.cache.test.suite").compareTo("true") == 0) {
             suite.addTest(new org.eclipse.persistence.testing.tests.jpa.advanced.MetadataCachingTestSuite("testProjectCacheWithDefaultPU"));
         }

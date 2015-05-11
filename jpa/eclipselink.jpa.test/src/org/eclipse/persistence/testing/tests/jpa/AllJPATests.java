@@ -17,7 +17,6 @@ package org.eclipse.persistence.testing.tests.jpa;
 import junit.framework.Test;
 
 import org.eclipse.persistence.testing.framework.TestModel;
-import org.eclipse.persistence.testing.tests.jpa.FullRegressionTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.advanced.JPAAdvancedTestModel;
 import org.eclipse.persistence.testing.tests.jpa.remote.RemoteEntityManagerTestSuite;
 
