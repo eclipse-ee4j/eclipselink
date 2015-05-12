@@ -76,6 +76,9 @@ public class TestDDLGenLineTerminator implements PUPropertiesProvider {
     @Test
     public void testGeneratedScripts() throws Exception {
         String terminatorToken = ((EntityManagerFactoryImpl) terminatedEmf).getDatabaseSession().getPlatform().getStoredProcedureTerminationToken();
+        if (terminatorToken == null || terminatorToken.isEmpty()) {
+            return;
+        }
         BufferedReader reader = new BufferedReader(new FileReader(terminatedScript));
         String line = reader.readLine();
         while (line != null) {

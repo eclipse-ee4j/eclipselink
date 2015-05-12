@@ -60,6 +60,8 @@
     <echo message="run classpath                    = ${jse.run.cp}"/>   
     <echo message="report dir                       = ${reports.dir}"/>
     <echo message="basedir                          = ${basedir}"/>
+    <echo message="junitlib                         = ${junit.lib}"/>
+    <echo message="jse.run.cp                       = ${jse.run.cp}"/>
 
     <target name="test-no-report" depends="test-run"/>
     <target name="test" depends="test-run, test-report"/>
