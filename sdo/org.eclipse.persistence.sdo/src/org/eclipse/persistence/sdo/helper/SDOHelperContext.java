@@ -25,6 +25,7 @@ import commonj.sdo.helper.XSDHelper;
 import commonj.sdo.impl.ExternalizableDelegator;
 import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedGetMethod;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOResolvable;
 import org.eclipse.persistence.sdo.helper.delegates.SDODataFactoryDelegate;
@@ -45,12 +46,14 @@ import javax.naming.NamingException;
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
+import java.security.AccessController;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -87,6 +90,8 @@ public class SDOHelperContext implements HelperContext {
     private static ConcurrentHashMap<Object, ConcurrentHashMap<String, HelperContext>> helperContexts = new ConcurrentHashMap<Object, ConcurrentHashMap<String, HelperContext>>();
     // Each application will have a Map of alias' to identifiers
     private static ConcurrentHashMap<Object, ConcurrentHashMap<String, String>> aliasMap = new ConcurrentHashMap<Object, ConcurrentHashMap<String, String>>();
+    // Each application could have separate HelperContextResolver
+    private static final ConcurrentHashMap<Object, HelperContextResolver> HELPER_CONTEXT_RESOLVERS = new ConcurrentHashMap<>();
     // allow users to set their own classloader to context map pairs
     private static WeakHashMap<ClassLoader, WeakHashMap<String, WeakReference<HelperContext>>> userSetHelperContexts = new WeakHashMap<ClassLoader, WeakHashMap<String, WeakReference<HelperContext>>>();
     // keep a map of application names to application class loaders to handle redeploy
@@ -154,11 +159,6 @@ public class SDOHelperContext implements HelperContext {
      * Singleton.
      */
     private static final HelperContextResolver DEFAULT_HCR = new DefaultHelperContextResolver();
-
-    /**
-     * Strategy for HelperContext creation. Couldn't be null.
-     */
-    private static HelperContextResolver helperContextResolver = DEFAULT_HCR;
 
     /**
      * ADVANCED:
@@ -356,7 +356,7 @@ public class SDOHelperContext implements HelperContext {
             currentMap = new WeakHashMap<String, WeakReference<HelperContext>>();
             userSetHelperContexts.put(key, currentMap);
         }
-        currentMap.put(((SDOHelperContext)value).getIdentifier(), new WeakReference(value));
+        currentMap.put(((SDOHelperContext) value).getIdentifier(), new WeakReference(value));
     }
 
     /**
@@ -468,7 +468,7 @@ public class SDOHelperContext implements HelperContext {
         helperContext = contextMap.get(identifier);
         if (null == helperContext) {
             LOGGER.fine("helperContext not found.");
-            helperContext = helperContextResolver.getHelperContext(identifier, classLoader);
+            helperContext = getHelperContextResolver().getHelperContext(identifier, classLoader);
             HelperContext existingContext = contextMap.putIfAbsent(identifier, helperContext);
             if (existingContext != null) {
                 LOGGER.fine(String.format("contextMap already has context for id: %s. Existing one will be used.", identifier));
@@ -564,16 +564,40 @@ public class SDOHelperContext implements HelperContext {
      */
     private static void resetHelperContext(String key) {
         // remove entry from helperContext map
-        helperContexts.remove(key);
-        // there may be a loader/context pair to remove
-        ClassLoader appLoader = appNameToClassLoaderMap.get(key);
-        if (appLoader != null) {
-            helperContexts.remove(appLoader);
+        boolean successHc = removeAppFromMap(helperContexts, key);
+        // remove app's helperContextResolver
+        boolean successHcr = removeAppFromMap(HELPER_CONTEXT_RESOLVERS, key);
+        if (LOGGER.isLoggable(Level.WARNING) && !successHc && !successHcr) {
+            LOGGER.warning("No entries found in maps for application:" + key);
         }
+
         // remove the appName entry in the appNameToClassLoader map
         appNameToClassLoaderMap.remove(key);
         // remove the alias map for this app
         aliasMap.remove(key);
+    }
+
+    /**
+     * Trying to remove entry for a given app the provided map.
+     *
+     * @param map from which app value should be removed
+     * @param appName application name
+     * @return
+     */
+    private static boolean removeAppFromMap(Map map, String appName) {
+        Object result = map.remove(appName);
+        // there may be a loader/context pair to remove
+        if (result != null)
+            return true;
+        // there may be a loader/context pair to remove
+        ClassLoader appLoader = appNameToClassLoaderMap.get(appName);
+        if (appLoader != null) {
+            result = map.remove(appLoader);
+        } else {
+            // try with Thread ContextClassLoader
+            result = map.remove(Thread.currentThread().getContextClassLoader());
+        }
+        return result != null;
     }
 
     /**
@@ -811,10 +835,30 @@ public class SDOHelperContext implements HelperContext {
 
     /**
      * Getter for HelperContextResolver
-     * @return actual stategy
+     * @return actual strategy
      */
     public static HelperContextResolver getHelperContextResolver() {
-        return helperContextResolver;
+        Object key = getMapKey();
+        HelperContextResolver result = HELPER_CONTEXT_RESOLVERS.get(key);
+        if (result == null) {
+            result = DEFAULT_HCR;
+            HELPER_CONTEXT_RESOLVERS.putIfAbsent(key, result);
+        }
+        return result;
+    }
+
+    /**
+     * Method allows dynamically change HelperContext creation strategy.
+     *
+     * @param helperContextResolver on this object {@link HelperContextResolver#getHelperContext(String, ClassLoader)} will be called.
+     *                              If it is null - then default strategy will be set.
+     */
+    public static void setHelperContextResolver(Object helperContextResolver) {
+        Object key = getMapKey();
+        if (helperContextResolver == null)
+            HELPER_CONTEXT_RESOLVERS.put(key, DEFAULT_HCR);
+        else
+            HELPER_CONTEXT_RESOLVERS.put(key, new ReflectionHelperContextResolver(helperContextResolver));
     }
 
     /**
@@ -823,10 +867,19 @@ public class SDOHelperContext implements HelperContext {
      * @param helperContextResolver strategy to be used. If it is null - then default strategy will be set.
      */
     public static void setHelperContextResolver(HelperContextResolver helperContextResolver) {
+        Object key = getMapKey();
         if (helperContextResolver == null)
-            SDOHelperContext.helperContextResolver = DEFAULT_HCR;
+            HELPER_CONTEXT_RESOLVERS.put(key, DEFAULT_HCR);
         else
-            SDOHelperContext.helperContextResolver = helperContextResolver;
+            HELPER_CONTEXT_RESOLVERS.put(key, helperContextResolver);
+    }
+
+    /**
+     * Removes HelperContextResolver for the current application.
+     * Application is resolved based on applicationName or classLoader.
+     */
+    public static void removeHelerContextResolver() {
+        HELPER_CONTEXT_RESOLVERS.remove(getMapKey());
     }
 
     /**
@@ -1274,15 +1327,25 @@ public class SDOHelperContext implements HelperContext {
     }
 
     /**
-     * Strategy for HelperContext creation.
+     * Strategy for {@link HelperContext} creation.
      *
      * If is not set explicitly the default one is used.
      */
     public interface HelperContextResolver {
 
+        /**
+         * Should return instance of {@link HelperContext}.
+         *
+         * @param id          the unique label for this HelperContext
+         * @param classLoader this class loader will be used to find static instance classes
+         * @return instance of {@link HelperContext}
+         */
         HelperContext getHelperContext(String id, ClassLoader classLoader);
     }
 
+    /**
+     * Default implementation of {@link HelperContextResolver}
+     */
     private static class DefaultHelperContextResolver implements HelperContextResolver {
 
         @Override
@@ -1290,6 +1353,54 @@ public class SDOHelperContext implements HelperContext {
             LOGGER.fine(String.format("DefaultHelperContextResolver: new HelperContext will be created for id: %s and classLoader: %s",
                     id, classLoader));
             return new SDOHelperContext(id, classLoader);
+        }
+    }
+
+    /**
+     * Implementation of {@link HelperContextResolver} which uses reflection to get {@link HelperContext} instance.
+     */
+    private static class ReflectionHelperContextResolver implements HelperContextResolver {
+
+        private Method method;
+        private Object target;
+
+        /**
+         * 'getHelperContext' method will be called on the provided target object.
+         *
+         * @param target object which has 'getHelperContext(String, Classloader)' method. In case it's not - RuntimeException will be thrown
+         */
+        public ReflectionHelperContextResolver(Object target) {
+            this.target = target;
+            try {
+                this.method = findMethod(target.getClass(), "getHelperContext", new Class[]{String.class, ClassLoader.class});
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                throw new IllegalStateException(e);
+            }
+        }
+
+        private Method findMethod(Class clazz, String methodName, Class[] params) throws java.security.PrivilegedActionException, NoSuchMethodException {
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess())
+                return AccessController.doPrivileged(new PrivilegedGetMethod(clazz, methodName, params, true));
+            return PrivilegedAccessHelper.getMethod(clazz, methodName, params, true);
+        }
+
+        /**
+         * Calling 'getHelperContext' method on provided target object
+         *
+         * @param id          the unique label for this HelperContext
+         * @param classLoader this class loader will be used to find static instance classes
+         * @return in case if something goes wrong with method invocation and Exception is thrown - default implementation of
+         * {@link HelperContextResolver} will be called
+         */
+        @Override
+        public HelperContext getHelperContext(String id, ClassLoader classLoader) {
+            try {
+                return (HelperContext) method.invoke(target, id, classLoader);
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
+            }
+            return DEFAULT_HCR.getHelperContext(id, classLoader);
         }
     }
 }
