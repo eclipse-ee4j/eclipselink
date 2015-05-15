@@ -83,6 +83,16 @@ public class BeanValidationTableCreator extends TableCreator {
         fieldName.setIsIdentity(false);
         table.addField(fieldName);
 
+        FieldDefinition fieldSurname = new FieldDefinition();
+        fieldSurname.setName("SURNAME");
+        fieldSurname.setTypeName("VARCHAR");
+        fieldSurname.setSize(20);
+        fieldSurname.setShouldAllowNull(true);
+        fieldSurname.setIsPrimaryKey(false);
+        fieldSurname.setUnique(false);
+        fieldSurname.setIsIdentity(false);
+        table.addField(fieldSurname);
+
         FieldDefinition fieldManagedProject = new FieldDefinition();
         fieldManagedProject.setName("MANAGEDPROJECT_ID");
         fieldManagedProject.setTypeName("NUMERIC");

@@ -33,6 +33,8 @@ public class Employee {
     @Size(max = NAME_MAX_SIZSE)
     private String         name;
 
+    private String         surname;
+
     @Valid
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name="CMP3_BV_EMPLOYEE_PROJECT")
@@ -51,9 +53,10 @@ public class Employee {
 
     public Employee() {}
 
-    public Employee(int id, String name, long salary) {
+    public Employee(int id, String name, String surname, long salary) {
         this.id = id;
         this.name = name;
+        this.surname = surname;
         this.salary = salary;
     }
 
@@ -67,6 +70,15 @@ public class Employee {
 
     public String setName(String name) {
         return this.name = name;
+    }
+
+    @Size(max = NAME_MAX_SIZSE)
+    public String getSurname() {
+        return surname;
+    }
+
+    public String setSurname(String surname) {
+        return this.surname = surname;
     }
 
     public void setProjects(Collection<Project> projects) {
