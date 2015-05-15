@@ -1,0 +1,316 @@
+<!--/*******************************************************************************
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+* which accompanies this distribution.
+* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+* and the Eclipse Distribution License is available at
+* http://www.eclipse.org/org/documents/edl-v10.php.
+*
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*     - properties ending in .jar define jarfile names only (no path)
+*     - properties ending in .lib are fully qualified jars (path and filename)
+*     - properties ending in .dir are directory paths
+*     - properties ending in .path are path refid names (classpath fragments)
+*   - multi-word targets use hyphens '-'
+*     - targets beginning with test- are reserved for high level test targets,
+*       and are used in test results parsing
+*     - targets typically use the form <action>-<object>-<type> (ie. package-bundle-zip)
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatenated
+*     e.g. 'runpathref'
+*   - multi-word tasks (taskdef) names are concatenated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+*
+* Contributors:
+*     Dmitry Kornilov - initial API and implementation
+#******************************************************************************/-->
+
+<!-- This ant project includes the following tasks:
+        - build (default) : cleans build directories, compiles model and tests, creates war file
+        - compile : compiles model and tests
+        - test : runs all tests
+        - create-jaxrs-war-file : creates war file
+
+        It requires some configuration of the build.properties and test.properties to run.
+        -->
+<project name="eclipselink.jaxrs.test" default="build" basedir=".">
+    <!-- For IntelliJ Ides proper syntax highlighting -->
+    <property file="antbuild.properties"/>
+
+    <available file="../${ant.project.name}" type="dir" property="jpatest.is.local"/>
+
+    <dirname property="jaxrs.test.build.location_temp" file="${ant.file.eclipselink.jaxrs.test}"/>
+    <pathconvert targetos="unix" property="jaxrs.test.build.location">
+        <path>
+            <pathelement location="${jaxrs.test.build.location_temp}"/>
+        </path>
+    </pathconvert>
+    <property name="env" environment="env" value="env"/>
+
+    <!-- Allows a user to overide certain user specific properties. -->
+    <!-- local property overrides -->
+    <condition property="custom.bld.properties.message"
+        value="Loading ${user.home}/build.properties"
+        else="Skipping ${user.home}/build.properties, file does not exist">
+        <available file="${user.home}/build.properties"/>
+    </condition>
+    <condition property="custom.tst.properties.message"
+        value="Loading ${user.home}/test.properties"
+        else="Skipping ${user.home}/test.properties, file does not exist">
+        <available file="${user.home}/test.properties"/>
+    </condition>
+    <condition property="custom.cmd.properties.message"
+        value="Loading ${test.properties}"
+        else="Skipping ${test.properties}, file does not exist">
+        <and>
+            <isset property="test.properties"/>
+            <available file="${test.properties}"/>
+        </and>
+    </condition>
+    <condition property="custom.local.properties.message"
+        value="Loading ${basedir}/local.build.properties"
+        else="Skipping ${basedir}/local.build.properties, file does not exist">
+        <available file="${basedir}/local.build.properties"/>
+    </condition>
+    <echo message="${custom.tst.properties.message}"/>
+    <echo message="${custom.bld.properties.message}"/>
+    <echo message="${custom.cmd.properties.message}"/>
+    <echo message="${custom.local.properties.message}"/>
+    <property file="${user.home}/build.properties"/>
+    <property file="${user.home}/test.properties"/>
+    <property file="${test.properties}"/>
+    <property file="${basedir}/local.build.properties"/>
+
+    <!-- Allows override of the build location or "basedir" for specific configurations (can specifically define jpatest.basedir) -->
+    <property name="jaxrs.test.basedir" value="${jaxrs.test.build.location}"/>
+    <property file="${jaxrs.test.basedir}/antbuild.properties"/>
+    <!-- Allows specific suites/configurations to override defaults and add custom test (runtime) properties -->
+    <property file="${jaxrs.test.basedir}/${test.properties}"/>
+    <property file="${jaxrs.test.basedir}/test.properties"/>
+    <property name="eclipselink.jaxrs.test.dir" value="${jaxrs.test.basedir}"/>
+
+    <!-- This checks if the trunk was checked out, or just the Eclipse projects. -->
+    <!-- To run from another location be sure to override jpatest.basedir appropriately -->
+    <condition property="eclipselink.root.dir" value="${jaxrs.test.basedir}/../.." else="${jaxrs.test.basedir}/..">
+        <contains string="${jaxrs.test.build.location}" substring="jpa/${ant.project.name}"/>
+    </condition>
+    <property name="eclipselink.common.plugins.dir"   value="${eclipselink.root.dir}/plugins"/>
+    <property name="eclipselink.jpa.test.dir"         value="${eclipselink.root.dir}/jpa/eclipselink.jpa.test"/>
+    <property name="eclipselink.jpa.plugins.dir"      value="${eclipselink.root.dir}/jpa/plugins"/>
+    <property name="eclipselink.coretest.dir"         value="${eclipselink.root.dir}/foundation/eclipselink.core.test"/>
+    <property name="oracle.extensions.depend.dir"     value="${eclipselink.root.dir}/../extension.oracle.lib.external"/>
+    <property name="extensions.depend.dir"            value="${eclipselink.root.dir}/../extension.lib.external"/>
+    <property name="jacocoagent.lib"                  value="${extensions.depend.dir}/${jacocoagent.jar}"/>
+
+    <property name="version.qualifier"     value="qualifier"/>
+    <property name="version.string"        value="${release.version}.${version.qualifier}"/>
+
+    <echo message="ant.project.name               = '${ant.project.name}'"/>
+    <echo message="jaxrs.test.build.location      = '${jaxrs.test.build.location}'"/>
+    <echo message="eclipselink.root.dir           = '${eclipselink.root.dir}'"/>
+    <echo message="eclipselink.common.plugins.dir = '${eclipselink.common.plugins.dir}'"/>
+    <echo message="eclipselink.jpa.plugins.dir    = '${eclipselink.jpa.plugins.dir}'"/>
+    <echo message="eclipselink.coretest.dir       = '${eclipselink.coretest.dir}'"/>
+
+    <macrodef name="config-model-classpath">
+        <sequential>
+            <echo message="Configuring model.compile.classpath to:"/>
+            <echo message="   '${eclipselink.jpa.plugins.dir}/${persistence20.jar}'"/>
+            <echo message="   '${eclipselink.root.dir}/${eclipselink.jar}'"/>
+            <echo message="   '${eclipselink.common.plugins.dir}/${ejb.jar}'"/>
+            <echo message="   '${eclipselink.common.plugins.dir}/${restfulws.jar}'"/>
+            <echo message="   '${jacocoagent.lib}'"/>
+            <echo message="   "/>
+            <path id="model.compile.classpath">
+                <pathelement path="${eclipselink.jpa.plugins.dir}/${persistence20.jar}"/>
+                <pathelement path="${eclipselink.root.dir}/${eclipselink.jar}"/>
+                <pathelement path="${eclipselink.common.plugins.dir}/${ejb.jar}"/>
+                <pathelement path="${eclipselink.common.plugins.dir}/${restfulws.jar}"/>
+                <pathelement path="${jacocoagent.lib}"/>
+            </path>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="config-tests-classpath">
+        <sequential>
+            <echo message="Configuring tests.compile.classpath to:"/>
+            <echo message="   '${eclipselink.coretest.dir}/${coretest.jar}'"/>
+            <echo message="   '${eclipselink.coretest.dir}/${coretest.framework.jar}'"/>
+            <echo message="   '${eclipselink.jpa.test.dir}/${jpatest.framework.jar}'"/>
+            <echo message="   '${eclipselink.root.dir}/${eclipselink.jar}'"/>
+            <echo message="   '${eclipselink.common.plugins.dir}/${restfulws.jar}'"/>
+            <echo message="   '${junit.lib}'"/>
+            <echo message="   '${jacocoagent.lib}'"/>
+            <echo message="   "/>
+            <path id="tests.compile.classpath">
+                <pathelement path="${eclipselink.coretest.dir}/${coretest.jar}"/>
+                <pathelement path="${eclipselink.coretest.dir}/${coretest.framework.jar}"/>
+                <pathelement path="${eclipselink.jpa.test.dir}/${jpatest.framework.jar}"/>
+                <pathelement path="${eclipselink.root.dir}/${eclipselink.jar}"/>
+                <pathelement path="${junit.lib}"/>
+                <pathelement path="${jacocoagent.lib}"/>
+            </path>
+        </sequential>
+    </macrodef>
+
+    <!-- Classpath used for running tests. -->
+    <macrodef name="config-run-path">
+        <sequential>
+            <path id="run.classpath">
+                <pathelement path="${jaxrs.test.basedir}/${classes.dir}"/>
+                <path refid="model.compile.classpath"/>
+                <path refid="tests.compile.classpath"/>
+                <pathelement path="${jdbc.driver.jar}"/>
+                <pathelement path="${jaxrs.test.basedir}/${jpatest.framework.jar}"/>
+                <pathelement path="${jaxrs.test.basedir}/${jpa.test.jar}"/>
+            </path>
+        </sequential>
+    </macrodef>
+
+    <!-- Default ant target, compiles and packages test jars, does not run tests. -->
+    <target name="build" depends="clean, init, compile, create-jaxrs-war-file"/>
+
+    <!-- Clean all build generated content. -->
+    <target name="clean" description="Clean the build">
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="${classes.dir}"/>
+            <fileset dir="${report.dir}"/>
+            <!--<fileset dir="${jparstest.build.location}" includes="${jpars.test.jar}"/>-->
+        </delete>
+    </target>
+
+    <!-- Creates required directories for building. -->
+    <target name="init">
+        <mkdir dir="${jaxrs.test.basedir}/${classes.dir}"/>
+        <mkdir dir="${jaxrs.test.basedir}/${report.dir}"/>
+    </target>
+
+    <!-- Compiles everything. -->
+    <target name="compile" description="Compiles model and test classes" depends="compile-tests"/>
+
+    <!-- Compiles model. -->
+    <target name="compile-model" depends="init">
+        <config-model-classpath/>
+        <javac srcdir="${jaxrs.test.basedir}/${src.dir}/main/java"
+               destdir="${jaxrs.test.basedir}/${classes.dir}"
+               debug="${javac.debug}"
+               debuglevel="${javac.debuglevel}"
+               encoding="UTF-8"
+               source="${javac.version}"
+               target="${javac.version}"
+               failonerror="true">
+            <include name="org/eclipse/persistence/testing/jaxrs/model/**"/>
+            <classpath>
+                <path refid="model.compile.classpath"/>
+            </classpath>
+        </javac>
+    </target>
+
+    <!-- Compiles tests. -->
+    <target name="compile-tests" depends="init, compile-model">
+        <config-tests-classpath/>
+        <javac srcdir="${jaxrs.test.basedir}/${src.dir}/it/java"
+               destdir="${jaxrs.test.basedir}/${classes.dir}"
+               debug="${javac.debug}"
+               debuglevel="${javac.debuglevel}"
+               encoding="UTF-8"
+               source="${javac.version}"
+               target="${javac.version}"
+               failonerror="true">
+            <include name="org/eclipse/persistence/testing/jaxrs/**"/>
+            <include name="org/eclipse/persistence/testing/jaxrs/utils/**"/>
+            <classpath>
+                <path refid="tests.compile.classpath"/>
+            </classpath>
+        </javac>
+    </target>
+
+    <!-- Test run. -->
+    <target name="test" depends="build">
+        <config-run-path/>
+
+        <mkdir dir="${jaxrs.test.basedir}/${classes.dir}/META-INF"/>
+        <copy file="${jaxrs.test.basedir}/src/it/resources/META-INF/persistence.xml"
+              todir="${jaxrs.test.basedir}/${classes.dir}/META-INF"/>
+
+        <!-- Use -DremoteDebug=true to enable remote debugging on 8787 port -->
+        <property name="remoteDebug" value="false"/>
+        <condition property="remoteDebugJvmArgs"
+                   value="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=8787"
+                   else="-ea">
+            <istrue value="${remoteDebug}"/>
+        </condition>
+
+        <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
+        <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
+        <junit printsummary="withOutAndErr" fork="yes" dir="${classes.dir}" maxmemory="512m" showoutput="yes">
+            <jvmarg value="-XX:MaxPermSize=256m"/>
+            <jvmarg value="-Ddb.driver=${db.driver}"/>
+            <jvmarg value="-Ddb.url=${db.url}"/>
+            <jvmarg value="-Ddb.user=${db.user}"/>
+            <jvmarg value="-Ddb.pwd=${db.pwd}"/>
+            <jvmarg value="-Dserver.url=${server.url}"/>
+            <jvmarg value="-Dserver.port=${server.port}"/>
+            <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
+            <!--jvmarg value="-javaagent:${eclipselink.root.dir}/${eclipselink.jar}"/-->
+            <jvmarg value="${remoteDebugJvmArgs}"/>
+            <jvmarg line="${additional.jvmargs}"/>
+            <sysproperty key="loggingLevelFinest" value="false"/>
+            <sysproperty key="tempFileDir" value="${tmp.dir}"/>
+            <sysproperty key="ignoreCRLF" value="true"/>
+            <sysproperty key="useLogging" value="false"/>
+            <sysproperty key="useSAXParsing" value="true"/>
+            <sysproperty key="useDeploymentXML" value="false"/>
+            <sysproperty key="jpars.xmlfile.directory" value="META-INF/xmldocs/"/>
+
+            <batchtest todir="${report.dir}">
+                <fileset dir="${jaxrs.test.basedir}/${src.dir}/it/java/">
+                    <include name="${test.class}"/>
+                </fileset>
+                <formatter type="xml"/>
+            </batchtest>
+            <classpath>
+                <path refid="run.classpath"/>
+            </classpath>
+        </junit>
+
+        <antcall target="generate-report" inheritRefs="true"/>
+    </target>
+
+    <target name="generate-report">
+        <junitreport todir="${report.dir}">
+            <fileset dir="${report.dir}">
+                <include name="**/*.xml"/>
+            </fileset>
+            <report format="noframes" todir="${report.dir}"/>
+        </junitreport>
+    </target>
+
+    <!-- Build war file for JAX-RS -->
+    <target name="create-jaxrs-war-file">
+        <mkdir dir="${jaxrs.test.basedir}/target/META-INF"/>
+        <mkdir dir="${jaxrs.test.basedir}/target/WEB-INF"/>
+        <mkdir dir="${jaxrs.test.basedir}/target/WEB-INF/lib"/>
+        <mkdir dir="${jaxrs.test.basedir}/target/WEB-INF/classes/META-INF"/>
+        <mkdir dir="${jaxrs.test.basedir}/target/WEB-INF/classes/org/eclipse/persistence/testing/jaxrs"/>
+        <copy file="${jaxrs.test.basedir}/src/main/resources/WEB-INF/web.xml"
+              todir="${jaxrs.test.basedir}/target/WEB-INF"/>
+        <copy file="${jaxrs.test.basedir}/src/main/resources/META-INF/persistence.xml"
+              todir="${jaxrs.test.basedir}/target/WEB-INF/classes/META-INF"/>
+        <copy file="${jaxrs.test.basedir}/src/main/resources/binding-address.xml"
+              todir="${jaxrs.test.basedir}/target/WEB-INF/classes/org/eclipse/persistence/testing/jaxrs/model"/>
+        <copy file="${jaxrs.test.basedir}/src/main/resources/binding-phonenumber.xml"
+              todir="${jaxrs.test.basedir}/target/WEB-INF/classes/org/eclipse/persistence/testing/jaxrs/model"/>
+        <copy todir="${jaxrs.test.basedir}/target/WEB-INF/classes/org/eclipse/persistence/testing/jaxrs/model">
+            <fileset dir="${jaxrs.test.basedir}/classes/org/eclipse/persistence/testing/jaxrs/model/" includes="*.class"/>
+        </copy>
+        <jar destfile="${jaxrs.test.basedir}/target/${ant.project.name}.war" basedir="${jaxrs.test.basedir}/target"/>
+    </target>
+</project>

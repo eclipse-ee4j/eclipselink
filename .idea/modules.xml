@@ -10,6 +10,7 @@
       <module fileurl="file://$PROJECT_DIR$/utils/eclipselink.dbws.builder.test.oracle/dbws.builder.test.oracle.iml" filepath="$PROJECT_DIR$/utils/eclipselink.dbws.builder.test.oracle/dbws.builder.test.oracle.iml" group="root/dbws" />
       <module fileurl="file://$PROJECT_DIR$/dbws/eclipselink.dbws.test/dbws.test.iml" filepath="$PROJECT_DIR$/dbws/eclipselink.dbws.test/dbws.test.iml" group="root/dbws" />
       <module fileurl="file://$PROJECT_DIR$/dbws/eclipselink.dbws.test.oracle/dbws.test.oracle.iml" filepath="$PROJECT_DIR$/dbws/eclipselink.dbws.test.oracle/dbws.test.oracle.iml" group="root/dbws" />
+      <module fileurl="file://$PROJECT_DIR$/jpa/eclipselink.jaxrs.test/eclipselink.jaxrs.test.iml" filepath="$PROJECT_DIR$/jpa/eclipselink.jaxrs.test/eclipselink.jaxrs.test.iml" group="root/jpa" />
       <module fileurl="file://$PROJECT_DIR$/foundation/org.eclipse.persistence.extension/extension.iml" filepath="$PROJECT_DIR$/foundation/org.eclipse.persistence.extension/extension.iml" group="root/foundation" />
       <module fileurl="file://$PROJECT_DIR$/jpa/org.eclipse.persistence.jpa/jpa.iml" filepath="$PROJECT_DIR$/jpa/org.eclipse.persistence.jpa/jpa.iml" group="root/jpa" />
       <module fileurl="file://$PROJECT_DIR$/jpa/eclipselink.jpa.modelgen.test/jpa.modelgen.test.iml" filepath="$PROJECT_DIR$/jpa/eclipselink.jpa.modelgen.test/jpa.modelgen.test.iml" group="root/jpa" />

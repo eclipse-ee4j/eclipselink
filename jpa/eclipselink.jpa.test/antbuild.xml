@@ -363,10 +363,6 @@
             </not>
         </condition>
 
-        <condition property="is.jaxrs.testing">
-            <contains string="${MODEL_NAME}" substring="eclipselink-jaxrs-model"/>
-        </condition>
-
         <condition property="is.grid.testing">
             <contains string="${grid}" substring="true"/>
         </condition>
@@ -379,33 +375,12 @@
             <contains string="${MODEL_NAME}" substring="eclipselink-jpars-model"/>
         </condition>
 
-        <condition property="is.jaxrs.or.jpars.testing">
-            <or>
-                <contains string="${MODEL_NAME}" substring="eclipselink-jaxrs-model"/>
-                <contains string="${MODEL_NAME}" substring="eclipselink-jpars-model"/>
-                <contains string="${grid}" substring="true"/>
-                <contains string="${kryo}" substring="true"/>
-            </or>
-        </condition>
-        <condition property="is.jaxrs.testing.on.glassfish">
-            <and>
-                <isset property="is.jaxrs.testing"/>
-                <contains string="${server.name}" substring="glassfish"/>
-            </and>
-        </condition>
-
-        <condition property="is.jaxrs.testing.on.weblogic">
-            <and>
-                <isset property="is.jaxrs.testing"/>
-                <isset property="is.weblogic"/>
-            </and>
-        </condition>
         <condition property="jpars.url" value="http://${weblogic.host}:${weblogic.port}">
-                <contains string="${server.name}" substring="weblogic"/>
+            <contains string="${server.name}" substring="weblogic"/>
         </condition>
 
         <condition property="jpars.url" value="http://${glassfish.host}:8080">
-                <contains string="${server.name}" substring="glassfish"/>
+            <contains string="${server.name}" substring="glassfish"/>
         </condition>
     </target>
 
@@ -2936,11 +2911,7 @@
 
     <target name="create-ejb-jar-without-static-weaving" unless="is.static.server.weaving">
         <antcall target="remove-composite-classes"/>
-        <antcall target="copy-jaxb-properties-file-for-jaxrs"/>
         <jar destfile="${jpatest.basedir}/${build.dir}/${MODEL_NAME}_ejb.jar" basedir="stage"/>
-    </target>
-    <target name="copy-jaxb-properties-file-for-jaxrs" if="is.jaxrs.testing.on.glassfish">
-    <copy file="${jpatest.basedir}/resource/eclipselink-jaxrs-model/server/jaxb.properties" todir="stage/org/eclipse/persistence/testing/models/jpa/jaxrs"/>
     </target>
     <target name="create-ejb-jar-with-static-weaving" if="is.static.server.weaving">
         <antcall target="remove-composite-classes"/>
@@ -3077,58 +3048,7 @@
             <arg line="${jpatest.basedir}/${build.dir}/${MODEL_NAME}_ejb.jar"/>
         </exec>
     </target>
-    <target name="server-jaxrsconfig">
-        <!-- Hardcoding server-specific URL in JAX-RS test cases -->
-        <ant antfile="${jpatest.basedir}/${server.name}.xml" target="${server.name}-jaxrsconfig" inheritRefs="true"/>
-        <replace file="${jpatest.basedir}/resource/eclipselink-jaxrs-model/server/persistence.xml" token='%%database-platform%%' value="${db.platform}"/>
-    </target>
 
-    <!-- Build war file for JAX-RS -->
-    <target name="create-jaxrs-war-file">
-        <mkdir dir="${jpatest.basedir}/stage/META-INF"/>
-        <mkdir dir="${jpatest.basedir}/stage/WEB-INF"/>
-        <mkdir dir="${jpatest.basedir}/stage/WEB-INF/lib"/>
-        <mkdir dir="${jpatest.basedir}/stage/WEB-INF/classes/org/eclipse/persistence/testing/tests/jpa/jaxrs"/>
-        <mkdir dir="${build.dir}/META-INF"/>
-        <copy overwrite="true" file="${jpatest.basedir}/resource/eclipselink-jaxrs-model/server/application.xml" tofile="${build.dir}/META-INF/application.xml"/>
-        <copy file="${jpatest.basedir}/resource/eclipselink-jaxrs-model/server/WEB-INF/web.xml" todir="${jpatest.basedir}/stage/WEB-INF"/>
-        <copy file="${jpatest.basedir}/resource/eclipselink-jaxrs-model/server/binding-address.xml" todir="${jpatest.basedir}/stage/WEB-INF/classes/org/eclipse/persistence/testing/models/jpa/jaxrs"/>
-        <copy file="${jpatest.basedir}/resource/eclipselink-jaxrs-model/server/binding-phonenumber.xml" todir="${jpatest.basedir}/stage/WEB-INF/classes/org/eclipse/persistence/testing/models/jpa/jaxrs"/>
-        <copy todir="${jpatest.basedir}/stage/WEB-INF/classes/org/eclipse/persistence/testing/models/jpa/jaxrs/">
-            <fileset dir="${jpatest.basedir}/classes/org/eclipse/persistence/testing/models/jpa/jaxrs/" includes="*.class" excludes="Address.class,Customer.class,PhoneNumber.class"/>
-        </copy>
-        <copy file="${jpatest.basedir}/stage/CustomerJPA.jar" todir="${jpatest.basedir}/stage/WEB-INF/lib"/>
-        <delete file="${jpatest.basedir}/stage/CustomerJPA.jar"/>
-        <jar destfile="${jpatest.basedir}/stage/${MODEL_NAME}.war" basedir="${jpatest.basedir}/stage"/>
-    </target>
-    <target name="copy-jaxb-properties-file-for-jaxrs2" if="is.jaxrs.testing.on.glassfish">
-        <copy file="${jpatest.basedir}/resource/eclipselink-jaxrs-model/server/jaxb.properties" todir="${jpatest.basedir}/CustomerJPA_jar/org/eclipse/persistence/testing/models/jpa/jaxrs"/>
-    </target>
-
-    <!-- Build server test ear file specific to JAX-RS -->
-    <target name="server-build-ear-jaxrs" if="is.jaxrs.testing">
-        <copy overwrite="true" file="./resource/${MODEL_NAME}/server/application.xml" todir="${build.dir}/META-INF"/>
-        <replace dir="${build.dir}/META-INF" token="%%modelname%%" value="${MODEL_NAME}">
-            <include name="*.xml"/>
-        </replace>
-        <mkdir dir="${jpatest.basedir}/stage"/>
-        <delete dir="${jpatest.basedir}/CustomerJPA_jar"/>
-        <mkdir dir="${jpatest.basedir}/CustomerJPA_jar/META-INF"/>
-        <mkdir dir="${jpatest.basedir}/CustomerJPA_jar/org/eclipse/persistence/testing/models/jpa/jaxrs"/>
-        <copy file="${jpatest.basedir}/resource/eclipselink-jaxrs-model/server/jaxb.properties" todir="${jpatest.basedir}/CustomerJPA_jar/org/eclipse/persistence/testing/models/jpa/jaxrs"/>
-        <antcall target="copy-jaxb-properties-file-for-jaxrs2"/>
-        <copy todir="${jpatest.basedir}/CustomerJPA_jar/org/eclipse/persistence/testing/models/jpa/jaxrs/">
-            <fileset dir="${jpatest.basedir}/classes/org/eclipse/persistence/testing/models/jpa/jaxrs/" includes="Address.class,Customer.class,PhoneNumber.class"/>
-        </copy>
-        <copy file="${jpatest.basedir}/resource/eclipselink-jaxrs-model/server/persistence.xml" todir="${jpatest.basedir}/CustomerJPA_jar/META-INF"/>
-        <jar destfile="${jpatest.basedir}/stage/CustomerJPA.jar" basedir="${jpatest.basedir}/CustomerJPA_jar"/>
-        <antcall target="create-jaxrs-war-file"/>
-        <copy overwrite="true" file="${jpatest.basedir}/stage/${MODEL_NAME}.war" todir="${build.dir}"/>
-        <ear destfile="${jpatest.basedir}/${build.dir}/${EAR_NAME}.ear" appxml="${build.dir}/META-INF/application.xml">
-            <fileset dir="${jpatest.basedir}/${build.dir}" includes="${MODEL_NAME}_ejb.jar, *.war"/>
-        </ear>
-        <copy file="${jpatest.basedir}/${build.dir}/${EAR_NAME}.ear" todir="."/>
-    </target>
     <!-- Build server test ear file specific to grid -->
     <target name="server-build-ear-grid" if="is.grid.testing" depends="set-server-properties">
         <copy overwrite="true" file="./resource/server/application.xml" todir="${build.dir}/META-INF"/>
@@ -3185,7 +3105,7 @@
         includes="META-INF/MANIFEST.MF, WEB-INF/**"/>
     </target>
     <!-- Build server test ear. -->
-    <target name="server-build-ear" unless="is.jaxrs.or.jpars.testing" depends="set-server-properties">
+    <target name="server-build-ear" unless="is.jpars.testing" depends="set-server-properties">
         <copy overwrite="true" file="./resource/server/application.xml" todir="${build.dir}/META-INF"/>
         <replace dir="${build.dir}/META-INF" token='%%modelname%%' value="${MODEL_NAME}">
             <include name="*.xml"/>
@@ -3199,9 +3119,9 @@
     </target>
 
     <!-- Build the client jar, ejb jar, and ear. -->
-    <target name="server-build" depends="prepare-non-jta-ds-servertest,prepare-server-sessionbeans,server-build-jpa20-client-jar,server-build-jpa20-ejb-jar,server-build-ear,server-build-ear-jaxrs, server-build-ear-jpars,server-build-ear-grid,server-build-ear-kryo"/>
+    <target name="server-build" depends="prepare-non-jta-ds-servertest,prepare-server-sessionbeans,server-build-jpa20-client-jar,server-build-jpa20-ejb-jar,server-build-ear,server-build-ear-jpars,server-build-ear-grid,server-build-ear-kryo"/>
 
-    <target name="server-build-jpa21" depends="prepare-non-jta-ds-servertest,prepare-server-sessionbeans,server-build-jpa21-client-jar,server-build-jpa21-ejb-jar,server-build-ear,server-build-ear-jaxrs, server-build-ear-jpars"/>
+    <target name="server-build-jpa21" depends="prepare-non-jta-ds-servertest,prepare-server-sessionbeans,server-build-jpa21-client-jar,server-build-jpa21-ejb-jar,server-build-ear,server-build-ear-jpars"/>
 
     <target name="server-build-composite-advanced" depends="prepare-non-jta-ds-servertest,prepare-server-sessionbeans,server-build-jpa20-client-jar,server-build-ejb-composite-advanced-jar,server-build-composite-advanced-ear"/>
 
@@ -3995,33 +3915,6 @@
             <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.inherited.InheritedServerTestSuite"/>
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
-    </target>
-
-    <target name="server-test-jaxrs" depends="clean-test">
-
-        <copy file="${jpatest.basedir}/resource/eclipselink-jaxrs-model/persistence-jaxrs.xml" tofile="${jpatest.basedir}/resource/eclipselink-jaxrs-model/server/persistence.xml"/>
-        <copy todir="${jpatest.basedir}" overwrite="true" failonerror="false">
-                    <fileset dir="${jpatest.basedir}/src/org/eclipse/persistence/testing/tests/jpa/jaxrs" includes="*TestCases.java"/>
-        </copy>
-        <antcall target="server-jaxrsconfig" inheritRefs="true"/>
-        <antcall target="server-run-all" inheritRefs="true">
-            <param name="PERSISTENCE_UNIT_NAME" value="jaxrs"/>
-            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/jaxrs"/>
-            <param name="MODEL_NAME" value="eclipselink-jaxrs-model"/>
-            <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/jaxrs"/>
-            <param name="TEST_NAME" value="eclipselink-jaxrs-model"/>
-            <param name="EAR_NAME" value="eclipselink-jaxrs-model"/>
-            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.jaxrs.JAXRSTestSuite"/>
-            <param name="eclipselink.jpa.test.dir" value="."/>
-        </antcall>
-        <antcall target="generate-report" inheritRefs="true"/>
-        <copy todir="${jpatest.basedir}/src/org/eclipse/persistence/testing/tests/jpa/jaxrs" overwrite="true" failonerror="false">
-                    <fileset dir="${jpatest.basedir}" includes="*TestCases.java"/>
-        </copy>
-        <delete failonerror="false">
-               <fileset dir="${jpatest.basedir}" includes="*TestCases.java"/>
-        </delete>
-        <delete file="${jpatest.basedir}/resource/eclipselink-jaxrs-model/server/persistence.xml"/>
     </target>
 
     <target name="server-test-jpars" depends="clean-test, set-server-properties" if="is.glassfish.or.weblogic">
