@@ -163,7 +163,7 @@ public class TestFlush extends JPA1Base {
      */
     @SuppressWarnings("unchecked")
     @Test
-    @Bugzilla(bugid=317760)
+    @Bugzilla(bugid=311760)
     public void testRelationshipToRemoved() {
         JPAEnvironment env = getEnvironment();
         EntityManager em = env.getEntityManager();
@@ -450,7 +450,7 @@ public class TestFlush extends JPA1Base {
      * </ul>
      */
     @Test
-    @Bugzilla(bugid=317760)
+    @Bugzilla(bugid=311760)
     public void testRelationshipToRemovedLazy() {
         JPAEnvironment env = getEnvironment();
         EntityManager em = env.getEntityManager();

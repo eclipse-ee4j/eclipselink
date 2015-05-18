@@ -314,7 +314,7 @@ public class TestBidirectionalManyToMany extends JPA1Base {
             verify(emp != null, "employee not found");
             Set<Project> projects = emp.getProjects();
             Iterator<Project> iter = projects.iterator();
-            Project project = (Project) iter.next();
+            Project project = iter.next();
             int removedId = project.getId().intValue();
             // there are no managed relationships -> we have to remove the projects on both sides
             em.remove(project);
@@ -497,8 +497,6 @@ public class TestBidirectionalManyToMany extends JPA1Base {
     }
 
     @Test
-    @Bugzilla(bugid=338783, databaseNames={"org.eclipse.persistence.platform.database.oracle.Oracle10Platform",
-                                           "org.eclipse.persistence.platform.database.oracle.Oracle11Platform"})
     public void testCascadeMerge() throws IOException, ClassNotFoundException {
         JPAEnvironment env = getEnvironment();
         EntityManager em = env.getEntityManager();
