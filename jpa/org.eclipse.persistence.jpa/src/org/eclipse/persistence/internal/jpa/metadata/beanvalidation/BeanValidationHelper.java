@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -8,7 +8,7 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Marcel Valovy - 2.6 - initial API and implementation
+ *      Marcel Valovy - <marcelv3612@gmail.com>
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.beanvalidation;
 
@@ -16,6 +16,7 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Collections;
@@ -116,7 +117,52 @@ public enum BeanValidationHelper {
                 }
             }
         }
+        for (Method m : getDeclaredMethods(clazz)) {
+            for (Annotation a : m.getDeclaredAnnotations()) {
+                final Class<? extends Annotation> type = a.annotationType();
+                final String typeCanonicalName = type.getCanonicalName();
+
+                if (KNOWN_CONSTRAINTS.contains(typeCanonicalName)) {
+                    return true;
+                }
+
+                // Check for custom annotations on the field (+ check inheritance on class annotations).
+                // Custom bean validation annotation is defined by having @Constraint annotation on its class.
+                for (Annotation typesClassAnnotation : type.getAnnotations()) {
+                    final Class<? extends Annotation> classAnnotationType = typesClassAnnotation.annotationType();
+                    if ("javax.validation.Constraint".equals(classAnnotationType.getCanonicalName())) {
+                        // Avoid adding anonymous class constraints.
+                        if (typeCanonicalName != null) {
+                            KNOWN_CONSTRAINTS.add(typeCanonicalName);
+                        }
+                        return true;
+                    }
+                }
+            }
+        }
         return false;
+    }
+
+    /**
+     * Retrieves declared methods.
+     * <p/>
+     * If security is enabled, makes {@linkplain java.security.AccessController#doPrivileged(PrivilegedAction)
+     * privileged calls}.
+     *
+     * @param clazz methods of that class will be returned
+     * @return array of declared methods
+     * @see Class#getDeclaredMethods()
+     */
+    private Method[] getDeclaredMethods(final Class<?> clazz) {
+        return PrivilegedAccessHelper.shouldUsePrivilegedAccess()
+                ? AccessController.doPrivileged(
+                new PrivilegedAction<Method[]>() {
+                    @Override
+                    public Method[] run() {
+                        return clazz.getDeclaredMethods();
+                    }
+                })
+                : PrivilegedAccessHelper.getDeclaredMethods(clazz);
     }
 
     /**

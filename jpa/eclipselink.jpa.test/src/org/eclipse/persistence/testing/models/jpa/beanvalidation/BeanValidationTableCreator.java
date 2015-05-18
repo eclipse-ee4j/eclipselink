@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright (c) 2009, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -8,6 +8,7 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
+ *      Marcel Valovy - <marcelv3612@gmail.com>
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.beanvalidation;
 
@@ -82,6 +83,16 @@ public class BeanValidationTableCreator extends TableCreator {
         fieldName.setUnique(false);
         fieldName.setIsIdentity(false);
         table.addField(fieldName);
+
+        FieldDefinition fieldSurname = new FieldDefinition();
+        fieldSurname.setName("SURNAME");
+        fieldSurname.setTypeName("VARCHAR");
+        fieldSurname.setSize(20);
+        fieldSurname.setShouldAllowNull(true);
+        fieldSurname.setIsPrimaryKey(false);
+        fieldSurname.setUnique(false);
+        fieldSurname.setIsIdentity(false);
+        table.addField(fieldSurname);
 
         FieldDefinition fieldManagedProject = new FieldDefinition();
         fieldManagedProject.setName("MANAGEDPROJECT_ID");

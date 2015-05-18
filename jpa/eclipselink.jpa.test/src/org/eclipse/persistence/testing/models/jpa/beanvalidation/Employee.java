@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright (c) 2009, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -8,8 +8,8 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
+ *      Marcel Valovy - <marcelv3612@gmail.com>
  ******************************************************************************/
-
 package org.eclipse.persistence.testing.models.jpa.beanvalidation;
 
 import javax.persistence.*;
@@ -33,6 +33,8 @@ public class Employee {
     @Size(max = NAME_MAX_SIZSE)
     private String	     name;
 
+    private String         surname;
+
     @Valid
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name="CMP3_BV_EMPLOYEE_PROJECT")
@@ -51,9 +53,10 @@ public class Employee {
 
     public Employee() {}
 
-    public Employee(int id, String name, long salary) {
+    public Employee(int id, String name, String surname, long salary) {
         this.id = id;
         this.name = name;
+        this.surname = surname;
         this.salary = salary;
     }
 
@@ -67,6 +70,15 @@ public class Employee {
 
     public String setName(String name) {
         return this.name = name;
+    }
+
+    @Size(max = NAME_MAX_SIZSE)
+    public String getSurname() {
+        return surname;
+    }
+
+    public String setSurname(String surname) {
+        return this.surname = surname;
     }
 
     public void setProjects(Collection<Project> projects) {
