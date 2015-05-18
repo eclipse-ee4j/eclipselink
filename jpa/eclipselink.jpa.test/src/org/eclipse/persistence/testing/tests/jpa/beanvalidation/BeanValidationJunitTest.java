@@ -23,7 +23,6 @@ import junit.framework.*;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.beanvalidation.*;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
-import org.junit.*;
 
 public class BeanValidationJunitTest extends JUnitTestCase {
 
