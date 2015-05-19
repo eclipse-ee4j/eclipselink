@@ -8,13 +8,15 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Marcel Valovy - 2.6 - initial API and implementation
+ *     Marcel Valovy - marcelv3612@gmail.com - initial API and implementation
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.beanvalidation;
 
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.security.AccessController;
@@ -76,74 +78,86 @@ public enum BeanValidationHelper {
     }
 
     /**
-     * Tells whether any of the class's fields are constrained by Bean Validation annotations or custom constraints.
+     * Tells whether any of the class's {@link java.lang.reflect.AccessibleObject}s are constrained by Bean
+     * Validation annotations or custom constraints.
      *
      * @param clazz checked class
      * @return true or false
      */
     public boolean isConstrained(Class<?> clazz) {
-        Boolean annotated = CONSTRAINTS_ON_CLASSES.get(clazz);
-        if (annotated == null) {
-            annotated = detectConstraints(clazz);
-            CONSTRAINTS_ON_CLASSES.put(clazz, annotated);
+        Boolean constrained = CONSTRAINTS_ON_CLASSES.get(clazz);
+        if (constrained == null) {
+            constrained = detectConstraints(clazz);
+            CONSTRAINTS_ON_CLASSES.put(clazz, constrained);
         }
-        return annotated;
+        return constrained;
     }
 
     /**
      * INTERNAL:
-     * Reveals whether any of the class's fields are constrained by Bean Validation annotations or custom constraints.
-     * Uses reflection.
-     * @see Class#getDeclaredFields
+     * Reveals whether any of the class's {@link java.lang.reflect.AccessibleObject}s are constrained by Bean Validation
+     * annotations or custom constraints.
+     *
+     * Will accept upon first detected annotation - faster.
      */
     private Boolean detectConstraints(Class<?> clazz) {
         for (Field f : getDeclaredFields(clazz)) {
-            for (Annotation a : f.getDeclaredAnnotations()) {
-                final Class<? extends Annotation> type = a.annotationType();
-                final String typeCanonicalName = type.getCanonicalName();
-
-                if (KNOWN_CONSTRAINTS.contains(typeCanonicalName)) {
-                    return true;
-                }
-
-                // Check for custom annotations on the field (+ check inheritance on class annotations).
-                // Custom bean validation annotation is defined by having @Constraint annotation on its class.
-                for (Annotation typesClassAnnotation : type.getAnnotations()) {
-                    final Class<? extends Annotation> classAnnotationType = typesClassAnnotation.annotationType();
-                    if ("javax.validation.Constraint".equals(classAnnotationType.getCanonicalName())) {
-                        // Avoid adding anonymous class constraints.
-                        if (typeCanonicalName != null) {
-                            KNOWN_CONSTRAINTS.add(typeCanonicalName);
-                        }
-                        return true;
-                    }
-                }
-            }
+            if (detectValidationConstraints(f)) return true;
         }
         for (Method m : getDeclaredMethods(clazz)) {
-            for (Annotation a : m.getDeclaredAnnotations()) {
-                final Class<? extends Annotation> type = a.annotationType();
-                final String typeCanonicalName = type.getCanonicalName();
+            if (detectValidationConstraints(m)) return true;
+        }
+        for (Constructor<?> c : getDeclaredConstructors(clazz)) {
+            if (detectValidationConstraints(c)) return true;
+        }
+        return false;
+    }
 
-                if (KNOWN_CONSTRAINTS.contains(typeCanonicalName)) {
-                    return true;
-                }
+    private boolean detectValidationConstraints(AccessibleObject accessibleObject) {
+        for (Annotation a : accessibleObject.getDeclaredAnnotations()) {
+            final Class<? extends Annotation> type = a.annotationType();
+            final String typeCanonicalName = type.getCanonicalName();
 
-                // Check for custom annotations on the field (+ check inheritance on class annotations).
-                // Custom bean validation annotation is defined by having @Constraint annotation on its class.
-                for (Annotation typesClassAnnotation : type.getAnnotations()) {
-                    final Class<? extends Annotation> classAnnotationType = typesClassAnnotation.annotationType();
-                    if ("javax.validation.Constraint".equals(classAnnotationType.getCanonicalName())) {
-                        // Avoid adding anonymous class constraints.
-                        if (typeCanonicalName != null) {
-                            KNOWN_CONSTRAINTS.add(typeCanonicalName);
-                        }
-                        return true;
+            if (KNOWN_CONSTRAINTS.contains(typeCanonicalName)) {
+                return true;
+            }
+
+            // Check for custom annotations on the field (+ check inheritance on class annotations).
+            // Custom bean validation annotation is defined by having @Constraint annotation on its class.
+            for (Annotation typesClassAnnotation : type.getAnnotations()) {
+                final Class<? extends Annotation> classAnnotationType = typesClassAnnotation.annotationType();
+                if ("javax.validation.Constraint".equals(classAnnotationType.getCanonicalName())) {
+                    // Avoid adding anonymous class constraints.
+                    if (typeCanonicalName != null) {
+                        KNOWN_CONSTRAINTS.add(typeCanonicalName);
                     }
+                    return true;
                 }
             }
         }
         return false;
+    }
+
+    /**
+     * Retrieves declared fields.
+     * <p/>
+     * If security is enabled, makes {@linkplain java.security.AccessController#doPrivileged(PrivilegedAction)
+     * privileged calls}.
+     *
+     * @param clazz fields of that class will be returned
+     * @return array of declared fields
+     * @see Class#getDeclaredFields()
+     */
+    private Field[] getDeclaredFields(final Class<?> clazz) {
+        return PrivilegedAccessHelper.shouldUsePrivilegedAccess()
+                ? AccessController.doPrivileged(
+                new PrivilegedAction<Field[]>() {
+                    @Override
+                    public Field[] run() {
+                        return clazz.getDeclaredFields();
+                    }
+                })
+                : PrivilegedAccessHelper.getDeclaredFields(clazz);
     }
 
     /**
@@ -169,25 +183,25 @@ public enum BeanValidationHelper {
     }
 
     /**
-     * Retrieves declared fields.
+     * Retrieves declared constructors.
      * <p/>
      * If security is enabled, makes {@linkplain java.security.AccessController#doPrivileged(PrivilegedAction)
      * privileged calls}.
      *
-     * @param clazz fields of that class will be returned
-     * @return array of declared fields
-     * @see Class#getDeclaredFields()
+     * @param clazz constructors of that class will be returned
+     * @return array of declared constructors
+     * @see Class#getDeclaredConstructors()
      */
-    private Field[] getDeclaredFields(final Class<?> clazz) {
+    private Constructor[] getDeclaredConstructors(final Class<?> clazz) {
         return PrivilegedAccessHelper.shouldUsePrivilegedAccess()
                 ? AccessController.doPrivileged(
-                new PrivilegedAction<Field[]>() {
+                new PrivilegedAction<Constructor[]>() {
                     @Override
-                    public Field[] run() {
-                        return clazz.getDeclaredFields();
+                    public Constructor[] run() {
+                        return clazz.getDeclaredConstructors();
                     }
                 })
-                : PrivilegedAccessHelper.getDeclaredFields(clazz);
+                : clazz.getDeclaredConstructors();
     }
 
     /**
