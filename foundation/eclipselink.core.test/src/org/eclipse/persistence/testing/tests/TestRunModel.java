@@ -122,7 +122,6 @@ public class TestRunModel extends TestModel {
             tests.add("org.eclipse.persistence.testing.tests.optimization.queryandsqlcounting.QueryAndSQLCountingTestModel");
             tests.add("org.eclipse.persistence.testing.tests.identitymaps.cache.CacheIdentityMapTestModel");
             tests.add("org.eclipse.persistence.testing.tests.failover.FailoverTestModel");
-            tests.add("org.eclipse.persistence.testing.tests.distributedservers.rcm.jgroups.JGroupsDistributedServersModel");
         }
 
         // ** All new tests should be in light, unless they require specific db/config support
