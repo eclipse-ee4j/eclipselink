@@ -472,6 +472,14 @@
         </antcall>
     </target>
 
+    <!-- Runs extension tests. -->
+    <target name="test-extension">
+        <antcall target="run-test" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.ExtensionTestModel"/>
+        </antcall>
+        <antcall target="generate-report" inheritRefs="true"/>
+    </target>
+
     <!-- Launches the testing browser -->
     <target name="test-browser" depends="init_paths, process-resource">
         <echo>Running test browser</echo>

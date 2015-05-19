@@ -1606,6 +1606,10 @@
         <!-- No Mongodb installed on nightly build machine. Test execution won't work.  -->
         <!-- ant antfile="antbuild.xml" dir="${eclipselink.extension.nosql.test}"      target="test"/ -->
     </target>
+    <!-- Run Extension Tests. -->
+    <target name="test-extension" description="run the org.eclipse.persistence.extension tests">
+        <ant antfile="antbuild.xml" dir="${eclipselink.core.test}" target="test-extension"/>
+    </target>
     <!-- Run JPA LRG. -->
     <target name="test-jpa" description="run the jpa tests">
         <ant antfile="antbuild.xml" dir="${eclipselink.jpa.test}" target="test-lrg"/>
