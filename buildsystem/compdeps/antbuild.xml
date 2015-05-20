@@ -349,6 +349,7 @@
             <fileset
                 dir="${compdeps.2.common.plugins.dir}"
                 includes="${jersey.prefix}_${jersey.version}.jar,
+                          ${javax.xml.bind.prefix}_${javax.xml.bind.version}.jar,
                           ${ejb.prefix}_${ejb.version}.jar,
                           ${jms.prefix}_${jms.version}.jar,
                           ${resource.prefix}_${resource.version}.jar,

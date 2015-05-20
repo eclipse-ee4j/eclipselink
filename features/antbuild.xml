@@ -133,7 +133,7 @@
         <echo message=" ---"/>
 
         <!-- Tool definitions -->
-        <property name="p2.SDK.install.dir" value="D:\Juno-M7\eclipse"/>
+        <property name="p2.SDK.install.dir" value="${eclipse.install.dir}"/>
         <property name="p2.SDK.plugin.dir" value="${p2.SDK.install.dir}/plugins"/>
         <property name="p2.publisher.jar" value="org.eclipse.equinox.p2.publisher_*.jar"/>
         <property name="p2.launcher.jar" value="org.eclipse.equinox.launcher_*.jar"/>
@@ -152,12 +152,12 @@
         <echo message=" ---"/>
 
         <!-- Input definitions -->
-        <property name="p2.composite.home.dir"    value="D:/__EL-CompositeRepositoryTest2Site"/>
+        <property name="p2.composite.home.dir"    value="${basedir}/p2site/__EL-CompositeRepositoryTest2Site"/>
         <condition property="p2.repos.dir"        value="${p2.composite.home.dir}/${version.string}"
-                                                   else="D:/__EL-RepositorySite">
+                                                   else="${basedir}/p2site/__EL-RepositorySite">
             <isset property="do.composite"/>
         </condition>
-        <property name="p2.mirror.dir"            value="D:/__EL-MirroredRepoSite"/>
+        <property name="p2.mirror.dir"            value="${basedir}/p2site/__EL-MirroredRepoSite"/>
         <property name="p2.feature.dir"           value="${p2.repos.dir}/features"/>
         <property name="p2.bundle.dir"            value="${p2.repos.dir}/plugins"/>
         <condition property="bundle.install.file" value="${feature.2.base.dir}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}"
@@ -479,6 +479,8 @@
             <zipfileset dir="${feature.build.dir}"            prefix="features" includes="*.jar"/>
             <zipfileset dir="${feature.2.common.plugins.dir}" prefix="plugins"  includes="org.eclipse.persistence*.jar"/>
             <zipfileset dir="${feature.2.util.plugins.dir}"   prefix="plugins"  includes="org.eclipse.persistence*.jar"/>
+            <!-- see https://bugs.eclipse.org/bugs/show_bug.cgi?id=348829 -->
+            <zipfileset dir="${feature.2.jpa.plugins.dir}"    prefix="plugins"  includes="javax.persistence*.jar"/>
         </zip>
     </target>
 
