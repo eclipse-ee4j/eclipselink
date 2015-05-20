@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-Export-Package:
+Export-Package: \
  org.eclipse.persistence.internal.platform.database.oracle;version="2.7.0",
  org.eclipse.persistence.internal.platform.database.oracle.xdb;version="2.7.0",
  org.eclipse.persistence.platform.database.oracle;version="2.7.0",
