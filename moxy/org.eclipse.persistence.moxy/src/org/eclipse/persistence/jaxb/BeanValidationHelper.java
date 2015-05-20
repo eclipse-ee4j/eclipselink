@@ -27,7 +27,9 @@ import javax.validation.constraints.Past;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -41,9 +43,24 @@ import java.util.concurrent.TimeUnit;
  *
  * Utility class for bean validation related tasks.
  *  - Singleton.
- *  - Thread-safe.
+ *  - Thread-safe (see note 1).
  *
- * @author Marcel Valovy - marcel.valovy@oracle.com
+ *  The same helper class is located in JPA, under org.eclipse.persistence.internal.jpa.metadata.beanvalidation package.
+ *  There are two notable differences:
+ *   1. This one uses Class objects as keys, and as such is faster. JPA does not depend on BV API so it has to use
+ *   string comparisons instead.
+ *   2. This one differs in concurrency management.
+ *
+ * Note 1 - There possibly could be data race on concurrent accesses to the underlying data structure. Here we show that
+ * concurrent usage of our class is actually safe.
+ *  1. We only add and never remove from data structure.
+ *  2. A fresh scan is performed upon not finding an item in data structure, (even if by a stale iterator), so we will
+ * always compute with correct values (even if we scan for something which another thread already discovered).
+ * After the value is found - here usually comes the problem, but not in our case - we replace the previous entry
+ * (there should be none, but due to JMM unspecified behavior in this case, we actually can replace an entry found by
+ * another thread) with a new entry, which in our case can have only one possible value, boolean true.
+ *
+ * @author Marcel Valovy - marcelv3612@gmail.com
  * @since 2.6
  */
 enum BeanValidationHelper {
@@ -54,11 +71,13 @@ enum BeanValidationHelper {
     }
 
     /**
-     * How long to wait for {@link ValidationXMLReader#runAsynchronously()} to finish. This is only used
-     * to account for interrupts. If the asynchronous thread is interrupted and flag {@link
-     * ValidationXMLReader#firstTime} is false, deadlock occurs. This prevents such deadlock.
+     * How much time to allow {@link ValidationXMLReader#runAsynchronously()} to finish its task, in milliseconds.
+     * This is an interrupt management system. If the asynchronous thread were interrupted and flag {@link
+     * ValidationXMLReader#firstTime} were to be false, deadlock would occur. This prevents such case, as it will
+     * await until timeout expires and then run the processing in forced, synchronous way.
      */
-    private static final int TIMEOUT = 10; // milliseconds, can specify in single digits since nanoTime is used.
+    private static final int TIMEOUT = 10; /* milliseconds, can be specified with precision up to single digits since
+                                              nanoTime is used. */
 
     /**
      * Speed-up flag. Indicates that parsing of validation.xml file has finished.
@@ -114,8 +133,8 @@ enum BeanValidationHelper {
     }
 
     /**
-     * Tells whether any of the class's fields, methods or constructors are constrained by Bean Validation annotations
-     * or custom constraints.
+     * Tells whether any of the class's {@link java.lang.reflect.AccessibleObject}s are constrained by Bean
+     * Validation annotations or custom constraints.
      *
      * @param clazz checked class
      * @return true or false
@@ -123,72 +142,68 @@ enum BeanValidationHelper {
     boolean isConstrained(Class<?> clazz) {
         if (!xmlParsed) ensureValidationXmlWasParsed();
 
-        Boolean annotated = constraintsOnClasses.get(clazz);
-        if (annotated == null) {
-            annotated = detectConstraints(clazz);
-            constraintsOnClasses.put(clazz, annotated);
+        Boolean constrained = constraintsOnClasses.get(clazz);
+        if (constrained == null) {
+            constrained = detectConstraints(clazz);
+            constraintsOnClasses.put(clazz, constrained);
         }
-        return annotated;
+        return constrained;
     }
 
     /**
      * INTERNAL:
-     * Reveals whether any of the class's fields or methods are constrained by Bean Validation annotations or custom
-     * constraints.
+     * Reveals whether any of the class's {@link java.lang.reflect.AccessibleObject}s are constrained by Bean Validation
+     * annotations or custom constraints.
      * Uses reflection.
+     * Will accept upon first detected annotation - faster.
      */
     private Boolean detectConstraints(Class<?> clazz) {
         for (Field f : ReflectionUtils.getDeclaredFields(clazz)) {
-            for (Annotation a : f.getDeclaredAnnotations()) {
-                final Class<? extends Annotation> type = a.annotationType();
-                if (knownConstraints.contains(type)){
-                    return true;
-                }
-                // Check for custom annotations on the field (+ check inheritance on class annotations).
-                // Custom bean validation annotation is defined by having @Constraint annotation on its class.
-                for (Annotation typesClassAnnotation : type.getAnnotations()) {
-                    final Class<? extends Annotation> classAnnotationType = typesClassAnnotation.annotationType();
-                    if (Constraint.class == classAnnotationType) {
-                        knownConstraints.add(type);
-                        return true;
-                    }
-                }
-            }
+            if (detectFirstClassConstraints(f)) return true;
         }
         for (Method m : ReflectionUtils.getDeclaredMethods(clazz)) {
-            for (Annotation a : m.getDeclaredAnnotations()) {
-                final Class<? extends Annotation> type = a.annotationType();
-                if (knownConstraints.contains(type)){
-                    return true;
-                }
-                // Check for custom annotations on the method (+ check inheritance on class annotations).
-                // Custom bean validation annotation is defined by having @Constraint annotation on its class.
-                for (Annotation typesClassAnnotation : type.getAnnotations()) {
-                    final Class<? extends Annotation> classAnnotationType = typesClassAnnotation.annotationType();
-                    if (Constraint.class == classAnnotationType) {
-                        knownConstraints.add(type);
-                        return true;
-                    }
-                }
-            }
+            if (detectFirstClassConstraints(m) || detectParameterConstraints(m)) return true;
         }
         for (Constructor<?> c : ReflectionUtils.getDeclaredConstructors(clazz)) {
-            for (Annotation a : c.getDeclaredAnnotations()) {
-                final Class<? extends Annotation> type = a.annotationType();
-                if (knownConstraints.contains(type)){
+            if (detectFirstClassConstraints(c) || detectParameterConstraints(c)) return true;
+        }
+        return false;
+    }
+
+    private boolean detectFirstClassConstraints(AccessibleObject accessibleObject) {
+        for (Annotation a : accessibleObject.getDeclaredAnnotations()) {
+            final Class<? extends Annotation> annType = a.annotationType();
+            if (knownConstraints.contains(annType)){
+                return true;
+            }
+            // Check for custom annotations.
+            for (Annotation annOnAnnType : annType.getAnnotations()) {
+                final Class<? extends Annotation> annTypeOnAnnType = annOnAnnType.annotationType();
+                if (Constraint.class == annTypeOnAnnType) {
+                    knownConstraints.add(annType);
                     return true;
                 }
-                // Check for custom annotations on the constructor (+ check inheritance on class annotations).
-                // Custom bean validation annotation is defined by having @Constraint annotation on its class.
-                for (Annotation typesClassAnnotation : type.getAnnotations()) {
-                    final Class<? extends Annotation> classAnnotationType = typesClassAnnotation.annotationType();
-                    if (Constraint.class == classAnnotationType) {
-                        knownConstraints.add(type);
+            }
+        }
+        return false;
+    }
+
+    private boolean detectParameterConstraints(Executable c) {
+        for (Annotation[] aa : c.getParameterAnnotations())
+            for (Annotation a : aa) {
+                final Class<? extends Annotation> annType = a.annotationType();
+                if (knownConstraints.contains(annType)) {
+                    return true;
+                }
+                // Check for custom annotations.
+                for (Annotation annOnAnnType : annType.getAnnotations()) {
+                    final Class<? extends Annotation> annTypeOnAnnType = annOnAnnType.annotationType();
+                    if (Constraint.class == annTypeOnAnnType) {
+                        knownConstraints.add(annType);
                         return true;
                     }
                 }
             }
-        }
         return false;
     }
 
@@ -199,7 +214,7 @@ enum BeanValidationHelper {
      * Strategy:
      *  - if {@link ValidationXMLReader#runAsynchronously()} is not doing anything,
      *  run parsing synchronously.
-     *  - else if latch count set to 0 aka async call finished, return
+     *  - else if latch count is 0, indicating successful finish of asynchronous processing, return.
      *  - else wait for {@link #TIMEOUT} seconds to allow async thread to finish. If it does not finish till then,
      *  run parsing synchronously.
      *

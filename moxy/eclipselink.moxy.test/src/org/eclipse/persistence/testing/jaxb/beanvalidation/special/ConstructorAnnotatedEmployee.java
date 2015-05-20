@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.beanvalidation.special;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -28,8 +29,7 @@ public class ConstructorAnnotatedEmployee {
     public ConstructorAnnotatedEmployee(){
     }
 
-    @NotNull
-    public ConstructorAnnotatedEmployee(Integer id){
+    public ConstructorAnnotatedEmployee(@NotNull @Min(1337) Integer id){
         this.id = id;
     }
 

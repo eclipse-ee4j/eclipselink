@@ -43,7 +43,8 @@ public class BeanValidationJunitTest extends JUnitTestCase {
         if (! JUnitTestCase.isJPA10()) {
             suite.addTest(new BeanValidationJunitTest("testSetup"));
             suite.addTest(new BeanValidationJunitTest("testPersistWithInvalidData"));
-            suite.addTest(new BeanValidationJunitTest("testPersistWithInvalidMethodSetData"));
+            suite.addTest(new BeanValidationJunitTest("testPersistWithInvalidMethodData"));
+//            suite.addTest(new BeanValidationJunitTest("testPersistWithInvalidConstructorParameterData"));
             suite.addTest(new BeanValidationJunitTest("testEmbeddedWithInvalidData"));
             suite.addTest(new BeanValidationJunitTest("testUpdateWithInvalidData"));
             suite.addTest(new BeanValidationJunitTest("testRemoveWithInvalidData"));
@@ -66,7 +67,7 @@ public class BeanValidationJunitTest extends JUnitTestCase {
         try {
             beginTransaction(em);
             Employee e1 = new Employee(EMPLOYEE_PK, getFilledStringOfLength(Employee.NAME_MAX_SIZSE - 1),
-                    getFilledStringOfLength(Employee.NAME_MAX_SIZSE - 1), 1000);
+                    getFilledStringOfLength(Employee.NAME_MAX_SIZSE - 1), 1337);
             Project p1 = new Project(PROJECT_PK, "proj");
             Project p2 = new Project(PROJECT_PK + 1, "proj");
             em.persist(p1);
@@ -111,7 +112,7 @@ public class BeanValidationJunitTest extends JUnitTestCase {
         try {
             // Persist an object with invalid value
             beginTransaction(em);
-            Employee e1 = new Employee(100, invalidName, validName, 1000);
+            Employee e1 = new Employee(100, invalidName, validName, 1337);
             em.persist(e1);
         } catch (ConstraintViolationException e) {
             assertTrue("Transaction not marked for roll back when ConstraintViolation is thrown", getRollbackOnly(em)) ;
@@ -137,7 +138,7 @@ public class BeanValidationJunitTest extends JUnitTestCase {
      * 3. Assert - transaction is rolled back
      * 4. Assert - The validation exception is due to invalid value given by us.
      */
-    public void testPersistWithInvalidMethodSetData() {
+    public void testPersistWithInvalidMethodData() {
         EntityManager em = createEntityManager();
         boolean gotConstraintViolations = false;
         String invalidName = getFilledStringOfLength(Employee.NAME_MAX_SIZSE + 1);
@@ -145,7 +146,7 @@ public class BeanValidationJunitTest extends JUnitTestCase {
         try {
             // Persist an object with invalid value
             beginTransaction(em);
-            Employee e1 = new Employee(100, validName, invalidName, 1000);
+            Employee e1 = new Employee(100, validName, invalidName, 1337);
             em.persist(e1);
         } catch (ConstraintViolationException e) {
             assertTrue("Transaction not marked for roll back when ConstraintViolation is thrown", getRollbackOnly(em)) ;
@@ -153,6 +154,44 @@ public class BeanValidationJunitTest extends JUnitTestCase {
             ConstraintViolation constraintViolation = constraintViolations.iterator().next();
             Object invalidaValue = constraintViolation.getInvalidValue();
             assertTrue("Invalid value should be " + invalidName, invalidName.equals(invalidaValue));
+            gotConstraintViolations = true;
+        } finally {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
+        assertTrue("Did not get Constraint Violation while persisting invalid data ", gotConstraintViolations);
+
+    }
+
+    /* This test unfortunately doesn't pass now, because HV 5.1.0.Final does not correctly detect constructor
+     constraints. See similar test in moxy, where through reflection we check correctness of BeanValidationHelper.
+     The test case is BeanValidationSpecialtiesTestCase#testConstructorAnnotations.*/
+    /**
+     * Strategy:
+     * 1. Persist an object with invalid value
+     * 2. Assert - a ConstraintViolationException is raised
+     * 3. Assert - transaction is rolled back
+     * 4. Assert - The validation exception is due to invalid value given by us.
+     */
+    public void testPersistWithInvalidConstructorParameterData() {
+        EntityManager em = createEntityManager();
+        boolean gotConstraintViolations = false;
+        String invalidName = getFilledStringOfLength(Employee.NAME_MAX_SIZSE + 1);
+        String validName = getFilledStringOfLength(Employee.NAME_MAX_SIZSE - 1);
+        long low_salary = "too_low".compareTo("1337_salary");
+        try {
+            // Persist an object with invalid value
+            beginTransaction(em);
+            Employee e1 = new Employee(100, validName, validName, low_salary);
+            em.persist(e1);
+        } catch (ConstraintViolationException e) {
+            assertTrue("Transaction not marked for roll back when ConstraintViolation is thrown", getRollbackOnly(em)) ;
+            Set<ConstraintViolation<?>> constraintViolations = e.getConstraintViolations();
+            ConstraintViolation constraintViolation = constraintViolations.iterator().next();
+            Object invalidaValue = constraintViolation.getInvalidValue();
+            assertTrue("Invalid value should be " + low_salary, invalidName.equals(invalidaValue));
             gotConstraintViolations = true;
         } finally {
             if (isTransactionActive(em)) {
@@ -177,7 +216,7 @@ public class BeanValidationJunitTest extends JUnitTestCase {
         try {
             // Persist an object with invalid value
             beginTransaction(em);
-            Employee e1 = new Employee(100, "name", "name", 1000);
+            Employee e1 = new Employee(100, "name", "name", 1337);
             Address address = new Address("street", "city", "state" /*passing invalid value for state */);
             e1.setAddress(address);
             em.persist(e1);
@@ -244,7 +283,7 @@ public class BeanValidationJunitTest extends JUnitTestCase {
         try {
             beginTransaction(em);
             Employee e1 = new Employee(EMPLOYEE_PK_TO_REMOVE, getFilledStringOfLength(Employee.NAME_MAX_SIZSE - 1 ),
-                    getFilledStringOfLength(Employee.NAME_MAX_SIZSE - 1 ), 1000);
+                    getFilledStringOfLength(Employee.NAME_MAX_SIZSE - 1 ), 1337);
             em.persist(e1);
             commitTransaction(em);
         } catch (RuntimeException ex) {

@@ -37,19 +37,22 @@ import java.util.logging.Logger;
 import static org.eclipse.persistence.jaxb.BeanValidationHelper.BEAN_VALIDATION_HELPER;
 
 /**
- * Parses validation.xml, scanning for constraints file reference. If found,
- * it will parse the constraints file and put all classes declared under <bean class="clazz"> into
+ * Detects external Bean Validation configuration.
+ *
+ * Strategy:
+ * 1. Parse validation.xml, looking for a constraints-file reference.
+ * 2. For each referenceIf  file is found,
+ * parses the constraints file and puts all classes declared under <bean class="clazz"> into
  * {@link org.eclipse.persistence.jaxb.BeanValidationHelper#constraintsOnClasses} with value
  * {@link Boolean#TRUE}.
  *
- * This class contains heavy instance fields (e.g. SAXParser) and as such was designed to be instantiated once (make
- * the instance BOUNDED) and have {@link #call()} method called on that instance once.
+ * This class contains resources-burdening instance fields (e.g. SAXParser) and as such was designed to be instantiated
+ * once (make the instance BOUNDED) and have {@link #call()} method called on that instance once.
  *
- * Not to be made singleton. The method #parse() shall be invoked only once per class load of this class,
- * i.e. once per VM in usual case. After that the instance and all its fields should be made available for garbage
- * collection.
+ * Not suitable for singleton (memory burden). The method #parse() will be invoked only once per class load of this
+ * class. After that the instance and all its fields should be made collectible by GC.
  *
- * @author Marcel Valovy - marcel.valovy@oracle.com
+ * @author Marcel Valovy - marcelv3612@gmail.com
  * @since 2.6
  */
 class ValidationXMLReader implements Callable<Void> {
@@ -113,9 +116,9 @@ class ValidationXMLReader implements Callable<Void> {
      * Someone might have interrupted/killed that thread... or didn't even allow it to be created,
      * aka {@link #didSomething} is false.
      *
-     * Note: Run parsing synchronously is force of last resort. If this fails, you should proceed with validation and
+     * Note: To run parsing synchronously is force of last resort. If this fails, you should proceed with validation and
      * not account for classes specified in validation.xml - there is high chance that if we cannot read validation.xml
-     * successfully, neither will be able the Validation implementation.
+     * successfully, neither will the BV implementation library.
      *
      * @return true if parsing finished successfully, false if exception was thrown
      */
@@ -131,6 +134,9 @@ class ValidationXMLReader implements Callable<Void> {
         return true;
     }
 
+    /**
+     * @return latch
+     */
     static CountDownLatch getLatch() {
         return latch;
     }
@@ -178,7 +184,7 @@ class ValidationXMLReader implements Callable<Void> {
     }
 
     private void parseConstraintFiles() {
-        final DefaultHandler referencedFileHandler = new DefaultHandler() {
+        final class ConstrainedClassesDetector extends DefaultHandler {
 
             private boolean defaultPackageElement = false;
             private String defaultPackage = "";
@@ -214,7 +220,7 @@ class ValidationXMLReader implements Callable<Void> {
         };
 
         for (String file : constraintsFiles) {
-            parseConstraintFile(file, referencedFileHandler);
+            parseConstraintFile(file, new ConstrainedClassesDetector());
         }
     }
 
@@ -228,7 +234,7 @@ class ValidationXMLReader implements Callable<Void> {
     }
 
     /**
-     * Parse constraints file referenced in validation.xml. Add all classes declared under <bean
+     * Parse constraints file (referenced in validation.xml). Add all classes declared under <bean
      * class="clazz"> to {@link org.eclipse.persistence.jaxb.BeanValidationHelper#constraintsOnClasses} with value
      * {@link Boolean#TRUE}.
      */

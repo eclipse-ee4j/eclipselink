@@ -13,6 +13,7 @@
 package org.eclipse.persistence.testing.models.jpa.beanvalidation;
 
 import javax.persistence.*;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 import javax.validation.constraints.Max;
 import javax.validation.Valid;
@@ -27,7 +28,7 @@ public class Employee {
     private int         id;
 
     @Basic(fetch = FetchType.LAZY)
-    @Max(1000)
+    @Max(2000)
     private long salary;
 
     @Size(max = NAME_MAX_SIZSE)
@@ -53,7 +54,7 @@ public class Employee {
 
     public Employee() {}
 
-    public Employee(int id, String name, String surname, long salary) {
+    public Employee(int id, String name, String surname, @Min(1337) long salary) {
         this.id = id;
         this.name = name;
         this.surname = surname;

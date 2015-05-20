@@ -17,6 +17,7 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.security.AccessController;
@@ -102,39 +103,61 @@ public enum BeanValidationHelper {
      */
     private Boolean detectConstraints(Class<?> clazz) {
         for (Field f : getDeclaredFields(clazz)) {
-            if (detectValidationConstraints(f)) return true;
+            if (detectFirstClassConstraints(f)) return true;
         }
         for (Method m : getDeclaredMethods(clazz)) {
-            if (detectValidationConstraints(m)) return true;
+            if (detectFirstClassConstraints(m) || detectParameterConstraints(m)) return true;
         }
         for (Constructor<?> c : getDeclaredConstructors(clazz)) {
-            if (detectValidationConstraints(c)) return true;
+            if (detectFirstClassConstraints(c) || detectParameterConstraints(c)) return true;
         }
         return false;
     }
 
-    private boolean detectValidationConstraints(AccessibleObject accessibleObject) {
+    private boolean detectFirstClassConstraints(AccessibleObject accessibleObject) {
         for (Annotation a : accessibleObject.getDeclaredAnnotations()) {
-            final Class<? extends Annotation> type = a.annotationType();
-            final String typeCanonicalName = type.getCanonicalName();
+            final Class<? extends Annotation> annType = a.annotationType();
+            final String annTypeCanonicalName = annType.getCanonicalName();
 
-            if (KNOWN_CONSTRAINTS.contains(typeCanonicalName)) {
+            if (KNOWN_CONSTRAINTS.contains(annTypeCanonicalName)) {
                 return true;
             }
-
-            // Check for custom annotations on the field (+ check inheritance on class annotations).
-            // Custom bean validation annotation is defined by having @Constraint annotation on its class.
-            for (Annotation typesClassAnnotation : type.getAnnotations()) {
-                final Class<? extends Annotation> classAnnotationType = typesClassAnnotation.annotationType();
-                if ("javax.validation.Constraint".equals(classAnnotationType.getCanonicalName())) {
+            // Check for custom annotations.
+            for (Annotation annOnAnnType : annType.getAnnotations()) {
+                final Class<? extends Annotation> annTypeOnAnnType = annOnAnnType.annotationType();
+                if ("javax.validation.Constraint".equals(annTypeOnAnnType.getCanonicalName())) {
                     // Avoid adding anonymous class constraints.
-                    if (typeCanonicalName != null) {
-                        KNOWN_CONSTRAINTS.add(typeCanonicalName);
+                    if (annTypeCanonicalName != null) {
+                        KNOWN_CONSTRAINTS.add(annTypeCanonicalName);
                     }
                     return true;
                 }
             }
         }
+        return false;
+    }
+
+    private boolean detectParameterConstraints(Executable c) {
+        for (Annotation[] aa : c.getParameterAnnotations())
+            for (Annotation a : aa) {
+                final Class<? extends Annotation> annType = a.annotationType();
+                final String annTypeCanonicalName = annType.getCanonicalName();
+
+                if (KNOWN_CONSTRAINTS.contains(annTypeCanonicalName)) {
+                    return true;
+                }
+                // Check for custom annotations.
+                for (Annotation annOnAnnType : annType.getAnnotations()) {
+                    final Class<? extends Annotation> annTypeOnAnnType = annOnAnnType.annotationType();
+                    if ("javax.validation.Constraint".equals(annTypeOnAnnType.getCanonicalName())) {
+                        // Avoid adding anonymous class constraints.
+                        if (annTypeCanonicalName != null) {
+                            KNOWN_CONSTRAINTS.add(annTypeCanonicalName);
+                        }
+                        return true;
+                    }
+                }
+            }
         return false;
     }
 

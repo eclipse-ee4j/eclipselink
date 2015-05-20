@@ -6,7 +6,7 @@
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
- *
+ * <p/>
  * Contributors:
  *     Marcel Valovy - initial implementation
  ******************************************************************************/
