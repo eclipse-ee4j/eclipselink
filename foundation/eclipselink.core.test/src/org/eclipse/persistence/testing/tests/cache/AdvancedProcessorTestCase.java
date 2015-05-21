@@ -15,17 +15,19 @@
 package org.eclipse.persistence.testing.tests.cache;
 
 
-import junit.framework.TestCase;
 import org.eclipse.persistence.internal.cache.AdvancedProcessor;
 import org.eclipse.persistence.internal.cache.ComputableTask;
-import org.junit.Before;
+import org.eclipse.persistence.testing.framework.TestCase;
 
+/**
+ * @author Marcel Valovy - marcelv3612@gmail.com
+ */
 public class AdvancedProcessorTestCase extends TestCase {
 
     private AdvancedProcessor processor;
     private MutableComputableTask<Integer, Integer> computableTask;
 
-    public void testCompute() {
+    public void testCompute() throws Exception {
         assertEquals(processor.compute(computableTask.setArg(5), 5), (Integer) 10);
     }
 
@@ -35,7 +37,6 @@ public class AdvancedProcessorTestCase extends TestCase {
         assertEquals(processor.compute(computableTask.setArg(7), 5), (Integer) 12);
     }
 
-    @Before
     public void setUp() {
         processor = new AdvancedProcessor();
         computableTask = new Task<>();

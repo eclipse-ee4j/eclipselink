@@ -89,7 +89,7 @@ public class Memoizer<A, V> implements LowLevelProcessor<A, V> {
     }
 
     /**
-     * Multi-key map.
+     * Composite-key map.
      */
     private class KeyStorage {
 
@@ -103,7 +103,7 @@ public class Memoizer<A, V> implements LowLevelProcessor<A, V> {
     }
 
     /**
-     * Key for multi-key map.
+     * Key for composite-key map.
      */
     private class MemoizerKey {
 

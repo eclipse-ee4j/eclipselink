@@ -8,6 +8,7 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
+ *      Marcel Valovy
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.beanvalidation;
 
@@ -49,7 +50,7 @@ public class BeanValidationJunitTest extends JUnitTestCase {
             suite.addTest(new BeanValidationJunitTest("testUpdateWithInvalidData"));
             suite.addTest(new BeanValidationJunitTest("testRemoveWithInvalidData"));
             suite.addTest(new BeanValidationJunitTest("testTraversableResolverPreventsLoadingOfLazyRelationships"));
-            suite.addTest(new BeanValidationJunitTest("testTraversableResolverPreventsTraversingRelationshipdMultipleTimes"));
+            suite.addTest(new BeanValidationJunitTest("testTraversableResolverPreventsTraversingRelationshipMultipleTimes"));
         }
         return suite;
     }
@@ -118,8 +119,8 @@ public class BeanValidationJunitTest extends JUnitTestCase {
             assertTrue("Transaction not marked for roll back when ConstraintViolation is thrown", getRollbackOnly(em)) ;
             Set<ConstraintViolation<?>> constraintViolations = e.getConstraintViolations();
             ConstraintViolation constraintViolation = constraintViolations.iterator().next();
-            Object invalidaValue = constraintViolation.getInvalidValue();
-            assertTrue("Invalid value should be " + invalidName, invalidName.equals(invalidaValue));
+            Object invalidValue = constraintViolation.getInvalidValue();
+            assertTrue("Invalid value should be " + invalidName, invalidName.equals(invalidValue));
             gotConstraintViolations = true;
         } finally {
             if (isTransactionActive(em)) {
@@ -152,8 +153,8 @@ public class BeanValidationJunitTest extends JUnitTestCase {
             assertTrue("Transaction not marked for roll back when ConstraintViolation is thrown", getRollbackOnly(em)) ;
             Set<ConstraintViolation<?>> constraintViolations = e.getConstraintViolations();
             ConstraintViolation constraintViolation = constraintViolations.iterator().next();
-            Object invalidaValue = constraintViolation.getInvalidValue();
-            assertTrue("Invalid value should be " + invalidName, invalidName.equals(invalidaValue));
+            Object invalidValue = constraintViolation.getInvalidValue();
+            assertTrue("Invalid value should be " + invalidName, invalidName.equals(invalidValue));
             gotConstraintViolations = true;
         } finally {
             if (isTransactionActive(em)) {
@@ -190,8 +191,8 @@ public class BeanValidationJunitTest extends JUnitTestCase {
             assertTrue("Transaction not marked for roll back when ConstraintViolation is thrown", getRollbackOnly(em)) ;
             Set<ConstraintViolation<?>> constraintViolations = e.getConstraintViolations();
             ConstraintViolation constraintViolation = constraintViolations.iterator().next();
-            Object invalidaValue = constraintViolation.getInvalidValue();
-            assertTrue("Invalid value should be " + low_salary, invalidName.equals(invalidaValue));
+            Object invalidValue = constraintViolation.getInvalidValue();
+            assertTrue("Invalid value should be " + low_salary, invalidName.equals(invalidValue));
             gotConstraintViolations = true;
         } finally {
             if (isTransactionActive(em)) {
@@ -234,12 +235,12 @@ public class BeanValidationJunitTest extends JUnitTestCase {
 
     /**
      * Strategy:
-     * 1. Persit an object with valid values
+     * 1. Persist an object with valid values
      * 2. Update it with invalid data and commit transaction
      * 3. Assert - a Persistence Exception  is raised
-     * 4. Assert - Cause of the persitence exception is ConstraintViolationException
+     * 4. Assert - Cause of the Persistence exception is ConstraintViolationException
      * 5  Assert - The ConstraintViolationException exception is due to invalid value given by us.
-     * 6  Assert - transaction is marked for rolled back
+     * 6  Assert - transaction is marked for roll back
 
      */
     public void testUpdateWithInvalidData() {
@@ -347,7 +348,7 @@ public class BeanValidationJunitTest extends JUnitTestCase {
      * 1. Update an Employee and related project to trigger validation on it
      * 2. Assert that the objects are traversed only once
      */
-    public void testTraversableResolverPreventsTraversingRelationshipdMultipleTimes() {
+    public void testTraversableResolverPreventsTraversingRelationshipMultipleTimes() {
         // Write a validator that sets value of boolean @Transient flag validationPerformed for each entity that visits it.
         // If it ever finds an entity with such flag set, the entity has visited the validator twice. It should be flagged as error.
     }

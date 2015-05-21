@@ -171,10 +171,10 @@ public class BeanValidationSpecialtiesTestCase extends junit.framework.TestCase 
         Field field = clazz.getDeclaredField("constraintsOnClasses");
         field.setAccessible(true);
         //noinspection unchecked
-//        Map<Class<?>, Boolean> constraintsOnClasses = (Map<Class<?>, Boolean>) field.get(clazz.getEnumConstants()[0]);
-//        assertTrue(constraintsOnClasses.containsKey(ConstructorAnnotatedEmployee.class));
-//        field.setAccessible(false);
-//
+        Map<Class<?>, Boolean> constraintsOnClasses = (Map<Class<?>, Boolean>) field.get(clazz.getEnumConstants()[0]);
+        assertTrue(constraintsOnClasses.containsKey(ConstructorAnnotatedEmployee.class));
+        field.setAccessible(false);
+
 //        Set<? extends ConstraintViolation<?>> violations = marshaller.getConstraintViolations();
 //
 //        assertFalse(violations.isEmpty());
