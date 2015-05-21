@@ -14,6 +14,7 @@
  */
 package org.eclipse.persistence.internal.cache;
 
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,17 +28,17 @@ import java.util.concurrent.FutureTask;
  *
  * Inspired by D. Lea. <i>JCiP</i>, 2nd edition. Addison-Wesley, 2006. pp.109
  *
- * @author Marcel Valovy - marcel.valovy@oracle.com
+ * @author Marcel Valovy - marcelv3612@gmail.com
  * @since 2.6
  */
 public class Memoizer<A, V> implements LowLevelProcessor<A, V> {
 
-    /** cache */
-    private final ConcurrentMap<CacheKey, Future<V>> cache = new ConcurrentHashMap<>();
+    private final ConcurrentMap<MemoizerKey, Future<V>> cache = new ConcurrentHashMap<>();
+    private final KeyStorage keyStorage = new KeyStorage();
 
     @Override
     public V compute(final ComputableTask<A, V> c, final A taskArg) throws InterruptedException {
-        final CacheKey key = new CacheKey(c, taskArg);
+        final MemoizerKey key = keyStorage.get(c, taskArg);
         while (true) {
             Future<V> f = cache.get(key);
             if (f == null) {
@@ -77,7 +78,7 @@ public class Memoizer<A, V> implements LowLevelProcessor<A, V> {
      * @param key argument of computation
      */
     public void forget(ComputableTask<A, V> task, A key) {
-        cache.remove(this.new CacheKey(task, key));
+        cache.remove(this.new MemoizerKey(task, key));
     }
 
     /**
@@ -87,11 +88,29 @@ public class Memoizer<A, V> implements LowLevelProcessor<A, V> {
         cache.clear();
     }
 
-    private class CacheKey {
+    /**
+     * Multi-key map.
+     */
+    private class KeyStorage {
+
+        Map<MemoizerKey, MemoizerKey> map = new ConcurrentHashMap<>();
+
+        public MemoizerKey get(final ComputableTask<A, V> c, final A taskArg) {
+            MemoizerKey certificate = new MemoizerKey(c, taskArg);
+            MemoizerKey key = map.putIfAbsent(certificate, certificate);
+            return (key == null) ? certificate : key;
+        }
+    }
+
+    /**
+     * Key for multi-key map.
+     */
+    private class MemoizerKey {
+
         private final ComputableTask<A, V> task;
         private final A key;
 
-        private CacheKey(ComputableTask<A, V> task, A key) {
+        private MemoizerKey(ComputableTask<A, V> task, A key) {
             this.task = task;
             this.key = key;
         }
@@ -101,7 +120,8 @@ public class Memoizer<A, V> implements LowLevelProcessor<A, V> {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
 
-            CacheKey cacheKey = (CacheKey) o;
+            //noinspection unchecked
+            MemoizerKey cacheKey = (MemoizerKey) o;
 
             //noinspection SimplifiableIfStatement
             if (key != null ? !key.equals(cacheKey.key) : cacheKey.key != null) return false;
