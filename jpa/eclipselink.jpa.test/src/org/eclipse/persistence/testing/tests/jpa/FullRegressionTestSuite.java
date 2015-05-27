@@ -131,6 +131,7 @@ public class FullRegressionTestSuite extends TestSuite {
         suite.addTest(ConcurrencyTest.suite());
         suite.addTest(CacheImplJUnitTest.suite());
         suite.addTest(CallbackEventJUnitTestSuite.suite());
+        suite.addTest(IsolatedHashMapTest.suite());
         suite.addTest(EntityManagerJUnitTestSuite.suite());
         suite.addTest(SQLResultSetMappingTestSuite.suite());
         suite.addTest(JoinedAttributeAdvancedJunitTest.suite());
