@@ -555,6 +555,13 @@
                 <include name="**/*.jar"/>
             </patternset>
         </unzip>
+        <!-- replace with signed bits if applicable -->
+        <unzip dest="${p2.bundle.dir}" src="${p2.archive.zip}">
+            <patternset>
+                <include name="plugins/*.jar"/>
+            </patternset>
+            <mapper type="flatten"/>
+        </unzip>
         <!-- Remove jars we are not including in features at this time (needs to be separate because exclude in unzip does not seem to work) -->
         <delete>
             <fileset
