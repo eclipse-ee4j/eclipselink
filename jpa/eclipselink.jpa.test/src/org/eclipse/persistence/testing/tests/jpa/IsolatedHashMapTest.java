@@ -279,14 +279,11 @@ public class IsolatedHashMapTest extends JUnitTestCase {
          return sessionNames;
      }
 
-     final SessionLog log;
-
      /**
      * Creates an instance of partition isolated {@link HashMap} test.
      */
     public IsolatedHashMapTest() {
         super();
-        log = getServerSession().getSessionLog();
     }
 
     /**
@@ -295,7 +292,6 @@ public class IsolatedHashMapTest extends JUnitTestCase {
      */
     public IsolatedHashMapTest(final String name) {
         super(name);
-        log = getServerSession().getSessionLog();
     }
 
     /**
@@ -325,6 +321,7 @@ public class IsolatedHashMapTest extends JUnitTestCase {
      * Test partition isolation in real context with real {@link ServerPlatform}.
      */
     public void testIsolationInRealContext() {
+        final SessionLog log = getServerSession().getSessionLog();
         log.log(SessionLog.INFO, "IsolatedHashMapTest.testIsolationInRealContext()");
         doIsolationCheck(map, supportPartitions ? serverPlatform.getPartitionID() : DEFAULT_PARTITION_ID, log);
     }
@@ -333,6 +330,7 @@ public class IsolatedHashMapTest extends JUnitTestCase {
      * Test partition isolation in mocked partition context.
      */
     public void testIsolationInMockedContext() {
+        final SessionLog log = getServerSession().getSessionLog();
         log.log(SessionLog.INFO, "IsolatedHashMapTest.testIsolationInMockedContext()");
         // Replace serverPlatform with mocked instance in IsolatedHashMap.
         final TestServerPlatform testPlatform = new TestServerPlatform();
