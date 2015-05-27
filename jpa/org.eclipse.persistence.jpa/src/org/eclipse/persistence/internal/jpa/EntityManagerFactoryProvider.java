@@ -23,14 +23,16 @@
  *       - 389090: JPA 2.1 DDL Generation Support
  *     02/19/2013-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support
+ *     05/06/2015-2.7 Tomas Kraus
+ *       - Added partition isolation for persistence units.
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
 import java.security.AccessController;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.HashMap;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.TargetDatabase;
@@ -49,7 +51,8 @@ import org.eclipse.persistence.tools.schemaframework.SchemaManager;
  * be used to create EntityManagerFactories
  */
 public class EntityManagerFactoryProvider { 
-    public static final HashMap<String, EntityManagerSetupImpl> emSetupImpls = new HashMap<String, EntityManagerSetupImpl>();
+
+    public static final Map<String, EntityManagerSetupImpl> emSetupImpls = IsolatedHashMap.newMap();
     
     // TEMPORARY - WILL BE REMOVED.
     // Used to warn users about deprecated property name and suggest the valid name.
