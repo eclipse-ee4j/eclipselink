@@ -16,6 +16,9 @@ package org.eclipse.persistence.internal.cache;
 
 /**
  * Computable task.
+ *
+ * Note: If implementation has mutable state, it must override equals and hashCode methods, taking into account all
+ * fields that may have any effect on computation result.
  */
 public interface ComputableTask<A, V> {
 

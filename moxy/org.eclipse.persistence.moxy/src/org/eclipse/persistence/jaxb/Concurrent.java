@@ -69,6 +69,9 @@ public class Concurrent {
             o.setPayload2(false);
             return (V) o;
         }
+
+        // Note: Here we do not need equals and hashCode because there are no fields. But remember to create these
+        // methods for any ComputableTask class you create that has a state!
     }
 
 }
