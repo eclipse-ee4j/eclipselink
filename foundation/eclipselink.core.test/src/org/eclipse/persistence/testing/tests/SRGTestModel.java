@@ -21,14 +21,14 @@ public class SRGTestModel extends TestModel {
     public SRGTestModel() {
         setDescription("This model is a basic set of tests run by developers before checking in code.");
         boolean isSRG = true;
-//        addTest(new HelperTestModel());
-//        addTest(new org.eclipse.persistence.testing.tests.feature.FeatureTestModel(isSRG));
-//        addTest(new EmployeeBasicTestModel(isSRG));
-//        addTest(new org.eclipse.persistence.testing.tests.writing.ComplexUpdateAndUnitOfWorkTestModel(isSRG));
-//        addTest(new org.eclipse.persistence.testing.tests.sessionsxml.SessionsXMLBasicTestModel(isSRG));
-//        addTest(new org.eclipse.persistence.testing.tests.aggregate.AggregateTestModel(isSRG));
-//        addTest(new InheritanceTestModel(isSRG));
-//        addTest(new org.eclipse.persistence.testing.tests.sessionsxml.SessionsXMLTestModel(isSRG));
+        addTest(new HelperTestModel());
+        addTest(new org.eclipse.persistence.testing.tests.feature.FeatureTestModel(isSRG));
+        addTest(new EmployeeBasicTestModel(isSRG));
+        addTest(new org.eclipse.persistence.testing.tests.writing.ComplexUpdateAndUnitOfWorkTestModel(isSRG));
+        addTest(new org.eclipse.persistence.testing.tests.sessionsxml.SessionsXMLBasicTestModel(isSRG));
+        addTest(new org.eclipse.persistence.testing.tests.aggregate.AggregateTestModel(isSRG));
+        addTest(new InheritanceTestModel(isSRG));
+        addTest(new org.eclipse.persistence.testing.tests.sessionsxml.SessionsXMLTestModel(isSRG));
         addTest(new org.eclipse.persistence.testing.tests.cache.AdvancedProcessingTestModel(isSRG));
     }
 
