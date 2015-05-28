@@ -19,6 +19,7 @@ import org.eclipse.persistence.jaxb.JAXBMarshaller;
 import org.eclipse.persistence.testing.jaxb.beanvalidation.dom.Employee;
 import org.eclipse.persistence.testing.jaxb.beanvalidation.special.ConstructorAnnotatedEmployee;
 import org.eclipse.persistence.testing.jaxb.beanvalidation.special.CustomAnnotatedEmployee;
+import org.eclipse.persistence.testing.jaxb.beanvalidation.special.InheritanceAnnotatedEmployee;
 import org.eclipse.persistence.testing.jaxb.beanvalidation.special.MethodAnnotatedEmployee;
 import org.eclipse.persistence.testing.jaxb.beanvalidation.special.NonConstrainedClass;
 
@@ -131,6 +132,33 @@ public class BeanValidationSpecialtiesTestCase extends junit.framework.TestCase 
         JAXBMarshaller marshaller = (JAXBMarshaller) JAXBContextFactory.createContext(new
                 Class[]{MethodAnnotatedEmployee.class}, null).createMarshaller();
         MethodAnnotatedEmployee employee = new MethodAnnotatedEmployee().withId(null);
+
+        try {
+            marshaller.marshal(employee, new StringWriter());
+            assertFalse("Constraints-breaking class escaped validation -> fail.", true);
+        } catch (BeanValidationException ignored) {
+        }
+
+        Set<? extends ConstraintViolation<?>> violations = marshaller.getConstraintViolations();
+
+        assertFalse(violations.isEmpty());
+
+
+        // For all, i.e. one constraintViolations.
+        for (ConstraintViolation constraintViolation : violations) {
+            assertEquals(NOT_NULL_MESSAGE, constraintViolation.getMessageTemplate());
+        }
+    }
+
+    /**
+     * Tests that we detect inherited constraints.
+     */
+    public void testInheritedAnnotations() throws Exception {
+        JAXBMarshaller marshaller = (JAXBMarshaller) JAXBContextFactory.createContext(new
+                Class[]{InheritanceAnnotatedEmployee.class}, null).createMarshaller();
+
+        InheritanceAnnotatedEmployee employee = (InheritanceAnnotatedEmployee) new InheritanceAnnotatedEmployee()
+                .withId(null);
 
         try {
             marshaller.marshal(employee, new StringWriter());

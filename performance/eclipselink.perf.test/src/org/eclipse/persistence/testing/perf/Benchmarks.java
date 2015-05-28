@@ -12,14 +12,12 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.perf;
 
-import org.eclipse.persistence.testing.perf.beanvalidation.ValidationBenchmark;
+import org.eclipse.persistence.testing.perf.beanvalidation.MOXyValidationBenchmark;
 import org.eclipse.persistence.testing.perf.jpa.persistence_content_handler.PersistenceContentHandlerBenchmark;
 import org.eclipse.persistence.testing.perf.json.marshal.JsonMarshalBenchmark;
 import org.eclipse.persistence.testing.perf.json.unmarshal.JsonUnmarshalBenchmark;
 import org.eclipse.persistence.testing.perf.json.writer.JsonWriterBenchmark;
 import org.eclipse.persistence.testing.perf.largexml.LargeXmlBenchmark;
-import org.eclipse.persistence.testing.perf.moxy.casesensitivity.CaseInsensitiveUnmarshalBenchmark;
-import org.eclipse.persistence.testing.perf.moxy.referenceresolver.ReferenceResolverBenchmark;
 import org.eclipse.persistence.testing.perf.smallxml.SmallXmlBenchmark;
 import org.openjdk.jmh.results.format.ResultFormatType;
 import org.openjdk.jmh.runner.Runner;
@@ -55,8 +53,9 @@ public class Benchmarks {
                 .include(getInclude(JsonMarshalBenchmark.class))
                 .include(getInclude(JsonUnmarshalBenchmark.class))
                 .include(getInclude(JsonWriterBenchmark.class))
-                // tests that are not part of regular test-harness
-//                .include(getInclude(ValidationBenchmark.class))
+                .include(getInclude(MOXyValidationBenchmark.class))
+                 // tests that are not part of regular test-harness
+//                .include(getInclude(JPAValidationBenchmark.class))
 //                .include(getInclude(ReferenceResolverBenchmark.class))
 //                .include(getInclude(CaseInsensitiveUnmarshalBenchmark.class))
                 .result(resultFile)

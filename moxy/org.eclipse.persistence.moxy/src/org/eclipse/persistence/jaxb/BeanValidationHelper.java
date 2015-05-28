@@ -12,6 +12,9 @@
  ******************************************************************************/
 package org.eclipse.persistence.jaxb;
 
+import org.eclipse.persistence.internal.cache.AdvancedProcessor;
+import org.eclipse.persistence.internal.cache.ComputableTask;
+
 import javax.validation.Constraint;
 import javax.validation.Valid;
 import javax.validation.constraints.AssertFalse;
@@ -32,6 +35,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -45,8 +49,8 @@ import java.util.concurrent.TimeUnit;
  *  - Singleton.
  *  - Thread-safe (see note 1).
  *
- *  The same helper class is located in JPA, under org.eclipse.persistence.internal.jpa.metadata.beanvalidation package.
- *  There are two notable differences:
+ * The same helper class is located in JPA, under org.eclipse.persistence.internal.jpa.metadata.beanvalidation package,
+ * with two notable differences:
  *   1. This one uses Class objects as keys, and as such is faster. JPA does not depend on BV API so it has to use
  *   string comparisons instead.
  *   2. This one differs in concurrency management.
@@ -76,13 +80,22 @@ enum BeanValidationHelper {
      * ValidationXMLReader#firstTime} were to be false, deadlock would occur. This prevents such case, as it will
      * await until timeout expires and then run the processing in forced, synchronous way.
      */
-    private static final int TIMEOUT = 10; /* milliseconds, can be specified with precision up to single digits since
-                                              nanoTime is used. */
+    private static final int TIMEOUT = 10; /* in ms, handles precision up to single digits since nanoTime is used. */
 
     /**
      * Speed-up flag. Indicates that parsing of validation.xml file has finished.
      */
     private static boolean xmlParsed = false;
+
+    /**
+     * Advanced memoizer.
+     */
+    private final AdvancedProcessor memoizer = new AdvancedProcessor();
+
+    /**
+     * Computable task for memoizer.
+     */
+    private final ConstraintsDetectorService<Class<?>, Boolean> cds = new ConstraintsDetectorService<>();
 
     /**
      * Set of all default BeanValidation field or method annotations and known custom field or method constraints.
@@ -124,8 +137,9 @@ enum BeanValidationHelper {
     }
 
     /**
-     * Put a class to map of constrained classes with value Boolean.TRUE. Specifying value is not allowed because
-     * there is no thing to detect that would make class not constrained after it was already found to be constrained.
+     * Put a class to the map of constrained classes with value Boolean.TRUE. Specifying value is not allowed because
+     * there is nothing to detect that would make class not constrained after it was already found to be constrained.
+     *
      * @return value previously associated with the class or null if the class was not in dictionary before
      */
     Boolean putConstrainedClass(Class<?> clazz) {
@@ -142,69 +156,7 @@ enum BeanValidationHelper {
     boolean isConstrained(Class<?> clazz) {
         if (!xmlParsed) ensureValidationXmlWasParsed();
 
-        Boolean constrained = constraintsOnClasses.get(clazz);
-        if (constrained == null) {
-            constrained = detectConstraints(clazz);
-            constraintsOnClasses.put(clazz, constrained);
-        }
-        return constrained;
-    }
-
-    /**
-     * INTERNAL:
-     * Reveals whether any of the class's {@link java.lang.reflect.AccessibleObject}s are constrained by Bean Validation
-     * annotations or custom constraints.
-     * Uses reflection.
-     * Will accept upon first detected annotation - faster.
-     */
-    private Boolean detectConstraints(Class<?> clazz) {
-        for (Field f : ReflectionUtils.getDeclaredFields(clazz)) {
-            if (detectFirstClassConstraints(f)) return true;
-        }
-        for (Method m : ReflectionUtils.getDeclaredMethods(clazz)) {
-            if (detectFirstClassConstraints(m) || detectParameterConstraints(m)) return true;
-        }
-        for (Constructor<?> c : ReflectionUtils.getDeclaredConstructors(clazz)) {
-            if (detectFirstClassConstraints(c) || detectParameterConstraints(c)) return true;
-        }
-        return false;
-    }
-
-    private boolean detectFirstClassConstraints(AccessibleObject accessibleObject) {
-        for (Annotation a : accessibleObject.getDeclaredAnnotations()) {
-            final Class<? extends Annotation> annType = a.annotationType();
-            if (knownConstraints.contains(annType)){
-                return true;
-            }
-            // Check for custom annotations.
-            for (Annotation annOnAnnType : annType.getAnnotations()) {
-                final Class<? extends Annotation> annTypeOnAnnType = annOnAnnType.annotationType();
-                if (Constraint.class == annTypeOnAnnType) {
-                    knownConstraints.add(annType);
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    private boolean detectParameterConstraints(Executable c) {
-        for (Annotation[] aa : c.getParameterAnnotations())
-            for (Annotation a : aa) {
-                final Class<? extends Annotation> annType = a.annotationType();
-                if (knownConstraints.contains(annType)) {
-                    return true;
-                }
-                // Check for custom annotations.
-                for (Annotation annOnAnnType : annType.getAnnotations()) {
-                    final Class<? extends Annotation> annTypeOnAnnType = annOnAnnType.annotationType();
-                    if (Constraint.class == annTypeOnAnnType) {
-                        knownConstraints.add(annType);
-                        return true;
-                    }
-                }
-            }
-        return false;
+        return memoizer.compute(cds, clazz);
     }
 
     /**
@@ -234,6 +186,104 @@ enum BeanValidationHelper {
             } catch (InterruptedException ignored) {
                 Thread.currentThread().interrupt();
             }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public class ConstraintsDetectorService<A, V> implements ComputableTask<A, V> {
+
+        @Override
+        public V compute(A arg) throws InterruptedException {
+            Boolean b = isConstrained0((Class<?>) arg);
+            return (V) b;
+        }
+
+        private Boolean isConstrained0(Class<?> clazz) {
+            Boolean constrained = constraintsOnClasses.get(clazz);
+            if (constrained == null) {
+                constrained = detectConstraints(clazz);
+                constraintsOnClasses.put(clazz, constrained);
+            }
+            return constrained;
+        }
+
+        /**
+         * INTERNAL:
+         * Determines whether this class is subject to validation according to rules in BV spec.
+         * Will accept upon first detected annotation - faster.
+         * Uses reflection, recursion and DP.
+         */
+        private Boolean detectConstraints(Class<?> clazz) {
+            if (detectAncestorConstraints(clazz)) return true;
+
+            for (Field f : ReflectionUtils.getDeclaredFields(clazz)) {
+                if ((f.getModifiers() & Modifier.STATIC) != 0) continue; // section 4.1 of BV spec
+                if (detectFirstClassConstraints(f)) return true;
+            }
+
+            for (Method m : ReflectionUtils.getDeclaredMethods(clazz)) {
+                if ((m.getModifiers() & Modifier.STATIC) != 0) continue; // section 4.1 of BV spec
+                if (detectFirstClassConstraints(m) || detectParameterConstraints(m)) return true;
+            }
+
+            // length 0 if an interface, a primitive type, an array class, or void
+            for (Constructor<?> c : ReflectionUtils.getDeclaredConstructors(clazz)) {
+                if (clazz.isEnum()) continue; // cannot construct enum instances during runtime
+                if (detectFirstClassConstraints(c) || detectParameterConstraints(c)) return true;
+            }
+            return false;
+        }
+
+        /**
+         * Recursively detects constraints on ancestors. Uses strong form of dynamic programming.
+         *
+         * @param clazz class whose ancestors are to be scanned
+         * @return true if any of the ancestors are constrained
+         */
+        private boolean detectAncestorConstraints(Class<?> clazz) {
+            /* If this Class represents either the Object class, an interface, a primitive type, or void, then null is
+               returned. If this object represents an array class then the Class object representing the Object class
+               is returned. */
+            Class<?> superClass = clazz.getSuperclass();
+            if (superClass == null) return false;
+            return memoizer.compute(cds, superClass);
+        }
+
+        private boolean detectFirstClassConstraints(AccessibleObject accessibleObject) {
+            for (Annotation a : accessibleObject.getDeclaredAnnotations()) {
+                final Class<? extends Annotation> annType = a.annotationType();
+                if (knownConstraints.contains(annType)){
+                    return true;
+                }
+                // detect custom annotations
+                for (Annotation annOnAnnType : annType.getAnnotations()) {
+                    final Class<? extends Annotation> annTypeOnAnnType = annOnAnnType.annotationType();
+                    if (Constraint.class == annTypeOnAnnType) {
+                        knownConstraints.add(annType);
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        private boolean detectParameterConstraints(Executable c) {
+            for (Annotation[] aa : c.getParameterAnnotations())
+                for (Annotation a : aa) {
+                    final Class<? extends Annotation> annType = a.annotationType();
+                    if (knownConstraints.contains(annType)) {
+                        return true;
+                    }
+                    // detect custom annotations
+                    for (Annotation annOnAnnType : annType.getAnnotations()) {
+                        final Class<? extends Annotation> annTypeOnAnnType = annOnAnnType.annotationType();
+                        if (Constraint.class == annTypeOnAnnType) {
+                            knownConstraints.add(annType);
+                            return true;
+                        }
+                    }
+                }
+            return false;
         }
     }
 

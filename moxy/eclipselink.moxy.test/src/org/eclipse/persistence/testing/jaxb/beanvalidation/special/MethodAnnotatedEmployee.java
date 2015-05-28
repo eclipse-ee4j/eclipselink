@@ -18,6 +18,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Contains only method constraint.
+ *
+ * @author Marcel Valovy
  */
 @XmlRootElement
 public class MethodAnnotatedEmployee {

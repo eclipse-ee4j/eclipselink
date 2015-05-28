@@ -17,7 +17,6 @@ import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.JAXBMarshaller;
 import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
-import org.eclipse.persistence.jpa.PersistenceProvider;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
@@ -25,23 +24,20 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.TearDown;
 import org.openjdk.jmh.infra.Blackhole;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import java.io.StringWriter;
 import java.util.HashMap;
 
 /**
- * Performance baseline for JAXB and JPA processes using Bean Validation.
- * Tests provide comparison in performance of bean validation callbacks occurring during basic MOXy and JPA mapping
+ * Performance baseline for JAXB processes using Bean Validation.
+ * Tests provide comparison in performance of bean validation callbacks occurring during basic MOXy mapping
  * processes, with objects that are constrained against the same objects that are not constrained.
  *
  * @author Marcel Valovy
  */
 @State(Scope.Benchmark)
-public class ValidationBenchmark {
+public class MOXyValidationBenchmark {
 
     private static final String EMPLOYEE_XML = "org/eclipse/persistence/testing/perf/validation/employee.xml";
     private static final String EMPLOYEE_ANNOTATED_XML =
@@ -51,32 +47,6 @@ public class ValidationBenchmark {
     private JAXBContext ctx;
     private JAXBUnmarshaller unm;
     private JAXBMarshaller mar;
-    private EntityManagerFactory emf;
-    private EntityManager em;
-
-    @Benchmark
-    public void testJpaAnnotated(Blackhole bh) throws Exception {
-        final EntityTransaction transaction = em.getTransaction();
-        transaction.begin();
-        EmployeeAnnotated employee = new EmployeeAnnotated().withAge(51289).withPersonalName("Robert Paulson")
-                .withPhoneNumber("(420)333-4444").withId(250);
-        em.persist(employee);
-        transaction.rollback();
-        bh.consume(transaction);
-        bh.consume(employee);
-    }
-
-    @Benchmark
-    public void testJpa(Blackhole bh) throws Exception {
-        final EntityTransaction transaction = em.getTransaction();
-        transaction.begin();
-        Employee employee = new Employee().withAge(51289).withPersonalName("Robert Paulson")
-                .withPhoneNumber("(420)333-4444").withId(250);
-        em.persist(employee);
-        transaction.rollback();
-        bh.consume(transaction);
-        bh.consume(employee);
-    }
 
     @Benchmark
     public void testMarshal(Blackhole bh) throws Exception {
@@ -117,7 +87,6 @@ public class ValidationBenchmark {
      */
     @Setup
     public void prepare() throws Exception {
-        prepareJPA();
         prepareJAXB();
     }
 
@@ -126,17 +95,9 @@ public class ValidationBenchmark {
      */
     @TearDown
     public void tearDown() throws Exception {
-        emf = null;
-        em.close();
-        em = null;
         ctx = null;
         unm = null;
         mar = null;
-    }
-
-    private void prepareJPA() throws Exception {
-        emf = new PersistenceProvider().createEntityManagerFactory("my-app", null);
-        em = emf.createEntityManager();
     }
 
     private void prepareJAXB() throws Exception {
