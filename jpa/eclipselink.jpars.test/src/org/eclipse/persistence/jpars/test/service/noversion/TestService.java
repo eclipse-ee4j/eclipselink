@@ -72,7 +72,7 @@ public class TestService {
     private static PersistenceContext context;
 
     public static PersistenceContext getAuctionPersistenceContext(Map<String, Object> additionalProperties) throws URISyntaxException {
-        Map<String, Object> properties = new HashMap<String, Object>();
+        Map<String, Object> properties = new HashMap<>();
         if (additionalProperties != null) {
             properties.putAll(additionalProperties);
         }
@@ -81,7 +81,7 @@ public class TestService {
     }
 
     public static PersistenceContext getPhoneBookPersistenceContext(Map<String, Object> additionalProperties) throws URISyntaxException {
-        Map<String, Object> properties = new HashMap<String, Object>();
+        Map<String, Object> properties = new HashMap<>();
         if (additionalProperties != null) {
             properties.putAll(additionalProperties);
         }
@@ -91,7 +91,7 @@ public class TestService {
 
     @BeforeClass
     public static void setup() {
-        Map<String, Object> properties = new HashMap<String, Object>();
+        Map<String, Object> properties = new HashMap<>();
         ExamplePropertiesLoader.loadProperties(properties);
         factory = null;
         try {
@@ -146,19 +146,19 @@ public class TestService {
         resource.setPersistenceFactory(factory);
         PersistenceContext context = TestService.getAuctionPersistenceContext(null);
 
-        DynamicEntity entity = (DynamicEntity) context.newEntity("User");
+        DynamicEntity entity = context.newEntity("User");
         entity.set("name", "Jim");
         context.create(null, entity);
 
         entity.set("name", "James");
 
-        DynamicEntity entity2 = (DynamicEntity) context.newEntity("User");
+        DynamicEntity entity2 = context.newEntity("User");
         entity2.set("name", "Jill");
         context.create(null, entity2);
 
         entity2.set("name", "Gillian");
 
-        List<DynamicEntity> entities = new ArrayList<DynamicEntity>();
+        List<DynamicEntity> entities = new ArrayList<>();
         entities.add(entity);
         entities.add(entity2);
 
@@ -179,7 +179,7 @@ public class TestService {
         }
         assertNotNull("returned data was null", entities);
         assertTrue("returned data had wrong list size", entities.size() == 2);
-        List<String> values = new ArrayList<String>();
+        List<String> values = new ArrayList<>();
         values.add("James");
         values.add("Gillian");
         for (DynamicEntity value : entities) {
@@ -199,7 +199,7 @@ public class TestService {
         resource.setPersistenceFactory(factory);
         PersistenceContext context = getPhoneBookPersistenceContext(null);
 
-        DynamicEntity entity = (DynamicEntity) context.newEntity("Person");
+        DynamicEntity entity = context.newEntity("Person");
         entity.set("firstName", "Jim");
         entity.set("lastName", "Jones");
         entity.set("phoneNumber", "1234567");
@@ -207,14 +207,14 @@ public class TestService {
 
         entity.set("firstName", "James");
 
-        DynamicEntity entity2 = (DynamicEntity) context.newEntity("Person");
+        DynamicEntity entity2 = context.newEntity("Person");
         entity2.set("firstName", "Jill");
         entity2.set("lastName", "Jones");
         context.create(null, entity2);
 
         entity2.set("firstName", "Gillian");
 
-        List<DynamicEntity> entities = new ArrayList<DynamicEntity>();
+        List<DynamicEntity> entities = new ArrayList<>();
         entities.add(entity);
         entities.add(entity2);
 
@@ -236,7 +236,7 @@ public class TestService {
         assertNotNull("returned data was null", entities);
         assertNotNull("returned data had null list", entities);
         assertTrue("returned data had wrong list size", entities.size() == 2);
-        List<String> values = new ArrayList<String>();
+        List<String> values = new ArrayList<>();
         values.add("James");
         values.add("Gillian");
         for (DynamicEntity value : entities) {
@@ -255,14 +255,14 @@ public class TestService {
         resource.setPersistenceFactory(factory);
         PersistenceContext context = getAuctionPersistenceContext(null);
 
-        DynamicEntity entity1 = (DynamicEntity) context.newEntity("Auction");
+        DynamicEntity entity1 = context.newEntity("Auction");
         entity1.set("name", "Computer");
 
-        DynamicEntity entity2 = (DynamicEntity) context.newEntity("User");
+        DynamicEntity entity2 = context.newEntity("User");
         entity2.set("name", "Bob");
         context.create(null, entity2);
 
-        DynamicEntity entity3 = (DynamicEntity) context.newEntity("Bid");
+        DynamicEntity entity3 = context.newEntity("Bid");
         entity3.set("amount", 200d);
         entity3.set("user", entity2);
         entity3.set("auction", entity1);
@@ -289,17 +289,17 @@ public class TestService {
         resource.setPersistenceFactory(factory);
         PersistenceContext context = getAuctionPersistenceContext(null);
 
-        DynamicEntity entity1 = (DynamicEntity) context.newEntity("Auction");
+        DynamicEntity entity1 = context.newEntity("Auction");
         entity1.set("name", "Computer");
         context.create(null, entity1);
 
-        DynamicEntity entity2 = (DynamicEntity) context.newEntity("Auction");
+        DynamicEntity entity2 = context.newEntity("Auction");
         entity2.set("name", "Word Processor");
         context.create(null, entity2);
 
         TestHttpHeaders headers = new TestHttpHeaders();
         headers.getAcceptableMediaTypes().add(MediaType.APPLICATION_JSON_TYPE);
-        List<String> mediaTypes = new ArrayList<String>();
+        List<String> mediaTypes = new ArrayList<>();
         mediaTypes.add(MediaType.APPLICATION_JSON);
         TestURIInfo ui = new TestURIInfo();
         StreamingOutput output = (StreamingOutput) resource.namedQuery("jpars_auction", "Auction.all", headers, ui).getEntity();
@@ -323,17 +323,17 @@ public class TestService {
         resource.setPersistenceFactory(factory);
         PersistenceContext context = getAuctionPersistenceContext(null);
 
-        DynamicEntity entity1 = (DynamicEntity) context.newEntity("Auction");
+        DynamicEntity entity1 = context.newEntity("Auction");
         entity1.set("name", "Computer");
         context.create(null, entity1);
 
-        DynamicEntity entity2 = (DynamicEntity) context.newEntity("Auction");
+        DynamicEntity entity2 = context.newEntity("Auction");
         entity2.set("name", "Word Processor");
         context.create(null, entity2);
 
         TestHttpHeaders headers = new TestHttpHeaders();
         headers.getAcceptableMediaTypes().add(MediaType.APPLICATION_JSON_TYPE);
-        List<String> mediaTypes = new ArrayList<String>();
+        List<String> mediaTypes = new ArrayList<>();
         mediaTypes.add(MediaType.APPLICATION_JSON);
         TestURIInfo ui = new TestURIInfo();
         ui.addMatrixParameter("Auction.forName", "name", "Computer");
@@ -353,7 +353,7 @@ public class TestService {
         resource.setPersistenceFactory(factory);
         PersistenceContext context = getAuctionPersistenceContext(null);
 
-        DynamicEntity entity1 = (DynamicEntity) context.newEntity("Auction");
+        DynamicEntity entity1 = context.newEntity("Auction");
         entity1.set("name", "Computer");
         context.create(null, entity1);
         entity1.set("name", "Laptop");
@@ -374,14 +374,14 @@ public class TestService {
         resource.setPersistenceFactory(factory);
         PersistenceContext context = getAuctionPersistenceContext(null);
 
-        DynamicEntity entity1 = (DynamicEntity) context.newEntity("Auction");
+        DynamicEntity entity1 = context.newEntity("Auction");
         entity1.set("name", "Computer");
 
-        DynamicEntity entity2 = (DynamicEntity) context.newEntity("User");
+        DynamicEntity entity2 = context.newEntity("User");
         entity2.set("name", "Bob");
         context.create(null, entity2);
 
-        DynamicEntity entity3 = (DynamicEntity) context.newEntity("Bid");
+        DynamicEntity entity3 = context.newEntity("Bid");
         entity3.set("amount", 200d);
         entity3.set("user", entity2);
         entity3.set("auction", entity1);
@@ -439,7 +439,7 @@ public class TestService {
         resource.setPersistenceFactory(factory);
         PersistenceContext context = getAuctionPersistenceContext(null);
 
-        DynamicEntity entity1 = (DynamicEntity) context.newEntity("Auction");
+        DynamicEntity entity1 = context.newEntity("Auction");
         entity1.set("name", "Computer1");
         context.create(null, entity1);
 
@@ -458,7 +458,7 @@ public class TestService {
         resource.setPersistenceFactory(factory);
         PersistenceContext context = getAuctionPersistenceContext(null);
 
-        DynamicEntity entity = (DynamicEntity) context.newEntity("User");
+        DynamicEntity entity = context.newEntity("User");
         entity.set("name", "Bob");
         context.create(null, entity);
 
@@ -478,9 +478,9 @@ public class TestService {
         EntityResource resource = new EntityResource();
         resource.setPersistenceFactory(factory);
         PersistenceContext context = getAuctionPersistenceContext(null);
-        DynamicEntity user = (DynamicEntity) context.newEntity("User");
+        DynamicEntity user = context.newEntity("User");
         user.set("name", "Wes");
-        DynamicEntity address = (DynamicEntity) context.newEntity("Address");
+        DynamicEntity address = context.newEntity("Address");
         address.set("city", "Ottawa");
         address.set("postalCode", "a1a1a1");
         address.set("street", "Main Street");
@@ -526,11 +526,11 @@ public class TestService {
     public void testUpdateStaticRelationship() throws URISyntaxException {
         EntityResource resource = new EntityResource();
         resource.setPersistenceFactory(factory);
-        Map<String, Object> properties = new HashMap<String, Object>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
         PersistenceContext context = factory.get("jpars_auction-static-local", RestUtils.getServerURI(), null, properties);
 
-        StaticUser initialUser = (StaticUser) ((StaticBid) context.find("StaticBid", StaticModelDatabasePopulator.BID1_ID)).getUser();
+        StaticUser initialUser = ((StaticBid) context.find("StaticBid", StaticModelDatabasePopulator.BID1_ID)).getUser();
         StaticUser user2 = (StaticUser) context.find("StaticUser", StaticModelDatabasePopulator.USER2_ID);
 
         try {
@@ -553,14 +553,14 @@ public class TestService {
     public void testStaticReportQuery() throws URISyntaxException {
         QueryResource resource = new QueryResource();
         resource.setPersistenceFactory(factory);
-        Map<String, Object> properties = new HashMap<String, Object>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
         @SuppressWarnings("unused")
         PersistenceContext context = factory.get("jpars_auction-static-local", RestUtils.getServerURI(), null, properties);
 
         TestHttpHeaders headers = new TestHttpHeaders();
         headers.getAcceptableMediaTypes().add(MediaType.APPLICATION_JSON_TYPE);
-        List<String> mediaTypes = new ArrayList<String>();
+        List<String> mediaTypes = new ArrayList<>();
         mediaTypes.add(MediaType.APPLICATION_JSON);
         TestURIInfo ui = new TestURIInfo();
         StreamingOutput output = (StreamingOutput) resource.namedQuery("jpars_auction-static-local", "User.count", headers, ui).getEntity();
@@ -624,12 +624,12 @@ public class TestService {
     public void testMultitenant() throws JAXBException, URISyntaxException {
         EntityResource resource = new EntityResource();
         resource.setPersistenceFactory(factory);
-        Map<String, Object> properties = new HashMap<String, Object>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
         PersistenceContext context = factory.get("jpars_auction-static-local", RestUtils.getServerURI(), null, properties);
 
         Account account = new Account();
-        account.setAccoutNumber("AAA111");
+        account.setAccountNumber("AAA111");
         TestURIInfo ui = new TestURIInfo();
         ui.addMatrixParameter("jpars_auction-static-local", "tenant.id", "AcctOwner1");
 

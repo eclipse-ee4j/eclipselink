@@ -138,9 +138,7 @@
         <property name="sun.tools.xjc.prefix" value="jaxb-xjc"/>
         <property name="sun.tools.xjc.criteria" value="[2.2.11,5.0.0)"/>
         <property name="sun.xml.bind.prefix" value="jaxb-core"/>
-        <property name="sun.xml.bind.criteria" value="[2.2.11,5.0.0)"/>
-        <property name="jersey.prefix" value="com.sun.jersey"/>
-        <property name="jersey.criteria" value="[1.8.0,5.0.0)"/>
+        <property name="sun.xml.bind.criteria" value="[0.0.1,5.0.0)"/>
         <property name="sdo.prefix" value="commonj.sdo"/>
         <property name="sdo.criteria" value="[2.1.1,5.0.0)"/>
         <property name="ejb.prefix" value="javax.ejb"/>
@@ -159,6 +157,8 @@
         <property name="servlet.criteria" value="[0.0.1,5.0.0)"/>
         <property name="wsdl.prefix" value="javax.wsdl"/>
         <property name="wsdl.criteria" value="[0.0.1,5.0.0)"/>
+        <property name="wsrs.prefix" value="javax.ws.rs"/>
+        <property name="wsrs.criteria" value="[2.0.1,5.0.0)"/>
         <property name="xml.soap.prefix" value="javax.xml.soap"/>
         <property name="xml.soap.criteria" value="[0.0.1,5.0.0)"/>
         <property name="json.prefix" value="org.glassfish.javax.json"/>
@@ -197,9 +197,6 @@
         <selectbundle basename="${sun.tools.xjc.prefix}"  directory="${compdeps.2.common.plugins.dir}"
                       criterion="${sun.tools.xjc.criteria}" property="sun.tools.xjc.version" versiononly="true"
         />
-        <selectbundle basename="${jersey.prefix}"  directory="${compdeps.2.common.plugins.dir}"
-                     criterion="${jersey.criteria}" property="jersey.version" versiononly="true"
-        />
         <selectbundle basename="${ejb.prefix}"  directory="${compdeps.2.common.plugins.dir}"
                      criterion="${ejb.criteria}" property="ejb.version" versiononly="true"
         />
@@ -230,6 +227,9 @@
         <selectbundle basename="${json.prefix}"  directory="${compdeps.2.common.plugins.dir}"
                      criterion="${json.criteria}" property="json.version" versiononly="true"
         />
+        <selectbundle basename="${wsrs.prefix}"  directory="${compdeps.2.common.plugins.dir}"
+                     criterion="${wsrs.criteria}" property="wsrs.version" versiononly="true"
+        />
 
         <say  message="   javax.xml.bind.version   = '${javax.xml.bind.version}'"                                                   if="javax.xml.bind.version"/>
         <say  message="   '{$javax.xml.bind.prefix}_{$javax.xml.bind.criteria}' not found! Generated features will be invalid."   unless="javax.xml.bind.version"/>
@@ -237,8 +237,6 @@
         <say  message="   '${sun.tools.xjc.prefix}_${sun.tools.xjc.criteria}.jar' not found! Generated features will be invalid." unless="sun.tools.xjc.version"/>
         <say  message="   sun.xml.bind.version     = '${sun.xml.bind.version}'"                                                     if="sun.xml.bind.version"/>
         <say  message="   '${sun.xml.bind.prefix}_${sun.xml.bind.criteria}.jar' not found! Generated features will be invalid."   unless="sun.xml.bind.version"/>
-        <say  message="   jersey.version           = '${jersey.version}'"                                                           if="jersey.version"/>
-        <say  message="   '${jersey.prefix}_${jersey.criteria}.jar' not found! Generated features will be invalid."             unless="jersey.version"/>
         <say  message="   ejb.version              = '${ejb.version}'"                                                              if="ejb.version"/>
         <say  message="   '${ejb.prefix}_${ejb.criteria}.jar' not found! Generated features will be invalid."                   unless="ejb.version"/>
         <say  message="   jms.version              = '${jms.version}'"                                                              if="jms.version"/>
@@ -259,6 +257,8 @@
         <say  message="   '${validation.prefix}_${validation.criteria}.jar' not found! Generated features will be invalid."     unless="validation.version"/>
         <say  message="   json.version             = '${json.version}'"                                                                   if="json.version"/>
         <say  message="   '${json.prefix}_${json.criteria}.jar' not found! Generated features will be invalid."                 unless="json.version"/>
+        <say  message="   wsrs.version             = '${wsrs.version}'"                                                                   if="wsrs.version"/>
+        <say  message="   '${wsrs.prefix}_${wsrs.criteria}.jar' not found! Generated features will be invalid."                 unless="wsrs.version"/>
 
         <echo message="Searching ${compdeps.2.jpa.plugins.dir}..."/>
         <selectbundle basename="${persistence.prefix}"  directory="${compdeps.2.jpa.plugins.dir}"
@@ -316,7 +316,6 @@
         <filter token="XJC_VERSION"          value="${sun.tools.xjc.version}"/>
         <filter token="JAXB_CORE_VERSION"    value="${sun.xml.bind.version}"/>
         <filter token="JAVAX_XML_BIND_VERSION"  value="${javax.xml.bind.version}"/>
-        <filter token="JERSEY_VERSION"       value="${jersey.version}"/>
         <filter token="EJB_VERSION"          value="${ejb.version}"/>
         <filter token="JMS_VERSION"          value="${jms.version}"/>
         <filter token="RESOURCE_VERSION"     value="${resource.version}"/>
@@ -327,7 +326,9 @@
         <filter token="VALIDATION_VERSION"   value="${validation.version}"/>
         <filter token="SDO_VERSION"          value="${sdo.version}"/>
         <filter token="JSON_VERSION"         value="${json.version}"/>
-        <filter token="WSDL_VERSION"         value="${wsdl.version}"/>        <!--          Filters for product bundles in feature.xml files -->
+        <filter token="WSDL_VERSION"         value="${wsdl.version}"/>
+        <filter token="WSRS_VERSION"         value="${wsrs.version}"/>
+        <!--          Filters for product bundles in feature.xml files -->
         <filter token="ANTLR_VERSION"        value="${antlr.version}"/>
         <filter token="ASM_VERSION"          value="${asm.version}"/>
         <filter token="ORACLEDDL_VERSION"    value="${oracleddl.version}"/>
@@ -355,8 +356,7 @@
         <copy todir="${p2.bundle.dir}">
             <fileset
                 dir="${compdeps.2.common.plugins.dir}"
-                includes="${jersey.prefix}_${jersey.version}.jar,
-                          ${javax.xml.bind.prefix}_${javax.xml.bind.version}.jar,
+                includes="${javax.xml.bind.prefix}_${javax.xml.bind.version}.jar,
                           ${ejb.prefix}_${ejb.version}.jar,
                           ${jms.prefix}_${jms.version}.jar,
                           ${resource.prefix}_${resource.version}.jar,
@@ -369,6 +369,7 @@
                           ${asm.prefix}.source_${asm.version}.jar,
                           ${validation.prefix}_${validation.version}.jar,
                           ${json.prefix}_${json.version}.jar,
+                          ${wsrs.prefix}_${wsrs.version}.jar,
                           ${sun.tools.xjc.prefix}_${sun.tools.xjc.version}.jar,
                           ${sun.tools.xjc.prefix}.source_${sun.tools.xjc.version}.jar,
                           ${sun.xml.bind.prefix}_${sun.xml.bind.version}.jar,

@@ -32,6 +32,7 @@
 *     tware - modified for jpa rs tests
 *     Dmitry Kornilov - remoteDebug property added
 *     Tomas Kraus - JPA RS jUnit tests for Java EE with WebLogic
+*     Dmitry Kornilov - Jersey 2.0 & dependencies
 #******************************************************************************/-->
 
 <!-- This ant project includes the following tasks:
@@ -119,8 +120,19 @@
         <!-- Give this a default value if not set in a user.home or test property file -->
         <property name="extensions.depend.dir" value="../${core_test.2.base.dir}/extension.lib.external"/>
         <property name="junit.lib"             value="${extensions.depend.dir}/junit.jar"/>
-        <property name="json.lib"          value="${jparstest.build.location}/${jparstest.2.common.plugins.dir}/${json.jar}"/>
+        <property name="json.lib"              value="${jparstest.build.location}/${jparstest.2.common.plugins.dir}/${json.jar}"/>
         <property name="jacocoagent.lib"       value="${extensions.depend.dir}/${jacocoagent.jar}"/>
+
+        <!-- Jersey 2.0 dependencies -->
+        <property name="javax.ws.rs.lib"       value="${jparstest.build.location}/${jparstest.2.common.plugins.dir}/${javax.ws.rs.jar}"/>
+        <property name="jersey.client.lib"     value="${jparstest.build.location}/${jparstest.2.common.plugins.dir}/${jersey.client.jar}"/>
+        <property name="jersey.common.lib"     value="${jparstest.build.location}/${jparstest.2.common.plugins.dir}/${jersey.common.jar}"/>
+        <property name="hk2.api.lib"           value="${jparstest.build.location}/${jparstest.2.common.plugins.dir}/${hk2.api.jar}"/>
+        <property name="hk2.locator.lib"       value="${jparstest.build.location}/${jparstest.2.common.plugins.dir}/${hk2.locator.jar}"/>
+        <property name="hk2.utils.lib"         value="${jparstest.build.location}/${jparstest.2.common.plugins.dir}/${hk2.utils.jar}"/>
+        <property name="jersey.guava.lib"      value="${jparstest.build.location}/${jparstest.2.common.plugins.dir}/${jersey.guava.jar}"/>
+        <property name="javax.inject.lib"      value="${jparstest.build.location}/${jparstest.2.common.plugins.dir}/${javax.inject.jar}"/>
+        <property name="javax.annotation.lib"  value="${jparstest.build.location}/${jparstest.2.common.plugins.dir}/${javax.annotation.jar}"/>
 
         <echo message="user.home             ='${user.home}'"/>
         <echo message="test.properties       ='${test.properties}'"/>
@@ -148,10 +160,8 @@
                       criterion="[2.0.0,3.0.0)" property="jaxb-api.lib" includepath="true"/>
         <selectbundle basename="javax.persistence" directory="${jparstest.build.location}/${jparstest.2.jpa.plugins.dir}" separator="_"
                       criterion="[2.0.0,3.0.0)" property="persistence20.lib" includepath="true"/>
-        <selectbundle basename="com.sun.jersey" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
-                      criterion="[1.0.0,2.0.0)" property="jersey.lib" includepath="true"/>
-        <selectbundle basename="javax.ws.rs" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
-                      criterion="[1.0.0,2.0.0)" property="javax.ws.rs.lib" includepath="true"/>
+        <selectbundle basename="javax.ws.rs-api" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
+                      criterion="[2.0.0,3.0.0)" property="javax.ws.rs.lib" includepath="true"/>
         <selectbundle basename="javax.ejb" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
                       criterion="[3.0.0,4.0.0)" property="javax.ejb.lib" includepath="true"/>
         <selectbundle basename="javax.servlet" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
@@ -159,19 +169,31 @@
         <selectbundle basename="javax.validation" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
                       criterion="[1.0.0,2.0.0)" property="validation.lib" includepath="true"/>
 
-
-        <available file="${jaxb-api.lib}"      property="jaxb-api.lib.exist"/>
-        <available file="${persistence20.lib}" property="persistence20.lib.exist"/>
-        <available file="${jersey.lib}"        property="jersey.lib.exist"/>
-        <available file="${javax.ws.rs.lib}"   property="javax.ws.rs.lib.exist"/>
-        <available file="${validation.lib}"    property="validation.lib.exist"/>
-        <available file="${json.lib}"      property="json.lib.exists"/>
+        <available file="${jaxb-api.lib}"           property="jaxb-api.lib.exist"/>
+        <available file="${persistence20.lib}"      property="persistence20.lib.exist"/>
+        <available file="${jersey.common.lib}"      property="jersey.common.lib.exist"/>
+        <available file="${hk2.api.lib}"            property="hk2.api.lib.exist"/>
+        <available file="${hk2.locator.lib}"        property="hk2.locator.lib.exist"/>
+        <available file="${hk2.utils.lib}"          property="hk2.utils.lib.exist"/>
+        <available file="${jersey.guava.lib}"       property="jersey.guava.lib.exist"/>
+        <available file="${javax.inject.lib}"       property="javax.inject.lib.exist"/>
+        <available file="${javax.annotation.lib}"   property="javax.annotation.lib.exist"/>
+        <available file="${javax.ws.rs.lib}"        property="javax.ws.rs.lib.exist"/>
+        <available file="${validation.lib}"         property="validation.lib.exist"/>
+        <available file="${json.lib}"               property="json.lib.exists"/>
         <echo message="jaxb-api.lib          ='${jaxb-api.lib}'"/>
         <echo message="persistence20.lib     ='${persistence20.lib}'"/>
-        <echo message="jersey.lib            ='${jersey.lib}'"/>
+        <echo message="jersey.client.lib     ='${jersey.client.lib}'"/>
+        <echo message="jersey.common.lib     ='${jersey.common.lib}'"/>
+        <echo message="hk2.api.lib           ='${hk2.api.lib}'"/>
+        <echo message="hk2.locator.lib       ='${hk2.locator.lib}'"/>
+        <echo message="hk2.utils.lib         ='${hk2.utils.lib}'"/>
+        <echo message="jersey.guava.lib      ='${jersey.guava.lib}'"/>
+        <echo message="javax.inject.lib      ='${javax.inject.lib}'"/>
+        <echo message="javax.annotation.lib  ='${javax.annotation.lib}'"/>
         <echo message="javax.ws.rs.lib       ='${javax.ws.rs.lib}'"/>
         <echo message="validation.lib        ='${validation.lib}'"/>
-        <echo message="json.lib          ='${json.lib}'"/>
+        <echo message="json.lib              ='${json.lib}'"/>
 
         <!-- Test for Eclipselink dependencies -->
         <selectbundle basename="org.eclipse.persistence.antlr" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
@@ -217,7 +239,7 @@
             <pathelement path="${junit.lib}"/>
             <pathelement path="${jaxb-api.lib}"/>
             <pathelement path="${persistence20.lib}"/>
-            <pathelement path="${jersey.lib}"/>
+            <pathelement path="${jersey.common.lib}"/>
             <pathelement path="${javax.ws.rs.lib}"/>
             <pathelement path="${jdbc.driver.jar}"/>
             <pathelement path="${javax.ejb.lib}"/>
@@ -232,8 +254,16 @@
             <pathelement path="${antlr.lib}"/>
             <pathelement path="${hermes.lib}"/>
             <pathelement path="${json.lib}"/>
-            <fileset dir="${jparstest.2.common.plugins.dir}"
-                     includes="${eclipselink.core.depend}"/>
+            <pathelement path="${hk2.api.lib}"/>
+            <pathelement path="${javax.ws.rs.lib}"/>
+            <pathelement path="${hk2.locator.lib}"/>
+            <pathelement path="${hk2.utils.lib}"/>
+            <pathelement path="${javax.inject.lib}"/>
+            <pathelement path="${javax.annotation.lib}"/>
+            <pathelement path="${jersey.guava.lib}"/>
+            <pathelement path="${jersey.common.lib}"/>
+            <pathelement path="${jersey.client.lib}"/>
+            <fileset dir="${jparstest.2.common.plugins.dir}" includes="${eclipselink.core.depend}"/>
         </path>
 
         <!-- Set Compile/Run Paths using product OSGi bundles -->
@@ -470,7 +500,7 @@
             <fail message="Cannot find JPARS: '${jparstest.2.common.plugins.dir}/org.eclipse.persistence.jpars_${version.string}.jar'." unless="jpars.bundle.exist"/>
             <fail message="Cannot find JAXB-API: '${jaxb-api.lib}'."                unless="jaxb-api.lib.exist"/>
             <fail message="Cannot find javax.persistence: '${persistence20.lib}'."  unless="persistence20.lib.exist"/>
-            <fail message="Cannot find Jersey: '${jersey.lib}'."                    unless="jersey.lib.exist"/>
+            <fail message="Cannot find jersey-common: '${jersey.common.lib}'."      unless="jersey.common.lib.exist"/>
             <fail message="Cannot find javax.ws.rs: '${javax.ws.rs.lib}'."          unless="javax.ws.rs.lib.exist"/>
             <mkdir dir="${classes.dir}"/>
             <javac

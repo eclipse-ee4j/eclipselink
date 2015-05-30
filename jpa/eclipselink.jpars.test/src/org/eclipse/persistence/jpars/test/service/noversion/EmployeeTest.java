@@ -102,7 +102,7 @@ public class EmployeeTest extends BaseJparsTest {
         em.getTransaction().commit();
 
         String mgrMsg = RestUtils.marshal(context, manager, MediaType.APPLICATION_JSON_TYPE);
-        Employee mgr = RestUtils.unmarshal(context, mgrMsg, Employee.class.getSimpleName(), MediaType.APPLICATION_JSON_TYPE);
+        Employee mgr = RestUtils.unmarshal(context, mgrMsg, Employee.class, MediaType.APPLICATION_JSON_TYPE);
 
         List<Employee> employees = mgr.getManagedEmployees();
         assertTrue("Incorrectly unmarshalled managed employees.", employees.size() == 1);
@@ -178,7 +178,7 @@ public class EmployeeTest extends BaseJparsTest {
         em.getTransaction().commit();
 
         String mgrMsg = RestUtils.marshal(context, manager, MediaType.APPLICATION_XML_TYPE);
-        Employee mgr = RestUtils.unmarshal(context, mgrMsg, Employee.class.getSimpleName(), MediaType.APPLICATION_XML_TYPE);
+        Employee mgr = RestUtils.unmarshal(context, mgrMsg, Employee.class, MediaType.APPLICATION_XML_TYPE);
 
         List<Employee> employees = mgr.getManagedEmployees();
         assertTrue("Incorrectly unmarshalled managed employees.", employees.size() == 1);

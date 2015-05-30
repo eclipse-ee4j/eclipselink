@@ -9,7 +9,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.nosql"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/com.sun.xml.bind_2.2.11.v201406210428.jar"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.mail_1.4.0.v201005080615.jar"/>
-	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.ws.rs_1.1.1.v20101004-1200.jar" sourcepath="/ECLIPSELINK_HOME/plugins/javax.ws.rs.source_1.1.1.v20101004-1200.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.ws.rs_2.0.1.v201504171603.jar"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.xml.bind_2.2.12.v201410011542.jar"/>
 	<classpathentry kind="var" path="EXTENSION_LIB_EXTERNAL/pax-exam-3.0.0.M3.jar"/>
 	<classpathentry kind="var" path="EXTENSION_LIB_EXTERNAL/javax.inject-1.jar"/>

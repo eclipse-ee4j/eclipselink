@@ -16,17 +16,6 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/javax.ws.rs_1.1.1.v20101004-1200.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$MODULE_DIR$/../../plugins/javax.ws.rs.source_1.1.1.v20101004-1200.jar!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
           <root url="jar://$MODULE_DIR$/../../jpa/plugins/javax.persistence_2.1.0.v201304241213.jar!/" />
         </CLASSES>
         <JAVADOC />
@@ -53,6 +42,15 @@
         <SOURCES>
           <root url="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.asm.source_5.0.1.v201405080102.jar!/" />
         </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../plugins/javax.ws.rs-api_2.0.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
       </library>
     </orderEntry>
   </component>

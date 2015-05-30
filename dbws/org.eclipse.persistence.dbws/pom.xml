@@ -20,5 +20,4 @@
         <componentId>dbws</componentId>
         <testId>eclipselink.${componentId}.test</testId>
     </properties>
-
 </project>

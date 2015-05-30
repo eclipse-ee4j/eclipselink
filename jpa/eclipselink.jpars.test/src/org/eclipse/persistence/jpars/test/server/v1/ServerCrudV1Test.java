@@ -8,11 +8,10 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *      Dmitry Kornilov - Initial implementation
+ *      Dmitry Kornilov - Initial implementation, upgrade to Jersey 2.x
  ******************************************************************************/
 package org.eclipse.persistence.jpars.test.server.v1;
 
-import com.sun.jersey.api.client.Client;
 import org.eclipse.persistence.jpars.test.server.noversion.ServerCrudTest;
 import org.eclipse.persistence.jpars.test.util.StaticModelDatabasePopulator;
 import org.junit.BeforeClass;
@@ -30,6 +29,5 @@ public class ServerCrudV1Test extends ServerCrudTest {
     public static void setup() throws Exception {
         initContext("jpars_auction-static", "v1.0");
         StaticModelDatabasePopulator.populateDB(emf);
-        client = Client.create();
     }
 }

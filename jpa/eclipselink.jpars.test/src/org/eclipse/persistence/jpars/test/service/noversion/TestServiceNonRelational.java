@@ -38,7 +38,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class TestServiceNonRelational {
-    PersistenceFactoryBase factory = null;;
+    PersistenceFactoryBase factory = null;
     PersistenceContext context = null;
     private static final String PLACE_PU = "jpars_place";
     private static final String ZIPS_PU = "jpars_zip";
@@ -60,7 +60,7 @@ public class TestServiceNonRelational {
         setContext(PLACE_PU);
         PersistenceResource resource = new PersistenceResource();
         resource.setPersistenceFactory(factory);
-        DynamicEntity place = (DynamicEntity) context.newEntity("Place");
+        DynamicEntity place = context.newEntity("Place");
         place.set("state", "Ontario");
         context.create(null, place);
         InputStream stream = serializeToStream(place, context, MediaType.APPLICATION_JSON_TYPE);
@@ -77,15 +77,15 @@ public class TestServiceNonRelational {
         setContext(ZIPS_PU);
         PersistenceResource resource = new PersistenceResource();
         resource.setPersistenceFactory(factory);
-        DynamicEntity zips = (DynamicEntity) context.newEntity("Zips");
+        DynamicEntity zips = context.newEntity("Zips");
         zips.set("state", "ON");
         zips.set("city", "Ottawa");
-        zips.set("pop", new Integer(6055));
+        zips.set("pop", 6055);
         zips.set("id", "1234");
 
-        List<Double> loc = new ArrayList<Double>();
-        loc.add(new Double(45.4214));
-        loc.add(new Double(75.6919));
+        List<Double> loc = new ArrayList<>();
+        loc.add(45.4214);
+        loc.add(75.6919);
         zips.set("loc", loc);
 
         context.create(null, zips);
@@ -107,32 +107,32 @@ public class TestServiceNonRelational {
         setContext(PERSON_PU);
         PersistenceResource resource = new PersistenceResource();
         resource.setPersistenceFactory(factory);
-        DynamicEntity person = (DynamicEntity) context.newEntity("Person");
+        DynamicEntity person = context.newEntity("Person");
         person.set("firstName", "Jim");
         person.set("lastName", "Smith");
-        person.set("age", new Integer(48));
+        person.set("age", 48);
         person.set("occupation", "Engineer");
         person.set("currentEmployer", "Oracle");
 
-        List<String> pastEmployers = new ArrayList<String>();
+        List<String> pastEmployers = new ArrayList<>();
         pastEmployers.add("BEA");
         pastEmployers.add("IBM");
         pastEmployers.add("Sun");
         person.set("pastEmployers", pastEmployers);
 
-        DynamicEntity address1 = (DynamicEntity) context.newEntity("Addresses");
+        DynamicEntity address1 = context.newEntity("Addresses");
         address1.set("street1", "123 Sandy Lane");
         address1.set("city", "San Jose");
         address1.set("state", "CA");
-        address1.set("zip", new Integer(94143));
+        address1.set("zip", 94143);
 
-        DynamicEntity address2 = (DynamicEntity) context.newEntity("Addresses");
+        DynamicEntity address2 = context.newEntity("Addresses");
         address2.set("street1", "334 California Street");
         address2.set("city", "San Francisco");
         address2.set("state", "CA");
-        address2.set("zip", new Integer(94110));
+        address2.set("zip", 94110);
 
-        List<Object> addresses = new ArrayList<Object>();
+        List<Object> addresses = new ArrayList<>();
         addresses.add(address1);
         addresses.add(address2);
         person.set("addresses", addresses);
@@ -155,7 +155,7 @@ public class TestServiceNonRelational {
 
     private void setContext(String persistenceUnit) throws Exception {
         context = null;
-        Map<String, Object> properties = new HashMap<String, Object>();
+        Map<String, Object> properties = new HashMap<>();
         ExamplePropertiesLoader.loadProperties(properties);
         factory = new PersistenceFactoryBase();
         properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);

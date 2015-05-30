@@ -43,7 +43,7 @@ public class Basket {
 
     @OneToMany(mappedBy = "basket", cascade = CascadeType.ALL)
     @RestPageable(limit = 2)
-    private List<BasketItem> basketItems = new ArrayList<BasketItem>();
+    private List<BasketItem> basketItems = new ArrayList<>();
 
     public Basket() {
     }

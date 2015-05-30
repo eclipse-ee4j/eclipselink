@@ -29,7 +29,7 @@ public class Account {
     @GeneratedValue
     private int id;
 
-    private String accoutNumber;
+    private String accountNumber;
     @Version
     private int version;
 
@@ -39,11 +39,11 @@ public class Account {
     public void setId(int id) {
         this.id = id;
     }
-    public String getAccoutNumber() {
-        return accoutNumber;
+    public String getAccountNumber() {
+        return accountNumber;
     }
-    public void setAccoutNumber(String accoutNumber) {
-        this.accoutNumber = accoutNumber;
+    public void setAccountNumber(String accountNumber) {
+        this.accountNumber = accountNumber;
     }
     public int getVersion() {
         return version;

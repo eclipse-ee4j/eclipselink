@@ -8,7 +8,7 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *      Dmitry Kornilov - Initial implementation
+ *      Dmitry Kornilov - Initial implementation, upgrade to Jersey 2.x
  ******************************************************************************/
 package org.eclipse.persistence.jpars.test.server.v2;
 
@@ -41,7 +41,7 @@ public class ServerTravelerV2Test extends BaseJparsTest {
 
     @After
     public void cleanup() throws URISyntaxException {
-        RestUtils.restUpdateQuery(context, "Traveler.deleteAll", "Traveler", null, null, MediaType.APPLICATION_JSON_TYPE);
+        RestUtils.restUpdateQuery(context, "Traveler.deleteAll", null, null, MediaType.APPLICATION_JSON_TYPE);
     }
 
     /**
@@ -71,7 +71,7 @@ public class ServerTravelerV2Test extends BaseJparsTest {
         } else {
             traveler = RestUtils.getJSONMessage("traveler.json");
         }
-        String response = RestUtils.restUpdate(context, traveler, Traveler.class.getSimpleName(), null, mediaType);
+        String response = RestUtils.restUpdateStr(context, traveler, Traveler.class, null, mediaType);
         assertNotNull(response);
         if (mediaType == MediaType.APPLICATION_XML_TYPE) {
 

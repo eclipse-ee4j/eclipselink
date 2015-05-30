@@ -39,10 +39,6 @@ public class ExamplePropertiesLoader {
     public static final String DB_PLATFORM_KEY = "db.platform";
     public static final String LOGGING_LEVEL_KEY = "eclipselink.logging.level";
 
-    /**
-     *
-     * @param properties
-     */
     public static void loadProperties(Map<String, Object> properties) {
         String fileName = System.getProperty(DEFAULT_FILENAME);
         if (fileName == null){
@@ -51,10 +47,6 @@ public class ExamplePropertiesLoader {
         loadProperties(properties, fileName);
     }
 
-    /**
-     *
-     * @param properties
-     */
     public static void loadProperties(Map<String, Object> properties, String filename) {
         loadProperties(properties, new File(filename));
         String home = System.getProperty("user.home");
@@ -68,11 +60,6 @@ public class ExamplePropertiesLoader {
         }
     }
 
-    /**
-     *
-     * @param properties
-     * @param filePath
-     */
     public static void loadProperties(Map<String, Object> properties, File file) {
         try {
             if (file.exists()) {

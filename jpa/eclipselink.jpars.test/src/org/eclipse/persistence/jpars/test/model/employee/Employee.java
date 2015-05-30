@@ -116,18 +116,18 @@ public class Employee {
 
     @ManyToMany
     @JoinTable(joinColumns = @JoinColumn(name = "EMP_ID"), inverseJoinColumns = @JoinColumn(name = "PROJ_ID"), name = "JPARS_PROJ_EMP")
-    private List<Project> projects = new ArrayList<Project>();
+    private List<Project> projects = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "MANAGER_ID")
     private Employee manager;
 
     @OneToMany(mappedBy = "manager")
-    private List<Employee> managedEmployees = new ArrayList<Employee>();
+    private List<Employee> managedEmployees = new ArrayList<>();
 
     @OneToMany(mappedBy = "employee", cascade = ALL, fetch = LAZY)
     @PrivateOwned
-    private List<PhoneNumber> phoneNumbers = new ArrayList<PhoneNumber>();
+    private List<PhoneNumber> phoneNumbers = new ArrayList<>();
 
     @OneToOne(cascade = ALL, fetch = LAZY)
     @JoinColumn(name = "ADDR_ID")
@@ -142,10 +142,10 @@ public class Employee {
 
     @ElementCollection
     @CollectionTable(name = "JPARS_RESPONS")
-    private List<String> responsibilities = new ArrayList<String>();
+    private List<String> responsibilities = new ArrayList<>();
 
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
-    private Set<Expertise> expertiseAreas = new HashSet<Expertise>();
+    private Set<Expertise> expertiseAreas = new HashSet<>();
 
     @ManyToOne(cascade = PERSIST, fetch = LAZY)
     @JoinColumn(name = "OFFICE_ID")
@@ -153,7 +153,7 @@ public class Employee {
 
     @ElementCollection
     @CollectionTable(name = "JPARS_CERTIFICATION", joinColumns = { @JoinColumn(name = "EMP_ID") })
-    private List<Certification> certifications = new ArrayList<Certification>();
+    private List<Certification> certifications = new ArrayList<>();
 
     public Employee() {
     }

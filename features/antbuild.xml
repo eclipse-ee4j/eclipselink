@@ -245,7 +245,7 @@
         <property name="wsdl.prefix" value="javax.wsdl"/>
         <property name="wsdl.criteria" value="[1.0,9.0)"/>
         <property name="jaxrs.prefix" value="javax.ws.rs"/>
-        <property name="jaxrs.criteria" value="[1.0,9.0)"/>
+        <property name="jaxrs.criteria" value="[2.0.1,9.0)"/>
         <property name="xml.bind.prefix" value="javax.xml.bind"/>
         <property name="xml.bind.criteria" value="[2.2.0,2.3.0)"/>
         <property name="sun.tools.xjc.prefix" value="jaxb-xjc"/>

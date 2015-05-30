@@ -20,5 +20,4 @@
         <componentId>jpa</componentId>
         <testId>eclipselink.${componentId}.test</testId>
     </properties>
-
 </project>

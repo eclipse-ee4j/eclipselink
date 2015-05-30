@@ -8,7 +8,7 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *      Dmitry Kornilov - initial implementation
+ *      Dmitry Kornilov - initial implementation, upgrade to Jersey 2.x
  ******************************************************************************/
 package org.eclipse.persistence.jpars.test.server.v2;
 
@@ -46,8 +46,8 @@ public class ServerPageableTest extends BaseJparsTest {
 
     @AfterClass
     public static void cleanup() throws Exception {
-        RestUtils.restUpdateQuery(context, "BasketItem.deleteAll", "BasketItem", null, null, MediaType.APPLICATION_JSON_TYPE);
-        RestUtils.restUpdateQuery(context, "Basket.deleteAll", "Basket", null, null, MediaType.APPLICATION_JSON_TYPE);
+        RestUtils.restUpdateQuery(context, "BasketItem.deleteAll", null, null, MediaType.APPLICATION_JSON_TYPE);
+        RestUtils.restUpdateQuery(context, "Basket.deleteAll", null, null, MediaType.APPLICATION_JSON_TYPE);
     }
 
     protected static void initData() throws Exception {
@@ -55,7 +55,7 @@ public class ServerPageableTest extends BaseJparsTest {
         Basket basket = new Basket();
         basket.setId(1);
         basket.setName("Basket1");
-        basket = RestUtils.restCreate(context, basket, Basket.class.getSimpleName(), Basket.class, null, MediaType.APPLICATION_XML_TYPE, true);
+        basket = RestUtils.restCreate(context, basket, Basket.class);
         assertNotNull("Basket create failed.", basket);
 
         // Add items
@@ -63,8 +63,9 @@ public class ServerPageableTest extends BaseJparsTest {
             BasketItem basketItem = new BasketItem();
             basketItem.setId(j);
             basketItem.setName("BasketItem" + j);
-            RestUtils.restCreate(context, basketItem, BasketItem.class.getSimpleName(), BasketItem.class, null, MediaType.APPLICATION_XML_TYPE, false);
-            RestUtils.restUpdateBidirectionalRelationship(context, String.valueOf(basket.getId()), Basket.class.getSimpleName(), "basketItems", basketItem, MediaType.APPLICATION_XML_TYPE, "basket", true);
+            //RestUtils.restCreate(context, basketItem, BasketItem.class, null, MediaType.APPLICATION_XML_TYPE, false);
+            RestUtils.restCreate(context, basketItem, BasketItem.class);
+            RestUtils.restUpdateBidirectionalRelationship(context, String.valueOf(basket.getId()), Basket.class, "basketItems", basketItem, MediaType.APPLICATION_XML_TYPE, "basket", true);
         }
     }
 
@@ -74,7 +75,7 @@ public class ServerPageableTest extends BaseJparsTest {
         final Map<String, String> hints = new HashMap<>(1);
         hints.put("limit", "2");
 
-        final String queryResult = RestUtils.restNamedMultiResultQuery(context, "BasketItem.findAllPageable", null, hints, MediaType.APPLICATION_JSON_TYPE);
+        final String queryResult = RestUtils.restNamedMultiResultQueryResult(context, "BasketItem.findAllPageable", null, hints, MediaType.APPLICATION_JSON_TYPE);
         logger.info(queryResult);
         assertNotNull("Query all basket items failed.", queryResult);
 
@@ -103,7 +104,7 @@ public class ServerPageableTest extends BaseJparsTest {
         final Map<String, String> hints = new HashMap<>(1);
         hints.put("limit", "2");
 
-        final String queryResult = RestUtils.restNamedMultiResultQuery(context, "BasketItem.findAllPageable", null, hints, MediaType.APPLICATION_XML_TYPE);
+        final String queryResult = RestUtils.restNamedMultiResultQueryResult(context, "BasketItem.findAllPageable", null, hints, MediaType.APPLICATION_XML_TYPE);
         logger.info(queryResult);
         assertNotNull("Query all basket items failed.", queryResult);
 
@@ -133,7 +134,7 @@ public class ServerPageableTest extends BaseJparsTest {
         hints.put("limit", "2");
         hints.put("offset", "2");
 
-        final String queryResult = RestUtils.restNamedMultiResultQuery(context, "BasketItem.findAllPageable", null, hints, MediaType.APPLICATION_JSON_TYPE);
+        final String queryResult = RestUtils.restNamedMultiResultQueryResult(context, "BasketItem.findAllPageable", null, hints, MediaType.APPLICATION_JSON_TYPE);
         logger.info(queryResult);
         assertNotNull("Query all basket items failed.", queryResult);
 
@@ -167,7 +168,7 @@ public class ServerPageableTest extends BaseJparsTest {
         hints.put("limit", "2");
         hints.put("offset", "2");
 
-        final String queryResult = RestUtils.restNamedMultiResultQuery(context, "BasketItem.findAllPageable", null, hints, MediaType.APPLICATION_XML_TYPE);
+        final String queryResult = RestUtils.restNamedMultiResultQueryResult(context, "BasketItem.findAllPageable", null, hints, MediaType.APPLICATION_XML_TYPE);
         logger.info(queryResult);
         assertNotNull("Query all basket items failed.", queryResult);
 
@@ -199,7 +200,7 @@ public class ServerPageableTest extends BaseJparsTest {
         final Map<String, String> hints = new HashMap<>(1);
         hints.put("offset", "10");
 
-        final String queryResult = RestUtils.restNamedMultiResultQuery(context, "BasketItem.findAllPageable", null, hints, MediaType.APPLICATION_JSON_TYPE);
+        final String queryResult = RestUtils.restNamedMultiResultQueryResult(context, "BasketItem.findAllPageable", null, hints, MediaType.APPLICATION_JSON_TYPE);
         logger.info(queryResult);
         assertNotNull("Query all basket items failed.", queryResult);
 
@@ -221,7 +222,7 @@ public class ServerPageableTest extends BaseJparsTest {
 
     @Test
     public void testNoLimitJson() throws URISyntaxException {
-        final String queryResult = RestUtils.restNamedMultiResultQuery(context, "BasketItem.findAllPageable", null, null, MediaType.APPLICATION_JSON_TYPE);
+        final String queryResult = RestUtils.restNamedMultiResultQueryResult(context, "BasketItem.findAllPageable", null, null, MediaType.APPLICATION_JSON_TYPE);
         logger.info(queryResult);
         assertNotNull("Query all basket items failed.", queryResult);
 
@@ -243,7 +244,7 @@ public class ServerPageableTest extends BaseJparsTest {
 
     @Test
     public void testNoLimitXml() throws URISyntaxException {
-        final String queryResult = RestUtils.restNamedMultiResultQuery(context, "BasketItem.findAllPageable", null, null, MediaType.APPLICATION_XML_TYPE);
+        final String queryResult = RestUtils.restNamedMultiResultQueryResult(context, "BasketItem.findAllPageable", null, null, MediaType.APPLICATION_XML_TYPE);
         logger.info(queryResult);
         assertNotNull("Query all basket items failed.", queryResult);
 
@@ -270,7 +271,7 @@ public class ServerPageableTest extends BaseJparsTest {
         hints.put("limit", "2");
         hints.put("offset", "4");
 
-        final String queryResult = RestUtils.restNamedMultiResultQuery(context, "BasketItem.findAllPageable", null, hints, MediaType.APPLICATION_XML_TYPE);
+        final String queryResult = RestUtils.restNamedMultiResultQueryResult(context, "BasketItem.findAllPageable", null, hints, MediaType.APPLICATION_XML_TYPE);
         logger.info(queryResult);
         assertNotNull("Query all basket items failed.", queryResult);
 
@@ -301,7 +302,7 @@ public class ServerPageableTest extends BaseJparsTest {
         hints.put("limit", "2");
 
         // Call not pageable query with limit parameter. It suppose to throw an exception.
-        RestUtils.restNamedMultiResultQuery(context, "BasketItem.findAll", null, hints, MediaType.APPLICATION_XML_TYPE);
+        RestUtils.restNamedMultiResultQueryResult(context, "BasketItem.findAll", null, hints, MediaType.APPLICATION_XML_TYPE);
     }
 
     @Test(expected = Exception.class)
@@ -311,7 +312,7 @@ public class ServerPageableTest extends BaseJparsTest {
         hints.put("offset", "2");
 
         // Call not pageable query with limit parameter. It suppose to throw an exception.
-        RestUtils.restNamedMultiResultQuery(context, "BasketItem.findAll", null, hints, MediaType.APPLICATION_XML_TYPE);
+        RestUtils.restNamedMultiResultQueryResult(context, "BasketItem.findAll", null, hints, MediaType.APPLICATION_XML_TYPE);
     }
 
     @Test
@@ -320,7 +321,7 @@ public class ServerPageableTest extends BaseJparsTest {
         final Map<String, String> hints = new HashMap<>(1);
         hints.put("limit", "2");
 
-        final String queryResult = RestUtils.restFindAttribute(context, 1, Basket.class.getSimpleName(), "basketItems", null, hints, MediaType.APPLICATION_XML_TYPE);
+        final String queryResult = RestUtils.restFindAttribute(context, 1, Basket.class, "basketItems", null, hints, MediaType.APPLICATION_XML_TYPE);
         logger.info(queryResult);
 
         // First 2 items must be in the response
@@ -347,7 +348,7 @@ public class ServerPageableTest extends BaseJparsTest {
         final Map<String, String> hints = new HashMap<>(1);
         hints.put("offset", "2");
 
-        final String queryResult = RestUtils.restFindAttribute(context, 1, Basket.class.getSimpleName(), "basketItems", null, hints, MediaType.APPLICATION_XML_TYPE);
+        final String queryResult = RestUtils.restFindAttribute(context, 1, Basket.class, "basketItems", null, hints, MediaType.APPLICATION_XML_TYPE);
         logger.info(queryResult);
 
         // First 2 items mustn't be in the response
@@ -375,7 +376,7 @@ public class ServerPageableTest extends BaseJparsTest {
         final Map<String, String> hints = new HashMap<>(1);
         hints.put("offset", "1");
 
-        final String queryResult = RestUtils.restFindAttribute(context, 1, Basket.class.getSimpleName(), "basketItems", null, hints, MediaType.APPLICATION_XML_TYPE);
+        final String queryResult = RestUtils.restFindAttribute(context, 1, Basket.class, "basketItems", null, hints, MediaType.APPLICATION_XML_TYPE);
         logger.info(queryResult);
 
         assertFalse(queryResult.contains("Item1"));
@@ -397,7 +398,7 @@ public class ServerPageableTest extends BaseJparsTest {
         final Map<String, String> hints = new HashMap<>(1);
         hints.put("offset", "10");
 
-        final String queryResult = RestUtils.restFindAttribute(context, 1, Basket.class.getSimpleName(), "basketItems", null, hints, MediaType.APPLICATION_JSON_TYPE);
+        final String queryResult = RestUtils.restFindAttribute(context, 1, Basket.class, "basketItems", null, hints, MediaType.APPLICATION_JSON_TYPE);
         logger.info(queryResult);
         assertNotNull("Query all basket items failed.", queryResult);
 
@@ -423,7 +424,7 @@ public class ServerPageableTest extends BaseJparsTest {
         final Map<String, String> hints = new HashMap<>(1);
         hints.put("offset", "3");
 
-        final String queryResult = RestUtils.restFindAttribute(context, 1, Basket.class.getSimpleName(), "basketItems", null, hints, MediaType.APPLICATION_XML_TYPE);
+        final String queryResult = RestUtils.restFindAttribute(context, 1, Basket.class, "basketItems", null, hints, MediaType.APPLICATION_XML_TYPE);
         logger.info(queryResult);
 
         assertFalse(queryResult.contains("Item1"));
@@ -447,7 +448,7 @@ public class ServerPageableTest extends BaseJparsTest {
         hints.put("limit", "-2");
 
         // It has to fail because negative limit is not permitted
-        RestUtils.restNamedMultiResultQuery(context, "BasketItem.findAllPageable", null, hints, MediaType.APPLICATION_JSON_TYPE);
+        RestUtils.restNamedMultiResultQueryResult(context, "BasketItem.findAllPageable", null, hints, MediaType.APPLICATION_JSON_TYPE);
     }
 
     @Test(expected = RestCallFailedException.class)
@@ -457,7 +458,7 @@ public class ServerPageableTest extends BaseJparsTest {
         hints.put("limit", "0");
 
         // It has to fail because zero limit is not permitted
-        RestUtils.restNamedMultiResultQuery(context, "BasketItem.findAllPageable", null, hints, MediaType.APPLICATION_JSON_TYPE);
+        RestUtils.restNamedMultiResultQueryResult(context, "BasketItem.findAllPageable", null, hints, MediaType.APPLICATION_JSON_TYPE);
     }
 
     @Test(expected = RestCallFailedException.class)
@@ -467,7 +468,7 @@ public class ServerPageableTest extends BaseJparsTest {
         hints.put("offset", "-2");
 
         // It has to fail because negative offset is not permitted
-        RestUtils.restNamedMultiResultQuery(context, "BasketItem.findAllPageable", null, hints, MediaType.APPLICATION_JSON_TYPE);
+        RestUtils.restNamedMultiResultQueryResult(context, "BasketItem.findAllPageable", null, hints, MediaType.APPLICATION_JSON_TYPE);
     }
 
     private boolean basketItemExists(String response, int id) {

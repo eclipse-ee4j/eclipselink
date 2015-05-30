@@ -8,7 +8,7 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *      Dmitry Kornilov - initial implementation
+ *      Dmitry Kornilov - initial implementation, upgrade to Jersey 2.x
  ******************************************************************************/
 package org.eclipse.persistence.jpars.test.server.v2;
 
@@ -41,8 +41,8 @@ public class ServerLinksTest extends BaseJparsTest {
 
     @AfterClass
     public static void cleanup() throws Exception {
-        RestUtils.restUpdateQuery(context, "BasketItem.deleteAll", "BasketItem", null, null, MediaType.APPLICATION_JSON_TYPE);
-        RestUtils.restUpdateQuery(context, "Basket.deleteAll", "Basket", null, null, MediaType.APPLICATION_JSON_TYPE);
+        RestUtils.restUpdateQuery(context, "BasketItem.deleteAll", null, null, MediaType.APPLICATION_JSON_TYPE);
+        RestUtils.restUpdateQuery(context, "Basket.deleteAll", null, null, MediaType.APPLICATION_JSON_TYPE);
     }
 
     protected static void initData() throws Exception {
@@ -50,7 +50,7 @@ public class ServerLinksTest extends BaseJparsTest {
         Basket basket = new Basket();
         basket.setId(1);
         basket.setName("Basket1");
-        basket = RestUtils.restCreate(context, basket, Basket.class.getSimpleName(), Basket.class, null, MediaType.APPLICATION_XML_TYPE, true);
+        basket = RestUtils.restCreate(context, basket, Basket.class);
         assertNotNull("Basket creation failed.", basket);
 
         // Add items
@@ -58,15 +58,15 @@ public class ServerLinksTest extends BaseJparsTest {
             BasketItem basketItem = new BasketItem();
             basketItem.setId(j);
             basketItem.setName("BasketItem" + j);
-            RestUtils.restUpdate(context, basketItem, BasketItem.class.getSimpleName(), BasketItem.class, null, MediaType.APPLICATION_XML_TYPE, false);
-            RestUtils.restUpdateBidirectionalRelationship(context, String.valueOf(basket.getId()), Basket.class.getSimpleName(), "basketItems", basketItem, MediaType.APPLICATION_XML_TYPE, "basket", true);
+            RestUtils.restUpdate(context, basketItem, BasketItem.class, null, MediaType.APPLICATION_XML_TYPE, false);
+            RestUtils.restUpdateBidirectionalRelationship(context, String.valueOf(basket.getId()), Basket.class, "basketItems", basketItem, MediaType.APPLICATION_XML_TYPE, "basket", true);
         }
     }
 
     @Test
     public void testLinksJson() throws URISyntaxException {
         // Get Basket with id = 1
-        final String queryResult = RestUtils.restRead(context, 1, Basket.class.getSimpleName(), null, MediaType.APPLICATION_JSON_TYPE);
+        final String queryResult = RestUtils.restRead(context, 1, Basket.class);
         logger.info(queryResult);
 
         // Check links
@@ -77,7 +77,7 @@ public class ServerLinksTest extends BaseJparsTest {
     @Test
     public void testLinksXml() throws URISyntaxException {
         // Get Basket with id = 1
-        final String queryResult = RestUtils.restRead(context, 1, Basket.class.getSimpleName(), null, MediaType.APPLICATION_XML_TYPE);
+        final String queryResult = RestUtils.restRead(context, 1, Basket.class, MediaType.APPLICATION_XML_TYPE);
         logger.info(queryResult);
 
         // Check links
@@ -88,7 +88,7 @@ public class ServerLinksTest extends BaseJparsTest {
     @Test
     public void testCollectionLinksJson() throws URISyntaxException {
         // Get BasketItem with id = 1
-        final String queryResult = RestUtils.restRead(context, 1, BasketItem.class.getSimpleName(), null, MediaType.APPLICATION_JSON_TYPE);
+        final String queryResult = RestUtils.restRead(context, 1, BasketItem.class);
         logger.info(queryResult);
 
         // Check links. Canonical and self links to Basket must be different.
@@ -99,7 +99,7 @@ public class ServerLinksTest extends BaseJparsTest {
     @Test
     public void testCollectionLinksXml() throws URISyntaxException {
         // Get BasketItem with id = 1
-        final String queryResult = RestUtils.restRead(context, 1, BasketItem.class.getSimpleName(), null, MediaType.APPLICATION_XML_TYPE);
+        final String queryResult = RestUtils.restRead(context, 1, BasketItem.class, MediaType.APPLICATION_XML_TYPE);
         logger.info(queryResult);
 
         // Check links. Canonical and self links to Basket must be different.

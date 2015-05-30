@@ -11,5 +11,5 @@
 package org.eclipse.persistence.jpars.test.model.employee;
 
 public enum Gender {
-    Female, Male;
+    Female, Male
 }

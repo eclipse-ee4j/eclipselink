@@ -46,26 +46,6 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/com.sun.jersey_1.8.0.201204181614.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/javax.ws.rs_1.1.1.v20101004-1200.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$MODULE_DIR$/../../plugins/javax.ws.rs.source_1.1.1.v20101004-1200.jar!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
           <root url="jar://$MODULE_DIR$/../../plugins/javax.xml.ws_2.0.0.v200902170419.jar!/" />
         </CLASSES>
         <JAVADOC />
@@ -105,6 +85,24 @@
       <library>
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../../plugins/javax.ejb_3.1.0.v201205171433.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../plugins/jersey-common_2.17.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../plugins/javax.ws.rs_2.0.1.v201504171603.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

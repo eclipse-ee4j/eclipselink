@@ -32,10 +32,10 @@
             unpack="false"/>
 
    <plugin
-         id="com.sun.jersey"
+         id="javax.ws.rs"
          download-size="0"
          install-size="0"
-         version="@JERSEY_VERSION@"
+         version="@WSRS_VERSION@"
          unpack="false"/>
 
    <plugin

@@ -9,8 +9,7 @@
  *
  * Contributors:
  *      gonural - initial
- *      2014-09-01-2.6.0 Dmitry Kornilov
- *         - Moved to another package
+ *      Dmitry Kornilov - Moved to another package, upgrade to Jersey 2.x
  ******************************************************************************/
 package org.eclipse.persistence.jpars.test.server.noversion;
 
@@ -26,6 +25,9 @@ import javax.ws.rs.core.MediaType;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+/**
+ * Traveler model tests.
+ */
 public class ServerTravelerTest extends BaseJparsTest {
 
     @BeforeClass
@@ -35,13 +37,11 @@ public class ServerTravelerTest extends BaseJparsTest {
 
     @After
     public void cleanup() throws Exception {
-        RestUtils.restUpdateQuery(context, "Traveler.deleteAll", "Traveler", null, null, MediaType.APPLICATION_JSON_TYPE);
+        RestUtils.restUpdateQuery(context, "Traveler.deleteAll", null, null, MediaType.APPLICATION_JSON_TYPE);
     }
 
     /**
      * Test update travel reservation json.
-     *
-     * @throws Exception the exception
      */
     @Test
     public void testUpdateTravelReservationJSON() throws Exception {
@@ -50,8 +50,6 @@ public class ServerTravelerTest extends BaseJparsTest {
 
     /**
      * Test update travel reservation xml.
-     *
-     * @throws Exception the exception
      */
     @Test
     public void testUpdateTravelReservationXML() throws Exception {
@@ -65,7 +63,7 @@ public class ServerTravelerTest extends BaseJparsTest {
         } else {
             traveler = RestUtils.getJSONMessage("traveler.json");
         }
-        String response = RestUtils.restUpdate(context, traveler, Traveler.class.getSimpleName(), null, mediaType);
+        String response = RestUtils.restUpdateStr(context, traveler, Traveler.class, null, mediaType);
         assertNotNull(response);
         if (mediaType == MediaType.APPLICATION_XML_TYPE) {
 

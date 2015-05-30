@@ -9,10 +9,10 @@
  *
  * Contributors:
  *      Dmitry Kornilov - Initial implementation
+ *      Dmitry Kornilov - Upgrade to Jersey 2.x
  ******************************************************************************/
 package org.eclipse.persistence.jpars.test.server.latest;
 
-import com.sun.jersey.api.client.Client;
 import org.eclipse.persistence.jpars.test.server.v2.ServerCrudV2Test;
 import org.eclipse.persistence.jpars.test.util.StaticModelDatabasePopulator;
 import org.junit.BeforeClass;
@@ -30,6 +30,5 @@ public class ServerCrudLatestTest extends ServerCrudV2Test {
     public static void setup() throws Exception {
         initContext("jpars_auction-static", "latest");
         StaticModelDatabasePopulator.populateDB(emf);
-        client = Client.create();
     }
 }

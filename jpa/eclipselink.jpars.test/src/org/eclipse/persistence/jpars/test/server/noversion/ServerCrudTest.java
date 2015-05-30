@@ -9,17 +9,11 @@
  *
  * Contributors:
  *      tware/gonural - Initial implementation
- *      2014-09-01-2.6.0 Dmitry Kornilov
- *        - Moved to another package
+ *      Dmitry Kornilov - Moved to another package, upgrade to Jersey 2.x
  ******************************************************************************/
 package org.eclipse.persistence.jpars.test.server.noversion;
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.ClientResponse.Status;
-import com.sun.jersey.api.client.WebResource;
 import org.eclipse.persistence.config.QueryHints;
-import org.eclipse.persistence.jpa.rs.QueryParameters;
 import org.eclipse.persistence.jpars.test.BaseJparsTest;
 import org.eclipse.persistence.jpars.test.model.auction.StaticAddress;
 import org.eclipse.persistence.jpars.test.model.auction.StaticAuction;
@@ -29,17 +23,15 @@ import org.eclipse.persistence.jpars.test.model.multitenant.Account;
 import org.eclipse.persistence.jpars.test.server.RestCallFailedException;
 import org.eclipse.persistence.jpars.test.util.RestUtils;
 import org.eclipse.persistence.jpars.test.util.StaticModelDatabasePopulator;
+import org.eclipse.persistence.jpars.test.util.UriBuilder;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.persistence.EntityManager;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
-import javax.xml.bind.JAXBException;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import javax.ws.rs.core.Response;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
@@ -52,13 +44,11 @@ import static org.junit.Assert.fail;
  * Server CRUD tests.
  */
 public class ServerCrudTest extends BaseJparsTest {
-    protected static Client client = null;
 
     @BeforeClass
     public static void setup() throws Exception {
         initContext("jpars_auction-static", null);
         StaticModelDatabasePopulator.populateDB(emf);
-        client = Client.create();
     }
 
     @AfterClass
@@ -68,278 +58,245 @@ public class ServerCrudTest extends BaseJparsTest {
 
     /**
      * Test read.
-     *
-     * @throws org.eclipse.persistence.jpars.test.server.RestCallFailedException the rest call failed exception
-     * @throws URISyntaxException the uRI syntax exception
      */
     @Test
-    public void testRead() throws RestCallFailedException, URISyntaxException {
-        StaticBid bid = restRead(StaticModelDatabasePopulator.BID1_ID, "StaticBid", StaticBid.class);
+    public void testRead() throws Exception {
+        StaticBid bid = RestUtils.restReadObject(context, StaticModelDatabasePopulator.BID1_ID, StaticBid.class);
         StaticBid bid2 = dbRead(StaticModelDatabasePopulator.BID1_ID, StaticBid.class);
         assertTrue("Wrong bid in DB.", bid.getAmount() == bid2.getAmount());
     }
 
     /**
      * Test read xml.
-     *
-     * @throws RestCallFailedException the rest call failed exception
-     * @throws URISyntaxException the uRI syntax exception
      */
     @Test
-    public void testReadXML() throws RestCallFailedException, URISyntaxException {
-        StaticBid bid = restRead(StaticModelDatabasePopulator.BID1_ID, "StaticBid", pu, null, MediaType.APPLICATION_XML_TYPE);
+    public void testReadXML() throws Exception {
+        StaticBid bid = RestUtils.restReadObject(context, StaticModelDatabasePopulator.BID1_ID, StaticBid.class, MediaType.APPLICATION_XML_TYPE);
         StaticBid bid2 = dbRead(StaticModelDatabasePopulator.BID1_ID, StaticBid.class);
         assertTrue("Wrong bid in DB.", bid.getAmount() == bid2.getAmount());
     }
 
     /**
-     * Test read non existant.
-     *
-     * @throws RestCallFailedException the rest call failed exception
-     * @throws URISyntaxException the uRI syntax exception
+     * Test read non-existent.
      */
     @Test(expected = RestCallFailedException.class)
-    public void testReadNonExistant() throws RestCallFailedException, URISyntaxException {
-        restRead(0, "StaticBid", StaticBid.class);
+    public void testReadNonExistent() throws Exception {
+        RestUtils.restReadObject(context, 0, StaticBid.class);
     }
 
     /**
-     * Test read non existant type.
-     *
-     * @throws RestCallFailedException the rest call failed exception
-     * @throws URISyntaxException the uRI syntax exception
+     * Test read non-existent type.
      */
     @Test(expected = RestCallFailedException.class)
-    public void testReadNonExistantType() throws RestCallFailedException, URISyntaxException {
-        restRead(1, "NonExistant", StaticBid.class);
+    public void testReadNonExistentType() throws Exception {
+        String uri = new UriBuilder(context).addEntity("NonExistent", 1).toString();
+        RestUtils.doGet(context, uri, MediaType.APPLICATION_JSON_TYPE);
     }
 
     /**
-     * Test read non existant pu.
-     *
-     * @throws RestCallFailedException the rest call failed exception
-     * @throws URISyntaxException the uRI syntax exception
+     * Test read non-existent pu.
      */
     @Test(expected = RestCallFailedException.class)
-    public void testReadNonExistantPU() throws RestCallFailedException, URISyntaxException {
-        restRead(1, "StaticBid", "non-existant", null, MediaType.APPLICATION_JSON_TYPE);
+    public void testReadNonExistentPU() throws Exception {
+        String uri = new UriBuilder(context).addPu("non-existent").addEntity("StaticBid", 1).toString();
+        RestUtils.doGet(context, uri, MediaType.APPLICATION_JSON_TYPE);
     }
 
     /**
      * Test update.
-     *
-     * @throws RestCallFailedException the rest call failed exception
-     * @throws URISyntaxException the uRI syntax exception
      */
     @Test
-    public void testUpdate() throws RestCallFailedException, URISyntaxException {
-        StaticBid bid = restRead(StaticModelDatabasePopulator.BID1_ID, "StaticBid", StaticBid.class);
+    public void testUpdate() throws Exception {
+        StaticBid bid = RestUtils.restReadObject(context, StaticModelDatabasePopulator.BID1_ID, StaticBid.class);
         bid.setAmount(120);
-        bid = restUpdate(bid, "StaticBid", StaticBid.class, true);
+        bid = RestUtils.restUpdate(context, bid, StaticBid.class);
         assertTrue("Wrong bid retrieved.", bid.getAmount() == 120);
         bid = dbRead(StaticModelDatabasePopulator.BID1_ID, StaticBid.class);
         assertTrue("Wrong bid retrieved in db.", bid.getAmount() == 120);
         assertTrue("No auction for Bid in db", bid.getAuction() != null);
         bid.setAmount(110);
-        bid = restUpdate(bid, "StaticBid", StaticBid.class, true);
+        RestUtils.restUpdate(context, bid, StaticBid.class);
     }
 
     /**
      * Test create delete.
-     *
-     * @throws RestCallFailedException the rest call failed exception
-     * @throws URISyntaxException the uRI syntax exception
      */
     @Test
-    public void testCreateDelete() throws RestCallFailedException, URISyntaxException {
+    public void testCreateDelete() throws Exception {
         StaticUser user = new StaticUser();
         user.setName("Joe");
         user.setId(100);
-        user = restCreate(user, "StaticUser", StaticUser.class);
+        user = RestUtils.restCreate(context, user,StaticUser.class);
         assertTrue("Wrong user retrieved.", user.getName().equals("Joe"));
         StaticUser dbUser = dbRead(user.getId(), StaticUser.class);
         assertTrue("DB User not equal ", user.equals(dbUser));
-        restDelete(user.getId(), "StaticUser", StaticUser.class);
+        RestUtils.restDelete(context, user.getId(), StaticUser.class);
         dbUser = dbRead(user.getId(), StaticUser.class);
         assertTrue("User was not deleted.", dbUser == null);
     }
 
     /**
      * Test create xml.
-     *
-     * @throws RestCallFailedException the rest call failed exception
-     * @throws URISyntaxException the uRI syntax exception
      */
     @Test
-    public void testCreateXML() throws RestCallFailedException, URISyntaxException {
+    public void testCreateXML() throws Exception {
         StaticUser user = new StaticUser();
         user.setName("Joe");
         user.setId(101);
-        user = restCreate(user, "StaticUser", StaticUser.class, pu, MediaType.APPLICATION_XML_TYPE, MediaType.APPLICATION_XML_TYPE);
+        user = RestUtils.restCreate(context, user, StaticUser.class, MediaType.APPLICATION_XML_TYPE);
         assertTrue("Wrong user retrieved.", user.getName().equals("Joe"));
         StaticUser dbUser = dbRead(user.getId(), StaticUser.class);
         assertTrue("DB User not equal ", user.equals(dbUser));
-        restDelete(user.getId(), "StaticUser", StaticUser.class);
+        RestUtils.restDelete(context, user.getId(), StaticUser.class);
         dbUser = dbRead(user.getId(), StaticUser.class);
         assertTrue("User was not deleted.", dbUser == null);
     }
 
     /**
      * Test create sequenced.
-     *
-     * @throws RestCallFailedException the rest call failed exception
-     * @throws URISyntaxException the uRI syntax exception
      */
     @Test(expected = RestCallFailedException.class)
-    public void testCreateSequenced() throws RestCallFailedException, URISyntaxException {
+    public void testCreateSequenced() throws Exception {
         StaticAuction auction = new StaticAuction();
         auction.setName("Laptop");
-        auction = restCreate(auction, "StaticAuction", StaticAuction.class);
+        RestUtils.restCreate(context, auction, StaticAuction.class);
     }
 
     /**
-     * Test create non existant.
-     *
-     * @throws RestCallFailedException the rest call failed exception
-     * @throws URISyntaxException the uRI syntax exception
+     * Test create non-existent.
      */
     @Test(expected = RestCallFailedException.class)
-    public void testCreateNonExistant() throws RestCallFailedException, URISyntaxException {
+    public void testCreateNonExistent() throws Exception {
         StaticUser user = new StaticUser();
         user.setName("Joe");
         user.setId(102);
-        user = restCreate(user, "NonExistant", StaticUser.class);
+
+        String userJson = RestUtils.marshal(context, user, MediaType.APPLICATION_JSON_TYPE);
+        String uri = new UriBuilder(context).addEntity("NonExistent").toString();
+        RestUtils.doPut(context, uri, Entity.entity(userJson, MediaType.APPLICATION_JSON_TYPE), MediaType.APPLICATION_JSON_TYPE);
     }
 
     /**
-     * Test create non existant persistence unit.
-     *
-     * @throws RestCallFailedException the rest call failed exception
-     * @throws URISyntaxException the uRI syntax exception
+     * Test create non existent persistence unit.
      */
     @Test(expected = RestCallFailedException.class)
-    public void testCreateNonExistantPersistenceUnit() throws RestCallFailedException, URISyntaxException {
+    public void testCreateNonExistentPersistenceUnit() throws Exception {
         StaticUser user = new StaticUser();
         user.setName("Joe");
         user.setId(103);
-        user = restCreate(user, "StaticUser", StaticUser.class, "non-existant", MediaType.APPLICATION_XML_TYPE, MediaType.APPLICATION_XML_TYPE);
+
+        String userJson = RestUtils.marshal(context, user, MediaType.APPLICATION_JSON_TYPE);
+        String uri = new UriBuilder(context).addPu("not-existent").addEntity("StaticUser").toString();
+        RestUtils.doPut(context, uri, Entity.entity(userJson, MediaType.APPLICATION_JSON_TYPE), MediaType.APPLICATION_JSON_TYPE);
     }
 
     /**
      * Test create garbage.
-     *
-     * @throws IOException Signals that an I/O exception has occurred.
-     * @throws URISyntaxException the uRI syntax exception
      */
     @Test
-    public void testCreateGarbage() throws IOException, URISyntaxException {
-        WebResource webResource = client.resource(getServerURI() + "/entity/" + "StaticUser");
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        byte[] b = "Garbage".getBytes();
-        os.write(b);
-        ClientResponse response = webResource.type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON_TYPE).put(ClientResponse.class, os.toString());
-        Status status = response.getClientResponseStatus();
-        assertTrue("Wrong exception garbage write. " + status, status.equals(Status.BAD_REQUEST));
+    public void testCreateGarbage() throws Exception {
+        String uri = new UriBuilder(context).addEntity("StaticUser").toString();
+
+        try {
+            RestUtils.doPut(context, uri, Entity.entity("Garbage", MediaType.APPLICATION_JSON_TYPE), MediaType.APPLICATION_JSON_TYPE);
+        } catch (RestCallFailedException ex) {
+            // This is OK that exception is thrown. We just need to check status.
+            assertTrue("Wrong exception garbage write: " + ex.getHttpStatus(), ex.getHttpStatus() == Response.Status.BAD_REQUEST.getStatusCode());
+            return;
+        }
+
+        fail();
     }
 
     /**
      * Test update xml.
-     *
-     * @throws RestCallFailedException the rest call failed exception
-     * @throws URISyntaxException the uRI syntax exception
      */
     @Test
-    public void testUpdateXML() throws RestCallFailedException, URISyntaxException {
-        StaticBid bid = restRead(StaticModelDatabasePopulator.BID1_ID, "StaticBid", pu, null, MediaType.APPLICATION_XML_TYPE);
+    public void testUpdateXML() throws Exception {
+        StaticBid bid = RestUtils.restReadObject(context, StaticModelDatabasePopulator.BID1_ID, StaticBid.class, MediaType.APPLICATION_XML_TYPE);
         bid.setAmount(120);
-        bid = restUpdate(bid, "StaticBid", StaticBid.class, pu, null, MediaType.APPLICATION_XML_TYPE, MediaType.APPLICATION_XML_TYPE, true);
+        bid = RestUtils.restUpdate(context, bid, StaticBid.class, null, MediaType.APPLICATION_XML_TYPE, true);
         assertTrue("Wrong bid retrieved.", bid.getAmount() == 120);
         bid = dbRead(StaticModelDatabasePopulator.BID1_ID, StaticBid.class);
         assertTrue("Wrong bid retrieved in db.", bid.getAmount() == 120);
         bid.setAmount(110);
-        bid = restUpdate(bid, "StaticBid", StaticBid.class, true);
+        RestUtils.restUpdate(context, bid, StaticBid.class);
     }
 
     /**
      * Test post new entity.
-     *
-     * @throws RestCallFailedException the rest call failed exception
-     * @throws URISyntaxException the uRI syntax exception
      */
     @Test
-    public void testPostNewEntity() throws RestCallFailedException, URISyntaxException {
+    public void testPostNewEntity() throws Exception {
         StaticAuction auction = new StaticAuction();
         auction.setName("Computer");
-        auction = restUpdate(auction, "StaticAuction", StaticAuction.class, true);
+        auction = RestUtils.restUpdate(context, auction, StaticAuction.class);
         assertTrue("Wrong Auction returned.", auction.getName().equals("Computer"));
         assertTrue("Auction not sequenced.", auction.getId() > 0);
         StaticAuction dbAuction = dbRead(auction.getId(), StaticAuction.class);
         assertTrue("Wrong user retrieved in db.", auction.getName().equals(dbAuction.getName()));
-        restDelete(auction.getId(), "StaticAuction", StaticAuction.class);
+        RestUtils.restDelete(context, auction.getId(), StaticAuction.class);
     }
 
     /**
-     * Test update non existant.
-     *
-     * @throws RestCallFailedException the rest call failed exception
-     * @throws URISyntaxException the uRI syntax exception
+     * Test update non-existent.
      */
     @Test(expected = RestCallFailedException.class)
-    public void testUpdateNonExistant() throws RestCallFailedException, URISyntaxException {
+    public void testUpdateNonExistent() throws Exception {
         StaticUser user = new StaticUser();
         user.setName("Joe");
-        user = restUpdate(user, "NonExistant", StaticUser.class, true);
+
+        String userJson = RestUtils.marshal(context, user, MediaType.APPLICATION_JSON_TYPE);
+        String uri = new UriBuilder(context).addEntity("NonExistent").toString();
+        RestUtils.doPost(context, uri, Entity.entity(userJson, MediaType.APPLICATION_JSON_TYPE), MediaType.APPLICATION_JSON_TYPE);
     }
 
     /**
-     * Test update non existant persistence unit.
-     *
-     * @throws RestCallFailedException the rest call failed exception
-     * @throws URISyntaxException the uRI syntax exception
+     * Test update non-existent persistence unit.
      */
     @Test(expected = RestCallFailedException.class)
-    public void testUpdateNonExistantPersistenceUnit() throws RestCallFailedException, URISyntaxException {
+    public void testUpdateNonExistentPersistenceUnit() throws Exception {
         StaticUser user = new StaticUser();
         user.setName("Joe");
-        user = restUpdate(user, "StaticUser", StaticUser.class, "non-existant", null, MediaType.APPLICATION_XML_TYPE, MediaType.APPLICATION_XML_TYPE, true);
+
+        String userJson = RestUtils.marshal(context, user, MediaType.APPLICATION_JSON_TYPE);
+        String uri = new UriBuilder(context).addPu("not-existent").addEntity("StaticUser").toString();
+        RestUtils.doPost(context, uri, Entity.entity(userJson, MediaType.APPLICATION_JSON_TYPE), MediaType.APPLICATION_JSON_TYPE);
     }
 
     /**
      * Test update garbage.
-     *
-     * @throws IOException Signals that an I/O exception has occurred.
-     * @throws URISyntaxException the uRI syntax exception
      */
     @Test
-    public void testUpdateGarbage() throws IOException, URISyntaxException {
-        WebResource webResource = client.resource(getServerURI() + "/entity/" + "StaticUser");
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        byte[] b = "Garbage".getBytes();
-        os.write(b);
-        ClientResponse response = webResource.type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON_TYPE).post(ClientResponse.class, os.toString());
-        Status status = response.getClientResponseStatus();
-        assertTrue("Wrong exception garbage write. " + status, status.equals(Status.BAD_REQUEST));
+    public void testUpdateGarbage() throws Exception {
+        String uri = new UriBuilder(context).addEntity("StaticUser").toString();
+
+        try {
+            RestUtils.doPost(context, uri, Entity.entity("Garbage", MediaType.APPLICATION_JSON_TYPE), MediaType.APPLICATION_JSON_TYPE);
+        } catch (RestCallFailedException ex) {
+            // This is OK that exception is thrown. We just need to check status.
+            assertTrue("Wrong exception garbage write: " + ex.getHttpStatus(), ex.getHttpStatus() == Response.Status.BAD_REQUEST.getStatusCode());
+            return;
+        }
+
+        fail();
     }
 
     /**
      * Test update relationship.
-     *
-     * @throws RestCallFailedException the rest call failed exception
-     * @throws URISyntaxException the uRI syntax exception
      */
     @Test
-    public void testUpdateRelationship() throws RestCallFailedException, URISyntaxException {
+    public void testUpdateRelationship() throws Exception {
         StaticBid bid = dbRead(StaticModelDatabasePopulator.BID1_ID, StaticBid.class);
         StaticUser user = bid.getUser();
         StaticUser newUser = new StaticUser();
         newUser.setName("Mark");
-        bid = restUpdateRelationship(String.valueOf(StaticModelDatabasePopulator.BID1_ID), "StaticBid", "user", newUser, "jpars_auction-static", MediaType.APPLICATION_JSON_TYPE,
-                MediaType.APPLICATION_JSON_TYPE);
+        RestUtils.restUpdateRelationship(context, String.valueOf(StaticModelDatabasePopulator.BID1_ID), "user", newUser, StaticBid.class, MediaType.APPLICATION_JSON_TYPE);
 
         bid = dbRead(StaticModelDatabasePopulator.BID1_ID, StaticBid.class);
         assertTrue("Wrong user.", bid.getUser().getName().equals("Mark"));
         newUser = bid.getUser();
-        bid = restUpdateRelationship(String.valueOf(StaticModelDatabasePopulator.BID1_ID), "StaticBid", "user", user, "jpars_auction-static", MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON_TYPE);
+        bid = RestUtils.restUpdateRelationship(context, String.valueOf(StaticModelDatabasePopulator.BID1_ID), "user", user, StaticBid.class, MediaType.APPLICATION_JSON_TYPE);
 
         StaticBid dbBid = dbRead(StaticModelDatabasePopulator.BID1_ID, StaticBid.class);
         assertTrue("Wrong user.", dbBid.getUser().getName().equals(bid.getUser().getName()));
@@ -348,160 +305,137 @@ public class ServerCrudTest extends BaseJparsTest {
     }
 
     /**
-     * Test delete non existant.
-     *
-     * @throws RestCallFailedException the rest call failed exception
-     * @throws URISyntaxException the uRI syntax exception
+     * Test delete non existent.
      */
     @Test
-    public void testDeleteNonExistant() throws RestCallFailedException, URISyntaxException {
-        restDelete(1000, "StaticUser", StaticUser.class);
+    public void testDeleteNonExistent() throws Exception {
+        RestUtils.restDelete(context, 1000, StaticUser.class);
     }
 
     /**
-     * Test delete non existant type.
-     *
-     * @throws RestCallFailedException the rest call failed exception
-     * @throws URISyntaxException the uRI syntax exception
+     * Test delete non existent type.
      */
     @Test(expected = RestCallFailedException.class)
-    public void testDeleteNonExistantType() throws RestCallFailedException, URISyntaxException {
-        restDelete(1000, "NonExistant", StaticUser.class);
+    public void testDeleteNonExistentType() throws Exception {
+        String uri = new UriBuilder(context).addEntity("non-existent", 1000).toString();
+        RestUtils.doDelete(context, uri, MediaType.APPLICATION_JSON_TYPE);
     }
 
     /**
-     * Test delete non existant persistence unit.
-     *
-     * @throws RestCallFailedException the rest call failed exception
-     * @throws URISyntaxException the uRI syntax exception
+     * Test delete non existent persistence unit.
      */
     @Test(expected = RestCallFailedException.class)
-    public void testDeleteNonExistantPersistenceUnit() throws RestCallFailedException, URISyntaxException {
-        restDelete(1000, "StaticUser", "non-existant", null);
+    public void testDeleteNonExistentPersistenceUnit() throws Exception {
+        String uri = new UriBuilder(context).addPu("non-existent").addEntity("StaticUser", 1000).toString();
+        RestUtils.doDelete(context, uri, MediaType.APPLICATION_JSON_TYPE);
     }
 
     /**
      * Test named query.
-     *
-     * @throws URISyntaxException the uRI syntax exception
      */
     @SuppressWarnings("unchecked")
     @Test
-    public void testNamedQuery() throws URISyntaxException {
-        List<StaticUser> users = (List<StaticUser>) restNamedQuery("User.all", "StaticUser", null, null);
+    public void testNamedQuery() throws Exception {
+        List<StaticUser> users = RestUtils.restNamedMultiResultQuery(context, "User.all", StaticUser.class, null, null);
         assertTrue("Incorrect Number of users found.", users.size() == 3);
     }
 
     /**
      * Test named query parameter.
-     *
-     * @throws URISyntaxException the uRI syntax exception
      */
     @SuppressWarnings("unchecked")
     @Test
-    public void testNamedQueryParameter() throws URISyntaxException {
+    public void testNamedQueryParameter() throws Exception {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("id", StaticModelDatabasePopulator.USER1_ID);
-        List<StaticUser> users = (List<StaticUser>) restNamedQuery("User.byId", "StaticUser", parameters, null);
+        List<StaticUser> users = RestUtils.restNamedMultiResultQuery(context, "User.byId", StaticUser.class, parameters, null);
         assertTrue("Incorrect Number of users found.", users.size() == 1);
         assertTrue("Wrong user returned", users.get(0).getId() == StaticModelDatabasePopulator.USER1_ID);
     }
 
     /**
      * Test named query parameters.
-     *
-     * @throws URISyntaxException the uRI syntax exception
      */
     @SuppressWarnings("unchecked")
     @Test
-    public void testNamedQueryParameters() throws URISyntaxException {
+    public void testNamedQueryParameters() throws Exception {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("id", StaticModelDatabasePopulator.USER1_ID);
         parameters.put("name", "user2");
-        List<StaticUser> users = (List<StaticUser>) restNamedQuery("User.byNameOrId", "StaticUser", parameters, null);
+        List<StaticUser> users = RestUtils.restNamedMultiResultQuery(context, "User.byNameOrId", StaticUser.class, parameters, null);
         assertTrue("Incorrect Number of users found.", users.size() == 2);
     }
 
     /**
      * Test named query wrong parameter.
-     *
-     * @throws URISyntaxException the uRI syntax exception
      */
     @Test(expected = RestCallFailedException.class)
-    public void testNamedQueryWrongParameter() throws URISyntaxException {
+    public void testNamedQueryWrongParameter() throws Exception {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("wrong", StaticModelDatabasePopulator.USER1_ID);
-        restNamedQuery("User.byId", "StaticUser", parameters, null);
+        RestUtils.restNamedMultiResultQuery(context, "User.byId", StaticUser.class, parameters, null);
     }
 
     /**
      * Test named query wrong number of parameters.
-     *
-     * @throws URISyntaxException the uRI syntax exception
      */
     @Test(expected = RestCallFailedException.class)
-    public void testNamedQueryWrongNumberOfParameters() throws URISyntaxException {
+    public void testNamedQueryWrongNumberOfParameters() throws Exception {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("id", StaticModelDatabasePopulator.USER1_ID);
-        restNamedQuery("User.byNameOrId", "StaticUser", parameters, null);
+        RestUtils.restNamedMultiResultQuery(context, "User.byNameOrId", StaticUser.class, parameters, null);
     }
 
     /**
      * Test named query no results.
-     *
-     * @throws URISyntaxException the uRI syntax exception
      */
     @SuppressWarnings("unchecked")
     @Test
-    public void testNamedQueryNoResults() throws URISyntaxException {
+    public void testNamedQueryNoResults() throws Exception {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("id", 0);
-        List<StaticUser> users = (List<StaticUser>) restNamedQuery("User.byId", "StaticUser", parameters, null);
+        List<StaticUser> users = RestUtils.restNamedMultiResultQuery(context, "User.byId", StaticUser.class, parameters, null, MediaType.APPLICATION_XML_TYPE);
         assertTrue("Incorrect Number of users found.", users.size() == 0);
     }
 
     /**
-     * Test non existant named query.
-     *
-     * @throws URISyntaxException the uRI syntax exception
+     * Test non-existent named query.
      */
     @Test(expected = RestCallFailedException.class)
-    public void testNonExistantNamedQuery() throws URISyntaxException {
+    public void testNonExistentNamedQuery() throws Exception {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("id", StaticModelDatabasePopulator.USER1_ID);
-        restNamedQuery("User.nonExistant", "StaticUser", parameters, null);
+        RestUtils.restNamedMultiResultQuery(context, "User.nonExistent", StaticUser.class, parameters, null);
     }
 
     /**
-     * Test non existant persistence unit named query.
-     *
-     * @throws URISyntaxException the uRI syntax exception
+     * Test non-existent persistence unit named query.
      */
     @Test(expected = RestCallFailedException.class)
-    public void testNonExistantPersistenceUnitNamedQuery() throws URISyntaxException {
+    public void testNonExistentPersistenceUnitNamedQuery() throws Exception {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("id", StaticModelDatabasePopulator.USER1_ID);
-        restNamedQuery("User.all", "StatisUser", "nonExistant", parameters, null, MediaType.APPLICATION_JSON_TYPE);
+
+        String uri = new UriBuilder(context).addPu("nonExistent").addQuery("User.all").addParameters(parameters).toString();
+        RestUtils.doGet(context, uri, MediaType.APPLICATION_JSON_TYPE);
     }
 
     /**
      * Test named query hint.
-     *
-     * @throws URISyntaxException the uRI syntax exception
      */
     @SuppressWarnings("unchecked")
     @Test
-    public void testNamedQueryHint() throws URISyntaxException {
+    public void testNamedQueryHint() throws Exception {
         // load the cache
         Map<String, String> hints = new HashMap<>();
         hints.put(QueryHints.REFRESH, "true");
-        List<StaticUser> users = (List<StaticUser>) restNamedQuery("User.all", "StaticUser", null, hints);
+        List<StaticUser> users = RestUtils.restNamedMultiResultQuery(context, "User.all", StaticUser.class, null, hints);
         assertTrue("Incorrect Number of users found.", users.size() == 3);
         StaticUser user1 = users.get(0);
         String oldName = user1.getName();
         user1.setName("Changed");
         dbUpdate(user1);
-        users = (List<StaticUser>) restNamedQuery("User.all", "StaticUser", null, hints);
+        users = RestUtils.restNamedMultiResultQuery(context, "User.all", StaticUser.class, null, hints);
         for (StaticUser user : users) {
             if (user.getId() == user1.getId()) {
                 assertTrue("User was not refreshed", user.getName().equals(user1.getName()));
@@ -513,7 +447,7 @@ public class ServerCrudTest extends BaseJparsTest {
         // refresh cache
         hints = new HashMap<>();
         hints.put(QueryHints.REFRESH, "true");
-        users = (List<StaticUser>) restNamedQuery("User.all", "StaticUser", null, hints);
+        RestUtils.restNamedMultiResultQuery(context, "User.all", StaticUser.class, null, hints);
     }
 
     /**
@@ -523,11 +457,11 @@ public class ServerCrudTest extends BaseJparsTest {
      */
     @SuppressWarnings("unchecked")
     @Test
-    public void testNamedQueryParameterHint() throws URISyntaxException {
+    public void testNamedQueryParameterHint() throws Exception {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("id", StaticModelDatabasePopulator.USER1_ID);
         // load the cache
-        List<StaticUser> users = (List<StaticUser>) restNamedQuery("User.byId", "StaticUser", parameters, null);
+        List<StaticUser> users = RestUtils.restNamedMultiResultQuery(context, "User.byId", StaticUser.class, parameters, null);
         assertTrue("Incorrect Number of users found.", users.size() == 1);
         assertTrue("Wrong user returned", users.get(0).getId() == StaticModelDatabasePopulator.USER1_ID);
         StaticUser user1 = users.get(0);
@@ -536,7 +470,7 @@ public class ServerCrudTest extends BaseJparsTest {
         dbUpdate(user1);
         Map<String, String> hints = new HashMap<>();
         hints.put(QueryHints.REFRESH, "true");
-        users = (List<StaticUser>) restNamedQuery("User.byId", "StaticUser", parameters, hints);
+        users = RestUtils.restNamedMultiResultQuery(context, "User.byId", StaticUser.class, parameters, hints);
         assertTrue("User was not refreshed", users.get(0).getName().equals(user1.getName()));
         user1 = dbRead(user1.getId(), StaticUser.class);
         user1.setName(oldName);
@@ -545,48 +479,42 @@ public class ServerCrudTest extends BaseJparsTest {
         // refresh cache
         hints = new HashMap<>();
         hints.put(QueryHints.REFRESH, "true");
-        users = (List<StaticUser>) restNamedQuery("User.all", "StaticUser", null, hints);
+        RestUtils.restNamedMultiResultQuery(context, "User.all", StaticUser.class, null, hints);
     }
 
     /**
      * Test named query single result.
-     *
-     * @throws URISyntaxException the uRI syntax exception
      */
     @Test
-    public void testNamedQuerySingleResult() throws URISyntaxException {
+    public void testNamedQuerySingleResult() throws Exception {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("id", StaticModelDatabasePopulator.USER1_ID);
-        StaticUser user = (StaticUser) restNamedSingleResultQuery("User.byId", "StaticUser", pu, parameters, null, MediaType.APPLICATION_JSON_TYPE);
+        StaticUser user = (StaticUser) RestUtils.restNamedSingleResultQuery(context, "User.byId", "StaticUser", parameters, null);
         assertTrue("user was not returned", user != null);
         assertTrue("incorrect user returned", user.getName().equals("user1"));
     }
 
     /**
      * Test named query single result no result.
-     *
-     * @throws URISyntaxException the uRI syntax exception
      */
     @Test(expected = RestCallFailedException.class)
-    public void testNamedQuerySingleResultNoResult() throws URISyntaxException {
+    public void testNamedQuerySingleResultNoResult() throws Exception {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("id", 0);
-        StaticUser user = (StaticUser) restNamedSingleResultQuery("User.byId", "StaticUser", pu, parameters, null, MediaType.APPLICATION_JSON_TYPE);
+        StaticUser user = (StaticUser) RestUtils.restNamedSingleResultQuery(context, "User.byId", "StaticUser", parameters, null);
         assertTrue("user should not have been returned", user == null);
     }
 
     /**
      * Test update query.
-     *
-     * @throws URISyntaxException the uRI syntax exception
      */
     @Test
-    public void testUpdateQuery() throws URISyntaxException {
+    public void testUpdateQuery() throws Exception {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("id", StaticModelDatabasePopulator.USER1_ID);
         parameters.put("name", "newName");
 
-        String result = RestUtils.restUpdateQuery(context, "User.updateName", "StaticUser", parameters, null, MediaType.APPLICATION_JSON_TYPE);
+        String result = RestUtils.restUpdateQuery(context, "User.updateName", parameters, null, MediaType.APPLICATION_JSON_TYPE);
         assertTrue(result.contains("{\"value\":1}"));
         StaticUser user1 = dbRead(StaticModelDatabasePopulator.USER1_ID, StaticUser.class);
         assertTrue(user1.getName().equals("newName"));
@@ -597,49 +525,42 @@ public class ServerCrudTest extends BaseJparsTest {
 
     /**
      * Test multitenant.
-     *
-     * @throws RestCallFailedException the rest call failed exception
-     * @throws URISyntaxException the uRI syntax exception
      */
     @Test(expected = RestCallFailedException.class)
-    public void testMultitenant() throws RestCallFailedException, URISyntaxException {
+    public void testMultitenant() throws Exception {
         Account account = new Account();
-        account.setAccoutNumber("AAA1");
+        account.setAccountNumber("AAA1");
         Map<String, String> tenantId = new HashMap<>();
         tenantId.put("tenant.id", "AcctHolder1");
-        account = restUpdate(account, "Account", Account.class, pu, tenantId, MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON_TYPE, true);
+        account = RestUtils.restUpdate(context, account, Account.class, tenantId, MediaType.APPLICATION_JSON_TYPE, true);
 
         assertTrue("account not created.", account != null);
 
-        account = restRead(account.getId(), "Account", pu, tenantId, MediaType.APPLICATION_JSON_TYPE);
+        account = RestUtils.restReadObject(context, account.getId(), Account.class, MediaType.APPLICATION_JSON_TYPE, tenantId);
 
         assertTrue("account not read.", account != null);
-        assertTrue("account not completely read.", account.getAccoutNumber().equals("AAA1"));
+        assertTrue("account not completely read.", account.getAccountNumber().equals("AAA1"));
 
         Map<String, String> tenantId2 = new HashMap<>();
         tenantId2.put("tenant.id", "AcctHolder2");
         try {
-            restRead(account.getId(), "Account", pu, tenantId2, MediaType.APPLICATION_JSON_TYPE);
+            RestUtils.restReadObject(context, account.getId(), Account.class, MediaType.APPLICATION_JSON_TYPE, tenantId2);
         } finally {
-            restDelete(account.getId(), "Account", pu, tenantId);
+            RestUtils.restDelete(context, account.getId(), Account.class, tenantId, MediaType.APPLICATION_JSON_TYPE);
         }
     }
 
     /**
      * Test create object graph put.
-     *
-     * @throws RestCallFailedException the rest call failed exception
-     * @throws JAXBException the jAXB exception
-     * @throws URISyntaxException the uRI syntax exception
      */
     @Test
-    public void testCreateObjectGraphPut() throws RestCallFailedException, JAXBException, URISyntaxException {
+    public void testCreateObjectGraphPut() throws Exception {
         // Create a bid without auction and user first
         StaticBid bid = new StaticBid();
         bid.setId(777);
         bid.setAmount(510);
         bid.setTime(System.currentTimeMillis());
-        bid = restCreate(bid, "StaticBid", StaticBid.class);
+        bid = RestUtils.restCreate(context, bid, StaticBid.class);
 
         // Create an auction
         StaticAuction auction = new StaticAuction();
@@ -649,7 +570,7 @@ public class ServerCrudTest extends BaseJparsTest {
         auction.setImage("Starwars.jpg");
         auction.setEndPrice(1000);
         auction.setDescription("Lego auction");
-        auction = restCreate(auction, "StaticAuction", StaticAuction.class);
+        auction = RestUtils.restCreate(context, auction, StaticAuction.class);
 
         // Create address
         StaticAddress address = new StaticAddress();
@@ -658,29 +579,28 @@ public class ServerCrudTest extends BaseJparsTest {
         address.setStreet("Main Street");
         address.setPostalCode("K1P 1A4");
         address.setType("Business");
-        address = restCreate(address, "StaticAddress", StaticAddress.class);
+        address = RestUtils.restCreate(context, address, StaticAddress.class);
 
         // Create a user
         StaticUser user = new StaticUser();
         user.setId(466);
         user.setName("LegoLover");
-        user = restCreate(user, "StaticUser", StaticUser.class);
+        user = RestUtils.restCreate(context, user, StaticUser.class);
 
         // Update user with address
-        restUpdateBidirectionalRelationship(String.valueOf(user.getId()), "StaticUser", "address", address, pu,
-                MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON_TYPE, "user", true);
+        RestUtils.restUpdateBidirectionalRelationship(context, String.valueOf(user.getId()), StaticUser.class,
+                "address", address, MediaType.APPLICATION_JSON_TYPE, "user", true);
 
         // read user again, because we will update the bid with user
-        user = restRead(String.valueOf(user.getId()), "StaticUser", pu, null, MediaType.APPLICATION_JSON_TYPE);
+        user = RestUtils.restReadObject(context, String.valueOf(user.getId()), StaticUser.class, MediaType.APPLICATION_JSON_TYPE);
 
         // Update bid with the auction
-        restUpdateBidirectionalRelationship(String.valueOf(777), "StaticBid",
-                "auction", auction, pu, MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON_TYPE, "bids", true);
+        RestUtils.restUpdateBidirectionalRelationship(context, String.valueOf(777), StaticBid.class,
+                "auction", auction, MediaType.APPLICATION_JSON_TYPE, "bids", true);
 
         // update bid with the user
-        String bidJsonResponse = restUpdateBidirectionalRelationship(
-                String.valueOf(777), "StaticBid", "user", user, pu, MediaType.APPLICATION_JSON_TYPE,
-                MediaType.APPLICATION_JSON_TYPE, null, true);
+        String bidJsonResponse = RestUtils.restUpdateBidirectionalRelationship(context,
+                String.valueOf(777), StaticBid.class, "user", user, MediaType.APPLICATION_JSON_TYPE, null, true);
 
         String expectedAuctionLink = getServerURI() + "/entity/StaticBid/777/auction";
         String expectedUserLink = getServerURI() + "/entity/StaticBid/777/user";
@@ -690,10 +610,10 @@ public class ServerCrudTest extends BaseJparsTest {
         assertTrue(bidJsonResponse.toUpperCase().contains(expectedUserLink.toUpperCase()));
 
         // Read auction, using the link provided in the newly created bid above
-        StaticAuction auctionByLink = restReadByHref(expectedAuctionLink, "StaticAuction", MediaType.APPLICATION_JSON_TYPE);
+        StaticAuction auctionByLink = RestUtils.restReadByHref(context, expectedAuctionLink, StaticAuction.class);
 
         // Read user, using the link provided in the newly created bid above
-        StaticUser userByLink = restReadByHref(expectedUserLink, "StaticUser", MediaType.APPLICATION_JSON_TYPE);
+        StaticUser userByLink = RestUtils.restReadByHref(context, expectedUserLink, StaticUser.class);
 
         assertTrue("Wrong user, could not update bid with a user.", userByLink.getName().equals(user.getName()));
         assertTrue("Wrong auction, could not update bid with an auction.", auctionByLink.getName().equals(auction.getName()));
@@ -706,18 +626,14 @@ public class ServerCrudTest extends BaseJparsTest {
 
     /**
      * Test create object graph post.
-     *
-     * @throws RestCallFailedException the rest call failed exception
-     * @throws JAXBException the jAXB exception
-     * @throws URISyntaxException the uRI syntax exception
      */
     @Test
-    public void testCreateObjectGraphPost() throws RestCallFailedException, JAXBException, URISyntaxException {
+    public void testCreateObjectGraphPost() throws Exception {
         // Create a bid without auction and user first (no id)
         StaticBid bid = new StaticBid();
         bid.setAmount(810);
         bid.setTime(System.currentTimeMillis());
-        bid = restUpdate(bid, "StaticBid", StaticBid.class, false);
+        bid = RestUtils.restUpdate(context, bid, StaticBid.class, false);
 
         // Create an auction (no id)
         StaticAuction auction = new StaticAuction();
@@ -726,20 +642,20 @@ public class ServerCrudTest extends BaseJparsTest {
         auction.setImage("Starwars2.jpg");
         auction.setEndPrice(1000);
         auction.setDescription("PlayStation auction");
-        auction = restUpdate(auction, "StaticAuction", StaticAuction.class, false);
+        auction = RestUtils.restUpdate(context, auction, StaticAuction.class, false);
 
         // Create a user (no id)
         StaticUser user = new StaticUser();
         user.setName("LegoLover");
-        user = restUpdate(user, "StaticUser", StaticUser.class, false);
+        user = RestUtils.restUpdate(context, user, StaticUser.class, false);
 
         // Update bid with the auction
-        restUpdateBidirectionalRelationship(String.valueOf(bid.getId()), "StaticBid", "auction", auction, pu,
-                MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON_TYPE, "bids", true);
+        RestUtils.restUpdateBidirectionalRelationship(context, String.valueOf(bid.getId()), StaticBid.class, "auction",
+                auction, MediaType.APPLICATION_JSON_TYPE, "bids", true);
 
         // update bid with the user
-        String bidJsonResponse = restUpdateBidirectionalRelationship(String.valueOf(bid.getId()), "StaticBid", "user", user,
-                pu, MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON_TYPE, null, true);
+        String bidJsonResponse = RestUtils.restUpdateBidirectionalRelationship(context, String.valueOf(bid.getId()),
+                StaticBid.class, "user", user, MediaType.APPLICATION_JSON_TYPE, null, true);
 
         String expectedAuctionLink = getServerURI() + "/entity/StaticBid/" + bid.getId() + "/auction";
         String expectedUserLink = getServerURI() + "/entity/StaticBid/" + bid.getId() + "/user";
@@ -748,10 +664,10 @@ public class ServerCrudTest extends BaseJparsTest {
         assertTrue(bidJsonResponse.toUpperCase().contains(expectedUserLink.toUpperCase()));
 
         // Read auction, using the link provided in the newly created bid above
-        StaticAuction auctionByLink = restReadByHref(expectedAuctionLink, "StaticAuction", MediaType.APPLICATION_JSON_TYPE);
+        StaticAuction auctionByLink = RestUtils.restReadByHref(context, expectedAuctionLink, StaticAuction.class);
 
         // Read user, using the link provided in the newly created bid above
-        StaticUser userByLink = restReadByHref(expectedUserLink, "StaticUser", MediaType.APPLICATION_JSON_TYPE);
+        StaticUser userByLink = RestUtils.restReadByHref(context, expectedUserLink, StaticUser.class);
 
         assertTrue("Wrong user, could not update bid with a user.", userByLink.getName().equals(user.getName()));
         assertTrue("Wrong auction, could not update bid with an auction.", auctionByLink.getName().equals(auction.getName()));
@@ -763,12 +679,9 @@ public class ServerCrudTest extends BaseJparsTest {
 
     /**
      * Test read composite pk.
-     *
-     * @throws RestCallFailedException the rest call failed exception
-     * @throws URISyntaxException the uRI syntax exception
      */
     @Test
-    public void testReadCompositePK() throws RestCallFailedException, URISyntaxException {
+    public void testReadCompositePK() throws Exception {
         StaticAddress address = new StaticAddress();
         address.setId(10012090);
         address.setType("home");
@@ -776,7 +689,7 @@ public class ServerCrudTest extends BaseJparsTest {
         dbCreate(address);
 
         String id = "10012090+home";
-        StaticAddress addr = restRead(id, "StaticAddress", StaticAddress.class);
+        StaticAddress addr = RestUtils.restReadObject(context, id, StaticAddress.class);
 
         assertTrue("Wrong address", addr.getId() == 10012090);
 
@@ -785,34 +698,23 @@ public class ServerCrudTest extends BaseJparsTest {
 
     /**
      * Test read non existing composite pk.
-     *
-     * @throws RestCallFailedException the rest call failed exception
-     * @throws URISyntaxException the uRI syntax exception
      */
     @Test(expected = RestCallFailedException.class)
-    public void testReadNonExistingCompositePK() throws RestCallFailedException, URISyntaxException {
+    public void testReadNonExistingCompositePK() throws Exception {
         String id = "home+10012090";
-        restRead(id, "StaticAddress", StaticAddress.class);
+        RestUtils.restRead(context, id, StaticAddress.class);
     }
 
     /**
      * Test get contexts xml.
-     *
-     * @throws URISyntaxException the uRI syntax exception
      */
     @Test
-    public void testGetContextsXML() throws URISyntaxException {
-        WebResource webResource = client.resource(String.valueOf(RestUtils.getServerURI(context.getVersion())));
-        ClientResponse response = webResource.accept(MediaType.APPLICATION_XML_TYPE).get(ClientResponse.class);
-        Status status = response.getClientResponseStatus();
-        if (status != Status.OK) {
-            throw new RestCallFailedException(status);
-        }
-
-        String result = response.getEntity(String.class);
+    public void testGetContextsXML() throws Exception {
+        String uri = new UriBuilder(context).addPu(null).toString();
+        Response response = RestUtils.doGet(context, uri, MediaType.APPLICATION_XML_TYPE);
+        String result = response.readEntity(String.class);
 
         assertTrue(result != null);
-
         assertTrue(result.contains(RestUtils.getServerURI(context.getVersion()) + "jpars_auction/metadata"));
         assertTrue(result.contains(RestUtils.getServerURI(context.getVersion()) + "jpars_auction-static-local/metadata"));
         assertTrue(result.contains(RestUtils.getServerURI(context.getVersion()) + "jpars_auction-static/metadata"));
@@ -822,19 +724,12 @@ public class ServerCrudTest extends BaseJparsTest {
 
     /**
      * Test get contexts json.
-     *
-     * @throws URISyntaxException the uRI syntax exception
      */
     @Test
-    public void testGetContextsJSON() throws URISyntaxException {
-        WebResource webResource = client.resource(String.valueOf(RestUtils.getServerURI(context.getVersion())));
-        ClientResponse response = webResource.accept(MediaType.APPLICATION_JSON_TYPE).get(ClientResponse.class);
-        Status status = response.getClientResponseStatus();
-        if (status != Status.OK) {
-            throw new RestCallFailedException(status);
-        }
-
-        String result = response.getEntity(String.class);
+    public void testGetContextsJSON() throws Exception {
+        String uri = new UriBuilder(context).addPu(null).toString();
+        Response response = RestUtils.doGet(context, uri, MediaType.APPLICATION_JSON_TYPE);
+        String result = response.readEntity(String.class);
 
         assertTrue(result != null);
         assertTrue(result.contains(RestUtils.getServerURI(context.getVersion()) + "jpars_auction/metadata"));
@@ -846,19 +741,12 @@ public class ServerCrudTest extends BaseJparsTest {
 
     /**
      * Test get types xml.
-     *
-     * @throws URISyntaxException the uRI syntax exception
      */
     @Test
-    public void testGetTypesXML() throws URISyntaxException {
-        WebResource webResource = client.resource((getServerURI() + "/metadata"));
-        ClientResponse response = webResource.accept(MediaType.APPLICATION_XML_TYPE).get(ClientResponse.class);
-        Status status = response.getClientResponseStatus();
-        if (status != Status.OK) {
-            throw new RestCallFailedException(status);
-        }
-
-        String result = response.getEntity(String.class);
+    public void testGetTypesXML() throws Exception {
+        String uri = new UriBuilder(context).toString() + "/metadata";
+        Response response = RestUtils.doGet(context, uri, MediaType.APPLICATION_XML_TYPE);
+        String result = response.readEntity(String.class);
 
         assertTrue(result != null);
         assertTrue(result.contains("<persistenceUnit><persistenceUnitName>jpars_auction-static"));
@@ -872,19 +760,12 @@ public class ServerCrudTest extends BaseJparsTest {
 
     /**
      * Test get types json.
-     *
-     * @throws URISyntaxException the uRI syntax exception
      */
     @Test
-    public void testGetTypesJSON() throws URISyntaxException {
-        WebResource webResource = client.resource((getServerURI() + "/metadata"));
-        ClientResponse response = webResource.accept(MediaType.APPLICATION_JSON_TYPE).get(ClientResponse.class);
-        Status status = response.getClientResponseStatus();
-        if (status != Status.OK) {
-            throw new RestCallFailedException(status);
-        }
-
-        String result = response.getEntity(String.class);
+    public void testGetTypesJSON() throws Exception {
+        String uri = new UriBuilder(context).toString() + "/metadata";
+        Response response = RestUtils.doGet(context, uri, MediaType.APPLICATION_JSON_TYPE);
+        String result = response.readEntity(String.class);
 
         assertTrue(result != null);
         assertTrue(result.contains("{\"persistenceUnitName\":\"jpars_auction-static\",\"types\":[{\"_link\":{\"href\":\""));
@@ -897,13 +778,9 @@ public class ServerCrudTest extends BaseJparsTest {
 
     /**
      * Test remove relationship non collection.
-     *
-     * @throws RestCallFailedException the rest call failed exception
-     * @throws URISyntaxException the uRI syntax exception
-     * @throws JAXBException the jAXB exception
      */
     @Test
-    public void testRemoveRelationshipNonCollection() throws RestCallFailedException, URISyntaxException, JAXBException {
+    public void testRemoveRelationshipNonCollection() throws Exception {
         StaticBid bid = dbRead(StaticModelDatabasePopulator.BID1_ID, StaticBid.class);
         StaticUser origUser = bid.getUser();
 
@@ -911,322 +788,55 @@ public class ServerCrudTest extends BaseJparsTest {
         newUser.setName("Mark");
 
         // add a user to bid
-        bid = restUpdateRelationship(String.valueOf(StaticModelDatabasePopulator.BID1_ID), "StaticBid", "user", newUser, "jpars_auction-static", MediaType.APPLICATION_JSON_TYPE,
-                MediaType.APPLICATION_JSON_TYPE);
+        bid = RestUtils.restUpdateRelationship(context, String.valueOf(StaticModelDatabasePopulator.BID1_ID), "user", newUser, StaticBid.class, MediaType.APPLICATION_JSON_TYPE);
         assertTrue("Wrong user.", bid.getUser().getName().equals("Mark"));
 
         // remove relationship between bid and the new user
-        String userRemoved = RestUtils.restRemoveBidirectionalRelationship(context, String.valueOf(bid.getId()), StaticBid.class.getSimpleName(), "user", MediaType.APPLICATION_JSON_TYPE, null, null);
+        String userRemoved = RestUtils.restRemoveBidirectionalRelationship(context, String.valueOf(bid.getId()), StaticBid.class, "user", MediaType.APPLICATION_JSON_TYPE, null, null);
         assertTrue(userRemoved != null);
         dbDelete(newUser);
 
         // Put the original user back
-        bid = restUpdateRelationship(String.valueOf(StaticModelDatabasePopulator.BID1_ID), "StaticBid", "user", origUser, "jpars_auction-static", MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON_TYPE);
+        bid = RestUtils.restUpdateRelationship(context, String.valueOf(StaticModelDatabasePopulator.BID1_ID), "user", origUser, StaticBid.class, MediaType.APPLICATION_JSON_TYPE);
         assertTrue("Wrong user.", bid.getUser().getName().equals("user1"));
     }
 
     /**
      * Test create employee with phone numbers non idempotent.
-     *
-     * @throws Exception the exception
      */
     @Test(expected = RestCallFailedException.class)
-    public void testCreateEmployeeWithPhoneNumbersNonIdempotent() throws Exception {
+    public void testCreateAuctionNonIdempotent() throws Exception {
         String auction = RestUtils.getJSONMessage("auction-bidsByValueNoId.json");
         // The bid contained by the auction object has generated id field, and create is idempotent.
         // So, create operation on auction with bid list should fail.
-        RestUtils.restCreateWithSequence(context, auction, StaticAuction.class.getSimpleName(), null, MediaType.APPLICATION_JSON_TYPE);
+        RestUtils.restCreateWithSequence(context, auction, StaticAuction.class, MediaType.APPLICATION_JSON_TYPE);
     }
 
-    private static void dbCreate(Object object) {
+    protected static void dbCreate(Object object) {
         EntityManager em = context.getEmf().createEntityManager();
         em.getTransaction().begin();
         em.persist(object);
         em.getTransaction().commit();
     }
 
-    private static <T> T dbRead(Object id, Class<T> resultClass) {
+    protected static <T> T dbRead(Object id, Class<T> resultClass) {
         context.getEmf().getCache().evictAll();
         EntityManager em = context.getEmf().createEntityManager();
         return em.find(resultClass, id);
     }
 
-    private static void dbUpdate(Object object) {
+    protected static void dbUpdate(Object object) {
         EntityManager em = context.getEmf().createEntityManager();
         em.getTransaction().begin();
         em.merge(object);
         em.getTransaction().commit();
     }
 
-    private static void dbDelete(Object object) {
+    protected static void dbDelete(Object object) {
         EntityManager em = context.getEmf().createEntityManager();
         em.getTransaction().begin();
         Object merged = em.merge(object);
         em.remove(merged);
         em.getTransaction().commit();
-    }
-
-    private static <T> T restCreate(Object object, String type, Class<T> resultClass) throws RestCallFailedException, URISyntaxException {
-        return restCreate(object, type, resultClass, pu, MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON_TYPE);
-    }
-
-    private static <T> T restCreate(Object object, String type, Class<T> resultClass, String persistenceUnit, MediaType inputMediaType, MediaType outputMediaType) throws RestCallFailedException, URISyntaxException {
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        try {
-            context.marshall(object, inputMediaType, os, false);
-        } catch (JAXBException e) {
-            fail("Exception thrown unmarshalling: " + e);
-        }
-        return restCreate(os, type, persistenceUnit, null, inputMediaType, outputMediaType);
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <T> T restCreate(OutputStream os, String type, String persistenceUnit, Map<String, String> tenantId, MediaType inputMediaType, MediaType outputMediaType) throws RestCallFailedException, URISyntaxException {
-        StringBuilder uri = new StringBuilder();
-        uri.append(RestUtils.getServerURI(context.getVersion()) + persistenceUnit);
-        if (tenantId != null) {
-            for (String key : tenantId.keySet()) {
-                uri.append(";" + key + "=" + tenantId.get(key));
-            }
-        }
-        uri.append("/entity/" + type);
-        WebResource webResource = client.resource(uri.toString());
-        ClientResponse response = webResource.type(inputMediaType).accept(outputMediaType).put(ClientResponse.class, os.toString());
-        Status status = response.getClientResponseStatus();
-        if (status != Status.CREATED) {
-            throw new RestCallFailedException(status);
-        }
-        String result = response.getEntity(String.class);
-        T resultObject = null;
-        try {
-            resultObject = (T) context.unmarshalEntity(type, outputMediaType, new ByteArrayInputStream(result.getBytes()));
-        } catch (JAXBException e) {
-            fail("Exception thrown unmarshalling: " + e);
-        }
-        return resultObject;
-    }
-
-    private static <T> void restDelete(Object id, String type, Class<T> resultClass) throws RestCallFailedException, URISyntaxException {
-        restDelete(id, type, pu, null);
-    }
-
-    private static <T> void restDelete(Object id, String type, String persistenceUnit, Map<String, String> tenantId) throws RestCallFailedException, URISyntaxException {
-        StringBuilder uri = new StringBuilder();
-        uri.append(RestUtils.getServerURI(context.getVersion()) + persistenceUnit);
-        if (tenantId != null) {
-            for (String key : tenantId.keySet()) {
-                uri.append(";" + key + "=" + tenantId.get(key));
-            }
-        }
-        uri.append("/entity/" + type + "/" + id);
-        WebResource webResource = client.resource(uri.toString());
-        ClientResponse response = webResource.type(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).delete(ClientResponse.class);
-        Status status = response.getClientResponseStatus();
-        if (status != Status.OK) {
-            throw new RestCallFailedException(status);
-        }
-    }
-
-    private static Object restNamedQuery(String queryName, String returnType, Map<String, Object> parameters, Map<String, String> hints) throws URISyntaxException {
-        return restNamedQuery(queryName, returnType, pu, parameters, hints, MediaType.APPLICATION_JSON_TYPE);
-    }
-
-    private static Object restNamedQuery(String queryName, String returnType, String persistenceUnit, Map<String, Object> parameters, Map<String, String> hints, MediaType outputMediaType) throws URISyntaxException {
-        StringBuffer resourceURL = new StringBuffer();
-        resourceURL.append(RestUtils.getServerURI(context.getVersion()) + persistenceUnit + "/query/" + queryName);
-        appendParametersAndHints(resourceURL, parameters, hints);
-        WebResource webResource = client.resource(resourceURL.toString());
-        ClientResponse response = webResource.accept(outputMediaType).get(ClientResponse.class);
-        Status status = response.getClientResponseStatus();
-        if (status != Status.OK) {
-            throw new RestCallFailedException(status);
-        }
-        String result = response.getEntity(String.class);
-        try {
-            return context.unmarshalEntity(returnType, outputMediaType, new ByteArrayInputStream(result.getBytes()));
-        } catch (JAXBException e) {
-            fail("Exception thrown unmarshalling: " + e);
-        }
-        return null;
-    }
-
-    private static Object restNamedSingleResultQuery(String queryName, String returnType, String persistenceUnit, Map<String, Object> parameters, Map<String, String> hints, MediaType outputMediaType) throws URISyntaxException {
-        StringBuffer resourceURL = new StringBuffer();
-        resourceURL.append(RestUtils.getServerURI(context.getVersion()) + persistenceUnit + "/singleResultQuery/" + queryName);
-        appendParametersAndHints(resourceURL, parameters, hints);
-
-        WebResource webResource = client.resource(resourceURL.toString());
-        ClientResponse response = webResource.accept(outputMediaType).get(ClientResponse.class);
-        Status status = response.getClientResponseStatus();
-        if (status != Status.OK) {
-            throw new RestCallFailedException(status);
-        }
-        String result = response.getEntity(String.class);
-        try {
-            return context.unmarshalEntity(returnType, outputMediaType, new ByteArrayInputStream(result.getBytes()));
-        } catch (JAXBException e) {
-            fail("Exception thrown unmarshalling: " + e);
-        }
-        return null;
-    }
-
-    private static void appendParametersAndHints(StringBuffer resourceURL, Map<String, Object> parameters, Map<String, String> hints) {
-        if (parameters != null && !parameters.isEmpty()) {
-            for (String key : parameters.keySet()) {
-                resourceURL.append(";" + key + "=" + parameters.get(key));
-            }
-        }
-        if (hints != null && !hints.isEmpty()) {
-            boolean firstElement = true;
-
-            for (String key : hints.keySet()) {
-                if (firstElement) {
-                    resourceURL.append("?");
-                } else {
-                    resourceURL.append("&");
-                }
-                resourceURL.append(key + "=" + hints.get(key));
-                firstElement = false;
-            }
-        }
-    }
-
-    private static <T> T restRead(Object id, String type, Class<T> resultClass) throws RestCallFailedException, URISyntaxException {
-        return restRead(id, type, pu, null, MediaType.APPLICATION_JSON_TYPE);
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <T> T restRead(Object id, String type, String persistenceUnit, Map<String, String> tenantId, MediaType outputMediaType) throws RestCallFailedException, URISyntaxException {
-        StringBuilder uri = new StringBuilder();
-        uri.append(RestUtils.getServerURI(context.getVersion()) + persistenceUnit);
-        if (tenantId != null) {
-            for (String key : tenantId.keySet()) {
-                uri.append(";" + key + "=" + tenantId.get(key));
-            }
-        }
-        uri.append("/entity/" + type + "/" + id);
-        WebResource webResource = client.resource(uri.toString());
-        ClientResponse response = webResource.accept(outputMediaType).get(ClientResponse.class);
-        Status status = response.getClientResponseStatus();
-        if (status != Status.OK) {
-            throw new RestCallFailedException(status);
-        }
-        String result = response.getEntity(String.class);
-        T resultObject = null;
-        try {
-            resultObject = (T) context.unmarshalEntity(type, outputMediaType, new ByteArrayInputStream(result.getBytes()));
-        } catch (JAXBException e) {
-            fail("Exception thrown unmarshalling: " + e);
-        }
-        return resultObject;
-    }
-
-    private static <T> T restUpdate(Object object, String type, Class<T> resultClass, boolean sendLinks) throws RestCallFailedException, URISyntaxException {
-        return restUpdate(object, type, resultClass, pu, null, MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON_TYPE, sendLinks);
-    }
-
-    private static <T> T restUpdate(Object object, String type, Class<T> resultClass, String persistenceUnit, Map<String, String> tenantId, MediaType inputMediaType, MediaType outputMediaType, boolean sendLinks) throws RestCallFailedException, URISyntaxException {
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        try {
-            if (sendLinks) {
-                context.marshallEntity(object, inputMediaType, os);
-            } else {
-                context.marshall(object, inputMediaType, os, false);
-            }
-        } catch (JAXBException e) {
-            fail("Exception thrown unmarshalling: " + e);
-        }
-        return restUpdate(os, type, persistenceUnit, tenantId, inputMediaType, outputMediaType);
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <T> T restUpdate(OutputStream os, String type, String persistenceUnit, Map<String, String> tenantId, MediaType inputMediaType, MediaType outputMediaType) throws RestCallFailedException, URISyntaxException {
-        StringBuilder uri = new StringBuilder();
-        uri.append(RestUtils.getServerURI(context.getVersion()) + persistenceUnit);
-        if (tenantId != null) {
-            for (String key : tenantId.keySet()) {
-                uri.append(";" + key + "=" + tenantId.get(key));
-            }
-        }
-        uri.append("/entity/" + type);
-        WebResource webResource = client.resource(uri.toString());
-        ClientResponse response = webResource.type(inputMediaType).accept(outputMediaType).post(ClientResponse.class, os.toString());
-        Status status = response.getClientResponseStatus();
-        if (status != Status.OK) {
-            throw new RestCallFailedException(status);
-        }
-        String result = response.getEntity(String.class);
-
-        T resultObject = null;
-        try {
-            resultObject = (T) context.unmarshalEntity(type, outputMediaType, new ByteArrayInputStream(result.getBytes()));
-        } catch (JAXBException e) {
-            fail("Exception thrown unmarshalling: " + e);
-        }
-        return resultObject;
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <T> T restUpdateRelationship(String objectId, String type, String relationshipName, Object newValue, String persistenceUnit, MediaType inputMediaType, MediaType outputMediaType) throws RestCallFailedException, URISyntaxException {
-        WebResource webResource = client.resource(RestUtils.getServerURI(context.getVersion()) + persistenceUnit + "/entity/" + type + "/" + objectId + "/" + relationshipName);
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        try {
-            context.marshallEntity(newValue, inputMediaType, os);
-
-        } catch (JAXBException e) {
-            fail("Exception thrown unmarshalling: " + e);
-        }
-        ClientResponse response = webResource.type(inputMediaType).accept(outputMediaType).post(ClientResponse.class, os.toString());
-        Status status = response.getClientResponseStatus();
-        if (status != Status.OK) {
-            throw new RestCallFailedException(status);
-        }
-        String result = response.getEntity(String.class);
-
-        T resultObject = null;
-        try {
-            resultObject = (T) context.unmarshalEntity(type, outputMediaType, new ByteArrayInputStream(result.getBytes()));
-        } catch (JAXBException e) {
-            fail("Exception thrown unmarshalling: " + e);
-        }
-        return resultObject;
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <T> T restReadByHref(String href, String type, MediaType outputMediaType) throws RestCallFailedException, JAXBException {
-        WebResource webResource = client.resource(href);
-        ClientResponse response = webResource.accept(outputMediaType).get(
-                ClientResponse.class);
-        Status status = response.getClientResponseStatus();
-        if (status != Status.OK) {
-            throw new RestCallFailedException(status);
-        }
-        String result = response.getEntity(String.class);
-        return (T) context.unmarshalEntity(type, outputMediaType, new ByteArrayInputStream(result.getBytes()));
-    }
-
-    private static String restUpdateBidirectionalRelationship(String objectId,
-            String type, String relationshipName, Object newValue,
-            String persistenceUnit, MediaType inputMediaType,
-            MediaType outputMediaType, String partner, boolean sendLinks)
-            throws RestCallFailedException, JAXBException, URISyntaxException {
-
-        String url = RestUtils.getServerURI(context.getVersion()) + persistenceUnit + "/entity/" + type + "/"
-                + objectId + "/" + relationshipName;
-        if (partner != null) {
-            url += "?" + QueryParameters.JPARS_RELATIONSHIP_PARTNER + "=" + partner;
-        }
-
-        WebResource webResource = client.resource(url);
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        context.marshall(newValue, inputMediaType, os, sendLinks);
-        ClientResponse response = webResource.type(inputMediaType)
-                .accept(outputMediaType)
-                .post(ClientResponse.class, os.toString());
-        Status status = response.getClientResponseStatus();
-        if (status != Status.OK) {
-            throw new RestCallFailedException(status);
-        }
-        return response.getEntity(String.class);
     }
 }

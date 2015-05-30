@@ -8,7 +8,8 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *      tware -
+ *      tware - Initial implementation
+ *      Dmitry Kornilov - upgrade to Jersey 2.x
  ******************************************************************************/
 package org.eclipse.persistence.jpars.test.util;
 
@@ -22,13 +23,13 @@ import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
-import com.sun.jersey.core.util.MultivaluedMapImpl;
-import com.sun.jersey.core.util.StringKeyIgnoreCaseMultivaluedMap;
+import org.glassfish.jersey.internal.util.collection.MultivaluedStringMap;
+import org.glassfish.jersey.internal.util.collection.StringKeyIgnoreCaseMultivaluedMap;
 
 public class TestURIInfo implements UriInfo {
 
-    protected List<PathSegment> pathSegments = new ArrayList<PathSegment>();
-    protected MultivaluedMap<String, String> queryParameters = new StringKeyIgnoreCaseMultivaluedMap<String>();
+    protected List<PathSegment> pathSegments = new ArrayList<>();
+    protected MultivaluedMap<String, String> queryParameters = new StringKeyIgnoreCaseMultivaluedMap<>();
 
     public TestURIInfo() {
     }
@@ -139,14 +140,14 @@ public class TestURIInfo implements UriInfo {
 
         List<String> parameters = segmentToUse.getMatrixParameters().get(key);
         if (parameters == null) {
-            parameters = new ArrayList<String>();
+            parameters = new ArrayList<>();
         }
         parameters.add(value);
         segmentToUse.getMatrixParameters().put(key, parameters);
     }
 
     public class TestPathSegment implements PathSegment {
-        private MultivaluedMap<String, String> matrixParameters = new MultivaluedMapImpl();
+        private MultivaluedMap<String, String> matrixParameters = new MultivaluedStringMap();
         private String path;
 
         public TestPathSegment(String path) {

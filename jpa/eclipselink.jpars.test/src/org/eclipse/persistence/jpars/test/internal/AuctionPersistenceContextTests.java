@@ -20,8 +20,6 @@ import java.util.Map;
 import javax.persistence.EntityManagerFactory;
 import javax.xml.bind.JAXBContext;
 
-import junit.framework.Assert;
-
 import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.PersistenceFactoryBase;
@@ -29,6 +27,9 @@ import org.eclipse.persistence.jpars.test.util.ExamplePropertiesLoader;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertNotNull;
 
 /**
  * Tests validating the
@@ -42,28 +43,28 @@ public class AuctionPersistenceContextTests {
 
     @Test
     public void verifyJPAConfig() {
-        Assert.assertNotNull(context);
+        assertNotNull(context);
         EntityManagerFactory emf = context.getEmf();
-        Assert.assertNotNull(emf);
+        assertNotNull(emf);
 
         DatabaseSession session = JpaHelper.getServerSession(emf);
-        Assert.assertEquals(3, session.getDescriptors().size());
+        assertEquals(3, session.getDescriptors().size());
     }
 
     @Test
     public void verifyJaxbContext() {
-        Assert.assertNotNull(context);
+        assertNotNull(context);
         JAXBContext jaxbContext = context.getJAXBContext();
-        Assert.assertNotNull(jaxbContext);
+        assertNotNull(jaxbContext);
 
         org.eclipse.persistence.jaxb.JAXBContext contextImpl = (org.eclipse.persistence.jaxb.JAXBContext) jaxbContext;
 
-        Assert.assertEquals(4, contextImpl.getXMLContext().getSession(0).getDescriptors().size());
+        assertEquals(4, contextImpl.getXMLContext().getSession(0).getDescriptors().size());
     }
 
     @BeforeClass
     public static void createContext() throws Exception {
-        Map<String, Object> properties = new HashMap<String, Object>();
+        Map<String, Object> properties = new HashMap<>();
         ExamplePropertiesLoader.loadProperties(properties);
         PersistenceFactoryBase factory = new PersistenceFactoryBase();
         InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream("xmldocs/auction-persistence.xml");

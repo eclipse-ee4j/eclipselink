@@ -23,7 +23,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 
-import com.sun.jersey.core.util.StringKeyIgnoreCaseMultivaluedMap;
+import org.glassfish.jersey.internal.util.collection.StringKeyIgnoreCaseMultivaluedMap;
 
 /**
  * A fake HTTPHeaders implementation to test the service class
@@ -31,13 +31,13 @@ import com.sun.jersey.core.util.StringKeyIgnoreCaseMultivaluedMap;
  * @author tware
  */
 public class TestHttpHeaders implements HttpHeaders {
-    protected List<MediaType> acceptableMediaTypes = new ArrayList<MediaType>();
-    protected MultivaluedMap<String, String> requestHeaders = new StringKeyIgnoreCaseMultivaluedMap<String>();
+    protected List<MediaType> acceptableMediaTypes = new ArrayList<>();
+    protected MultivaluedMap<String, String> requestHeaders = new StringKeyIgnoreCaseMultivaluedMap<>();
 
     public static HttpHeaders generateHTTPHeader(MediaType acceptableMedia, String mediaTypeString) {
         TestHttpHeaders headers = new TestHttpHeaders();
         headers.getAcceptableMediaTypes().add(acceptableMedia);
-        List<String> mediaTypes = new ArrayList<String>();
+        List<String> mediaTypes = new ArrayList<>();
         mediaTypes.add(mediaTypeString);
 
         headers.getRequestHeaders().put(HttpHeaders.CONTENT_TYPE, mediaTypes);
@@ -60,6 +60,16 @@ public class TestHttpHeaders implements HttpHeaders {
     }
 
     @Override
+    public Date getDate() {
+        return null;
+    }
+
+    @Override
+    public int getLength() {
+        return 0;
+    }
+
+    @Override
     public Locale getLanguage() {
         return null;
     }
@@ -72,6 +82,11 @@ public class TestHttpHeaders implements HttpHeaders {
     @Override
     public List<String> getRequestHeader(String arg0) {
         return requestHeaders.get(arg0);
+    }
+
+    @Override
+    public String getHeaderString(String s) {
+        return null;
     }
 
     @Override

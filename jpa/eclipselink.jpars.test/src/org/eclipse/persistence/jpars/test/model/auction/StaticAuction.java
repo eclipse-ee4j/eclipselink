@@ -43,7 +43,7 @@ public class StaticAuction {
     private boolean sold;
 
     @OneToMany(mappedBy="auction", cascade=CascadeType.ALL)
-    private List<StaticBid> bids = new ArrayList<StaticBid>();
+    private List<StaticBid> bids = new ArrayList<>();
 
     public int getId() {
         return id;

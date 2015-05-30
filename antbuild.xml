@@ -984,6 +984,12 @@
                 <exclude name="org.apache.ant_1.7.0.v20080627-1145.zip"/>
                 <exclude name="com.sun*.jar"/>
                 <exclude name="*dynamic*.jar"/>
+                <!-- exclude test-only dependencies -->
+                <exclude name="*hk2*"/>
+                <exclude name="*jersey*"/>
+                <exclude name="javax.annotation*"/>
+                <exclude name="javax.inject*"/>
+                <exclude name="*dynamic*.jar"/>
             </zipfileset>
             <zipfileset dir="${eclipselink.jpa.plugins}/" includes="javax.persistence*_2.1*.jar" excludes="*preview*.jar"/>
             <zipfileset dir="${eclipselink.sdo.plugins}/" includes="commonj.sdo*2.1.1*.jar"/>

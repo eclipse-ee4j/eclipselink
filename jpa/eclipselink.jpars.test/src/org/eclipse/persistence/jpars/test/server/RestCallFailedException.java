@@ -7,42 +7,41 @@
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
+ * Contributors:
+ *      Dmitry Kornilov - Upgrade to Jersey 2.x
  ******************************************************************************/
 package org.eclipse.persistence.jpars.test.server;
 
 import org.eclipse.persistence.jpa.rs.exceptions.ErrorResponse;
 
-import com.sun.jersey.api.client.ClientResponse.Status;
+import javax.ws.rs.core.Response;
 
 public class RestCallFailedException extends RuntimeException {
     private static final long serialVersionUID = 1L;
-    private Status httpStatus = null;
-    private ErrorResponse errorDetails = null;
+    private int httpStatus;
+    private ErrorResponse errorDetails;
 
-    public RestCallFailedException(Status httpStatus, ErrorResponse errorDetails) {
+    public RestCallFailedException(int httpStatus, ErrorResponse errorDetails) {
         super();
         this.httpStatus = httpStatus;
         this.errorDetails = errorDetails;
     }
 
-    public RestCallFailedException(Status httpStatus) {
+    public RestCallFailedException(int httpStatus) {
         super();
         this.httpStatus = httpStatus;
     }
 
-    public Status getHttpStatus() {
-        return httpStatus;
+    public RestCallFailedException(Response.Status status) {
+        super();
+        this.httpStatus = status.getStatusCode();
     }
 
-    public void setHttpStatus(Status httpStatus) {
-        this.httpStatus = httpStatus;
+    public int getHttpStatus() {
+        return httpStatus;
     }
 
     public ErrorResponse getErrorDetails() {
         return errorDetails;
-    }
-
-    public void setErrorDetails(ErrorResponse errorDetails) {
-        this.errorDetails = errorDetails;
     }
 }

@@ -47,7 +47,7 @@ public class StaticCrudTests {
 
     @BeforeClass
     public static void setup() {
-        Map<String, Object> properties = new HashMap<String, Object>();
+        Map<String, Object> properties = new HashMap<>();
         ExamplePropertiesLoader.loadProperties(properties);
         properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
         properties.put(PersistenceUnitProperties.DDL_GENERATION, PersistenceUnitProperties.DROP_AND_CREATE);

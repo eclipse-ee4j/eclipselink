@@ -8,40 +8,32 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *      Dmitry Kornilov - Initial implementation
+ *      Dmitry Kornilov - Initial implementation, upgrade to Jersey 2.x
  ******************************************************************************/
 package org.eclipse.persistence.jpars.test.server.v2;
 
-import com.sun.jersey.api.client.ClientResponse.Status;
-import org.eclipse.persistence.exceptions.DatabaseException;
-import org.eclipse.persistence.jpa.rs.exceptions.ErrorResponse;
-import org.eclipse.persistence.jpars.test.BaseJparsTest;
 import org.eclipse.persistence.jpars.test.model.employee.Employee;
 import org.eclipse.persistence.jpars.test.model.employee.EmployeeAddress;
-import org.eclipse.persistence.jpars.test.model.employee.EmploymentPeriod;
 import org.eclipse.persistence.jpars.test.model.employee.Gender;
 import org.eclipse.persistence.jpars.test.model.employee.LargeProject;
 import org.eclipse.persistence.jpars.test.model.employee.Office;
-import org.eclipse.persistence.jpars.test.model.employee.PhoneNumber;
 import org.eclipse.persistence.jpars.test.model.employee.SmallProject;
 import org.eclipse.persistence.jpars.test.server.RestCallFailedException;
-import org.eclipse.persistence.jpars.test.util.DBUtils;
+import org.eclipse.persistence.jpars.test.server.noversion.ServerEmployeeTest;
 import org.eclipse.persistence.jpars.test.util.RestUtils;
 import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.net.URISyntaxException;
 import java.util.Arrays;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -51,7 +43,7 @@ import static org.junit.Assert.assertTrue;
  * @author Dmitry Kornilov
  * @since EclipseLink 2.6.0
  */
-public class ServerEmployeeV2Test extends BaseJparsTest {
+public class ServerEmployeeV2Test extends ServerEmployeeTest {
 
     @BeforeClass
     public static void setup() throws Exception {
@@ -60,628 +52,65 @@ public class ServerEmployeeV2Test extends BaseJparsTest {
 
     @After
     public void cleanup() throws URISyntaxException {
-        RestUtils.restUpdateQuery(context, "Employee.deleteAll", "Employee", null, null, MediaType.APPLICATION_JSON_TYPE);
-    }
-
-    /**
-     * Test read employee json.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testReadEmployeeJSON() throws Exception {
-        readEmployee(MediaType.APPLICATION_JSON_TYPE);
-    }
-
-    /**
-     * Test read employee xml.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testReadEmployeeXML() throws Exception {
-        readEmployee(MediaType.APPLICATION_XML_TYPE);
-    }
-
-    /**
-     * Test update employee with employment period json.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testUpdateEmployeeWithEmploymentPeriodJSON() throws Exception {
-        updateEmployeeWithEmploymentPeriod(MediaType.APPLICATION_JSON_TYPE);
-    }
-
-    /**
-     * Test update employee with employment period xml.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testUpdateEmployeeWithEmploymentPeriodXML() throws Exception {
-        updateEmployeeWithEmploymentPeriod(MediaType.APPLICATION_XML_TYPE);
-    }
-
-    /**
-     * Test create employee with phone numbers json.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testCreateEmployeeWithPhoneNumbersJSON() throws Exception {
-        createEmployeeWithPhoneNumbers();
+        RestUtils.restUpdateQuery(context, "Employee.deleteAll", null, null, MediaType.APPLICATION_JSON_TYPE);
     }
 
     /**
      * Test create employee with address json.
-     *
-     * @throws Exception the exception
      */
     @Test
+    @Override
     public void testCreateEmployeeWithAddressJSON() throws Exception {
         String msg = RestUtils.getJSONMessage("employee-with-address-V2.json");
-        String employee = RestUtils.restUpdate(context, msg, Employee.class.getSimpleName(), null, MediaType.APPLICATION_JSON_TYPE);
+        String employee = RestUtils.restUpdateStr(context, msg, Employee.class, null, MediaType.APPLICATION_JSON_TYPE);
         assertNotNull(employee);
         String addressLink = "\"address\":{\"links\":[{\"rel\":\"self\",\"href\":\"" + getServerURI() + "/entity/Employee/20130/address\"}";
         assertTrue(employee.contains(addressLink));
-        RestUtils.restDelete(context, 20130, Employee.class.getSimpleName(), Employee.class, null, null, MediaType.APPLICATION_JSON_TYPE);
-    }
-
-    /**
-      * Test update employee with manager json.
-      *
-      * @throws Exception the exception
-      */
-    @Test
-    public void testUpdateEmployeeWithManagerJSON() throws Exception {
-        updateEmployeeWithManager(MediaType.APPLICATION_JSON_TYPE);
-    }
-
-    /**
-     * Test update employee with manager xml.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testUpdateEmployeeWithManagerXML() throws Exception {
-        updateEmployeeWithManager(MediaType.APPLICATION_XML_TYPE);
-    }
-
-    /**
-     * Test update employee with project json.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testUpdateEmployeeWithProjectJSON() throws Exception {
-        updateEmployeeWithProject(MediaType.APPLICATION_JSON_TYPE, false);
-    }
-
-    /**
-     * Test update employee with project xml.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testUpdateEmployeeWithProjectXML() throws Exception {
-        updateEmployeeWithProject(MediaType.APPLICATION_XML_TYPE, false);
-    }
-
-    /**
-     * Test update employee with project remove all projects json.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testUpdateEmployeeWithProjectRemoveAllProjectsJSON() throws Exception {
-        updateEmployeeWithProject(MediaType.APPLICATION_JSON_TYPE, true);
-    }
-
-    /**
-     * Test update employee with project remove all projects xml.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testUpdateEmployeeWithProjectRemoveAllProjectsXML() throws Exception {
-        updateEmployeeWithProject(MediaType.APPLICATION_XML_TYPE, true);
-    }
-
-    /**
-     * Test create employee address with binary data json.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testCreateEmployeeAddressWithBinaryDataJSON() throws Exception {
-        createEmployeeAddressWithBinaryData(MediaType.APPLICATION_JSON_TYPE);
-    }
-
-    /**
-     * Test create employee address with binary data xml.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testCreateEmployeeAddressWithBinaryDataXML() throws Exception {
-        createEmployeeAddressWithBinaryData(MediaType.APPLICATION_XML_TYPE);
-    }
-
-    /**
-     * Test execute query get all xml.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testExecuteQueryGetAllXML() throws Exception {
-        executeQueryGetAll(MediaType.APPLICATION_XML_TYPE);
-    }
-
-    /**
-     * Test execute query get all json.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testExecuteQueryGetAllJSON() throws Exception {
-        executeQueryGetAll(MediaType.APPLICATION_JSON_TYPE);
-    }
-
-    /**
-     * Test execute single result query xml.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testExecuteSingleResultQueryXML() throws Exception {
-        executeSingleResultQuery(MediaType.APPLICATION_XML_TYPE);
-    }
-
-    /**
-     * Test execute single result query json.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testExecuteSingleResultQueryJSON() throws Exception {
-        executeSingleResultQuery(MediaType.APPLICATION_JSON_TYPE);
-    }
-
-    /**
-     * Test read employee with responsibilities xml.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testReadEmployeeWithResponsibilitiesXML() throws Exception {
-        readEmployeeWithResponsibilities(MediaType.APPLICATION_XML_TYPE);
-    }
-
-    /**
-     * Test read employee with responsibilities json.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testReadEmployeeWithResponsibilitiesJSON() throws Exception {
-        readEmployeeWithResponsibilities(MediaType.APPLICATION_JSON_TYPE);
-    }
-
-    /**
-     * Test multi result query get employee address with simple fields xml.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testMultiResultQueryGetEmployeeAddressWithSimpleFieldsXML() throws Exception {
-        executeMultiResultQueryGetEmployeeAddressWithSimpleFields(MediaType.APPLICATION_XML_TYPE);
-    }
-
-    /**
-     * Test multi result query get employee address with simple fields json.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testMultiResultQueryGetEmployeeAddressWithSimpleFieldsJSON() throws Exception {
-        executeMultiResultQueryGetEmployeeAddressWithSimpleFields(MediaType.APPLICATION_JSON_TYPE);
-    }
-
-    /**
-     * Test multi result query get employee with domain object json.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testMultiResultQueryGetEmployeeWithDomainObjectJSON() throws Exception {
-        executeMultiResultQueryGetEmployeeWithDomainObject(MediaType.APPLICATION_JSON_TYPE);
-    }
-
-    /**
-     * Test multi result query get employee with domain object xml.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testMultiResultQueryGetEmployeeWithDomainObjectXML() throws Exception {
-        executeMultiResultQueryGetEmployeeWithDomainObject(MediaType.APPLICATION_XML_TYPE);
-    }
-
-    /**
-     * Test employee address multi result named query with binary data xml.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testEmployeeAddressMultiResultNamedQueryWithBinaryDataXML() throws Exception {
-        getEmployeeAddressMultiResultNamedQueryWithBinaryData(MediaType.APPLICATION_XML_TYPE);
-    }
-
-    /**
-     * Test employee address multi result named query with binary data json.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testEmployeeAddressMultiResultNamedQueryWithBinaryDataJSON() throws Exception {
-        getEmployeeAddressMultiResultNamedQueryWithBinaryData(MediaType.APPLICATION_JSON_TYPE);
-    }
-
-    /**
-     * Test read employee responsibilities xml.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testReadEmployeeResponsibilitiesXML() throws Exception {
-        readEmployeeResponsibilities(MediaType.APPLICATION_XML_TYPE);
-    }
-
-    /**
-     * Test read employee responsibilities json.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testReadEmployeeResponsibilitiesJSON() throws Exception {
-        readEmployeeResponsibilities(MediaType.APPLICATION_JSON_TYPE);
-    }
-
-    /**
-     * Test single result query get employee with domain object json.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testSingleResultQueryGetEmployeeWithDomainObjectJSON() throws Exception {
-        executeSingleResultQueryGetEmployeeWithDomainObject(MediaType.APPLICATION_JSON_TYPE);
-    }
-
-    /**
-     * Test single result query get employee with domain object xml.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testSingleResultQueryGetEmployeeWithDomainObjectXML() throws Exception {
-        executeSingleResultQueryGetEmployeeWithDomainObject(MediaType.APPLICATION_XML_TYPE);
-    }
-
-    /**
-     * Test multi result query max xml.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testMultiResultQueryMaxXML() throws Exception {
-        executeMultiResultQueryMax(MediaType.APPLICATION_XML_TYPE);
-    }
-
-    /**
-     * Test multi result query max json.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testMultiResultQueryMaxJSON() throws Exception {
-        executeMultiResultQueryMax(MediaType.APPLICATION_JSON_TYPE);
-    }
-
-    /**
-     * Test single result query max xml.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testSingleResultQueryMaxXML() throws Exception {
-        executeSingleResultQueryMax(MediaType.APPLICATION_XML_TYPE);
-    }
-
-    /**
-     * Test single result query max json.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testSingleResultQueryMaxJSON() throws Exception {
-        executeSingleResultQueryMax(MediaType.APPLICATION_JSON_TYPE);
-    }
-
-    /**
-     * Test multi result query count xml.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testMultiResultQueryCountXML() throws Exception {
-        executeMultiResultQueryCount(MediaType.APPLICATION_XML_TYPE);
-    }
-
-    /**
-     * Test multi result query count json.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testMultiResultQueryCountJSON() throws Exception {
-        executeMultiResultQueryCount(MediaType.APPLICATION_JSON_TYPE);
-    }
-
-    /**
-     * Test single result query count xml.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testSingleResultQueryCountXML() throws Exception {
-        executeSingleResultQueryCount(MediaType.APPLICATION_XML_TYPE);
-    }
-
-    /**
-     * Test single result query count json.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testSingleResultQueryCountJSON() throws Exception {
-        executeSingleResultQueryCount(MediaType.APPLICATION_JSON_TYPE);
-    }
-
-    /**
-     * Test employee address single result named query with binary data xml.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testEmployeeAddressSingleResultNamedQueryWithBinaryDataXML() throws Exception {
-        getEmployeeAddressSingleResultNamedQueryWithBinaryData(MediaType.APPLICATION_XML_TYPE);
-    }
-
-    /**
-     * Test employee address single result named query with binary data json.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testEmployeeAddressSingleResultNamedQueryWithBinaryDataJSON() throws Exception {
-        getEmployeeAddressSingleResultNamedQueryWithBinaryData(MediaType.APPLICATION_JSON_TYPE);
-    }
-
-    /**
-     * Test employee address single result named query with binary data octet stream.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testEmployeeAddressSingleResultNamedQueryWithBinaryDataOctetStream() throws Exception {
-        getEmployeeAddressSingleResultNamedQueryWithBinaryData(MediaType.APPLICATION_OCTET_STREAM_TYPE);
-    }
-
-    /**
-     * Test read employee with address lazy fetch one2 one xml.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testReadEmployeeWithAddressLazyFetchOne2OneXML() throws Exception {
-        readEmployeeWithAddressLazyFetchOne2One(MediaType.APPLICATION_XML_TYPE);
-    }
-
-    /**
-     * Test read employee with address lazy fetch one2 one json.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testReadEmployeeWithAddressLazyFetchOne2OneJSON() throws Exception {
-        readEmployeeWithAddressLazyFetchOne2One(MediaType.APPLICATION_JSON_TYPE);
-    }
-
-    /**
-     * Test create employee with expertise non idempotent.
-     *
-     * @throws Exception the exception
-     */
-    @Test(expected = RestCallFailedException.class)
-    public void testCreateEmployeeWithExpertiseNonIdempotent() throws Exception {
-        String employee = RestUtils.getJSONMessage("employee-expertiseByValueNoId.json");
-        // The expertise object contained by the employee object has generated id field, and create is idempotent.
-        // So, create operation on employee with expertise list should fail.
-        RestUtils.restCreateWithSequence(context, employee, Employee.class.getSimpleName(), null, MediaType.APPLICATION_JSON_TYPE);
-    }
-
-    /**
-     * Test create office with employee non idempotent.
-     *
-     * @throws Exception the exception
-     */
-    @Test(expected = RestCallFailedException.class)
-    public void testCreateOfficeWithEmployeeNonIdempotent() throws Exception {
-        String office = RestUtils.getJSONMessage("office-employeeByValueNoId-V2.json");
-        RestUtils.restCreateWithSequence(context, office, Office.class.getSimpleName(), null, MediaType.APPLICATION_JSON_TYPE);
+        RestUtils.restDelete(context, 20130, Employee.class);
     }
 
     /**
      * Test create employee with office many to one inverse mapping.
-     *
-     * @throws Exception the exception
      */
+    @Override
     @Test(expected = RestCallFailedException.class)
     public void testCreateEmployeeWithOfficeManyToOneInverseMapping() throws Exception {
         String msg = RestUtils.getJSONMessage("employee-officeByValueNoId-V2.json");
 
         // In JPARS version 1.0 or below the office should be ignored (inverse mapping) and employee should be created successfully
         // In version 2.0 inverse mappings are not removed, the idempotence exception is expected
-        RestUtils.restCreate(context, msg, Employee.class.getSimpleName(), Employee.class, null, MediaType.APPLICATION_JSON_TYPE);
+        RestUtils.restCreateStr(context, msg, Employee.class, MediaType.APPLICATION_JSON_TYPE);
     }
 
     /**
-     * Test query employee find all json.
-     *
-     * @throws Exception the exception
+     * Test create office with employee non idempotent.
      */
-    @Test
-    public void testQueryEmployeeFindAllJSON() throws Exception {
-        queryEmployeeFindAll(MediaType.APPLICATION_JSON_TYPE);
+    @Override
+    @Test(expected = RestCallFailedException.class)
+    public void testCreateOfficeWithEmployeeNonIdempotent() throws Exception {
+        String office = RestUtils.getJSONMessage("office-employeeByValueNoId-V2.json");
+        RestUtils.restCreateWithSequence(context, office, Office.class, MediaType.APPLICATION_JSON_TYPE);
     }
 
     /**
-     * Test query employee find all xml.
-     *
-     * @throws Exception the exception
+     * Test create employee with phone numbers json.
      */
+    @Override
     @Test
-    public void testQueryEmployeeFindAllXML() throws Exception {
-        queryEmployeeFindAll(MediaType.APPLICATION_XML_TYPE);
+    public void testCreateEmployeeWithPhoneNumbersJSON() throws Exception {
+        createEmployeeWithPhoneNumbers("employee-with-phoneNumber-V2.json");
     }
 
-    /**
-     * Test read employee with certifications xml.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testReadEmployeeWithCertificationsXML() throws Exception {
-        readEmployeeWithCertifications(MediaType.APPLICATION_XML_TYPE);
-    }
-
-    /**
-     * Test read employee with certifications json.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testReadEmployeeWithCertificationsJSON() throws Exception {
-        readEmployeeWithCertifications(MediaType.APPLICATION_JSON_TYPE);
-    }
-
-    /**
-     * Test database exception json.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testDatabaseExceptionJSON() throws Exception {
-        databaseException(MediaType.APPLICATION_JSON_TYPE);
-    }
-
-    /**
-     * Test database exception xml.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testDatabaseExceptionXML() throws Exception {
-        databaseException(MediaType.APPLICATION_XML_TYPE);
-    }
-
-    private void queryEmployeeFindAll(MediaType mediaType) throws Exception {
-        // create an employee
-        Employee employee1 = new Employee();
-        employee1.setFirstName("Billie");
-        employee1.setLastName("Holiday");
-        employee1 = RestUtils.restUpdate(context, employee1, Employee.class.getSimpleName(), Employee.class, null, mediaType, true);
-        assertNotNull("Employee create failed.", employee1);
-
-        // create another employee
-        Employee employee2 = new Employee();
-        employee2.setFirstName("Ella");
-        employee2.setLastName("Fitzgerald");
-        employee2.setGender(Gender.Female);
-        employee2 = RestUtils.restUpdate(context, employee2, Employee.class.getSimpleName(), Employee.class, null, mediaType, true);
-        assertNotNull("Employee create failed.", employee2);
-
-        // query employee
-        String queryResult = RestUtils.restNamedMultiResultQuery(context, "Employee.findAll", null, null, mediaType);
-        assertNotNull("Query all employees failed.", queryResult);
-
-        assertTrue(queryResult.contains(employee1.getFirstName()));
-        assertTrue(queryResult.contains(employee1.getLastName()));
-
-        assertTrue(queryResult.contains(employee2.getFirstName()));
-        assertTrue(queryResult.contains(employee1.getLastName()));
-
-        // delete employees
-        RestUtils.restDelete(context, employee1.getId(), Employee.class.getSimpleName(), Employee.class, null, null, mediaType);
-        RestUtils.restDelete(context, employee2.getId(), Employee.class.getSimpleName(), Employee.class, null, null, mediaType);
-    }
-
-    private void readEmployeeWithAddressLazyFetchOne2One(MediaType mediaType) throws Exception {
-        // address on employee object is annoted to be LAZY fetch
-        // Create an employee without any address, and make sure that read employee response doesn't contain address,
-        // then add an address to the employee and re-read the employee to make sure that the response contains a link to the address
-        // even if it is fetched lazily.
-
-        // create an employee
-        Employee employee = new Employee();
-        employee.setFirstName("Diana");
-        employee.setLastName("Krall");
-
-        employee = RestUtils.restUpdate(context, employee, Employee.class.getSimpleName(), Employee.class, null, mediaType, false);
-        assertNotNull("Employee create failed.", employee);
-        assertTrue(employee.getAddress() == null);
-
-        // create an address for this employee
-        EmployeeAddress address = new EmployeeAddress();
-        address.setCity("Toronto");
-        address.setStreet("Queen street");
-        address.setPostalCode("ON");
-        address.setCountry("CA");
-        address.setPostalCode("H0H 0H0");
-
-        address = RestUtils.restUpdate(context, address, EmployeeAddress.class.getSimpleName(), EmployeeAddress.class, null, mediaType, true);
-        assertNotNull("Employee address create failed.", address);
-        assertTrue("Queen street".equals(address.getStreet()));
-        assertTrue("H0H 0H0".equals(address.getPostalCode()));
-
-        // update employee with address
-        String result = RestUtils.restUpdateBidirectionalRelationship(context, String.valueOf(employee.getId()), Employee.class.getSimpleName(), "address", address, mediaType, null, true);
-        assertNotNull(result);
-
-        // make sure that response from restUpdateBidirectionalRelationship contains newly added address in employee object
-        String addressLinkHref = getServerURI() + "/entity/EmployeeAddress/" + address.getId();
-        assertTrue(result.contains(addressLinkHref));
-
-        // read employee with an addresss
-        String employeeWithAddress = RestUtils.restRead(context, employee.getId(), Employee.class.getSimpleName(), null, mediaType);
-        assertNotNull("Employee read failed.", employeeWithAddress);
-        // make sure employee has address
-        assertTrue(employeeWithAddress.contains(addressLinkHref));
-
-        // delete employee (cascade deletes address)
-        RestUtils.restDelete(context, employee.getId(), Employee.class.getSimpleName(), Employee.class, null, null, mediaType);
-    }
-
-    private void getEmployeeAddressSingleResultNamedQueryWithBinaryData(MediaType mediaType) throws Exception {
-        EmployeeAddress address = new EmployeeAddress("Newyork City", "USA", "NY", "10005", "Wall Street");
+    @Override
+    protected void getEmployeeAddressSingleResultNamedQueryWithBinaryData(MediaType mediaType) throws Exception {
+        EmployeeAddress address = new EmployeeAddress("New York City", "USA", "NY", "10005", "Wall Street");
         byte[] manhattan = RestUtils.convertImageToByteArray("manhattan.png");
         address.setAreaPicture(manhattan);
 
-        address = RestUtils.restUpdate(context, address, EmployeeAddress.class.getSimpleName(), EmployeeAddress.class, null, MediaType.APPLICATION_JSON_TYPE, true);
+        address = RestUtils.restUpdate(context, address, EmployeeAddress.class, null, MediaType.APPLICATION_JSON_TYPE, true);
         assertNotNull("EmployeeAddress create failed.", address);
         assertNotNull("EmployeeAddress area picture is null", address.getAreaPicture());
-        assertTrue("Newyork City".equals(address.getCity()));
+        assertTrue("New York City".equals(address.getCity()));
         assertTrue("USA".equals(address.getCountry()));
         assertTrue("NY".equals(address.getProvince()));
         assertTrue("10005".equals(address.getPostalCode()));
@@ -693,27 +122,28 @@ public class ServerEmployeeV2Test extends BaseJparsTest {
         // query
         if (mediaType == MediaType.APPLICATION_XML_TYPE) {
             String expected = "<areaPicture>89504E470D0A1A0A0000000D49484452000000960000009608030000000BDF81D000000300504C5445CFDEE2EFEFEFE6E6E6F7F7F7FFFFFFDEDEDEF7FDFF00C4F163DBF608C6F153D7F6D6F6FDEBFAFD99E7F9F0FCFE30CFF4B6EEFB21CCF310C8F258D8F68BE4F9CFF4FCDFF8FD7DE1F8E6F9FEBCEFFB3BD2F4C3F1FC84E3F84AD5F53AD1F46BDDF717C9F295E6F919CAF272DEF7A8EBFAA6EAFAACECFA29CDF345D0F143D4F586E1F688DAEE6ED9F1E9F4F6A3DDEAD5DDDFA2E0EFD7F1F7CFE6EA0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000003A4D766F00000A084944415478DAE55CDB72DC36124537E05896E424BEC8962B4925D9AD4DEDD3FEFF67EC5BDED74E7993527CD9B5654983466F0304392087177088E1A86AC7374933260F4F779FBE002418751F5FA8FEFF60B1E3FB08CB6904E27B070BE48F41473579749F7C4B9B489933D9468503462227D74C00E15BAB8FCE964B2943E0DAAE4786D581A0EF89CBF7E1D07C6C58FD71E703731A9A59CD860987129908C78AC4F113133F70C730228F9B571B3E0A2C65F7F4BEC3C202FD77FDD7713E0D0C51AA0F84EB5C3DFF7CE5F04BBFCE62C5152A8675D97A4C576797784523C1C066D8010F15880F94BAD1833E4DA212167CA65CD7882F7FF7A458EE4F38080247DEA341F53A9011FD612FBF0CDA886D90D5610D390C5B17574A3DFBB722335C5B546EEF59EBD3DD83C042DC28B521D6C31F50105C0B7C65BD96117FB81685B81D3B3685F4132B325E87ADF377DE4E44389A2F9D10A645B798711DB6EEBCBFDF8E6A8F1064A0FA57AF1589AFE4CFAD9A6A731CC44A91578225D1FFF22A47A881068B583C80666DD4C6D2E881EB776120291E80AD679FD5D9ED4411181902BB5EAA7EAFD4899BE87378A21B2A0FEB04FCD938BF855C05163E735E9660499D7F0097D79FBC8DEE264ECC13C88AB3F5689C0CAAD9E0558DF8E87A41CB7D305868265A1CEE68E93AB0BEBEEEAD093451858E72BAB1E2B04ECF07E25F8749A00EB53B9163695D59AF06EBD1DBC6713A641804499500723EF0153C00385A09D6F3FFC42F3EFFDC04A3B5D5D9D957C95220DBD8ED38E933DC3A139B0F8D4F6DD0F9A64B52B250435A7E49996CDB1108C0ABB0F5707B9AB717EAC92FFEAA597E868C5571A52326E629AD2FA9F2E9A48FEFE8C3DFFED002C70FB3424351FDDC77161A08E287B91F5B41542F13177EF149BD70AF31A447636AE726E79082B6196408C2C5FD725F92ACA4E47AAB2E7E3FE1FA0CDAB838C4D102D326F99A078A8972B0427F1F5F1FD55F3EE0C3EBC088AB144BA94AA9F4B62F1413A3EE0FBA72B0126348717AE5CEDEF9830B4FE8ACB5D2B0C6C64B77F8ED9DCE159B9D9E27A32C9182F36F7E0BFD72DD5AB37C237E3ED802756AFA52917802C9555F5CF3DD7FAB09047A6D90FE59831FD4381C8045DAC1218C7879D3AE8999EBB988288131E2EA3CD012065D0171342C0F0BFFECCCDCDCB6C489EB7548235EE9BB6BE6E2B01EA7D5DFE9E6A4C54604686840D6757C23015E06D6451A4E68DFDD0DB4AC0349D0C49F1B5714D6C969EA59CFF0D6F5A991246D6DED6866D6F53A68115897290B2FBF48ABEC867A4343A319A26E3D4AC8D6933709ACEFF0F6B67FC2A789335412C3FA6C09582625EBDDDDDDD0CC544F773CFE681E5701239E7E4CBEF9FEC68475802557E98AA83C2555E64FD7FC59F1C2634A622800EB6C93B8F5A7EBE1B1777ED68702464C62EBFBF73765DCB500ACAD139FBE16C1A412475C0E0BB7527AEE7CCE655B00D8625C8983DFC4A4AC1C2E0CA2E56C9D5E345FBEF2C51370F6DE90E1A1DC7258275B67BAAD0B19B0B488AC02B0DCD6B7CEAAC249F29E46B784AC02B03E5CF4E8342BD8CFF1C93A5FD62F6F319215547DD7F8BFD5FB683DD515D762B64E7E4C6AD4B4A0813DDCAB99E12C86F5EA5FA9369B4463F7D81458AE3A4DDAC3EFFE6C08B26ADE7E2DD519E12C8695E46976EDC32E08C6C5B09E069EE0DBC75F7DFD9A931E8BF7F1AE866053C2883FBDB1EF157D4AE65BD2AE4AA383A48FC59678D1F99BC7FF6046D35ECAD7928590D687F530FCFDC7573F6E6E9F86D31BD889AB7D370F1799D83CBDFC550DCC62EA5295F202135C41973FFB75C0145CCDDB94659C67CFBD613D7D52F5141F5FA8E7DF8C0F3D2A9FCBB2272DF6AD709A27BF79A1FFE79859AC8824BB99BEBF7775FA25D4333F7C78F596AE06DD46AA54E7A7B8AC1920A736AC87820B5DFE21DCB01B3E4425FB1CB66A65356A0E0A45E2F8C9C200D2449B433EACC591387E5948359979CE05A574CBE5E61770D3566CB69A2CEFC772636C1335AC800DB2948FB26BABFC5454606023B19F83CACC91AEC5B0B4562E776B3EAE6844073AF373C18854AD63F7FF9FA6625BCC16E5D6EC90ACE56B7DB09C5837E65A1DE0B5749E988F0AEADA7ED0F5A5A1D67BA5EA70AF5A9A436C866FD61AE9D7817D8264D74F864BFA73332030B003C85FB0BF8874E58673AA02DDD4D0E1E31E92EBDB320213453319D216EB6DE5612D3EB515D5254AF69441A24F7EFB797B731D3B89885A14F61851722BFA8187DF282024697109D35AEBABAD923DF393B6086D386DD2DF76FE779BBF5D58CD75208AB511C3C6E86E71372F5ED0F31AFC2A54AAD57501B78089DBE28811A72D53933563524450A1F24BBF8C8DBD124B52FBBE0C9C8D6A77BC32D52FC8E9A1DAC06C21161C959AEBEDBE0D6CBB3CCE3DD736B226B5216E268B61EC9DC1A745E7977FE3FA1CC08E34EC2FA7D9F589AE2A2C096314C163E79C84631009EB8392FCDD0F429F83C9CE27C788D1B972340B6D5C180F6E2EFD0FFA88F3DEED34A1381BF8250B2E927CE6544E467B0351E51F1476EFDB6A13BFDFB1E1D9DCF40DCBCDFE30674C89206829806A26D00216037FA28B3DF7C3A29AEFF3F15A325CCCFBBCFF98F1A6D3E08DE765407BA120174F67332A0876D94EAFA70542FB9CE25BEB2A8B493E433431AB61542E368698A93D0ED8AFB0C1ACD968BCD1A2BE52082E061B0EFCA0645EB248E0ACE436015B628F4D88AFA9850AC1414CB6A9842D40A83F5C147E2D1509EE16CC7DB07261BAEA486E68CD29746936AC93402500DEB98DC35839128894016D9233A25A94133BFE8EFD3796136FA33C7C42842A8ABA50CD4652A3F8BD968F3545132F8CC456F438B4FD296A3BFF4E37F6B0F024D613C9107FF241DA9BC3BA6C6592D5CE173DC3055FF641B321A259CBF194A970A346F76E0DBFF56C584E394B293B76D3BD25BDD9B2B8D10D3E5D157C694DB35B057661719672E74C69E4CAB6F3BFE40BE7CB058E3C0A450F7A6BDC8E112B1B4E90B5EBE33D56B4A18946A82EA165F4785563B7A29BF9E9AEE74D487B6BAA3A270643D849512218E4F7C40648635EDC61CB8BDC44FBB7731796AF0BA03589A0AAC0F3E042CF14575D9AA5836957E9C002624894A47756EA46FABB5D4313D4B68AB6B39851A8756039EF8B63D38E9E3BD65A0140D141776E5EE68AA2CC877AB46171251EC3B87AEFA30B67ACF0C078F0DA07994B9F6D58CD850FF8FCAE05B38698AE728B6C505D5830118BFBACC341B69F0F550CBCDB75ED912FB73481A32858D208CE9A83B5D81A1F9C13CCD8D1932EB94C3EC263444E451626F6C5CC4145CD304530ED516AD66CCD5861C876A83D58EAB0358D6AD64E319F64F8C1820168608BA7A3C4CEF2585EBCB1CC4C5025D948CF3360899799182610CEA66A0D585CDDDDB1F60BA7DFE7233C960E47DB50EB3400A8E3C01AA48CB4B42CF668B006D4DD6276D3711058FDF5E571008DB51873EB90C3C0E21D4C78E487427A58DD6D1FEEF80FAAC4DD25C1A3845E77B082367DE8A0EB5F533B8211536E8C53F780AA60449D8ABABA272F4C968E49DF17547E71C59BCDAAFE87021D8F2D3F4BF40B4400F707D5411F2CBAE0F53F4891BE36E04AC8330000000049454E44AE426082</areaPicture>";
-            String result = RestUtils.restNamedSingleResultQuery(context, "EmployeeAddress.getPicture", parameters, null, mediaType);
+            String result = RestUtils.restNamedSingleResultQueryResult(context, "EmployeeAddress.getPicture", parameters, null, mediaType);
             assertNotNull(result);
             assertTrue(result.contains(expected));
         } else if (mediaType == MediaType.APPLICATION_JSON_TYPE) {
             String expected = "\"areaPicture\":\"89504E470D0A1A0A0000000D49484452000000960000009608030000000BDF81D000000300504C5445CFDEE2EFEFEFE6E6E6F7F7F7FFFFFFDEDEDEF7FDFF00C4F163DBF608C6F153D7F6D6F6FDEBFAFD99E7F9F0FCFE30CFF4B6EEFB21CCF310C8F258D8F68BE4F9CFF4FCDFF8FD7DE1F8E6F9FEBCEFFB3BD2F4C3F1FC84E3F84AD5F53AD1F46BDDF717C9F295E6F919CAF272DEF7A8EBFAA6EAFAACECFA29CDF345D0F143D4F586E1F688DAEE6ED9F1E9F4F6A3DDEAD5DDDFA2E0EFD7F1F7CFE6EA0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000003A4D766F00000A084944415478DAE55CDB72DC36124537E05896E424BEC8962B4925D9AD4DEDD3FEFF67EC5BDED74E7993527CD9B5654983466F0304392087177088E1A86AC7374933260F4F779FBE002418751F5FA8FEFF60B1E3FB08CB6904E27B070BE48F41473579749F7C4B9B489933D9468503462227D74C00E15BAB8FCE964B2943E0DAAE4786D581A0EF89CBF7E1D07C6C58FD71E703731A9A59CD860987129908C78AC4F113133F70C730228F9B571B3E0A2C65F7F4BEC3C202FD77FDD7713E0D0C51AA0F84EB5C3DFF7CE5F04BBFCE62C5152A8675D97A4C576797784523C1C066D8010F15880F94BAD1833E4DA212167CA65CD7882F7FF7A458EE4F38080247DEA341F53A9011FD612FBF0CDA886D90D5610D390C5B17574A3DFBB722335C5B546EEF59EBD3DD83C042DC28B521D6C31F50105C0B7C65BD96117FB81685B81D3B3685F4132B325E87ADF377DE4E44389A2F9D10A645B798711DB6EEBCBFDF8E6A8F1064A0FA57AF1589AFE4CFAD9A6A731CC44A91578225D1FFF22A47A881068B583C80666DD4C6D2E881EB776120291E80AD679FD5D9ED4411181902BB5EAA7EAFD4899BE87378A21B2A0FEB04FCD938BF855C05163E735E9660499D7F0097D79FBC8DEE264ECC13C88AB3F5689C0CAAD9E0558DF8E87A41CB7D305868265A1CEE68E93AB0BEBEEEAD093451858E72BAB1E2B04ECF07E25F8749A00EB53B9163695D59AF06EBD1DBC6713A641804499500723EF0153C00385A09D6F3FFC42F3EFFDC04A3B5D5D9D957C95220DBD8ED38E933DC3A139B0F8D4F6DD0F9A64B52B250435A7E49996CDB1108C0ABB0F5707B9AB717EAC92FFEAA597E868C5571A52326E629AD2FA9F2E9A48FEFE8C3DFFED002C70FB3424351FDDC77161A08E287B91F5B41542F13177EF149BD70AF31A447636AE726E79082B6196408C2C5FD725F92ACA4E47AAB2E7E3FE1FA0CDAB838C4D102D326F99A078A8972B0427F1F5F1FD55F3EE0C3EBC088AB144BA94AA9F4B62F1413A3EE0FBA72B0126348717AE5CEDEF9830B4FE8ACB5D2B0C6C64B77F8ED9DCE159B9D9E27A32C9182F36F7E0BFD72DD5AB37C237E3ED802756AFA52917802C9555F5CF3DD7FAB09047A6D90FE59831FD4381C8045DAC1218C7879D3AE8999EBB988288131E2EA3CD012065D0171342C0F0BFFECCCDCDCB6C489EB7548235EE9BB6BE6E2B01EA7D5DFE9E6A4C54604686840D6757C23015E06D6451A4E68DFDD0DB4AC0349D0C49F1B5714D6C969EA59CFF0D6F5A991246D6DED6866D6F53A68115897290B2FBF48ABEC867A4343A319A26E3D4AC8D6933709ACEFF0F6B67FC2A789335412C3FA6C09582625EBDDDDDDD0CC544F773CFE681E5701239E7E4CBEF9FEC68475802557E98AA83C2555E64FD7FC59F1C2634A622800EB6C93B8F5A7EBE1B1777ED68702464C62EBFBF73765DCB500ACAD139FBE16C1A412475C0E0BB7527AEE7CCE655B00D8625C8983DFC4A4AC1C2E0CA2E56C9D5E345FBEF2C51370F6DE90E1A1DC7258275B67BAAD0B19B0B488AC02B0DCD6B7CEAAC249F29E46B784AC02B03E5CF4E8342BD8CFF1C93A5FD62F6F319215547DD7F8BFD5FB683DD515D762B64E7E4C6AD4B4A0813DDCAB99E12C86F5EA5FA9369B4463F7D81458AE3A4DDAC3EFFE6C08B26ADE7E2DD519E12C8695E46976EDC32E08C6C5B09E069EE0DBC75F7DFD9A931E8BF7F1AE866053C2883FBDB1EF157D4AE65BD2AE4AA383A48FC59678D1F99BC7FF6046D35ECAD7928590D687F530FCFDC7573F6E6E9F86D31BD889AB7D370F1799D83CBDFC550DCC62EA5295F202135C41973FFB75C0145CCDDB94659C67CFBD613D7D52F5141F5FA8E7DF8C0F3D2A9FCBB2272DF6AD709A27BF79A1FFE79859AC8824BB99BEBF7775FA25D4333F7C78F596AE06DD46AA54E7A7B8AC1920A736AC87820B5DFE21DCB01B3E4425FB1CB66A65356A0E0A45E2F8C9C200D2449B433EACC591387E5948359979CE05A574CBE5E61770D3566CB69A2CEFC772636C1335AC800DB2948FB26BABFC5454606023B19F83CACC91AEC5B0B4562E776B3EAE6844073AF373C18854AD63F7FF9FA6625BCC16E5D6EC90ACE56B7DB09C5837E65A1DE0B5749E988F0AEADA7ED0F5A5A1D67BA5EA70AF5A9A436C866FD61AE9D7817D8264D74F864BFA73332030B003C85FB0BF8874E58673AA02DDD4D0E1E31E92EBDB320213453319D216EB6DE5612D3EB515D5254AF69441A24F7EFB797B731D3B89885A14F61851722BFA8187DF282024697109D35AEBABAD923DF393B6086D386DD2DF76FE779BBF5D58CD75208AB511C3C6E86E71372F5ED0F31AFC2A54AAD57501B78089DBE28811A72D53933563524450A1F24BBF8C8DBD124B52FBBE0C9C8D6A77BC32D52FC8E9A1DAC06C21161C959AEBEDBE0D6CBB3CCE3DD736B226B5216E268B61EC9DC1A745E7977FE3FA1CC08E34EC2FA7D9F589AE2A2C096314C163E79C84631009EB8392FCDD0F429F83C9CE27C788D1B972340B6D5C180F6E2EFD0FFA88F3DEED34A1381BF8250B2E927CE6544E467B0351E51F1476EFDB6A13BFDFB1E1D9DCF40DCBCDFE30674C89206829806A26D00216037FA28B3DF7C3A29AEFF3F15A325CCCFBBCFF98F1A6D3E08DE765407BA120174F67332A0876D94EAFA70542FB9CE25BEB2A8B493E433431AB61542E368698A93D0ED8AFB0C1ACD968BCD1A2BE52082E061B0EFCA0645EB248E0ACE436015B628F4D88AFA9850AC1414CB6A9842D40A83F5C147E2D1509EE16CC7DB07261BAEA486E68CD29746936AC93402500DEB98DC35839128894016D9233A25A94133BFE8EFD3796136FA33C7C42842A8ABA50CD4652A3F8BD968F3545132F8CC456F438B4FD296A3BFF4E37F6B0F024D613C9107FF241DA9BC3BA6C6592D5CE173DC3055FF641B321A259CBF194A970A346F76E0DBFF56C584E394B293B76D3BD25BDD9B2B8D10D3E5D157C694DB35B057661719672E74C69E4CAB6F3BFE40BE7CB058E3C0A450F7A6BDC8E112B1B4E90B5EBE33D56B4A18946A82EA165F4785563B7A29BF9E9AEE74D487B6BAA3A270643D849512218E4F7C40648635EDC61CB8BDC44FBB7731796AF0BA03589A0AAC0F3E042CF14575D9AA5836957E9C002624894A47756EA46FABB5D4313D4B68AB6B39851A8756039EF8B63D38E9E3BD65A0140D141776E5EE68AA2CC877AB46171251EC3B87AEFA30B67ACF0C078F0DA07994B9F6D58CD850FF8FCAE05B38698AE728B6C505D5830118BFBACC341B69F0F550CBCDB75ED912FB73481A32858D208CE9A83B5D81A1F9C13CCD8D1932EB94C3EC263444E451626F6C5CC4145CD304530ED516AD66CCD5861C876A83D58EAB0358D6AD64E319F64F8C1820168608BA7A3C4CEF2585EBCB1CC4C5025D948CF3360899799182610CEA66A0D585CDDDDB1F60BA7DFE7233C960E47DB50EB3400A8E3C01AA48CB4B42CF668B006D4DD6276D3711058FDF5E571008DB51873EB90C3C0E21D4C78E487427A58DD6D1FEEF80FAAC4DD25C1A3845E77B082367DE8A0EB5F533B8211536E8C53F780AA60449D8ABABA272F4C968E49DF17547E71C59BCDAAFE87021D8F2D3F4BF40B4400F707D5411F2CBAE0F53F4891BE36E04AC8330000000049454E44AE426082\"";
-            String result = RestUtils.restNamedSingleResultQuery(context, "EmployeeAddress.getPicture", parameters, null, mediaType);
+            String result = RestUtils.restNamedSingleResultQueryResult(context, "EmployeeAddress.getPicture", parameters, null, mediaType);
             assertNotNull(result);
             assertTrue(result.contains(expected));
         } else if (mediaType == MediaType.APPLICATION_OCTET_STREAM_TYPE) {
-            byte[] expectedResult = RestUtils.restNamedSingleResultQueryInByteArray(context, "EmployeeAddress.getPicture", pu, parameters, null, mediaType);
+            byte[] expectedResult = RestUtils.restNamedSingleResultQueryInByteArray(context, "EmployeeAddress.getPicture", parameters, null, mediaType);
             assertTrue(Arrays.equals(manhattan, expectedResult));
         } else {
             // unsupported media type
-            throw new RestCallFailedException(Status.BAD_REQUEST);
+            throw new RestCallFailedException(Response.Status.BAD_REQUEST);
         }
 
         // delete employee address
-        RestUtils.restDelete(context, address.getId(), EmployeeAddress.class.getSimpleName(), EmployeeAddress.class, null, null, MediaType.APPLICATION_JSON_TYPE);
+        RestUtils.restDelete(context, address.getId(), EmployeeAddress.class);
     }
 
-    private void executeMultiResultQueryMax(MediaType mediaType) throws Exception {
+    @Override
+    protected void executeMultiResultQueryMax(MediaType mediaType) throws Exception {
         // create an employee
         Employee employee1 = new Employee();
         employee1.setFirstName("Miles");
@@ -721,7 +151,7 @@ public class ServerEmployeeV2Test extends BaseJparsTest {
         employee1.setGender(Gender.Male);
         employee1.setSalary(20000.0);
 
-        employee1 = RestUtils.restUpdate(context, employee1, Employee.class.getSimpleName(), Employee.class, null, mediaType, true);
+        employee1 = RestUtils.restUpdate(context, employee1, Employee.class, null, mediaType, true);
         assertNotNull("Employee1 create failed.", employee1);
 
         // create another employee
@@ -731,11 +161,11 @@ public class ServerEmployeeV2Test extends BaseJparsTest {
         employee2.setGender(Gender.Male);
         employee2.setSalary(30000.0);
 
-        employee2 = RestUtils.restUpdate(context, employee2, Employee.class.getSimpleName(), Employee.class, null, mediaType, true);
+        employee2 = RestUtils.restUpdate(context, employee2, Employee.class, null, mediaType, true);
         assertNotNull("Employee2 create failed.", employee2);
 
         // query
-        String queryResult = RestUtils.restNamedMultiResultQuery(context, "Employee.salaryMax", null, null, mediaType);
+        String queryResult = RestUtils.restNamedMultiResultQueryResult(context, "Employee.salaryMax", null, null, mediaType);
         assertNotNull(queryResult);
 
         if (mediaType == MediaType.APPLICATION_JSON_TYPE) {
@@ -746,15 +176,16 @@ public class ServerEmployeeV2Test extends BaseJparsTest {
             assertTrue(queryResult.contains("<id>" + employee2.getId() + "</id><max_salary>30000.0</max_salary>"));
         } else {
             // unsupported media type
-            throw new RestCallFailedException(Status.BAD_REQUEST);
+            throw new RestCallFailedException(Response.Status.BAD_REQUEST);
         }
 
         // delete employees
-        RestUtils.restDelete(context, employee1.getId(), Employee.class.getSimpleName(), Employee.class, null, null, mediaType);
-        RestUtils.restDelete(context, employee2.getId(), Employee.class.getSimpleName(), Employee.class, null, null, mediaType);
+        RestUtils.restDelete(context, employee1.getId(), Employee.class, mediaType);
+        RestUtils.restDelete(context, employee2.getId(), Employee.class, mediaType);
     }
 
-    private void executeSingleResultQueryMax(MediaType mediaType) throws Exception {
+    @Override
+    protected void executeSingleResultQueryMax(MediaType mediaType) throws Exception {
         // create an employee
         Employee employee = new Employee();
         employee.setFirstName("Miles");
@@ -762,11 +193,11 @@ public class ServerEmployeeV2Test extends BaseJparsTest {
         employee.setGender(Gender.Male);
         employee.setSalary(20000.0);
 
-        employee = RestUtils.restUpdate(context, employee, Employee.class.getSimpleName(), Employee.class, null, mediaType, true);
+        employee = RestUtils.restUpdate(context, employee, Employee.class, null, mediaType, true);
         assertNotNull("Employee create failed.", employee);
 
         // query
-        String queryResult = RestUtils.restNamedSingleResultQuery(context, "Employee.salaryMax", null, null, mediaType);
+        String queryResult = RestUtils.restNamedSingleResultQueryResult(context, "Employee.salaryMax", null, null, mediaType);
         assertNotNull(queryResult);
 
         if (mediaType == MediaType.APPLICATION_JSON_TYPE) {
@@ -775,21 +206,22 @@ public class ServerEmployeeV2Test extends BaseJparsTest {
             assertTrue(queryResult.contains("<id>" + employee.getId() + "</id><max_salary>20000.0</max_salary>"));
         } else {
             // unsupported media type
-            throw new RestCallFailedException(Status.BAD_REQUEST);
+            throw new RestCallFailedException(Response.Status.BAD_REQUEST);
         }
 
         // delete employee
-        RestUtils.restDelete(context, employee.getId(), Employee.class.getSimpleName(), Employee.class, null, null, mediaType);
+        RestUtils.restDelete(context, employee.getId(), Employee.class, mediaType);
     }
 
-    private void executeSingleResultQueryCount(MediaType mediaType) throws Exception {
+    @Override
+    protected void executeSingleResultQueryCount(MediaType mediaType) throws Exception {
         // create an employee
         Employee employee1 = new Employee();
         employee1.setFirstName("Miles");
         employee1.setLastName("Davis");
         employee1.setGender(Gender.Male);
 
-        employee1 = RestUtils.restUpdate(context, employee1, Employee.class.getSimpleName(), Employee.class, null, mediaType, true);
+        employee1 = RestUtils.restUpdate(context, employee1, Employee.class, null, mediaType, true);
         assertNotNull("Employee1 create failed.", employee1);
 
         // create another employee
@@ -798,11 +230,11 @@ public class ServerEmployeeV2Test extends BaseJparsTest {
         employee2.setLastName("Parker");
         employee2.setGender(Gender.Male);
 
-        employee2 = RestUtils.restUpdate(context, employee2, Employee.class.getSimpleName(), Employee.class, null, mediaType, true);
+        employee2 = RestUtils.restUpdate(context, employee2, Employee.class, null, mediaType, true);
         assertNotNull("Employee2 create failed.", employee2);
 
         // query
-        String queryResult = RestUtils.restNamedSingleResultQuery(context, "Employee.count", null, null, mediaType);
+        String queryResult = RestUtils.restNamedSingleResultQueryResult(context, "Employee.count", null, null, mediaType);
         assertNotNull(queryResult);
 
         if (mediaType == MediaType.APPLICATION_JSON_TYPE) {
@@ -811,22 +243,23 @@ public class ServerEmployeeV2Test extends BaseJparsTest {
             assertTrue(queryResult.contains("<COUNT>2</COUNT>"));
         } else {
             // unsupported media type
-            throw new RestCallFailedException(Status.BAD_REQUEST);
+            throw new RestCallFailedException(Response.Status.BAD_REQUEST);
         }
 
         // delete employees
-        RestUtils.restDelete(context, employee1.getId(), Employee.class.getSimpleName(), Employee.class, null, null, mediaType);
-        RestUtils.restDelete(context, employee2.getId(), Employee.class.getSimpleName(), Employee.class, null, null, mediaType);
+        RestUtils.restDelete(context, employee1.getId(), Employee.class, mediaType);
+        RestUtils.restDelete(context, employee2.getId(), Employee.class, mediaType);
     }
 
-    private void executeMultiResultQueryCount(MediaType mediaType) throws Exception {
+    @Override
+    protected void executeMultiResultQueryCount(MediaType mediaType) throws Exception {
         // create an employee
         Employee employee1 = new Employee();
         employee1.setFirstName("Miles");
         employee1.setLastName("Davis");
         employee1.setGender(Gender.Male);
 
-        employee1 = RestUtils.restUpdate(context, employee1, Employee.class.getSimpleName(), Employee.class, null, mediaType, true);
+        employee1 = RestUtils.restUpdate(context, employee1, Employee.class, null, mediaType, true);
         assertNotNull("Employee1 create failed.", employee1);
 
         // create another employee
@@ -835,11 +268,11 @@ public class ServerEmployeeV2Test extends BaseJparsTest {
         employee2.setLastName("Parker");
         employee2.setGender(Gender.Male);
 
-        employee2 = RestUtils.restUpdate(context, employee2, Employee.class.getSimpleName(), Employee.class, null, mediaType, true);
+        employee2 = RestUtils.restUpdate(context, employee2, Employee.class, null, mediaType, true);
         assertNotNull("Employee2 create failed.", employee2);
 
         // query
-        String queryResult = RestUtils.restNamedMultiResultQuery(context, "Employee.count", null, null, mediaType);
+        String queryResult = RestUtils.restNamedMultiResultQueryResult(context, "Employee.count", null, null, mediaType);
         assertNotNull(queryResult);
 
         if (mediaType == MediaType.APPLICATION_JSON_TYPE) {
@@ -850,22 +283,23 @@ public class ServerEmployeeV2Test extends BaseJparsTest {
                     getServerURI() + "/query/Employee.count\"/></result>"));
         } else {
             // unsupported media type
-            throw new RestCallFailedException(Status.BAD_REQUEST);
+            throw new RestCallFailedException(Response.Status.BAD_REQUEST);
         }
 
         // delete employees
-        RestUtils.restDelete(context, employee1.getId(), Employee.class.getSimpleName(), Employee.class, null, null, mediaType);
-        RestUtils.restDelete(context, employee2.getId(), Employee.class.getSimpleName(), Employee.class, null, null, mediaType);
+        RestUtils.restDelete(context, employee1.getId(), Employee.class, mediaType);
+        RestUtils.restDelete(context, employee2.getId(), Employee.class, mediaType);
     }
 
-    private void executeMultiResultQueryGetEmployeeWithDomainObject(MediaType mediaType) throws Exception {
+    @Override
+    protected void executeMultiResultQueryGetEmployeeWithDomainObject(MediaType mediaType) throws Exception {
         // create an employee
         Employee employee = new Employee();
         employee.setFirstName("Miles");
         employee.setLastName("Davis");
         employee.setGender(Gender.Male);
 
-        employee = RestUtils.restUpdate(context, employee, Employee.class.getSimpleName(), Employee.class, null, mediaType, true);
+        employee = RestUtils.restUpdate(context, employee, Employee.class, null, mediaType, true);
         assertNotNull("Employee create failed.", employee);
 
         // create a manager
@@ -874,19 +308,19 @@ public class ServerEmployeeV2Test extends BaseJparsTest {
         manager.setLastName("Parker");
         manager.setGender(Gender.Male);
 
-        manager = RestUtils.restUpdate(context, manager, Employee.class.getSimpleName(), Employee.class, null, mediaType, true);
+        manager = RestUtils.restUpdate(context, manager, Employee.class, null, mediaType, true);
         assertNotNull("Employee manager create failed.", manager);
 
         // update employee with manager
-        RestUtils.restUpdateBidirectionalRelationship(context, String.valueOf(employee.getId()), Employee.class.getSimpleName(), "manager", manager, mediaType, "managedEmployees", true);
+        RestUtils.restUpdateBidirectionalRelationship(context, String.valueOf(employee.getId()), Employee.class, "manager", manager, mediaType, "managedEmployees", true);
 
         // read manager and verify that the relationship is set correctly
-        manager = RestUtils.restRead(context, manager.getId(), Employee.class.getSimpleName(), Employee.class, null, mediaType);
+        manager = RestUtils.restReadObject(context, manager.getId(), Employee.class, mediaType);
         assertNotNull("Manager read failed.", manager);
         assertNotNull("Manager's managed employee list is null", manager.getManagedEmployees());
         assertTrue("Manager's managed employee list is empty", manager.getManagedEmployees().size() > 0);
 
-        employee = RestUtils.restRead(context, employee.getId(), Employee.class.getSimpleName(), Employee.class, null, mediaType);
+        employee = RestUtils.restReadObject(context, employee.getId(), Employee.class, mediaType);
         assertNotNull("Manager read failed.", employee);
 
         for (Employee emp : manager.getManagedEmployees()) {
@@ -895,7 +329,7 @@ public class ServerEmployeeV2Test extends BaseJparsTest {
         }
 
         // query
-        String queryResult = RestUtils.restNamedMultiResultQuery(context, "Employee.getManager", null, null, mediaType);
+        String queryResult = RestUtils.restNamedMultiResultQueryResult(context, "Employee.getManager", null, null, mediaType);
         if (mediaType == MediaType.APPLICATION_JSON_TYPE) {
             assertTrue(queryResult.contains("\"firstName\":\"Miles\""));
             assertTrue(queryResult.contains("\"lastName\":\"Davis\""));
@@ -906,42 +340,21 @@ public class ServerEmployeeV2Test extends BaseJparsTest {
             assertTrue(queryResult.contains("<links rel=\"self\" href=\"" + getServerURI() + "/entity/Employee/" + manager.getId() + "\"/>"));
         } else {
             // unsupported media type
-            throw new RestCallFailedException(Status.BAD_REQUEST);
+            throw new RestCallFailedException(Response.Status.BAD_REQUEST);
         }
 
         // delete employee
-        RestUtils.restDelete(context, employee.getId(), Employee.class.getSimpleName(), Employee.class, null, null, mediaType);
+        RestUtils.restDelete(context, employee.getId(), Employee.class, mediaType);
 
         // delete manager
-        RestUtils.restDelete(context, manager.getId(), Employee.class.getSimpleName(), Employee.class, null, null, mediaType);
+        RestUtils.restDelete(context, manager.getId(), Employee.class, mediaType);
     }
 
-    private void readEmployeeWithResponsibilities(MediaType mediaType) throws Exception {
-        // create an employee
-        Employee employee = new Employee();
-        employee.setId(11025);
-        employee.setFirstName("Miles");
-        employee.setLastName("Davis");
-
-        employee.addResponsibility("team lead");
-        employee.addResponsibility("standard lead");
-        employee.addResponsibility("er team member");
-
-        employee = RestUtils.restCreate(context, employee, Employee.class.getSimpleName(), Employee.class, null, mediaType, true);
-        assertNotNull("Employee create failed.", employee);
-
-        employee = RestUtils.restRead(context, 11025, Employee.class.getSimpleName(), Employee.class, null, mediaType);
-        assertNotNull(employee.getResponsibilities());
-        assertTrue(employee.getResponsibilities().size() == 3);
-
-        // delete employee
-        RestUtils.restDelete(context, 11025, Employee.class.getSimpleName(), Employee.class, null, null, mediaType);
-    }
-
-    private void executeQueryGetAll(MediaType mediaType) throws Exception {
+    @Override
+    protected void executeQueryGetAll(MediaType mediaType) throws Exception {
         // Create address1
         EmployeeAddress address1 = new EmployeeAddress("Newyork City", "USA", "NY", "10005", "Wall Street");
-        address1 = RestUtils.restUpdate(context, address1, EmployeeAddress.class.getSimpleName(), EmployeeAddress.class, null, mediaType, true);
+        address1 = RestUtils.restUpdate(context, address1, EmployeeAddress.class, null, mediaType, true);
         assertNotNull("EmployeeAddress create failed.", address1);
         assertTrue("Newyork City".equals(address1.getCity()));
         assertTrue("USA".equals(address1.getCountry()));
@@ -951,7 +364,7 @@ public class ServerEmployeeV2Test extends BaseJparsTest {
 
         // Create address2
         EmployeeAddress address2 = new EmployeeAddress("Ottawa", "Canada", "Ontario", "K1Y 6F7", "Main Street");
-        address2 = RestUtils.restUpdate(context, address2, EmployeeAddress.class.getSimpleName(), EmployeeAddress.class, null, mediaType, true);
+        address2 = RestUtils.restUpdate(context, address2, EmployeeAddress.class, null, mediaType, true);
         assertNotNull("EmployeeAddress create failed.", address2);
         assertTrue("Ottawa".equals(address2.getCity()));
         assertTrue("Canada".equals(address2.getCountry()));
@@ -960,20 +373,21 @@ public class ServerEmployeeV2Test extends BaseJparsTest {
         assertTrue("Main Street".equals(address2.getStreet()));
 
         // Query
-        final String result = RestUtils.restNamedMultiResultQuery(context, "EmployeeAddress.getAll", null, null, mediaType);
+        final String result = RestUtils.restNamedMultiResultQueryResult(context, "EmployeeAddress.getAll", null, null, mediaType);
 
         assertTrue("Address1 is missing in the result", result.contains(getServerURI() + "/entity/EmployeeAddress/" + address1.getId()));
         assertTrue("Address2 is missing in the result", result.contains(getServerURI() + "/entity/EmployeeAddress/" + address2.getId()));
 
         // Delete employee addresses
-        RestUtils.restDelete(context, address1.getId(), EmployeeAddress.class.getSimpleName(), EmployeeAddress.class, null, null, mediaType);
-        RestUtils.restDelete(context, address2.getId(), EmployeeAddress.class.getSimpleName(), EmployeeAddress.class, null, null, mediaType);
+        RestUtils.restDelete(context, address1.getId(), EmployeeAddress.class, mediaType);
+        RestUtils.restDelete(context, address2.getId(), EmployeeAddress.class, mediaType);
     }
 
-    private void executeMultiResultQueryGetEmployeeAddressWithSimpleFields(MediaType mediaType) throws Exception {
+    @Override
+    protected void executeMultiResultQueryGetEmployeeAddressWithSimpleFields(MediaType mediaType) throws Exception {
         // create address1
         EmployeeAddress address1 = new EmployeeAddress("Washington", "USA", "WA", "99999", "Main");
-        address1 = RestUtils.restUpdate(context, address1, EmployeeAddress.class.getSimpleName(), EmployeeAddress.class, null, mediaType, true);
+        address1 = RestUtils.restUpdate(context, address1, EmployeeAddress.class, null, mediaType, true);
         assertNotNull("EmployeeAddress create failed.", address1);
         assertTrue("Washington".equals(address1.getCity()));
         assertTrue("USA".equals(address1.getCountry()));
@@ -983,7 +397,7 @@ public class ServerEmployeeV2Test extends BaseJparsTest {
 
         // create address2
         EmployeeAddress address2 = new EmployeeAddress("Halifax", "Canada", "NS", "K1A5A7", "Queen");
-        address2 = RestUtils.restUpdate(context, address2, EmployeeAddress.class.getSimpleName(), EmployeeAddress.class, null, mediaType, true);
+        address2 = RestUtils.restUpdate(context, address2, EmployeeAddress.class, null, mediaType, true);
         assertNotNull("EmployeeAddress create failed.", address2);
         assertTrue("Halifax".equals(address2.getCity()));
         assertTrue("Canada".equals(address2.getCountry()));
@@ -992,7 +406,7 @@ public class ServerEmployeeV2Test extends BaseJparsTest {
         assertTrue("Queen".equals(address2.getStreet()));
 
         // query
-        String result = RestUtils.restNamedMultiResultQuery(context, "EmployeeAddress.getRegion", null, null, mediaType);
+        String result = RestUtils.restNamedMultiResultQueryResult(context, "EmployeeAddress.getRegion", null, null, mediaType);
         assertNotNull(result);
         if (mediaType == MediaType.APPLICATION_JSON_TYPE) {
             assertTrue(result.contains("{\"postalCode\":\"99999\",\"province\":\"WA\",\"street\":\"Main\"}"));
@@ -1006,20 +420,21 @@ public class ServerEmployeeV2Test extends BaseJparsTest {
                     getServerURI() + "/query/EmployeeAddress.getRegion\"/>"));
         } else {
             // unsupported media type
-            throw new RestCallFailedException(Status.BAD_REQUEST);
+            throw new RestCallFailedException(Response.Status.BAD_REQUEST);
         }
 
         // delete employee address
-        RestUtils.restDelete(context, address1.getId(), EmployeeAddress.class.getSimpleName(), EmployeeAddress.class, null, null, mediaType);
-        RestUtils.restDelete(context, address2.getId(), EmployeeAddress.class.getSimpleName(), EmployeeAddress.class, null, null, mediaType);
+        RestUtils.restDelete(context, address1.getId(), EmployeeAddress.class, mediaType);
+        RestUtils.restDelete(context, address2.getId(), EmployeeAddress.class, mediaType);
     }
 
-    private void executeSingleResultQuery(MediaType mediaType) throws Exception {
+    @Override
+    protected void executeSingleResultQuery(MediaType mediaType) throws Exception {
         EmployeeAddress address = new EmployeeAddress("Newyork City", "USA", "NY", "10005", "Wall Street");
         address.setId(9112);
         address.setAreaPicture(RestUtils.convertImageToByteArray("manhattan.png"));
 
-        address = RestUtils.restCreate(context, address, EmployeeAddress.class.getSimpleName(), EmployeeAddress.class, null, mediaType, true);
+        address = RestUtils.restCreate(context, address, EmployeeAddress.class, mediaType);
 
         assertNotNull("EmployeeAddress create failed.", address);
         assertNotNull("EmployeeAddress area picture is null", address.getAreaPicture());
@@ -1031,7 +446,7 @@ public class ServerEmployeeV2Test extends BaseJparsTest {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("id", address.getId());
 
-        String result = RestUtils.restNamedSingleResultQuery(context, "EmployeeAddress.getById", parameters, null, mediaType);
+        String result = RestUtils.restNamedSingleResultQueryResult(context, "EmployeeAddress.getById", parameters, null, mediaType);
         assertNotNull(result);
 
         if (mediaType == MediaType.APPLICATION_JSON_TYPE) {
@@ -1059,48 +474,32 @@ public class ServerEmployeeV2Test extends BaseJparsTest {
             assertTrue(result.contains("<links rel=\"canonical\" href=\"" + getServerURI() + "/entity/EmployeeAddress/9112\"/>"));
         } else {
             // unsupported media type
-            throw new RestCallFailedException(Status.BAD_REQUEST);
+            throw new RestCallFailedException(Response.Status.BAD_REQUEST);
         }
 
         // delete employee address
-        RestUtils.restDelete(context, address.getId(), EmployeeAddress.class.getSimpleName(), EmployeeAddress.class, null, null, mediaType);
+        RestUtils.restDelete(context, address.getId(), EmployeeAddress.class, mediaType);
     }
 
-    private void createEmployeeAddressWithBinaryData(MediaType mediaType) throws Exception {
-        EmployeeAddress address = new EmployeeAddress("Newyork City", "USA", "NY", "10005", "Wall Street");
-        address.setAreaPicture(RestUtils.convertImageToByteArray("manhattan.png"));
-
-        address = RestUtils.restUpdate(context, address, EmployeeAddress.class.getSimpleName(), EmployeeAddress.class, null, mediaType, true);
-        assertNotNull("EmployeeAddress create failed.", address);
-        assertNotNull("EmployeeAddress area picture is null", address.getAreaPicture());
-        assertTrue("Newyork City".equals(address.getCity()));
-        assertTrue("USA".equals(address.getCountry()));
-        assertTrue("NY".equals(address.getProvince()));
-        assertTrue("10005".equals(address.getPostalCode()));
-        assertTrue("Wall Street".equals(address.getStreet()));
-
-        // delete employee address
-        RestUtils.restDelete(context, address.getId(), EmployeeAddress.class.getSimpleName(), EmployeeAddress.class, null, null, mediaType);
-    }
-
-    private void updateEmployeeWithProject(MediaType mediaType, boolean removeAllProjects) throws Exception {
+    @Override
+    protected void updateEmployeeWithProject(MediaType mediaType, boolean removeAllProjects) throws Exception {
         // create an employee
         Employee employee = new Employee();
         employee.setFirstName("Charles");
         employee.setLastName("Mingus");
         employee.setGender(Gender.Male);
 
-        employee = RestUtils.restUpdate(context, employee, Employee.class.getSimpleName(), Employee.class, null, mediaType, true);
+        employee = RestUtils.restUpdate(context, employee, Employee.class, null, mediaType, true);
         assertNotNull("Employee create failed.", employee);
 
         // create a small project
         SmallProject smallProject = new SmallProject("SmallProject", "This is a small project.");
 
-        smallProject = RestUtils.restUpdate(context, smallProject, SmallProject.class.getSimpleName(), SmallProject.class, null, mediaType, true);
+        smallProject = RestUtils.restUpdate(context, smallProject, SmallProject.class, null, mediaType, true);
         assertNotNull("SmallProject create failed.", smallProject);
 
         // update employee with small project
-        RestUtils.restUpdateBidirectionalRelationship(context, String.valueOf(employee.getId()), Employee.class.getSimpleName(), "projects", smallProject,
+        RestUtils.restUpdateBidirectionalRelationship(context, String.valueOf(employee.getId()), Employee.class, "projects", smallProject,
                 mediaType, "teamLeader", true);
 
         // create a large project
@@ -1108,15 +507,15 @@ public class ServerEmployeeV2Test extends BaseJparsTest {
         largeProject.setName("LargeProject");
         largeProject.setBudget(100000);
 
-        largeProject = RestUtils.restUpdate(context, largeProject, LargeProject.class.getSimpleName(), LargeProject.class, null, mediaType, true);
+        largeProject = RestUtils.restUpdate(context, largeProject, LargeProject.class, null, mediaType, true);
         assertNotNull("LargeProject create failed.", largeProject);
 
         // update employee with large project
-        RestUtils.restUpdateBidirectionalRelationship(context, String.valueOf(employee.getId()), Employee.class.getSimpleName(), "projects", largeProject,
+        RestUtils.restUpdateBidirectionalRelationship(context, String.valueOf(employee.getId()), Employee.class, "projects", largeProject,
                 mediaType, "teamLeader", true);
 
         // read employee and verify that the relationship is set correctly for the projects
-        final Employee employeeUpdated = RestUtils.restRead(context, employee.getId(), Employee.class.getSimpleName(), Employee.class, null, mediaType);
+        final Employee employeeUpdated = RestUtils.restReadObject(context, employee.getId(), Employee.class, mediaType);
         assertNotNull("Employee read failed.", employeeUpdated);
         assertTrue("Incorrect projects number", employeeUpdated.getProjects().size() == 2);
         assertTrue("SmallProject not found.", employeeUpdated.getProjects().get(0).getName().equals("SmallProject") || employeeUpdated.getProjects().get(1).getName().equals("SmallProject"));
@@ -1124,162 +523,47 @@ public class ServerEmployeeV2Test extends BaseJparsTest {
 
         if (removeAllProjects) {
             // Remove all projects
-            RestUtils.restRemoveBidirectionalRelationship(context, String.valueOf(employee.getId()), Employee.class.getSimpleName(), "projects", mediaType, "teamLeader", null);
+            RestUtils.restRemoveBidirectionalRelationship(context, String.valueOf(employee.getId()), Employee.class, "projects", mediaType, "teamLeader", null);
 
         } else {
             // Remove projects one by one
 
             // Disassociate large project from the employee
-            RestUtils.restRemoveBidirectionalRelationship(context, String.valueOf(employee.getId()), Employee.class.getSimpleName(), "projects", mediaType, "teamLeader", String.valueOf(largeProject.getId()));
+            RestUtils.restRemoveBidirectionalRelationship(context, String.valueOf(employee.getId()), Employee.class, "projects", mediaType, "teamLeader", String.valueOf(largeProject.getId()));
 
             // Read projects
-            String projects = RestUtils.restFindAttribute(context, employee.getId(), Employee.class.getSimpleName(), "projects", null, mediaType);
+            String projects = RestUtils.restFindAttribute(context, employee.getId(), Employee.class, "projects", mediaType);
 
             // Verify that only SmallProject is there
             assertTrue("Projects verification failed.", projects.contains("SmallProject") || !projects.contains("LargeProject"));
 
             // Disassociate small project from the employee
-            RestUtils.restRemoveBidirectionalRelationship(context, String.valueOf(employee.getId()), Employee.class.getSimpleName(), "projects", mediaType, "teamLeader", String.valueOf(smallProject.getId()));
+            RestUtils.restRemoveBidirectionalRelationship(context, String.valueOf(employee.getId()), Employee.class, "projects", mediaType, "teamLeader", String.valueOf(smallProject.getId()));
         }
 
         // Read projects
-        String projects = RestUtils.restFindAttribute(context, employee.getId(), Employee.class.getSimpleName(), "projects", null, mediaType);
+        String projects = RestUtils.restFindAttribute(context, employee.getId(), Employee.class, "projects", mediaType);
 
         // Verify that there are no projects
         assertTrue("Projects verification failed.", !projects.contains("SmallProject") || !projects.contains("LargeProject"));
 
         // Delete projects
-        RestUtils.restDelete(context, largeProject.getId(), LargeProject.class.getSimpleName(), LargeProject.class, null, null, mediaType);
-        RestUtils.restDelete(context, smallProject.getId(), SmallProject.class.getSimpleName(), SmallProject.class, null, null, mediaType);
+        RestUtils.restDelete(context, largeProject.getId(), LargeProject.class, mediaType);
+        RestUtils.restDelete(context, smallProject.getId(), SmallProject.class, mediaType);
 
         // Delete employee
-        RestUtils.restDelete(context, employee.getId(), Employee.class.getSimpleName(), Employee.class, null, null, mediaType);
+        RestUtils.restDelete(context, employee.getId(), Employee.class, mediaType);
     }
 
-    private void updateEmployeeWithManager(MediaType mediaType) throws Exception {
-        // create an employee
-        Employee employee = new Employee();
-        employee.setId(90888);
-        employee.setFirstName("Miles");
-        employee.setLastName("Davis");
-        employee.setGender(Gender.Male);
-
-        employee = RestUtils.restCreate(context, employee, Employee.class.getSimpleName(), Employee.class, null, mediaType, true);
-        assertNotNull("Employee create failed.", employee);
-
-        // create a manager
-        Employee manager = new Employee();
-        manager.setId(11910);
-        manager.setFirstName("Charlie");
-        manager.setLastName("Parker");
-        manager.setGender(Gender.Male);
-
-        manager = RestUtils.restCreate(context, manager, Employee.class.getSimpleName(), Employee.class, null, mediaType, true);
-        assertNotNull("Employee manager create failed.", manager);
-
-        // update employee with manager
-        RestUtils.restUpdateBidirectionalRelationship(context, String.valueOf(employee.getId()), Employee.class.getSimpleName(), "manager", manager, mediaType, "managedEmployees", true);
-
-        // read manager and verify that the relationship is set correctly
-        manager = RestUtils.restRead(context, manager.getId(), Employee.class.getSimpleName(), Employee.class, null, mediaType);
-        assertNotNull("Manager read failed.", manager);
-        assertNotNull("Manager's managed employee list is null", manager.getManagedEmployees());
-        assertTrue("Manager's managed employee list is empty", manager.getManagedEmployees().size() > 0);
-
-        employee = RestUtils.restRead(context, employee.getId(), Employee.class.getSimpleName(), Employee.class, null, mediaType);
-        assertNotNull("Manager read failed.", employee);
-
-        for (Employee emp : manager.getManagedEmployees()) {
-            assertNotNull("Managed employee's first name is null", emp.getFirstName());
-            assertNotNull("Managed employee's last name is null", emp.getLastName());
-        }
-
-        // delete employee
-        RestUtils.restDelete(context, employee.getId(), Employee.class.getSimpleName(), Employee.class, null, null, mediaType);
-
-        // delete manager
-        RestUtils.restDelete(context, manager.getId(), Employee.class.getSimpleName(), Employee.class, null, null, mediaType);
-    }
-
-    private void createEmployeeWithPhoneNumbers() throws Exception {
-        String msg = RestUtils.getJSONMessage("employee-with-phoneNumber-V2.json");
-        Employee employee = RestUtils.restCreate(context, msg, Employee.class.getSimpleName(), Employee.class, null, MediaType.APPLICATION_JSON_TYPE);
-        assertNotNull(employee);
-        assertTrue(employee.getId() == 743627);
-        List<PhoneNumber> phoneNumbers = employee.getPhoneNumbers();
-        assertNotNull(phoneNumbers);
-        assertTrue(phoneNumbers.size() == 1);
-        assertTrue("613".equals(phoneNumbers.get(0).getAreaCode()));
-
-        // update employee
-        employee.setSalary(20000);
-        employee = RestUtils.restUpdate(context, employee, Employee.class.getSimpleName(), Employee.class, null, MediaType.APPLICATION_JSON_TYPE, true);
-        assertNotNull(employee);
-        assertTrue(employee.getId() == 743627);
-        assertTrue(employee.getSalary() == 20000);
-
-        // delete
-        RestUtils.restDelete(context, employee.getId(), Employee.class.getSimpleName(), Employee.class, null, null, MediaType.APPLICATION_JSON_TYPE);
-    }
-
-    private void updateEmployeeWithEmploymentPeriod(MediaType mediaType) throws Exception {
-        Employee employee = new Employee();
-        employee.setId(10234);
-        employee.setFirstName("John");
-        employee.setLastName("Travolta");
-        EmploymentPeriod employmentPeriod = new EmploymentPeriod();
-        Calendar now = GregorianCalendar.getInstance();
-        employmentPeriod.setStartDate(now);
-        employee.setPeriod(employmentPeriod);
-
-        employee = RestUtils.restCreate(context, employee, Employee.class.getSimpleName(), Employee.class, null, mediaType, true);
-        assertNotNull("Employee create failed.", employee);
-
-        Calendar threeYearsLater = GregorianCalendar.getInstance();
-        long end = (now.getTimeInMillis() + 94608000000L); // + 3 years
-        threeYearsLater.setTimeInMillis(end);
-
-        employmentPeriod.setEndDate(threeYearsLater);
-        employee.setPeriod(employmentPeriod);
-
-        employee = RestUtils.restUpdate(context, employee, Employee.class.getSimpleName(), Employee.class, null, mediaType, true);
-
-        assertNotNull("Employee update failed.", employee);
-        assertNotNull("Employee's employment period update failed", employee.getPeriod());
-        assertNotNull("Employee's employment period end date is null", employee.getPeriod().getEndDate());
-        assertTrue("Incorrect end date for employee", employee.getPeriod().getEndDate().getTimeInMillis() == threeYearsLater.getTimeInMillis());
-
-        RestUtils.restDelete(context, 10234, Employee.class.getSimpleName(), Employee.class, null, null, mediaType);
-    }
-
-    private void readEmployee(MediaType mediaType) throws Exception {
-        Employee employee = new Employee();
-        employee.setId(18234);
-        employee.setFirstName("Pat");
-        employee.setLastName("Metheny");
-        EmploymentPeriod employmentPeriod = new EmploymentPeriod();
-        employmentPeriod.setStartDate(GregorianCalendar.getInstance());
-        employee.setPeriod(employmentPeriod);
-
-        Employee employeeCreated = RestUtils.restCreate(context, employee, Employee.class.getSimpleName(), Employee.class, null, mediaType, true);
-        Employee employeeRead = RestUtils.restRead(context, 18234, Employee.class.getSimpleName(), Employee.class, null, mediaType);
-
-        assertNotNull("Employee create failed.", employeeCreated);
-        assertNotNull("Employee read failed.", employeeRead);
-        assertTrue("Employee created and employee read is different", employeeCreated.getLastName().equals(employeeRead.getLastName()));
-        RestUtils.restDelete(context, 18234, Employee.class.getSimpleName(), Employee.class, null, null, mediaType);
-        Employee emp = DBUtils.dbRead(18234, Employee.class, context.getEmf().createEntityManager());
-        assertNull("Employee could not be deleted", emp);
-    }
-
-    private void getEmployeeAddressMultiResultNamedQueryWithBinaryData(MediaType mediaType) throws Exception {
-        EmployeeAddress address = new EmployeeAddress("Newyork City", "USA", "NY", "10005", "Wall Street");
+    @Override
+    protected void getEmployeeAddressMultiResultNamedQueryWithBinaryData(MediaType mediaType) throws Exception {
+        EmployeeAddress address = new EmployeeAddress("New York City", "USA", "NY", "10005", "Wall Street");
         address.setAreaPicture(RestUtils.convertImageToByteArray("manhattan.png"));
 
-        address = RestUtils.restUpdate(context, address, EmployeeAddress.class.getSimpleName(), EmployeeAddress.class, null, mediaType, true);
+        address = RestUtils.restUpdate(context, address, EmployeeAddress.class, null, mediaType, true);
         assertNotNull("EmployeeAddress create failed.", address);
         assertNotNull("EmployeeAddress area picture is null", address.getAreaPicture());
-        assertTrue("Newyork City".equals(address.getCity()));
+        assertTrue("New York City".equals(address.getCity()));
         assertTrue("USA".equals(address.getCountry()));
         assertTrue("NY".equals(address.getProvince()));
         assertTrue("10005".equals(address.getPostalCode()));
@@ -1295,19 +579,20 @@ public class ServerEmployeeV2Test extends BaseJparsTest {
             expected = "[{\"areaPicture\":\"89504E470D0A1A0A0000000D49484452000000960000009608030000000BDF81D000000300504C5445CFDEE2EFEFEFE6E6E6F7F7F7FFFFFFDEDEDEF7FDFF00C4F163DBF608C6F153D7F6D6F6FDEBFAFD99E7F9F0FCFE30CFF4B6EEFB21CCF310C8F258D8F68BE4F9CFF4FCDFF8FD7DE1F8E6F9FEBCEFFB3BD2F4C3F1FC84E3F84AD5F53AD1F46BDDF717C9F295E6F919CAF272DEF7A8EBFAA6EAFAACECFA29CDF345D0F143D4F586E1F688DAEE6ED9F1E9F4F6A3DDEAD5DDDFA2E0EFD7F1F7CFE6EA0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000003A4D766F00000A084944415478DAE55CDB72DC36124537E05896E424BEC8962B4925D9AD4DEDD3FEFF67EC5BDED74E7993527CD9B5654983466F0304392087177088E1A86AC7374933260F4F779FBE002418751F5FA8FEFF60B1E3FB08CB6904E27B070BE48F41473579749F7C4B9B489933D9468503462227D74C00E15BAB8FCE964B2943E0DAAE4786D581A0EF89CBF7E1D07C6C58FD71E703731A9A59CD860987129908C78AC4F113133F70C730228F9B571B3E0A2C65F7F4BEC3C202FD77FDD7713E0D0C51AA0F84EB5C3DFF7CE5F04BBFCE62C5152A8675D97A4C576797784523C1C066D8010F15880F94BAD1833E4DA212167CA65CD7882F7FF7A458EE4F38080247DEA341F53A9011FD612FBF0CDA886D90D5610D390C5B17574A3DFBB722335C5B546EEF59EBD3DD83C042DC28B521D6C31F50105C0B7C65BD96117FB81685B81D3B3685F4132B325E87ADF377DE4E44389A2F9D10A645B798711DB6EEBCBFDF8E6A8F1064A0FA57AF1589AFE4CFAD9A6A731CC44A91578225D1FFF22A47A881068B583C80666DD4C6D2E881EB776120291E80AD679FD5D9ED4411181902BB5EAA7EAFD4899BE87378A21B2A0FEB04FCD938BF855C05163E735E9660499D7F0097D79FBC8DEE264ECC13C88AB3F5689C0CAAD9E0558DF8E87A41CB7D305868265A1CEE68E93AB0BEBEEEAD093451858E72BAB1E2B04ECF07E25F8749A00EB53B9163695D59AF06EBD1DBC6713A641804499500723EF0153C00385A09D6F3FFC42F3EFFDC04A3B5D5D9D957C95220DBD8ED38E933DC3A139B0F8D4F6DD0F9A64B52B250435A7E49996CDB1108C0ABB0F5707B9AB717EAC92FFEAA597E868C5571A52326E629AD2FA9F2E9A48FEFE8C3DFFED002C70FB3424351FDDC77161A08E287B91F5B41542F13177EF149BD70AF31A447636AE726E79082B6196408C2C5FD725F92ACA4E47AAB2E7E3FE1FA0CDAB838C4D102D326F99A078A8972B0427F1F5F1FD55F3EE0C3EBC088AB144BA94AA9F4B62F1413A3EE0FBA72B0126348717AE5CEDEF9830B4FE8ACB5D2B0C6C64B77F8ED9DCE159B9D9E27A32C9182F36F7E0BFD72DD5AB37C237E3ED802756AFA52917802C9555F5CF3DD7FAB09047A6D90FE59831FD4381C8045DAC1218C7879D3AE8999EBB988288131E2EA3CD012065D0171342C0F0BFFECCCDCDCB6C489EB7548235EE9BB6BE6E2B01EA7D5DFE9E6A4C54604686840D6757C23015E06D6451A4E68DFDD0DB4AC0349D0C49F1B5714D6C969EA59CFF0D6F5A991246D6DED6866D6F53A68115897290B2FBF48ABEC867A4343A319A26E3D4AC8D6933709ACEFF0F6B67FC2A789335412C3FA6C09582625EBDDDDDDD0CC544F773CFE681E5701239E7E4CBEF9FEC68475802557E98AA83C2555E64FD7FC59F1C2634A622800EB6C93B8F5A7EBE1B1777ED68702464C62EBFBF73765DCB500ACAD139FBE16C1A412475C0E0BB7527AEE7CCE655B00D8625C8983DFC4A4AC1C2E0CA2E56C9D5E345FBEF2C51370F6DE90E1A1DC7258275B67BAAD0B19B0B488AC02B0DCD6B7CEAAC249F29E46B784AC02B03E5CF4E8342BD8CFF1C93A5FD62F6F319215547DD7F8BFD5FB683DD515D762B64E7E4C6AD4B4A0813DDCAB99E12C86F5EA5FA9369B4463F7D81458AE3A4DDAC3EFFE6C08B26ADE7E2DD519E12C8695E46976EDC32E08C6C5B09E069EE0DBC75F7DFD9A931E8BF7F1AE866053C2883FBDB1EF157D4AE65BD2AE4AA383A48FC59678D1F99BC7FF6046D35ECAD7928590D687F530FCFDC7573F6E6E9F86D31BD889AB7D370F1799D83CBDFC550DCC62EA5295F202135C41973FFB75C0145CCDDB94659C67CFBD613D7D52F5141F5FA8E7DF8C0F3D2A9FCBB2272DF6AD709A27BF79A1FFE79859AC8824BB99BEBF7775FA25D4333F7C78F596AE06DD46AA54E7A7B8AC1920A736AC87820B5DFE21DCB01B3E4425FB1CB66A65356A0E0A45E2F8C9C200D2449B433EACC591387E5948359979CE05A574CBE5E61770D3566CB69A2CEFC772636C1335AC800DB2948FB26BABFC5454606023B19F83CACC91AEC5B0B4562E776B3EAE6844073AF373C18854AD63F7FF9FA6625BCC16E5D6EC90ACE56B7DB09C5837E65A1DE0B5749E988F0AEADA7ED0F5A5A1D67BA5EA70AF5A9A436C866FD61AE9D7817D8264D74F864BFA73332030B003C85FB0BF8874E58673AA02DDD4D0E1E31E92EBDB320213453319D216EB6DE5612D3EB515D5254AF69441A24F7EFB797B731D3B89885A14F61851722BFA8187DF282024697109D35AEBABAD923DF393B6086D386DD2DF76FE779BBF5D58CD75208AB511C3C6E86E71372F5ED0F31AFC2A54AAD57501B78089DBE28811A72D53933563524450A1F24BBF8C8DBD124B52FBBE0C9C8D6A77BC32D52FC8E9A1DAC06C21161C959AEBEDBE0D6CBB3CCE3DD736B226B5216E268B61EC9DC1A745E7977FE3FA1CC08E34EC2FA7D9F589AE2A2C096314C163E79C84631009EB8392FCDD0F429F83C9CE27C788D1B972340B6D5C180F6E2EFD0FFA88F3DEED34A1381BF8250B2E927CE6544E467B0351E51F1476EFDB6A13BFDFB1E1D9DCF40DCBCDFE30674C89206829806A26D00216037FA28B3DF7C3A29AEFF3F15A325CCCFBBCFF98F1A6D3E08DE765407BA120174F67332A0876D94EAFA70542FB9CE25BEB2A8B493E433431AB61542E368698A93D0ED8AFB0C1ACD968BCD1A2BE52082E061B0EFCA0645EB248E0ACE436015B628F4D88AFA9850AC1414CB6A9842D40A83F5C147E2D1509EE16CC7DB07261BAEA486E68CD29746936AC93402500DEB98DC35839128894016D9233A25A94133BFE8EFD3796136FA33C7C42842A8ABA50CD4652A3F8BD968F3545132F8CC456F438B4FD296A3BFF4E37F6B0F024D613C9107FF241DA9BC3BA6C6592D5CE173DC3055FF641B321A259CBF194A970A346F76E0DBFF56C584E394B293B76D3BD25BDD9B2B8D10D3E5D157C694DB35B057661719672E74C69E4CAB6F3BFE40BE7CB058E3C0A450F7A6BDC8E112B1B4E90B5EBE33D56B4A18946A82EA165F4785563B7A29BF9E9AEE74D487B6BAA3A270643D849512218E4F7C40648635EDC61CB8BDC44FBB7731796AF0BA03589A0AAC0F3E042CF14575D9AA5836957E9C002624894A47756EA46FABB5D4313D4B68AB6B39851A8756039EF8B63D38E9E3BD65A0140D141776E5EE68AA2CC877AB46171251EC3B87AEFA30B67ACF0C078F0DA07994B9F6D58CD850FF8FCAE05B38698AE728B6C505D5830118BFBACC341B69F0F550CBCDB75ED912FB73481A32858D208CE9A83B5D81A1F9C13CCD8D1932EB94C3EC263444E451626F6C5CC4145CD304530ED516AD66CCD5861C876A83D58EAB0358D6AD64E319F64F8C1820168608BA7A3C4CEF2585EBCB1CC4C5025D948CF3360899799182610CEA66A0D585CDDDDB1F60BA7DFE7233C960E47DB50EB3400A8E3C01AA48CB4B42CF668B006D4DD6276D3711058FDF5E571008DB51873EB90C3C0E21D4C78E487427A58DD6D1FEEF80FAAC4DD25C1A3845E77B082367DE8A0EB5F533B8211536E8C53F780AA60449D8ABABA272F4C968E49DF17547E71C59BCDAAFE87021D8F2D3F4BF40B4400F707D5411F2CBAE0F53F4891BE36E04AC8330000000049454E44AE426082\"}]";
         } else {
             // unsupported media type
-            throw new RestCallFailedException(Status.BAD_REQUEST);
+            throw new RestCallFailedException(Response.Status.BAD_REQUEST);
         }
 
         // query
-        String result = RestUtils.restNamedMultiResultQuery(context, "EmployeeAddress.getPicture", parameters, null, mediaType);
+        String result = RestUtils.restNamedMultiResultQueryResult(context, "EmployeeAddress.getPicture", parameters, null, mediaType);
         assertNotNull(result);
         assertTrue(result.contains(expected));
 
         // delete employee address
-        RestUtils.restDelete(context, address.getId(), EmployeeAddress.class.getSimpleName(), EmployeeAddress.class, null, null, mediaType);
+        RestUtils.restDelete(context, address.getId(), EmployeeAddress.class, mediaType);
     }
 
-    private void readEmployeeResponsibilities(MediaType mediaType) throws Exception {
+    @Override
+    protected void readEmployeeResponsibilities(MediaType mediaType) throws Exception {
         // create an employee
         Employee employee = new Employee();
         employee.setId(921025);
@@ -1318,10 +603,10 @@ public class ServerEmployeeV2Test extends BaseJparsTest {
         employee.addResponsibility("architect");
         employee.addResponsibility("conductor");
 
-        employee = RestUtils.restCreate(context, employee, Employee.class.getSimpleName(), Employee.class, null, mediaType, true);
+        employee = RestUtils.restCreate(context, employee, Employee.class, mediaType);
         assertNotNull("Employee create failed.", employee);
 
-        employee = RestUtils.restRead(context, employee.getId(), Employee.class.getSimpleName(), Employee.class, null, mediaType);
+        employee = RestUtils.restReadObject(context, employee.getId(), Employee.class, mediaType);
         assertNotNull(employee.getResponsibilities());
         assertTrue(employee.getResponsibilities().size() == 3);
         List<String> responsibilities = employee.getResponsibilities();
@@ -1330,24 +615,25 @@ public class ServerEmployeeV2Test extends BaseJparsTest {
         assertTrue(responsibilities.contains("conductor"));
 
         // read responsibilities
-        final String result = RestUtils.restFindAttribute(context, employee.getId(), Employee.class.getSimpleName(), "responsibilities", null, mediaType);
+        final String result = RestUtils.restFindAttribute(context, employee.getId(), Employee.class, "responsibilities", mediaType);
         assertNotNull(result);
         assertTrue(result.contains("musician"));
         assertTrue(result.contains("architect"));
         assertTrue(result.contains("conductor"));
 
         // delete employee
-        RestUtils.restDelete(context, employee.getId(), Employee.class.getSimpleName(), Employee.class, null, null, mediaType);
+        RestUtils.restDelete(context, employee.getId(), Employee.class, mediaType);
     }
 
-    private void executeSingleResultQueryGetEmployeeWithDomainObject(MediaType mediaType) throws Exception {
+    @Override
+    protected void executeSingleResultQueryGetEmployeeWithDomainObject(MediaType mediaType) throws Exception {
         // create an employee
         Employee employee = new Employee();
         employee.setFirstName("Miles");
         employee.setLastName("Davis");
         employee.setGender(Gender.Male);
 
-        employee = RestUtils.restUpdate(context, employee, Employee.class.getSimpleName(), Employee.class, null, mediaType, true);
+        employee = RestUtils.restUpdate(context, employee, Employee.class, null, mediaType, true);
         assertNotNull("Employee create failed.", employee);
 
         // create a manager
@@ -1356,19 +642,19 @@ public class ServerEmployeeV2Test extends BaseJparsTest {
         manager.setLastName("Parker");
         manager.setGender(Gender.Male);
 
-        manager = RestUtils.restUpdate(context, manager, Employee.class.getSimpleName(), Employee.class, null, mediaType, true);
+        manager = RestUtils.restUpdate(context, manager, Employee.class, null, mediaType, true);
         assertNotNull("Employee manager create failed.", manager);
 
         // update employee with manager
-        RestUtils.restUpdateBidirectionalRelationship(context, String.valueOf(employee.getId()), Employee.class.getSimpleName(), "manager", manager, mediaType, "managedEmployees", true);
+        RestUtils.restUpdateBidirectionalRelationship(context, String.valueOf(employee.getId()), Employee.class, "manager", manager, mediaType, "managedEmployees", true);
 
         // read manager and verify that the relationship is set correctly
-        manager = RestUtils.restRead(context, manager.getId(), Employee.class.getSimpleName(), Employee.class, null, mediaType);
+        manager = RestUtils.restReadObject(context, manager.getId(), Employee.class, mediaType);
         assertNotNull("Manager read failed.", manager);
         assertNotNull("Manager's managed employee list is null", manager.getManagedEmployees());
         assertTrue("Manager's managed employee list is empty", manager.getManagedEmployees().size() > 0);
 
-        employee = RestUtils.restRead(context, employee.getId(), Employee.class.getSimpleName(), Employee.class, null, mediaType);
+        employee = RestUtils.restReadObject(context, employee.getId(), Employee.class, mediaType);
         assertNotNull("Manager read failed.", employee);
 
         for (Employee emp : manager.getManagedEmployees()) {
@@ -1380,7 +666,7 @@ public class ServerEmployeeV2Test extends BaseJparsTest {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("id", employee.getId());
 
-        String queryResult = RestUtils.restNamedSingleResultQuery(context, "Employee.getManagerById", parameters, null, mediaType);
+        String queryResult = RestUtils.restNamedSingleResultQueryResult(context, "Employee.getManagerById", parameters, null, mediaType);
         if (mediaType == MediaType.APPLICATION_JSON_TYPE) {
             assertTrue(queryResult.contains("\"firstName\":\"Miles\""));
             assertTrue(queryResult.contains("\"lastName\":\"Davis\""));
@@ -1391,17 +677,18 @@ public class ServerEmployeeV2Test extends BaseJparsTest {
             assertTrue(queryResult.contains("<links rel=\"self\" href=\"" + getServerURI() + "/entity/Employee/" + manager.getId() + "\"/>"));
         } else {
             // unsupported media type
-            throw new RestCallFailedException(Status.BAD_REQUEST);
+            throw new RestCallFailedException(Response.Status.BAD_REQUEST);
         }
 
         // delete employee
-        RestUtils.restDelete(context, employee.getId(), Employee.class.getSimpleName(), Employee.class, null, null, mediaType);
+        RestUtils.restDelete(context, employee.getId(), Employee.class, mediaType);
 
         // delete manager
-        RestUtils.restDelete(context, manager.getId(), Employee.class.getSimpleName(), Employee.class, null, null, mediaType);
+        RestUtils.restDelete(context, manager.getId(), Employee.class, mediaType);
     }
 
-    private void readEmployeeWithCertifications(MediaType mediaType) throws Exception {
+    @Override
+    protected void readEmployeeWithCertifications(MediaType mediaType) throws Exception {
         // Create employee
         final String msg;
         if (mediaType == MediaType.APPLICATION_JSON_TYPE) {
@@ -1410,43 +697,19 @@ public class ServerEmployeeV2Test extends BaseJparsTest {
             msg = RestUtils.getXMLMessage("employee-with-certification-V2.xml");
         } else {
             // Unsupported media type
-            throw new RestCallFailedException(Status.BAD_REQUEST);
+            throw new RestCallFailedException(Response.Status.BAD_REQUEST);
         }
-        RestUtils.restCreate(context, msg, Employee.class.getSimpleName(), Employee.class, null, mediaType);
+        RestUtils.restCreateStr(context, msg, Employee.class, mediaType);
 
         // Read employee and check certifications attribute
-        final String employee = RestUtils.restRead(context, 201204, Employee.class.getSimpleName(), null, mediaType);
+        final String employee = RestUtils.restRead(context, 201204, Employee.class, mediaType);
         assertTrue("Certifications link doesn't exist.", employee.contains(getServerURI() + "/entity/Employee/201204/certifications"));
 
         // Read certifications and check that 'Java' certification exists
-        final String certifications = RestUtils.restFindAttribute(context, 201204, Employee.class.getSimpleName(), "certifications", null, mediaType);
+        final String certifications = RestUtils.restFindAttribute(context, 201204, Employee.class, "certifications", mediaType);
         assertTrue("Invalid certifications list.", certifications.contains("Java"));
 
         // Delete employee
-        RestUtils.restDelete(context, 201204, Employee.class.getSimpleName(), Employee.class, null, null, mediaType);
-    }
-
-    private void databaseException(MediaType mediaType) throws Exception {
-        Employee employee = new Employee();
-        employee.setId(19209);
-        employee.setFirstName("Pat");
-        employee.setLastName("Metheny");
-        EmploymentPeriod employmentPeriod = new EmploymentPeriod();
-        employmentPeriod.setStartDate(GregorianCalendar.getInstance());
-        employee.setPeriod(employmentPeriod);
-
-        Employee employeeCreated = RestUtils.restCreate(context, employee, Employee.class.getSimpleName(), Employee.class, null, mediaType, true);
-        assertNotNull("Employee create failed.", employeeCreated);
-
-        // 2nd create call should fail, because of the violation of the integrity constraints
-        try {
-            RestUtils.restCreate(context, employee, Employee.class.getSimpleName(), Employee.class, null, mediaType, true);
-        } catch (RestCallFailedException ex) {
-            ErrorResponse errorResponse = ex.getErrorDetails();
-            assertNotNull(errorResponse);
-            assertTrue(DatabaseException.class.getName().equals(errorResponse.getTitle()));
-        } finally {
-            RestUtils.restDelete(context, employee.getId(), Employee.class.getSimpleName(), Employee.class, null, null, mediaType);
-        }
+        RestUtils.restDelete(context, 201204, Employee.class, mediaType);
     }
 }

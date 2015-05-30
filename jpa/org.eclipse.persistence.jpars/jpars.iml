@@ -22,12 +22,10 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/javax.ws.rs_1.1.1.v20101004-1200.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/javax.ws.rs-api-2.0.1.jar!/" />
         </CLASSES>
         <JAVADOC />
-        <SOURCES>
-          <root url="jar://$MODULE_DIR$/../../plugins/javax.ws.rs.source_1.1.1.v20101004-1200.jar!/" />
-        </SOURCES>
+        <SOURCES />
       </library>
     </orderEntry>
   </component>
