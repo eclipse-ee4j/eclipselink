@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -33,6 +33,7 @@ import org.eclipse.persistence.expressions.ExpressionMath;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.expressions.DateConstantExpression;
 import org.eclipse.persistence.internal.expressions.MapEntryExpression;
+import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryDeclaration.Type;
@@ -642,6 +643,15 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 			child.accept(this);
 			expressions.add(queryExpression);
 			types.add(type[0]);
+
+            // Set the type on an untyped ParameterExpression, so that 
+            // valid types can be passed for null parameter values in JDBC
+            if (queryExpression.isParameterExpression()) {
+                ParameterExpression paramExpression = (ParameterExpression) queryExpression;
+                if (paramExpression.getType() == null || paramExpression.getType().equals(Object.class)) {
+                    paramExpression.setType(type[0]);
+                }
+            }
 		}
 
 		// Create the COALESCE expression

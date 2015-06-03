@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -18,6 +18,7 @@ import java.util.Collection;
 
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
+import javax.persistence.Query;
 
 import junit.framework.*;
 
@@ -76,7 +77,8 @@ public class AdvancedJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedJunitTest("testElementCollectionEntityMapKeyRemove"));
         suite.addTest(new AdvancedJunitTest("testSwitchBatchDuringSessionEvent"));
         suite.addTest(new AdvancedJunitTest("testTableQualifierOnSequencingTableAndEntity"));
-        
+        suite.addTest(new AdvancedJunitTest("testCoalesceJPQLQueryWithNullParameterValue"));
+
         return suite;
     }
     
@@ -560,4 +562,68 @@ public class AdvancedJunitTest extends JUnitTestCase {
         assertEquals("Table Sequence : table qualifier should be equal", tableQualifier, tsQualifier);
         assertEquals("Table Sequence : qualified table name should be equal", (tableQualifier + "." + tableName), tsQualifiedTableName);
     }
+    
+    /*
+     * Implemented for bug 469182
+     * Test setting a null parameter in the JPQL coalesce query, so that the jdbc type 
+     * can be configured correctly when setting a null parameter on the JDBC statement. 
+     */
+    public void testCoalesceJPQLQueryWithNullParameterValue() {
+        // create test data, Employee.salary values are different
+        EntityManager em = createEntityManager();
+        Employee emp1, emp2 = null;
+        try {
+            beginTransaction(em);
+            
+            emp1 = new Employee();
+            emp1.setFirstName("Per");
+            emp1.setLastName("Johanssen");
+            emp1.setSalary(100000);
+            em.persist(emp1);
+            
+            emp2 = new Employee();
+            emp2.setFirstName("Kalle");
+            emp2.setLastName("Johanssen");
+            emp2.setSalary(999999);
+            em.persist(emp2);
+            
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            throw e;
+        } finally {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            clearCache();
+            closeEntityManager(em);
+        }
+        
+        // test setting a null parameter on a coalesce jpql query and executing it
+        em = createEntityManager();
+        try {
+            String jpql = "select count(1) from Employee e where e.lastName = 'Johanssen' and e.salary = coalesce(e.salary, :sal)";
+            Query query = em.createQuery(jpql);
+            query = query.setParameter("sal", null); // deliberate null parameter value
+            Long result = (Long)query.getSingleResult(); // query should still function
+            assertNotNull("Query result should be non-null", result);
+            assertEquals("Incorrect query results", new Long(2), result); // result value from db
+        } catch (RuntimeException e) {
+            throw e;
+        } finally {
+            // cleanup test data
+            beginTransaction(em);
+            emp1 = em.find(Employee.class, emp1.getId());
+            if (emp1 != null) {
+                em.remove(emp1);
+            }
+            emp2 = em.find(Employee.class, emp2.getId());
+            if (emp2 != null) {
+                em.remove(emp2);
+            }
+            commitTransaction(em);
+            clearCache();
+            closeEntityManager(em);
+        }
+    }
+    
 }
