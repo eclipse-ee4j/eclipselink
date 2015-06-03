@@ -113,7 +113,7 @@
     <!-- JPA tests interface: Setup multitenant environment in WebLogic domain. -->
     <target name="weblogic-mt-setup"
         description="JPA tests interface: Setup multitenant environment on WebLogic domain."
-        depends="wls-create-partition,wls-config-partition"/>
+        depends="wls-create-partition,wls-config-partition,wls-start-partitions"/>
 
     <!-- JPA tests interface: Reset multitenant environment in WebLogic domain. -->
     <target name="weblogic-mt-reset"
@@ -162,22 +162,24 @@
         <translate-property name="weblogic.mt.test.runner3"    value="SERVER.TESTRUNNER3"/>
         <translate-property name="weblogic.mt.test.runner4"    value="SERVER.TESTRUNNER4"/>
         <translate-property name="weblogic.mt.test.runner5"    value="SERVER.TESTRUNNER5"/>
-        <translate-property name="weblogic.mt.test.t1.host"    value="t1.host"/>
-        <translate-property name="weblogic.mt.test.t2.host"    value="t2.host"/>
+        <translate-property name="weblogic.mt.test.t1.target"  value="weblogic.mt.tenant1.virtual.target.name"/>
+        <translate-property name="weblogic.mt.test.t2.target"  value="weblogic.mt.tenant2.virtual.target.name"/>
         <condition property="weblogic.mt.test.t1.url"
-            value="t3://${t1.host}:${weblogic.port}/${weblogic.mt.test.model.name}">
+            value="t3://${weblogic.host}:${weblogic.port}/${weblogic.mt.tenant1.virtual.target.prefix}/${weblogic.mt.test.model.name}">
             <and>
-                <isset property="t1.host"/>
+                <isset property="weblogic.host"/>
                 <isset property="weblogic.port"/>
                 <isset property="weblogic.mt.test.model.name"/>
+                <isset property="weblogic.mt.tenant1.virtual.target.prefix"/>
             </and>
         </condition>
         <condition property="weblogic.mt.test.t2.url"
-            value="t3://${t2.host}:${weblogic.port}/${weblogic.mt.test.model.name}">
+            value="t3://${weblogic.host}:${weblogic.port}/${weblogic.mt.tenant2.virtual.target.prefix}/${weblogic.mt.test.model.name}">
             <and>
-                <isset property="t2.host"/>
+                <isset property="weblogic.host"/>
                 <isset property="weblogic.port"/>
                 <isset property="weblogic.mt.test.model.name"/>
+                <isset property="weblogic.mt.tenant2.virtual.target.prefix"/>
             </and>
         </condition>
     </target>
@@ -255,11 +257,25 @@
         </condition>
         <fail message="Could not start WebLogic server: ${weblogic.mt.host}:${weblogic.mt.port} is not free"
               if="wls.mt.can.start"/>
-        <exec executable="${wls.mt.domain.full.path}/startWebLogic.sh" spawn="true"/>
+        <antcall target="wls-start-domain-platform"/>
         <echo message="Waiting for WebLogic to start listening on ${weblogic.mt.host}:${weblogic.mt.port}"/>
         <waitfor maxwait="120" maxwaitunit="second">
             <socket server="${weblogic.mt.host}" port="${weblogic.mt.port}"/>
         </waitfor>
+    </target>
+    
+    <target name="wls-start-domain-platform" depends="wls-start-domain-unix, wls-start-domain-win"/>
+
+    <condition property="windows.os" value="true">
+        <contains string="${os.name}" substring="Win"/>
+    </condition>
+    
+    <target name="wls-start-domain-win" if="windows.os">
+        <exec executable="${wls.mt.domain.full.path}/startWebLogic.cmd" spawn="true"/>
+    </target>
+    
+    <target name="wls-start-domain-unix" unless="windows.os">
+        <exec executable="${wls.mt.domain.full.path}/startWebLogic.sh" spawn="true"/>
     </target>
 
     <!-- Stop WebLogic domain for tests. -->
@@ -269,6 +285,7 @@
         <condition property="wls.mt.can.stop" value="true">
             <socket server="${weblogic.mt.host}" port="${weblogic.mt.port}"/>
         </condition>
+        
         <fail message="Could not stop WebLogic server: Server is not listening on ${weblogic.mt.host}:${weblogic.mt.port}"
               unless="wls.mt.can.stop"/>
         <java classname="weblogic.WLST" fork="yes">
@@ -304,34 +321,64 @@
             <arg value="--provider=${weblogic.mt.persistence.provider}"/>
             <arg value="create-resource-group-template"/>
             <arg value="--name=${weblogic.mt.resource.group.template.name}"/>
-            <arg value="create-virtual-host"/>
-            <arg value="--name=${weblogic.mt.global.virtual.host.name}"/>
-            <arg value="--targets=${weblogic.mt.server.name}:Server"/>
-            <arg value="create-virtual-host"/>
-            <arg value="--name=${weblogic.mt.tenant1.virtual.host.name}"/>
-            <arg value="--targets=${weblogic.mt.server.name}:Server"/>
-            <arg value="create-virtual-host"/>
-            <arg value="--name=${weblogic.mt.tenant2.virtual.host.name}"/>
-            <arg value="--targets=${weblogic.mt.server.name}:Server"/>
+            <arg value="create-virtual-target"/>
+            <arg value="--name=${weblogic.mt.global.virtual.target.name}"/>
+            <arg value="--prefix=${weblogic.mt.global.virtual.target.prefix}"/>
+            <arg value="create-virtual-target"/>
+            <arg value="--name=${weblogic.mt.tenant1.virtual.target.name}"/>
+            <arg value="--prefix=${weblogic.mt.tenant1.virtual.target.prefix}"/>
+            <arg value="create-virtual-target"/>
+            <arg value="--name=${weblogic.mt.tenant2.virtual.target.name}"/>
+            <arg value="--prefix=${weblogic.mt.tenant2.virtual.target.prefix}"/>
             <arg value="create-resource-group"/>
             <arg value="--name=${weblogic.mt.resource.group.name}"/>
-            <arg value="--targets=${weblogic.mt.global.virtual.host.name}:VirtualHost"/>
+            <arg value="--targets=${weblogic.mt.global.virtual.target.name}:VirtualTarget"/>
             <arg value="--template=${weblogic.mt.resource.group.template.name}"/>
             <arg value="activate"/>
             <arg value="create-partition"/>
             <arg value="--name=${weblogic.mt.tenant1.partition.name}"/>
-            <arg value="--virtual-host=${weblogic.mt.tenant1.virtual.host.name}"/>
+            <arg value="--virtual-target=${weblogic.mt.tenant1.virtual.target.name}"/>
             <arg value="--resource-group=${weblogic.mt.resource.group.name}"/>
             <arg value="--resource-group-template=${weblogic.mt.resource.group.template.name}"/>
             <arg value="create-partition"/>
             <arg value="--name=${weblogic.mt.tenant2.partition.name}"/>
-            <arg value="--virtual-host=${weblogic.mt.tenant2.virtual.host.name}"/>
+            <arg value="--virtual-target=${weblogic.mt.tenant2.virtual.target.name}"/>
             <arg value="--resource-group=${weblogic.mt.resource.group.name}"/>
             <arg value="--resource-group-template=${weblogic.mt.resource.group.template.name}"/>
             <arg value="create-proxy-resource"/>
             <arg value="--name=${weblogic.mt.proxy.resource.name}"/>
             <arg value="--targets=${weblogic.mt.server.name}:Server"/>
             <arg value="--jndi-name=${weblogic.mt.proxy.resource.jndi.name}"/>
+        </java>
+    </target>
+
+    <!-- Start the WebLogic partitions for tests. -->
+    <target name="wls-start-partitions"
+        description="Start the WebLogic partitions for tests">
+        <antcall target="wls-start-partition" inheritrefs="true">
+            <param name="partition" value="${weblogic.mt.tenant1.partition.name}"/>
+        </antcall> 
+        <antcall target="wls-start-partition" inheritrefs="true">
+            <param name="partition" value="${weblogic.mt.tenant2.partition.name}"/>
+        </antcall> 
+    </target>
+
+    <!-- Start a WebLogic partition for tests. -->
+    <target name="wls-start-partition"
+        description="Starts a Weblogic partition">
+        <java classname="weblogic.WLST" fork="yes">
+            <env key="WL_HOME" value="${wls.mt.install.wl.home}"/>
+            <classpath>
+                <path refid="wls.mt.path"/>
+            </classpath>
+            <jvmarg value="-XX:MaxPermSize=256M"/>
+            <arg value="${wls.mt.config.tool}"/>
+            <arg value="--host=${weblogic.mt.host}"/>
+            <arg value="--port=${weblogic.mt.port}"/>
+            <arg value="--admin-user=${weblogic.mt.admin.user}"/>
+            <arg value="--admin-password=${weblogic.mt.admin.password}"/>
+            <arg value="start-partition"/>
+            <arg value="--partition=${partition}"/>
         </java>
     </target>
 
@@ -527,7 +574,7 @@
         <weblogic-mt-test-call
             platform="${weblogic.mt.test.platform}"
             libs="${weblogic.mt.test.libs}"
-            host="${weblogic.mt.test.t1.host}"
+            target="${weblogic.mt.test.t1.target}"
             dir.lib="${weblogic.mt.test.dir.lib}"
             dir.base="${weblogic.mt.test.dir.base}"
             dir.build="${weblogic.mt.test.dir.build}"
@@ -555,7 +602,7 @@
             <weblogic-mt-test-call
                 platform="${weblogic.mt.test.platform}"
                 libs="${weblogic.mt.test.libs}"
-                host="${weblogic.mt.test.t1.host}"
+                target="${weblogic.mt.test.t1.target}"
                 dir.lib="${weblogic.mt.test.dir.lib}"
                 dir.base="${weblogic.mt.test.dir.base}"
                 dir.build="${weblogic.mt.test.dir.build}"
@@ -578,7 +625,7 @@
             <weblogic-mt-test-call
                 platform="${weblogic.mt.test.platform}"
                 libs="${weblogic.mt.test.libs}"
-                host="${weblogic.mt.test.t2.host}"
+                target="${weblogic.mt.test.t2.target}"
                 dir.lib="${weblogic.mt.test.dir.lib}"
                 dir.base="${weblogic.mt.test.dir.base}"
                 dir.build="${weblogic.mt.test.dir.build}"
@@ -605,7 +652,7 @@
     <macrodef name="weblogic-mt-test-call">
         <attribute name="platform"/>
         <attribute name="libs"/>
-        <attribute name="host"/>
+        <attribute name="target"/>
         <attribute name="dir.lib"/>
         <attribute name="dir.base"/>
         <attribute name="dir.build"/>
@@ -653,7 +700,7 @@
                 <sysproperty key="run.metadata.cache.test.suite" value="${run.metadata.cache.test.suite}"/>
                 <classpath refid="run.path"/>
                 <formatter type="xml"/>
-                <test name="@{suite}" haltonfailure="no" outfile="@{dir.report}/@{suite}-@{host}-test-results"/>
+                <test name="@{suite}" haltonfailure="no" outfile="@{dir.report}/@{suite}-@{target}-test-results"/>
             </junit>
         </sequential>
     </macrodef>
@@ -1421,14 +1468,14 @@
         <!-- Check whether there is at least one tenant defined. -->
         <condition property="is.test.with.tenant" value="true">
             <and>
-                <isset property="weblogic.mt.test.t1.host"/>
+                <isset property="weblogic.mt.test.t1.target"/>
                 <isset property="weblogic.mt.test.t1.url"/>
             </and>
         </condition>
         <!-- Check whether there are two tenants set. -->
         <condition property="is.test.with.second.tenant" value="true">
             <and>
-                <isset property="weblogic.mt.test.t2.host"/>
+                <isset property="weblogic.mt.test.t2.target"/>
                 <isset property="weblogic.mt.test.t2.url"/>
             </and>
         </condition>
@@ -1485,9 +1532,9 @@
         <property-check-message name="weblogic.mt.test.runner3"/>
         <property-check-message name="weblogic.mt.test.runner4"/>
         <property-check-message name="weblogic.mt.test.runner5"/>
-        <property-check-message name="weblogic.mt.test.t1.host"/>
+        <property-check-message name="weblogic.mt.test.t1.target"/>
         <property-check-message name="weblogic.mt.test.t1.url"/>
-        <property-check-message name="weblogic.mt.test.t2.host"/>
+        <property-check-message name="weblogic.mt.test.t2.target"/>
         <property-check-message name="weblogic.mt.test.t2.url"/>
     </target>
 
