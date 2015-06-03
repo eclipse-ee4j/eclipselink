@@ -73,16 +73,8 @@
     <property name="ddlparser.criteria" value="[1.0.0,2.0.0)"/>
 
     <!-- Primary Targets: "jar" separate for dev use -->
-    <target name="build" depends="clean, compile, jar" description="build ${ant.project.name} component"/>
-    <target name="jar"   depends="bnd-package, package" description="package ${ant.project.name} component"/>
-
-    <!-- clean -->
-    <target name="clean" description="Clean all generated content">
-        <delete includeEmptyDirs="true" failonerror="false">
-            <fileset dir="${classes.dir}"/>
-            <fileset dir="${dbwsbldr.2.common.plugins.dir}" includes="${ant.project.name}_*.jar, ${ant.project.name}.source_*.jar"/>
-        </delete>
-    </target>
+    <target name="build" depends="jar" description="build ${ant.project.name} component"/>
+    <target name="jar"   depends="package" description="package ${ant.project.name} component"/>
 
     <!-- initialize varables and paths needed for compile -->
     <!-- the number of properties needed now is too great for lazy loading without a target -->
@@ -204,25 +196,6 @@
         <echo message="on the ant command-line. However, the manifests used will be those"/>
         <echo message="checked-in for development, and will likely have errors."/>
         <fail message="Missing BND library!"/>
-    </target>
-
-    <target name="compile" depends="init, fail-on-no-bnd" description="Compile bundle code">
-        <mkdir dir="${classes.dir}"/>
-        <javac srcdir="${src.dir}"
-               destdir="${classes.dir}"
-               includes="**/*.java"
-               debug="${javac.debug}"
-               debuglevel="${javac.debuglevel}"
-               encoding="UTF-8"
-               optimize="${javac.optimize}"
-               source="${javac.version}"
-               target="${javac.version}"
-               deprecation="${javac.deprecation}"
-               failonerror="true"
-               memoryMaximumSize="512m"
-               fork="true"
-               classpathref="dbwsbldr.compile.path"
-        />
     </target>
 
     <target name="package-src" depends="init" description="jar OSGI Source bundle">
