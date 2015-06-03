@@ -481,7 +481,6 @@
         <ant antfile="antbuild.xml" dir="${eclipselink.modelgen}"               target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.moxy.dynamicxjc}"        target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.util.jaxb}"              target="clean"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder}"           target="clean"/>
         <!-- ant antfile="antbuild.xml" dir="${eclipselink.util.rename}"            target="clean"/ -->
         <ant antfile="antbuild.xml" dir="${eclipselink.util.sigcompare}"        target="clean"/>
         <ant antfile="build.xml"    dir="${eclipselink.util.workbench}"         target="clean"/>
@@ -652,14 +651,10 @@
     </target>
 
     <!-- Compiles all utils components. -->
-    <target name="build-util" depends="build-dbws-utils">
+    <target name="build-util">
         <ant antfile="antbuild.xml" dir="${eclipselink.util.sigcompare}"  target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.util.rename}"      target="build"/>
         <ant antfile="build.xml"    dir="${eclipselink.util.workbench}"   target="all"/>
-    </target>
-
-    <target name="build-dbws-utils" if="compat.jdk">
-        <ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder}"     target="build"/>
     </target>
 
     <!-- Oracle extensions Targets -->
