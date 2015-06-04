@@ -372,7 +372,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         this.hasSimplePrimaryKey = false;
         this.derivesIdMappings = new HashMap(5);
 
-        this.referencingClasses = new HashSet<ClassDescriptor>();
+        this.referencingClasses = new HashSet<>();
 
         // Policies
         this.objectBuilder = new ObjectBuilder(this);
@@ -1315,7 +1315,6 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             throw new AssertionError(exception);
         }
 
-
         Vector mappingsVector = NonSynchronizedVector.newInstance();
 
         // All the mappings
@@ -1349,6 +1348,25 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
 
         // fields.
         clonedDescriptor.setFields(NonSynchronizedVector.newInstance());
+
+        // Referencing classes
+        referencingClasses = new HashSet<>();
+
+        // Post-calculate changes
+        if (this.mappingsPostCalculateChanges != null) {
+            clonedDescriptor.mappingsPostCalculateChanges = new ArrayList<>();
+            for (DatabaseMapping databaseMapping : this.mappingsPostCalculateChanges) {
+                clonedDescriptor.mappingsPostCalculateChanges.add((DatabaseMapping)databaseMapping.clone());
+            }
+        }
+
+        // Post-calculate on delete
+        if (this.mappingsPostCalculateChangesOnDeleted != null) {
+            clonedDescriptor.mappingsPostCalculateChangesOnDeleted = new ArrayList<>();
+            for (DatabaseMapping databaseMapping : this.mappingsPostCalculateChangesOnDeleted) {
+                clonedDescriptor.mappingsPostCalculateChangesOnDeleted.add((DatabaseMapping)databaseMapping.clone());
+            }
+        }
 
         // The inheritance policy
         if (clonedDescriptor.hasInheritance()) {
@@ -6819,5 +6837,13 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     @Override
     public Map<String, AttributeGroup> getAttributeGroups() {
         return super.getAttributeGroups();
+    }
+
+    /**
+     * INTERNAL:
+     * Cleans referencingClasses set. Called from ClientSession for proper cleanup and avoid memory leak.
+     */
+    public void clearReferencingClasses() {
+        this.referencingClasses.clear();
     }
 }

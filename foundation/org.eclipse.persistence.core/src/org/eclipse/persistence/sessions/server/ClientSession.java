@@ -19,6 +19,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.sessions.server;
 
+import java.lang.reflect.Field;
 import java.util.*;
 import java.io.*;
 import org.eclipse.persistence.platform.server.ServerPlatform;
@@ -595,7 +596,7 @@ public class ClientSession extends AbstractSession {
     public Accessor getWriteConnection() {
         if ((this.writeConnections == null) || this.writeConnections.isEmpty()) {
             return null;
-    }
+        }
         return this.writeConnections.values().iterator().next();
     }
 
@@ -659,6 +660,11 @@ public class ClientSession extends AbstractSession {
      */
     @Override
     public void release() throws DatabaseException {
+        // Clear referencing classes. If this is not done the object is not garbage collected.
+        for (Map.Entry<Class, ClassDescriptor> entry : getDescriptors().entrySet()) {
+            entry.getValue().clearReferencingClasses();
+        }
+
         if (!this.isActive) {
             return;
         }
