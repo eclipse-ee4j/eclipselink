@@ -108,6 +108,9 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildCmp3EmbedVisitorTable());
         addTableDefinition(buildCMP3_CANOETable());
         addTableDefinition(buildCMP3_LAKETable());
+        addTableDefinition(buildCMP3_OYSTERTable());
+        addTableDefinition(buildCMP3_PEARLTable());
+        addTableDefinition(buildCMP3_PEARL_HISTTable());
     }
 
     public TableDefinition buildADDRESSTable() {
@@ -2848,6 +2851,95 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldNAME.setIsIdentity(false);
         table.addField(fieldNAME);
 
+        return table;
+    }
+    
+    public TableDefinition buildCMP3_OYSTERTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_OYSTER");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(15);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+        
+        FieldDefinition fieldCOLOR = new FieldDefinition();
+        fieldCOLOR.setName("COLOR");
+        fieldCOLOR.setTypeName("VARCHAR");
+        fieldCOLOR.setSize(32);
+        fieldCOLOR.setShouldAllowNull(true);
+        fieldCOLOR.setIsPrimaryKey(false);
+        fieldCOLOR.setUnique(false);
+        fieldCOLOR.setIsIdentity(false);
+        table.addField(fieldCOLOR);
+        
+        return table;
+    }
+    
+    public TableDefinition buildCMP3_PEARLTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_PEARL");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(15);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+        
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("NAME");
+        fieldNAME.setTypeName("VARCHAR");
+        fieldNAME.setSize(32);
+        fieldNAME.setShouldAllowNull(true);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setIsIdentity(false);
+        table.addField(fieldNAME);
+        
+        FieldDefinition fieldOYSTER_ID = new FieldDefinition();
+        fieldOYSTER_ID.setName("OYSTER_ID");
+        fieldOYSTER_ID.setTypeName("NUMBER");
+        fieldOYSTER_ID.setSize(15);
+        fieldOYSTER_ID.setIsPrimaryKey(false);
+        fieldOYSTER_ID.setIsIdentity(false);
+        fieldOYSTER_ID.setUnique(false);
+        fieldOYSTER_ID.setShouldAllowNull(true);
+        table.addField(fieldOYSTER_ID);
+        
+        return table;
+    }
+    
+    public TableDefinition buildCMP3_PEARL_HISTTable() {
+        TableDefinition table = buildCMP3_PEARLTable();
+        table.setName(table.getName() + "_HIST");
+        
+        FieldDefinition fieldSTART = new FieldDefinition();
+        fieldSTART.setName("START_DATE");
+        fieldSTART.setTypeName("TIMESTAMP");
+        fieldSTART.setIsPrimaryKey(true);
+        fieldSTART.setIsIdentity(false);
+        fieldSTART.setUnique(false);
+        fieldSTART.setShouldAllowNull(true);
+        table.addField(fieldSTART);
+        
+        FieldDefinition fieldEND = new FieldDefinition();
+        fieldEND.setName("END_DATE");
+        fieldEND.setTypeName("TIMESTAMP");
+        fieldEND.setIsPrimaryKey(false);
+        fieldEND.setIsIdentity(false);
+        fieldEND.setUnique(false);
+        fieldEND.setShouldAllowNull(true);
+        table.addField(fieldEND);
+        
         return table;
     }
 
