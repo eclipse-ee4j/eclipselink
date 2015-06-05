@@ -28,6 +28,7 @@
 *  This buildfile contains:
 *        - targets to generate a p2 repository for eclipselink on the
 *          download site.
+*        - targets to verify generated p2 repository for eclipselink
 *
 *  It is setup to run by "default" in test mode on a local windows machine.
 *  To use in production, it should be called after overriding with some variables:
@@ -50,6 +51,26 @@
 *           <param name="target" value="${classes.dir}"/>         - can be a zip, jar, or directory
 *           <param name="destination" value="${p2.feature.dir}"/> - can be a zip, jar, dir or url
 *       </antcall>
+*
+*
+*  To install just MOXy feature into some Eclipse installation, use:
+*        ant test-p2-site -Dp2.director.destination=<eclipse> \
+*            -Dp2.director.action=""  \
+*            -Dp2.director.installIU=org.eclipse.persistence.moxy.feature.group
+*
+*  If behind proxy:
+*    -pass "-Dp2.director.additionalArgs='-pluginCustomization proxy-settings.ini'"
+*     to the build, where the content of that file is:
+*  # Proxy settings
+*  org.eclipse.core.net/proxyData/HTTP/host=<proxyHost>
+*  org.eclipse.core.net/proxyData/HTTPS/host=<proxyHost>
+*  org.eclipse.core.net/proxyData/HTTPS/hasAuth=false
+*  org.eclipse.core.net/proxyData/HTTP/port=<proxyPort>
+*  org.eclipse.core.net/proxyData/HTTPS/port=<proxyPort>
+*  org.eclipse.core.net/org.eclipse.core.net.hasMigrated=true
+*  org.eclipse.core.net/nonProxiedHosts=<nonProxyHost>|localhost|127.0.0.1
+*  org.eclipse.core.net/systemProxiesEnabled=false
+*  org.eclipse.core.net/proxyData/HTTP/hasAuth=false
 *
 *================================================================================= -->
 
@@ -256,6 +277,7 @@
     <target name="build"                         depends="init, build-features, build-p2"/>
     <target name="build-p2"                      depends="create-sign-zipfile, clear-p2-loc, assemble-repos"/>
     <target name="build-features-sign-jars-wait" depends="init, build-features, sign-jars, retrieve-signed-archive"/>
+    <target name="test-repos"                    depends="populate-p2-site, publish-p2-repos, test-p2-site"/>
     <!-- ** DO NOT ALTER LIGHTLY ** - Needed by automated process -->
     <target name="build-features-create-signzip" depends="init, build-features, create-sign-zipfile"/>
     <target name="build-features"                depends="clean, create-deployable-features"/>
@@ -696,4 +718,48 @@
         </java>
     </target>
 
+    <target name="test-p2-site" depends="init">
+        <!-- EclipseLink SDK installation variables -->
+        <property name="p2.director.jar" value="org.eclipse.equinox.p2.director_*.jar"/>
+        <property name="p2.director.destination" location="${p2.SDK.install.dir}" />
+        <property name="p2.director.bundlepool" location="${p2.director.destination}" />
+        <property name="p2.director.profile" value="SDKProfile" />
+        <property name="p2.director.installIU" value="org.eclipse.persistence.sdk.feature.group" />
+        <property name="p2.director.action" value="-verifyOnly" />
+        <property name="p2.director.eclipse.version" value="luna" />
+        <property name="p2.director.eclipse.updateSite" value="http://download.eclipse.org/releases/${p2.director.eclipse.version}" />
+        <property name="p2.director.additionalArgs" value="" />
+        <echo message="p2.director.jar                  ='${p2.director.jar}'"/>
+        <echo message="p2.director.destination          ='${p2.director.destination}'"/>
+        <echo message="p2.director.bundlepool           ='${p2.director.bundlepool}'"/>
+        <echo message="p2.director.profile              ='${p2.director.profile}'"/>
+        <echo message="p2.director.installIU            ='${p2.director.installIU}'"/>
+        <echo message="p2.director.action               ='${p2.director.action}'"/>
+        <echo message="p2.director.eclipse.version      ='${p2.director.eclipse.version}'"/>
+        <echo message="p2.director.eclipse.updateSite   ='${p2.director.eclipse.updateSite}'"/>
+        <echo message="p2.director.additionalArgs       ='${p2.director.additionalArgs}'"/>
+
+        <echo message="Verifying EclipseLink Update Site: '${p2.repos.url}'"/>
+
+        <java classname="org.eclipse.equinox.launcher.Main" fork="true" timeout="10800000" taskname="p2.director"
+            jvm="${java.home}/bin/java" failonerror="true" maxmemory="512m">
+            <classpath>
+                <fileset dir="${p2.SDK.plugin.dir}"
+                    includes="${p2.launcher.jar},
+                              ${p2.director.jar}"/>
+                <pathelement location="${p2.SDK.plugin.dir}" />
+            </classpath>
+            <arg line="-application org.eclipse.equinox.p2.director" />
+            <arg line="-nosplash -flavor tooling -roaming" />
+            <arg line="-profile '${p2.director.profile}'" />
+            <arg line="-destination '${p2.director.destination}'" />
+            <arg line="-bundlepool '${p2.director.bundlepool}'" />
+            <arg line="-installIU '${p2.director.installIU}'" />
+            <arg line="-tag EclipseLinkSDK"/>
+            <arg line="${p2.director.action}"/>
+            <arg line="-profileProperties org.eclipse.update.install.features=true" />
+            <arg line="-repository ${p2.repos.url},${p2.director.eclipse.updateSite}" />
+            <arg line="${p2.director.additionalArgs}"/>
+        </java>
+    </target>
 </project>
