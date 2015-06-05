@@ -70,6 +70,7 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.history.AsOfClause;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryDelegate;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
@@ -116,6 +117,8 @@ import org.eclipse.persistence.testing.models.jpa.advanced.Jigsaw;
 import org.eclipse.persistence.testing.models.jpa.advanced.JigsawPiece;
 import org.eclipse.persistence.testing.models.jpa.advanced.LargeProject;
 import org.eclipse.persistence.testing.models.jpa.advanced.Loot;
+import org.eclipse.persistence.testing.models.jpa.advanced.Oyster;
+import org.eclipse.persistence.testing.models.jpa.advanced.Pearl;
 import org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber;
 import org.eclipse.persistence.testing.models.jpa.advanced.Product;
 import org.eclipse.persistence.testing.models.jpa.advanced.Project;
@@ -256,6 +259,8 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             suite.addTest(new AdvancedJPAJunitTest("testProjectToEmployeeWithBatchFetchJoinFetch"));
             suite.addTest(new AdvancedJPAJunitTest("testEmployeeToPhoneNumberWithBatchFetchJoinFetch"));
             suite.addTest(new AdvancedJPAJunitTest("testEmployeeToAddressWithBatchFetchJoinFetch"));
+            
+            suite.addTest(new AdvancedJPAJunitTest("testHistoryRelationshipQueryInitialization"));
         }
         
         return suite;
@@ -3069,6 +3074,86 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         }
     }
     
+    /**
+     * Bug 464088
+     * Test non-historized Entity eager-referencing a historized Entity's queries function correctly
+     * when read all queries are executed on a 'historical' session before a 'regular' session.
+     * Uses very specialized non-cacheable entities: Oyster bi-directional eager 1:1 to: Pearl(historized)
+     */
+    public void testHistoryRelationshipQueryInitialization() {
+        // setup
+        EntityManager em = createEntityManager();
+        
+        Oyster oyster = null;
+        Pearl pearl = null;
+        try {
+            beginTransaction(em);
+            
+            oyster = new Oyster();
+            oyster.setColor("Black");
+            pearl = new Pearl();
+            pearl.setName("Bob");
+            oyster.setPearl(pearl);
+            pearl.setOyster(oyster);
+            
+            em.persist(oyster);
+            em.flush();
+            
+            try {
+                Thread.sleep(1000); // pause for a bit to allow timestamps to be different
+            } catch (InterruptedException ie) {} // ignore
+            
+            oyster.getPearl().setName("Doug"); // change related entity for history entry
+            
+            commitTransaction(em);
+        } finally {
+            closeEntityManager(em);
+        }
+        
+        // test
+        em = createEntityManager();
+        try {
+            Calendar asOfDate = Calendar.getInstance();
+            asOfDate.set(1999, 1, 1, 12, 0, 0);
+            
+            // execute a historical query against the non-historical Oyster entity
+            Session client = JpaHelper.getServerSession(em.getEntityManagerFactory()).acquireClientSession();
+            Session historical = client.acquireHistoricalSession(new AsOfClause(asOfDate));
+            
+            List<Oyster> oysters = (List<Oyster>)historical.readAllObjects(Oyster.class);
+            assertTrue("Historical query: Oysters should be non-empty", oysters.size() > 0);
+            for (Oyster oysterElem : oysters) {
+                assertNull("Historical query: Oyster should not have a pearl", oysterElem.getPearl());
+            }
+            
+            // execute a non historical query through JPQL against the Oyster entity
+            oysters = (List<Oyster>)em.createQuery("SELECT e FROM Oyster e", Oyster.class).getResultList();
+            assertTrue("JPA query: Oysters should be non-empty", oysters.size() > 0);
+            for (Oyster oysterElem : oysters) {
+                assertNotNull("JPA query: Oyster should have a pearl, historical query executed", oysterElem.getPearl());
+            }
+        } finally {
+            closeEntityManager(em);
+        }
+        
+        // reset
+        em = createEntityManager();
+        try {
+            beginTransaction(em);
+            oyster = em.find(Oyster.class, oyster.getId());
+            if (oyster != null) {
+                em.remove(oyster);
+            }
+            pearl = em.find(Pearl.class, pearl.getId());
+            if (pearl != null) {
+                em.remove(pearl);
+            }
+            commitTransaction(em);
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+
     protected int getVersion(EntityManager em, Dealer dealer) {
         Vector pk = new Vector(1);
         pk.add(dealer.getId());

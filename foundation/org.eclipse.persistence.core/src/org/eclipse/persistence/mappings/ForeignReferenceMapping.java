@@ -2241,7 +2241,13 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             row = sopRow;
         }
 
-        // Copy nested fetch group from the source query 
+        // Bug 464088
+        if (executionSession.isHistoricalSession() && !targetQuery.isPrepared()) {
+            targetQuery = (ObjectLevelReadQuery)targetQuery.clone();
+            targetQuery.setIsExecutionClone(true);
+        }
+        
+        // Copy nested fetch group from the source query
         if (targetQuery.isObjectLevelReadQuery() && targetQuery.getDescriptor().hasFetchGroupManager()) {
             FetchGroup sourceFG = sourceQuery.getExecutionFetchGroup(this.getDescriptor());
             if (sourceFG != null) {                    
