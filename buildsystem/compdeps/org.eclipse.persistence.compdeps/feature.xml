@@ -18,14 +18,14 @@
    </license>
 
     <plugin
-            id="com.sun.xml.bind"
+            id="jaxb-core"
             download-size="0"
             install-size="0"
             version="@JAXB_CORE_VERSION@"
             unpack="false"/>
 
     <plugin
-            id="com.sun.tools.xjc"
+            id="jaxb-xjc"
             download-size="0"
             install-size="0"
             version="@XJC_VERSION@"
@@ -78,6 +78,13 @@
          download-size="0"
          install-size="0"
          version="@RESOURCE_VERSION@"
+         unpack="false"/>
+
+   <plugin
+         id="javax.transaction"
+         download-size="0"
+         install-size="0"
+         version="@TRANSACTION_VERSION@"
          unpack="false"/>
 
    <plugin

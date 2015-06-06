@@ -9,7 +9,6 @@ JVM_ARGS="-Xmx256m"
 
 # Please do not change any of the following lines:
 CLASSPATH=`dirname $0`/../jlib/moxy/jaxb-core_2.2.11.v201407311112.jar:\
-`dirname $0`/../jlib/moxy/jaxb-core_2.2.11.v201407311112.jar:\
 `dirname $0`/../jlib/moxy/jaxb-xjc_2.2.11.v201407311112.jar:\
 `dirname $0`/../jlib/moxy/org.glassfish.javax.json_1.0.4.v201311181159.jar:\
 `dirname $0`/../jlib/moxy/javax.validation_1.1.0.v201304101302.jar:\

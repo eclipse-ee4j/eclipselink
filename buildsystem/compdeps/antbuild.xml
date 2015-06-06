@@ -31,6 +31,8 @@
     <!-- (should be set locally, and be destroyed upon return) -->
     <fail message="Not running from '${ant.project.name}' directory" unless="p2.is.local"/>
 
+    <target name="generate-p2" if="p2.tooling.available" depends="generate-p2-site, test-p2-site"/>
+
     <target name="init">
         <tstamp>
            <format property="compdeps.build.date" pattern="yyyyMMdd"/>
@@ -134,9 +136,9 @@
         <property name="javax.xml.bind.prefix" value="javax.xml.bind"/>
         <property name="javax.xml.bind.criteria" value="[0.0.1,5.0.0)"/>
         <property name="sun.tools.xjc.prefix" value="jaxb-xjc"/>
-        <property name="sun.tools.xjc.criteria" value="[0.0.1,5.0.0)"/>
+        <property name="sun.tools.xjc.criteria" value="[2.2.11,5.0.0)"/>
         <property name="sun.xml.bind.prefix" value="jaxb-core"/>
-        <property name="sun.xml.bind.criteria" value="[0.0.1,5.0.0)"/>
+        <property name="sun.xml.bind.criteria" value="[2.2.11,5.0.0)"/>
         <property name="jersey.prefix" value="com.sun.jersey"/>
         <property name="jersey.criteria" value="[1.8.0,5.0.0)"/>
         <property name="sdo.prefix" value="commonj.sdo"/>
@@ -149,6 +151,8 @@
         <property name="persistence.criteria" value="[2.0.0,5.0.0)"/>
         <property name="resource.prefix" value="javax.resource"/>
         <property name="resource.criteria" value="[0.0.1,5.0.0)"/>
+        <property name="transaction.prefix" value="javax.transaction"/>
+        <property name="transaction.criteria" value="[0.0.1,5.0.0)"/>
         <property name="validation.prefix" value="javax.validation"/>
         <property name="validation.criteria" value="[0.0.1,5.0.0)"/>
         <property name="servlet.prefix" value="javax.servlet"/>
@@ -187,15 +191,12 @@
         <selectbundle basename="${javax.xml.bind.prefix}"  directory="${compdeps.2.common.plugins.dir}"
                       criterion="${javax.xml.bind.criteria}" property="javax.xml.bind.version" versiononly="true"
         />
-
         <selectbundle basename="${sun.xml.bind.prefix}"  directory="${compdeps.2.common.plugins.dir}"
                       criterion="${sun.xml.bind.criteria}" property="sun.xml.bind.version" versiononly="true"
         />
-
         <selectbundle basename="${sun.tools.xjc.prefix}"  directory="${compdeps.2.common.plugins.dir}"
                       criterion="${sun.tools.xjc.criteria}" property="sun.tools.xjc.version" versiononly="true"
         />
-
         <selectbundle basename="${jersey.prefix}"  directory="${compdeps.2.common.plugins.dir}"
                      criterion="${jersey.criteria}" property="jersey.version" versiononly="true"
         />
@@ -207,6 +208,9 @@
         />
         <selectbundle basename="${resource.prefix}"  directory="${compdeps.2.common.plugins.dir}"
                      criterion="${resource.criteria}" property="resource.version" versiononly="true"
+        />
+        <selectbundle basename="${transaction.prefix}"  directory="${compdeps.2.common.plugins.dir}"
+                     criterion="${transaction.criteria}" property="transaction.version" versiononly="true"
         />
         <selectbundle basename="${servlet.prefix}"  directory="${compdeps.2.common.plugins.dir}"
                      criterion="${servlet.criteria}" property="servlet.version" versiononly="true"
@@ -241,6 +245,8 @@
         <say  message="   '${jms.prefix}_${jms.criteria}.jar' not found! Generated features will be invalid."                   unless="jms.version"/>
         <say  message="   resource.version         = '${resource.version}'"                                                         if="resource.version"/>
         <say  message="   '${resource.prefix}_${resource.criteria}.jar' not found! Generated features will be invalid."         unless="resource.version"/>
+        <say  message="   transaction.version      = '${transaction.version}'"                                                         if="transaction.version"/>
+        <say  message="   '${transaction.prefix}_${transaction.criteria}.jar' not found! Generated features will be invalid."         unless="transaction.version"/>
         <say  message="   servlet.version          = '${servlet.version}'"                                                          if="servlet.version"/>
         <say  message="   '${servlet.prefix}_${servlet.criteria}.jar' not found! Generated features will be invalid."           unless="servlet.version"/>
         <say  message="   xml.soap.version         = '${xml.soap.version}'"                                                         if="xml.soap.version"/>
@@ -314,6 +320,7 @@
         <filter token="EJB_VERSION"          value="${ejb.version}"/>
         <filter token="JMS_VERSION"          value="${jms.version}"/>
         <filter token="RESOURCE_VERSION"     value="${resource.version}"/>
+        <filter token="TRANSACTION_VERSION"  value="${transaction.version}"/>
         <filter token="SERVLET_VERSION"      value="${servlet.version}"/>
         <filter token="XML_SOAP_VERSION"     value="${xml.soap.version}"/>
         <filter token="PERSISTENCE_VERSION"  value="${persistence.version}"/>
@@ -353,6 +360,7 @@
                           ${ejb.prefix}_${ejb.version}.jar,
                           ${jms.prefix}_${jms.version}.jar,
                           ${resource.prefix}_${resource.version}.jar,
+                          ${transaction.prefix}_${transaction.version}.jar,
                           ${servlet.prefix}_${servlet.version}.jar,
                           ${xml.soap.prefix}_${xml.soap.version}.jar,
                           ${antlr.prefix}_${antlr.version}.jar,
@@ -405,7 +413,7 @@
         <say  message="All P2 Generation libraries not available. Generation aborted!"  unless="p2.tooling.available"/>
     </target>
 
-    <target name="generate-p2" if="p2.tooling.available" depends="configure-tooling, populate-p2-site">
+    <target name="generate-p2-site" if="p2.tooling.available" depends="configure-tooling, populate-p2-site">
         <delete file="${p2repo.dir}/site.xml" quiet="true"/>
         <filter token="REPOS_URL"          value="${p2.release.repos.url}"/>
         <filter token="VERSION"            value="${compdeps.version}"/>
@@ -438,4 +446,49 @@
         </java>
     </target>
 
+    <target name="test-p2-site" if="p2.tooling.available" >
+        <!-- EclipseLink CompDeps feature installation variables -->
+        <property name="p2.director.jar" value="org.eclipse.equinox.p2.director_*.jar"/>
+        <property name="p2.director.destination" location="${eclipse.install.dir}" />
+        <property name="p2.director.bundlepool" location="${p2.director.destination}" />
+        <property name="p2.director.profile" value="SDKProfile" />
+        <property name="p2.director.installIU" value="org.eclipse.persistence.compdeps.feature.group" />
+        <property name="p2.director.action" value="-verifyOnly" />
+        <property name="p2.director.eclipse.version" value="luna" />
+        <property name="p2.director.eclipse.updateSite" value="http://download.eclipse.org/releases/${p2.director.eclipse.version}" />
+        <property name="p2.director.additionalArgs" value="" />
+        <echo message="p2.director.jar                  ='${p2.director.jar}'"/>
+        <echo message="p2.director.destination          ='${p2.director.destination}'"/>
+        <echo message="p2.director.bundlepool           ='${p2.director.bundlepool}'"/>
+        <echo message="p2.director.profile              ='${p2.director.profile}'"/>
+        <echo message="p2.director.installIU            ='${p2.director.installIU}'"/>
+        <echo message="p2.director.action               ='${p2.director.action}'"/>
+        <echo message="p2.director.eclipse.version      ='${p2.director.eclipse.version}'"/>
+        <echo message="p2.director.eclipse.updateSite   ='${p2.director.eclipse.updateSite}'"/>
+        <echo message="p2.director.additionalArgs       ='${p2.director.additionalArgs}'"/>
+
+        <echo message="Verifying EclipseLink Update Site with Compilation dependencies: '${p2.repos.url}'"/>
+
+        <java classname="org.eclipse.equinox.launcher.Main" fork="true" timeout="10800000" taskname="p2.director"
+            jvm="${java.home}/bin/java" failonerror="true" maxmemory="512m">
+            <classpath>
+                <fileset dir="${eclipse.plugin.dir}"
+                    includes="${p2.launcher.jar},
+                              ${p2.director.jar}"/>
+                <pathelement location="${eclipse.plugin.dir}" />
+            </classpath>
+            <arg line="-application org.eclipse.equinox.p2.director" />
+            <arg line="-nosplash -flavor tooling -roaming" />
+            <arg line="-profile '${p2.director.profile}'" />
+            <arg line="-destination '${p2.director.destination}'" />
+            <arg line="-bundlepool '${p2.director.bundlepool}'" />
+            <arg line="-installIU '${p2.director.installIU}'" />
+            <arg line="-tag EclipseLinkSDK"/>
+            <arg line="${p2.director.action}"/>
+            <arg line="-profileProperties org.eclipse.update.install.features=true" />
+            <!--<arg line="-repository ${p2.repos.url},http://download.eclipse.org/tools/orbit/downloads/drops/R20130827064939/repository,${p2.director.eclipse.updateSite}" />-->
+            <arg line="-repository ${p2.repos.url},${p2.director.eclipse.updateSite}" />
+            <arg line="${p2.director.additionalArgs}"/>
+        </java>
+    </target>
 </project>
