@@ -250,10 +250,16 @@
         <property name="jaxrs.criteria" value="[1.0,9.0)"/>
         <property name="xml.bind.prefix" value="javax.xml.bind"/>
         <property name="xml.bind.criteria" value="[2.2.0,2.3.0)"/>
+        <property name="sun.tools.xjc.prefix" value="jaxb-xjc"/>
+        <property name="sun.tools.xjc.criteria" value="[2.2.11,5.0.0)"/>
+        <property name="sun.xml.bind.prefix" value="jaxb-core"/>
+        <property name="sun.xml.bind.criteria" value="[2.2.11,5.0.0)"/>
         <property name="xml.stream.prefix" value="javax.xml.stream"/>
         <property name="xml.stream.criteria" value="[1.0.1,1.1.0)"/>
         <property name="mongodb.prefix" value="org.eclipse.orbit.mongodb"/>
         <property name="mongodb.criteria" value="[2.7.2,2.8.0)"/>
+        <property name="json.prefix" value="org.glassfish.javax.json"/>
+        <property name="json.criteria" value="[1.0.4,5.0.0)"/>
 
         <!-- For EclipseLink bundles -->
         <property name="antlr.prefix" value="org.eclipse.persistence.antlr"/>
@@ -329,6 +335,12 @@
         <selectbundle basename="${xml.bind.prefix}" directory="${feature.2.common.plugins.dir}"
                      criterion="${xml.bind.criteria}" property="xml.bind.version" versiononly="true"
         />
+        <selectbundle basename="${sun.xml.bind.prefix}"  directory="${feature.2.common.plugins.dir}"
+                      criterion="${sun.xml.bind.criteria}" property="sun.xml.bind.version" versiononly="true"
+        />
+        <selectbundle basename="${sun.tools.xjc.prefix}"  directory="${feature.2.common.plugins.dir}"
+                      criterion="${sun.tools.xjc.criteria}" property="sun.tools.xjc.version" versiononly="true"
+        />
         <selectbundle basename="${xml.stream.prefix}" directory="${feature.2.common.plugins.dir}"
                      criterion="${xml.stream.criteria}" property="xml.stream.version" versiononly="true"
         />
@@ -359,6 +371,9 @@
         <selectbundle basename="${wsdl.prefix}" directory="${feature.2.util.plugins.dir}"
                      criterion="${wsdl.criteria}" property="wsdl.version" versiononly="true"
         />
+        <selectbundle basename="${json.prefix}"  directory="${feature.2.common.plugins.dir}"
+                     criterion="${json.criteria}" property="json.version" versiononly="true"
+        />
         <echo message="Searching ${feature.2.util.plugins.dir}..."/>
         <say  message="   oracleddl.version   = '${oracleddl.version}'"                                                       if="oracleddl.version"/>
         <say  message="   '${oracleddl.prefix}_${oracleddl.criteria}.jar' not found! Generated features will be invalid."     unless="oracleddl.version"/>
@@ -381,6 +396,10 @@
         <say  message="   '${servlet.prefix}_${servlet.criteria}.jar' not found! Generated features will be invalid."         unless="servlet.version"/>
         <say  message="   xml.bind.version    = '${xml.bind.version}'"                                                        if="xml.bind.version"/>
         <say  message="   '${xml.bind.prefix}_${xml.bind.criteria}.jar' not found! Generated features will be invalid."       unless="xml.bind.version"/>
+        <say  message="   sun.tools.xjc.version    = '${sun.tools.xjc.version}'"                                                    if="sun.tools.xjc.version"/>
+        <say  message="   '${sun.tools.xjc.prefix}_${sun.tools.xjc.criteria}.jar' not found! Generated features will be invalid." unless="sun.tools.xjc.version"/>
+        <say  message="   sun.xml.bind.version     = '${sun.xml.bind.version}'"                                                     if="sun.xml.bind.version"/>
+        <say  message="   '${sun.xml.bind.prefix}_${sun.xml.bind.criteria}.jar' not found! Generated features will be invalid."   unless="sun.xml.bind.version"/>
         <say  message="   xml.stream.version  = '${xml.stream.version}'"                                                      if="xml.stream.version"/>
         <say  message="   '${xml.stream.prefix}_${xml.stream.criteria}.jar' not found! Generated features will be invalid."   unless="xml.stream.version"/>
         <say  message="   mongodb.version     = '${mongodb.version}'"                                                         if="mongodb.version"/>
@@ -397,6 +416,8 @@
         <say  message="   '${oracle.prefix}_${oracle.criteria}.jar' not found! Generated features will be invalid."           unless="oracle.version"/>
         <say  message="   oraclenosql.version = '${oraclenosql.version}'"                                                     if="oraclenosql.version"/>
         <say  message="   '${oraclenosql.prefix}_${oraclenosql.criteria}.jar' not found! Generated features will be invalid." unless="oraclenosql.version"/>
+        <say  message="   json.version        = '${json.version}'"                                                            if="json.version"/>
+        <say  message="   '${json.prefix}_${json.criteria}.jar' not found! Generated features will be invalid."               unless="json.version"/>
     </target>
 
     <target name="create-deployable-features" depends="resolve-feature-dependencies">
@@ -415,8 +436,11 @@
         <filter token="WSDL_VERSION"        value="${wsdl.version}"/>
         <filter token="JAXRS_VERSION"       value="${jaxrs.version}"/>
         <filter token="XMLBIND_VERSION"     value="${xml.bind.version}"/>
+        <filter token="XJC_VERSION"          value="${sun.tools.xjc.version}"/>
+        <filter token="JAXB_CORE_VERSION"    value="${sun.xml.bind.version}"/>
         <filter token="XMLSTREAM_VERSION"   value="${xml.stream.version}"/>
         <filter token="MONGODB_VERSION"     value="${mongodb.version}"/>
+        <filter token="JSON_VERSION"         value="${json.version}"/>
         <!--          Filters for product bundles in feature.xml files -->
         <filter token="ANTLR_VERSION"       value="${antlr.version}"/>
         <filter token="ASM_VERSION"         value="${asm.version}"/>

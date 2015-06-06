@@ -65,6 +65,27 @@
          unpack="false"/>
 
    <plugin
+         id="org.glassfish.javax.json"
+         download-size="0"
+         install-size="0"
+         version="@JSON_VERSION@"
+         unpack="false"/>
+
+   <plugin
+         id="jaxb-core"
+         download-size="0"
+         install-size="0"
+         version="@JAXB_CORE_VERSION@"
+         unpack="false"/>
+
+   <plugin
+         id="jaxb-xjc"
+         download-size="0"
+         install-size="0"
+         version="@XJC_VERSION@"
+         unpack="false"/>
+
+   <plugin
          id="org.eclipse.persistence.asm"
          download-size="0"
          install-size="0"
