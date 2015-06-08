@@ -204,11 +204,9 @@
     <target name="config-compile-path">
         <path id="compile.path">
             <pathelement path="${eclipselink.jpa}/${classes.dir}"/>
-            <pathelement path="${eclipselink.core.lib.dir}/${activation.jar}"/>
             <pathelement path="${eclipselink.core.lib.dir}/${resource.jar}"/>
             <pathelement path="${eclipselink.core.lib.dir}/${ejb.jar}"/>
             <pathelement path="${eclipselink.core.lib.dir}/${jms.jar}"/>
-            <pathelement path="${eclipselink.core.lib.dir}/${stax_api.jar}"/>
             <pathelement path="${eclipselink.core.lib.dir}/${transaction.jar}"/>
             <pathelement path="${eclipselink.core.lib.dir}/${mail.jar}"/>
             <pathelement path="${eclipselink.jar}"/>

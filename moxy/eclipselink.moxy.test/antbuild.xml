@@ -116,11 +116,9 @@
         <path refid="xml.parser.path"/>
         <pathelement path="${jaxb-api.lib}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${json.jar}"/>
-        <pathelement path="${moxytest.2.common.plugins.dir}/${activation.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${resource.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${ejb.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${jms.jar}"/>
-        <pathelement path="${moxytest.2.common.plugins.dir}/${stax_api.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${transaction.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${mail.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${jaxrs.jar}"/>
@@ -139,7 +137,6 @@
         <path refid="xml.parser.path"/>
         <pathelement path="${jaxb-api.lib}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${json.jar}"/>
-        <pathelement path="${moxytest.2.common.plugins.dir}/${activation.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${mail.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${jaxrs.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${asm.jar}"/>
@@ -165,11 +162,9 @@
     </path>
     <path id="oxm.compile.path">
         <path refid="xml.parser.path"/>
-        <pathelement path="${moxytest.2.common.plugins.dir}/${activation.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${resource.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${ejb.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${jms.jar}"/>
-        <pathelement path="${moxytest.2.common.plugins.dir}/${stax_api.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${transaction.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${mail.jar}"/>
         <pathelement path="${oep.nosql.lib}"/>
@@ -180,11 +175,9 @@
     </path>
     <path id="oxm.run.path">
         <path refid="xml.parser.path"/>
-        <pathelement path="${moxytest.2.common.plugins.dir}/${activation.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${resource.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${ejb.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${jms.jar}"/>
-        <pathelement path="${moxytest.2.common.plugins.dir}/${stax_api.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${transaction.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${mail.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${asm.jar}"/>
@@ -204,11 +197,9 @@
         <pathelement path="${junit.lib}"/>
         <pathelement path="${jaxb-api.lib}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${json.jar}"/>
-        <pathelement path="${moxytest.2.common.plugins.dir}/${activation.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${resource.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${ejb.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${jms.jar}"/>
-        <pathelement path="${moxytest.2.common.plugins.dir}/${stax_api.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${transaction.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${mail.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${jaxrs.jar}"/>
@@ -226,8 +217,6 @@
         <pathelement path="${junit.lib}"/>
         <pathelement path="${jaxb-api.lib}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${json.jar}"/>
-        <pathelement path="${moxytest.2.common.plugins.dir}/${activation.jar}"/>
-        <pathelement path="${moxytest.2.common.plugins.dir}/${stax_api.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${mail.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${jaxrs.jar}"/>
         <pathelement path="${oep.nosql.lib}"/>
@@ -249,11 +238,9 @@
         <pathelement path="${jaxb-api.lib}"/>
         <pathelement path="${jmockit.lib}"/>
         <pathelement path="${junit.lib}"/>
-        <pathelement path="${moxytest.2.common.plugins.dir}/${activation.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${resource.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${ejb.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${jms.jar}"/>
-        <pathelement path="${moxytest.2.common.plugins.dir}/${stax_api.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${transaction.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${mail.jar}"/>
         <pathelement path="${oep.nosql.lib}"/>
@@ -266,11 +253,9 @@
         <pathelement path="${junit.lib}"/>
         <pathelement path="${jaxb-api.lib}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${json.jar}"/>
-        <pathelement path="${moxytest.2.common.plugins.dir}/${activation.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${resource.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${ejb.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${jms.jar}"/>
-        <pathelement path="${moxytest.2.common.plugins.dir}/${stax_api.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${transaction.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${mail.jar}"/>
         <pathelement path="${oep.nosql.lib}"/>

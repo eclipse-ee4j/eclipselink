@@ -10,7 +10,6 @@ EclipseLink Core Functionality
 - org.eclipse.persistence.core
 - org.eclipse.persistence.asm
 - org.eclipse.persistence.antlr
-- javax.activation
 - javax.jms
 - javax.mail
 - javax.persistence
@@ -18,7 +17,6 @@ EclipseLink Core Functionality
 - javax.transaction
 - javax.xml.rpc
 - javax.xml.soap
-- javax.xml.stream
 - org.apache.ant
 - org.glassfish.javax.json
 

@@ -127,7 +127,6 @@
         <pathelement path="../${sdotest.2.common.plugins.dir}/org.eclipse.persistence.sdo_${version.string}.jar"/>
         <pathelement path="../${classes.dir}"/>
         <pathelement path="../${sdotest.plugins.dir}/${commonj.sdo.jar}"/>
-        <pathelement path="../${sdotest.2.common.plugins.dir}/javax.activation_1.1.0.jar"/>
         <pathelement path="../${sdotest.2.common.plugins.dir}/javax.mail_1.4.0.jar"/>
     </path>
 

@@ -178,21 +178,15 @@
 
     <target name="init-tests" depends="init">
         <!-- Test dependencies -->
-        <selectbundle basename="${activation.prefix}"  directory="${dbwsbldrtest.2.common.plugins.dir}"
-                     criterion="${activation.criteria}" property="activation.jar"
-        />
         <selectbundle basename="${mail.prefix}"  directory="${dbwsbldrtest.2.common.plugins.dir}"
                      criterion="${mail.criteria}" property="mail.jar"
         />
         <echo message="jdbc.driver.jar  ='${jdbc.driver.jar}'"/>
         <echo message="dbwsbldrtest.jar ='./${dbwsbldrtest.jar}'"/>
-        <echo message="activation.jar   ='${dbwsbldrtest.2.common.plugins.dir}/${activation.jar}'"/>
         <echo message="mail.jar         ='${dbwsbldrtest.2.common.plugins.dir}/${mail.jar}'"/>
-        <property name="activation.lib" value="${dbwsbldrtest.2.common.plugins.dir}/${activation.jar}"/>
         <property name="mail.lib"       value="${dbwsbldrtest.2.common.plugins.dir}/${mail.jar}"/>
         <available file="${jdbc.driver.jar}"          property="jdbc.jar.exist"/>
         <available file="./${dbwsbldrtest.jar}"       property="dbwsbldrtest.jar.exist"/>
-        <available file="${activation.lib}"           property="activation.lib.exist"/>
         <available file="${mail.lib}"                 property="mail.lib.exist"/>
 
         <!-- Set Run Path -->
@@ -201,7 +195,6 @@
             <pathelement path="${jacocoagent.lib}"/>
             <pathelement path="${jdbc.driver.jar}"/>
             <pathelement path="./${dbwsbldrtest.jar}"/>
-            <pathelement path="${activation.lib}"/>
             <pathelement path="${mail.lib}"/>
             <pathelement path="${javax.validation.lib}"/>
         </path>
@@ -218,7 +211,6 @@
                 <isset property="is.mysql.platform"/>
                 <isset property="jdbc.jar.exist"/>
                 <isset property="dbwsbldrtest.jar.exist"/>
-                <isset property="activation.lib.exist"/>
                 <isset property="mail.lib.exist"/>
                 <isset property="db.platform"/>
                 <isset property="db.driver"/>
@@ -234,7 +226,6 @@
         <say message="     DB platform not set to MySQL!"   unless="is.mysql.platform"/>
         <say message="     jdbc.jar not found!"             unless="jdbc.jar.exist"/>
         <say message="     dbwsbldrtest.jar not found!"     unless="dbwsbldrtest.jar.exist"/>
-        <say message="     activation.lib not found!"       unless="activation.lib.exist"/>
         <say message="     mail.lib not found!"             unless="mail.lib.exist"/>
         <say message="     db.platform not set!"            unless="db.platform"/>
         <say message="     db.driver not set!"              unless="db.driver"/>

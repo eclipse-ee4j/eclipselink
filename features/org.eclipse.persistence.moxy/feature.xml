@@ -23,13 +23,6 @@
    </url>
 
    <plugin
-         id="javax.activation"
-         download-size="0"
-         install-size="0"
-         version="@ACTIVATION_VERSION@"
-         unpack="false"/>
-
-   <plugin
          id="javax.mail"
          download-size="0"
          install-size="0"
@@ -48,13 +41,6 @@
          download-size="0"
          install-size="0"
          version="@XMLBIND_VERSION@"
-         unpack="false"/>
-
-   <plugin
-         id="javax.xml.stream"
-         download-size="0"
-         install-size="0"
-         version="@XMLSTREAM_VERSION@"
          unpack="false"/>
 
    <plugin

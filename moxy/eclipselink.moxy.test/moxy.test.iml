@@ -166,24 +166,6 @@
     <orderEntry type="module-library" scope="RUNTIME">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/javax.activation_1.1.0.v201108011116.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" scope="RUNTIME">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/javax.xml.stream_1.0.1.v201004272200.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" scope="RUNTIME">
-      <library>
-        <CLASSES>
           <root url="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.nosql_2.6.0.qualifier.jar!/" />
         </CLASSES>
         <JAVADOC />

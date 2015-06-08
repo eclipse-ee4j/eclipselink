@@ -234,8 +234,6 @@
         <!-- Defaults, set var in ${user.home}/build.properties if different version required -->
         <property name="sdo.prefix" value="commonj.sdo"/>
         <property name="sdo.criteria" value="[2.1.1,2.2.0)"/>
-        <property name="activation.prefix" value="javax.activation"/>
-        <property name="activation.criteria" value="[1.1.0,1.2.0)"/>
         <property name="mail.prefix" value="javax.mail"/>
         <property name="mail.criteria" value="[1.4.0,1.5.0)"/>
         <property name="persistence.prefix" value="javax.persistence"/>
@@ -254,8 +252,6 @@
         <property name="sun.tools.xjc.criteria" value="[2.2.11,5.0.0)"/>
         <property name="sun.xml.bind.prefix" value="jaxb-core"/>
         <property name="sun.xml.bind.criteria" value="[2.2.11,5.0.0)"/>
-        <property name="xml.stream.prefix" value="javax.xml.stream"/>
-        <property name="xml.stream.criteria" value="[1.0.1,1.1.0)"/>
         <property name="mongodb.prefix" value="org.eclipse.orbit.mongodb"/>
         <property name="mongodb.criteria" value="[2.7.2,2.8.0)"/>
         <property name="json.prefix" value="org.glassfish.javax.json"/>
@@ -317,9 +313,6 @@
         <selectbundle basename="${sdo.prefix}" directory="${feature.2.sdo.plugins.dir}"
                      criterion="${sdo.criteria}" property="sdo.version" versiononly="true"
         />
-        <selectbundle basename="${activation.prefix}" directory="${feature.2.common.plugins.dir}"
-                     criterion="${activation.criteria}" property="activation.version" versiononly="true"
-        />
         <selectbundle basename="${mail.prefix}" directory="${feature.2.common.plugins.dir}"
                      criterion="${mail.criteria}" property="mail.version" versiononly="true"
         />
@@ -340,9 +333,6 @@
         />
         <selectbundle basename="${sun.tools.xjc.prefix}"  directory="${feature.2.common.plugins.dir}"
                       criterion="${sun.tools.xjc.criteria}" property="sun.tools.xjc.version" versiononly="true"
-        />
-        <selectbundle basename="${xml.stream.prefix}" directory="${feature.2.common.plugins.dir}"
-                     criterion="${xml.stream.criteria}" property="xml.stream.version" versiononly="true"
         />
         <selectbundle basename="${mongodb.prefix}" directory="${feature.2.common.plugins.dir}"
                      criterion="${mongodb.criteria}" property="mongodb.version" versiononly="true"
@@ -386,8 +376,6 @@
         <say  message="   persistence.version = '${persistence.version}'"                                                     if="persistence.version"/>
         <say  message="   '${persistence.prefix}_${persistence.criteria}.jar' not found! Generated features will be invalid." unless="persistence.version"/>
         <echo message="Searching ${feature.2.common.plugins.dir}..."/>
-        <say  message="   activation.version  = '${activation.version}'"                                                      if="activation.version"/>
-        <say  message="   '${activation.prefix}_${activation.criteria}.jar' not found! Generated features will be invalid."   unless="activation.version"/>
         <say  message="   mail.version        = '${mail.version}'"                                                            if="mail.version"/>
         <say  message="   '${mail.prefix}_${mail.criteria}.jar' not found! Generated features will be invalid."               unless="mail.version"/>
         <say  message="   resource.version    = '${resource.version}'"                                                        if="resource.version"/>
@@ -400,8 +388,6 @@
         <say  message="   '${sun.tools.xjc.prefix}_${sun.tools.xjc.criteria}.jar' not found! Generated features will be invalid." unless="sun.tools.xjc.version"/>
         <say  message="   sun.xml.bind.version     = '${sun.xml.bind.version}'"                                                     if="sun.xml.bind.version"/>
         <say  message="   '${sun.xml.bind.prefix}_${sun.xml.bind.criteria}.jar' not found! Generated features will be invalid."   unless="sun.xml.bind.version"/>
-        <say  message="   xml.stream.version  = '${xml.stream.version}'"                                                      if="xml.stream.version"/>
-        <say  message="   '${xml.stream.prefix}_${xml.stream.criteria}.jar' not found! Generated features will be invalid."   unless="xml.stream.version"/>
         <say  message="   mongodb.version     = '${mongodb.version}'"                                                         if="mongodb.version"/>
         <say  message="   '${mongodb.prefix}_${mongodb.criteria}.jar' not found! Generated features will be invalid."         unless="mongodb.version"/>
         <say  message="   jaxrs.version       = '${jaxrs.version}'"                                                           if="jaxrs.version"/>
@@ -428,7 +414,6 @@
         <filter token="QUALIFIER"           value="${version.qualifier}"/>
         <!--          Filters for dependencies in feature.xml files -->
         <filter token="SDO_VERSION"         value="${sdo.version}"/>
-        <filter token="ACTIVATION_VERSION"  value="${activation.version}"/>
         <filter token="MAIL_VERSION"        value="${mail.version}"/>
         <filter token="PERSISTENCE_VERSION" value="${persistence.version}"/>
         <filter token="SERVLET_VERSION"     value="${servlet.version}"/>
@@ -438,7 +423,6 @@
         <filter token="XMLBIND_VERSION"     value="${xml.bind.version}"/>
         <filter token="XJC_VERSION"          value="${sun.tools.xjc.version}"/>
         <filter token="JAXB_CORE_VERSION"    value="${sun.xml.bind.version}"/>
-        <filter token="XMLSTREAM_VERSION"   value="${xml.stream.version}"/>
         <filter token="MONGODB_VERSION"     value="${mongodb.version}"/>
         <filter token="JSON_VERSION"         value="${json.version}"/>
         <!--          Filters for product bundles in feature.xml files -->
