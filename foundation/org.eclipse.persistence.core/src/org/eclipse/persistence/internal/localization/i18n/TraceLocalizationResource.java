@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -245,13 +245,21 @@ public class TraceLocalizationResource extends ListResourceBundle {
                                            { "weaver_found_field_lock", "Weaving for change tracking not enabled for class [{0}] because it uses field-based optimisitic locking."},
                                            { "weaver_class_not_in_project", "Weaver found class [{0}] in configuration but not in TopLink project."},
                                            { "weaver_processing_class", "Class [{0}] registered to be processed by weaver."},
-                                           { "begin_weaving_class", "Begin weaver class transformer processing class [{0}]."},
-                                           { "end_weaving_class", "End weaver class transformer processing class [{0}]."},
-                                           { "weaved_lazy", "Weaved lazy (ValueHolder indirection) [{0}]."},
-                                           { "weaved_fetchgroups", "Weaved fetch groups (FetchGroupTracker) [{0}]."},
-                                           { "weaved_changetracker", "Weaved change tracking (ChangeTracker) [{0}]."},
-                                           { "weaved_persistenceentity", "Weaved persistence (PersistenceEntity) [{0}]."},
-                                           { "weaved_rest", "Weaved REST [{0}]."},
+                                           { "begin_weaving_class", "Weaver: Begin weaver class transformer processing class [{0}]."},
+                                           { "end_weaving_class", "Weaver: End weaver class transformer processing class [{0}]."},
+                                           { "transform_missing_class_details", "Weaver: Missing class details for [{0}]."},
+                                           { "transform_existing_class_bytes", "Weaver: Using existing class bytes for [{0}]."},
+                                           { "exception_while_weaving", "Weaver: Exception [{0}] in class [{1}]." },
+                                           { "weaved_lazy", "Weaver: Weaved lazy (ValueHolder indirection) [{0}]."},
+                                           { "weaved_fetchgroups", "Weaver: Weaved fetch groups (FetchGroupTracker) [{0}]."},
+                                           { "weaved_changetracker", "Weaver: Weaved change tracking (ChangeTracker) [{0}]."},
+                                           { "weaved_persistenceentity", "Weaver: Weaved persistence (PersistenceEntity) [{0}]."},
+                                           { "weaved_rest", "Weaver: Weaved REST [{0}]."},
+                                           { "class_weaver_add_get_set_add_get", "ClassWeaver: Adding _persistence_get() method into [{0}]." },
+                                           { "class_weaver_add_get_set_add_set", "ClassWeaver: Adding _persistence_set() method into [{0}]." },
+                                           { "class_weaver_visit_end_do","ClassWeaver: Visiting the end of the class [{0}]." },
+                                           { "class_weaver_visit_end_skip","ClassWeaver: Skipping the end of the class [{0}]." },
+                                           { "class_weaver_visit_end_internal","ClassWeaver: Processing internal optimizations [{0}]." },
                                            { "cmp_init_invoke_predeploy", "JavaSECMPInitializer - predeploying {0}."},
                                            { "cmp_init_register_transformer", "JavaSECMPInitializer - registering transformer for {0}."},
                                            { "cmp_init_tempLoader_created", "JavaSECMPInitializer - created temporary ClassLoader: {0}."},

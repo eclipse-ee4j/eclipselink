@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -27,7 +27,6 @@ import org.eclipse.persistence.internal.libraries.asm.ClassReader;
 import org.eclipse.persistence.internal.libraries.asm.ClassVisitor;
 import org.eclipse.persistence.internal.libraries.asm.ClassWriter;
 import org.eclipse.persistence.internal.libraries.asm.commons.SerialVersionUIDAdder;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.Session;
 
@@ -40,7 +39,7 @@ import org.eclipse.persistence.sessions.Session;
 public class PersistenceWeaver implements ClassTransformer {
 
     public static final String EXCEPTION_WHILE_WEAVING = "exception_while_weaving";
-    
+
     protected Session session; // for logging
     // Map<String, ClassDetails> where the key is className in JVM '/' format 
     protected Map classDetailsMap;
@@ -82,9 +81,9 @@ public class PersistenceWeaver implements ClassTransformer {
              * in the class.
              */
             ClassDetails classDetails = (ClassDetails)classDetailsMap.get(Helper.toSlashedClassName(className));
-    
+
             if (classDetails != null) {
-                ((AbstractSession)session).log(SessionLog.FINEST, SessionLog.WEAVER, "begin_weaving_class", className);
+                WeaverLogger.log(SessionLog.FINEST, "begin_weaving_class", className);
                 ClassReader classReader = new ClassReader(classfileBuffer);
                 ClassWriter classWriter = null;
                 String introspectForHierarchy = System.getProperty(SystemProperties.WEAVING_REFLECTIVE_INTROSPECTION, null);
@@ -97,7 +96,7 @@ public class PersistenceWeaver implements ClassTransformer {
                 ClassVisitor sv = new SerialVersionUIDAdder(classWeaver);
                 classReader.accept(sv, 0);
                 if (classWeaver.alreadyWeaved) {
-                    ((AbstractSession)session).log(SessionLog.FINEST, SessionLog.WEAVER, "end_weaving_class", className);
+                    WeaverLogger.log(SessionLog.FINEST, "end_weaving_class", className);
                     return null;
                 }
                 if (classWeaver.weaved) {
@@ -109,32 +108,35 @@ public class PersistenceWeaver implements ClassTransformer {
                         Helper.outputClassFile(className, bytes, outputPath);
                     }
                     if (classWeaver.weavedPersistenceEntity) {
-                        ((AbstractSession)session).log(SessionLog.FINEST, SessionLog.WEAVER, "weaved_persistenceentity", className);
+                        WeaverLogger.log(SessionLog.FINEST, "weaved_persistenceentity", className);
                     }
                     if (classWeaver.weavedChangeTracker) {
-                        ((AbstractSession)session).log(SessionLog.FINEST, SessionLog.WEAVER, "weaved_changetracker", className);
+                        WeaverLogger.log(SessionLog.FINEST, "weaved_changetracker", className);
                     }
                     if (classWeaver.weavedLazy) {
-                        ((AbstractSession)session).log(SessionLog.FINEST, SessionLog.WEAVER, "weaved_lazy", className);
+                        WeaverLogger.log(SessionLog.FINEST, "weaved_lazy", className);
                     }
                     if (classWeaver.weavedFetchGroups) {
-                        ((AbstractSession)session).log(SessionLog.FINEST, SessionLog.WEAVER, "weaved_fetchgroups", className);
+                        WeaverLogger.log(SessionLog.FINEST, "weaved_fetchgroups", className);
                     }
                     if (classWeaver.weavedRest) {
-                        ((AbstractSession)session).log(SessionLog.FINEST, SessionLog.WEAVER, "weaved_rest", className);
+                        WeaverLogger.log(SessionLog.FINEST, "weaved_rest", className);
                     }
-                    ((AbstractSession)session).log(SessionLog.FINEST, SessionLog.WEAVER, "end_weaving_class", className);
+                    WeaverLogger.log(SessionLog.FINEST, "end_weaving_class", className);
                     return bytes;
                 }
-                ((AbstractSession)session).log(SessionLog.FINEST, SessionLog.WEAVER, "end_weaving_class", className);
+                WeaverLogger.log(SessionLog.FINEST, "end_weaving_class", className);
+            } else {
+                WeaverLogger.log(SessionLog.FINEST, "transform_missing_class_details", className);
             }
         } catch (Throwable exception) {
-            ((AbstractSession)session).log(SessionLog.WARNING, SessionLog.WEAVER, EXCEPTION_WHILE_WEAVING, className, exception);
-            ((AbstractSession)session).logThrowable(SessionLog.FINEST, SessionLog.WEAVER, exception);
+            WeaverLogger.log(SessionLog.FINE, EXCEPTION_WHILE_WEAVING, new Object[] {exception, className});
+            WeaverLogger.logThrowable(SessionLog.FINEST, exception);
         }
+        WeaverLogger.log(SessionLog.FINEST, "transform_existing_class_bytes", className);
         return null; // returning null means 'use existing class bytes'
     }
-    
+
     // same as in org.eclipse.persistence.internal.helper.Helper, but uses
     // '/' slash as delimiter, not '.'
     protected static String getShortName(String name) {

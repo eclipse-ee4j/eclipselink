@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -28,6 +28,7 @@ import org.eclipse.persistence.internal.libraries.asm.Label;
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 import org.eclipse.persistence.internal.libraries.asm.Type;
+import org.eclipse.persistence.logging.SessionLog;
 
 /**
  * INTERNAL: Weaves classes to allow them to support EclipseLink indirection.
@@ -919,6 +920,7 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
      */
     public void addPersistenceGetSet(ClassDetails classDetails) {
         // create the _persistence_get() method
+        WeaverLogger.log(SessionLog.FINEST, "class_weaver_add_get_set_add_get", classDetails.getClassName());
         MethodVisitor cv_get = cv.visitMethod(ACC_PUBLIC, "_persistence_get", "(Ljava/lang/String;)Ljava/lang/Object;", null, null);
 
         Label label = null;
@@ -963,6 +965,7 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
         cv_get.visitMaxs(0, 0);
 
         // create the _persistence_set() method
+        WeaverLogger.log(SessionLog.FINEST, "class_weaver_add_get_set_add_set", classDetails.getClassName());
         MethodVisitor cv_set = cv.visitMethod(ACC_PUBLIC, "_persistence_set", "(Ljava/lang/String;Ljava/lang/Object;)V", null, null);
 
         label = null;
@@ -1364,7 +1367,7 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
      */
     public void visitEnd() {
         if (!alreadyWeaved) {
-
+            WeaverLogger.log(SessionLog.FINEST, "class_weaver_visit_end_do", classDetails.getClassName());
             if (this.classDetails.shouldWeaveInternal()) {
 
                 // Add a persistence and shallow clone method.
@@ -1443,6 +1446,8 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
                     addFetchGroupMethods(this.classDetails);
                 }
             }
+        }  else {
+            WeaverLogger.log(SessionLog.WARNING, "class_weaver_visit_end_skip", classDetails.getClassName());
         }
         if (classDetails.shouldWeaveREST() && classDetails.getSuperClassDetails() == null) {
             weavedRest = true;
