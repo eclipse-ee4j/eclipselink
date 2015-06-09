@@ -19,8 +19,11 @@ import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 
 /**
+ * INTERNAL:
  * Log to EclipseLink {@code weaver} logger and optionally to standard error output
  * when {@code org.eclipse.persistence.jpa.weaving.log.stderr} JVM system property is set.
+ * Logger API is based on {@link SessionLog} with {code SessionLog.WEAVER} as EclipseLink logging category.
+ * @since 2.6.1
  */
 class WeaverLogger {
 
@@ -34,58 +37,65 @@ class WeaverLogger {
     private static final boolean doLogStdErr = Boolean.valueOf(System.getProperty(PROPERTY_NAME));
 
     /**
+     * INTERNAL:
+     * Check if a message of the given level would actually be logged by EclipseLink {@code weaver} logger
+     * or to standard error output.
+     * @param level The log request level value.
+     * @return Value of {@code true} if message  will be logged or {@code false} otherwise.
+     */
+    static final boolean shouldLog(final int level) {
+        return doLogStdErr || LOGGER.shouldLog(level, SessionLog.WEAVER);
+    }
+
+    /**
+     * INTERNAL:
      * Log message with no arguments to EclipseLink {@code weaver} logger and standard error output.
      * @param level      The log request level value.
      * @param messageKey The {@link TraceLocalizationResource} log message key.
      */
     static final void log(final int level, final String messageKey) {
-        if (LOGGER.shouldLog(level, SessionLog.WEAVER)) {
-            LOGGER.log(level, SessionLog.WEAVER, messageKey, null);
-        }
+        LOGGER.log(level, SessionLog.WEAVER, messageKey, null);
         if (doLogStdErr) {
             System.err.println(TraceLocalization.buildMessage(messageKey));
         }
     }
 
     /**
+     * INTERNAL:
      * Log message with a single argument to EclipseLink {@code weaver} logger and standard error output.
      * @param level      The log request level value.
      * @param messageKey The {@link TraceLocalizationResource} log message key.
      * @param argument   An argument of the log message.
      */
     static final void log(final int level, final String messageKey, final Object argument) {
-        if (LOGGER.shouldLog(level, SessionLog.WEAVER)) {
-            LOGGER.log(level, SessionLog.WEAVER, messageKey, argument);
-        }
+        LOGGER.log(level, SessionLog.WEAVER, messageKey, argument);
         if (doLogStdErr) {
             System.err.println(TraceLocalization.buildMessage(messageKey, new Object[] {argument}));
         }
     }
 
     /**
+     * INTERNAL:
      * Log message with arguments array to EclipseLink {@code weaver} logger and standard error output.
      * @param level      The log request level value.
      * @param messageKey {@link TraceLocalizationResource} message key.
      * @param arguments  Arguments of the log message.
      */
     static final void log(final int level, final String messageKey, final Object[] arguments) {
-        if (LOGGER.shouldLog(level, SessionLog.WEAVER)) {
-            LOGGER.log(level, SessionLog.WEAVER, messageKey, arguments);
-        }
+        LOGGER.log(level, SessionLog.WEAVER, messageKey, arguments);
         if (doLogStdErr) {
             System.err.println(TraceLocalization.buildMessage(messageKey, arguments));
         }
     }
 
     /**
+     * INTERNAL:
      * Log {@link Throwable} to EclipseLink {@code weaver} logger and standard error output.
      * @param level     The log request level value.
      * @param exception {@link Throwable} to be logged.
      */
     static final void logThrowable(final int level, final Throwable throwable) {
-        if (LOGGER.shouldLog(level, SessionLog.WEAVER)) {
-            LOGGER.logThrowable(level, SessionLog.WEAVER, throwable);
-        }
+        LOGGER.logThrowable(level, SessionLog.WEAVER, throwable);
         if (doLogStdErr) {
             for (StackTraceElement ste : throwable.getStackTrace()) {
                 System.err.printf(" - %s", ste.toString());
