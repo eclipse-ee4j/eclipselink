@@ -1510,8 +1510,8 @@
             </not>
         </condition>
         <echo message="Oracle Build Settings:"/>
-        <echo message="    oracle.p2.dir: ''"/>
-        <echo message="    oracle.p2.url: ''"/>
+        <echo message="    oracle.p2.dir: '${oracle.p2.dir}'"/>
+        <echo message="    oracle.p2.url: '${oracle.p2.url}'"/>
         <echo message="  Generate a local Oracle p2 repo?"/>
         <echo message="        generate.oracle.p2: '${generate.oracle.p2}' (undefined = false)"/>
     </target>
