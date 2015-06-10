@@ -336,35 +336,37 @@
     </target>
 
     <target name="init-osgi">
-        <!-- Detect compatible version of JDK for OSGi tests (= 1.7). -->
-        <condition property="compat.jdk.osgi" value="true">
-            <matches string="${java.version}" pattern="1.7(?:.\d+)*.*"/>
-        </condition>
-        <echo message="Detected JDK version:${java.version}. OSGi tests will not run on other JDK than 1.7!"/>
-    </target>
-    <target name="check-osgi" unless="compat.jdk.osgi">
-        <echo message="Skipping OSGi Tests for JDK > 1.7."/>
-    </target>
-    <target name="compile-and-run-osgi-tests" if="compat.jdk.osgi">
-        <condition property="M2_HOME" value="${env.M2_HOME}"
-                   else="C:/apache-maven-3.0.3">
+        <property environment="env"/>
+        <condition property="m2.home.exists" value="true">
             <isset property="env.M2_HOME"/>
         </condition>
-        <condition property="version.qualifier" value="{$version.qualifier}"
-                   else="qualifier">
+        <condition property="M2_HOME" value="${env.M2_HOME}">
+            <isset property="m2.home.exists"/>
+        </condition>
+    </target>
+    <target name="check-osgi" unless="m2.home.exists">
+        <echo message="Skipping OSGi Tests. M2_HOME is not set."/>
+    </target>
+    <target name="compile-and-run-osgi-tests">
+        <condition property="version.qualifier" value="${version.qualifier}" else="qualifier">
             <isset property="version.qualifier"/>
         </condition>
         <echo message="Launching Maven build with the following parameters:"/>
         <echo message="    -Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
         <echo message="    -Dmaven.home=${M2_HOME}"/>
         <echo message="    -Dbuild.qualifier=${version.qualifier}"/>
-        <java dir="${basedir}" fork="true" failonerror="true"
-              classname="org.codehaus.plexus.classworlds.launcher.Launcher">
+        <java dir="${basedir}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
             <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
             <jvmarg value="-Dmaven.home=${M2_HOME}"/>
+            <!--<arg line="-Dmaven.surefire.debug clean install"/>-->
             <arg line="clean install"/>
             <arg line="-Dmoxytest.2.common.plugins.dir=${basedir}/../../plugins/"/>
+            <arg line="-Djavax.validation.lib=${basedir}/${javax.validation.lib}"/>
             <arg line="-Dbuild.qualifier=${version.qualifier}"/>
+            <arg line="-Drelease.version=${release.version}"/>
+            <arg line="-Djaxb-api.jar=${jaxb-api.jar}"/>
+            <arg line="-Djaxrs.jar=${jaxrs.jar}"/>
+            <arg line="-Dasm.jar=${asm.jar}"/>
             <classpath>
                 <fileset dir="${M2_HOME}/boot">
                     <include name="plexus-classworlds-*.jar"/>

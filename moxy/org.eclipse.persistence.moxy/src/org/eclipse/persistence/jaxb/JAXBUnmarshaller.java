@@ -21,6 +21,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URL;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -28,8 +29,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ValidatorFactory;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.PropertyException;
@@ -99,12 +98,14 @@ import org.eclipse.persistence.internal.jaxb.many.ManyValue;
  */
 public class JAXBUnmarshaller implements Unmarshaller {
 
-    private final JAXBBeanValidator beanValidator;
+    private JAXBBeanValidator beanValidator;
 
     private BeanValidationMode beanValidationMode;
-    private ValidatorFactory prefValidatorFactory;
+
+    // The actual type is ValidatorFactory. It's done due to optional nature of javax.validation.
+    private Object prefValidatorFactory;
     private boolean bvNoOptimisation = false;
-    private Class<?>[] beanValidationGroups = JAXBBeanValidator.DEFAULT_GROUP_ARRAY;
+    private Class<?>[] beanValidationGroups;
 
     private final XMLUnmarshaller xmlUnmarshaller;
     private final JAXBContext jaxbContext;
@@ -120,7 +121,9 @@ public class JAXBUnmarshaller implements Unmarshaller {
         this.jaxbContext = jaxbContext;
         validationEventHandler = JAXBContext.DEFAULT_VALIDATION_EVENT_HANDLER;
         beanValidationMode = BeanValidationMode.AUTO;
-        beanValidator = JAXBBeanValidator.getUnmarshallingBeanValidator(this.jaxbContext);
+        if (BeanValidationChecker.isBeanValidationPresent()) {
+            beanValidator = JAXBBeanValidator.getUnmarshallingBeanValidator(this.jaxbContext);
+        }
         xmlUnmarshaller = newXMLUnmarshaller;
         xmlUnmarshaller.setValidationMode(XMLUnmarshaller.NONVALIDATING);
         xmlUnmarshaller.setUnmarshalListener(new JAXBUnmarshalListener(this));
@@ -232,7 +235,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
     }
 
     private JAXBElement validateAndBuildJAXBElement(Object obj, Class declaredClass) throws BeanValidationException {
-        if (beanValidator.shouldValidate(obj, beanValidationMode, prefValidatorFactory, bvNoOptimisation)) {
+        if (beanValidator != null && beanValidator.shouldValidate(obj, beanValidationMode, prefValidatorFactory, bvNoOptimisation)) {
             beanValidator.validate(obj, beanValidationGroups);
         }
         return buildJAXBElementFromObject(obj, declaredClass);
@@ -867,10 +870,8 @@ public class JAXBUnmarshaller implements Unmarshaller {
             }
             this.beanValidationMode = ((BeanValidationMode) value);
         } else if (UnmarshallerProperties.BEAN_VALIDATION_FACTORY.equals(key)) {
-            if(value == null){
-                // Allow null value for preferred validation factory.
-            }
-            this.prefValidatorFactory = ((ValidatorFactory)value);
+            // Null value is allowed
+            this.prefValidatorFactory = value;
         } else if (UnmarshallerProperties.BEAN_VALIDATION_GROUPS.equals(key)) {
             if (value == null) {
                 throw new PropertyException(key, Constants.EMPTY_STRING);
@@ -1017,7 +1018,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
     }
 
     private Object validateAndTransformIfRequired(Object obj) throws BeanValidationException {
-        if (beanValidator.shouldValidate(obj, beanValidationMode, prefValidatorFactory, bvNoOptimisation)) {
+        if (beanValidator != null && beanValidator.shouldValidate(obj, beanValidationMode, prefValidatorFactory, bvNoOptimisation)) {
             beanValidator.validate(obj, beanValidationGroups);
         }
         return createJAXBElementOrUnwrapIfRequired(obj);
@@ -1101,8 +1102,11 @@ public class JAXBUnmarshaller implements Unmarshaller {
      *
      * @return set of constraint violations from last unmarshal
      */
-    public Set<? extends ConstraintViolation<?>> getConstraintViolations() {
-        return beanValidator.getConstraintViolations();
+    public Set<ConstraintViolationWrapper<Object>> getConstraintViolations() {
+        if (beanValidator != null) {
+            return beanValidator.getConstraintViolations();
+        }
+        return Collections.emptySet();
     }
 
     private static class PrimitiveContentHandler<T> extends DefaultHandler {

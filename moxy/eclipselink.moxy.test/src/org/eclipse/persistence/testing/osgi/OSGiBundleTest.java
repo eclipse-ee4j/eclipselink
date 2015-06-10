@@ -12,7 +12,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.osgi;
 
-import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.inject.Inject;
@@ -21,17 +20,11 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
-import static org.ops4j.pax.exam.CoreOptions.bundle;
-import static org.ops4j.pax.exam.CoreOptions.felix;
-import static org.ops4j.pax.exam.CoreOptions.junitBundles;
-import static org.ops4j.pax.exam.CoreOptions.localRepository;
-import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
-import static org.ops4j.pax.exam.CoreOptions.options;
-import static org.ops4j.pax.exam.CoreOptions.repositories;
+
 import org.ops4j.pax.exam.Option;
-import org.ops4j.pax.exam.junit.ExamReactorStrategy;
-import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerClass;
+import org.ops4j.pax.exam.junit.PaxExam;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
@@ -41,43 +34,23 @@ import org.osgi.framework.Version;
  * Tests that all MOXy exported bundles can be properly loaded by OSGi framework.
  *
  * @author Marcel Valovy - marcel.valovy@oracle.com
+ * @since 2.7.0
  */
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)
 public class OSGiBundleTest {
+    // MOXy bundle symbolic name
+    private static final String MOXY_BUNDLE_NAME = "org.eclipse.persistence.moxy";
 
-    private static final String PLUGINS_DIR = System.getProperty("moxytest.2.common.plugins.dir");
-    private static final String QUALIFIER = System.getProperty("build.qualifier");
+    // MOXy bundle
+    private Bundle moxyBundle;
 
     @Inject
     private static BundleContext ctx;
 
     @Configuration
     public static Option[] config() {
-        return options(
-                repositories("http://repo1.maven.org/maven2",
-                        //                "http://repository.apache.org/content/groups/snapshots-group",
-                        //                "https://maven.java.net/content/groups/staging",
-                        //                "http://repository.ops4j.org/maven2",
-                        //                "http://svn.apache.org/repos/asf/servicemix/m2-repo",
-                        //                "http://repository.springsource.com/maven/bundles/release",
-                        //                "http://repository.springsource.com/maven/bundles/external",
-                        "http://maven.java.net/content/repositories/snapshots/"),
-                localRepository(getLocalRepository()),
-                mavenBundle().groupId("org.osgi").artifactId("org.osgi.compendium").version("4.3.0"),
-                mavenBundle().groupId("org.eclipse.persistence").artifactId("org.eclipse.persistence.asm")
-                        .version("2.5.1"),
-                //JAXB API
-                bundle("file:" + PLUGINS_DIR + "javax.xml.bind_2.2.12.v201410011542.jar"),
-                //WS API
-                bundle("file:" + PLUGINS_DIR + "javax.ws.rs_1.1.1.v20101004-1200.jar"),
-                //EclipseLink bundles
-                bundle("file:" + PLUGINS_DIR + "org.eclipse.persistence.moxy_2.7.0." + QUALIFIER + ".jar"),
-                bundle("file:" + PLUGINS_DIR + "org.eclipse.persistence.core_2.7.0." + QUALIFIER + ".jar"),
-                bundle("file:" + PLUGINS_DIR + "org.eclipse.persistence.asm_5.0.1.v201405080102.jar"),
-
-                junitBundles(),
-                felix());
+        return OSGITestHelper.getDefaultOptions();
     }
 
     @Test
@@ -89,84 +62,105 @@ public class OSGiBundleTest {
     @Test
     public void testInternalJaxb() {
         Class<?> c = loadClass("org.eclipse.persistence.internal.jaxb.AttributeNodeImpl");
-        assertClassLoadedByBundle(c, "org.eclipse.persistence.moxy");
+        assertClassLoadedByBundle(c, MOXY_BUNDLE_NAME);
     }
 
     @Test
     public void testInternalJaxbMany() {
         Class<?> c = loadClass("org.eclipse.persistence.internal.jaxb.many.ArrayValue");
-        assertClassLoadedByBundle(c, "org.eclipse.persistence.moxy");
+        assertClassLoadedByBundle(c, MOXY_BUNDLE_NAME);
     }
 
     @Test
     public void testJaxb() {
         Class<?> c = loadClass("org.eclipse.persistence.jaxb.JAXBContext");
-        assertClassLoadedByBundle(c, "org.eclipse.persistence.moxy");
+        assertClassLoadedByBundle(c, MOXY_BUNDLE_NAME);
     }
 
     @Test
     public void testJaxbAttachment() {
         Class<?> c = loadClass("org.eclipse.persistence.jaxb.attachment.AttachmentMarshallerAdapter");
-        assertClassLoadedByBundle(c, "org.eclipse.persistence.moxy");
+        assertClassLoadedByBundle(c, MOXY_BUNDLE_NAME);
     }
 
     @Test
     public void testJaxbCompiler() {
         Class<?> c = loadClass("org.eclipse.persistence.jaxb.compiler.AnnotationsProcessor");
-        assertClassLoadedByBundle(c, "org.eclipse.persistence.moxy");
+        assertClassLoadedByBundle(c, MOXY_BUNDLE_NAME);
     }
 
     @Test
     public void testJaxbDynamic() {
         Class<?> c = loadClass("org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext");
-        assertClassLoadedByBundle(c, "org.eclipse.persistence.moxy");
+        assertClassLoadedByBundle(c, MOXY_BUNDLE_NAME);
     }
 
     @Test
     public void testJaxbDynamicMetadata() {
         Class<?> c = loadClass("org.eclipse.persistence.jaxb.dynamic.metadata.Metadata");
-        assertClassLoadedByBundle(c, "org.eclipse.persistence.moxy");
+        assertClassLoadedByBundle(c, MOXY_BUNDLE_NAME);
     }
 
     @Test
     public void testJaxbJavamodel() {
         Class<?> c = loadClass("org.eclipse.persistence.jaxb.javamodel.AnnotationProxy");
-        assertClassLoadedByBundle(c, "org.eclipse.persistence.moxy");
+        assertClassLoadedByBundle(c, MOXY_BUNDLE_NAME);
     }
 
     @Test
     public void testJaxbJavamodelOxm() {
         Class<?> c = loadClass("org.eclipse.persistence.jaxb.javamodel.oxm.OXMJavaClassImpl");
-        assertClassLoadedByBundle(c, "org.eclipse.persistence.moxy");
+        assertClassLoadedByBundle(c, MOXY_BUNDLE_NAME);
     }
 
     @Test
     public void testJaxbJavamodelReflection() {
         Class<?> c = loadClass("org.eclipse.persistence.jaxb.javamodel.reflection.AnnotationHelper");
-        assertClassLoadedByBundle(c, "org.eclipse.persistence.moxy");
+        assertClassLoadedByBundle(c, MOXY_BUNDLE_NAME);
     }
 
     @Test
-    public void testJaxbMetadata() {
+    public void testJaxbMetadata() throws ClassNotFoundException {
         Class<?> c = loadClass("org.eclipse.persistence.jaxb.metadata.MetadataSource");
-        assertClassLoadedByBundle(c, "org.eclipse.persistence.moxy");
+        assertClassLoadedByBundle(c, MOXY_BUNDLE_NAME);
     }
 
     @Test
     public void testJaxbRs() {
         Class<?> c = loadClass("org.eclipse.persistence.jaxb.rs.MOXyJsonProvider");
-        assertClassLoadedByBundle(c, "org.eclipse.persistence.moxy");
+        assertClassLoadedByBundle(c, MOXY_BUNDLE_NAME);
     }
 
     @Test
     public void testJaxbXmlmodel() {
         Class<?> c = loadClass("org.eclipse.persistence.jaxb.xmlmodel.JavaAttribute");
-        assertClassLoadedByBundle(c, "org.eclipse.persistence.moxy");
+        assertClassLoadedByBundle(c, MOXY_BUNDLE_NAME);
     }
 
+    @Test
+    public void testJavaxXmlParsers() {
+        Class<?> c = loadClass("javax.xml.parsers.ParserConfigurationException");
+        assertClassLoadedBySystemBundle(c);
+    }
+
+    @Test
+    public void testJavaxNaming() {
+        Class<?> c = loadClass("javax.naming.InitialContext");
+        assertClassLoadedBySystemBundle(c);
+    }
+
+    @Test
+    public void testOrgXmlSaxHelpers() {
+        Class<?> c = loadClass("org.xml.sax.helpers.DefaultHandler");
+        assertClassLoadedBySystemBundle(c);
+    }
+
+    /**
+     * Loads a class from MOXy bundle. Fails the test if not loaded.
+     */
     private Class<?> loadClass(String className) {
         try {
-            return ctx.getBundle().loadClass(className);
+            return getMoxyBundle().loadClass(className);
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(OSGiBundleTest.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
             Assert.fail("Cannot find and load class: " + className);
@@ -174,33 +168,46 @@ public class OSGiBundleTest {
         return null;
     }
 
+    /**
+     * Returns MOXy bundle ('org.eclipse.persistence.moxy').
+     */
+    private Bundle getMoxyBundle() {
+        if (this.moxyBundle != null) {
+            return this.moxyBundle;
+        }
+
+        for (Bundle b : ctx.getBundles()) {
+            if (b.getSymbolicName().equals(MOXY_BUNDLE_NAME)) {
+                this.moxyBundle = b;
+                return b;
+            }
+        }
+
+        return null;
+    }
+
+    private void assertClassLoadedBySystemBundle(Class<?> c) {
+        Assert.assertNotNull(c);
+
+        // Class is there but loaded from the system bundle
+        Assert.assertNull("Class " + c.getName() + " was not loaded from JDK", FrameworkUtil.getBundle(c));
+    }
+
     private void assertClassLoadedByBundle(Class<?> c, String bundle) {
+        Assert.assertNotNull(c);
         Bundle b = FrameworkUtil.getBundle(c);
-        Assert.assertEquals("Class '" + c.getName() + "' was loaded by '"
-                        + b.getSymbolicName() + "', expected was '" + bundle + "'",
-                bundle, b.getSymbolicName());
+        Assert.assertEquals("Class '" + c.getName() + "' was loaded by '" + b.getSymbolicName() +
+                        "', expected was '" + bundle + "'", bundle, b.getSymbolicName());
         Assert.assertEquals("Bundle '" + bundle + "' is not running", Bundle.ACTIVE, b.getState());
     }
 
     private void assertClassLoadedByBundle(Class<?> c, String bundle, String version) {
         Bundle b = FrameworkUtil.getBundle(c);
         Version v = b.getVersion();
-        Assert.assertEquals("Class '" + c.getName() + "' was loaded by '"
-                        + b.getSymbolicName() + "', expected was '" + bundle + "'",
-                bundle, b.getSymbolicName());
-        Assert.assertEquals("Class '" + c.getName() + "' was loaded by '"
-                        + b.getSymbolicName() + "', version '" + v.toString() +"' expected was '" + bundle + "', version '" +
-                        v.toString() + "'.",
-                version, v.toString());
+        Assert.assertEquals("Class '" + c.getName() + "' was loaded by '" + b.getSymbolicName() +
+                        "', expected was '" + bundle + "'", bundle, b.getSymbolicName());
+        Assert.assertEquals("Class '" + c.getName() + "' was loaded by '"  + b.getSymbolicName() + "', version '"
+                        + v.toString() + "' expected was '" + bundle + "', version '" + v.toString() + "'.", version, v.toString());
         Assert.assertEquals("Bundle '" + bundle + "' is not running", Bundle.ACTIVE, b.getState());
-    }
-
-    private static String getLocalRepository() {
-        String path = System.getProperty("maven.repo.local");
-        return (path != null && path.trim().length() > 0)
-                ? path
-                : System.getProperty("user.home") + File.separator
-                + ".m2" + File.separator
-                + "repository";
     }
 }

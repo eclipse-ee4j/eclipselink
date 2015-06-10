@@ -13,6 +13,7 @@
 package org.eclipse.persistence.testing.jaxb.beanvalidation;
 
 import org.eclipse.persistence.exceptions.BeanValidationException;
+import org.eclipse.persistence.jaxb.ConstraintViolationWrapper;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.JAXBMarshaller;
@@ -114,13 +115,13 @@ public class BeanValidationSpecialtiesTestCase extends junit.framework.TestCase 
         } catch (BeanValidationException ignored) {
         }
 
-        Set<? extends ConstraintViolation<?>> violations = marshaller.getConstraintViolations();
+        Set<ConstraintViolationWrapper<Object>> violations = marshaller.getConstraintViolations();
 
         assertFalse("Some constraints were not validated, even though they should have been.", violations.isEmpty());
 
         // For all, i.e. one constraintViolations.
-        for (ConstraintViolation constraintViolation : violations) {
-            assertEquals(CUSTOM_ANNOTATION_MESSAGE, constraintViolation.getMessage());
+        for (ConstraintViolationWrapper cv : violations) {
+            assertEquals(CUSTOM_ANNOTATION_MESSAGE, cv.getMessage());
         }
     }
 
@@ -139,14 +140,13 @@ public class BeanValidationSpecialtiesTestCase extends junit.framework.TestCase 
         } catch (BeanValidationException ignored) {
         }
 
-        Set<? extends ConstraintViolation<?>> violations = marshaller.getConstraintViolations();
+        Set<ConstraintViolationWrapper<Object>> violations = marshaller.getConstraintViolations();
 
         assertFalse(violations.isEmpty());
 
-
         // For all, i.e. one constraintViolations.
-        for (ConstraintViolation constraintViolation : violations) {
-            assertEquals(NOT_NULL_MESSAGE, constraintViolation.getMessageTemplate());
+        for (ConstraintViolationWrapper cv : violations) {
+            assertEquals(NOT_NULL_MESSAGE, cv.getMessageTemplate());
         }
     }
 
@@ -166,14 +166,13 @@ public class BeanValidationSpecialtiesTestCase extends junit.framework.TestCase 
         } catch (BeanValidationException ignored) {
         }
 
-        Set<? extends ConstraintViolation<?>> violations = marshaller.getConstraintViolations();
+        Set<ConstraintViolationWrapper<Object>> violations = marshaller.getConstraintViolations();
 
         assertFalse(violations.isEmpty());
 
-
         // For all, i.e. one constraintViolations.
-        for (ConstraintViolation constraintViolation : violations) {
-            assertEquals(NOT_NULL_MESSAGE, constraintViolation.getMessageTemplate());
+        for (ConstraintViolationWrapper cv : violations) {
+            assertEquals(NOT_NULL_MESSAGE, cv.getMessageTemplate());
         }
     }
 
@@ -230,7 +229,7 @@ public class BeanValidationSpecialtiesTestCase extends junit.framework.TestCase 
         } catch (BeanValidationException ignored) {
         }
 
-        Set<? extends ConstraintViolation<?>> violations = marshaller.getConstraintViolations();
+        Set<ConstraintViolationWrapper<Object>> violations = marshaller.getConstraintViolations();
 
         assertFalse(violations.isEmpty());
     }

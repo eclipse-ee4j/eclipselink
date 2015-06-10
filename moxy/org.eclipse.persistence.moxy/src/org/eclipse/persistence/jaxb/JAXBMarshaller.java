@@ -22,13 +22,12 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ValidatorFactory;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.MarshalException;
@@ -94,12 +93,14 @@ import org.xml.sax.ContentHandler;
 
 public class JAXBMarshaller implements javax.xml.bind.Marshaller {
 
-    private final JAXBBeanValidator beanValidator;
+    private JAXBBeanValidator beanValidator;
 
     private BeanValidationMode beanValidationMode;
-    private ValidatorFactory prefValidatorFactory;
+
+    // The actual type is ValidatorFactory. It's done due to optional nature of javax.validation.
+    private Object prefValidatorFactory;
     private boolean bvNoOptimisation = false;
-    private Class<?>[] beanValidationGroups = JAXBBeanValidator.DEFAULT_GROUP_ARRAY;
+    private Class<?>[] beanValidationGroups;
 
     private final XMLMarshaller xmlMarshaller;
     private final JAXBContext jaxbContext;
@@ -136,7 +137,9 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         this.jaxbContext = jaxbContext;
         validationEventHandler = JAXBContext.DEFAULT_VALIDATION_EVENT_HANDLER;
         beanValidationMode = BeanValidationMode.AUTO;
-        beanValidator = JAXBBeanValidator.getMarshallingBeanValidator(jaxbContext);
+        if (BeanValidationChecker.isBeanValidationPresent()) {
+            beanValidator = JAXBBeanValidator.getMarshallingBeanValidator(jaxbContext);
+        }
         xmlMarshaller = newXMLMarshaller;
         xmlMarshaller.setErrorHandler(new JAXBErrorHandler(validationEventHandler));
         xmlMarshaller.setEncoding("UTF-8");
@@ -597,7 +600,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
 
     private Object validateAndTransformIfNeeded(Object obj) throws BeanValidationException {
         Object result = modifyObjectIfNeeded(obj);
-        if (beanValidator.shouldValidate(obj, beanValidationMode, prefValidatorFactory, bvNoOptimisation)) {
+        if (beanValidator != null && beanValidator.shouldValidate(obj, beanValidationMode, prefValidatorFactory, bvNoOptimisation)) {
             beanValidator.validate(result, beanValidationGroups);
         }
         return result;
@@ -969,7 +972,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
                 if(value == null) {
                     // Allow null value for preferred validation factory.
                 }
-                this.prefValidatorFactory = ((ValidatorFactory)value);
+                this.prefValidatorFactory = value;
             } else if (MarshallerProperties.BEAN_VALIDATION_GROUPS.equals(key)) {
                 if(value == null){
                     throw new PropertyException(key, Constants.EMPTY_STRING);
@@ -1011,8 +1014,11 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
      *
      * @return set of constraint violations from last unmarshal
      */
-    public Set<ConstraintViolation<Object>> getConstraintViolations() {
-        return beanValidator.getConstraintViolations();
+    public Set<ConstraintViolationWrapper<Object>> getConstraintViolations() {
+        if (beanValidator != null) {
+            return beanValidator.getConstraintViolations();
+        }
+        return Collections.emptySet();
     }
 
     private static class CharacterEscapeHandlerWrapper extends org.eclipse.persistence.internal.oxm.record.CharacterEscapeHandlerWrapper implements CharacterEscapeHandler {
