@@ -24,18 +24,15 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.advanced;
 
-import java.util.Vector;
-
 import org.eclipse.persistence.exceptions.DatabaseException;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.logging.SessionLogEntry;
+import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.testing.framework.TogglingFastTableCreator;
-import org.eclipse.persistence.tools.schemaframework.*;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
+import org.eclipse.persistence.tools.schemaframework.ForeignKeyConstraint;
+import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 
 public class AdvancedTableCreator extends TogglingFastTableCreator {
     public AdvancedTableCreator() {
@@ -111,6 +108,8 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildCMP3_OYSTERTable());
         addTableDefinition(buildCMP3_PEARLTable());
         addTableDefinition(buildCMP3_PEARL_HISTTable());
+        addTableDefinition(buildJobTable());
+        addTableDefinition(buildEventTable());
     }
 
     public TableDefinition buildADDRESSTable() {
@@ -2940,6 +2939,76 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldEND.setShouldAllowNull(true);
         table.addField(fieldEND);
         
+        return table;
+    }
+
+    public TableDefinition buildJobTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JOB");
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("BIGINT");
+        fieldID.setSize(15);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+
+        FieldDefinition fieldDTYPE = new FieldDefinition();
+        fieldDTYPE.setName("DTYPE");
+        fieldDTYPE.setTypeName("VARCHAR");
+        fieldDTYPE.setSize(31);
+        fieldDTYPE.setShouldAllowNull(true);
+        fieldDTYPE.setIsPrimaryKey(false);
+        fieldDTYPE.setUnique(false);
+        fieldDTYPE.setIsIdentity(false);
+        table.addField(fieldDTYPE);
+
+        return table;
+    }
+
+    public TableDefinition buildEventTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("EVENT");
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("BIGINT");
+        fieldID.setSize(15);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+
+        FieldDefinition fieldDATEF = new FieldDefinition();
+        fieldDATEF.setName("DATEF");
+        fieldDATEF.setTypeName("TIMESTAMP");
+        fieldDATEF.setShouldAllowNull(true);
+        fieldDATEF.setIsPrimaryKey(false);
+        fieldDATEF.setUnique(false);
+        fieldDATEF.setIsIdentity(false);
+        table.addField(fieldDATEF);
+
+        FieldDefinition fieldJOBID = new FieldDefinition();
+        fieldJOBID.setName("JOB_ID");
+        fieldJOBID.setTypeName("BIGINT");
+        fieldJOBID.setSize(15);
+        fieldJOBID.setIsPrimaryKey(false);
+        fieldJOBID.setIsIdentity(false);
+        fieldJOBID.setUnique(false);
+        fieldJOBID.setShouldAllowNull(true);
+        table.addField(fieldJOBID);
+
+        ForeignKeyConstraint foreignKeyFK_EVENT_JOB_ID = new ForeignKeyConstraint();
+        foreignKeyFK_EVENT_JOB_ID.setName("FK_EVENT_JOB_ID");
+        foreignKeyFK_EVENT_JOB_ID.setTargetTable("JOB");
+        foreignKeyFK_EVENT_JOB_ID.addSourceField("JOB_ID");
+        foreignKeyFK_EVENT_JOB_ID.addTargetField("ID");
+        table.addForeignKeyConstraint(foreignKeyFK_EVENT_JOB_ID);
+
         return table;
     }
 

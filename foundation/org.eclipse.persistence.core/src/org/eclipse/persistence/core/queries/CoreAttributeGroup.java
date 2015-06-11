@@ -394,8 +394,12 @@ public class CoreAttributeGroup<
     @Override
     public int hashCode() {
         int result = superClassGroup != null ? superClassGroup.hashCode() : 0;
-        result = 31 * result + getItems().hashCode();
-        return result;
+        for (String attribute : getItems().keySet()) {
+            // avoid processing values in getItems map to avoid infinite recursion
+            // as ATTRIBUTE_ITEM.hashCode() calls group.hashCode()
+            result = 31 * result + attribute.hashCode();
+        }
+        return 31 * result;
     }
 
     public CoreAttributeGroup findGroup(DESCRIPTOR type){
