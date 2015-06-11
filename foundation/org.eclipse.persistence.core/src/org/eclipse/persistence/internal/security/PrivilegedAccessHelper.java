@@ -15,7 +15,8 @@
  *                       instead of throwing NPE during deploy validation.
  *     30/05/2012-2.4 Guy Pelletier
  *       - 354678: Temp classloader is still being used during metadata processing
- *
+ *     06/16/2015-2.7 Tomas Kraus
+ *       - 254437: Added getSystemProperty methods and fixed line separator property.
  ******************************************************************************/
 package org.eclipse.persistence.internal.security;
 
@@ -28,7 +29,9 @@ import java.security.PrivilegedActionException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 
 /**
  * INTERNAL:
@@ -140,7 +143,7 @@ public class PrivilegedAccessHelper {
     }
 
     /**
-     * Gets the class loader for a given class.  Wraps the call in a privileged block if necessary
+     * Gets the class loader for a given class. Wraps the call in a privileged block if necessary
      */
     public static ClassLoader getClassLoaderForClass(final Class clazz) {
         return clazz.getClassLoader();
@@ -148,6 +151,7 @@ public class PrivilegedAccessHelper {
 
     /**
      * Gets the class loader for a given class.  Wraps the call in a privileged block if necessary
+     * @deprecated Will be removed in next version.
      */
     public static ClassLoader privilegedGetClassLoaderForClass(final Class clazz) {
         try{
@@ -348,15 +352,64 @@ public class PrivilegedAccessHelper {
     }
 
     /**
-     * Get the line separator character.
-     * Previous versions of TopLink always did this in a privileged block so we will continue to do so.
+     * Check if {@code getSystemProperty} is allowed for provided property key.
+     * @param key The name of the {@link System} property.
+     * @return Value of {@code true} if {@code getSystemProperty} is allowed for this property key
+     *         or {@code false} otherwise.
      */
-    public static String getLineSeparator() {
-        if (shouldUsePrivilegedAccess()) {
-            return AccessController.doPrivileged(new PrivilegedGetSystemProperty("file.separator"));
-        } else {
-            return org.eclipse.persistence.internal.helper.Helper.cr();
+    private static boolean isIllegalProperty(final String key) {
+        return key == null || !(key.startsWith("eclipselink.") || "line.separator".equals(key)
+                || key.startsWith("javax.persistence.") || key.startsWith("persistence.")
+                || PersistenceUnitProperties.JAVASE_DB_INTERACTION.equals(key));
+    }
+
+    /**
+     * INTERNAL:
+     * Get the {@link System} property indicated by the specified {@code key}.
+     * @param key The name of the {@link System} property.
+     * @return The {@link String} value of the system property or {@code null} if property identified by {@code key}
+     *         does not exist.
+     * @since 2.7
+     */
+    public static final String getSystemProperty(final String key) {
+        if (isIllegalProperty(key)) {
+            throw new IllegalArgumentException(
+                    ExceptionLocalization.buildMessage("unexpect_argument", new Object[] {key}));
         }
+        if (shouldUsePrivilegedAccess()) {
+            return AccessController.doPrivileged(new PrivilegedGetSystemProperty(key));
+        } else {
+            return System.getProperty(key);
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Get the {@link System} property indicated by the specified {@code key}.
+     * @param key The name of the {@link System} property.
+     * @return The {@link String} value of the system property or {@code def} if property identified by {@code key}
+     *         does not exist.
+     * @since 2.7
+     */
+    public static final String getSystemProperty(final String key, final String def) {
+        if (isIllegalProperty(key)) {
+            throw new IllegalArgumentException(
+                    ExceptionLocalization.buildMessage("unexpect_argument", new Object[] {key}));
+        }
+        if (shouldUsePrivilegedAccess()) {
+            return AccessController.doPrivileged(new PrivilegedGetSystemProperty(key, def));
+        } else {
+            return System.getProperty(key, def);
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Get the line separator character.
+     * @return The {@link String} containing the platform-appropriate characters for line separator.
+     */
+    public static final String getLineSeparator() {
+        return getSystemProperty("line.separator");
     }
 
     /**

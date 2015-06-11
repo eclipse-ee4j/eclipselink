@@ -12,7 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.helper;
 
-import org.eclipse.persistence.testing.framework.*;
+import org.eclipse.persistence.testing.framework.TestModel;
+import org.eclipse.persistence.testing.framework.TestSuite;
 
 public class HelperTestModel extends TestModel {
     public HelperTestModel() {

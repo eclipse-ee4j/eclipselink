@@ -9,22 +9,58 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation.
+ *     06/16/2015-2.7 Tomas Kraus
+ *       - 254437: Added default value support.
  ******************************************************************************/
 package org.eclipse.persistence.internal.security;
 
+import java.security.AccessController;
 import java.security.PrivilegedAction;
 
+/**
+ * INTERNAL:
+ * Retrieve {@link System} property with privileges enabled.
+ */
 public class PrivilegedGetSystemProperty implements PrivilegedAction<String> {
+    /** The name of the {@link System} property. */
+    private final String key;
+    /** A default value of the {@link System} property. */
+    private final String def;
 
-    private final String propertyName;
-
-    public PrivilegedGetSystemProperty(String propertyName) {
-        this.propertyName = propertyName;
+    /**
+     * INTERNAL:
+     * Creates an instance of {@link System} property getter with privileges enabled.
+     * Selects {@link System} property getter without default value to be executed so getter will return {@code null}
+     * if property with {@code key} does not exist.
+     * @param key The name of the {@link System} property.
+     */
+    public PrivilegedGetSystemProperty(final String key) {
+        this.key = key;
+        this.def = null;
     }
 
+    /**
+     * INTERNAL:
+     * Creates an instance of {@link System} property getter with privileges enabled.
+     * Selects {@link System} property getter with default value to be executed so getter will return {@code def}
+     * if property with {@code key} does not exist.
+     * @param key The name of the {@link System} property.
+     * @since 2.7
+     */
+    public PrivilegedGetSystemProperty(final String key, final String def) {
+        this.key = key;
+        this.def = null;
+    }
+
+    /**
+     * INTERNAL:
+     * Performs {@link System} property retrieval.
+     * This method will be called by {@link AccessController#doPrivileged(PrivilegedAction)} after enabling privileges.
+     * @return The {@link String} value of the system property.
+     */
     @Override
     public String run() {
-        return System.getProperty(propertyName);
+        return def != null ? System.getProperty(key, def) : System.getProperty(key);
     }
 
 }

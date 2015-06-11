@@ -28,6 +28,8 @@ import org.eclipse.persistence.internal.libraries.asm.Label;
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 import org.eclipse.persistence.internal.libraries.asm.Type;
+import org.eclipse.persistence.internal.logging.StdErrLogger;
+import org.eclipse.persistence.logging.SessionLog;
 
 /**
  * INTERNAL: Weaves classes to allow them to support EclipseLink indirection.
@@ -910,7 +912,12 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
      * "city") { this.city = (String)city; } }
      */
     public void addPersistenceGetSet(ClassDetails classDetails) {
+        // PERF: Is finest logging turned on?
+        final boolean shouldLogFinest = StdErrLogger.shouldLog(SessionLog.FINEST, SessionLog.WEAVER);
         // create the _persistence_get() method
+        if (shouldLogFinest) {
+            StdErrLogger.log(SessionLog.FINEST, SessionLog.WEAVER, "class_weaver_add_get_set_add_get", classDetails.getClassName());
+        }
         MethodVisitor cv_get = cv.visitMethod(ACC_PUBLIC, "_persistence_get", "(Ljava/lang/String;)Ljava/lang/Object;", null, null);
 
         Label label = null;
@@ -955,6 +962,9 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
         cv_get.visitMaxs(0, 0);
 
         // create the _persistence_set() method
+        if (shouldLogFinest) {
+            StdErrLogger.log(SessionLog.FINEST, SessionLog.WEAVER, "class_weaver_add_get_set_add_set", classDetails.getClassName());
+        }
         MethodVisitor cv_set = cv.visitMethod(ACC_PUBLIC, "_persistence_set", "(Ljava/lang/String;Ljava/lang/Object;)V", null, null);
 
         label = null;
@@ -1351,13 +1361,17 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
     }
 
     /**
-     * Visit the end of the class byte codes. Add any new methods or variables
-     * to the end.
+     * Visit the end of the class byte codes. Add any new methods or variables to the end.
      */
     @Override
     public void visitEnd() {
+        // PERF: Is finest logging turned on?
+        final boolean shouldLogFinest = StdErrLogger.shouldLog(SessionLog.FINEST, SessionLog.WEAVER);
         if (!alreadyWeaved) {
-
+            if (shouldLogFinest) {
+                StdErrLogger.log(
+                        SessionLog.FINEST, SessionLog.WEAVER, "class_weaver_visit_end_do", classDetails.getClassName());
+            }
             if (this.classDetails.shouldWeaveInternal()) {
 
                 // Add a persistence and shallow clone method.
@@ -1436,6 +1450,8 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
                     addFetchGroupMethods(this.classDetails);
                 }
             }
+        } else if (shouldLogFinest) {
+            StdErrLogger.log(SessionLog.FINEST, SessionLog.WEAVER, "class_weaver_visit_end_skip", classDetails.getClassName());
         }
         if (classDetails.shouldWeaveREST() && classDetails.getSuperClassDetails() == null) {
             weavedRest = true;

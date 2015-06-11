@@ -78,6 +78,9 @@ public class Helper extends CoreHelper implements Serializable {
     /** Used to store null values in hashtables, is helper because need to be serializable. */
     public static final Object NULL_VALUE = new Helper();
 
+    /** Used to convert {@code null} value to {@link String}. */
+    private static final String NULL_STRING = "null";
+
     /** PERF: Used to cache a set of calendars for conversion/printing purposes. */
     protected static final Queue<Calendar> calendarCache = initCalendarCache();
 
@@ -243,6 +246,16 @@ public class Helper extends CoreHelper implements Serializable {
             result[i] = vector.elementAt(i);
         }
         return result;
+    }
+
+    /**
+     * Convert {@link Integer} to hexadecimal {@link String}.
+     * @param i An {@link Integer} to be converted to a hexadecimal string.
+     * @return The {@link String} representation of the unsigned integer value represented by the argument
+     *         in hexadecimal or {@code "null"} if provided {@link Integer} argument is {@code null}.
+     */
+    public static String integerToHexString(final Integer i) {
+        return i != null ? Integer.toHexString(i) : NULL_STRING;
     }
 
     /**
@@ -789,7 +802,7 @@ public class Helper extends CoreHelper implements Serializable {
     public static String cr() {
         // bug 2756643
         if (CR == null) {
-            CR = System.getProperty("line.separator");
+            CR = PrivilegedAccessHelper.getLineSeparator();
         }
         return CR;
     }
