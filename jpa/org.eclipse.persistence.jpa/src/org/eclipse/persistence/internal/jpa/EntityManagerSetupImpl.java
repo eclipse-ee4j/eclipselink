@@ -208,6 +208,7 @@ import org.eclipse.persistence.internal.jpa.metamodel.proxy.ListAttributeProxyIm
 import org.eclipse.persistence.internal.jpa.metamodel.proxy.MapAttributeProxyImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.proxy.SetAttributeProxyImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.proxy.SingularAttributeProxyImpl;
+import org.eclipse.persistence.internal.jpa.weaving.ClassDetails;
 import org.eclipse.persistence.internal.jpa.weaving.PersistenceWeaver;
 import org.eclipse.persistence.internal.jpa.weaving.TransformerFactory;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
@@ -3766,7 +3767,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         this.compositeMemberEmSetupImpls = new HashSet(compositeMemberPuInfos.size());
         this.processor = new MetadataProcessor();
         if (enableWeaving) {
-            this.weaver = new PersistenceWeaver(this.session, new HashMap());
+            this.weaver = new PersistenceWeaver(new HashMap<String, ClassDetails>());
         }
         
         // create containedEmSetupImpls and predeploy them for the first time.

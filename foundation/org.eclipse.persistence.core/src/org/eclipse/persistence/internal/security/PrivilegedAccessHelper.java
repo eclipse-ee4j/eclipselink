@@ -15,7 +15,8 @@
  *                       instead of throwing NPE during deploy validation.
  *     30/05/2012-2.4 Guy Pelletier
  *       - 354678: Temp classloader is still being used during metadata processing
- *
+ *     06/16/2015-2.7 Tomas Kraus
+ *       - 254437: Added getSystemProperty methods and fixed line separator property.
  ******************************************************************************/
 package org.eclipse.persistence.internal.security;
 
@@ -170,6 +171,7 @@ public class PrivilegedAccessHelper {
 
     /**
      * Gets the class loader for a given class.  Wraps the call in a privileged block if necessary
+     * @deprecated Will be removed in next version.
      */
     public static ClassLoader privilegedGetClassLoaderForClass(final Class clazz) {
         try{
@@ -437,15 +439,12 @@ public class PrivilegedAccessHelper {
     }
 
     /**
+     * INTERNAL:
      * Get the line separator character.
-     * Previous versions of TopLink always did this in a privileged block so we will continue to do so.
+     * @return The {@link String} containing the platform-appropriate characters for line separator.
      */
-    public static String getLineSeparator() {
-        if (shouldUsePrivilegedAccess()) {
-            return AccessController.doPrivileged(new PrivilegedGetSystemProperty("file.separator"));
-        } else {
-            return org.eclipse.persistence.internal.helper.Helper.cr();
-        }
+    public static final String getLineSeparator() {
+        return getSystemProperty("line.separator");
     }
 
     /**

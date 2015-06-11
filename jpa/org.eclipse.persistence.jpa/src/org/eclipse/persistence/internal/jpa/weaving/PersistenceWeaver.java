@@ -29,6 +29,7 @@ import org.eclipse.persistence.internal.libraries.asm.ClassReader;
 import org.eclipse.persistence.internal.libraries.asm.ClassVisitor;
 import org.eclipse.persistence.internal.libraries.asm.ClassWriter;
 import org.eclipse.persistence.internal.libraries.asm.commons.SerialVersionUIDAdder;
+import org.eclipse.persistence.internal.logging.StdErrLogger;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetClassLoaderFromCurrentThread;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -43,28 +44,36 @@ import org.eclipse.persistence.sessions.Session;
  */
 public class PersistenceWeaver implements ClassTransformer {
 
-    protected Session session; // for logging
     /** Class name in JVM '/' format to {@link ClassDetails} map. */
-    protected Map classDetailsMap;
+    protected Map<String, ClassDetails> classDetailsMap;
 
     /**
      * INTERNAL:
      * Creates an instance of dynamic byte code weaver.
-     * @param session         EclipseLink session.
+     * @param session EclipseLink session (not used so {@code null} value is OK).
      * @param classDetailsMap Class name to {@link ClassDetails} map.
+     * @deprecated Session instance is no longer needed for logging. Will be removed in 2.8.
      */
-    public PersistenceWeaver(final Session session, final Map classDetailsMap) {
-        this.session = session;
+    public PersistenceWeaver(final Session session, final Map<String, ClassDetails> classDetailsMap) {
+        this.classDetailsMap = classDetailsMap;
+    }
+
+    /**
+     * INTERNAL:
+     * Creates an instance of dynamic byte code weaver.
+     * @param classDetailsMap Class name to {@link ClassDetails} map.
+     * @since 2.7
+     */
+    public PersistenceWeaver(final Map<String, ClassDetails> classDetailsMap) {
         this.classDetailsMap = classDetailsMap;
     }
 
     /**
      * INTERNAL:
      * Allow the weaver to be clear to release its referenced memory.
-     * This is require because the class loader reference to the transformer will never gc.
+     * This is required because the class loader reference to the transformer will never gc.
      */
     public void clear() {
-        this.session = null;
         this.classDetailsMap = null;
     }
 
@@ -73,33 +82,32 @@ public class PersistenceWeaver implements ClassTransformer {
      * Get Class name in JVM '/' format to {@link ClassDetails} map.
      * @return Class name in JVM '/' format to {@link ClassDetails} map.
      */
-    public Map getClassDetailsMap() {
+    public Map<String, ClassDetails> getClassDetailsMap() {
         return classDetailsMap;
     }
 
-    // @Override: well, not precisely. I wanted the code to be 1.4 compatible,
-    // so the method is written without any Generic type <T>'s in the signature
     /**
      * INTERNAL:
      * Perform dynamic byte code weaving of class.
      * @param loader              The defining loader of the class to be transformed, may be {@code null}
      *                            if the bootstrap loader.
-     * @param className           The name of the class in the internal form of fully qualified class and interface names.
+     * @param className           The name of the class in the internal form of fully qualified class and interface
+     *                            names.
      * @param classBeingRedefined If this is a redefine, the class being redefined, otherwise {@code null}.
      * @param protectionDomain    The protection domain of the class being defined or redefined.
      * @param classfileBuffer     The input byte buffer in class file format (must not be modified).
-     * @return  A well-formed class file buffer (the result of the transform), or {@code null} if no transform is performed
+     * @return  A well-formed class file buffer (the result of the transform), or {@code null} if no transform
+     *          is performed.
      */
     @Override
     public byte[] transform(final ClassLoader loader, final String className,
             final Class classBeingRedefined, final ProtectionDomain protectionDomain,
             final byte[] classfileBuffer) throws IllegalClassFormatException {
         // PERF: Is finest logging on weaving turned on?
-        final boolean shouldLogFinest = ((AbstractSession)session).shouldLog(SessionLog.FINEST, SessionLog.WEAVER);
+        final boolean shouldLogFinest = StdErrLogger.shouldLog(SessionLog.FINEST, SessionLog.WEAVER);
         final Map classDetailsMap = this.classDetailsMap;
-        final Session session = this.session;
         // Check if cleared already.
-        if ((classDetailsMap == null) || (session == null)) {
+        if (classDetailsMap == null) {
             return null;
         }
         try {
@@ -113,28 +121,48 @@ public class PersistenceWeaver implements ClassTransformer {
 
             if (classDetails != null) {
                 if (shouldLogFinest) {
-                    ((AbstractSession)session).log(SessionLog.FINEST, SessionLog.WEAVER, "begin_weaving_class", className);
+                    StdErrLogger.log(SessionLog.FINEST, SessionLog.WEAVER, "begin_weaving_class", className);
                 }
                 final ClassReader classReader = new ClassReader(classfileBuffer);
-                ClassWriter classWriter = null;
-                final String introspectForHierarchy = System.getProperty(SystemProperties.WEAVING_REFLECTIVE_INTROSPECTION, null);
-                if (introspectForHierarchy != null) {
-                    classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
-                } else {
-                    classWriter = new ComputeClassWriter(loader, ClassWriter.COMPUTE_FRAMES);
+                final String reflectiveIntrospectionProperty =
+                        PrivilegedAccessHelper.getSystemProperty(SystemProperties.WEAVING_REFLECTIVE_INTROSPECTION);
+                final ClassWriter classWriter = reflectiveIntrospectionProperty != null
+                        ? new ClassWriter(ClassWriter.COMPUTE_FRAMES)
+                        : new ComputeClassWriter(loader, ClassWriter.COMPUTE_FRAMES);
+                if (shouldLogFinest) {
+                    ClassLoader contextClassLoader;
+                    if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                        try {
+                            contextClassLoader = AccessController.doPrivileged(
+                                    new PrivilegedGetClassLoaderFromCurrentThread());
+                        } catch (PrivilegedActionException ex) {
+                            throw (RuntimeException) ex.getCause();
+                        }
+                    } else {
+                        contextClassLoader = Thread.currentThread().getContextClassLoader();
+                    }
+                    if (reflectiveIntrospectionProperty != null) {
+                        StdErrLogger.log(SessionLog.FINEST, SessionLog.WEAVER, "weaving_init_class_writer",
+                                className, Integer.toHexString(System.identityHashCode(contextClassLoader)));
+                    } else {
+                        StdErrLogger.log(SessionLog.FINEST, SessionLog.WEAVER, "weaving_init_compute_class_writer",
+                                className, Integer.toHexString(System.identityHashCode(contextClassLoader)),
+                                loader != null ? Integer.toHexString(System.identityHashCode(loader)) : "null");
+                    }
                 }
                 final ClassWeaver classWeaver = new ClassWeaver(classWriter, classDetails);
                 final ClassVisitor sv = new SerialVersionUIDAdder(classWeaver);
                 classReader.accept(sv, 0);
                 if (classWeaver.alreadyWeaved) {
                     if (shouldLogFinest) {
-                        ((AbstractSession)session).log(SessionLog.FINEST, SessionLog.WEAVER, "end_weaving_class", className);
+                        StdErrLogger.log(SessionLog.FINEST, SessionLog.WEAVER, "end_weaving_class", className);
                     }
                     return null;
                 }
                 if (classWeaver.weaved) {
                     final byte[] bytes = classWriter.toByteArray();
-                    final String outputPath = System.getProperty(SystemProperties.WEAVING_OUTPUT_PATH, "");
+                    final String outputPath =
+                            PrivilegedAccessHelper.getSystemProperty(SystemProperties.WEAVING_OUTPUT_PATH, "");
 
                     if (!outputPath.equals("")) {
                         Helper.outputClassFile(className, bytes, outputPath);
@@ -142,46 +170,50 @@ public class PersistenceWeaver implements ClassTransformer {
                     // PERF: Don't execute this set of if statements with logging turned off.
                     if (shouldLogFinest) {
                         if (classWeaver.weavedPersistenceEntity) {
-                            ((AbstractSession)session).log(SessionLog.FINEST, SessionLog.WEAVER, "weaved_persistenceentity", className);
+                            StdErrLogger.log(
+                                    SessionLog.FINEST, SessionLog.WEAVER, "weaved_persistenceentity", className);
                         }
                         if (classWeaver.weavedChangeTracker) {
-                            ((AbstractSession)session).log(SessionLog.FINEST, SessionLog.WEAVER, "weaved_changetracker", className);
+                            StdErrLogger.log(SessionLog.FINEST, SessionLog.WEAVER, "weaved_changetracker", className);
                         }
                         if (classWeaver.weavedLazy) {
-                            ((AbstractSession)session).log(SessionLog.FINEST, SessionLog.WEAVER, "weaved_lazy", className);
+                            StdErrLogger.log(SessionLog.FINEST, SessionLog.WEAVER, "weaved_lazy", className);
                         }
                         if (classWeaver.weavedFetchGroups) {
-                            ((AbstractSession)session).log(SessionLog.FINEST, SessionLog.WEAVER, "weaved_fetchgroups", className);
+                            StdErrLogger.log(SessionLog.FINEST, SessionLog.WEAVER, "weaved_fetchgroups", className);
                         }
                         if (classWeaver.weavedRest) {
-                            ((AbstractSession)session).log(SessionLog.FINEST, SessionLog.WEAVER, "weaved_rest", className);
+                            StdErrLogger.log(SessionLog.FINEST, SessionLog.WEAVER, "weaved_rest", className);
                         }
-                        ((AbstractSession)session).log(SessionLog.FINEST, SessionLog.WEAVER, "end_weaving_class", className);
+                        StdErrLogger.log(SessionLog.FINEST, SessionLog.WEAVER, "end_weaving_class", className);
                     }
                     return bytes;
                 }
                 if (shouldLogFinest) {
-                    ((AbstractSession)session).log(SessionLog.FINEST, SessionLog.WEAVER, "end_weaving_class", className);
+                    StdErrLogger.log(SessionLog.FINEST, SessionLog.WEAVER, "end_weaving_class", className);
                 }
             } else {
                 if (shouldLogFinest) {
-                    ((AbstractSession)session).log(SessionLog.FINEST, SessionLog.WEAVER, "transform_missing_class_details", className);
+                    StdErrLogger.log(
+                            SessionLog.FINEST, SessionLog.WEAVER, "transform_missing_class_details", className);
                 }
             }
         } catch (Throwable exception) {
-            ((AbstractSession)session).log(SessionLog.WARNING, SessionLog.WEAVER, "exception_while_weaving", new Object[] {className, exception.getLocalizedMessage()});
-            if (shouldLogFinest) {
-                ((AbstractSession)session).logThrowable(SessionLog.FINEST, SessionLog.WEAVER, exception);
+            if (StdErrLogger.shouldLog(SessionLog.WARNING, SessionLog.WEAVER)) {
+                StdErrLogger.log(SessionLog.WARNING, SessionLog.WEAVER,
+                        "exception_while_weaving", new Object[] {exception, className});
+                if (shouldLogFinest) {
+                    StdErrLogger.logThrowable(SessionLog.FINEST, SessionLog.WEAVER, exception);
+                }
             }
         }
         if (shouldLogFinest) {
-            ((AbstractSession)session).log(SessionLog.FINEST, SessionLog.WEAVER, "transform_existing_class_bytes", className);
+            StdErrLogger.log(SessionLog.FINEST, SessionLog.WEAVER, "transform_existing_class_bytes", className);
         }
-        return null; // returning null means 'use existing class bytes'
+        // Returning null means 'use existing class bytes'.
+        return null;
     }
 
-    // same as in org.eclipse.persistence.internal.helper.Helper, but uses
-    // '/' slash as delimiter, not '.'
     /**
      * INTERNAL:
      * Returns an unqualified class name from the specified class name.
@@ -199,4 +231,5 @@ public class PersistenceWeaver implements ClassTransformer {
         }
         return "";
     }
+
 }

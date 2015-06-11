@@ -138,7 +138,7 @@ public class TransformerFactory {
     }
 
     public PersistenceWeaver buildPersistenceWeaver() {
-        return new PersistenceWeaver(session, classDetailsMap);
+        return new PersistenceWeaver(classDetailsMap);
     }
 
     /**

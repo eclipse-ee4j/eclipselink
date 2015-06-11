@@ -37,7 +37,6 @@ import java.util.Map;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.TargetDatabase;
 import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl.TableCreationType;
-import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetSystemProperty;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -116,27 +115,17 @@ public class EntityManagerFactoryProvider {
         }
     }
 
-    public static String getConfigPropertyAsString(String propertyKey, Map overrides){
-        String value = null;
-        if (overrides != null){
-            value = (String)overrides.get(propertyKey);
-        }
-        if (value == null){
-            if (propertyKey == null || !(propertyKey.startsWith("eclipselink.")
-                    || propertyKey.startsWith("javax.persistence.")
-                    || propertyKey.startsWith("persistence.")
-                    || PersistenceUnitProperties.JAVASE_DB_INTERACTION.equals(propertyKey))) {
-                throw new IllegalArgumentException(
-                        ExceptionLocalization.buildMessage("unexpect_argument", new Object[] {propertyKey}));
-            }
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                 value = AccessController.doPrivileged(new PrivilegedGetSystemProperty(propertyKey));
-             } else {
-                 value = System.getProperty(propertyKey);
-             }
-        }
-        
-        return value;
+    /**
+     * Get configuration {@link System} property indicated by the specified {@code propertyKey}.
+     * Property value may be overridden by {@code overrides} {@link Map}.
+     * @param propertyKey The name of the configuration {@link System} property.
+     * @param overrides   {@link Map} with property overrides.
+     * @return The {@link String} value of the property from {@code overrides} {@link Map} or value of configuration
+     *         {@link System} property or {@code null} if property identified by {@code propertyKey} does not exist.
+     */
+    public static String getConfigPropertyAsString(final String propertyKey, final Map overrides) {
+        final String value = overrides != null ? (String)overrides.get(propertyKey) : null;
+        return value != null ? value : PrivilegedAccessHelper.getSystemProperty(propertyKey);
     }
     
     /**
