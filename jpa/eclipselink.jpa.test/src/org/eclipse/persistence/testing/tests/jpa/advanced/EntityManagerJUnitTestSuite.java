@@ -171,6 +171,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.Bungalow;
 import org.eclipse.persistence.testing.models.jpa.advanced.Buyer;
 import org.eclipse.persistence.testing.models.jpa.advanced.Canoe;
+import org.eclipse.persistence.testing.models.jpa.advanced.ConcreteJob;
 import org.eclipse.persistence.testing.models.jpa.advanced.Customer;
 import org.eclipse.persistence.testing.models.jpa.advanced.Customizer;
 import org.eclipse.persistence.testing.models.jpa.advanced.Dealer;
@@ -183,12 +184,14 @@ import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmploymentPeriod;
 import org.eclipse.persistence.testing.models.jpa.advanced.Equipment;
 import org.eclipse.persistence.testing.models.jpa.advanced.EquipmentCode;
+import org.eclipse.persistence.testing.models.jpa.advanced.Event;
 import org.eclipse.persistence.testing.models.jpa.advanced.FormerEmployment;
 import org.eclipse.persistence.testing.models.jpa.advanced.GoldBuyer;
 import org.eclipse.persistence.testing.models.jpa.advanced.Golfer;
 import org.eclipse.persistence.testing.models.jpa.advanced.GolferPK;
 import org.eclipse.persistence.testing.models.jpa.advanced.Hinge;
 import org.eclipse.persistence.testing.models.jpa.advanced.HugeProject;
+import org.eclipse.persistence.testing.models.jpa.advanced.Job;
 import org.eclipse.persistence.testing.models.jpa.advanced.Lake;
 import org.eclipse.persistence.testing.models.jpa.advanced.LargeProject;
 import org.eclipse.persistence.testing.models.jpa.advanced.Man;
@@ -466,6 +469,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         tests.add("testBeginTransactionOnClosedEM");
         tests.add("testUpdateDetachedEntityWithRelationshipCascadeRefresh");
         tests.add("testForNPEInCloning"); //Bug#457480
+        tests.add("testCopy"); //Bug#463350
 //        if (isJPA21()){
 //            tests.add("testUnsynchronizedPC");
 //        }
@@ -12876,6 +12880,53 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
     }
     
+    //Bug#463350
+    public void testCopy() {
+        EntityManager em = null;
+        Job job = new ConcreteJob();
+        CopyGroup eventsCG = new CopyGroup();
+        eventsCG.addAttribute("id");
+        eventsCG.addAttribute("datef");
+        CopyGroup jobCG = new CopyGroup();
+        jobCG.addAttribute("id");
+        eventsCG.addAttribute("job", jobCG);
+        jobCG.addAttribute("events", eventsCG);
+
+        try {
+            em = createEntityManager();
+            beginTransaction(em);
+            em.persist(job);
+            em.flush();
+            job = (Job) em.unwrap(JpaEntityManager.class).copy(job, jobCG);
+            commitTransaction(em);
+
+            for (int i = 0; i < 10; i++) {
+                beginTransaction(em);
+                job = em.merge(job);
+                em.flush();
+                Event e = new Event();
+                e.setJob(job);
+                job.getEvents().add(e);
+                em.flush();
+
+                CopyGroup eventsCG2 = new CopyGroup();
+                eventsCG2.addAttribute("id");
+                eventsCG2.addAttribute("datef");
+                CopyGroup jobCG2 = new CopyGroup();
+                jobCG2.addAttribute("id");
+                eventsCG2.addAttribute("job", jobCG2);
+                jobCG2.addAttribute("events", eventsCG2);
+
+                job = (Job) em.unwrap(JpaEntityManager.class).copy(job, jobCG2);
+                commitTransaction(em);
+            }
+        } finally {
+            if (em != null) {
+                closeEntityManagerAndTransaction(em);
+            }
+        }
+    }
+
     public static final class Platform extends ServerPlatformBase {
 
         public Platform(DatabaseSession newDatabaseSession) {

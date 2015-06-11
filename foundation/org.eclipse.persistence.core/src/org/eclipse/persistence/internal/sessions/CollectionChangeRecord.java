@@ -12,12 +12,12 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.sessions;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
@@ -187,6 +187,7 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
      * ADVANCED:
      * This method returns the collection of ChangeSets that were added to the collection.
      */
+    @Override
     public Map<ObjectChangeSet, ObjectChangeSet> getAddObjectList() {
         if (addObjectList == null) {
             addObjectList = new IdentityHashMap(10);
@@ -219,6 +220,7 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
      * This method returns the Map that contains the removed values from the collection
      * and their corresponding ChangeSets.
      */
+    @Override
     public Map<ObjectChangeSet, ObjectChangeSet> getRemoveObjectList() {
         if (removeObjectList == null) {
             removeObjectList = new IdentityHashMap();
@@ -230,6 +232,7 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
      * PUBLIC:
      * Returns true if the change set has changes.
      */
+    @Override
     public boolean hasChanges() {
         return (!(  (this.addObjectList == null || this.addObjectList.isEmpty()) && 
                     (this.removeObjectList == null || this.removeObjectList.isEmpty()) && 
@@ -242,6 +245,7 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
     /**
      * This method will be used to merge one record into another.
      */
+    @Override
     public void mergeRecord(ChangeRecord mergeFromRecord, UnitOfWorkChangeSet mergeToChangeSet, UnitOfWorkChangeSet mergeFromChangeSet) {
         if (((DeferrableChangeRecord)mergeFromRecord).isDeferred()){
             if (this.hasChanges()){
@@ -256,6 +260,7 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
                 return;
             }
         }
+        Map<ObjectChangeSet, ObjectChangeSet> changeSets = new HashMap<>();
         Iterator addEnum = ((CollectionChangeRecord)mergeFromRecord).getAddObjectList().keySet().iterator();
         while (addEnum.hasNext()) {
             ObjectChangeSet mergingObject = (ObjectChangeSet)addEnum.next();
@@ -263,9 +268,11 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
             if (getRemoveObjectList().containsKey(localChangeSet)) {
                 getRemoveObjectList().remove(localChangeSet);
             } else {
-                getAddObjectList().put(localChangeSet, localChangeSet);
+                changeSets.put(localChangeSet, localChangeSet);
             }
         }
+        getAddObjectList().putAll(changeSets);
+        changeSets = new HashMap<>();
         Iterator removeEnum = ((CollectionChangeRecord)mergeFromRecord).getRemoveObjectList().keySet().iterator();
         while (removeEnum.hasNext()) {
             ObjectChangeSet mergingObject = (ObjectChangeSet)removeEnum.next();
@@ -273,10 +280,12 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
             if (getAddObjectList().containsKey(localChangeSet)) {
                 getAddObjectList().remove(localChangeSet);
             } else {
-                getRemoveObjectList().put(localChangeSet, localChangeSet);
+                changeSets.put(localChangeSet, localChangeSet);
             }
         }
+        getRemoveObjectList().putAll(changeSets);
         //237545: merge the changes for ordered list's attribute change tracking. (still need to check if deferred changes need to be merged)
+        List<OrderedChangeObject> orderedChangeSets = new ArrayList<>();
         Iterator orderedChangeObjectEnum = ((CollectionChangeRecord)mergeFromRecord).getOrderedChangeObjectList().iterator();
         while (orderedChangeObjectEnum.hasNext()) {
             OrderedChangeObject changeObject = (OrderedChangeObject)orderedChangeObjectEnum.next();
@@ -284,8 +293,9 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
             ObjectChangeSet localChangeSet = mergeToChangeSet.findOrIntegrateObjectChangeSet(mergingObject, mergeFromChangeSet);
             
             OrderedChangeObject orderedChangeObject = new OrderedChangeObject(changeObject.getChangeType(), changeObject.getIndex(), localChangeSet);;
-            getOrderedChangeObjectList().add(orderedChangeObject);
+            orderedChangeSets.add(orderedChangeObject);
         }
+        getOrderedChangeObjectList().addAll(orderedChangeSets);
     }
 
     /**
@@ -305,6 +315,7 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
     /**
      * This method will be used to update the objectsChangeSets references.
      */
+    @Override
     public void updateReferences(UnitOfWorkChangeSet mergeToChangeSet, UnitOfWorkChangeSet mergeFromChangeSet) {
         Map addList = new IdentityHashMap(this.getAddObjectList().size() + 1);
         Map removeList = new IdentityHashMap(this.getRemoveObjectList().size() + 1);
@@ -510,6 +521,7 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
    /**
     * Recreates the original state of currentCollection.
     */
+    @Override
    public void internalRecreateOriginalCollection(Object currentCollection, AbstractSession session) {
        ContainerPolicy cp = this.mapping.getContainerPolicy();
        if(orderedChangeObjectList == null || orderedChangeObjectList.isEmpty()) {
@@ -563,6 +575,7 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
    /**
     * Clears info about added / removed objects set by change tracker.
     */
+    @Override
    public void clearChanges() {
        if(orderedChangeObjectList != null) {
            this.orderedChangeObjectList.clear();
