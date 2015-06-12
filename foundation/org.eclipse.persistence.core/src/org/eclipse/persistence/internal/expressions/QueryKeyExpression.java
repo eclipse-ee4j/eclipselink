@@ -770,7 +770,7 @@ public class QueryKeyExpression extends ObjectExpression {
         ReadQuery query = normalizer.getStatement().getQuery();
         // Record any class used in a join to invalidate query results cache.
         if ((query != null) && query.shouldCacheQueryResults()) {
-            if ((mapping != null) && (mapping.getReferenceDescriptor().getJavaClass() != null)) {
+            if ((mapping != null) && (mapping.getReferenceDescriptor() != null) && (mapping.getReferenceDescriptor().getJavaClass() != null)) {
                 query.getQueryResultsCachePolicy().getInvalidationClasses().add(mapping.getReferenceDescriptor().getJavaClass());
             } else {
                 QueryKey queryKey = getQueryKeyOrNull();

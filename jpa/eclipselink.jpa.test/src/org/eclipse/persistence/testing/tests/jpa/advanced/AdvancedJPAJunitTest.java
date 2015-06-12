@@ -125,6 +125,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.Project;
 import org.eclipse.persistence.testing.models.jpa.advanced.Quantity;
 import org.eclipse.persistence.testing.models.jpa.advanced.Room;
 import org.eclipse.persistence.testing.models.jpa.advanced.SmallProject;
+import org.eclipse.persistence.testing.models.jpa.advanced.ToDoList;
 import org.eclipse.persistence.testing.models.jpa.advanced.Violation;
 import org.eclipse.persistence.testing.models.jpa.advanced.ViolationCode;
 import org.eclipse.persistence.testing.models.jpa.advanced.Violation.ViolationID;
@@ -261,6 +262,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             suite.addTest(new AdvancedJPAJunitTest("testEmployeeToAddressWithBatchFetchJoinFetch"));
             
             suite.addTest(new AdvancedJPAJunitTest("testHistoryRelationshipQueryInitialization"));
+            suite.addTest(new AdvancedJPAJunitTest("testQueryJoinBasicCollectionTableUsingQueryResultsCache"));
         }
         
         return suite;
@@ -3150,6 +3152,69 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             }
             commitTransaction(em);
         } finally {
+            closeEntityManager(em);
+        }
+    }
+    
+    /**
+     * Bug 470007 - NPE in normalize() when querying on ElementCollection->CollectionTable, with query results caching enabled
+     * Tests querying across an Entity (ToDoList) containing an ElementCollection with a CollectionTable, referencing a
+     * basic type (String). A NullPointerException was previously observed when query results caching is enabled on the query.  
+     */
+    public void testQueryJoinBasicCollectionTableUsingQueryResultsCache() {
+        // setup
+        EntityManager em = createEntityManager();
+        try {
+            beginTransaction(em);
+            
+            String commonName = "My List";
+            String commonItem = "Feed the cat";
+            
+            // setup
+            // ToDoList has a Set<String>, mapped to an @ElementCollection, using @CollectionTable (String)
+            ToDoList bobsList = new ToDoList(1, commonName);
+            bobsList.addItem(commonItem);
+            bobsList.addItem("Cook dinner");
+            bobsList.addItem("Watch TV");
+            
+            ToDoList jensList = new ToDoList(2, commonName);
+            jensList.addItem("Feed the dog");
+            jensList.addItem("Hire and fire");
+            jensList.addItem("Eat chocolate");
+            
+            ToDoList bertsList = new ToDoList(3, commonName);
+            bertsList.addItem(commonItem);
+            bertsList.addItem("Feed the kids");
+            bertsList.addItem("Feed the wife");
+            
+            em.persist(bobsList);
+            em.persist(jensList);
+            em.persist(bertsList);
+            em.flush();
+            
+            // test
+            Query query = em.createQuery("SELECT tdl FROM ToDoList tdl JOIN tdl.items items " + 
+                    "WHERE tdl.name = :p_name AND items = :p_itemName");
+            query.setHint(QueryHints.QUERY_RESULTS_CACHE, HintValues.TRUE);
+            
+            query.setParameter("p_name", commonName);
+            query.setParameter("p_itemName", commonItem);
+            List<ToDoList> listsReturned = query.getResultList();
+            
+            // verify
+            assertNotNull("Query results should not be null", listsReturned);
+            assertSame("Query results size", 2, listsReturned.size()); // 2 results expected
+            
+            for (ToDoList aList : listsReturned) {
+                assertEquals(commonName, aList.getName());
+                assertTrue(aList.getItems().contains(commonItem));
+            }
+            
+        } finally {
+            // reset - rollback
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
             closeEntityManager(em);
         }
     }

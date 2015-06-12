@@ -110,6 +110,8 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildCMP3_PEARL_HISTTable());
         addTableDefinition(buildJobTable());
         addTableDefinition(buildEventTable());
+        addTableDefinition(buildCMP3_TODOLISTTable());
+        addTableDefinition(buildCMP3_TODOLISTITEMTable());
     }
     
     public TableDefinition buildADDRESSTable() {
@@ -3011,7 +3013,68 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-
+    
+    public TableDefinition buildCMP3_TODOLISTTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_TODOLIST");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(15);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+        
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("NAME");
+        fieldNAME.setTypeName("VARCHAR");
+        fieldNAME.setSize(32);
+        fieldNAME.setShouldAllowNull(true);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setIsIdentity(false);
+        table.addField(fieldNAME);
+        
+        return table;
+    }
+    
+    public TableDefinition buildCMP3_TODOLISTITEMTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_TODOLISTITEM");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("TODOLIST_ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(15);
+        fieldID.setIsPrimaryKey(false);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+        
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("ITEM_TEXT");
+        fieldNAME.setTypeName("VARCHAR");
+        fieldNAME.setSize(64);
+        fieldNAME.setShouldAllowNull(true);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setIsIdentity(false);
+        table.addField(fieldNAME);
+        
+        ForeignKeyConstraint fk_TODOLISTITEM_TODOLIST = new ForeignKeyConstraint();
+        fk_TODOLISTITEM_TODOLIST.setName("FK_TODOLISTITEM_TODOLIST");
+        fk_TODOLISTITEM_TODOLIST.setTargetTable("CMP3_TODOLIST");
+        fk_TODOLISTITEM_TODOLIST.addSourceField("TODOLIST_ID");
+        fk_TODOLISTITEM_TODOLIST.addTargetField("ID");
+        table.addForeignKeyConstraint(fk_TODOLISTITEM_TODOLIST);
+        
+        return table;
+    }
+    
     @Override
     public void replaceTables(DatabaseSession session) {
         DatabasePlatform dbPlatform = session.getPlatform();
