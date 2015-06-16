@@ -12,14 +12,18 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.beanvalidation;
 
+import org.eclipse.persistence.internal.cache.AdvancedProcessor;
+import org.eclipse.persistence.internal.cache.ComputableTask;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 
+import javax.validation.Constraint;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Collections;
@@ -27,6 +31,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 /**
  * INTERNAL:
@@ -61,21 +66,55 @@ public enum BeanValidationHelper {
             (int) (DEFAULT_CONSTRAINTS_QUANTITY / LOAD_FACTOR));
 
     /**
+     * How much time to allow {@link ValidationXMLReader#runAsynchronously()} to finish its task, in milliseconds.
+     * This is an interrupt management system. If the asynchronous thread were interrupted and flag {@link
+     * ValidationXMLReader#firstTime} were to be false, deadlock would occur. This prevents such case, as it will
+     * await until timeout expires and then run the processing in forced, synchronous way.
+     */
+    private static final int TIMEOUT = 10; /* in ms, handles precision up to single digits since nanoTime is used. */
+
+    /**
+     * Speed-up flag. Indicates that parsing of validation.xml file has finished.
+     */
+    private static boolean xmlParsed = false;
+
+    /**
+     * Advanced memoizer.
+     */
+    private final AdvancedProcessor memoizer = new AdvancedProcessor();
+
+    /**
+     * Computable task for memoizer.
+     */
+    private final ConstraintsDetectorService<Class<?>, Boolean> cds = new ConstraintsDetectorService<>();
+
+    /**
      * Set of all default BeanValidation field annotations and discovered custom field constraints.
      * Implemented as a ConcurrentHashMap with "Null Object" idiom.
      */
-    private static final Set<String> KNOWN_CONSTRAINTS = Collections.newSetFromMap(new ConcurrentHashMap<String,
-            Boolean>( KNOWN_CONSTRAINTS_DEFAULT_SIZE, LOAD_FACTOR ));
+    private static final Set<String> KNOWN_CONSTRAINTS = Collections.newSetFromMap(new ConcurrentHashMap<>( 
+            KNOWN_CONSTRAINTS_DEFAULT_SIZE, LOAD_FACTOR ));
 
     /**
      * Map of all classes that have undergone check for bean validation constraints.
      * Maps the key with boolean value telling whether the class contains an annotation from {@link #KNOWN_CONSTRAINTS}.
      */
     private static final Map<Class<?>, Boolean> CONSTRAINTS_ON_CLASSES = Collections.synchronizedMap(new
-            WeakHashMap<Class<?>, Boolean>());
+            WeakHashMap<>());
 
     static {
         initializeKnownConstraints();
+        ValidationXMLReader.runAsynchronously();
+    }
+
+    /**
+     * Put a class to the map of constrained classes with value Boolean.TRUE. Specifying value is not allowed because
+     * there is nothing to detect that would make class not constrained after it was already found to be constrained.
+     *
+     * @return value previously associated with the class or null if the class was not in dictionary before
+     */
+    Boolean putConstrainedClass(Class<?> clazz) {
+        return CONSTRAINTS_ON_CLASSES.put(clazz, Boolean.TRUE);
     }
 
     /**
@@ -86,12 +125,137 @@ public enum BeanValidationHelper {
      * @return true or false
      */
     public boolean isConstrained(Class<?> clazz) {
-        Boolean constrained = CONSTRAINTS_ON_CLASSES.get(clazz);
-        if (constrained == null) {
-            constrained = detectConstraints(clazz);
-            CONSTRAINTS_ON_CLASSES.put(clazz, constrained);
+        if (!xmlParsed) ensureValidationXmlWasParsed();
+
+        return memoizer.compute(cds, clazz);
+    }
+
+    /**
+     * INTERNAL:
+     * Ensures that validation.xml was parsed and classes described externally were added to {@link
+     * #CONSTRAINTS_ON_CLASSES}.
+     * Strategy:
+     *  - if {@link ValidationXMLReader#runAsynchronously()} is not doing anything,
+     *  run parsing synchronously.
+     *  - else if latch count is 0, indicating successful finish of asynchronous processing, return.
+     *  - else wait for {@link #TIMEOUT} seconds to allow async thread to finish. If it does not finish till then,
+     *  run parsing synchronously.
+     *
+     *  Note: Run parsing synchronously is force of last resort. If that fails, we proceed with validation and do not
+     *  account for classes specified in validation.xml - there is high chance that if we cannot read validation.xml
+     *  successfully, neither will be able the Validation implementation.
+     */
+    private void ensureValidationXmlWasParsed() {
+        // loop handles InterruptedException
+        while (!xmlParsed) {
+            try {
+                if (ValidationXMLReader.asyncAttemptFailed()
+                        || !ValidationXMLReader.getLatch().await(TIMEOUT, TimeUnit.MILLISECONDS)) {
+                    ValidationXMLReader.runSynchronouslyForced();
+                }
+                xmlParsed = true;
+            } catch (InterruptedException ignored) {
+                Thread.currentThread().interrupt();
+            }
         }
-        return constrained;
+    }
+
+    @SuppressWarnings("unchecked")
+    public class ConstraintsDetectorService<A, V> implements ComputableTask<A, V> {
+
+        @Override
+        public V compute(A arg) throws InterruptedException {
+            Boolean b = isConstrained0((Class<?>) arg);
+            return (V) b;
+        }
+
+        private Boolean isConstrained0(Class<?> clazz) {
+            Boolean constrained = CONSTRAINTS_ON_CLASSES.get(clazz);
+            if (constrained == null) {
+                constrained = detectConstraints(clazz);
+                CONSTRAINTS_ON_CLASSES.put(clazz, constrained);
+            }
+            return constrained;
+        }
+
+        /**
+         * INTERNAL:
+         * Determines whether this class is subject to validation according to rules in BV spec.
+         * Will accept upon first detected annotation - faster.
+         * Uses reflection, recursion and DP.
+         */
+        private Boolean detectConstraints(Class<?> clazz) {
+            if (detectAncestorConstraints(clazz)) return true;
+
+            for (Field f : ReflectionUtils.getDeclaredFields(clazz)) {
+                if ((f.getModifiers() & Modifier.STATIC) != 0) continue; // section 4.1 of BV spec
+                if (detectFirstClassConstraints(f)) return true;
+            }
+
+            for (Method m : ReflectionUtils.getDeclaredMethods(clazz)) {
+                if ((m.getModifiers() & Modifier.STATIC) != 0) continue; // section 4.1 of BV spec
+                if (detectFirstClassConstraints(m) || detectParameterConstraints(m)) return true;
+            }
+
+            // length 0 if an interface, a primitive type, an array class, or void
+            for (Constructor<?> c : ReflectionUtils.getDeclaredConstructors(clazz)) {
+                if (clazz.isEnum()) continue; // cannot construct enum instances during runtime
+                if (detectFirstClassConstraints(c) || detectParameterConstraints(c)) return true;
+            }
+            return false;
+        }
+
+        /**
+         * Recursively detects constraints on ancestors. Uses strong form of dynamic programming.
+         *
+         * @param clazz class whose ancestors are to be scanned
+         * @return true if any of the ancestors are constrained
+         */
+        private boolean detectAncestorConstraints(Class<?> clazz) {
+            /* If this Class represents either the Object class, an interface, a primitive type, or void, then null is
+               returned. If this object represents an array class then the Class object representing the Object class
+               is returned. */
+            Class<?> superClass = clazz.getSuperclass();
+            if (superClass == null) return false;
+            return memoizer.compute(cds, superClass);
+        }
+
+        private boolean detectFirstClassConstraints(AccessibleObject accessibleObject) {
+            for (Annotation a : accessibleObject.getDeclaredAnnotations()) {
+                final Class<? extends Annotation> annType = a.annotationType();
+                if (KNOWN_CONSTRAINTS.contains(annType.getName())){
+                    return true;
+                }
+                // detect custom annotations
+                for (Annotation annOnAnnType : annType.getAnnotations()) {
+                    final Class<? extends Annotation> annTypeOnAnnType = annOnAnnType.annotationType();
+                    if (Constraint.class == annTypeOnAnnType) {
+                        KNOWN_CONSTRAINTS.add(annType.getName());
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        private boolean detectParameterConstraints(Executable c) {
+            for (Annotation[] aa : c.getParameterAnnotations())
+                for (Annotation a : aa) {
+                    final Class<? extends Annotation> annType = a.annotationType();
+                    if (KNOWN_CONSTRAINTS.contains(annType.getName())) {
+                        return true;
+                    }
+                    // detect custom annotations
+                    for (Annotation annOnAnnType : annType.getAnnotations()) {
+                        final Class<? extends Annotation> annTypeOnAnnType = annOnAnnType.annotationType();
+                        if (Constraint.class == annTypeOnAnnType) {
+                            KNOWN_CONSTRAINTS.add(annType.getName());
+                            return true;
+                        }
+                    }
+                }
+            return false;
+        }
     }
 
     /**

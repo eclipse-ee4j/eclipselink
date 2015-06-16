@@ -23,6 +23,7 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import javax.validation.groups.Default;
 
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.descriptors.DescriptorEventAdapter;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -97,7 +98,8 @@ public class BeanValidationListener extends DescriptorEventAdapter {
 
     private void validateOnCallbackEvent(DescriptorEvent event, String callbackEventName, Class[] validationGroup) {
         Object source = event.getSource();
-        boolean shouldValidate = BEAN_VALIDATION_HELPER.isConstrained(source.getClass());
+        boolean noOptimization = "true".equalsIgnoreCase((String) event.getSession().getProperty(PersistenceUnitProperties.BEAN_VALIDATION_NO_OPTIMISATION));
+        boolean shouldValidate = noOptimization || BEAN_VALIDATION_HELPER.isConstrained(source.getClass());
         if (shouldValidate) {
             Set<ConstraintViolation<Object>> constraintViolations = getValidator(event).validate(source, validationGroup);
             if (constraintViolations.size() > 0) {

@@ -1134,6 +1134,18 @@ public class PersistenceUnitProperties {
      */
     public static final String VALIDATION_GROUP_PRE_REMOVE = "javax.persistence.validation.group.pre-remove";
 
+    /**
+     * Property for disabling Bean Validation optimisations.
+     * Bean Validation features optimisations, which are used to skip BV processes on non-constrained objects.
+     *
+     * This is to make maintenance easier and to allow for debugging in case that some object is not validated,
+     * but should be.
+     *
+     * Usage: set to {@link Boolean#TRUE} to disable optimisations, set to {@link Boolean#FALSE} to re-enable them
+     * again.
+     */
+    public static final String BEAN_VALIDATION_NO_OPTIMISATION = "eclipselink.beanvalidation.no-optimisation";
+
     // Caching Properties
 
     /**

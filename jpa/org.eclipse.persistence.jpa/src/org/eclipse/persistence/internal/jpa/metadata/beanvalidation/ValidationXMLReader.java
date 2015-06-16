@@ -13,17 +13,9 @@
  * ****************************************************************************
  */
 
-package org.eclipse.persistence.jaxb;
+package org.eclipse.persistence.internal.jpa.metadata.beanvalidation;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedGetContextClassLoader;
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
+import static org.eclipse.persistence.internal.jpa.metadata.beanvalidation.BeanValidationHelper.BEAN_VALIDATION_HELPER;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,7 +29,15 @@ import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static org.eclipse.persistence.jaxb.BeanValidationHelper.BEAN_VALIDATION_HELPER;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedGetContextClassLoader;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * Detects external Bean Validation configuration.
@@ -45,7 +45,7 @@ import static org.eclipse.persistence.jaxb.BeanValidationHelper.BEAN_VALIDATION_
  * Strategy:<br/>
  * 1. Parse validation.xml, looking for a constraints-file reference.<br/>
  * 2. For each reference, if file is found, parses the constraints file and puts all classes declared under 
- * {@literal <bean class="clazz">} into {@link org.eclipse.persistence.jaxb.BeanValidationHelper#constraintsOnClasses} 
+ * {@literal <bean class="clazz">} into {@link org.eclipse.persistence.internal.jpa.metadata.beanvalidation.BeanValidationHelper#CONSTRAINTS_ON_CLASSES} 
  * with value {@link Boolean#TRUE}.
  * <p/>
  * This class contains resources-burdening instance fields (e.g. SAXParser) and as such was designed to be instantiated
@@ -253,7 +253,7 @@ class ValidationXMLReader implements Callable<Void> {
 
     /**
      * Parse constraints file (referenced in validation.xml). Add all classes declared under <bean
-     * class="clazz"> to {@link org.eclipse.persistence.jaxb.BeanValidationHelper#constraintsOnClasses} with value
+     * class="clazz"> to {@link org.eclipse.persistence.internal.jpa.metadata.beanvalidation.BeanValidationHelper#CONSTRAINTS_ON_CLASSES} with value
      * {@link Boolean#TRUE}.
      */
     private void parseConstraintFile(String constraintsFile, DefaultHandler referencedFileHandler) {
