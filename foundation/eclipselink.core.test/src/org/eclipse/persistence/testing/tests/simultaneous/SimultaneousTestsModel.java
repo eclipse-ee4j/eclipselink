@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -68,6 +68,7 @@ public class SimultaneousTestsModel extends TestModel {
         addTest(AddDescriptorsMultithreadedTest.InsertTest.createMultithreadedTest(10, 10000));
         // int numberOfAddDescriptorsThreads, long timeToSleepBetweenAddingDescriptors, int numberOfInsertThreads
         addTest(AddDescriptorsMultithreadedTest.InsertTest.createMultithreadedTestWithAddDescriptors(1, 100, 10));
+        addTest(new ConcurrentQueryCacheQueryResultsTest());
     }
 
     public static TestSuite getReadEmployeeTestSuite() {

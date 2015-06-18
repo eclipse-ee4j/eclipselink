@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -82,19 +82,17 @@ public class CacheIdentityMap extends FullIdentityMap {
     /**
      * Insert a new element into the linked list of LinkedCacheKeys.
      * New elements (Recently Used) are added at the end (last).
+     * Callers of this method must synchronize on the start of the list (this.first).
      * @return the added LinkedCacheKey
      */
     protected LinkedCacheKey insertLink(LinkedCacheKey key) {
         if (key == null){
             return key;
         }
-        // No sence on locking the entire cache, just lock on the list.
-        synchronized (this.first){
-            this.first.getNext().setPrevious(key);
-            key.setNext(this.first.getNext());
-            key.setPrevious(this.first);
-            this.first.setNext(key);
-        }
+        this.first.getNext().setPrevious(key);
+        key.setNext(this.first.getNext());
+        key.setPrevious(this.first);
+        this.first.setNext(key);
         return key;
     }
 
@@ -102,12 +100,14 @@ public class CacheIdentityMap extends FullIdentityMap {
      * Also insert the link if the cacheKey is put.
      */
     protected CacheKey putCacheKeyIfAbsent(CacheKey searchKey) {
-        CacheKey cacheKey = super.putCacheKeyIfAbsent(searchKey);
-        if (cacheKey == null) {
-            insertLink((LinkedCacheKey)searchKey);
-            ensureFixedSize();
+        synchronized(this.first) {
+            CacheKey cacheKey = super.putCacheKeyIfAbsent(searchKey);
+            if (cacheKey == null) {
+                insertLink((LinkedCacheKey)searchKey);
+                ensureFixedSize();
+            }
+            return cacheKey;
         }
-        return cacheKey;
     }
 
     /**
@@ -115,32 +115,31 @@ public class CacheIdentityMap extends FullIdentityMap {
      * @return the LinkedCacheKey to be removed.
      */
     public Object remove(CacheKey key) {
-        super.remove(key);
-        // The key may be null if was missing, just null should be returned in this case.
-        if (key == null) {
-            return null;
+        synchronized (this.first) {
+            super.remove(key);
+            // The key may be null if was missing, just null should be returned in this case.
+            if (key == null) {
+                return null;
+            }
+            return removeLink((LinkedCacheKey)key).getObject();
         }
-        return removeLink((LinkedCacheKey)key).getObject();
     }
 
     /**
      * Remove the LinkedCacheKey from the linked list.
+     * Callers of this method must synchronize on the start of the list (this.first).
      * @return the removed LinkedCacheKey.
      */
     protected LinkedCacheKey removeLink(LinkedCacheKey key) {
-        if (key == null){
+        // callers of this method must be synchronized on this.first 
+        if (key == null || key.getPrevious() == null || key.getNext() == null){
+            //already removed by a competing thread, just return
             return key;
         }
-        synchronized (this.first) {
-            if (key.getPrevious() == null || key.getNext() == null){
-                //already removed by a competing thread, just return
-                return key;
-            }
-            key.getPrevious().setNext(key.getNext());
-            key.getNext().setPrevious(key.getPrevious());
-            key.setNext(null);
-            key.setPrevious(null);
-        }
+        key.getPrevious().setNext(key.getNext());
+        key.getNext().setPrevious(key.getPrevious());
+        key.setNext(null);
+        key.setPrevious(null);
         return key;
     }
 
