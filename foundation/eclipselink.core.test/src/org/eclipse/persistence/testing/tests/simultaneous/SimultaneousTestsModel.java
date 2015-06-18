@@ -68,6 +68,7 @@ public class SimultaneousTestsModel extends TestModel {
         addTest(AddDescriptorsMultithreadedTest.InsertTest.createMultithreadedTest(10, 10000));
         // int numberOfAddDescriptorsThreads, long timeToSleepBetweenAddingDescriptors, int numberOfInsertThreads
         addTest(AddDescriptorsMultithreadedTest.InsertTest.createMultithreadedTestWithAddDescriptors(1, 100, 10));
+        addTest(new ConcurrentQueryCacheQueryResultsTest());
     }
 
     public static TestSuite getReadEmployeeTestSuite() {
