@@ -75,6 +75,7 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "error_loading_resources", "Error loading resources {0} from the classpath" },
                                            { "error_parsing_resources", "Error parsing resources {0}" },
                                            { "unexpect_argument", "Unexpected input argument {0}" },                                           
+                                           { "null_argument", "Input argument {0} is null" },
                                            { "error_executing_jar_process", "Error executing jar process" },
                                            { "error_invoking_deploy", "Error invoking Deploy" },
                                            { "bean_definition_vector_arguments_are_of_different_sizes", "Bean definition vector arguments are of different sizes" },
