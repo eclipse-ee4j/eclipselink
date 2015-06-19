@@ -27,7 +27,6 @@ import org.eclipse.persistence.internal.libraries.asm.ClassReader;
 import org.eclipse.persistence.internal.libraries.asm.ClassVisitor;
 import org.eclipse.persistence.internal.libraries.asm.ClassWriter;
 import org.eclipse.persistence.internal.libraries.asm.commons.SerialVersionUIDAdder;
-import org.eclipse.persistence.internal.weaving.WeaverLogger;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.Session;
 
@@ -116,20 +115,9 @@ public class PersistenceWeaver implements ClassTransformer {
                 final ClassReader classReader = new ClassReader(classfileBuffer);
                 ClassWriter classWriter = null;
                 final String introspectForHierarchy = System.getProperty(SystemProperties.WEAVING_REFLECTIVE_INTROSPECTION, null);
-                if (introspectForHierarchy != null) {
-                    if (shouldLogFinest) {
-                        WeaverLogger.log(SessionLog.FINEST, "weaving_init_class_writer",
-                                className, Integer.toHexString(
-                                        System.identityHashCode(Thread.currentThread().getContextClassLoader())));
-                    }
+                if (introspectForHierarchy != null){
                     classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
                 } else {
-                    if (shouldLogFinest) {
-                        WeaverLogger.log(SessionLog.FINEST, "weaving_init_compute_class_writer",
-                                className, Integer.toHexString(
-                                        System.identityHashCode(Thread.currentThread().getContextClassLoader())),
-                                loader != null ? Integer.toHexString(System.identityHashCode(loader)) : "null");
-                      }
                     classWriter = new ComputeClassWriter(loader, ClassWriter.COMPUTE_FRAMES);
                 }
                 final ClassWeaver classWeaver = new ClassWeaver(classWriter, classDetails);
