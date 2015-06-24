@@ -14,14 +14,10 @@
 package org.eclipse.persistence.internal.weaving;
 
 import java.security.AccessController;
-import java.security.PrivilegedActionException;
 
-import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.localization.TraceLocalization;
 import org.eclipse.persistence.internal.localization.i18n.TraceLocalizationResource;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedGetClassLoaderForClass;
-import org.eclipse.persistence.internal.security.PrivilegedGetClassLoaderFromCurrentThread;
 import org.eclipse.persistence.internal.security.PrivilegedGetSystemProperty;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
@@ -85,50 +81,6 @@ public class WeaverLogger {
      */
     public static final boolean shouldLog(final int level, final String category) {
         return doLogStdErr || LOGGER.shouldLog(level, category);
-    }
-
-    // Back port from master branch: PrivilegedAccessHelper.getClassLoaderFromClass(Class)
-    /**
-     * INTERNAL:
-     * Gets the class loader for a given class.
-     * @param clazz Class to use for class loader retrieval.
-     * @return Value of {@code clazz.getClassLoader()} when {@code clazz} is not {@code null}.
-     * @throw {@link IllegalArgumentException} when {@code clazz} is null.
-     * @throws RuntimeException when an exceptional condition has occurred.
-     */
-    public static ClassLoader getClassLoaderFromClass(final Class clazz) {
-        if (clazz == null) {
-            throw new IllegalArgumentException(
-                    ExceptionLocalization.buildMessage("null_argument", new Object[] {"clazz"}));
-        }
-        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-            try {
-                return AccessController.doPrivileged(new PrivilegedGetClassLoaderForClass(clazz));
-            } catch (PrivilegedActionException ex) {
-                throw (RuntimeException) ex.getCause();
-            }
-        } else {
-            return clazz.getClassLoader();
-        }
-    }
-
-    // Back port from master branch: PrivilegedAccessHelper.getThreadContextClassLoader()
-    /**
-     * INTERNAL:
-     * Gets the class loader from current {@link Thread} context.
-     * @return Value of {@code Thread.currentThread().getContextClassLoader()}.
-     * @throws RuntimeException when an exceptional condition has occurred.
-     */
-    public static ClassLoader getThreadContextClassLoader() {
-        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-            try {
-                return AccessController.doPrivileged(new PrivilegedGetClassLoaderFromCurrentThread());
-            } catch (PrivilegedActionException ex) {
-                throw (RuntimeException) ex.getCause();
-            }
-        } else {
-            return Thread.currentThread().getContextClassLoader();
-        }
     }
 
     /**

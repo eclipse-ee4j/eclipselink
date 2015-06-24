@@ -16,6 +16,8 @@ package org.eclipse.persistence.internal.jpa.weaving;
 
 // J2SE imports
 import java.lang.instrument.IllegalClassFormatException;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 import java.security.ProtectionDomain;
 import java.util.Map;
 
@@ -27,6 +29,8 @@ import org.eclipse.persistence.internal.libraries.asm.ClassReader;
 import org.eclipse.persistence.internal.libraries.asm.ClassVisitor;
 import org.eclipse.persistence.internal.libraries.asm.ClassWriter;
 import org.eclipse.persistence.internal.libraries.asm.commons.SerialVersionUIDAdder;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedGetClassLoaderFromCurrentThread;
 import org.eclipse.persistence.internal.weaving.WeaverLogger;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.Session;
@@ -118,16 +122,36 @@ public class PersistenceWeaver implements ClassTransformer {
                 final String introspectForHierarchy = System.getProperty(SystemProperties.WEAVING_REFLECTIVE_INTROSPECTION, null);
                 if (introspectForHierarchy != null) {
                     if (shouldLogFinest) {
+                        ClassLoader contextClassLoader;
+                        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                            try {
+                                contextClassLoader = AccessController.doPrivileged(
+                                        new PrivilegedGetClassLoaderFromCurrentThread());
+                            } catch (PrivilegedActionException ex) {
+                                throw (RuntimeException) ex.getCause();
+                            }
+                        } else {
+                            contextClassLoader = Thread.currentThread().getContextClassLoader();
+                        }
                         WeaverLogger.log(SessionLog.FINEST, "weaving_init_class_writer", className,
-                                Integer.toHexString(System.identityHashCode(
-                                        WeaverLogger.getThreadContextClassLoader())));
+                                Integer.toHexString(System.identityHashCode(contextClassLoader)));
                     }
                     classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
                 } else {
                     if (shouldLogFinest) {
+                        ClassLoader contextClassLoader;
+                        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                            try {
+                                contextClassLoader = AccessController.doPrivileged(
+                                        new PrivilegedGetClassLoaderFromCurrentThread());
+                            } catch (PrivilegedActionException ex) {
+                                throw (RuntimeException) ex.getCause();
+                            }
+                        } else {
+                            contextClassLoader = Thread.currentThread().getContextClassLoader();
+                        }
                         WeaverLogger.log(SessionLog.FINEST, "weaving_init_compute_class_writer", className,
-                                Integer.toHexString(System.identityHashCode(
-                                        WeaverLogger.getThreadContextClassLoader())),
+                                Integer.toHexString(System.identityHashCode(contextClassLoader)),
                                 loader != null ? Integer.toHexString(System.identityHashCode(loader)) : "null");
                       }
                     classWriter = new ComputeClassWriter(loader, ClassWriter.COMPUTE_FRAMES);

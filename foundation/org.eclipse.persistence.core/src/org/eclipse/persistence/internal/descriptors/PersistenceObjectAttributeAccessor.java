@@ -9,10 +9,16 @@
  *
  * Contributors:
  *     James Sutherland - initial API and implementation
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.descriptors;
 
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+
 import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedGetClassLoaderForClass;
+import org.eclipse.persistence.internal.security.PrivilegedGetClassLoaderFromCurrentThread;
 import org.eclipse.persistence.internal.weaving.WeaverLogger;
 import org.eclipse.persistence.logging.SessionLog;
 
@@ -36,12 +42,25 @@ public class PersistenceObjectAttributeAccessor extends InstanceVariableAttribut
      */
     public Object getAttributeValueFromObject(Object object) {
         if (shouldLogFinest) {
+            ClassLoader contextClassLoader;
+            ClassLoader objectClassLoader;
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                try {
+                    contextClassLoader = AccessController.doPrivileged(
+                            new PrivilegedGetClassLoaderFromCurrentThread());
+                    objectClassLoader = AccessController.doPrivileged(
+                            new PrivilegedGetClassLoaderForClass(object.getClass()));
+                } catch (PrivilegedActionException ex) {
+                    throw (RuntimeException) ex.getCause();
+                }
+            } else {
+                contextClassLoader = Thread.currentThread().getContextClassLoader();
+                objectClassLoader = object.getClass().getClassLoader();
+            }
             WeaverLogger.log(SessionLog.FINEST, "weaving_call_persistence_get",
                     object.getClass().getName(),
-                    Integer.toHexString(System.identityHashCode(
-                            WeaverLogger.getThreadContextClassLoader())),
-                    Integer.toHexString(System.identityHashCode(
-                            WeaverLogger.getClassLoaderFromClass(object.getClass()))));
+                            Integer.toHexString(System.identityHashCode(contextClassLoader)),
+                            Integer.toHexString(System.identityHashCode(objectClassLoader)));
         }
         return ((PersistenceObject)object)._persistence_get(this.attributeName);
     }
@@ -60,12 +79,25 @@ public class PersistenceObjectAttributeAccessor extends InstanceVariableAttribut
      */
     public void setAttributeValueInObject(Object object, Object value) {
         if (shouldLogFinest) {
+            ClassLoader contextClassLoader;
+            ClassLoader objectClassLoader;
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                try {
+                    contextClassLoader = AccessController.doPrivileged(
+                            new PrivilegedGetClassLoaderFromCurrentThread());
+                    objectClassLoader = AccessController.doPrivileged(
+                            new PrivilegedGetClassLoaderForClass(object.getClass()));
+                } catch (PrivilegedActionException ex) {
+                    throw (RuntimeException) ex.getCause();
+                }
+            } else {
+                contextClassLoader = Thread.currentThread().getContextClassLoader();
+                objectClassLoader = object.getClass().getClassLoader();
+            }
             WeaverLogger.log(SessionLog.FINEST, "weaving_call_persistence_set",
                     object.getClass().getName(),
-                    Integer.toHexString(System.identityHashCode(
-                            WeaverLogger.getThreadContextClassLoader())),
-                    Integer.toHexString(System.identityHashCode(
-                            WeaverLogger.getClassLoaderFromClass(object.getClass()))));
+                    Integer.toHexString(System.identityHashCode(contextClassLoader)),
+                    Integer.toHexString(System.identityHashCode(objectClassLoader)));
         }
         ((PersistenceObject)object)._persistence_set(this.attributeName, value);
     }
