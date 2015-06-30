@@ -362,6 +362,10 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
                     valueHolder = ((WrappingValueHolder)valueHolder).getWrappedValueHolder();
                 }
             }
+            // EL bug 470161
+            if ((valueHolder != null) && (valueHolder instanceof DatabaseValueHolder)) {
+                ((DatabaseValueHolder) valueHolder).releaseWrappedValueHolder(session);
+            }
             return valueHolder;
         } else {
             return container.getValueHolder();
