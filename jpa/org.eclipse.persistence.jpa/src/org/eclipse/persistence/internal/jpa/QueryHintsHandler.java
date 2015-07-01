@@ -17,6 +17,8 @@
  *       - 325167: Make reserved # bind parameter char generic to enable native SQL pass through
  *     06/30/2011-2.3.1 Guy Pelletier 
  *       - 341940: Add disable/enable allowing native queries 
+ *     06/30/2015-2.6.0 Will Dazey
+ *       - 471487: Fixed eclipselink.jdbc.timeout hint not applying correctly to SQLCall
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
@@ -1861,6 +1863,7 @@ public class QueryHintsHandler {
     
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             query.setQueryTimeout(QueryHintsHandler.parseIntegerHint(valueToApply, QueryHints.JDBC_TIMEOUT));
+            query.setIsPrepared(false);
             return query;
         }
     }
