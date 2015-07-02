@@ -2929,7 +2929,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldSTART.setIsPrimaryKey(true);
         fieldSTART.setIsIdentity(false);
         fieldSTART.setUnique(false);
-        fieldSTART.setShouldAllowNull(true);
+        fieldSTART.setShouldAllowNull(false);
         table.addField(fieldSTART);
         
         FieldDefinition fieldEND = new FieldDefinition();
