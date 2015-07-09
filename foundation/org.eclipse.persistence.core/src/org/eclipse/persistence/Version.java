@@ -32,17 +32,17 @@ public class Version {
     // This will be used by all product components and included in exceptions.
     private static String product = "Eclipse Persistence Services";
     // A three part version number (major.minor.service)
-    private static final String version = "@VERSION@";
+    private static final String version = "2.6.1";
     // A string that describes this build i.e.( vYYYYMMDD-HHMM, etc.)
-    private static final String qualifier = "@QUALIFIER@";
+    private static final String qualifier = "WAS";
     // Should be in the format YYYYMMDD
-    private static final String buildDate = "@BUILD_DATE@";
+    private static final String buildDate = "20150821";
     // Should be in the format HHMM
-    private static final String buildTime = "@BUILD_TIME@";
+    private static final String buildTime = "0957";
     // revision of source from the repository
-    private static final String buildRevision = "@BUILD_REVISION@";
+    private static final String buildRevision = "NA";
     // Typically SNAPSHOT, Milestone name (M1,M2,etc), or RELEASE
-    private static final String buildType = "@BUILD_TYPE@";
+    private static final String buildType = "SNAPSHOT";
  
     /** Version numbers separator. */
     private static final char SEPARATOR = '.';

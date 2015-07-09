@@ -197,25 +197,6 @@
         <plugins>
             <plugin>
                 <groupId>org.eclipse.tycho</groupId>
-                <artifactId>tycho-compiler-plugin</artifactId>
-                <version>${tycho.version}</version>
-                <configuration>
-                    <excludes>
-                        <!-- some sources here require JDK 8 for compilation
-                             so exclude them from the tycho build -->
-                        <exclude>**/jdk8/**</exclude>
-                    </excludes>
-                    <!-- Set to force OSGi Compatability settings (defaults to "false") (Only available as of Tycho 0.16.0) -->
-                    <!-- requireJREPackageImports>true</requireJREPackageImports -->
-                    <!-- compilerArgument>-nowarn</compilerArgument> <disable all warnings -->
-                    <!-- compilerArgument>-warn:[+|-]warning_tokens_separated_by_comma - Specify the set of enabled warnings </compilerArgument -->
-                    <!-- compilerArgument>-err:warning_tokens_separated_by_comma - convert exactly the listed warnings to errors  </compilerArgument -->
-                    <!-- compilerArgument>-err:+warning_tokens_separated_by_comma - convert additional warnings to errors</compilerArgument -->
-                    <!-- compilerArgument>-err:-warning_tokens_separated_by_comma - remove specific warnings from being converted to errors </compilerArgument -->
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.eclipse.tycho</groupId>
                 <artifactId>tycho-maven-plugin</artifactId>
                 <version>${tycho.version}</version>
                 <extensions>true</extensions>

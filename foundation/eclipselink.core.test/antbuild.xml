@@ -112,7 +112,7 @@
     </target>
 
     <target name="valid-junit-java">
-        <available property="valid.junit.java.home" file="${junit.java.home}/bin/java"/>
+        <available property="valid.junit.java.home" file="${junit.java.home}/bin/java.exe"/>
     </target>
 
     <target name="check-jdk8" description="Check availability of JDK 8" if="${valid.junit.java.home}" depends="valid-junit-java">
@@ -254,21 +254,44 @@
             <path refid="core_test.runtime.only.path"/>
         </path>
     </target>
+    
+    <target name="compile" depends="init_paths, compile-core, compile-jdk8" description="compile EclipseLink core tests"/>
 
     <!-- Compiles all tests. -->
-    <target name="compile" depends="init_paths" description="compile EclipseLink core tests">
+    <target name="compile-core" depends="init_paths" description="compile EclipseLink core tests">
         <!-- fail message="Cannot find junit: '${junit.lib}'." unless="junit.jar.exist"/ -->
         <!-- fail message="Cannot find persistence: '${core_test.2.common.plugins.dir}/${unsigned.persistence10.jar}'." unless="persistence.bundle.exist"/ -->
         <mkdir dir="${core_test.classes.dir}"/>
         <javac srcdir="${core_test.src.dir}"
                destdir="${core_test.classes.dir}"
                includes="org/eclipse/persistence/**, deprecated/**, java/sql/**"
+               excludes="**/jdk8/**"
                debug="${javac.debug}"
                debuglevel="${javac.debuglevel}"
                encoding="UTF-8"
                optimize="${javac.optimize}"
                source="${javac.version}"
                target="${javac.version}"
+               deprecation="${javac.deprecation}"
+               failonerror="true"
+               memoryMaximumSize="512m"
+               fork="true"
+               classpathref="core_test.compile.path"
+        />
+    </target>
+
+    <!-- Compile Java 8 tests -->
+    <target name="compile-jdk8" depends="check-jdk8" description="compile EclipseLink core tests that require jdk8">
+        <mkdir dir="${core_test.classes.dir}"/>
+        <javac srcdir="${core_test.src.dir}"
+               destdir="${core_test.classes.dir}"
+               includes="**/jdk8/**"
+               debug="${javac.debug}"
+               debuglevel="${javac.debuglevel}"
+               encoding="UTF-8"
+               optimize="${javac.optimize}"
+               source="1.8"
+               target="1.8"
                deprecation="${javac.deprecation}"
                failonerror="true"
                memoryMaximumSize="512m"
@@ -352,9 +375,10 @@
         <antcall target="run-test" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.security.SecurityTestModel"/>
         </antcall>
-        <ant target="test-jdk8" antfile="${ant.file}">
-            <property name="junit.java.home" value="${env.JAVA8_HOME}"/>
-        </ant>
+        <condition property="junit.java.home" value="${env.JAVA8_HOME}" else="${java.home}">
+            <isset property="env.JAVA8_HOME"/>
+        </condition>
+        <ant target="test-jdk8" antfile="${ant.file}"/>
         <antcall target="generate-report" inheritRefs="true"/>
     </target>
 
@@ -431,15 +455,16 @@
         <antcall target="run-test" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.TestRunModel"/>
         </antcall>
-        <ant target="test-jdk8" antfile="${ant.file}">
-            <property name="junit.java.home" value="${env.JAVA8_HOME}"/>
-        </ant>
+        <condition property="junit.java.home" value="${env.JAVA8_HOME}" else="${java.home}">
+            <isset property="env.JAVA8_HOME"/>
+        </condition>
+        <ant target="test-jdk8" antfile="${ant.file}"/>
         <antcall target="generate-report" inheritRefs="true"/>
     </target>
 
     <target name="test-jdk8" depends="check-jdk8" if="${compat.jdk8}">
         <antcall target="run-test" inheritRefs="true">
-            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.transparentindirection.TransparentIndirectionModel"/>
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.transparentindirection.jdk8.TransparentIndirectionModel"/>
         </antcall>
     </target>
 

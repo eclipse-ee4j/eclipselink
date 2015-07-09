@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+    xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
 
     <name>EclipseLink Core</name>
@@ -24,6 +25,35 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.eclipse.tycho</groupId>
+                <artifactId>tycho-compiler-plugin</artifactId>
+                <version>${tycho.version}</version>
+                <executions>
+                    <execution>
+                        <id>default-compile</id>
+                        <configuration>
+                            <excludes>
+                                <exclude>**/jdk8/**</exclude>
+                            </excludes>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>compile-jdk8</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                        <configuration>
+                            <source>1.8</source>
+                            <target>1.8</target>
+                            <includes>
+                                <include>**/jdk8/**</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <version>1.6</version>
                 <executions>
@@ -33,28 +63,41 @@
                         <configuration>
                             <target>
                                 <tstamp>
-                                     <format property="build.date" pattern="yyyyMMdd"/>
-                                     <format property="build.time" pattern="HHmm"/>
+                                    <format property="build.date"
+                                        pattern="yyyyMMdd" />
+                                    <format property="build.time"
+                                        pattern="HHmm" />
                                 </tstamp>
-                                <echo message="Stamping the following values:"/>
-                                <echo message="version:       '${release.version}'"/>
-                                <echo message="qualifier:     '${build.qualifier}'"/>
-                                <echo message="buildDate:     '${build.date}'"/>
-                                <echo message="buildTime:     '${build.time}'"/>
-                                <echo message="buildType:     '${build.type}'"/>
-                                <echo message="buildRevision: '${svn.revision}'"/>
-                                <filter token="VERSION"         value="${release.version}"/>
-                                <filter token="QUALIFIER"       value="${build.qualifier}"/>
-                                <filter token="BUILD_DATE"      value="${build.date}"/>
-                                <filter token="BUILD_TIME"      value="${build.time}"/>
-                                <filter token="BUILD_TYPE"      value="${build.type}"/>
-                                <filter token="BUILD_REVISION"  value="${svn.revision}"/>
-                                <copy file="${src}/org/eclipse/persistence/Version.java" tofile="${src}/org/eclipse/persistence/Version.j"    filtering="false"/>
-                                <copy file="${src}/org/eclipse/persistence/Version.j"    tofile="${src}/org/eclipse/persistence/Version.java" filtering="true"/>
+                                <echo message="Stamping the following values:" />
+                                <echo
+                                    message="version:       '${release.version}'" />
+                                <echo
+                                    message="qualifier:     '${build.qualifier}'" />
+                                <echo message="buildDate:     '${build.date}'" />
+                                <echo message="buildTime:     '${build.time}'" />
+                                <echo message="buildType:     '${build.type}'" />
+                                <echo message="buildRevision: '${svn.revision}'" />
+                                <filter token="VERSION"
+                                    value="${release.version}" />
+                                <filter token="QUALIFIER"
+                                    value="${build.qualifier}" />
+                                <filter token="BUILD_DATE" value="${build.date}" />
+                                <filter token="BUILD_TIME" value="${build.time}" />
+                                <filter token="BUILD_TYPE" value="${build.type}" />
+                                <filter token="BUILD_REVISION"
+                                    value="${svn.revision}" />
+                                <copy
+                                    file="${src}/org/eclipse/persistence/Version.java"
+                                    tofile="${src}/org/eclipse/persistence/Version.j"
+                                    filtering="false" />
+                                <copy
+                                    file="${src}/org/eclipse/persistence/Version.j"
+                                    tofile="${src}/org/eclipse/persistence/Version.java"
+                                    filtering="true" />
                             </target>
                         </configuration>
                         <goals>
-                          <goal>run</goal>
+                            <goal>run</goal>
                         </goals>
                     </execution>
                     <execution>
@@ -62,9 +105,13 @@
                         <phase>package</phase>
                         <configuration>
                             <target>
-                                <echo message="Clean-up after stamping."/>
-                                <copy file="${src}/org/eclipse/persistence/Version.j"    tofile="${src}/org/eclipse/persistence/Version.java" filtering="false" overwrite="true"/>
-                                <delete file="${src}/org/eclipse/persistence/Version.j"/>
+                                <echo message="Clean-up after stamping." />
+                                <copy
+                                    file="${src}/org/eclipse/persistence/Version.j"
+                                    tofile="${src}/org/eclipse/persistence/Version.java"
+                                    filtering="false" overwrite="true" />
+                                <delete
+                                    file="${src}/org/eclipse/persistence/Version.j" />
                             </target>
                         </configuration>
                         <goals>
@@ -77,11 +124,11 @@
     </build>
 
     <dependencies>
-      <dependency>
-        <groupId>org.glassfish</groupId>
-        <artifactId>javax.json</artifactId>
-        <version>1.0.4</version>
-      </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.json</artifactId>
+            <version>1.0.4</version>
+        </dependency>
     </dependencies>
 
 </project>
