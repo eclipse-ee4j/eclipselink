@@ -50,7 +50,7 @@ public class IndirectMap<K, V> extends org.eclipse.persistence.indirection.Indir
 
     @Override
     public synchronized V merge(K key, V value, BiFunction<? super V,? super V,? extends V> remappingFunction) {
-    	// Must trigger add events if tracked or uow.
+        // Must trigger add events if tracked or uow.
         if (hasTrackedPropertyChangeListener()) {
             V oldValue = get(key);
             V newValue = (oldValue == null) ? value : remappingFunction.apply(oldValue, value);
@@ -66,7 +66,7 @@ public class IndirectMap<K, V> extends org.eclipse.persistence.indirection.Indir
 
     @Override
     public synchronized V compute(K key, BiFunction<? super K,? super V,? extends V> remappingFunction) {
-    	// Must trigger add events if tracked or uow.
+        // Must trigger add events if tracked or uow.
         if (hasTrackedPropertyChangeListener()) {
             V oldValue = get(key);
             V newValue = remappingFunction.apply(key, oldValue);
@@ -89,7 +89,7 @@ public class IndirectMap<K, V> extends org.eclipse.persistence.indirection.Indir
 
     @Override
     public synchronized V computeIfPresent(K key, BiFunction<? super K,? super V,? extends V> remappingFunction) {
-    	// Must trigger add events if tracked or uow.
+        // Must trigger add events if tracked or uow.
         if (hasTrackedPropertyChangeListener()) {
             if (get(key) != null) {
                 V oldValue = get(key);
@@ -107,7 +107,7 @@ public class IndirectMap<K, V> extends org.eclipse.persistence.indirection.Indir
 
     @Override
     public synchronized V computeIfAbsent(K key, Function<? super K,? extends V> mappingFunction) {
-    	// Must trigger add events if tracked or uow.
+        // Must trigger add events if tracked or uow.
         if (hasTrackedPropertyChangeListener()) {
             V oldValue = get(key);
             if (oldValue == null) {
@@ -124,7 +124,7 @@ public class IndirectMap<K, V> extends org.eclipse.persistence.indirection.Indir
 
     @Override
     public synchronized V replace(K key, V value) {
-    	// Must trigger add events if tracked or uow.
+        // Must trigger add events if tracked or uow.
         if (hasTrackedPropertyChangeListener()) {
             Map<K, V> del = getDelegate();
             if (del.containsKey(key)) {
@@ -137,7 +137,7 @@ public class IndirectMap<K, V> extends org.eclipse.persistence.indirection.Indir
 
     @Override
     public synchronized boolean replace(K key, V oldValue, V newValue) {
-    	// Must trigger add events if tracked or uow.
+        // Must trigger add events if tracked or uow.
         if (hasTrackedPropertyChangeListener()) {
             Map<K, V> del = getDelegate();
             if (del.containsKey(key) && Objects.equals(del.get(key), oldValue)) {
@@ -166,7 +166,7 @@ public class IndirectMap<K, V> extends org.eclipse.persistence.indirection.Indir
 
     @Override
     public synchronized V putIfAbsent(K key, V value) {
-    	// Must trigger add events if tracked or uow.
+        // Must trigger add events if tracked or uow.
         if (hasTrackedPropertyChangeListener()) {
             V current = getDelegate().get(key);
             if (current == null) {
@@ -181,7 +181,7 @@ public class IndirectMap<K, V> extends org.eclipse.persistence.indirection.Indir
 
     @Override
     public synchronized void replaceAll(BiFunction<? super K,? super V,? extends V> function) {
-    	// Must trigger add events if tracked or uow.
+        // Must trigger add events if tracked or uow.
         if (hasTrackedPropertyChangeListener()) {
             getDelegate().entrySet().stream().forEach((entry) -> {
                 K key = entry.getKey();

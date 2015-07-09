@@ -59,7 +59,7 @@ public class IndirectSet<E> extends org.eclipse.persistence.indirection.Indirect
 
     @Override
     public boolean removeIf(Predicate<? super E> filter) {
-    	// Must trigger remove events if tracked or uow.
+        // Must trigger remove events if tracked or uow.
         if (hasBeenRegistered() || hasTrackedPropertyChangeListener()) {
             boolean hasChanged = false;
             Iterator<E> objects = iterator();

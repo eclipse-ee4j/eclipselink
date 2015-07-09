@@ -53,7 +53,7 @@ public class IndirectList<E> extends org.eclipse.persistence.indirection.Indirec
 
     @Override
     public synchronized void replaceAll(UnaryOperator<E> operator) {
-    	// Must trigger remove/add events if tracked or uow.
+        // Must trigger remove/add events if tracked or uow.
         if (hasBeenRegistered() || hasTrackedPropertyChangeListener()) {
             List<E> del = getDelegate();
             for (int i = 0; i < del.size(); i++) {
@@ -66,7 +66,7 @@ public class IndirectList<E> extends org.eclipse.persistence.indirection.Indirec
 
     @Override
     public synchronized boolean removeIf(Predicate<? super E> filter) {
-    	// Must trigger remove events if tracked or uow.
+        // Must trigger remove events if tracked or uow.
         if (hasBeenRegistered() || hasTrackedPropertyChangeListener()) {
             boolean hasChanged = false;
             Iterator<E> objects = iterator();
