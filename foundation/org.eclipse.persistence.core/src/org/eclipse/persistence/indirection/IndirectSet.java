@@ -1,25 +1,28 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.indirection;
 
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.beans.PropertyChangeListener;
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+
 import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
 import org.eclipse.persistence.descriptors.changetracking.CollectionChangeTracker;
 import org.eclipse.persistence.exceptions.QueryException;
@@ -43,7 +46,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
  * CollectionMapping. (The order of these two message sends is significant.)
  * </ul>
  * TopLink will place an IndirectSet in the instance variable when the
- * containing domain object is read from the datatabase. With the first
+ * containing domain object is read from the database. With the first
  * message sent to the IndirectSet, the contents
  * are fetched from the database and normal Set behavior is resumed.
  *
@@ -85,26 +88,26 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
     private volatile Set<E> delegate;
 
     /** Delegate indirection behavior to a value holder */
-    private ValueHolderInterface valueHolder;
+    private volatile ValueHolderInterface valueHolder;
 
     /** Change tracking listener. */
-    private transient PropertyChangeListener changeListener;
-    
+    private transient PropertyChangeListener changeListener = null;
+
     /** The mapping attribute name, used to raise change events. */
-    private String attributeName;
+    private transient String attributeName = null;
 
     /** Store added elements to avoid instantiation on add. */
-    private transient Set addedElements;
-    
+    private transient Set<E> addedElements = null;
+
     /** Store removed elements to avoid instantiation on remove. */
-    private transient Set removedElements;
-    
+    private transient Set<E> removedElements = null;
+
     /** Store initial size for lazy init. */
     protected int initialCapacity = 10;
 
     /** Store load factor for lazy init. */
     protected float loadFactor = 0.75f;
-    
+
     /**
      * This value is used to determine if we should attempt to do adds and removes from the list without
      * actually instantiating the list from the database. By default, this is set to false.  When set to
@@ -112,7 +115,7 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
      * is committed.
      */
     private boolean useLazyInstantiation = false;
-    
+
     /**
      * Construct an empty IndirectSet.
      */
@@ -159,7 +162,7 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
         this.delegate = null;
         this.valueHolder = new ValueHolder(new HashSet<>(c));
     }
-    
+
     protected boolean isRelationshipMaintenanceRequired() {
         if (this.valueHolder instanceof UnitOfWorkQueryValueHolder) {
             DatabaseMapping mapping = ((UnitOfWorkQueryValueHolder)this.valueHolder).getMapping();
@@ -167,7 +170,7 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
         }
         return false;
     }
-    
+
     /**
      * @see java.util.Set#add(java.lang.Object)
      */
@@ -179,7 +182,7 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
             if (hasRemovedElements() && getRemovedElements().contains(element)) {
                 getRemovedElements().remove(element);
             } else if (isRelationshipMaintenanceRequired() && getAddedElements().contains(element)) {
-                // Must avoid recursion for relationship maintenance.                
+                // Must avoid recursion for relationship maintenance.
                 return false;
             } else {
                 getAddedElements().add(element);
@@ -215,30 +218,30 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
      * Return the freshly-built delegate.
      */
     protected Set<E> buildDelegate() {
-        Set delegate = (Set)getValueHolder().getValue();
-        if (delegate == null) {
-            delegate = new HashSet<>(this.initialCapacity, this.loadFactor);
+        Set<E> newDelegate = (Set<E>)getValueHolder().getValue();
+        if (newDelegate == null) {
+            newDelegate = new HashSet<>(this.initialCapacity, this.loadFactor);
         }
         // This can either be another indirect set or a HashSet.
         // It can be another indirect list because the mapping's query uses the same container policy.
-        // Unwrap any redundent indirection layers, which can cause issues and impact performance.
-        while (delegate instanceof IndirectSet) {
-            delegate = ((IndirectSet) delegate).getDelegate();
+        // Unwrap any redundant indirection layers, which can cause issues and impact performance.
+        while (newDelegate instanceof IndirectSet) {
+            newDelegate = ((IndirectSet) newDelegate).getDelegate();
         }
         // First add/remove any cached changes.
         if (hasAddedElements()) {
-            for (Iterator iterator = getAddedElements().iterator(); iterator.hasNext(); ) {
-                delegate.add(iterator.next());
+            for (Iterator<E> iterator = getAddedElements().iterator(); iterator.hasNext(); ) {
+                newDelegate.add(iterator.next());
             }
             this.addedElements = null;
         }
         if (hasRemovedElements()) {
-            for (Iterator iterator = getRemovedElements().iterator(); iterator.hasNext(); ) {
-                delegate.remove(iterator.next());
+            for (Iterator<E> iterator = getRemovedElements().iterator(); iterator.hasNext(); ) {
+                newDelegate.remove(iterator.next());
             }
             this.removedElements = null;
         }
-        return delegate;
+        return newDelegate;
     }
 
     /**
@@ -252,11 +255,11 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
                 objects.next();
                 objects.remove();
             }
-            // clear delegate in case it's still not empty, see bug 338393 
+            // clear delegate in case it's still not empty, see bug 338393
         }
         getDelegate().clear();
     }
-    
+
     /**
      * INTERNAL:
      * clear any changes that have been deferred to instantiation.
@@ -267,7 +270,7 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
         addedElements = null;
         removedElements = null;
     }
-    
+
     /**
      * @see java.lang.Object#clone()
      * This will result in a database query if necessary.
@@ -304,7 +307,7 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
      * Clone the delegate.
      */
     protected Set<E> cloneDelegate() {
-        java.lang.reflect.Method cloneMethod;
+        Method cloneMethod;
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
@@ -327,8 +330,10 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
                     Exception throwableException = exception.getException();
                     if (throwableException instanceof IllegalAccessException) {
                         throw QueryException.cloneMethodInaccessible();
+                    } else if (throwableException instanceof InvocationTargetException) {
+                        throw QueryException.cloneMethodThrowException(((InvocationTargetException)throwableException).getTargetException());
                     } else {
-                        throw QueryException.cloneMethodThrowException(((java.lang.reflect.InvocationTargetException)throwableException).getTargetException());
+                        throw QueryException.cloneMethodThrowException(throwableException);
                     }
                 }
             } else {
@@ -336,7 +341,7 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
             }
         } catch (IllegalAccessException ex1) {
             throw QueryException.cloneMethodInaccessible();
-        } catch (java.lang.reflect.InvocationTargetException ex2) {
+        } catch (InvocationTargetException ex2) {
             throw QueryException.cloneMethodThrowException(ex2.getTargetException());
         }
     }
@@ -382,16 +387,18 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
      * If they have not, read them and set the delegate.
      */
     protected Set<E> getDelegate() {
-        if (delegate == null) {
+        Set<E> newDelegate = this.delegate;
+        if (newDelegate == null) {
             synchronized(this){
-                if (delegate == null) {
-                    delegate = this.buildDelegate();
+                newDelegate = this.delegate;
+                if (newDelegate == null) {
+                    this.delegate = newDelegate = this.buildDelegate();
                 }
             }
         }
-        return delegate;
+        return newDelegate;
     }
-    
+
     /**
      * INTERNAL:
      * Return the real collection object.
@@ -408,15 +415,17 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
      */
     @Override
     public ValueHolderInterface getValueHolder() {
+        ValueHolderInterface vh = this.valueHolder;
         // PERF: lazy initialize value holder and vector as are normally set after creation.
-        if (valueHolder == null) {
+        if (vh == null) {
             synchronized(this){
-                if (valueHolder == null) {
-                    valueHolder = new ValueHolder(new HashSet(initialCapacity, loadFactor));
+                vh = this.valueHolder;
+                if (vh == null) {
+                    this.valueHolder = vh = new ValueHolder(new HashSet(initialCapacity, loadFactor));
                 }
             }
         }
-        return valueHolder;
+        return vh;
     }
 
     /**
@@ -460,18 +469,18 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
         return new Iterator<E>() {
             Iterator<E> delegateIterator = IndirectSet.this.getDelegate().iterator();
             E currentObject;
-            
+
             @Override
             public boolean hasNext() {
                 return this.delegateIterator.hasNext();
             }
-            
+
             @Override
             public E next() {
                 this.currentObject = this.delegateIterator.next();
                 return this.currentObject;
             }
-            
+
             @Override
             public void remove() {
                 this.delegateIterator.remove();
@@ -493,7 +502,7 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
                 // Must avoid recursion for relationship maintenance.
                 return false;
             } else {
-                getRemovedElements().add(element);
+                getRemovedElements().add((E) element);
             }
             this.raiseRemoveChangeEvent(element);
             return true;
@@ -553,14 +562,14 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
 
     /**
      * INTERNAL
-     * Set whether this collection should attempt do deal with adds and removes without retrieving the 
+     * Set whether this collection should attempt do deal with adds and removes without retrieving the
      * collection from the dB
      */
     @Override
     public void setUseLazyInstantiation(boolean useLazyInstantiation){
         this.useLazyInstantiation = useLazyInstantiation;
     }
-    
+
     /**
      * @see java.util.Set#size()
      */
@@ -570,14 +579,14 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
     }
 
     /**
-     * Return whether this collection should attempt do deal with adds and removes without retrieving the 
+     * Return whether this collection should attempt do deal with adds and removes without retrieving the
      * collection from the dB
      * @return
      */
     protected boolean shouldUseLazyInstantiation(){
         return useLazyInstantiation;
     }
-    
+
     /**
      * @see java.util.Set#toArray()
      */
@@ -590,7 +599,7 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
      * @see java.util.Set#toArray(java.lang.Object[])
      */
     @Override
-    public <E> E[] toArray(E[] a) {
+    public <T> T[] toArray(T[] a) {
         return this.getDelegate().toArray(a);
     }
 
@@ -612,7 +621,7 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
 
         }
     }
-    
+
     /**
      * Raise the add change event and relationship maintainence.
      */
@@ -624,7 +633,7 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
             ((UnitOfWorkQueryValueHolder)getValueHolder()).updateForeignReferenceSet(element, null);
         }
     }
-    
+
     /**
      * Raise the remove change event.
      */
@@ -636,7 +645,7 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
             ((UnitOfWorkQueryValueHolder)getValueHolder()).updateForeignReferenceRemove(element);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Return the property change listener for change tracking.
@@ -645,7 +654,7 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
      public PropertyChangeListener _persistence_getPropertyChangeListener() {
          return changeListener;
      }
-    
+
     /**
      * INTERNAL:
      * Return if the collection has a property change listener for change tracking.
@@ -653,7 +662,7 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
      public boolean hasTrackedPropertyChangeListener() {
          return this.changeListener != null;
      }
-     
+
     /**
      * INTERNAL:
      * Set the property change listener for change tracking.
@@ -662,7 +671,7 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
      public void _persistence_setPropertyChangeListener(PropertyChangeListener changeListener) {
          this.changeListener = changeListener;
      }
-     
+
     /**
      * INTERNAL:
      * Return the mapping attribute name, used to raise change events.
@@ -671,7 +680,7 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
      public String getTrackedAttributeName() {
          return attributeName;
      }
-     
+
     /**
      * INTERNAL:
      * Set the mapping attribute name, used to raise change events.
@@ -681,13 +690,13 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
      public void setTrackedAttributeName(String attributeName) {
          this.attributeName = attributeName;
      }
-          
+
     /**
      * INTERNAL:
      * Return the elements that have been removed before instantiation.
      */
     @Override
-    public Collection getRemovedElements() {
+    public Collection<E> getRemovedElements() {
         if (removedElements == null) {
             removedElements = new HashSet<>();
         }
@@ -699,7 +708,7 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
      * Return the elements that have been added before instantiation.
      */
     @Override
-    public Collection getAddedElements() {
+    public Collection<E> getAddedElements() {
         if (addedElements == null) {
             addedElements = new HashSet<>();
         }
@@ -721,7 +730,7 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
     public boolean hasRemovedElements() {
         return (removedElements != null) && (!removedElements.isEmpty());
     }
-    
+
     /**
      * INTERNAL:
      * Return if any elements that have been added or removed before instantiation.
@@ -730,7 +739,7 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
     public boolean hasDeferredChanges() {
         return hasRemovedElements() || hasAddedElements();
     }
-    
+
     /**
      * INTERNAL:
      * Return if add/remove should trigger instantiation or avoid.
