@@ -3638,7 +3638,6 @@
         </copy>
         <antcall target="server-run-all-jpa21" inheritRefs="true">
             <param name="PERSISTENCE_UNIT_NAME" value="default"/>
-            <param name="USE_MULTIPLE_PERSISTENCE_UNITS" value="true"/>
             <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa21/advanced"/>
             <param name="MODEL_NAME" value="eclipselink-jpa21-model"/>
             <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa21/advanced"/>
