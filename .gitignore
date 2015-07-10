@@ -40,4 +40,3 @@ test_*.properties
 /coverage-report/
 /jacoco.out
 jsonb/.gradle
-jsonb/gradle
