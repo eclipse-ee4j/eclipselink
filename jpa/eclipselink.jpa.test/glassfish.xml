@@ -172,11 +172,11 @@
     <target name="glassfish-setup" depends="glassfish-create-password-file">
         <echo message="glassfish.db.info == ${glassfish.db.info}"/>
         <exec executable="${glassfish.home}/bin/asadmin${extension}">
-            <arg value="create-jdbc-connection-pool"/>
             <arg value="--user"/>
             <arg value="${server.user}"/>
             <arg value="--passwordfile"/>
             <arg value="${adminpassfile}"/>
+            <arg value="create-jdbc-connection-pool"/>
             <arg value="--restype"/>
             <arg value="javax.sql.XADataSource"/>
             <arg value="--datasourceclassname"/>
@@ -186,21 +186,21 @@
             <arg value="jdbc-jta-pool"/>
         </exec>
         <exec executable="${glassfish.home}/bin/asadmin${extension}">
-            <arg value="create-jdbc-resource"/>
             <arg value="--user"/>
             <arg value="${server.user}"/>
             <arg value="--passwordfile"/>
             <arg value="${adminpassfile}"/>
+            <arg value="create-jdbc-resource"/>
             <arg value="--connectionpoolid"/>
             <arg value="jdbc-jta-pool"/>
             <arg value="jdbc/EclipseLinkDS"/>
         </exec>
         <exec executable="${glassfish.home}/bin/asadmin${extension}">
-            <arg value="create-jdbc-connection-pool"/>
             <arg value="--user"/>
             <arg value="${server.user}"/>
             <arg value="--passwordfile"/>
             <arg value="${adminpassfile}"/>
+            <arg value="create-jdbc-connection-pool"/>
             <arg value="--restype"/>
             <arg value="javax.sql.DataSource"/>
             <arg value="--datasourceclassname"/>
@@ -211,11 +211,11 @@
             <arg value="jdbc-nonjta-pool"/>
         </exec>
         <exec executable="${glassfish.home}/bin/asadmin${extension}">
-            <arg value="create-jdbc-resource"/>
             <arg value="--user"/>
             <arg value="${server.user}"/>
             <arg value="--passwordfile"/>
             <arg value="${adminpassfile}"/>
+            <arg value="create-jdbc-resource"/>
             <arg value="--connectionpoolid"/>
             <arg value="jdbc-nonjta-pool"/>
             <arg value="jdbc/ELNonJTADS"/>
@@ -229,35 +229,35 @@
 
     <target name="glassfish-reset">
         <exec executable="${glassfish.home}/bin/asadmin${extension}">
-            <arg value="delete-jdbc-resource"/>
             <arg value="--user"/>
             <arg value="${server.user}"/>
             <arg value="--passwordfile"/>
             <arg value="${adminpassfile}"/>
+            <arg value="delete-jdbc-resource"/>
             <arg value="jdbc/EclipseLinkDS"/>
         </exec>
         <exec executable="${glassfish.home}/bin/asadmin${extension}">
-            <arg value="delete-jdbc-connection-pool"/>
             <arg value="--user"/>
             <arg value="${server.user}"/>
             <arg value="--passwordfile"/>
             <arg value="${adminpassfile}"/>
+            <arg value="delete-jdbc-connection-pool"/>
             <arg value="jdbc-jta-pool"/>
         </exec>
         <exec executable="${glassfish.home}/bin/asadmin${extension}">
-            <arg value="delete-jdbc-resource"/>
             <arg value="--user"/>
             <arg value="${server.user}"/>
             <arg value="--passwordfile"/>
             <arg value="${adminpassfile}"/>
+            <arg value="delete-jdbc-resource"/>
             <arg value="jdbc/ELNonJTADS"/>
         </exec>
         <exec executable="${glassfish.home}/bin/asadmin${extension}">
-            <arg value="delete-jdbc-connection-pool"/>
             <arg value="--user"/>
             <arg value="${server.user}"/>
             <arg value="--passwordfile"/>
             <arg value="${adminpassfile}"/>
+            <arg value="delete-jdbc-connection-pool"/>
             <arg value="jdbc-nonjta-pool"/>
         </exec>
     </target>
@@ -277,11 +277,11 @@
     -->
     <target name="glassfish-deploy">
         <exec executable="${glassfish.home}/bin/asadmin${extension}">
-            <arg value="deploy"/>
             <arg value="--user"/>
             <arg value="${server.user}"/>
             <arg value="--passwordfile"/>
             <arg value="${adminpassfile}"/>
+            <arg value="deploy"/>
             <arg value="--name"/>
             <arg value="${application.name}"/>
             <arg value="${ear.name}"/>
@@ -294,11 +294,11 @@
     -->
     <target name="glassfish-undeploy">
         <exec executable="${glassfish.home}/bin/asadmin${extension}">
-            <arg value="undeploy"/>
             <arg value="--user"/>
             <arg value="${server.user}"/>
             <arg value="--passwordfile"/>
             <arg value="${adminpassfile}"/>
+            <arg value="undeploy"/>
             <arg value="${application.name}"/>
         </exec>
     </target>
