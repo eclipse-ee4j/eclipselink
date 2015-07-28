@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -64,7 +64,9 @@ import org.eclipse.persistence.descriptors.invalidation.TimeToLiveCacheInvalidat
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.indirection.IndirectCollection;
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.indirection.DatabaseValueHolder;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryDelegate;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
@@ -212,6 +214,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedJPAJunitTest("testEnumeratedPrimaryKeys"));
         
         suite.addTest(new AdvancedJPAJunitTest("testAttributeOverrideToMultipleSameDefaultColumnName"));
+        suite.addTest(new AdvancedJPAJunitTest("testTransparentIndirectionValueHolderSessionReset"));
         
         if (!isJPA10()) {
             // These tests use JPA 2.0 entity manager API
@@ -2535,6 +2538,91 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             assertTrue("Violation object did not match after refresh", getServerSession().compareObjects(violation, refreshedViolation));
         } catch (Exception e) {
             fail("An error occurred: " + e.getMessage());
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+    
+    /**
+     * Bug 470161 - ServerSession links RepeatableWriteUnitOfWork via entity / IndirectList / QueryBasedValueHolder\
+     * 
+     * Through the UoW: Persist a new object, read an existing object in (building from rows, original not put in the
+     * shared cache), associate existing object with new object, commit. Previously, after the changes are merged 
+     * into the shared cache, the transparent collection on the existing object has a wrapped VH from the initial uow 
+     * query, which internally references the uow session, not the shared session.
+     */
+    public void testTransparentIndirectionValueHolderSessionReset() {
+        Employee emp = null;
+        Dealer dealer = null;
+        
+        // setup
+        EntityManager em = createEntityManager();
+        try {
+            beginTransaction(em);
+            dealer = new Dealer();
+            dealer.setFirstName("Angle");
+            dealer.setLastName("Bracket");
+            em.persist(dealer);
+            commitTransaction(em);
+        } finally {
+            closeEntityManager(em);
+            clearCache(); // start test with an empty cache
+        }
+        
+        // test
+        em = createEntityManager();
+        try {
+            beginTransaction(em);
+            
+            emp = new Employee();
+            emp.setFemale();
+            emp.setFirstName("Case");
+            emp.setLastName("Statement");
+            em.persist(emp);
+            
+            Query query = em.createQuery("select d from Dealer d where d.firstName = :firstName and d.lastName = :lastName");
+            query.setParameter("firstName", dealer.getFirstName());
+            query.setParameter("lastName", dealer.getLastName());
+            List<Dealer> resultsList = query.getResultList();
+            assertTrue("List returned should be non-empty", resultsList.size() > 0);
+            
+            Dealer dealerFound = resultsList.get(0);
+            emp.addDealer(dealerFound);
+            
+            commitTransaction(em);
+            
+            // verify valueholder configuration in shared cache
+            ServerSession parentSession = JpaHelper.getEntityManager(em).getServerSession();
+            Dealer cachedDealer = (Dealer) parentSession.getIdentityMapAccessor().getFromIdentityMap(dealer);
+            assertNotNull("Dealer with id should be in the cache: " + dealer.getId(), cachedDealer);
+            
+            ClassDescriptor descriptor = parentSession.getDescriptor(Dealer.class);
+            DatabaseMapping mapping = descriptor.getMappingForAttributeName("customers");
+            IndirectCollection indirectCollection = (IndirectCollection) mapping.getAttributeValueFromObject(cachedDealer);
+            assertFalse("Collection VH should be uninstantiated", indirectCollection.isInstantiated());
+            
+            DatabaseValueHolder dbValueHolder = (DatabaseValueHolder) indirectCollection.getValueHolder();
+            assertFalse("Referenced VH should be uninstantiated", dbValueHolder.isInstantiated());
+            
+            Session vhSession = dbValueHolder.getSession();
+            assertSame("Dealer.customers VH session should reference the shared session", parentSession, vhSession);
+        } finally {
+            closeEntityManager(em);
+        }
+        
+        // reset
+        em = createEntityManager();
+        try {
+            beginTransaction(em);
+            emp = em.find(Employee.class, emp.getId());
+            if (emp != null) {
+                em.remove(emp);
+            }
+            dealer = em.find(Dealer.class, dealer.getId());
+            if (dealer != null) {
+                em.remove(dealer);
+            }
+            commitTransaction(em);
         } finally {
             closeEntityManager(em);
         }
