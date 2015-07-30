@@ -30,6 +30,7 @@ import org.eclipse.persistence.testing.tests.expressions.ExpressionSubSelectTest
 import org.eclipse.persistence.testing.tests.expressions.ExpressionTestSuite;
 import org.eclipse.persistence.testing.tests.expressions.ExpressionUnitTestSuite;
 import org.eclipse.persistence.testing.tests.identitymaps.IdentityMapTestSuite;
+import org.eclipse.persistence.testing.tests.logging.LoggingTestSuite;
 import org.eclipse.persistence.testing.tests.transactions.ReadingThroughWriteConnectionInTransactionTest;
 import org.eclipse.persistence.testing.tests.transactions.TransactionTestSuite;
 import org.eclipse.persistence.testing.tests.writing.CommitOrderTest;
@@ -80,6 +81,7 @@ public class FeatureTestModel extends TestModel {
     }
 
     public void addTests() {
+        addTest(new LoggingTestSuite());
         addTest(new IdentityMapTestSuite());
         addTest(new ExpressionTestSuite());
         addTest(new ExpressionInMemoryTestSuite());
@@ -118,6 +120,7 @@ public class FeatureTestModel extends TestModel {
 
     //SRG test set is maintained by QA only, do NOT add any new tests into it.
     public void addSRGTests() {
+        addTest(new LoggingTestSuite(true));
         addTest(new ExpressionTestSuite(true));
         addTest(new QueryFrameworkTestSuite(true));
         addTest(new TransactionTestSuite(true));

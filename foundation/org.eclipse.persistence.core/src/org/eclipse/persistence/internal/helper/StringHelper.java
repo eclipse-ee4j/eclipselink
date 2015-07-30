@@ -70,4 +70,13 @@ public class StringHelper {
         return str != null ? str : NULL_STRING;
     }
 
+    /**
+     * Checks if {@link String} is {@code null}, is empty ({@code ""}) or contains white spaces only.
+     * @param str {@link String}  to be checked.
+     * @return Value of {@code true} if @link String} is {@code null}, is empty ({@code ""}) or contains white spaces 
+     *         only or {@code false} otherwise
+     */
+    public static final boolean isBlank(final String str) {
+        return str == null || str.trim().length() == 0;
+    }
 }

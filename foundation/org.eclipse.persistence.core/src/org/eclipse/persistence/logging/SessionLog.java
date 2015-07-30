@@ -64,67 +64,66 @@ import org.eclipse.persistence.sessions.Session;
  * @since TOPLink/Java 3.0
  */
 public interface SessionLog extends Cloneable {
-    //EclipseLink log levels.  They are mapped to java.util.logging.Level values
+    // EclipseLink log levels. They are mapped to java.util.logging.Level values.
+    // Numeric constants can't be replaced with LogLevel.<level>.getId();
     public static final int OFF = 8;
-    public static final String OFF_LABEL = "OFF";
+    public static final String OFF_LABEL = LogLevel.OFF.getName();
 
     //EL is not in a state to continue
     public static final int SEVERE = 7;
-    public static final String SEVERE_LABEL = "SEVERE";
+    public static final String SEVERE_LABEL = LogLevel.SEVERE.getName();
 
     //Exceptions that don't force a stop
     public static final int WARNING = 6;
-    public static final String WARNING_LABEL = "WARNING";
+    public static final String WARNING_LABEL = LogLevel.WARNING.getName();
 
     //Login and logout per server session with name
     public static final int INFO = 5;
-    public static final String INFO_LABEL = "INFO";
+    public static final String INFO_LABEL = LogLevel.INFO.getName();
 
     //Configuration info
     public static final int CONFIG = 4;
-    public static final String CONFIG_LABEL = "CONFIG";
+    public static final String CONFIG_LABEL = LogLevel.CONFIG.getName();
 
     //SQL
     public static final int FINE = 3;
-    public static final String FINE_LABEL = "FINE";
+    public static final String FINE_LABEL = LogLevel.FINE.getName();
 
     //Previously logged under logMessage and stack trace of exceptions at WARNING level
     public static final int FINER = 2;
-    public static final String FINER_LABEL = "FINER";
+    public static final String FINER_LABEL = LogLevel.FINER.getName();
 
     //Previously logged under logDebug
     public static final int FINEST = 1;
-    public static final String FINEST_LABEL = "FINEST";
+    public static final String FINEST_LABEL = LogLevel.FINEST.getName();
     public static final int ALL = 0;
-    public static final String ALL_LABEL = "ALL";
+    public static final String ALL_LABEL = LogLevel.ALL.getName();
 
     //EclipseLink categories used for logging name space.
-    public static final String SQL = "sql";
-    public static final String TRANSACTION = "transaction";
-    public static final String EVENT = "event";
-    public static final String CONNECTION = "connection";
-    public static final String QUERY = "query";
-    public static final String CACHE = "cache";
-    public static final String PROPAGATION = "propagation";
-    public static final String SEQUENCING = "sequencing";
-    public static final String JPA = "jpa";
-    public static final String EJB = "ejb";
-    public static final String DMS = "dms";
-    public static final String METADATA = "metadata";
-    public static final String MONITORING = "monitoring";
-    public static final String MISC = "misc";
+    public static final String SQL = LogCategory.SQL.getName();
+    public static final String TRANSACTION = LogCategory.TRANSACTION.getName();
+    public static final String EVENT = LogCategory.EVENT.getName();
+    public static final String CONNECTION = LogCategory.CONNECTION.getName();
+    public static final String QUERY = LogCategory.QUERY.getName();
+    public static final String CACHE = LogCategory.CACHE.getName();
+    public static final String PROPAGATION = LogCategory.PROPAGATION.getName();
+    public static final String SEQUENCING = LogCategory.SEQUENCING.getName();
+    public static final String JPA = LogCategory.JPA.getName();
+    public static final String EJB = LogCategory.EJB.getName();
+    public static final String DMS = LogCategory.DMS.getName();
+    public static final String METADATA = LogCategory.METADATA.getName();
+    public static final String MONITORING = LogCategory.MONITORING.getName();
+    public static final String MISC = LogCategory.MISC.getName();
 
-    /**
-     * @deprecated use {@link #METADATA}
-     */
+    /** @deprecated use {@link #METADATA}. */
     @Deprecated
     public static final String EJB_OR_METADATA = METADATA;
-    public static final String METAMODEL = "metamodel";
-    public static final String WEAVER = "weaver";
-    public static final String PROPERTIES = "properties";
-    public static final String SERVER = "server";
-    public static final String DDL = "ddl";
-    public static final String JPARS = "jpars";
+    public static final String METAMODEL = LogCategory.METAMODEL.getName();
+    public static final String WEAVER = LogCategory.WEAVER.getName();
+    public static final String PROPERTIES = LogCategory.PROPERTIES.getName();
+    public static final String SERVER = LogCategory.SERVER.getName();
+    public static final String DDL = LogCategory.DDL.getName();
+    public static final String JPARS = LogCategory.JPARS.getName();
 
     public final String[] loggerCatagories = new String[] {
         SQL,

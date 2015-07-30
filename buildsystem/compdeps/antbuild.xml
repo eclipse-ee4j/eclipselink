@@ -170,6 +170,8 @@
         <property name="asm.criteria" value="[3.0,9.0)"/>
         <property name="oracleddl.prefix" value="org.eclipse.persistence.oracleddlparser"/>
         <property name="oracleddl.criteria" value="[0.0.1,5.0)"/>
+        <property name="slf4j.prefix" value="org.slf4j.api"/>
+        <property name="slf4j.criteria" value="[0.0.1,5.0)"/>
     </target>
 
     <!-- Need to copy only the bundles that will be in the features into the "p2repo.dir/plugins" dir
@@ -230,6 +232,9 @@
         <selectbundle basename="${wsrs.prefix}"  directory="${compdeps.2.common.plugins.dir}"
                      criterion="${wsrs.criteria}" property="wsrs.version" versiononly="true"
         />
+        <selectbundle basename="${slf4j.prefix}"  directory="${compdeps.2.common.plugins.dir}"
+                     criterion="${slf4j.criteria}" property="slf4j.version" versiononly="true"
+        />
 
         <say  message="   javax.xml.bind.version   = '${javax.xml.bind.version}'"                                                   if="javax.xml.bind.version"/>
         <say  message="   '{$javax.xml.bind.prefix}_{$javax.xml.bind.criteria}' not found! Generated features will be invalid."   unless="javax.xml.bind.version"/>
@@ -257,6 +262,8 @@
         <say  message="   '${validation.prefix}_${validation.criteria}.jar' not found! Generated features will be invalid."     unless="validation.version"/>
         <say  message="   json.version             = '${json.version}'"                                                                   if="json.version"/>
         <say  message="   '${json.prefix}_${json.criteria}.jar' not found! Generated features will be invalid."                 unless="json.version"/>
+        <say  message="   slf4j.version             = '${slf4j.version}'"                                                       if="slf4j.version"/>
+        <say  message="   '${slf4j.prefix}_${slf4j.criteria}.jar' not found! Generated features will be invalid."               unless="slf4j.version"/>
         <say  message="   wsrs.version             = '${wsrs.version}'"                                                                   if="wsrs.version"/>
         <say  message="   '${wsrs.prefix}_${wsrs.criteria}.jar' not found! Generated features will be invalid."                 unless="wsrs.version"/>
 
@@ -332,6 +339,7 @@
         <filter token="ANTLR_VERSION"        value="${antlr.version}"/>
         <filter token="ASM_VERSION"          value="${asm.version}"/>
         <filter token="ORACLEDDL_VERSION"    value="${oracleddl.version}"/>
+        <filter token="SLF4J_VERSION"        value="${slf4j.version}"/>
         <!--          Filters for feature.properties files          -->
         <filter token="PROVIDER"             value="${specification.vendor}"/>
         <filter token="REPOS_NAME"           value="${p2.release.repos.name}"/>
@@ -369,6 +377,7 @@
                           ${asm.prefix}.source_${asm.version}.jar,
                           ${validation.prefix}_${validation.version}.jar,
                           ${json.prefix}_${json.version}.jar,
+                          ${slf4j.prefix}_${slf4j.version}.jar,
                           ${wsrs.prefix}_${wsrs.version}.jar,
                           ${sun.tools.xjc.prefix}_${sun.tools.xjc.version}.jar,
                           ${sun.tools.xjc.prefix}.source_${sun.tools.xjc.version}.jar,

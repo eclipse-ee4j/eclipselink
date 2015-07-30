@@ -237,4 +237,5 @@ Import-Package: javax.activation;resolution:=optional,
  org.w3c.dom;resolution:=optional,
  org.xml.sax;resolution:=optional,
  org.xml.sax.ext;resolution:=optional,
- org.xml.sax.helpers;resolution:=optional
+ org.xml.sax.helpers;resolution:=optional,
+ org.slf4j;resolution:=optional

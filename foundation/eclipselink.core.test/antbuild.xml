@@ -232,6 +232,10 @@
             <pathelement path="${junit.lib}"/>
             <pathelement path="${core_test.2.common.plugins.dir}/${unsigned.persistence10.jar}"/>
             <fileset dir="${core_test.2.common.plugins.dir}" includes="${eclipselink.core.depend.without.connector}"/>
+            <pathelement path="${core_test.2.common.plugins.dir}/${org.slf4j.api.jar}"/>
+            <pathelement path="${core_test.2.common.plugins.dir}/${ch.qos.logback.core.jar}"/>
+            <pathelement path="${core_test.2.common.plugins.dir}/${ch.qos.logback.classic.jar}"/>
+            <pathelement path="${core_test.2.common.plugins.dir}/${ch.qos.logback.slf4j.jar}"/>
         </path>
         <path id="core_test.compile.path">
             <path refid="core_test.compile.without.connector.path"/>

@@ -14,6 +14,8 @@
 package org.eclipse.persistence.testing.framework;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import sun.misc.Unsafe;
 
@@ -94,5 +96,37 @@ public class ReflectionHelper {
         field.setAccessible(accessible);
         return value;
      }
+
+    public static final Object invokeMethod(
+            final String name, final Object obj, final Class<?>[] parameterTypes, final Object... args)
+            throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException,
+                   InvocationTargetException {
+        Method m = obj.getClass().getDeclaredMethod(name, parameterTypes);
+        boolean accessible = m.isAccessible();
+        if (!accessible) {
+            m.setAccessible(true);
+        }
+        Object result = m.invoke(obj, args);
+        if (!accessible) {
+            m.setAccessible(accessible);
+        }
+        return result;
+    }
+
+    public static final Object invokeStaticMethod(
+            final String name, final Class c, final Class<?>[] parameterTypes, final Object... args)
+            throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException,
+                   InvocationTargetException {
+        Method m = c.getDeclaredMethod(name, parameterTypes);
+        boolean accessible = m.isAccessible();
+        if (!accessible) {
+            m.setAccessible(true);
+        }
+        Object result = m.invoke(null, args);
+        if (!accessible) {
+            m.setAccessible(accessible);
+        }
+        return result;
+    }
 
 }

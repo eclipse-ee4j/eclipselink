@@ -13,6 +13,7 @@
 package org.eclipse.persistence.logging;
 
 import java.util.Date;
+import java.security.AccessController;
 import java.text.DateFormat;
 import java.io.*;
 
@@ -21,6 +22,8 @@ import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.localization.LoggingLocalization;
 import org.eclipse.persistence.internal.localization.TraceLocalization;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedGetSystemProperty;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.exceptions.ValidationException;
 
@@ -152,14 +155,23 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     /** Used to determine if bingdparameters should be logged or hidden. */
     protected Boolean shouldDisplayData;
 
+    /**
+     * Return the system default log level property value.
+     * @return The system default log level property value or {@code null} if no such property is set.
+     */
+    private static String getDefaultLoggingLevelProperty() {
+        return PrivilegedAccessHelper.shouldUsePrivilegedAccess()
+                ? AccessController.doPrivileged(
+                        new PrivilegedGetSystemProperty(PersistenceUnitProperties.LOGGING_LEVEL))
+                : System.getProperty(PersistenceUnitProperties.LOGGING_LEVEL);
+    }
 
     /**
      * Return the system default log level.
      * This is based on the System property "eclipselink.logging.level", or INFO if not set.
      */
     public static int getDefaultLoggingLevel() {
-        String logLevel = System.getProperty(PersistenceUnitProperties.LOGGING_LEVEL);
-        return translateStringToLoggingLevel(logLevel);
+        return translateStringToLoggingLevel(getDefaultLoggingLevelProperty());
     }
 
     /**
@@ -188,29 +200,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * Return the log level as a string value.
      */
     public String getLevelString() {
-        int level = getLevel();
-        switch (level) {
-            case OFF:
-                return "OFF";
-            case SEVERE:
-                return "SEVERE";
-            case WARNING:
-                return "WARNING";
-            case INFO:
-                return "INFO";
-            case CONFIG:
-                return "CONFIG";
-            case FINE:
-                return "FINE";
-            case FINER:
-                return "FINER";
-            case FINEST:
-                return "FINEST";
-            case ALL:
-                return "ALL";
-            default:
-                return "INFO";
-            }
+        return LogLevel.toValue(getLevel(), LogLevel.INFO).getName();
     }
 
     /**
@@ -910,30 +900,8 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * If value is null or invalid use the default.
      */
     public static int translateStringToLoggingLevel(String loggingLevel) {
-        if (loggingLevel == null){
-            return INFO;
-        }
-        String level = loggingLevel.toUpperCase();
-        if (level.equals("OFF")){
-            return OFF;
-        } else if (level.equals("SEVERE")){
-            return SEVERE;
-        } else if (level.equals("WARNING")){
-            return WARNING;
-        } else if (level.equals("INFO")){
-            return INFO;
-        } else if (level.equals("CONFIG")){
-            return CONFIG;
-        } else if (level.equals("FINE")){
-            return FINE;
-        } else if (level.equals("FINER")){
-            return FINER;
-        } else if (level.equals("FINEST")){
-            return FINEST;
-        } else if (level.equals("ALL")){
-            return ALL;
-        }
-        return INFO;
+        final LogLevel logLevel = LogLevel.toValue(loggingLevel);
+        return logLevel != null ? logLevel.getId() : LogLevel.INFO.getId();
     }
 
     /**
@@ -1089,27 +1057,8 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * Translate the string value of the log level to the constant value.
      * If value is null or invalid use the default.
      */
-    public static String translateLoggingLevelToString(int loggingLevel){
-        if (loggingLevel == OFF){
-            return "OFF";
-        } else if (loggingLevel == SEVERE){
-            return "SEVERE";
-        } else if (loggingLevel == WARNING){
-            return "WARNING";
-        } else if (loggingLevel == INFO){
-            return "INFO";
-        } else if (loggingLevel == CONFIG){
-            return "CONFIG";
-        } else if (loggingLevel == FINE){
-            return "FINE";
-        } else if (loggingLevel == FINER){
-            return "FINER";
-        } else if (loggingLevel == FINEST){
-            return "FINEST";
-        } else if (loggingLevel == ALL){
-            return "ALL";
-        }
-        return "INFO";
+    public static String translateLoggingLevelToString(final int loggingLevel) {
+        return LogLevel.toValue(loggingLevel, LogLevel.INFO).getName();
     }
 
 }
