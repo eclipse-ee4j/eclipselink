@@ -322,6 +322,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         tests.add("testWRITELock");
         tests.add("testOPTIMISTIC_FORCE_INCREMENTLock");
         tests.add("testReadOnlyTransactionalData");
+        tests.add("testReadOnlyCachedLazyAssociation");
         tests.add("testReadTransactionIsolation_OriginalInCache_UpdateAll_Refresh_Flush");
         tests.add("testReadTransactionIsolation_OriginalInCache_UpdateAll_Refresh");
         tests.add("testReadTransactionIsolation_OriginalInCache_UpdateAll_Flush");
@@ -4396,6 +4397,50 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         em.getTransaction().rollback();
         em.clear();
         assertNull("Uncommitted Data loaded into cache", em.find(Employee.class, emp.getId()));
+    }
+    
+    public void testReadOnlyCachedLazyAssociation() {
+        EntityManager em = createEntityManager();
+        Integer empId;
+        
+        // setup
+        try {
+            beginTransaction(em);
+            Employee emp = new Employee();
+            emp.setFirstName("Mark");
+            emp.setLastName("Dowder");
+            PhoneNumber phone = new PhoneNumber("work", "613", "5555555");
+            emp.addPhoneNumber(phone);
+            phone = new PhoneNumber("home", "613", "4444444");
+            emp.addPhoneNumber(phone);
+            Address address = new Address("SomeStreet", "somecity", "province", "country", "postalcode");
+            emp.setAddress(address);
+            em.persist(emp);
+            em.flush();
+            commitTransaction(em);
+
+            empId = emp.getId();
+
+            // clear cache
+            em.getEntityManagerFactory().getCache().evictAll();
+            getServerSession().getIdentityMapAccessor().initializeIdentityMaps();
+        } catch (RuntimeException ex) {
+            rollbackTransaction(em);
+            throw ex;
+        }
+            
+        Employee emp = em.find(Employee.class, empId);
+        Assert.assertNotNull("No Employee retrieved", emp);
+        // Bug#474232
+        emp.getAddress();
+        
+        Employee cachedEmployee = em.createNamedQuery("findEmployeeByPK", Employee.class).
+                setParameter("id", empId).
+                setHint(QueryHints.READ_ONLY, HintValues.TRUE).
+                getSingleResult();
+        Assert.assertNotNull("Employee not found", cachedEmployee);
+        Address address = cachedEmployee.getAddress();
+        Assert.assertNotNull("Address of employee not retrieved", address);
     }
     
     public void testReadTransactionIsolation_CustomUpdate() {

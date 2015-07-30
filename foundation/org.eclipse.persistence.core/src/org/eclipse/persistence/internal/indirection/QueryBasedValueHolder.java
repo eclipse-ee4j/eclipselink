@@ -152,6 +152,15 @@ public class QueryBasedValueHolder extends DatabaseValueHolder {
     public void postInstantiate(){
         DatabaseMapping mapping = query.getSourceMapping();
         if (mapping != null && mapping.isForeignReferenceMapping()){
+            // Fix for Bug#474232
+            IndirectionPolicy indirectionPolicy = ((ForeignReferenceMapping)mapping).getIndirectionPolicy();
+            if(indirectionPolicy != null && indirectionPolicy.isWeavedObjectBasicIndirectionPolicy()) {
+                if (!isCoordinatedWithProperty && mapping.isObjectReferenceMapping() && sourceObject != null && value != null) {
+                    mapping.setAttributeValueInObject(sourceObject, this);
+                    isCoordinatedWithProperty = true;
+                }
+            }
+            
             ClassDescriptor descriptor = mapping.getDescriptor();
             if (descriptor == null || descriptor.isAggregateDescriptor()){
                 descriptor = session.getDescriptor(sourceObject);
