@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -23,6 +23,7 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.expressions.*;
 import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.sessions.UnitOfWork;
 
 /**
  * <P>
@@ -410,9 +411,10 @@ public class ExpressionBuilder extends ObjectExpression {
     /**
      * INTERNAL:
      * Set the session in which we expect this expression to be translated.
+     * Stored session shall always be root session.
      */
     public void setSession(AbstractSession session) {
-        this.session = session;
+        this.session = session.getRootSession(null);
     }
 
     /**
