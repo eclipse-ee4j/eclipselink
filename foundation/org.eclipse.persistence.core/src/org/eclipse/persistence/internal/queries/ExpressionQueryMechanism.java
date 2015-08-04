@@ -648,7 +648,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                         //The builder has been cloned ensure that the cloned builder is used
                         //in the items.
                         clonedBuilder = (ExpressionBuilder)clonedBuilder.copiedVersionFrom(clonedExpressions);
-                        attributeExpression = attributeExpression.rebuildOn(clonedBuilder);
+                        attributeExpression = attributeExpression.copiedVersionFrom(clonedExpressions);
                     }
                 } 
                 if (attributeExpression.isExpressionBuilder()
