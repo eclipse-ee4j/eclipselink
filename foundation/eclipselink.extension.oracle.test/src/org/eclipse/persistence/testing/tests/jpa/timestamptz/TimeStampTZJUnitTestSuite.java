@@ -153,7 +153,9 @@ public class TimeStampTZJUnitTestSuite extends JUnitTestCase {
         }
        
         // Bug 464499 - Comparing values in same time zone
+        dbCal.getTime(); // Need to instantiate before changing time zone
         dbCal.setTimeZone(TimeZone.getTimeZone(zoneId));
+        
         assertEquals("The year is not match", year, dbCal.get(Calendar.YEAR));
         assertEquals("The month is not match", month, dbCal.get(Calendar.MONTH));
         assertEquals("The date is not match", date, dbCal.get(Calendar.DATE));
