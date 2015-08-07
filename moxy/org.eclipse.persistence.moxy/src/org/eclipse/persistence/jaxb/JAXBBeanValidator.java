@@ -15,8 +15,15 @@ package org.eclipse.persistence.jaxb;
 import org.eclipse.persistence.exceptions.BeanValidationException;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
-import static org.eclipse.persistence.jaxb.BeanValidationHelper.BEAN_VALIDATION_HELPER;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Path;
+import javax.validation.Validation;
+import javax.validation.ValidationException;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
+import javax.validation.groups.Default;
 import java.security.AccessController;
 import java.security.CodeSource;
 import java.security.PrivilegedAction;
@@ -28,15 +35,6 @@ import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import javax.validation.Path;
-import javax.validation.Validation;
-import javax.validation.ValidationException;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
-import javax.validation.groups.Default;
 
 /**
  * INTERNAL:
@@ -254,7 +252,7 @@ class JAXBBeanValidator {
 
         /* Ensure that the class contains BV annotations. If not, skip validation & speed things up.
          * note: This also effectively skips XmlBindings. */
-        return BEAN_VALIDATION_HELPER.isConstrained(value.getClass());
+        return context.getBeanValidationHelper().isConstrained(value.getClass());
     }
 
     /**
