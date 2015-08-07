@@ -10,6 +10,7 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     Marcel Valovy - 2.6 - added ci unmarshalling & BV in JAXB
+ *     Dmitry Kornilov - 2.6.1 - BeanValidationHelper refactoring
  ******************************************************************************/
 package org.eclipse.persistence.jaxb;
 
@@ -93,6 +94,7 @@ import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLLogin;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
+
 import org.eclipse.persistence.oxm.platform.SAXPlatform;
 import org.eclipse.persistence.oxm.platform.XMLPlatform;
 import org.eclipse.persistence.sessions.Project;
@@ -180,6 +182,8 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     private boolean initializedXMLInputFactory = false;
     private JAXBMarshaller jsonSchemaMarshaller;
 
+    private BeanValidationHelper beanValidationHelper = new BeanValidationHelper();
+
     protected JAXBContext() {
         super();
         contextState = new JAXBContextState();
@@ -212,6 +216,13 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      */
     public JAXBContext(XMLContext context, Generator generator, TypeMappingInfo[] boundTypes) {
         contextState = new JAXBContextState(context, generator, boundTypes, null);
+    }
+
+    /**
+     * Returns BeanValidationHelper.
+     */
+    public BeanValidationHelper getBeanValidationHelper() {
+        return beanValidationHelper;
     }
 
     public XMLInputFactory getXMLInputFactory() {
