@@ -28,7 +28,6 @@ import javax.persistence.Query;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.eclipse.persistence.nosql.adapters.mongo.MongoPlatform;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.dynamic.DynamicEntity;
@@ -39,33 +38,74 @@ import org.eclipse.persistence.internal.nosql.adapters.mongo.MongoConnectionFact
 import org.eclipse.persistence.internal.nosql.adapters.mongo.MongoOperation;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.jpa.dynamic.JPADynamicHelper;
+import org.eclipse.persistence.nosql.adapters.mongo.MongoPlatform;
 import org.eclipse.persistence.sessions.Record;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
+import org.eclipse.persistence.testing.models.jpa.mongo.Address;
+import org.eclipse.persistence.testing.models.jpa.mongo.Address.AddressType;
 import org.eclipse.persistence.testing.models.jpa.mongo.Buyer;
 import org.eclipse.persistence.testing.models.jpa.mongo.Customer;
 import org.eclipse.persistence.testing.models.jpa.mongo.LineItem;
 import org.eclipse.persistence.testing.models.jpa.mongo.Order;
-import org.eclipse.persistence.testing.models.jpa.mongo.Address;
-import org.eclipse.persistence.testing.models.jpa.mongo.Address.AddressType;
 
 import com.mongodb.DB;
 import com.mongodb.Mongo;
+import com.mongodb.MongoClientURI;
 
 /**
- * TestSuite to test Mongo database
- * ** To run this test suite the Mongo must be running.
+ * TestSuite to test MongoDB database.
+ * To run this test suite the MongoDB must be running.
  */
 public class MongoTestSuite extends JUnitTestCase {
 
+    /** The persistence unit name. */
+    private static final String PU_NAME = "mongo";
+    /** The persistence unit property key for the MongoDB connection host name or IP. */
+    private static final String PROPERTY_HOST_KEY = PersistenceUnitProperties.NOSQL_PROPERTY + "mongo.host";
+    /** The persistence unit property key for the MongoDB connection port. */
+    private static final String PROPERTY_PORT_KEY = PersistenceUnitProperties.NOSQL_PROPERTY + "mongo.port";
+    /** The persistence unit property key for the MongoDB database name. */
+    private static final String PROPERTY_DB_KEY = PersistenceUnitProperties.NOSQL_PROPERTY + "mongo.db";
+    /** The database (MongoDB) connection URL. */
+    private static final String DB_URL_KEY = JUnitTestCaseHelper.insertIndex(JUnitTestCaseHelper.DB_URL_KEY, null);
+    /** The database (MongoDB) connection user name test configuration property key. */
+    private static final String DB_USER_KEY = JUnitTestCaseHelper.insertIndex(JUnitTestCaseHelper.DB_USER_KEY, null);
+    /** The database (MongoDB) connection user password test configuration property key. */
+    private static final String DB_PWD_KEY = JUnitTestCaseHelper.insertIndex(JUnitTestCaseHelper.DB_PWD_KEY, null);
+    /** The database (MongoDB) platform class test configuration property key. */
+    private static final String DB_PLATFORM_KEY
+            = JUnitTestCaseHelper.insertIndex(JUnitTestCaseHelper.DB_PLATFORM_KEY, null);
+    /** The test configuration property key of the EISConnectionSpec class name used to connect to the MongoDB
+     *  data source. */
+    private static final String DB_SPEC_KEY = JUnitTestCaseHelper.insertIndex(JUnitTestCaseHelper.DB_SPEC_KEY, null);
+
     public static Order existingOrder;
 
-    public MongoTestSuite(){
+    /** The MongoDB persistence unit properties {@link Map} from the test properties {@code db.<name>}. */
+    private final Map<String, String> properties;
+
+    /**
+     * Create an instance of MongoDB database test suite.
+     */
+    public MongoTestSuite() {
+        properties = initProperties();
     }
 
+    /**
+     * Create an instance of MongoDB database test suite.
+     * @param name Test suite name.
+     */
     public MongoTestSuite(String name){
         super(name);
+        properties = initProperties();
     }
 
+    /**
+     * Build MongoDB database test suite. Creates an instance of the {@link TestSuite} class and adds all the tests
+     * into it.
+     * @return MongoDB database test suite with all the tests.
+     */
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("MongoTestSuite");
@@ -89,18 +129,127 @@ public class MongoTestSuite extends JUnitTestCase {
         return suite;
     }
 
+    /**
+     * Get the name of the persistence unit used in the tests.
+     * @return The name of the persistence unit used in the tests.
+     */
     @Override
     public String getPersistenceUnitName() {
-        return "mongo";
+        return PU_NAME;
     }
 
-    @Override
-    public Map getPersistenceProperties() {
-        Map properties = new HashMap();
-        properties.put(PersistenceUnitProperties.LOGGING_LEVEL, super.getPersistenceProperties().get(PersistenceUnitProperties.LOGGING_LEVEL));
+    /**
+     * Build MongoDB persistence unit properties {@link Map} from test properties {@code db.<name>}.
+     * @return Persistence unit properties {@link Map}.
+     */
+    private static Map<String, String> initProperties() {
+        final Map<String, String> properties = new HashMap<>();
+        final String dbUrl = JUnitTestCaseHelper.getProperty(DB_URL_KEY);
+        final String dbUser = JUnitTestCaseHelper.getProperty(DB_USER_KEY);
+        final String dbPwd = JUnitTestCaseHelper.getProperty(DB_PWD_KEY);
+        final String platform = JUnitTestCaseHelper.getProperty(DB_PLATFORM_KEY);
+        final String dbSpec = JUnitTestCaseHelper.getProperty(DB_SPEC_KEY);
+        final String logLevel = JUnitTestCaseHelper.getProperty(JUnitTestCaseHelper.LOGGING_LEVEL_KEY);
+        String uriUser = null;
+        char[] uriPwd = null;
+        if (dbUrl != null) {
+            final MongoClientURI uri = new MongoClientURI(dbUrl);
+            final List<String> hosts = uri.getHosts();
+            final String name = uri.getDatabase();
+            uriUser = uri.getUsername();
+            uriPwd = uri.getPassword();
+            if (hosts.size() > 0) {
+                final String hostPort = hosts.get(0);
+                final int splitPos = hostPort.indexOf(':');
+                if (splitPos >= 0) {
+                    final String host = hostPort.substring(0, splitPos);
+                    final String port = hostPort.substring(splitPos);
+                    properties.put(PROPERTY_HOST_KEY, host);
+                    if (port != null && port.length() > 0) {
+                        properties.put(PROPERTY_PORT_KEY, port);
+                    }
+                } else {
+                    properties.put(PROPERTY_HOST_KEY, hostPort);
+                }
+            }
+            if (name != null && name.length() > 0) {
+                properties.put(PROPERTY_DB_KEY, name);
+            }
+        }
+        // Database connection user name from db.user has higher priority than from URL.
+        if (dbUser != null) {
+            properties.put(PersistenceUnitProperties.JDBC_USER, dbUser);
+        } else if (uriUser != null && uriUser.length() > 0) {
+            properties.put(PersistenceUnitProperties.JDBC_USER, uriUser);
+        }
+        // Database connection user password from db.pwd has higher priority than from URL.
+        if (dbPwd != null) {
+            properties.put(PersistenceUnitProperties.JDBC_PASSWORD, dbPwd);
+        } else if (uriPwd != null && uriPwd.length > 0) {
+            properties.put(PersistenceUnitProperties.JDBC_PASSWORD, new String(uriPwd));
+        }
+        if (platform != null) {
+            properties.put(PersistenceUnitProperties.TARGET_DATABASE, platform);
+        }
+        if (dbSpec != null) {
+            properties.put(PersistenceUnitProperties.NOSQL_CONNECTION_SPEC, dbSpec);
+        }
+        if (logLevel != null) {
+            properties.put(PersistenceUnitProperties.LOGGING_LEVEL, logLevel);
+        }
         return properties;
     }
 
+    /**
+     * Update the connection user name persistence unit property value.
+     * @param properties The properties {@link Map} to be modified.
+     * @param key The connection user name persistence unit property key ({@code PersistenceUnitProperties.JDBC_USER}
+     *            or {@code PersistenceUnitProperties.NOSQL_USER)}).
+     * @param value The connection user name persistence unit property value.
+     */
+    private static void updateUserProperty(
+            final Map<String, String> properties, final String key, final String value) {
+        if (key.equals(PersistenceUnitProperties.JDBC_USER)
+                || key.equals(PersistenceUnitProperties.NOSQL_USER)) {
+            properties.remove(PersistenceUnitProperties.JDBC_USER);
+            properties.remove(PersistenceUnitProperties.NOSQL_USER);
+            properties.put(key, value);
+        } else {
+            throw new IllegalArgumentException("Invalid user persistence property key");
+        }
+    }
+
+    /**
+     * Update the connection user password persistence unit property value.
+     * @param properties The properties {@link Map} to be modified.
+     * @param key The connection user name persistence unit property key ({@code PersistenceUnitProperties.JDBC_PASSWORD}
+     *            or {@code PersistenceUnitProperties.NOSQL_PASSWORD)}).
+     * @param value The connection user name persistence unit property value.
+     */
+    private static void updatePasswordProperty(
+            final Map<String, String> properties, final String key, final String value) {
+        if (key.equals(PersistenceUnitProperties.JDBC_PASSWORD)
+                || key.equals(PersistenceUnitProperties.NOSQL_PASSWORD)) {
+            properties.remove(PersistenceUnitProperties.JDBC_PASSWORD);
+            properties.remove(PersistenceUnitProperties.NOSQL_PASSWORD);
+            properties.put(key, value);
+        } else {
+            throw new IllegalArgumentException("Invalid user persistence property key");
+        }
+    }
+
+    /**
+     * Get the MongoDB persistence unit properties {@link Map}.
+     * @return The MongoDB persistence unit properties {@link Map}.
+     */
+    @Override
+    public Map<String, String> getPersistenceProperties() {
+        return properties;
+    }
+
+    /**
+     * Initialize test suite.
+     */
     public void testSetup() {
         EntityManager em = createEntityManager();
         // First clear old database.
@@ -236,38 +385,52 @@ public class MongoTestSuite extends JUnitTestCase {
      * Test user/password connecting.
      */
     public void testUserPassword() throws Exception {
-        Map properties = new HashMap();
-        properties.put(PersistenceUnitProperties.JDBC_USER, "unknownuser");
-        properties.put(PersistenceUnitProperties.JDBC_PASSWORD, "password");
+        Map<String, String> properties = new HashMap<String, String>(this.properties);
+        updateUserProperty(properties, PersistenceUnitProperties.JDBC_USER, "unknownuser");
+        updatePasswordProperty(properties, PersistenceUnitProperties.JDBC_PASSWORD, "password");
         boolean errorCaught = false;
+        EntityManagerFactory factory = null;
+        EntityManager em = null;
         try {
-            EntityManagerFactory factory = Persistence.createEntityManagerFactory(getPersistenceUnitName(), properties);
-            EntityManager em = factory.createEntityManager();
-            em.close();
-            factory.close();
+            factory = Persistence.createEntityManagerFactory(getPersistenceUnitName(), properties);
+            em = factory.createEntityManager();
         } catch (Exception expected) {
             if (expected.getMessage().indexOf("authenticate") == -1) {
                 throw expected;
             }
             errorCaught = true;
+        } finally {
+            if (em != null) {
+                em.close();
+            }
+            if (factory != null) {
+                factory.close();
+            }
         }
         if (!errorCaught) {
             fail("authentication should have failed");
         }
-        properties = new HashMap();
-        properties.put(PersistenceUnitProperties.NOSQL_USER, "unknownuser");
-        properties.put(PersistenceUnitProperties.NOSQL_PASSWORD, "password");
+        properties = new HashMap<String, String>(this.properties);
+        updateUserProperty(properties, PersistenceUnitProperties.NOSQL_USER, "unknownuser");
+        updatePasswordProperty(properties, PersistenceUnitProperties.NOSQL_PASSWORD, "password");
         errorCaught = false;
+        factory = null;
+        em = null;
         try {
-            EntityManagerFactory factory = Persistence.createEntityManagerFactory(getPersistenceUnitName(), properties);
-            EntityManager em = factory.createEntityManager();
-            em.close();
-            factory.close();
+            factory = Persistence.createEntityManagerFactory(getPersistenceUnitName(), properties);
+            em = factory.createEntityManager();
         } catch (Exception expected) {
             if (expected.getMessage().indexOf("authenticate") == -1) {
                 throw expected;
             }
             errorCaught = true;
+        } finally {
+            if (em != null) {
+                em.close();
+            }
+            if (factory != null) {
+                factory.close();
+            }
         }
         if (!errorCaught) {
             fail("authentication should have failed");
@@ -797,20 +960,20 @@ public class MongoTestSuite extends JUnitTestCase {
      * Test dynamic entities.
      */
     public void testDynamicEntities() {
-        Map properties = new HashMap();
+        final Map properties = new HashMap<String, String>(this.properties);
         properties.put("eclipselink.classloader", new DynamicClassLoader(getClass().getClassLoader()));
         properties.put("eclipselink.logging.level", "finest");
-        EntityManagerFactory factory = Persistence.createEntityManagerFactory("mongo-dynamic", properties);
-        EntityManager em = factory.createEntityManager();
+        final EntityManagerFactory factory = Persistence.createEntityManagerFactory("mongo-dynamic", properties);
+        final EntityManager em = factory.createEntityManager();
         beginTransaction(em);
         try {
             JPADynamicHelper helper = new JPADynamicHelper(em);
-            DynamicEntity person = helper.newDynamicEntity("Person");
+            final DynamicEntity person = helper.newDynamicEntity("Person");
             person.set("firstname", "Boy");
             person.set("lastname", "Pelletier");
             DynamicEntity address = helper.newDynamicEntity("org.eclipse.persistence.testing.models.jpa.nosql.dynamic.Address");
             address.set("city", "Ottawa");
-            List addresses = new ArrayList();
+            List<DynamicEntity> addresses = new ArrayList<>();
             addresses.add(address);
             person.set("addresses", addresses);
             em.persist(person);
@@ -828,7 +991,7 @@ public class MongoTestSuite extends JUnitTestCase {
 
             factory.getCache().evictAll();
             em.clear();
-            DynamicEntity dbPerson = em.find(helper.getType("Person").getJavaClass(), person.get("id"));
+            final DynamicEntity dbPerson = em.find(helper.getType("Person").getJavaClass(), person.get("id"));
             if (((Collection)dbPerson.get("addresses")).size() != 2) {
                 fail("Expected 2 addresses: " + dbPerson.get("addresses"));
             }
