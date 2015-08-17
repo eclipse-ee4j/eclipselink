@@ -4407,14 +4407,14 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         // setup
         try {
             beginTransaction(em);
-            Employee emp = new Employee();
+            final Employee emp = new Employee();
             emp.setFirstName("Mark");
             emp.setLastName("Dowder");
-            PhoneNumber phone = new PhoneNumber("work", "613", "5555555");
+            final PhoneNumber phone = new PhoneNumber("work", "613", "5555555");
             emp.addPhoneNumber(phone);
-            phone = new PhoneNumber("home", "613", "4444444");
-            emp.addPhoneNumber(phone);
-            Address address = new Address("SomeStreet", "somecity", "province", "country", "postalcode");
+            final PhoneNumber newPhone = new PhoneNumber("home", "613", "4444444");
+            emp.addPhoneNumber(newPhone);
+            final Address address = new Address("SomeStreet", "somecity", "province", "country", "postalcode");
             emp.setAddress(address);
             em.persist(emp);
             em.flush();
@@ -4426,22 +4426,29 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             em.getEntityManagerFactory().getCache().evictAll();
             getServerSession().getIdentityMapAccessor().initializeIdentityMaps();
         } catch (RuntimeException ex) {
-            rollbackTransaction(em);
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
             throw ex;
         }
-            
-        Employee emp = em.find(Employee.class, empId);
-        Assert.assertNotNull("No Employee retrieved", emp);
-        // Bug#474232
-        emp.getAddress();
-        
-        Employee cachedEmployee = em.createNamedQuery("findEmployeeByPK", Employee.class).
-                setParameter("id", empId).
-                setHint(QueryHints.READ_ONLY, HintValues.TRUE).
-                getSingleResult();
-        Assert.assertNotNull("Employee not found", cachedEmployee);
-        Address address = cachedEmployee.getAddress();
-        Assert.assertNotNull("Address of employee not retrieved", address);
+          
+        try {
+            final Employee emp = em.find(Employee.class, empId);
+            Assert.assertNotNull("No Employee retrieved", emp);
+            // Bug#474232
+            emp.getAddress();
+
+            final Employee cachedEmployee = em.createNamedQuery("findEmployeeByPK", Employee.class).
+                    setParameter("id", empId).
+                    setHint(QueryHints.READ_ONLY, HintValues.TRUE).
+                    getSingleResult();
+            Assert.assertNotNull("Employee not found", cachedEmployee);
+            final Address address = cachedEmployee.getAddress();
+            Assert.assertNotNull("Address of employee not retrieved", address);
+        } finally {
+            closeEntityManager(em);
+        }
     }
 
     public void testReadTransactionIsolation_CustomUpdate() {
