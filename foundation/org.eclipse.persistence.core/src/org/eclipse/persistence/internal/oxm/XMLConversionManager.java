@@ -69,7 +69,6 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
 
     protected static final int TOTAL_MS_DIGITS = 3;  // total digits for millisecond formatting
     protected static final int TOTAL_NS_DIGITS = 9;  // total digits for nanosecond  formatting
-    protected static final long YEAR_ONE_AD_TIME = -62135769600000L; // time of 1 AD
 
     private static final char PLUS = '+';
 
@@ -941,7 +940,8 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
         if(xmlGregorianCalender == null) {
             return null;
         }
-        GregorianCalendar cal = xmlGregorianCalender.toGregorianCalendar();
+        // Obtain a Calendar from the XMLGregorianCalendar for further usage
+        Calendar cal = this.toCalendar(xmlGregorianCalender);
         if(xmlGregorianCalender.getTimezone() == DatatypeConstants.FIELD_UNDEFINED) {
             cal.setTimeZone(getTimeZone());
         }
@@ -1353,8 +1353,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     private String stringFromSQLDate(java.sql.Date sourceDate) {
         XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
 
-        GregorianCalendar cal = new GregorianCalendar(getTimeZone());
-        cal.setGregorianChange(new Date(Long.MIN_VALUE));
+        Calendar cal = Calendar.getInstance(getTimeZone());
         cal.setTime(sourceDate);
 
         if(cal.get(Calendar.ERA) == GregorianCalendar.BC){
@@ -1379,8 +1378,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     private String stringFromSQLTime(Time sourceTime) {
         XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
 
-        GregorianCalendar cal = new GregorianCalendar(getTimeZone());
-        cal.setGregorianChange(new Date(Long.MIN_VALUE));
+        Calendar cal = Calendar.getInstance(getTimeZone());
         cal.setTime(sourceTime);
 
         xgc.setHour(cal.get(Calendar.HOUR_OF_DAY));
@@ -1412,8 +1410,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
      * @return
      */
     private String stringFromTimestamp(Timestamp sourceDate) {
-        GregorianCalendar cal = new GregorianCalendar(getTimeZone());
-        cal.setGregorianChange(new Date(Long.MIN_VALUE));
+        Calendar cal = Calendar.getInstance(getTimeZone());
         cal.setTime(sourceDate);
 
         XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
@@ -1448,8 +1445,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     private String stringFromTimestamp(Timestamp sourceDate, QName schemaType) {
 
         if (Constants.DATE_QNAME.equals(schemaType)) {
-            GregorianCalendar cal = new GregorianCalendar(getTimeZone());
-            cal.setGregorianChange(new Date(Long.MIN_VALUE));
+            Calendar cal = Calendar.getInstance(getTimeZone());
             cal.setTime(sourceDate);
 
             XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
@@ -1480,8 +1476,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
         }
         if (Constants.G_DAY_QNAME.equals(schemaType)) {
             XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
-            GregorianCalendar cal = new GregorianCalendar(getTimeZone());
-            cal.setGregorianChange(new Date(Long.MIN_VALUE));
+            Calendar cal = Calendar.getInstance(getTimeZone());
             cal.setTime(sourceDate);
 
             xgc.setDay(cal.get(Calendar.DAY_OF_MONTH));
@@ -1490,8 +1485,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
         }
         if (Constants.G_MONTH_QNAME.equals(schemaType)) {
              XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
-             GregorianCalendar cal = new GregorianCalendar(getTimeZone());
-             cal.setGregorianChange(new Date(Long.MIN_VALUE));
+             Calendar cal = Calendar.getInstance(getTimeZone());
              cal.setTime(sourceDate);
 
             xgc.setMonth(cal.get(Calendar.MONTH)+1);
@@ -1501,8 +1495,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
         if (Constants.G_MONTH_DAY_QNAME.equals(schemaType)) {
 
              XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
-             GregorianCalendar cal = new GregorianCalendar(getTimeZone());
-             cal.setGregorianChange(new Date(Long.MIN_VALUE));
+             Calendar cal = Calendar.getInstance(getTimeZone());
              cal.setTime(sourceDate);
 
              xgc.setMonth(cal.get(Calendar.MONTH)+1);
@@ -1511,8 +1504,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
         }
         if (Constants.G_YEAR_QNAME.equals(schemaType)) {
              XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
-             GregorianCalendar cal = new GregorianCalendar(getTimeZone());
-             cal.setGregorianChange(new Date(Long.MIN_VALUE));
+             Calendar cal = Calendar.getInstance(getTimeZone());
              cal.setTime(sourceDate);
 
             if(cal.get(Calendar.ERA) == GregorianCalendar.BC){
@@ -1525,8 +1517,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
         }
         if (Constants.G_YEAR_MONTH_QNAME.equals(schemaType)) {
             XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
-            GregorianCalendar cal = new GregorianCalendar(getTimeZone());
-            cal.setGregorianChange(new Date(Long.MIN_VALUE));
+            Calendar cal = Calendar.getInstance(getTimeZone());
             cal.setTime(sourceDate);
             if(cal.get(Calendar.ERA) == GregorianCalendar.BC){
                 xgc.setYear(-cal.get(Calendar.YEAR));
@@ -1542,8 +1533,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
         }
         // default is dateTime
         XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
-        GregorianCalendar cal = new GregorianCalendar(getTimeZone());
-        cal.setGregorianChange(new Date(Long.MIN_VALUE));
+        Calendar cal = Calendar.getInstance(getTimeZone());
         cal.setTime(sourceDate);
         if(cal.get(Calendar.ERA) == GregorianCalendar.BC){
             xgc.setYear(-cal.get(Calendar.YEAR));

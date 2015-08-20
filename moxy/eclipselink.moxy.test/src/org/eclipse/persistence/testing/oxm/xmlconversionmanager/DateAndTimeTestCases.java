@@ -2163,8 +2163,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         // should be 5 hours earlier
         String control = "-2006-01-01T00:00:00.123456789"+TIMEZONE_OFFSET;
 
-        GregorianCalendar cal = new GregorianCalendar();
-        cal.setGregorianChange(new java.util.Date(Long.MIN_VALUE));
+        Calendar cal = Calendar.getInstance();
         cal.clear();
         cal.set(Calendar.ERA, java.util.GregorianCalendar.BC);
 
@@ -3662,5 +3661,375 @@ public class DateAndTimeTestCases extends OXTestCase {
             super(time);
         }
     }
-
+    
+    // java.sql.Date -> String tests
+    public void testPostADDateToSQLDate() {
+        String control = "0001-01-01";
+        java.sql.Date sqlDate = java.sql.Date.valueOf(control);
+        String test = (String)xcm.convertObject(sqlDate, String.class);
+        this.assertEquals(control, test);
+    }
+    
+    public void testPostADDateToSQLDate_Date() {
+        String control = "0001-01-01";
+        java.sql.Date sqlDate = java.sql.Date.valueOf(control);
+        String test = (String)xcm.convertObject(sqlDate, String.class, XMLConstants.DATE_QNAME);
+        this.assertEquals(control, test);
+    }
+    
+    public void testPostADDateToSQLDate_DateTime() {
+        String control = "0001-01-01T00:00:00" + TIMEZONE_OFFSET;
+        String input = "0001-01-01";
+        java.sql.Date sqlDate = java.sql.Date.valueOf(input);
+        String test = (String)xcm.convertObject(sqlDate, String.class, XMLConstants.DATE_TIME_QNAME);
+        this.assertEquals(control, test);
+    }
+    
+    // java.sql.Timestamp -> String tests
+    public void testPostADDateTimeToSQLTimestamp() {
+        String control = "0001-01-01T01:01:01" + TIMEZONE_OFFSET;
+        String input = "0001-01-01 01:01:01";
+        java.sql.Timestamp sqlTimestamp = java.sql.Timestamp.valueOf(input);
+        String test = (String)xcm.convertObject(sqlTimestamp, String.class);
+        this.assertEquals(control, test);
+    }
+    
+    public void testPostADDateTimeToSQLTimestamp_Date() {
+        String control = "0001-01-01";
+        String input = "0001-01-01 01:01:01";
+        java.sql.Timestamp sqlTimestamp = java.sql.Timestamp.valueOf(input);
+        String test = (String)xcm.convertObject(sqlTimestamp, String.class, XMLConstants.DATE_QNAME);
+        this.assertEquals(control, test);
+    }
+    
+    public void testPostADDateTimeToSQLTimestamp_DateTime() {
+        String control = "0001-01-01T01:01:01.001" + TIMEZONE_OFFSET;
+        String input = "0001-01-01 01:01:01.001";
+        java.sql.Timestamp sqlTimestamp = java.sql.Timestamp.valueOf(input);
+        String test = (String)xcm.convertObject(sqlTimestamp, String.class, XMLConstants.DATE_TIME_QNAME);
+        this.assertEquals(control, test);
+    }
+    
+    public void testPostADDateTimeToSQLTimestamp_Time() {
+        String control = "01:01:01.001" + TIMEZONE_OFFSET;
+        String input = "0001-01-01 01:01:01.001";
+        java.sql.Timestamp sqlTimestamp = java.sql.Timestamp.valueOf(input);
+        String test = (String)xcm.convertObject(sqlTimestamp, String.class, XMLConstants.TIME_QNAME);
+        this.assertEquals(control, test);
+    }
+    
+    public void testPostADDateTimeToSQLTimestamp_GDay() {
+        String control = "01"; // first day of month
+        String input = "0001-01-01 01:01:01.001";
+        java.sql.Timestamp sqlTimestamp = java.sql.Timestamp.valueOf(input);
+        String test = (String)xcm.convertObject(sqlTimestamp, String.class, XMLConstants.G_DAY_QNAME);
+        this.assertTrue(test.endsWith(control));
+    }
+    
+    public void testPostADDateTimeToSQLTimestamp_GMonth() {
+        String control = "01"; // first month of the year
+        String input = "0001-01-01 01:01:01.001";
+        java.sql.Timestamp sqlTimestamp = java.sql.Timestamp.valueOf(input);
+        String test = (String)xcm.convertObject(sqlTimestamp, String.class, XMLConstants.G_MONTH_QNAME);
+        this.assertTrue(test.endsWith(control));
+    }
+    
+    public void testPostADDateTimeToSQLTimestamp_GMonthDay() {
+        String control = "01-01"; // first month, first day
+        String input = "0001-01-01 01:01:01.001";
+        java.sql.Timestamp sqlTimestamp = java.sql.Timestamp.valueOf(input);
+        String test = (String)xcm.convertObject(sqlTimestamp, String.class, XMLConstants.G_MONTH_DAY_QNAME);
+        this.assertTrue(test.endsWith(control));
+    }
+    
+    public void testPostADDateTimeToSQLTimestamp_GYearMonth() {
+        String control = "01-01"; // first month, first day
+        String input = "0001-01-01 01:01:01.001";
+        java.sql.Timestamp sqlTimestamp = java.sql.Timestamp.valueOf(input);
+        String test = (String)xcm.convertObject(sqlTimestamp, String.class, XMLConstants.G_YEAR_MONTH_QNAME);
+        this.assertTrue(test.endsWith(control));
+    }
+    
+    public void testPostADDateTimeToSQLTimestamp_GYear() {
+        String control = "0001"; // first year (4 digit)
+        String input = "0001-01-01 01:01:01.001";
+        java.sql.Timestamp sqlTimestamp = java.sql.Timestamp.valueOf(input);
+        String test = (String)xcm.convertObject(sqlTimestamp, String.class, XMLConstants.G_YEAR_QNAME);
+        this.assertEquals(control, test);
+    }
+    
+    // java.util.Date -> String tests
+    public void testPostADDateTimeToUtilDate() {
+        String control = "0001-01-01T00:00:00" + TIMEZONE_OFFSET;
+        
+        Calendar cal = Calendar.getInstance();
+        cal.clear();
+        cal.set(Calendar.YEAR, 0001);
+        cal.set(Calendar.MONTH, Calendar.JANUARY);
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        java.util.Date utilDate = cal.getTime();
+        
+        String test = (String)xcm.convertObject(utilDate, String.class);
+        this.assertEquals(control, test);
+    }
+    
+    public void testPostADDateTimeToUtilDateWithHrMinSecMillis() {
+        String control = "0001-01-01T01:01:01.001" + TIMEZONE_OFFSET;
+        
+        Calendar cal = Calendar.getInstance();
+        cal.clear();
+        cal.set(Calendar.YEAR, 0001);
+        cal.set(Calendar.MONTH, Calendar.JANUARY);
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        cal.set(Calendar.HOUR, 1);
+        cal.set(Calendar.MINUTE, 1);
+        cal.set(Calendar.SECOND, 1);
+        cal.set(Calendar.MILLISECOND, 1);
+        java.util.Date utilDate = cal.getTime();
+        
+        String test = (String)xcm.convertObject(utilDate, String.class);
+        this.assertEquals(control, test);
+    }
+    
+    public void testPostADDateTimeToUtilDate_Date() {
+        String control = "0001-01-01";
+        
+        Calendar cal = Calendar.getInstance();
+        cal.clear();
+        cal.set(Calendar.YEAR, 0001);
+        cal.set(Calendar.MONTH, Calendar.JANUARY);
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        java.util.Date utilDate = cal.getTime();
+        
+        String test = (String)xcm.convertObject(utilDate, String.class, XMLConstants.DATE_QNAME);
+        this.assertEquals(control, test);
+    }
+    
+    public void testPostADDateTimeToUtilDate_DateTime() {
+        String control = "0001-01-01T01:01:01.001" + TIMEZONE_OFFSET;
+        
+        Calendar cal = Calendar.getInstance();
+        cal.clear();
+        cal.set(Calendar.YEAR, 0001);
+        cal.set(Calendar.MONTH, Calendar.JANUARY);
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        cal.set(Calendar.HOUR, 1);
+        cal.set(Calendar.MINUTE, 1);
+        cal.set(Calendar.SECOND, 1);
+        cal.set(Calendar.MILLISECOND, 1);
+        java.util.Date utilDate = cal.getTime();
+        
+        String test = (String)xcm.convertObject(utilDate, String.class, XMLConstants.DATE_TIME_QNAME);
+        this.assertEquals(control, test);
+    }
+    
+    // java.sql.Time -> String tests
+    public void testTimeToSQLTime() {
+        String input = "00:00:00";
+        String control = input + TIMEZONE_OFFSET;
+        
+        java.sql.Time sqlTime = java.sql.Time.valueOf(input);
+        
+        String test = (String)xcm.convertObject(sqlTime, String.class);
+        this.assertEquals(control, test);
+    }
+    
+    public void testTimeToSQLTime_TIME() {
+        String input = "00:00:00";
+        String control = input + TIMEZONE_OFFSET;
+        
+        java.sql.Time sqlTime = java.sql.Time.valueOf(input);
+        
+        String test = (String)xcm.convertObject(sqlTime, String.class, XMLConstants.TIME_QNAME);
+        this.assertEquals(control, test);
+    }
+    
+    public void testPostADTimeToSQLTime_Date() {
+        String control = "0001-01-01";
+        
+        Calendar cal = Calendar.getInstance();
+        cal.clear();
+        cal.set(Calendar.YEAR, 0001);
+        cal.set(Calendar.MONTH, Calendar.JANUARY);
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        cal.set(Calendar.HOUR, 1);
+        cal.set(Calendar.MINUTE, 1);
+        cal.set(Calendar.SECOND, 1);
+        cal.set(Calendar.MILLISECOND, 1);
+        
+        java.sql.Time sqlTime = new java.sql.Time(cal.getTimeInMillis());
+        
+        String test = (String)xcm.convertObject(sqlTime, String.class, XMLConstants.DATE_QNAME);
+        this.assertEquals(control, test);
+    }
+    
+    public void testPostADTimeToSQLTime_DateTime() {
+        String control = "0001-01-01T01:01:01.001" + TIMEZONE_OFFSET;
+        
+        Calendar cal = Calendar.getInstance();
+        cal.clear();
+        cal.set(Calendar.YEAR, 0001);
+        cal.set(Calendar.MONTH, Calendar.JANUARY);
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        cal.set(Calendar.HOUR, 1);
+        cal.set(Calendar.MINUTE, 1);
+        cal.set(Calendar.SECOND, 1);
+        cal.set(Calendar.MILLISECOND, 1);
+        
+        java.sql.Time sqlTime = new java.sql.Time(cal.getTimeInMillis());
+        
+        String test = (String)xcm.convertObject(sqlTime, String.class, XMLConstants.DATE_TIME_QNAME);
+        this.assertEquals(control, test);
+    }
+    
+    // String -> java.sql.Date tests
+    public void testPostADDateStringToSQLDate() {
+        String control = "0001-01-01";
+        java.sql.Date sqlDate = (java.sql.Date) xcm.convertObject(control, java.sql.Date.class);
+        String test = sqlDate.toString();
+        this.assertEquals(control, test);
+    }
+    
+    public void testPostADDateStringToSQLDate_Date() {
+        String control = "0001-01-01";
+        java.sql.Date sqlDate = (java.sql.Date) xcm.convertObject(control, java.sql.Date.class, XMLConstants.DATE_QNAME);
+        String test = sqlDate.toString();
+        this.assertEquals(control, test);
+    }
+    
+    // String -> java.util.Date tests
+    public void testPostADDateStringToUtilDate() {
+        String input = "0001-01-01T01:01:01.001" + TIMEZONE_OFFSET;
+        java.util.Date test = (java.util.Date) xcm.convertObject(input, java.util.Date.class);
+        
+        Calendar cal = Calendar.getInstance();
+        cal.clear();
+        cal.set(Calendar.YEAR, 0001);
+        cal.set(Calendar.MONTH, Calendar.JANUARY);
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        cal.set(Calendar.HOUR, 1);
+        cal.set(Calendar.MINUTE, 1);
+        cal.set(Calendar.SECOND, 1);
+        cal.set(Calendar.MILLISECOND, 1);
+        java.util.Date control = cal.getTime();
+        
+        this.assertEquals(control, test);
+    }
+    
+    public void testPostADDateStringToUtilDate_Date() {
+        String input = "0001-01-01T01:01:01.001" + TIMEZONE_OFFSET;
+        java.util.Date test = (java.util.Date) xcm.convertObject(input, java.util.Date.class, XMLConstants.DATE_QNAME);
+        
+        Calendar cal = Calendar.getInstance();
+        cal.clear();
+        cal.set(Calendar.YEAR, 0001);
+        cal.set(Calendar.MONTH, Calendar.JANUARY);
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        java.util.Date control = cal.getTime();
+        
+        this.assertEquals(control, test);
+    }
+    
+    public void testPostADDateStringToUtilDate_DateTime() {
+        String input = "0001-01-01T01:01:01.001" + TIMEZONE_OFFSET;
+        java.util.Date test = (java.util.Date) xcm.convertObject(input, java.util.Date.class, XMLConstants.DATE_TIME_QNAME);
+        
+        Calendar cal = Calendar.getInstance();
+        cal.clear();
+        cal.set(Calendar.YEAR, 0001);
+        cal.set(Calendar.MONTH, Calendar.JANUARY);
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        cal.set(Calendar.HOUR, 1);
+        cal.set(Calendar.MINUTE, 1);
+        cal.set(Calendar.SECOND, 1);
+        cal.set(Calendar.MILLISECOND, 1);
+        java.util.Date control = cal.getTime();
+        
+        this.assertEquals(control, test);
+    }
+    
+    // String -> java.sql.Timestamp tests
+    public void testPostADDateStringToSqlTimestamp() {
+        String input = "0001-01-01T01:01:01.001";
+        java.sql.Timestamp test = (java.sql.Timestamp) xcm.convertObject(input, java.sql.Timestamp.class);
+        
+        Calendar cal = Calendar.getInstance();
+        cal.clear();
+        cal.set(Calendar.YEAR, 0001);
+        cal.set(Calendar.MONTH, Calendar.JANUARY);
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        cal.set(Calendar.HOUR, 1);
+        cal.set(Calendar.MINUTE, 1);
+        cal.set(Calendar.SECOND, 1);
+        cal.set(Calendar.MILLISECOND, 1);
+        java.util.Date control = cal.getTime();
+        
+        this.assertEquals(control, test);
+    }
+    
+    public void testPostADDateStringToSqlTimestamp_DateTime() {
+        String input = "0001-01-01T01:01:01.001";
+        java.sql.Timestamp test = (java.sql.Timestamp) xcm.convertObject(input, java.sql.Timestamp.class, XMLConstants.DATE_TIME_QNAME);
+        
+        Calendar cal = Calendar.getInstance();
+        cal.clear();
+        cal.set(Calendar.YEAR, 0001);
+        cal.set(Calendar.MONTH, Calendar.JANUARY);
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        cal.set(Calendar.HOUR, 1);
+        cal.set(Calendar.MINUTE, 1);
+        cal.set(Calendar.SECOND, 1);
+        cal.set(Calendar.MILLISECOND, 1);
+        java.util.Date control = cal.getTime();
+        
+        this.assertEquals(control, test);
+    }
+    
+    public void testPostADDateStringToSqlTimestamp_Date() {
+        String input = "0001-01-01";
+        java.sql.Timestamp test = (java.sql.Timestamp) xcm.convertObject(input, java.sql.Timestamp.class, XMLConstants.DATE_QNAME);
+        
+        Calendar cal = Calendar.getInstance();
+        cal.clear();
+        cal.set(Calendar.YEAR, 0001);
+        cal.set(Calendar.MONTH, Calendar.JANUARY);
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        java.util.Date control = cal.getTime();
+        
+        this.assertEquals(control, test);
+    }
+    
+    public void testPostADDateStringToSqlTimestamp_Time() {
+        String input = "01:01:01.001";
+        java.sql.Timestamp test = (java.sql.Timestamp) xcm.convertObject(input, java.sql.Timestamp.class, XMLConstants.TIME_QNAME);
+        
+        Calendar cal = Calendar.getInstance();
+        cal.clear();
+        cal.set(Calendar.HOUR, 1);
+        cal.set(Calendar.MINUTE, 1);
+        cal.set(Calendar.SECOND, 1);
+        cal.set(Calendar.MILLISECOND, 1);
+        java.util.Date control = cal.getTime();
+        
+        this.assertEquals(control, test);
+    }
+    
+    // String -> java.sql.Time tests
+    public void testPostADDateStringToSqlTime() {
+        String input = "01:01:01";
+        java.sql.Time test = (java.sql.Time) xcm.convertObject(input, java.sql.Time.class);
+        java.sql.Time control = java.sql.Time.valueOf(input);
+        
+        this.assertEquals(control, test);
+    }
+    
+    public void testPostADDateStringToSqlTimeZeroed() {
+        String input = "00:00:00";
+        java.sql.Time test = (java.sql.Time) xcm.convertObject(input, java.sql.Time.class);
+        java.sql.Time control = java.sql.Time.valueOf(input);
+        
+        this.assertEquals(control, test);
+    }
+    
+    
 }
