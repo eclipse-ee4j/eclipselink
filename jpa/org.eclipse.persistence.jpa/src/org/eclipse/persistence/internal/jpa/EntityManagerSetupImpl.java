@@ -62,6 +62,8 @@
  *       - 460862 : Added support for JTA schema generation without JTA-DS
  *     03/23/2015 - Rick Curtis
  *       - 462888 : SessionCustomizer instance based configuration
+ *     08/24/2015 - Dalia Abo Sheasha
+ *       - 475285 : Create a generic application-id property to generate unique session names
  *****************************************************************************/
 package org.eclipse.persistence.internal.jpa;
 
@@ -482,6 +484,12 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         // This property will be set by the WebLogic Server if the persistence unit
         // is deployed as part of shared library to construct a unique session name
         String applicationId = (String)properties.get("weblogic.application-id");
+
+        // ELBug 475285 - Added a more generic version of the weblogic.application-id property.
+        if (applicationId == null) {
+            applicationId = (String) properties.get("application-id");
+        }
+
         if (isComposite(puInfo)) {
             // Composite doesn't use connection properties.
             if (applicationId != null) {
