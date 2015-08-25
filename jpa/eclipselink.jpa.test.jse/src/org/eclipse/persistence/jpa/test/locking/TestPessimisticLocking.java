@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 2015 IBM Corporation. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2015 IBM Corporation, Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -14,6 +14,8 @@
  *       - 458301: Added tests for force increment on scalar results
  *     03/18/2015-2.6.0 Joe Grassel
  *       - 462498: Missing isolation level expression in SQL for Derby platform
+ *     08/14/2015-2.7.0 Tomas Kraus
+ *       - 453208: Tests disabled for Oracle platform
  ******************************************************************************/
 package org.eclipse.persistence.jpa.test.locking;
 
@@ -29,7 +31,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.LockModeType;
 
+import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
+import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
 import org.eclipse.persistence.jpa.test.framework.DDLGen;
 import org.eclipse.persistence.jpa.test.framework.Emf;
 import org.eclipse.persistence.jpa.test.framework.EmfRunner;
@@ -49,6 +53,14 @@ public class TestPessimisticLocking {
     private EntityManagerFactory emf;
 
     static ExecutorService executor = null;
+
+    /**
+     * Get database platform from {@link EntityManagerFactory}.
+     * @return Database platform related to provided {@link EntityManager}.
+     */
+    private Platform getPlatform() {
+        return emf.unwrap(JpaEntityManagerFactory.class).getDatabaseSession().getPlatform();
+    }
 
     @BeforeClass
     public static void beforeClass() {
@@ -120,6 +132,10 @@ public class TestPessimisticLocking {
 
     @Test
     public void testFirstResultPessimisticRead() throws Exception {
+        // Not supported on Oracle DB
+        if (getPlatform().isOracle()) {
+            return;
+        }
         EntityManager em = emf.createEntityManager();
         final EntityManager em2 = emf.createEntityManager();
         try {
@@ -154,6 +170,10 @@ public class TestPessimisticLocking {
 
     @Test
     public void testMaxResultPessimisticRead() {
+        // Not supported on Oracle DB
+        if (getPlatform().isOracle()) {
+            return;
+        }
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -173,6 +193,10 @@ public class TestPessimisticLocking {
 
     @Test
     public void testFirstResultMaxResultPessimisticRead() {
+        // Not supported on Oracle DB
+        if (getPlatform().isOracle()) {
+            return;
+        }
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -196,6 +220,10 @@ public class TestPessimisticLocking {
      */
     @Test
     public void testAggregateResultPessimisticForceIncrement() {
+        // Not supported on Oracle DB
+        if (getPlatform().isOracle()) {
+            return;
+        }
         if (((EntityManagerFactoryImpl) emf).getServerSession().getDatasourcePlatform().isDerby()) {
             return;
         }

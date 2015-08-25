@@ -2710,6 +2710,9 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
     }
 
     public void testQueryPESSIMISTICLockWithLimit() throws InterruptedException {
+        if (getDatabaseSession().getPlatform().isOracle()) {
+            return;
+        }
         clearCache();
         EntityManager em = createEntityManager();
         beginTransaction(em);
