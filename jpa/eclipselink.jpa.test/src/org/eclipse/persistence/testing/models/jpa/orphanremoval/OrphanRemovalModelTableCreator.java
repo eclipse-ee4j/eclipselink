@@ -10,6 +10,8 @@
  * Contributors:
  *     05/1/2009-2.0 Guy Pelletier/David Minsky
  *       - 249033: JPA 2.0 Orphan removal
+ *     08/12/2015-2.6 Mythily Parthasarathy
+ *       - 474752: Add TireDetail table creation
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.orphanremoval;
 
@@ -27,6 +29,7 @@ public class OrphanRemovalModelTableCreator extends TableCreator {
         addTableDefinition(buildWHEELTable());
         addTableDefinition(buildWHEELRIMTable());
         addTableDefinition(buildWHEELNUTTable());
+        addTableDefinition(buildTIREDETAILTable());
     }
 
     public static TableDefinition buildCHASSISTable() {
@@ -316,6 +319,36 @@ public class OrphanRemovalModelTableCreator extends TableCreator {
         return table;
     }
 
+    public static TableDefinition buildTIREDETAILTable() {
+        // 474752 :CREATE TABLE TIREDETAIL (ID NUMBER(10) NOT NULL, DETAIL VARCHAR2(255), PRIMARY KEY (ID))
+        TableDefinition table = new TableDefinition();
+        table.setName("OR_TIREDETAIL");
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("TIRE_ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(10);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(true);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setUnique(false);
+        table.addField(fieldID);
+        
+        FieldDefinition fieldDetail = new FieldDefinition();
+        fieldDetail.setName("DETAIL");
+        fieldDetail.setTypeName("VARCHAR");
+        fieldDetail.setSize(255);
+        fieldDetail.setSubSize(0);
+        fieldDetail.setIsPrimaryKey(false);
+        fieldDetail.setIsIdentity(false);
+        fieldDetail.setShouldAllowNull(true);
+        fieldDetail.setUnique(false);
+        table.addField(fieldDetail);
+        
+        return table;
+    }
+    
     public static TableDefinition buildWHEELNUTTable() {
         // CREATE TABLE JPA_OR_WHEEL_NUT (ID NUMBER(10) NOT NULL, WHEEL_ID NUMBER(10) NULL, PRIMARY KEY (ID))
         TableDefinition table = new TableDefinition();

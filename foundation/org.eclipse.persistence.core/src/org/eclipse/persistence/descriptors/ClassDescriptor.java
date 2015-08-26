@@ -32,6 +32,8 @@
  *       - 397772: JPA 2.1 Entity Graph Support
  *     06/25/2014-2.5.2 Rick Curtis
  *       - 438177: Support M2M map with jointable
+ *     08/12/2015-2.6 Mythily Parthasarathy
+ *       - 474752: Address NPE for Embeddable with 1-M association
  ******************************************************************************/
 package org.eclipse.persistence.descriptors;
 
@@ -6699,7 +6701,11 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Add a mapping to the list of mappings that require postCalculateChanges method to be called.
      */
     public void addMappingsPostCalculateChanges(DatabaseMapping mapping) {
-        getMappingsPostCalculateChanges().add(mapping);
+        //474752 :ReferenceDescriptor may not be available during
+        //predeploy.  It is required for calculating changes.
+        if (mapping.getReferenceDescriptor() != null) {
+            getMappingsPostCalculateChanges().add(mapping);
+        }
     }
 
     /**

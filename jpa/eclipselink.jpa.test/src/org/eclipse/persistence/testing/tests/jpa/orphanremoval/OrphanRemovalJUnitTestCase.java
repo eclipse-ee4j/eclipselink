@@ -10,9 +10,13 @@
  * Contributors:
  *     05/1/2009-2.0 Guy Pelletier/David Minsky
  *       - 249033: JPA 2.0 Orphan removal
+ *     08/12/2015-2.6 Mythily Parthasarathy
+ *       - 474752: Add test for 1-M in Embeddable
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.orphanremoval;
 
+import java.util.HashSet;
+import java.util.Set;
 import javax.persistence.*;
 import junit.framework.*;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
@@ -55,6 +59,7 @@ public class OrphanRemovalJUnitTestCase extends JUnitTestCase {
             suite.addTest(new OrphanRemovalJUnitTestCase("test121WithNoCascadeMerge1"));
             suite.addTest(new OrphanRemovalJUnitTestCase("test121WithNoCascadeMerge2"));
             suite.addTest(new OrphanRemovalJUnitTestCase("test121WithNoCascadeMerge3"));
+            suite.addTest(new OrphanRemovalJUnitTestCase("testORInEmbeddedEntityWithToMany"));
         }
         return suite;
     }
@@ -138,6 +143,12 @@ public class OrphanRemovalJUnitTestCase extends JUnitTestCase {
             Wheel wheel4 = new Wheel(4l);
             Wheel wheel5 = new Wheel(5l);
 
+            wheel1.setTire(new Tire());
+            wheel2.setTire(new Tire());
+            wheel3.setTire(new Tire());
+            wheel4.setTire(new Tire());
+            wheel5.setTire(new Tire());
+            
             chassis.addWheel(wheel1);
             chassis.addWheel(wheel2);
             chassis.addWheel(wheel3);
@@ -202,8 +213,10 @@ public class OrphanRemovalJUnitTestCase extends JUnitTestCase {
             vehicle.setChassis(chassis1);
 
             Wheel wheel1 = new Wheel(1l);
+            wheel1.setTire(new Tire());
             chassis1.addWheel(wheel1);
             Wheel wheel2 = new Wheel(2l);
+            wheel2.setTire(new Tire());
             chassis1.addWheel(wheel2);
 
             em.persist(vehicle);
@@ -264,8 +277,12 @@ public class OrphanRemovalJUnitTestCase extends JUnitTestCase {
             Chassis chassis1 = new Chassis(1l);
             vehicle.setChassis(chassis1);
 
-            chassis1.addWheel(new Wheel(1l));
-            chassis1.addWheel(new Wheel(2l));
+            Wheel wheel1 = new Wheel(1l);
+            Wheel wheel2 = new Wheel(2l);
+            wheel1.setTire(new Tire());
+            wheel2.setTire(new Tire());
+            chassis1.addWheel(wheel1);
+            chassis1.addWheel(wheel2);
 
             em.persist(vehicle);
 
@@ -399,6 +416,7 @@ public class OrphanRemovalJUnitTestCase extends JUnitTestCase {
             vehicle.setChassis(chassis);
 
             Wheel wheel1 = new Wheel(1l);
+            wheel1.setTire(new Tire());
             chassis.addWheel(wheel1);
 
             WheelNut wheelNut1 = new WheelNut();
@@ -422,6 +440,7 @@ public class OrphanRemovalJUnitTestCase extends JUnitTestCase {
             wheel1.addWheelNut(wheelNut6);
 
             Wheel wheel2 = new Wheel(2l);
+            wheel2.setTire(new Tire());
 
             chassis.addWheel(wheel2);
 
@@ -1048,6 +1067,61 @@ public class OrphanRemovalJUnitTestCase extends JUnitTestCase {
 
             closeEntityManager(em);
             throw e;
+        }
+    }
+    
+    public void testORInEmbeddedEntityWithToMany() {
+        EntityManager em = createEntityManager();
+        Wheel wheel1 = new Wheel();
+        TireDetail detail = new TireDetail();
+        try {
+            beginTransaction(em);
+            
+            //Set Embeddable
+            Tire tire1 = new Tire();
+            tire1.setManufacturer("ACME");
+            tire1.setType("Radial");
+            wheel1.setTire(tire1);
+            
+            //Set 1-M of the embeddable 
+            detail.setTireId(1); 
+            detail.setDetail("Width:215"); 
+            Set<TireDetail> list = new HashSet<TireDetail>(); 
+            list.add(detail); 
+            tire1.setTireDetails(list);
+            wheel1.setTire(tire1);
+            
+            //Persist, clear and get new reference
+           // em.persist(detail);
+            em.persist(wheel1); 
+            commitTransaction(em);
+            em.clear();
+            
+            beginTransaction(em); 
+            wheel1 = (Wheel) em.getReference(Wheel.class, wheel1.getId());
+            assertNotNull(wheel1); 
+            
+            //Set Embeddable without 1-M details
+            wheel1.setTire(new Tire());
+            
+            //Merge wheel with Embeddable without 1-M.  This will orphan the previous details
+            em.merge(wheel1); 
+            
+            //474752 : commit should not throw NPE during change calculation
+            commitTransaction(em); 
+            
+        } catch (Throwable t) { 
+            t.printStackTrace(); 
+            fail(); 
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            beginTransaction(em);
+            em.merge(wheel1);
+            em.remove(wheel1);
+            commitTransaction(em);
+            closeEntityManager(em);
         }
     }
 

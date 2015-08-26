@@ -17,6 +17,8 @@
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  *     12/07/2012-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+ *     08/12/2015-2.6 Mythily Parthasarathy
+ *       - 474752: Address NPE for Embeddable with 1-M association
  ******************************************************************************/
 package org.eclipse.persistence.mappings;
 
@@ -1297,10 +1299,12 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
     @Override
     public void initialize(AbstractSession session) throws DescriptorException {
         super.initialize(session);
+        //474752 : InitializeReferenceDescriptor before 
+        //addMappingsPostCalculateChanges
+        initializeReferenceDescriptor(session);
         if (this.isPrivateOwned && (this.descriptor != null)) {
             this.descriptor.addMappingsPostCalculateChanges(this);
         }
-        initializeReferenceDescriptor(session);
         initializeSelectionQuery(session);
         this.indirectionPolicy.initialize();
 
