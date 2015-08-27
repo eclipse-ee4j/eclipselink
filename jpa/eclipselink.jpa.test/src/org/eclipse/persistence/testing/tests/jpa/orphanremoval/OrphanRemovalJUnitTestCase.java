@@ -1110,16 +1110,18 @@ public class OrphanRemovalJUnitTestCase extends JUnitTestCase {
             //474752 : commit should not throw NPE during change calculation
             commitTransaction(em); 
             
-        } catch (Throwable t) { 
-            t.printStackTrace(); 
-            fail(); 
+        } catch (Throwable t) {  
+            fail(t.getMessage()); 
         } finally {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
+            //Cleanup
             beginTransaction(em);
-            em.merge(wheel1);
-            em.remove(wheel1);
+            wheel1 = em.find(Wheel.class, wheel1.getId());
+            if (wheel1 != null) {
+                em.remove(wheel1);
+            }
             commitTransaction(em);
             closeEntityManager(em);
         }
