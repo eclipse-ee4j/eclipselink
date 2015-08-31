@@ -487,7 +487,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
 
         // ELBug 475285 - Added a more generic version of the weblogic.application-id property.
         if (applicationId == null) {
-            applicationId = (String) properties.get("application-id");
+            applicationId = (String) properties.get("eclipselink.application-id");
         }
 
         if (isComposite(puInfo)) {
