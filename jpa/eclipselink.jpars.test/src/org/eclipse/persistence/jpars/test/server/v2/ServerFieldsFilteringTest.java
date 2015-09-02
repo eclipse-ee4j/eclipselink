@@ -21,7 +21,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.ws.rs.core.MediaType;
+import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -68,13 +70,14 @@ public class ServerFieldsFilteringTest extends BaseJparsTest {
     }
 
     @Test
-    public void testFieldsJson() throws URISyntaxException {
+    public void testFieldsJson() throws URISyntaxException, UnsupportedEncodingException {
         // fields parameter
         final Map<String, String> hints = new HashMap<>(1);
         hints.put("fields", "name,id");
 
         // Get BasketItem with id = 1
         String queryResult = RestUtils.restReadWithHints(context, 1, Basket.class.getSimpleName(), hints, MediaType.APPLICATION_JSON_TYPE);
+        queryResult = URLDecoder.decode(queryResult, "UTF-8");
         logger.info(queryResult);
 
         // Check that 'name' and 'id' fields are present in the response and other fields are not
@@ -85,13 +88,14 @@ public class ServerFieldsFilteringTest extends BaseJparsTest {
     }
 
     @Test
-    public void testFieldsXml() throws URISyntaxException {
+    public void testFieldsXml() throws URISyntaxException, UnsupportedEncodingException {
         // fields parameter
         final Map<String, String> hints = new HashMap<>(1);
         hints.put("fields", "name,id");
 
         // Get BasketItem with id = 1
         String queryResult = RestUtils.restReadWithHints(context, 1, Basket.class.getSimpleName(), hints, MediaType.APPLICATION_XML_TYPE);
+        queryResult = URLDecoder.decode(queryResult, "UTF-8");
         logger.info(queryResult);
 
         // Check that 'name' and 'id' fields are present in the response and other fields are not
@@ -104,16 +108,17 @@ public class ServerFieldsFilteringTest extends BaseJparsTest {
     }
 
     @Test
-    public void testExcludeFieldsJson() throws URISyntaxException {
+    public void testExcludeFieldsJson() throws URISyntaxException, UnsupportedEncodingException {
         // excludeFields parameter
         final Map<String, String> hints = new HashMap<>(1);
         hints.put("excludeFields", "basketItems,name");
 
         // Get BasketItem with id = 1
         String queryResult = RestUtils.restReadWithHints(context, 1, Basket.class.getSimpleName(), hints, MediaType.APPLICATION_JSON_TYPE);
+        queryResult = URLDecoder.decode(queryResult, "UTF-8");
         logger.info(queryResult);
 
-        // Check that 'name' and 'id' fields are present in the response and other fields are not
+        // Check that 'id' field is present in the response and other fields are not
         assertTrue(queryResult.contains("\"id\":1"));
         assertFalse(queryResult.contains("\"basketItems\":[\n{"));
         assertTrue(checkLinkJson(queryResult, "self", "/entity/Basket/1?excludeFields=basketItems,name"));
@@ -121,16 +126,17 @@ public class ServerFieldsFilteringTest extends BaseJparsTest {
     }
 
     @Test
-    public void testExcludeFieldsXml() throws URISyntaxException {
+    public void testExcludeFieldsXml() throws URISyntaxException, UnsupportedEncodingException {
         // excludeFields parameter
         final Map<String, String> hints = new HashMap<>(1);
         hints.put("excludeFields", "basketItems,name");
 
         // Get BasketItem with id = 1
         String queryResult = RestUtils.restReadWithHints(context, 1, Basket.class.getSimpleName(), hints, MediaType.APPLICATION_XML_TYPE);
+        queryResult = URLDecoder.decode(queryResult, "UTF-8");
         logger.info(queryResult);
 
-        // Check that 'name' and 'id' fields are present in the response and other fields are not
+        // Check that 'id' field is present in the response and other fields are not
         assertTrue(queryResult.contains("<id>1</id>"));
         assertFalse(queryResult.contains("<basketItems>"));
         assertFalse(queryResult.contains("</basketItems>"));
