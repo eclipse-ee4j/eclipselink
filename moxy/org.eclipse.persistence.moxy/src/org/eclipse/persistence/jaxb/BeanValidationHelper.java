@@ -46,12 +46,11 @@ import java.util.logging.Logger;
  * @author Marcel Valovy, Dmitry Kornilov
  * @since 2.6
  */
-final class BeanValidationHelper {
+final public class BeanValidationHelper {
 
     private static final Logger LOGGER = Logger.getLogger(BeanValidationHelper.class.getName());
 
     private Future<Map<Class<?>, Boolean>> future;
-    private ExecutorService executor;
 
     /**
      * Set of all default BeanValidation field or method annotations and known custom field or method constraints.
@@ -96,9 +95,9 @@ final class BeanValidationHelper {
      * Creates a new instance. Starts asynchronous parsing of validation.xml.
      */
     public BeanValidationHelper() {
-        Crate.Tuple<ExecutorService, Boolean> crate = Concurrent.getManagedSingleThreadedExecutorService();
-        executor = crate.getPayload1();
+        final ExecutorService executor = Concurrent.getExecutorService();
         future = executor.submit(new ValidationXMLReader());
+        executor.shutdown();
     }
 
     /**
@@ -120,7 +119,7 @@ final class BeanValidationHelper {
     /**
      * Lazy getter for constraintsOnClasses property. Waits until the map is returned by async XML reader.
      */
-    private Map<Class<?>, Boolean> getConstraintsMap() {
+    public Map<Class<?>, Boolean> getConstraintsMap() {
         if (constraintsOnClasses == null) {
             try {
                 constraintsOnClasses = future.get();
