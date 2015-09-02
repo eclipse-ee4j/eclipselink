@@ -13,7 +13,9 @@
 package org.eclipse.persistence.testing.jaxb.beanvalidation;
 
 import org.eclipse.persistence.exceptions.BeanValidationException;
+import org.eclipse.persistence.jaxb.BeanValidationHelper;
 import org.eclipse.persistence.jaxb.ConstraintViolationWrapper;
+import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.JAXBMarshaller;
@@ -42,7 +44,6 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -181,8 +182,8 @@ public class BeanValidationSpecialtiesTestCase extends junit.framework.TestCase 
      * methods but have some on constructors.
      */
     public void testConstructorAnnotations() throws Exception {
-        JAXBMarshaller marshaller = (JAXBMarshaller) JAXBContextFactory.createContext(new
-                Class[]{ConstructorAnnotatedEmployee.class}, null).createMarshaller();
+        JAXBContext context = (JAXBContext)JAXBContextFactory.createContext(new Class[]{ConstructorAnnotatedEmployee.class}, null);
+        JAXBMarshaller marshaller = context.createMarshaller();
 
         ConstructorAnnotatedEmployee employee = new ConstructorAnnotatedEmployee(null);
 
@@ -191,17 +192,12 @@ public class BeanValidationSpecialtiesTestCase extends junit.framework.TestCase 
         } catch (BeanValidationException ignored) {
         }
 
-        // HV 5.1.0.Final doesn't detect constraints on constructor. But that does not mean anything. Our job is to
-        // ensure that we correctly identify that the class is constrained and pass the object to the underlying BV
-        // impl.
-        Class<?> clazz = Class.forName("org.eclipse.persistence.jaxb.BeanValidationHelper");
-        Field field = clazz.getDeclaredField("constraintsOnClasses");
-        field.setAccessible(true);
-        //noinspection unchecked
-        Map<Class<?>, Boolean> constraintsOnClasses = (Map<Class<?>, Boolean>) field.get(clazz.getEnumConstants()[0]);
-        assertTrue(constraintsOnClasses.containsKey(ConstructorAnnotatedEmployee.class));
-        field.setAccessible(false);
+        // Ok, HV is not picking up constraints on constructor. But that does not mean anything. Our job is to ensure
+        // that we correctly identify that the class is constrained and pass the object to the underlying BV impl.
+        BeanValidationHelper beanValidationHelper = context.getBeanValidationHelper();
+        assertTrue(beanValidationHelper.getConstraintsMap().containsKey(ConstructorAnnotatedEmployee.class));
 
+        // This will not detect the constraints violation on constructor (on HV 5.1), although it should.
 //        Set<? extends ConstraintViolation<?>> violations = marshaller.getConstraintViolations();
 //
 //        assertFalse(violations.isEmpty());

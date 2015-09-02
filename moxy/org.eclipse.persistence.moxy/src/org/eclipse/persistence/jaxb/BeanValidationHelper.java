@@ -16,6 +16,8 @@ package org.eclipse.persistence.jaxb;
 import org.eclipse.persistence.internal.cache.AdvancedProcessor;
 import org.eclipse.persistence.internal.cache.ComputableTask;
 
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.validation.Constraint;
 import javax.validation.Valid;
 import javax.validation.constraints.AssertFalse;
@@ -36,12 +38,15 @@ import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -51,11 +56,20 @@ import java.util.logging.Logger;
  * @author Marcel Valovy, Dmitry Kornilov
  * @since 2.6
  */
-final class BeanValidationHelper {
+final public class BeanValidationHelper {
     private static final Logger LOGGER = Logger.getLogger(BeanValidationHelper.class.getName());
 
     private Future<Map<Class<?>, Boolean>> future;
+
+    /**
+     * Executor service (managed or JDK).
+     */
     private ExecutorService executor;
+
+    /**
+     * True for JDK executor, false for managed.
+     */
+    private boolean shutdownNeeded;
 
     /**
      * Advanced memoizer.
@@ -110,9 +124,13 @@ final class BeanValidationHelper {
      * Creates a new instance. Starts asynchronous parsing of validation.xml.
      */
     public BeanValidationHelper() {
-        Crate.Tuple<ExecutorService, Boolean> crate = Concurrent.getManagedSingleThreadedExecutorService();
-        executor = crate.getPayload1();
+        createExecutor();
         future = executor.submit(new ValidationXMLReader());
+
+        // Shutdown is needed only for JDK executor
+        if (shutdownNeeded) {
+            executor.shutdown();
+        }
     }
 
     /**
@@ -227,14 +245,42 @@ final class BeanValidationHelper {
     /**
      * Lazy getter for constraintsOnClasses property. Waits until the map is returned by async XML reader.
      */
-    private Map<Class<?>, Boolean> getConstraintsMap() {
+    public Map<Class<?>, Boolean> getConstraintsMap() {
         if (constraintsOnClasses == null) {
             try {
                 constraintsOnClasses = future.get();
             } catch (InterruptedException | ExecutionException e) {
-                LOGGER.warning("Error parsing validation.xml");
+                LOGGER.log(Level.WARNING, "Error parsing validation.xml", e);
+
+                // For some reason the async parsing attempt failed. Call it synchronously.
+                final ValidationXMLReader reader = new ValidationXMLReader();
+                try {
+                    constraintsOnClasses = reader.call();
+                } catch (Exception e1) {
+                    LOGGER.log(Level.WARNING, "Error parsing validation.xml synchronously", e);
+                    constraintsOnClasses = new HashMap<>();
+                }
             }
         }
         return constraintsOnClasses;
+    }
+
+    /**
+     * Creates an executor service. Tries to get a managed executor service. If failed creates a JDK one.
+     * Sets shutdownNeeded property to true in case JDK executor is created.
+     */
+    private void createExecutor() {
+        try {
+            InitialContext jndiCtx = new InitialContext();
+            // type:      javax.enterprise.concurrent.ManagedExecutorService
+            // jndi-name: concurrent/ThreadPool
+            executor = (ExecutorService) jndiCtx.lookup("java:comp/env/concurrent/ThreadPool");
+            shutdownNeeded = false;
+            return;
+        } catch (NamingException ignored) {
+            // aka continue to proceed with retrieving jdk executor
+        }
+        executor = Executors.newSingleThreadExecutor();
+        shutdownNeeded = true;
     }
 }
