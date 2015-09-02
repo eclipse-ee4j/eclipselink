@@ -22,7 +22,7 @@
     <properties>
         <!-- TOOL Properties -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <tycho.version>0.23.0-SNAPSHOT</tycho.version>
+        <tycho.version>0.23.0</tycho.version>
         <junit4-version>4.12</junit4-version>
         <!-- maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format> Seems it must be in settings.xml -->
         <!-- PROJECT Properties -->
@@ -58,14 +58,6 @@
             <url>http://download.eclipse.org/releases/${eclipse.drop}</url>
         </repository>
     </repositories>
-    <!-- required for tycho 0.23.0 which contains JDT with the fix
-     for https://bugs.eclipse.org/bugs/show_bug.cgi?id=432541 -->
-    <pluginRepositories>
-        <pluginRepository>
-            <id>tycho-snapshots</id>
-            <url>https://repo.eclipse.org/content/repositories/tycho-snapshots/</url>
-        </pluginRepository>
-    </pluginRepositories>
 
     <profiles>
         <profile>
