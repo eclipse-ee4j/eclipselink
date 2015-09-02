@@ -280,6 +280,8 @@ public class TraceLocalizationResource extends ListResourceBundle {
                                            { "searching_for_default_mapping_file", "Searching for mapping file: [{0}] at root URL: [{1}]."},
                                            { "found_default_mapping_file", "Found mapping file: [{0}] at root URL: [{1}]."},
 
+                                           { "detect_server_platform","Detected server platform: {0}."},
+                                           { "configured_server_platform", "Configured server platform: {0}"},
                                            { "dbPlatformHelper_detectedVendorPlatform", "Detected database platform: {0}"},
                                            { "dbPlatformHelper_regExprDbPlatform", "Database platform: {1}, regular expression: {0}"},
                                            { "dbPlatformHelper_patternSyntaxException", "Exception while using regular expression: {0}" },

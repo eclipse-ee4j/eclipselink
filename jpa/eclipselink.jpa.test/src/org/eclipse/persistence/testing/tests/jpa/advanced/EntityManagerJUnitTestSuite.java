@@ -67,10 +67,6 @@ import javax.persistence.spi.LoadState;
 import javax.persistence.spi.ProviderUtil;
 import javax.sql.DataSource;
 
-import junit.framework.AssertionFailedError;
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
 import org.eclipse.persistence.annotations.IdValidation;
 import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.CacheUsageIndirectionPolicy;
@@ -121,10 +117,13 @@ import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
 import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.JpaQuery;
 import org.eclipse.persistence.jpa.PersistenceProvider;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.DefaultSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.platform.server.ServerPlatform;
 import org.eclipse.persistence.platform.server.ServerPlatformBase;
+import org.eclipse.persistence.platform.server.ServerPlatformUtils;
 import org.eclipse.persistence.platform.server.was.WebSphere_7_Platform;
 import org.eclipse.persistence.queries.CursoredStreamPolicy;
 import org.eclipse.persistence.queries.DataModifyQuery;
@@ -212,8 +211,13 @@ import org.eclipse.persistence.testing.models.jpa.advanced.WorldRank;
 import org.eclipse.persistence.testing.models.jpa.relationships.CustomerCollection;
 import org.eclipse.persistence.testing.tests.feature.TestDataSource;
 import org.eclipse.persistence.testing.tests.jpa.unit.EMFProviderTest;
+import org.eclipse.persistence.testing.tests.weaving.SimpleSessionLogWrapper;
 import org.eclipse.persistence.tools.schemaframework.SequenceObjectDefinition;
 import org.junit.Assert;
+
+import junit.framework.AssertionFailedError;
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
 /**
  * Test the EntityManager API using the advanced model.
@@ -471,6 +475,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         tests.add("testUpdateDetachedEntityWithRelationshipCascadeRefresh");
         tests.add("testForNPEInCloning"); //Bug#457480
         tests.add("testCopy"); //Bug#463350
+        tests.add("testServerDetectionLogging"); //Bug#476018
 //        if (isJPA21()){
 //            tests.add("testUnsynchronizedPC");
 //        }
@@ -12972,6 +12977,55 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
     }
 
+    /**
+     * Bug #476018
+     * This test verifies that EclipseLink prints server detection related log
+     * messages at appropriate level - FINE in session log, FINER in other cases
+     */
+    public void testServerDetectionLogging(){
+        if (isOnServer()) {
+            return;
+        }
+        closeEntityManagerFactory();
+
+        SessionLog original = AbstractSessionLog.getLog();
+        try {
+            //check session log for "Configured server platform message"
+            Map<String, Object> properties = new HashMap<>();
+            properties.putAll(JUnitTestCaseHelper.getDatabaseProperties());
+            properties.put(PersistenceUnitProperties.LOGGING_LEVEL, original.getLevelString());
+            properties.put(PersistenceUnitProperties.LOGGING_LOGGER, LogWrapper.class.getName());
+            EntityManagerFactoryImpl emf = (EntityManagerFactoryImpl) Persistence.createEntityManagerFactory(getPersistenceUnitName(), properties);
+            SimpleSessionLogWrapper wr = (SimpleSessionLogWrapper) emf.getServerSession().getSessionLog();
+            assertEquals("configured_server_platform should be printed at FINE level",
+                    wr.getLevel() <= SessionLog.FINE, wr.expected());
+
+            //it may happen that logging is not fully configured as that happens
+            //after detecting server platform; in such case, messages are printed out
+            //by an instance of DefaultSessionLog
+            LogWrapper lw = new LogWrapper("detect_server_platform");
+            AbstractSessionLog.setLog(lw);
+            AbstractSessionLog.getLog().setSession(null);
+            lw.setSession(null);
+            ServerPlatformUtils.detectServerPlatform(null);
+            assertEquals("detect_server_platform should be printed at FINER level",
+                    lw.getLevel() <= SessionLog.FINER, lw.expected());
+
+            lw = new LogWrapper("detect_server_platform");
+            AbstractSessionLog.setLog(lw);
+            Session ss = wr.getSession();
+            AbstractSessionLog.getLog().setSession(ss);
+            AbstractSessionLog.getLog().getSession().setSessionLog(lw);
+            lw.setSession(ss);
+            ServerPlatformUtils.detectServerPlatform((ServerSession) ss);
+            assertEquals("detect_server_platform should be printed at FINER level",
+                    lw.getLevel() <= SessionLog.FINER, lw.expected());
+        } finally {
+            AbstractSessionLog.setLog(original);
+            closeEntityManagerFactory();
+        }
+    }
+
     public static final class Platform extends ServerPlatformBase {
 
         public Platform(DatabaseSession newDatabaseSession) {
@@ -12981,6 +13035,19 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         @Override
         public Class getExternalTransactionControllerClass() {
             return null;
+        }
+    }
+
+    public static final class LogWrapper extends SimpleSessionLogWrapper {
+
+        public LogWrapper() {
+            this("configured_server_platform");
+        }
+
+        public LogWrapper(String expected) {
+            super(new DefaultSessionLog());
+            setExpectedMessage(expected);
+            setLevel(sessionLog.getLevel());
         }
     }
 }

@@ -72,10 +72,12 @@ public final class ServerPlatformUtils {
         if (SERVER_PLATFORM_CLS == UNKNOWN_MARKER) {
             return null;
         } else {
+            //https://bugs.eclipse.org/bugs/show_bug.cgi?id=476018
+            //log message only when we know how loggers were set up
             if (session != null) {
-                session.log(SessionLog.INFO, SessionLog.SERVER, "detect_server_platform", SERVER_PLATFORM_CLS);
+                session.log(SessionLog.FINER, SessionLog.SERVER, "detect_server_platform", SERVER_PLATFORM_CLS);
             } else {
-                AbstractSessionLog.getLog().log(SessionLog.INFO, SessionLog.SERVER, "detect_server_platform", SERVER_PLATFORM_CLS);
+                AbstractSessionLog.getLog().log(SessionLog.FINER, SessionLog.SERVER, "detect_server_platform", SERVER_PLATFORM_CLS);
             }
             return SERVER_PLATFORM_CLS;
         }

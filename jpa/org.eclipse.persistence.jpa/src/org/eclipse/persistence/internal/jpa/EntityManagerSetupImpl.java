@@ -1721,6 +1721,11 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                         updateServerPlatform(predeployProperties, classLoaderToUse);
                         // Update loggers and settings for the singleton logger and the session logger.
                         updateLoggers(predeployProperties, true, classLoaderToUse);
+                        // log the server platform being used by the session
+                        if (session.getSessionLog().shouldLog(SessionLog.FINE)) {
+                            session.getSessionLog().log(SessionLog.FINE, SessionLog.SERVER,
+                                    "configured_server_platform", session.getServerPlatform().getClass().getName()); // NOI18N
+                        }
                         // Get the temporary classLoader based on the platform
                         
                         //Update performance profiler
@@ -2687,6 +2692,12 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         if (!session.hasBroker()) {
             updateLoggers(m, serverPlatformChanged, loader);        
             updateProfiler(m,loader);
+        }
+
+        // log the server platform being used by the session if it has been changed
+        if (serverPlatformChanged && session.getSessionLog().shouldLog(SessionLog.FINE)) {
+            session.getSessionLog().log(SessionLog.FINE, SessionLog.SERVER,
+                    "configured_server_platform", session.getServerPlatform().getClass().getName()); // NOI18N
         }
 
         if(session.isBroker()) {

@@ -772,18 +772,18 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         // 282751
         { "removing_unique_constraint.MSGID", "TOP-50253"},
         { "session_manager_no_partition.MSGID", "TOP-50254"},
-        
+
         /**
-         * Note: Each MSGID and TOP-NNNNN key above must have a corresponding 
+         * Note: Each MSGID and TOP-NNNNN key above must have a corresponding
          * id and string message entry in the 1st section at the top of this file.
          */
-        {"detect_server_platform","Detected server platform: {0}."}
-        
-    }; 
-     
+
+    };
+
     /**
      * Return the lookup table.
      */
+    @Override
     protected Object[][] getContents() {
         return contents;
     }
