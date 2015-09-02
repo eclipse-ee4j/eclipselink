@@ -777,13 +777,13 @@ public class LoggingLocalizationResource extends ListResourceBundle {
          * Note: Each MSGID and TOP-NNNNN key above must have a corresponding
          * id and string message entry in the 1st section at the top of this file.
          */
-        {"detect_server_platform","Detected server platform: {0}."}
 
     };
 
     /**
      * Return the lookup table.
      */
+    @Override
     protected Object[][] getContents() {
         return contents;
     }
