@@ -19,6 +19,8 @@
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     09/27/2012-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     09/03/2015 - Will Dazey
+ *       - 456067 : Added support for defining query timeout units
  ******************************************************************************/
 package org.eclipse.persistence.internal.databaseaccess;
 
@@ -38,6 +40,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.QueryException;
@@ -122,6 +125,9 @@ public abstract class DatabaseCall extends DatasourceCall {
     //query timeout limit in seconds
     protected int queryTimeout;
 
+    //query timeout unit
+    protected TimeUnit queryTimeoutUnit;
+
     //max rows returned in the result set by the call
     protected int maxRows;
 
@@ -180,6 +186,7 @@ public abstract class DatabaseCall extends DatasourceCall {
         this.shouldCacheStatement = null;
         this.isFieldMatchingRequired = false;
         this.queryTimeout = 0;
+        this.queryTimeoutUnit = null;
         this.maxRows = 0;
         this.resultSetFetchSize = 0;
         this.isCursorOutputProcedure = false;
@@ -797,8 +804,18 @@ public abstract class DatabaseCall extends DatasourceCall {
         Statement statement = accessor.prepareStatement(this, session);
 
         // Setup the max rows returned and query timeout limit.
-        if (this.queryTimeout > 0) {
-            statement.setQueryTimeout(this.queryTimeout);
+        if (this.queryTimeout > 0 && this.queryTimeoutUnit != null) {
+            long timeout = TimeUnit.SECONDS.convert(this.queryTimeout, this.queryTimeoutUnit);
+
+            if(timeout > Integer.MAX_VALUE){
+                timeout = Integer.MAX_VALUE;
+            }
+
+            //Round up the timeout if SECONDS are larger than the given units
+            if(TimeUnit.SECONDS.compareTo(this.queryTimeoutUnit) > 0 && this.queryTimeout % 1000 > 0){
+                timeout += 1;
+            }
+            statement.setQueryTimeout((int)timeout);
         }
         if (!this.ignoreMaxResultsSetting && this.maxRows > 0) {
             statement.setMaxRows(this.maxRows);
@@ -930,6 +947,13 @@ public abstract class DatabaseCall extends DatasourceCall {
      */
     public void setQueryTimeout(int queryTimeout) {
         this.queryTimeout = queryTimeout;
+    }
+
+    /**
+     * set query timeout limit unit to the JDBC Statement
+     */
+    public void setQueryTimeoutUnit(TimeUnit queryTimeoutUnit) {
+        this.queryTimeoutUnit = queryTimeoutUnit;
     }
 
     /**

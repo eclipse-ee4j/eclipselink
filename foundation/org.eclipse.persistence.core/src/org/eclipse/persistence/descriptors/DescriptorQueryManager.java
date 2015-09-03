@@ -21,6 +21,8 @@
  *       - 356197: Add new VPD type to MultitenantType
  *     08/01/2012-2.5 Chris Delahunt
  *       - 371950: JPA Metadata caching
+ *     09/03/2015 - Will Dazey
+ *       - 456067 : Added support for defining query timeout units
  ******************************************************************************/
 package org.eclipse.persistence.descriptors;
 
@@ -33,6 +35,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.DescriptorException;
@@ -125,6 +128,9 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
     public static final int DefaultTimeout = -1;
     protected int queryTimeout;
 
+    public static final TimeUnit DefaultTimeoutUnit = TimeUnit.SECONDS;
+    protected TimeUnit queryTimeoutUnit;
+
     /**
      * INTERNAL:
      * Initialize the state of the descriptor query manager
@@ -133,6 +139,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
         this.queries = new LinkedHashMap(5);
         setDoesExistQuery(new DoesExistQuery());// Always has a does exist.
         this.setQueryTimeout(DefaultTimeout);
+        this.setQueryTimeoutUnit(DefaultTimeoutUnit);
     }
 
     /**
@@ -889,6 +896,11 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
         if (getQueryTimeout() == DefaultTimeout) {
             if (getDescriptor().hasInheritance() && (this.getDescriptor().getInheritancePolicy().getParentDescriptor() != null)) {
                 setQueryTimeout(this.getParentDescriptorQueryManager().getQueryTimeout());
+            }
+        }
+        if (getQueryTimeoutUnit().equals(DefaultTimeoutUnit)) {
+            if (getDescriptor().hasInheritance() && (this.getDescriptor().getInheritancePolicy().getParentDescriptor() != null)) {
+                setQueryTimeoutUnit(this.getParentDescriptorQueryManager().getQueryTimeoutUnit());
             }
         }
 
@@ -1688,6 +1700,10 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
         return queryTimeout;
     }
 
+    public TimeUnit getQueryTimeoutUnit() {
+        return queryTimeoutUnit;
+    }
+
     /**
      * PUBLIC:
      * Set the number of seconds that queries will wait for their Statement to execute.
@@ -1699,6 +1715,10 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      */
     public void setQueryTimeout(int queryTimeout) {
         this.queryTimeout = queryTimeout;
+    }
+
+    public void setQueryTimeoutUnit(TimeUnit queryTimeoutUnit) {
+        this.queryTimeoutUnit = queryTimeoutUnit;
     }
 
     /**
