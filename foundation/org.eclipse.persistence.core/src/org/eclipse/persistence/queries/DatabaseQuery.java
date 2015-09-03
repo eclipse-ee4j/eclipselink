@@ -29,11 +29,15 @@
  *       - 393867: Named queries do not work when using EM level Table Per Tenant Multitenancy.
  *     08/11/2014-2.5 Rick Curtis 
  *       - 440594: Tolerate invalid NamedQuery at EntityManager creation.
+ *     09/03/2015 - Will Dazey
+ *       - 456067 : Added support for defining query timeout units
  ******************************************************************************/
 package org.eclipse.persistence.queries;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.io.*;
+
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.config.ParameterDelimiterType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -259,6 +263,8 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      */
     protected int queryTimeout;
 
+    protected TimeUnit queryTimeoutUnit;
+
     /* Used as default for read, means shallow write for modify. */
     public static final int NoCascading = 1;
 
@@ -339,6 +345,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         this.isPrepared = false;
         this.shouldUseWrapperPolicy = true;
         this.queryTimeout = DescriptorQueryManager.DefaultTimeout;
+        this.queryTimeoutUnit = DescriptorQueryManager.DefaultTimeoutUnit;
         this.shouldPrepare = true;
         this.shouldCloneCall = false;
         this.shouldBindAllParameters = null;
@@ -1246,6 +1253,16 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
+     * PUBLIC: Return the unit of time the driver will wait for a Statement to
+     * execute.
+     * 
+     * @see DescriptorQueryManager#getQueryTimeoutUnit()
+     */
+    public TimeUnit getQueryTimeoutUnit() {
+        return queryTimeoutUnit;
+    }
+
+    /**
      * INTERNAL: Returns the specific default redirector for this query type.
      * There are numerous default query redirectors. See ClassDescriptor for
      * their types.
@@ -1818,6 +1835,10 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         if (this.queryTimeout == DescriptorQueryManager.DefaultTimeout) {
             if (this.descriptor == null) {
                 setQueryTimeout(this.session.getQueryTimeoutDefault());
+                if(this.session.getQueryTimeoutUnitDefault() == null){
+                    this.session.setQueryTimeoutUnitDefault(DescriptorQueryManager.DefaultTimeoutUnit);
+                }
+                setQueryTimeoutUnit(this.session.getQueryTimeoutUnitDefault());
             } else {
                 int timeout = this.descriptor.getQueryManager().getQueryTimeout();
                 // No timeout means none set, so use the session default.
@@ -1825,6 +1846,13 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
                     timeout = this.session.getQueryTimeoutDefault();
                 }
                 setQueryTimeout(timeout);
+                
+                //Bug #456067
+                TimeUnit timeoutUnit = this.descriptor.getQueryManager().getQueryTimeoutUnit();
+                if(timeoutUnit == DescriptorQueryManager.DefaultTimeoutUnit){
+                    timeoutUnit = this.session.getQueryTimeoutUnitDefault();
+                }
+                setQueryTimeoutUnit(timeoutUnit);
             }
         }
 
@@ -2274,6 +2302,11 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      */
     public void setQueryTimeout(int queryTimeout) {
         this.queryTimeout = queryTimeout;
+        this.shouldCloneCall = true;
+    }
+
+    public void setQueryTimeoutUnit(TimeUnit queryTimeoutUnit) {
+        this.queryTimeoutUnit = queryTimeoutUnit;
         this.shouldCloneCall = true;
     }
 

@@ -35,6 +35,8 @@
  *       - 438871 : Add support for writing statement terminator character(s) when generating ddl to script.
  *     02/19/2015 - Rick Curtis  
  *       - 458877 : Add national character support
+ *     09/03/2015 - Will Dazey
+ *       - 456067 : Added support for defining query timeout units
  ******************************************************************************/
 package org.eclipse.persistence.config;
 
@@ -3024,14 +3026,31 @@ public class PersistenceUnitProperties {
 
     /**
      * The "<code>javax.persistence.query.timeout</code>" property configures
-     * the default query timeout value.
+     * the default query timeout value. Defaults to seconds, but is configurable 
+     * with PersistenceUnitProperties.QUERY_TIMEOUT_UNIT
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
      * <li>a string containing a zero or greater integer value
      * </ul>
+     * @see PersistenceUnitProperties.QUERY_TIMEOUT_UNIT
      */
     public static final String QUERY_TIMEOUT = "javax.persistence.query.timeout";
+
+    /**
+     * The "<code>eclipselink.query.timeout.unit</code>" property
+     * configures the query timeout unit value. Allows users more refinement.
+     * Used in combination with PersistenceUnitProperties.QUERY_TIMEOUT
+     * <p>
+     * <b>Allowed Values:</b>
+     * <ul>
+     * <li>"<code>java.util.concurrent.TimeUnit.MILLISECONDS</code>",
+     * <li>"<code>java.util.concurrent.TimeUnit.SECONDS</code>" (DEFAULT),
+     * <li>"<code>java.util.concurrent.TimeUnit.MINUTES</code>".
+     * </ul>
+     * @see PersistenceUnitProperties.QUERY_TIMEOUT
+     */
+    public static final String QUERY_TIMEOUT_UNIT = "eclipselink.query.timeout.unit";
 
     /**
      * The "<code>eclipselink.persistence-context.close-on-commit</code>"

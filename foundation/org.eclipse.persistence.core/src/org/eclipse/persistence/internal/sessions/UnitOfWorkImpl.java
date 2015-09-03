@@ -30,6 +30,8 @@
  *       - 376603: Provide for table per tenant support for multitenant applications
  *     08/11/2012-2.5 Guy Pelletier  
  *       - 393867: Named queries do not work when using EM level Table Per Tenant Multitenancy.
+ *     09/03/2015 - Will Dazey
+ *       - 456067 : Added support for defining query timeout units
  ******************************************************************************/  
 package org.eclipse.persistence.internal.sessions;
 
@@ -323,6 +325,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         this.exceptionHandler = parent.exceptionHandler;
         this.pessimisticLockTimeoutDefault = parent.pessimisticLockTimeoutDefault;
         this.queryTimeoutDefault = parent.queryTimeoutDefault;
+        this.queryTimeoutUnitDefault = parent.queryTimeoutUnitDefault;
         this.shouldOptimizeResultSetAccess = parent.shouldOptimizeResultSetAccess;
         this.serializer = parent.serializer;
         this.isConcurrent = parent.isConcurrent;

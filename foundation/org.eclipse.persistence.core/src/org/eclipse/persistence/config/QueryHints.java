@@ -15,6 +15,8 @@
  *       - 325167: Make reserved # bind parameter char generic to enable native SQL pass through
  *     06/30/2011-2.3.1 Guy Pelletier 
  *       - 341940: Add disable/enable allowing native queries    
+ *     09/03/2015 - Will Dazey
+ *       - 456067 : Added support for defining query timeout units
  ******************************************************************************/  
 package org.eclipse.persistence.config;
 
@@ -347,6 +349,28 @@ public class QueryHints {
      */
     public static final String JDBC_TIMEOUT = "eclipselink.jdbc.timeout";
     
+    /**
+     * "javax.persistence.query.timeout" 
+     * <p>Configures the default query timeout value per the JPA specification.
+     * Valid values are strings containing a zero or greater integer value
+     * Defaults to use seconds as the unit of time.
+     * @see org.eclipse.persistence.queries.DatabaseQuery#setQueryTimeout(int)
+     */
+    public static final String QUERY_TIMEOUT = "javax.persistence.query.timeout";
+
+    /**
+     * "eclipselink.jdbc.timeout.unit"
+     * <p>Configures the query timeout unit value. Allows users more refinement.
+     * <b>Valid Values:</b>
+     * <ul>
+     * <li>"<code>java.util.concurrent.TimeUnit.MILLISECONDS</code>",
+     * <li>"<code>java.util.concurrent.TimeUnit.SECONDS</code>" (DEFAULT),
+     * <li>"<code>java.util.concurrent.TimeUnit.MINUTES</code>".
+     * </ul>
+     * @see org.eclipse.persistence.queries.DatabaseQuery#setQueryTimeoutUnit(TimeUnit)
+     */
+    public static final String QUERY_TIMEOUT_UNIT = "eclipselink.query.timeout.unit";
+
     /**
      * "eclipselink.jdbc.fetch-size"
      * <p>Configures the JDBC fetch-size for the queries result-set.

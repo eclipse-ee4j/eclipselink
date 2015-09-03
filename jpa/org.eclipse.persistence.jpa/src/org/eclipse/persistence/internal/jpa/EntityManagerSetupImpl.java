@@ -60,6 +60,8 @@
  *       - 458877 : Add national character support
  *     03/04/2015 - Will Dazey 
  *       - 460862 : Added support for JTA schema generation without JTA-DS
+ *     09/03/2015 - Will Dazey
+ *       - 456067 : Added support for defining query timeout units
  *****************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
@@ -125,6 +127,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeUnit;
 
 import javax.persistence.OptimisticLockException;
 import javax.persistence.PersistenceException;
@@ -2769,6 +2772,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             updateIdValidation(m);
             updatePessimisticLockTimeout(m);
             updateQueryTimeout(m);
+            updateQueryTimeoutUnit(m);
             if (!session.hasBroker()) {
                 updateCacheCoordination(m, loader);
             }
@@ -3494,13 +3498,25 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
 
     private void updateQueryTimeout(Map persistenceProperties) {
         String timeout = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.QUERY_TIMEOUT, persistenceProperties, session);
-
         try {
             if (timeout != null) {
                 session.setQueryTimeoutDefault(Integer.parseInt(timeout));
             }
         } catch (NumberFormatException exception) {
             this.session.handleException(ValidationException.invalidValueForProperty(timeout, PersistenceUnitProperties.QUERY_TIMEOUT, exception));
+        }
+    }
+
+    //Bug #456067: Added persistence unit support for timeout units
+    private void updateQueryTimeoutUnit(Map persistenceProperties) {
+        String timeoutUnit = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.QUERY_TIMEOUT_UNIT, persistenceProperties, session);
+        try {
+            if (timeoutUnit != null) {
+                TimeUnit unit = TimeUnit.valueOf(timeoutUnit);
+                session.setQueryTimeoutUnitDefault(unit);
+            }
+        } catch (IllegalArgumentException exception) {
+            this.session.handleException(ValidationException.invalidValueForProperty(timeoutUnit, PersistenceUnitProperties.QUERY_TIMEOUT_UNIT, exception));
         }
     }
 

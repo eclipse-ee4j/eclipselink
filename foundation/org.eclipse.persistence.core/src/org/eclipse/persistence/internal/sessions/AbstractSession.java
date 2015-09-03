@@ -25,6 +25,8 @@
  *       - 395406: Fix nightly static weave test errors
  *     08/11/2014-2.5 Rick Curtis 
  *       - 440594: Tolerate invalid NamedQuery at EntityManager creation.
+ *     09/03/2015 - Will Dazey
+ *       - 456067 : Added support for defining query timeout units
  ******************************************************************************/
 package org.eclipse.persistence.internal.sessions;
 
@@ -43,6 +45,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.ReferenceMode;
@@ -292,6 +295,8 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
 
     protected int queryTimeoutDefault;
     
+    protected TimeUnit queryTimeoutUnitDefault;
+
     /** Allow a session to enable concurrent processing. */
     protected boolean isConcurrent;
     
@@ -347,6 +352,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      */
     protected AbstractSession() {
         this.name = "";
+        this.queryTimeoutUnitDefault = DescriptorQueryManager.DefaultTimeoutUnit;
         initializeIdentityMapAccessor();
         // PERF - move to lazy init (3286091)
     }
@@ -2288,6 +2294,10 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         return queryTimeoutDefault;
     }
 
+    public TimeUnit getQueryTimeoutUnitDefault() {
+        return queryTimeoutUnitDefault;
+    }
+
     public EntityListenerInjectionManager getEntityListenerInjectionManager() {
         if (entityListenerInjectionManager == null){
             entityListenerInjectionManager = createEntityListenerInjectionManager(this.getProperty(PersistenceUnitProperties.CDI_BEANMANAGER));
@@ -4027,6 +4037,11 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      */
     public void setQueryTimeoutDefault(int queryTimeoutDefault) {
         this.queryTimeoutDefault = queryTimeoutDefault;
+    }
+
+    @Override
+    public void setQueryTimeoutUnitDefault(TimeUnit queryTimeoutUnitDefault) {
+        this.queryTimeoutUnitDefault = queryTimeoutUnitDefault;
     }
 
     /**

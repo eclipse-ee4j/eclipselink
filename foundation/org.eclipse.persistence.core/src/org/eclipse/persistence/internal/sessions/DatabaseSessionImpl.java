@@ -23,6 +23,8 @@
  *       - 462586 : Add national character support for z/OS.
  *     04/14/2015 - Will Dazey
  *       - 464641 : Fixed platform matching returning CNF.
+ *     09/03/2015 - Will Dazey
+ *       - 456067 : Added support for defining query timeout units
  *       ******************************************************************************/  
 package org.eclipse.persistence.internal.sessions;
 

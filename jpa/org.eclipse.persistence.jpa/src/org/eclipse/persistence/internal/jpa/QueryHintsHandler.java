@@ -19,6 +19,8 @@
  *       - 341940: Add disable/enable allowing native queries 
  *     06/30/2015-2.6.0 Will Dazey
  *       - 471487: Fixed eclipselink.jdbc.timeout hint not applying correctly to SQLCall
+ *     09/03/2015 - Will Dazey
+ *       - 456067 : Added support for defining query timeout units
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
@@ -31,6 +33,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.concurrent.TimeUnit;
 
 import javax.persistence.CacheRetrieveMode;
 import javax.persistence.CacheStoreMode;
@@ -249,6 +252,10 @@ public class QueryHintsHandler {
             addHint(new LeftFetchHint());
             addHint(new ReadOnlyHint());
             addHint(new JDBCTimeoutHint());
+            //Enhancement
+            addHint(new QueryTimeoutUnitHint());
+            //Enhancement
+            addHint(new QueryTimeoutHint());
             addHint(new JDBCFetchSizeHint());
             addHint(new JDBCMaxRowsHint());
             addHint(new JDBCFirstResultHint());
@@ -1868,6 +1875,36 @@ public class QueryHintsHandler {
         }
     }
         
+    //Bug #456067: Added support for user defining the timeout units to use
+    protected static class QueryTimeoutUnitHint extends Hint {
+        QueryTimeoutUnitHint() {
+            super(QueryHints.QUERY_TIMEOUT_UNIT, "");
+        }
+
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
+            try {
+                TimeUnit unit = TimeUnit.valueOf((String)valueToApply);
+                query.setQueryTimeoutUnit(unit);
+            }
+            catch(IllegalArgumentException e) {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+            }
+            return query;
+        }
+    }
+
+    //Bug #456067: Added support for query hint "javax.persistence.query.timeout" defined in the spec
+    protected static class QueryTimeoutHint extends Hint {
+        QueryTimeoutHint() {
+            super(QueryHints.QUERY_TIMEOUT, "");
+        }
+
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
+            query.setQueryTimeout(QueryHintsHandler.parseIntegerHint(valueToApply, QueryHints.QUERY_TIMEOUT));
+            return query;
+        }
+    }
+
     protected static class JDBCFetchSizeHint extends Hint {
         JDBCFetchSizeHint() {
             super(QueryHints.JDBC_FETCH_SIZE, "");
@@ -2064,5 +2101,4 @@ public class QueryHintsHandler {
             return query;
         }
     }
-
 }

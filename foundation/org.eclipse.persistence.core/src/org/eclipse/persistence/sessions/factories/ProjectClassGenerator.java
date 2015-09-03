@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     11/10/2011-2.4 Guy Pelletier
  *       - 357474: Address primaryKey option from tenant discriminator column
+ *     09/03/2015 - Will Dazey
+ *       - 456067 : Added support for defining query timeout units
  ******************************************************************************/
 package org.eclipse.persistence.sessions.factories;
 
@@ -829,6 +831,9 @@ public class ProjectClassGenerator {
         // Query timeout.
         if (descriptor.getQueryManager().getQueryTimeout() != DescriptorQueryManager.DefaultTimeout) {
             method.addLine("descriptor.getQueryManager().setQueryTimeout(" + descriptor.getQueryManager().getQueryTimeout() + ");");
+        }
+        if (!descriptor.getQueryManager().getQueryTimeoutUnit().equals(DescriptorQueryManager.DefaultTimeoutUnit)) {
+            method.addLine("descriptor.getQueryManager().setQueryTimeoutUnit(" + descriptor.getQueryManager().getQueryTimeoutUnit() + ");");
         }
 
         // Custom SQL.
