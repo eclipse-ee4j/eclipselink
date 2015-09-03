@@ -9,11 +9,15 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     09/03/2015 - Will Dazey
+ *       - 456067 : Added support for defining query timeout units
  ******************************************************************************/  
 package org.eclipse.persistence.sessions;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.io.*;
+
 import org.eclipse.persistence.config.ReferenceMode;
 import org.eclipse.persistence.core.sessions.CoreSession;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -997,6 +1001,14 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      */
     public void setQueryTimeoutDefault(int queryTimeoutDefault);
     
+    /**
+     * PUBLIC:
+     * Set the default query timeout units for this session.
+     * This timeout unit will apply to any queries that do not have a unit value set,
+     * and that do not have a default timeout unit defined in their descriptor.
+     */
+    public void setQueryTimeoutUnitDefault(TimeUnit queryTimeoutDefault);
+
     /**
      * PUBLIC:
      * Return the session's partitioning policy.

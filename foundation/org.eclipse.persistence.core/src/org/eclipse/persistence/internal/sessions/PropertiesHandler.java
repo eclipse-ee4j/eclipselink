@@ -14,12 +14,15 @@
  *     Rick Curtis - Add support for WebSphere Liberty platform.
  *     08/11/2014-2.5 Rick Curtis 
  *       - 440594: Tolerate invalid NamedQuery at EntityManager creation.
+ *     09/03/2015 - Will Dazey
+ *       - 456067 : Added support for defining query timeout units
  ******************************************************************************/  
 package org.eclipse.persistence.internal.sessions;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -36,6 +39,7 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.ReferenceMode;
 import org.eclipse.persistence.config.TargetDatabase;
 import org.eclipse.persistence.config.TargetServer;
+import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
@@ -214,6 +218,8 @@ public class PropertiesHandler {
             addProp(new BooleanProp(PersistenceUnitProperties.JPQL_TOLERATE, "false"));
             addProp(new BooleanProp(PersistenceUnitProperties.MULTITENANT_SHARED_CACHE, "false"));
             addProp(new BooleanProp(PersistenceUnitProperties.MULTITENANT_SHARED_EMF, "true"));
+            //Enhancement
+            addProp(new QueryTimeoutUnitProp());
         }
         
         Prop(String name) {
@@ -664,6 +670,17 @@ public class PropertiesHandler {
                 IdValidation.ZERO.toString(),
                 IdValidation.NEGATIVE.toString(),
                 IdValidation.NONE.toString()
+            };
+        }
+    }
+
+    protected static class QueryTimeoutUnitProp extends Prop {
+        QueryTimeoutUnitProp() {
+            super(PersistenceUnitProperties.QUERY_TIMEOUT_UNIT, DescriptorQueryManager.DefaultTimeoutUnit.toString());
+            valueArray = new Object[] {
+                TimeUnit.MILLISECONDS.toString(),
+                TimeUnit.SECONDS.toString(),
+                TimeUnit.MINUTES.toString()
             };
         }
     }

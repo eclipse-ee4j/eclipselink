@@ -13,6 +13,8 @@
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     08/24/2012-2.5 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     09/03/2015 - Will Dazey
+ *       - 456067 : Added support for defining query timeout units
  ******************************************************************************/  
 package org.eclipse.persistence.internal.queries;
 
@@ -148,6 +150,7 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
             call.setShouldCacheStatement(this.query.shouldCacheStatement());
         }
         call.setQueryTimeout(this.query.getQueryTimeout());
+        call.setQueryTimeoutUnit(this.query.getQueryTimeoutUnit());
         if (this.query.isNativeConnectionRequired()) {
             call.setIsNativeConnectionRequired(true);
         }

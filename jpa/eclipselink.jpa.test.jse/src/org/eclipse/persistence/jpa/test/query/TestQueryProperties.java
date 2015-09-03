@@ -22,14 +22,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.config.SessionCustomizer;
 import org.eclipse.persistence.jpa.test.basic.model.Employee;
 import org.eclipse.persistence.jpa.test.framework.Emf;
@@ -46,40 +44,47 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(EmfRunner.class)
-public class TestQueryHints implements PUPropertiesProvider {
+public class TestQueryProperties implements PUPropertiesProvider {
 
     private static int setTimeout;
-
+    
     private final static int realTimeout = 3099;
 
-    @Emf(name = "defaultEMF", classes = { Employee.class } )
-    private EntityManagerFactory emf;
+    @Emf(name = "timeoutEMF", classes = { Employee.class }, properties = { 
+            @Property(name = PersistenceUnitProperties.QUERY_TIMEOUT, value = "" + TestQueryProperties.realTimeout) })
+    private EntityManagerFactory emfTimeout;
 
-    @Emf(name = "TimeoutPropertiesEMF", classes = { Employee.class }, properties = { 
-            @Property(name = PersistenceUnitProperties.QUERY_TIMEOUT, value = "" + TestQueryHints.realTimeout),
+    @Emf(name = "timeoutWithUnitMintuesEMF", classes = { Employee.class }, properties = { 
+            @Property(name = PersistenceUnitProperties.QUERY_TIMEOUT, value = "" + TestQueryProperties.realTimeout),
             @Property(name = PersistenceUnitProperties.QUERY_TIMEOUT_UNIT, value = "MINUTES") })
-    private EntityManagerFactory emfTimeoutProperties;
+    private EntityManagerFactory emfTimeoutMinutes;
+    
+    @Emf(name = "timeoutWithUnitMillisecondsEMF", classes = { Employee.class }, properties = { 
+            @Property(name = PersistenceUnitProperties.QUERY_TIMEOUT, value = "" + TestQueryProperties.realTimeout),
+            @Property(name = PersistenceUnitProperties.QUERY_TIMEOUT_UNIT, value = "MILLISECONDS") })
+    private EntityManagerFactory emfTimeoutMilliseconds;
 
     /**
-     * Test that setting the Query Hint: QueryHints.JDBC_TIMEOUT sets the
+     * Test that setting the property "PersistenceUnitProperties.QUERY_TIMEOUT_UNIT" sets the
      * timeout accordingly on the executed java.sql.Statement.
      * 
-     * QueryHints.JDBC_TIMEOUT expects seconds by default.
-     * java.sql.Statement.getQueryTimeout() will return a value in seconds.
+     * Assumes value will be converted to Seconds for JDBC.
      * 
      * @throws Exception
      */
     @Test
-    public void testJDBCQueryTimeout() throws Exception {
+    public void testTimeoutUnitDefault() throws Exception {
         EntityManager em = null;
         try {
-            em = emf.createEntityManager();
+            em = emfTimeout.createEntityManager();
 
             em.getTransaction().begin();
-            Query q = em.createQuery("SELECT x FROM Employee x").setHint(QueryHints.JDBC_TIMEOUT, TestQueryHints.realTimeout);
+            Query q = em.createQuery("SELECT x FROM Employee x");
             q.getResultList();
+            
+            int queryTimeoutSeconds = TestQueryProperties.realTimeout;
 
-            Assert.assertEquals(TestQueryHints.realTimeout, TestQueryHints.setTimeout);
+            Assert.assertEquals(queryTimeoutSeconds, TestQueryProperties.setTimeout);
 
             em.getTransaction().rollback();
         } catch (Exception e) {
@@ -92,55 +97,63 @@ public class TestQueryHints implements PUPropertiesProvider {
     }
 
     /**
-     * Test that setting the Query Hint: QueryHints.JDBC_TIMEOUT_UNIT sets the
+     * Test that setting the property "PersistenceUnitProperties.QUERY_TIMEOUT_UNIT" sets the
      * timeout accordingly on the executed java.sql.Statement.
      * 
-     * QueryHints.JDBC_TIMEOUT expects seconds by default.
-     * java.sql.Statement.getQueryTimeout() will return a value in seconds.
+     * Assumes value will be converted to Seconds for JDBC.
      * 
      * @throws Exception
      */
     @Test
-    public void testQueryTimeoutUnit() throws Exception {
+    public void testTimeoutUnitMinutes() throws Exception {
         EntityManager em = null;
         try {
-            em = emf.createEntityManager();
+            em = emfTimeoutMinutes.createEntityManager();
 
-            /*
-             * Default Case: Seconds
-             * Without being set, the units should be in seconds already.
-             */
             em.getTransaction().begin();
-            Query q = em.createQuery("SELECT x FROM Employee x").setHint(QueryHints.JDBC_TIMEOUT, TestQueryHints.realTimeout);
+            Query q = em.createQuery("SELECT x FROM Employee x");
             q.getResultList();
-            int queryTimeoutSeconds = TestQueryHints.realTimeout;
-            Assert.assertEquals(queryTimeoutSeconds, TestQueryHints.setTimeout);
+            
+            int queryTimeoutSeconds = TestQueryProperties.realTimeout * 60;
+
+            Assert.assertEquals(queryTimeoutSeconds, TestQueryProperties.setTimeout);
+
             em.getTransaction().rollback();
-
-            /*
-             * Case 2: Minutes
-             * Setting units to Minutes, value should come back converted to Seconds
-             */
-            em.getTransaction().begin();
-            q = em.createQuery("SELECT x FROM Employee x").setHint(QueryHints.JDBC_TIMEOUT, TestQueryHints.realTimeout).setHint(QueryHints.QUERY_TIMEOUT_UNIT, TimeUnit.MINUTES.toString());
-            q.getResultList();
-            queryTimeoutSeconds = TestQueryHints.realTimeout * 60;
-            Assert.assertEquals(queryTimeoutSeconds, TestQueryHints.setTimeout);
-            em.getTransaction().rollback();
-
-            /*
-             * Case 3: Milliseconds
-             * Setting units to Milliseconds, value should come back converted to Seconds
-             */
-            em.getTransaction().begin();
-            q = em.createQuery("SELECT x FROM Employee x").setHint(QueryHints.JDBC_TIMEOUT, TestQueryHints.realTimeout).setHint(QueryHints.QUERY_TIMEOUT_UNIT, TimeUnit.MILLISECONDS.toString());
-            q.getResultList();
-            double queryTimeoutSecondsDouble = TestQueryHints.realTimeout / 1000d;
-            //if there was a remainder, it should round up
-            if(queryTimeoutSecondsDouble % 1 > 0){
-                queryTimeoutSecondsDouble += 1;
+        } catch (Exception e) {
+            Assert.fail(e.getLocalizedMessage());
+        } finally {
+            if (em != null) {
+                em.close();
             }
-            Assert.assertEquals((int)queryTimeoutSecondsDouble, TestQueryHints.setTimeout);
+        }
+    }
+
+    /**
+     * Test that setting the property "PersistenceUnitProperties.QUERY_TIMEOUT_UNIT" sets the
+     * timeout accordingly on the executed java.sql.Statement.
+     * 
+     * Assumes value will be converted to Seconds for JDBC.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testTimeoutUnitMilliseconds() throws Exception {
+        EntityManager em = null;
+        try {
+            em = emfTimeoutMilliseconds.createEntityManager();
+
+            em.getTransaction().begin();
+            Query q = em.createQuery("SELECT x FROM Employee x");
+            q.getResultList();
+            
+            double queryTimeoutSeconds = TestQueryProperties.realTimeout / 1000d;
+            //if there was a remainder, it should round up
+            if(queryTimeoutSeconds % 1 > 0){
+                queryTimeoutSeconds += 1;
+            }
+
+            Assert.assertEquals((int)queryTimeoutSeconds, TestQueryProperties.setTimeout);
+
             em.getTransaction().rollback();
         } catch (Exception e) {
             Assert.fail(e.getLocalizedMessage());
@@ -218,8 +231,8 @@ public class TestQueryHints implements PUPropertiesProvider {
 
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
             if (method.getName().equals("setQueryTimeout") && proxy instanceof PreparedStatement) {
-                if(args.length > 0){
-                    TestQueryHints.setTimeout = (Integer)args[0];
+                if (args.length > 0) {
+                    TestQueryProperties.setTimeout = (Integer) args[0];
                 }
             }
             return method.invoke(wrappedStatement, args);
