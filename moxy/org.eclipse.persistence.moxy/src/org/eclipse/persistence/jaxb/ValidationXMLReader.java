@@ -39,7 +39,7 @@ import java.util.logging.Logger;
  * {@link org.eclipse.persistence.jaxb.BeanValidationHelper#constraintsOnClasses} with value
  * {@link Boolean#TRUE}.
  */
-class ValidationXMLReader implements Callable<Map<Class<?>, Boolean>> {
+public class ValidationXMLReader implements Callable<Map<Class<?>, Boolean>> {
 
     public static final String DEFAULT_PACKAGE_QNAME = "default-package";
     public static final String BEAN_QNAME = "bean";
