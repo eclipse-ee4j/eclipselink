@@ -16,13 +16,6 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
-import javax.persistence.Query;
-
-import junit.framework.TestSuite;
-
-import org.eclipse.persistence.config.QueryHints;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.sessions.server.ServerSession;
 
 import org.eclipse.persistence.testing.framework.QuerySQLTracker;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
@@ -30,10 +23,14 @@ import org.eclipse.persistence.testing.models.jpa.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
 
+import junit.framework.TestSuite;
+
 /**
- * Bug 389265 - OptimisticLock Force Increment increments version both on flush and on commit
+ * Bug 389265 - OptimisticLock Force Increment increments version both on flush
+ * and on commit
  * 
- * - Test LockModeType.OPTIMISTIC_FORCE_INCREMENT with combinations of flush/commit/changes/no-op
+ * - Test LockModeType.OPTIMISTIC_FORCE_INCREMENT with combinations of
+ * flush/commit/changes/no-op
  */
 public class OptimisticLockForceIncrementTestSuite extends JUnitTestCase {
  
@@ -77,364 +74,442 @@ public class OptimisticLockForceIncrementTestSuite extends JUnitTestCase {
 
     public void testVersionIncrementNoChanges() {
     	if (usesSOP()) {
-    		// with SOP it fails with: 1 SQL update statement execution(s) expected:<1> but was:<2>
-    		// Looks like a bug: cascade versioning (used with SOP) adds an extra version increment.
+            // with SOP it fails with: 1 SQL update statement execution(s)
+            // expected:<1> but was:<2>
+            // Looks like a bug: cascade versioning (used with SOP) adds an
+            // extra version increment.
     		return;
     	}
-        QuerySQLTracker counter = new QuerySQLTracker(getServerSession());
-        EntityManager em = getEntityManagerFactory().createEntityManager();
-        em.getTransaction().begin();
-        
-        List<Address> addresses = em.createQuery("select a from Address a").getResultList();
-        assertNotNull("Null query results returned", addresses);
-        assertNotSame("No query results returned", addresses.size(), 0);
-        Address entity = addresses.get(0);
-        assertNotNull("Entity: Address cannot be null", entity);
+        QuerySQLTracker counter = null;
+        try {
+            counter = new QuerySQLTracker(getServerSession());
+            EntityManager em = getEntityManagerFactory().createEntityManager();
+            em.getTransaction().begin();
 
-        counter.getSqlStatements().clear();
-        int startVersion = entity.getVersion();
-        em.lock(entity, LockModeType.OPTIMISTIC_FORCE_INCREMENT);
-        
-        em.flush();
-        
-        em.getTransaction().commit();
-        int expectedVersion = (startVersion + 1);
-        int actualVersion = entity.getVersion();
+            List<Address> addresses = em.createQuery("select a from Address a").getResultList();
+            assertNotNull("Null query results returned", addresses);
+            assertNotSame("No query results returned", addresses.size(), 0);
+            Address entity = addresses.get(0);
+            assertNotNull("Entity: Address cannot be null", entity);
 
-        em.close();
-        
-        assertEquals("Version number incremented incorrectly: ", expectedVersion, actualVersion);
-        // SQL statements expected - 1 x update 
-        assertEquals("1 SQL update statement execution(s)", 1, countNumberOfUpdateStatements(counter));
+            counter.getSqlStatements().clear();
+            int startVersion = entity.getVersion();
+            em.lock(entity, LockModeType.OPTIMISTIC_FORCE_INCREMENT);
+
+            em.flush();
+
+            em.getTransaction().commit();
+            int expectedVersion = (startVersion + 1);
+            int actualVersion = entity.getVersion();
+
+            em.close();
+
+            assertEquals("Version number incremented incorrectly: ", expectedVersion, actualVersion);
+            // SQL statements expected - 1 x update
+            assertEquals("1 SQL update statement execution(s)", 1, countNumberOfUpdateStatements(counter));
+        } finally {
+            if (counter != null) {
+                counter.remove();
+            }
+        }
     }
 
     public void testVersionIncrementPreFlushChanges() {
     	if (usesSOP()) {
-    		// with SOP it fails with: 1 SQL update statement execution(s) expected:<1> but was:<2>
-    		// Looks like a bug: cascade versioning (used with SOP) adds an extra version increment.
+            // with SOP it fails with: 1 SQL update statement execution(s)
+            // expected:<1> but was:<2>
+            // Looks like a bug: cascade versioning (used with SOP) adds an
+            // extra version increment.
     		return;
     	}
-        QuerySQLTracker counter = new QuerySQLTracker(getServerSession());
-        EntityManager em = getEntityManagerFactory().createEntityManager();
-        
-        em.getTransaction().begin();
+        QuerySQLTracker counter = null;
+        try {
+            counter = new QuerySQLTracker(getServerSession());
+            EntityManager em = getEntityManagerFactory().createEntityManager();
 
-        List<Address> addresses = em.createQuery("select a from Address a").getResultList();
-        counter.getSqlStatements().clear();
-        
-        assertNotNull("Null query results returned", addresses);
-        assertNotSame("No query results returned", addresses.size(), 0);
-        Address entity = addresses.get(0);
-        assertNotNull("Entity: Address cannot be null", entity);
+            em.getTransaction().begin();
 
-        int startVersion = entity.getVersion();
-        em.lock(entity, LockModeType.OPTIMISTIC_FORCE_INCREMENT);
-        entity.setCity("Vancouver");
-        entity.setProvince("BC");
-        entity.setCountry("Canada");
-        
-        em.flush();
-        
-        em.getTransaction().commit();
-        int expectedVersion = (startVersion + 1);
-        int actualVersion = entity.getVersion();
+            List<Address> addresses = em.createQuery("select a from Address a").getResultList();
+            counter.getSqlStatements().clear();
 
-        em.close();
-        
-        assertEquals("Version number incremented incorrectly: ", expectedVersion, actualVersion);
-        assertEquals("Entity's name should be changed", "Vancouver", entity.getCity());
-        // SQL statements expected - 1 x update 
-        assertEquals("1 SQL update statement execution(s)", 1, countNumberOfUpdateStatements(counter));
+            assertNotNull("Null query results returned", addresses);
+            assertNotSame("No query results returned", addresses.size(), 0);
+            Address entity = addresses.get(0);
+            assertNotNull("Entity: Address cannot be null", entity);
+
+            int startVersion = entity.getVersion();
+            em.lock(entity, LockModeType.OPTIMISTIC_FORCE_INCREMENT);
+            entity.setCity("Vancouver");
+            entity.setProvince("BC");
+            entity.setCountry("Canada");
+
+            em.flush();
+
+            em.getTransaction().commit();
+            int expectedVersion = (startVersion + 1);
+            int actualVersion = entity.getVersion();
+
+            em.close();
+
+            assertEquals("Version number incremented incorrectly: ", expectedVersion, actualVersion);
+            assertEquals("Entity's name should be changed", "Vancouver", entity.getCity());
+            // SQL statements expected - 1 x update
+            assertEquals("1 SQL update statement execution(s)", 1, countNumberOfUpdateStatements(counter));
+        } finally {
+            if (counter != null) {
+                counter.remove();
+            }
+        }
     }
     
     public void testVersionIncrementPostFlushChanges() {
-        QuerySQLTracker counter = new QuerySQLTracker(getServerSession());
-        EntityManager em = getEntityManagerFactory().createEntityManager();
-        
-        em.getTransaction().begin();
+        QuerySQLTracker counter = null;
+        try {
+            counter = new QuerySQLTracker(getServerSession());
+            EntityManager em = getEntityManagerFactory().createEntityManager();
 
-        List<Address> addresses = em.createQuery("select a from Address a").getResultList();
-        counter.getSqlStatements().clear();
-        assertNotNull("Null query results returned", addresses);
-        assertNotSame("No query results returned", addresses.size(), 0);
-        Address entity = addresses.get(0);
-        assertNotNull("Entity: Address cannot be null", entity);
+            em.getTransaction().begin();
 
-        int startVersion = entity.getVersion();
-        em.lock(entity, LockModeType.OPTIMISTIC_FORCE_INCREMENT);
-        
-        em.flush();
-        
-        entity.setCity("Toronto");
-        entity.setProvince("ON");
-        entity.setCountry("Canada");
-        
-        em.getTransaction().commit();
-        int expectedVersion = (startVersion + 1);
-        int actualVersion = entity.getVersion();
+            List<Address> addresses = em.createQuery("select a from Address a").getResultList();
+            counter.getSqlStatements().clear();
+            assertNotNull("Null query results returned", addresses);
+            assertNotSame("No query results returned", addresses.size(), 0);
+            Address entity = addresses.get(0);
+            assertNotNull("Entity: Address cannot be null", entity);
 
-        em.close();
-        
-        assertEquals("Version number incremented incorrectly: ", expectedVersion, actualVersion);
-        assertEquals("Entity's name should be changed", "Toronto", entity.getCity());
-        // SQL statements expected - 2 x update 
-        assertEquals("2 SQL update statement execution(s)", 2, countNumberOfUpdateStatements(counter));
+            int startVersion = entity.getVersion();
+            em.lock(entity, LockModeType.OPTIMISTIC_FORCE_INCREMENT);
+
+            em.flush();
+
+            entity.setCity("Toronto");
+            entity.setProvince("ON");
+            entity.setCountry("Canada");
+
+            em.getTransaction().commit();
+            int expectedVersion = (startVersion + 1);
+            int actualVersion = entity.getVersion();
+
+            em.close();
+
+            assertEquals("Version number incremented incorrectly: ", expectedVersion, actualVersion);
+            assertEquals("Entity's name should be changed", "Toronto", entity.getCity());
+            // SQL statements expected - 2 x update
+            assertEquals("2 SQL update statement execution(s)", 2, countNumberOfUpdateStatements(counter));
+        } finally {
+            if (counter != null) {
+                counter.remove();
+            }
+        }
     }
     
     public void testVersionIncrementPreAndPostFlushChanges() {
-        QuerySQLTracker counter = new QuerySQLTracker(getServerSession());
-        EntityManager em = getEntityManagerFactory().createEntityManager();
-        
-        em.getTransaction().begin();
+        QuerySQLTracker counter = null;
+        try {
+            counter = new QuerySQLTracker(getServerSession());
+            EntityManager em = getEntityManagerFactory().createEntityManager();
 
-        List<Address> addresses = em.createQuery("select a from Address a").getResultList();
-        counter.getSqlStatements().clear();
-        assertNotNull("Null query results returned", addresses);
-        assertNotSame("No query results returned", addresses.size(), 0);
-        Address entity = addresses.get(0);
-        assertNotNull("Entity: Address cannot be null", entity);
+            em.getTransaction().begin();
 
-        int startVersion = entity.getVersion();
-        em.lock(entity, LockModeType.OPTIMISTIC_FORCE_INCREMENT);
-        
-        entity.setCity("Moncton");
-        entity.setProvince("NB");
-        entity.setCountry("Canada");
-        
-        em.flush();
-        
-        entity.setCity("Halifax");
-        entity.setProvince("NS");
-        entity.setCountry("Canada");
-        
-        em.getTransaction().commit();
-        int expectedVersion = (startVersion + 1);
-        int actualVersion = entity.getVersion();
+            List<Address> addresses = em.createQuery("select a from Address a").getResultList();
+            counter.getSqlStatements().clear();
+            assertNotNull("Null query results returned", addresses);
+            assertNotSame("No query results returned", addresses.size(), 0);
+            Address entity = addresses.get(0);
+            assertNotNull("Entity: Address cannot be null", entity);
 
-        em.close();
-        
-        assertEquals("Version number incremented incorrectly: ", expectedVersion, actualVersion);
-        assertEquals("Entity's name should be changed", "Halifax", entity.getCity());
-        // SQL statements expected - 2 x update 
-        assertEquals("2 SQL update statement execution(s)", 2, countNumberOfUpdateStatements(counter));
+            int startVersion = entity.getVersion();
+            em.lock(entity, LockModeType.OPTIMISTIC_FORCE_INCREMENT);
+
+            entity.setCity("Moncton");
+            entity.setProvince("NB");
+            entity.setCountry("Canada");
+
+            em.flush();
+
+            entity.setCity("Halifax");
+            entity.setProvince("NS");
+            entity.setCountry("Canada");
+
+            em.getTransaction().commit();
+            int expectedVersion = (startVersion + 1);
+            int actualVersion = entity.getVersion();
+
+            em.close();
+
+            assertEquals("Version number incremented incorrectly: ", expectedVersion, actualVersion);
+            assertEquals("Entity's name should be changed", "Halifax", entity.getCity());
+            // SQL statements expected - 2 x update
+            assertEquals("2 SQL update statement execution(s)", 2, countNumberOfUpdateStatements(counter));
+        } finally {
+            if (counter != null) {
+                counter.remove();
+            }
+        }
     }
 
     public void testVersionIncrementCommitNoChanges() {
-        QuerySQLTracker counter = new QuerySQLTracker(getServerSession());
-        EntityManager em = getEntityManagerFactory().createEntityManager();
-        
-        em.getTransaction().begin();
+        QuerySQLTracker counter = null;
+        try {
+            counter = new QuerySQLTracker(getServerSession());
+            EntityManager em = getEntityManagerFactory().createEntityManager();
 
-        List<Address> addresses = em.createQuery("select a from Address a").getResultList();
-        counter.getSqlStatements().clear();
-        assertNotNull("Null query results returned", addresses);
-        assertNotSame("No query results returned", addresses.size(), 0);
-        Address entity = addresses.get(0);
-        assertNotNull("Entity: Address cannot be null", entity);
-        
-        int startVersion = entity.getVersion();
-        em.lock(entity, LockModeType.OPTIMISTIC_FORCE_INCREMENT);
-        
-        em.getTransaction().commit();
-        int expectedVersion = (startVersion + 1);
-        int actualVersion = entity.getVersion();
+            em.getTransaction().begin();
 
-        em.close();
-        
-        assertEquals("Version number incremented incorrectly: ", expectedVersion, actualVersion);
-        // SQL statements expected - 1 x update 
-        assertEquals("1 SQL update statement execution(s)", 1, countNumberOfUpdateStatements(counter));
+            List<Address> addresses = em.createQuery("select a from Address a").getResultList();
+            counter.getSqlStatements().clear();
+            assertNotNull("Null query results returned", addresses);
+            assertNotSame("No query results returned", addresses.size(), 0);
+            Address entity = addresses.get(0);
+            assertNotNull("Entity: Address cannot be null", entity);
+
+            int startVersion = entity.getVersion();
+            em.lock(entity, LockModeType.OPTIMISTIC_FORCE_INCREMENT);
+
+            em.getTransaction().commit();
+            int expectedVersion = (startVersion + 1);
+            int actualVersion = entity.getVersion();
+
+            em.close();
+
+            assertEquals("Version number incremented incorrectly: ", expectedVersion, actualVersion);
+            // SQL statements expected - 1 x update
+            assertEquals("1 SQL update statement execution(s)", 1, countNumberOfUpdateStatements(counter));
+        } finally {
+            if (counter != null) {
+                counter.remove();
+            }
+        }
     }
     
     public void testVersionIncrementPreCommitChanges() {
-        QuerySQLTracker counter = new QuerySQLTracker(getServerSession());
-        EntityManager em = getEntityManagerFactory().createEntityManager();
+        QuerySQLTracker counter = null;
+        try {
+            counter = new QuerySQLTracker(getServerSession());
+            EntityManager em = getEntityManagerFactory().createEntityManager();
         
-        em.getTransaction().begin();
+            em.getTransaction().begin();
 
-        List<Address> addresses = em.createQuery("select a from Address a").getResultList();
-        counter.getSqlStatements().clear();
-        assertNotNull("Null query results returned", addresses);
-        assertNotSame("No query results returned", addresses.size(), 0);
-        Address entity = addresses.get(0);
-        assertNotNull("Entity: Address cannot be null", entity);
+            List<Address> addresses = em.createQuery("select a from Address a").getResultList();
+            counter.getSqlStatements().clear();
+            assertNotNull("Null query results returned", addresses);
+            assertNotSame("No query results returned", addresses.size(), 0);
+            Address entity = addresses.get(0);
+            assertNotNull("Entity: Address cannot be null", entity);
 
-        int startVersion = entity.getVersion();
-        em.lock(entity, LockModeType.OPTIMISTIC_FORCE_INCREMENT);
+            int startVersion = entity.getVersion();
+            em.lock(entity, LockModeType.OPTIMISTIC_FORCE_INCREMENT);
         
-        entity.setCity("Calgary");
-        entity.setProvince("AB");
-        entity.setCountry("Canada");
+            entity.setCity("Calgary");
+            entity.setProvince("AB");
+            entity.setCountry("Canada");
         
-        em.getTransaction().commit();
+            em.getTransaction().commit();
         
-        int expectedVersion = (startVersion + 1);
-        int actualVersion = entity.getVersion();
+            int expectedVersion = (startVersion + 1);
+            int actualVersion = entity.getVersion();
 
-        em.close();
+            em.close();
         
-        assertEquals("Version number incremented incorrectly: ", expectedVersion, actualVersion);
-        assertEquals("Entity's name should be changed", "Calgary", entity.getCity());
-        // SQL statements expected - 1 x update 
-        assertEquals("1 SQL update statement execution(s)", 1, countNumberOfUpdateStatements(counter));
+            assertEquals("Version number incremented incorrectly: ", expectedVersion, actualVersion);
+            assertEquals("Entity's name should be changed", "Calgary", entity.getCity());
+            // SQL statements expected - 1 x update
+            assertEquals("1 SQL update statement execution(s)", 1, countNumberOfUpdateStatements(counter));
+        } finally {
+            if (counter != null) {
+                counter.remove();
+            }
+        }
     }
     
     public void testVersionIncrementFlushCommitNoChanges() {
     	if (usesSOP()) {
-    		// with SOP it fails with: 1 SQL update statement execution(s) expected:<1> but was:<2>
-    		// Looks like a bug: cascade versioning (used with SOP) adds an extra version increment.
+            // with SOP it fails with: 1 SQL update statement execution(s)
+            // expected:<1> but was:<2>
+            // Looks like a bug: cascade versioning (used with SOP) adds an
+            // extra version increment.
     		return;
     	}
-        QuerySQLTracker counter = new QuerySQLTracker(getServerSession());
-        EntityManager em = getEntityManagerFactory().createEntityManager();
-        em.getTransaction().begin();
+        QuerySQLTracker counter = null;
+        try {
+            counter = new QuerySQLTracker(getServerSession());
+            EntityManager em = getEntityManagerFactory().createEntityManager();
+            em.getTransaction().begin();
 
-        List<Address> addresses = em.createQuery("select a from Address a").getResultList();
-        counter.getSqlStatements().clear();
-        assertNotNull("Null query results returned", addresses);
-        assertNotSame("No query results returned", addresses.size(), 0);
-        Address entity = addresses.get(0);
-        assertNotNull("Entity: Address cannot be null", entity);
+            List<Address> addresses = em.createQuery("select a from Address a").getResultList();
+            counter.getSqlStatements().clear();
+            assertNotNull("Null query results returned", addresses);
+            assertNotSame("No query results returned", addresses.size(), 0);
+            Address entity = addresses.get(0);
+            assertNotNull("Entity: Address cannot be null", entity);
 
-        int startVersion = entity.getVersion();
-        em.lock(entity, LockModeType.OPTIMISTIC_FORCE_INCREMENT);
-        
-        em.flush();
-        
-        em.getTransaction().commit();
-        int expectedVersion = (startVersion + 1);
-        int actualVersion = entity.getVersion();
+            int startVersion = entity.getVersion();
+            em.lock(entity, LockModeType.OPTIMISTIC_FORCE_INCREMENT);
 
-        em.close();
-        
-        assertEquals("Version number incremented incorrectly: ", expectedVersion, actualVersion);
-        // SQL statements expected - 1 x update 
-        assertEquals("1 SQL update statement execution(s)", 1, countNumberOfUpdateStatements(counter));
+            em.flush();
+
+            em.getTransaction().commit();
+            int expectedVersion = (startVersion + 1);
+            int actualVersion = entity.getVersion();
+
+            em.close();
+
+            assertEquals("Version number incremented incorrectly: ", expectedVersion, actualVersion);
+            // SQL statements expected - 1 x update
+            assertEquals("1 SQL update statement execution(s)", 1, countNumberOfUpdateStatements(counter));
+        } finally {
+            if (counter != null) {
+                counter.remove();
+            }
+        }
     }
     
     public void testVersionIncrementMultipleEntities() {
-        QuerySQLTracker counter = new QuerySQLTracker(getServerSession());
-        EntityManager em = getEntityManagerFactory().createEntityManager();
-        em.getTransaction().begin();
+        QuerySQLTracker counter = null;
+        try {
+            counter = new QuerySQLTracker(getServerSession());
+            EntityManager em = getEntityManagerFactory().createEntityManager();
+            em.getTransaction().begin();
 
-        List<Address> addresses = em.createQuery("select a from Address a").getResultList();
-        counter.getSqlStatements().clear();
-        assertNotNull("Null query results returned", addresses);
-        assertNotSame("No query results returned", addresses.size(), 0);
-        Address entity1 = addresses.get(0);
-        Address entity2 = addresses.get(1);
+            List<Address> addresses = em.createQuery("select a from Address a").getResultList();
+            counter.getSqlStatements().clear();
+            assertNotNull("Null query results returned", addresses);
+            assertNotSame("No query results returned", addresses.size(), 0);
+            Address entity1 = addresses.get(0);
+            Address entity2 = addresses.get(1);
         
-        assertNotNull("Entity 1: Address cannot be null", entity1);
-        assertNotNull("Entity 2: Address cannot be null", entity2);
+            assertNotNull("Entity 1: Address cannot be null", entity1);
+            assertNotNull("Entity 2: Address cannot be null", entity2);
 
-        int startVersion1 = entity1.getVersion();
-        int startVersion2 = entity2.getVersion();
-        em.lock(entity1, LockModeType.OPTIMISTIC_FORCE_INCREMENT);
+            int startVersion1 = entity1.getVersion();
+            int startVersion2 = entity2.getVersion();
+            em.lock(entity1, LockModeType.OPTIMISTIC_FORCE_INCREMENT);
         
-        // update entity 2
-        entity2.setCity("Kamloops");
-        entity2.setProvince("BC");
-        entity2.setCountry("Canada");
+            // update entity 2
+            entity2.setCity("Kamloops");
+            entity2.setProvince("BC");
+            entity2.setCountry("Canada");
         
-        em.flush();
+            em.flush();
         
-        // update entity 1
-        entity1.setCity("New Glasgow");
-        entity1.setProvince("NS");
-        entity1.setCountry("Canada");
+            // update entity 1
+            entity1.setCity("New Glasgow");
+            entity1.setProvince("NS");
+            entity1.setCountry("Canada");
         
-        em.flush();
+            em.flush();
         
-        int expectedVersion1 = (startVersion1 + 1);
-        int actualVersion1 = entity1.getVersion();
+            int expectedVersion1 = (startVersion1 + 1);
+            int actualVersion1 = entity1.getVersion();
         
-        int expectedVersion2 = (startVersion2 + 1);
-        int actualVersion2 = entity2.getVersion();
+            int expectedVersion2 = (startVersion2 + 1);
+            int actualVersion2 = entity2.getVersion();
 
-        em.getTransaction().rollback();
-        em.close();
+            em.getTransaction().rollback();
+            em.close();
         
-        assertEquals("Entity 1: Version number incremented incorrectly: ", expectedVersion1, actualVersion1);
-        assertEquals("Entity 2: Version number incremented incorrectly: ", expectedVersion2, actualVersion2);
+            assertEquals("Entity 1: Version number incremented incorrectly: ", expectedVersion1, actualVersion1);
+            assertEquals("Entity 2: Version number incremented incorrectly: ", expectedVersion2, actualVersion2);
         
-        // 3 SQL update statements expected
-        assertEquals("3 SQL update statement execution(s)", 3, countNumberOfUpdateStatements(counter));
+            // 3 SQL update statements expected
+            assertEquals("3 SQL update statement execution(s)", 3, countNumberOfUpdateStatements(counter));
+        } finally {
+            if (counter != null) {
+                counter.remove();
+            }
+        }
     }
     
     public void testVersionIncrementBasicPromoteLock() {
     	if (usesSOP()) {
-    		// with SOP it fails with: 1 SQL update statement execution(s) expected:<1> but was:<2>
-    		// Looks like a bug: cascade versioning (used with SOP) adds an extra version increment.
+            // with SOP it fails with: 1 SQL update statement execution(s)
+            // expected:<1> but was:<2>
+            // Looks like a bug: cascade versioning (used with SOP) adds an
+            // extra version increment.
     		return;
     	}
-        QuerySQLTracker counter = new QuerySQLTracker(getServerSession());
-        EntityManager em = getEntityManagerFactory().createEntityManager();
-        em.getTransaction().begin();
+        QuerySQLTracker counter = null;
+        try {
+            counter = new QuerySQLTracker(getServerSession());
+            EntityManager em = getEntityManagerFactory().createEntityManager();
+            em.getTransaction().begin();
 
-        List<Address> addresses = em.createQuery("select a from Address a").getResultList();
-        counter.getSqlStatements().clear();
-        assertNotNull("Null query results returned", addresses);
-        assertNotSame("No query results returned", addresses.size(), 0);
-        Address entity = addresses.get(0);
-        assertNotNull("Entity: Address cannot be null", entity);
+            List<Address> addresses = em.createQuery("select a from Address a").getResultList();
+            counter.getSqlStatements().clear();
+            assertNotNull("Null query results returned", addresses);
+            assertNotSame("No query results returned", addresses.size(), 0);
+            Address entity = addresses.get(0);
+            assertNotNull("Entity: Address cannot be null", entity);
 
-        int startVersion = entity.getVersion();
-        em.lock(entity, LockModeType.OPTIMISTIC);
-        
-        entity.setCity("Churchill");
-        entity.setProvince("MB");
-        entity.setCountry("Canada");
-        
-        em.flush();       
-        em.getTransaction().commit();
-        
-        int expectedVersion = (startVersion + 1);
-        int actualVersion = entity.getVersion();
+            int startVersion = entity.getVersion();
+            em.lock(entity, LockModeType.OPTIMISTIC);
 
-        em.close();
-        
-        assertEquals("Version number incremented incorrectly: ", expectedVersion, actualVersion);
-        // SQL statements expected
-        assertEquals("1 SQL update statement execution(s)", 1, countNumberOfUpdateStatements(counter));
+            entity.setCity("Churchill");
+            entity.setProvince("MB");
+            entity.setCountry("Canada");
+
+            em.flush();
+            em.getTransaction().commit();
+
+            int expectedVersion = (startVersion + 1);
+            int actualVersion = entity.getVersion();
+
+            em.close();
+
+            assertEquals("Version number incremented incorrectly: ", expectedVersion, actualVersion);
+            // SQL statements expected
+            assertEquals("1 SQL update statement execution(s)", 1, countNumberOfUpdateStatements(counter));
+        } finally {
+            if (counter != null) {
+                counter.remove();
+            }
+        }
     }
     
     public void testVersionIncrementPromoteLock() {
-        QuerySQLTracker counter = new QuerySQLTracker(getServerSession());
-        EntityManager em = getEntityManagerFactory().createEntityManager();
-        em.getTransaction().begin();
+        QuerySQLTracker counter = null;
+        try {
+            counter = new QuerySQLTracker(getServerSession());
+            EntityManager em = getEntityManagerFactory().createEntityManager();
+            em.getTransaction().begin();
 
-        List<Address> addresses = em.createQuery("select a from Address a").getResultList();
-        counter.getSqlStatements().clear();
-        assertNotNull("Null query results returned", addresses);
-        assertNotSame("No query results returned", addresses.size(), 0);
-        Address entity = addresses.get(0);
-        assertNotNull("Entity: Address cannot be null", entity);
+            List<Address> addresses = em.createQuery("select a from Address a").getResultList();
+            counter.getSqlStatements().clear();
+            assertNotNull("Null query results returned", addresses);
+            assertNotSame("No query results returned", addresses.size(), 0);
+            Address entity = addresses.get(0);
+            assertNotNull("Entity: Address cannot be null", entity);
 
-        int startVersion = entity.getVersion();
-        em.lock(entity, LockModeType.OPTIMISTIC);
+            int startVersion = entity.getVersion();
+            em.lock(entity, LockModeType.OPTIMISTIC);
         
-        entity.setCity("Banff");
-        entity.setProvince("AB");
-        entity.setCountry("Canada");
+            entity.setCity("Banff");
+            entity.setProvince("AB");
+            entity.setCountry("Canada");
         
-        em.flush();
+            em.flush();
         
-        em.lock(entity, LockModeType.OPTIMISTIC_FORCE_INCREMENT);
+            em.lock(entity, LockModeType.OPTIMISTIC_FORCE_INCREMENT);
         
-        entity.setCity("London");
-        entity.setProvince("ON");
-        entity.setCountry("Canada");
+            entity.setCity("London");
+            entity.setProvince("ON");
+            entity.setCountry("Canada");
         
-        em.getTransaction().commit();
+            em.getTransaction().commit();
         
-        int expectedVersion = (startVersion + 1);
-        int actualVersion = entity.getVersion();
+            int expectedVersion = (startVersion + 1);
+            int actualVersion = entity.getVersion();
 
-        em.close();
+            em.close();
         
-        assertEquals("Version number incremented incorrectly: ", expectedVersion, actualVersion);
-        // SQL statements expected
-        assertEquals("2 SQL update statement execution(s)", 2, countNumberOfUpdateStatements(counter));
+            assertEquals("Version number incremented incorrectly: ", expectedVersion, actualVersion);
+            // SQL statements expected
+            assertEquals("2 SQL update statement execution(s)", 2, countNumberOfUpdateStatements(counter));
+        } finally {
+            if (counter != null) {
+                counter.remove();
+            }
+        }
     }
     
     protected int countNumberOfUpdateStatements(QuerySQLTracker counter) {
@@ -443,7 +518,7 @@ public class OptimisticLockForceIncrementTestSuite extends JUnitTestCase {
         }
         
         int numberOfStatements = 0;
-        List<String> statements = (List<String>)counter.getSqlStatements();
+        List<String> statements = counter.getSqlStatements();
         for (String statement : statements) {
             if (statement != null && statement.trim().toUpperCase().startsWith("UPDATE")) {
                 numberOfStatements++;

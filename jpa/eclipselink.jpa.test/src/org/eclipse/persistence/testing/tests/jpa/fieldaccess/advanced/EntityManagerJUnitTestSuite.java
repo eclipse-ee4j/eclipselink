@@ -19,84 +19,113 @@ import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.StringWriter;
-
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
-import java.util.Iterator;
 
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.FlushModeType;
-import javax.persistence.Persistence;
-import javax.persistence.Query;
-import javax.persistence.TransactionRequiredException;
 import javax.persistence.LockModeType;
-import javax.persistence.PersistenceException;
 import javax.persistence.OptimisticLockException;
+import javax.persistence.Persistence;
+import javax.persistence.PersistenceException;
+import javax.persistence.Query;
 import javax.persistence.RollbackException;
+import javax.persistence.TransactionRequiredException;
 
-import junit.framework.*;
-
-import org.eclipse.persistence.jpa.JpaQuery;
-import org.eclipse.persistence.jpa.JpaEntityManager;
-import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.queries.DatabaseQuery;
-import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
-import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
-import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.queries.ObjectLevelReadQuery;
-import org.eclipse.persistence.queries.ReadAllQuery;
-import org.eclipse.persistence.sessions.changesets.ChangeRecord;
-import org.eclipse.persistence.sessions.changesets.ObjectChangeSet;
-import org.eclipse.persistence.sessions.changesets.UnitOfWorkChangeSet;
-import org.eclipse.persistence.sessions.server.ReadConnectionPool;
-import org.eclipse.persistence.sessions.server.ServerSession;
-import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.tools.schemaframework.SequenceObjectDefinition;
+import org.eclipse.persistence.config.CacheUsage;
+import org.eclipse.persistence.config.CascadePolicy;
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.config.PessimisticLock;
+import org.eclipse.persistence.config.QueryHints;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.DescriptorEvent;
+import org.eclipse.persistence.descriptors.DescriptorEventAdapter;
+import org.eclipse.persistence.descriptors.InheritancePolicy;
+import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.internal.descriptors.PersistenceEntity;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
+import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.weaving.PersistenceWeaved;
+import org.eclipse.persistence.internal.weaving.PersistenceWeavedLazy;
+import org.eclipse.persistence.jpa.JpaEntityManager;
+import org.eclipse.persistence.jpa.JpaQuery;
+import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.logging.SessionLogEntry;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.OneToOneMapping;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.FetchGroupTracker;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.sequencing.NativeSequence;
+import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sessions.CopyGroup;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.SessionEvent;
 import org.eclipse.persistence.sessions.SessionEventAdapter;
 import org.eclipse.persistence.sessions.UnitOfWork;
-import org.eclipse.persistence.config.CacheUsage;
-import org.eclipse.persistence.config.CascadePolicy;
-import org.eclipse.persistence.config.QueryHints;
-import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.config.PessimisticLock;
-import org.eclipse.persistence.descriptors.DescriptorEvent;
-import org.eclipse.persistence.descriptors.DescriptorEventAdapter;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.descriptors.InheritancePolicy;
-import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
-import org.eclipse.persistence.internal.descriptors.PersistenceEntity;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.internal.weaving.PersistenceWeaved;
-import org.eclipse.persistence.internal.weaving.PersistenceWeavedLazy;
-import org.eclipse.persistence.queries.FetchGroupTracker;
-import org.eclipse.persistence.sequencing.NativeSequence;
-import org.eclipse.persistence.sequencing.Sequence;
-import org.eclipse.persistence.logging.SessionLogEntry;
-import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.mappings.OneToOneMapping;
-
+import org.eclipse.persistence.sessions.changesets.ChangeRecord;
+import org.eclipse.persistence.sessions.changesets.ObjectChangeSet;
+import org.eclipse.persistence.sessions.changesets.UnitOfWorkChangeSet;
+import org.eclipse.persistence.sessions.server.ReadConnectionPool;
+import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.QuerySQLTracker;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
-import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.*;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Address;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.AdvancedTableCreator;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Buyer;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Customizer;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Department;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.EmploymentPeriod;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Equipment;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.EquipmentCode;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.FormerEmployment;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.GoldBuyer;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Golfer;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.GolferPK;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.LargeProject;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Man;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.NoIdentityMap;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.PartnerLink;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.PhoneNumber;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.PlatinumBuyer;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Project;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.SmallProject;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Source;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.SuperLargeProject;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.TargetA;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.TargetB;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Vegetable;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.VegetablePK;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Woman;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.WorldRank;
+import org.eclipse.persistence.tools.schemaframework.SequenceObjectDefinition;
+
+import junit.framework.Assert;
+import junit.framework.AssertionFailedError;
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
 /**
  * Test the EntityManager API using the advanced model.
@@ -3709,6 +3738,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             if (isTransactionActive(em)) {
                 rollbackTransaction(em);
             }
+            if (counter != null) {
+                counter.remove();
+            }
             closeEntityManager(em);
         }
     }
@@ -4467,20 +4499,35 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     // At first tried to use JTATransactionController class, but that introduced dependencies 
     // on javax.transaction package (and therefore failed in gf entity persistence tests).
     static class DummyExternalTransactionController extends org.eclipse.persistence.transaction.AbstractTransactionController {
+        @Override
         public boolean isRolledBack_impl(Object status){return false;}
+        @Override
         protected void registerSynchronization_impl(org.eclipse.persistence.transaction.AbstractSynchronizationListener listener, Object txn) throws Exception{}
+        @Override
         protected Object getTransaction_impl() throws Exception {return null;}
+        @Override
         protected Object getTransactionKey_impl(Object transaction) throws Exception {return null;}
+        @Override
         protected Object getTransactionStatus_impl() throws Exception {return null;}
+        @Override
         protected void beginTransaction_impl() throws Exception{}
+        @Override
         protected void commitTransaction_impl() throws Exception{}
+        @Override
         protected void rollbackTransaction_impl() throws Exception{}
+        @Override
         protected void markTransactionForRollback_impl() throws Exception{}
+        @Override
         protected boolean canBeginTransaction_impl(Object status){return false;}
+        @Override
         protected boolean canCommitTransaction_impl(Object status){return false;}
+        @Override
         protected boolean canRollbackTransaction_impl(Object status){return false;}
+        @Override
         protected boolean canIssueSQLToDatabase_impl(Object status){return false;}
+        @Override
         protected boolean canMergeUnitOfWork_impl(Object status){return false;}
+        @Override
         protected String statusToString_impl(Object status){return "";}
     }
     
@@ -4870,6 +4917,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     
     // listener for updateAttributeWithObjectTest - Test for bug fix: 299637 - updateAttributeWithObjectTest
     private class UpdateListener extends DescriptorEventAdapter {
+        @Override
         public void aboutToUpdate(DescriptorEvent event) {
             EmploymentPeriod period = new EmploymentPeriod();
             period.setStartDate(Date.valueOf("2010-11-14"));
@@ -4950,6 +4998,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     //  Bug 307433 - Regression in Auditing Support when using defaults.
     static class ChangeRecordKeepOldValueListener extends SessionEventAdapter {
         public UnitOfWorkChangeSet uowChangeSet;
+        @Override
         public void postCalculateUnitOfWorkChangeSet(SessionEvent event) {
             uowChangeSet = (UnitOfWorkChangeSet)event.getProperty("UnitOfWorkChangeSet");
         }

@@ -25,9 +25,6 @@ import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
@@ -37,7 +34,15 @@ import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.QuerySQLTracker;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
-import org.eclipse.persistence.testing.models.jpa.fieldaccess.relationships.*;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.relationships.Customer;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.relationships.Customer2;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.relationships.Item;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.relationships.Order;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.relationships.RelationshipsExamples;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.relationships.RelationshipsTableManager;
+
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
 public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
     
@@ -661,6 +666,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
     public void testReadCustomer() {        
         Customer customer = RelationshipsExamples.customerExample4();
         EntityManager em = createEntityManager("fieldaccess");
+        QuerySQLTracker counter = null;
         try {
             beginTransaction(em);
             Item item1 = RelationshipsExamples.itemExample1();
@@ -681,7 +687,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
             clearCache("fieldaccess");
             em = createEntityManager("fieldaccess");
             beginTransaction(em);
-            QuerySQLTracker counter = new QuerySQLTracker(getServerSession("fieldaccess"));
+            counter = new QuerySQLTracker(getServerSession("fieldaccess"));
             customer = em.find(Customer.class, customer.getCustomerId());
             for (Order order : customer.getOrders()) {
                 order.getCustomer();
@@ -693,6 +699,9 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
         } finally {
             if (isTransactionActive(em)) {
                 rollbackTransaction(em);
+            }
+            if (counter != null) {
+                counter.remove();
             }
             closeEntityManager(em);
         }

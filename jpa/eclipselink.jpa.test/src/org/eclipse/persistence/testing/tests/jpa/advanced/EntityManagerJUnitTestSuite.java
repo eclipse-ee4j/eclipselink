@@ -118,7 +118,6 @@ import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.JpaQuery;
 import org.eclipse.persistence.jpa.PersistenceProvider;
 import org.eclipse.persistence.logging.AbstractSessionLog;
-import org.eclipse.persistence.logging.DefaultSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.platform.server.ServerPlatform;
@@ -3000,6 +2999,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             if (isTransactionActive(em)) {
                 rollbackTransaction(em);
             }
+            if (counter != null) {
+                counter.remove();
+            }
             closeEntityManager(em);
         }
     }
@@ -3113,6 +3115,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         } finally {
             if (isTransactionActive(em)) {
                 rollbackTransaction(em);
+            }
+            if (counter != null) {
+                counter.remove();
             }
             closeEntityManager(em);
         }
@@ -12990,12 +12995,14 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
         SessionLog original = AbstractSessionLog.getLog();
         try {
+            AbstractSessionLog.setLog(new LogWrapper());
             //check session log for "Configured server platform message"
             Map<String, Object> properties = new HashMap<>();
             properties.putAll(JUnitTestCaseHelper.getDatabaseProperties());
             properties.put(PersistenceUnitProperties.LOGGING_LEVEL, original.getLevelString());
             properties.put(PersistenceUnitProperties.LOGGING_LOGGER, LogWrapper.class.getName());
             EntityManagerFactoryImpl emf = (EntityManagerFactoryImpl) Persistence.createEntityManagerFactory(getPersistenceUnitName(), properties);
+            emf.refreshMetadata(properties);
             SimpleSessionLogWrapper wr = (SimpleSessionLogWrapper) emf.getServerSession().getSessionLog();
             assertEquals("configured_server_platform should be printed at FINE level",
                     wr.getLevel() <= SessionLog.FINE, wr.expected());
@@ -13035,19 +13042,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         @Override
         public Class getExternalTransactionControllerClass() {
             return null;
-        }
-    }
-
-    public static final class LogWrapper extends SimpleSessionLogWrapper {
-
-        public LogWrapper() {
-            this("configured_server_platform");
-        }
-
-        public LogWrapper(String expected) {
-            super(new DefaultSessionLog());
-            setExpectedMessage(expected);
-            setLevel(sessionLog.getLevel());
         }
     }
 }
