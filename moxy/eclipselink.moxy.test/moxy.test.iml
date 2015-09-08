@@ -136,15 +136,6 @@
         </SOURCES>
       </library>
     </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$EXTENSION_LIB_EXTERNAL$/jmockit-1.0.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
     <orderEntry type="module-library" scope="RUNTIME">
       <library>
         <CLASSES>
@@ -231,15 +222,6 @@
     <orderEntry type="module-library" scope="RUNTIME">
       <library>
         <CLASSES>
-          <root url="jar://$EXTENSION_LIB_EXTERNAL$/javax.el-api-2.2.2.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" scope="RUNTIME">
-      <library>
-        <CLASSES>
           <root url="jar://$EXTENSION_LIB_EXTERNAL$/javax.el-2.2.2.jar!/" />
         </CLASSES>
         <JAVADOC />
@@ -250,6 +232,26 @@
       <library>
         <CLASSES>
           <root url="jar://$EXTENSION_LIB_EXTERNAL$/classmate-1.0.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$EXTENSION_LIB_EXTERNAL$/jmockit-1.10.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$EXTENSION_LIB_EXTERNAL$/jmockit-1.10.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$EXTENSION_LIB_EXTERNAL$/javax.el-api-2.2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

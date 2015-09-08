@@ -54,18 +54,8 @@ public class ValidationXMLReader implements Callable<Map<Class<?>, Boolean>> {
 
     private Map<Class<?>, Boolean> constraintsOnClasses = new HashMap<>();
 
+    // Created lazily
     private SAXParser saxParser;
-
-    public ValidationXMLReader() {
-        try {
-            SAXParserFactory factory = SAXParserFactory.newInstance();
-            saxParser = factory.newSAXParser();
-        } catch (ParserConfigurationException | SAXException e) {
-            String msg = "ValidationXMLReader initialization failed. Exception: " + e.getMessage();
-            LOGGER.severe(msg);
-            throw new BeanValidationException(msg, e);
-        }
-    }
 
     /**
      * Parses validation.xml.
@@ -84,6 +74,14 @@ public class ValidationXMLReader implements Callable<Map<Class<?>, Boolean>> {
             parseConstraintFiles();
         }
         return constraintsOnClasses;
+    }
+
+    /**
+     * Checks if validation.xml exists.
+     */
+    public static boolean isValidationXmlPresent() {
+        final URL url = Thread.currentThread().getContextClassLoader().getResource(VALIDATION_XML);
+        return url != null;
     }
 
     private void parseConstraintFiles() {
@@ -126,10 +124,27 @@ public class ValidationXMLReader implements Callable<Map<Class<?>, Boolean>> {
         }
     }
 
+    /**
+     * Lazy getter for SAX parser.
+     */
+    private SAXParser getSaxParser() {
+        if (saxParser == null) {
+            try {
+                SAXParserFactory factory = SAXParserFactory.newInstance();
+                saxParser = factory.newSAXParser();
+            } catch (ParserConfigurationException | SAXException e) {
+                String msg = "ValidationXMLReader initialization failed. Exception: " + e.getMessage();
+                LOGGER.severe(msg);
+                throw new BeanValidationException(msg, e);
+            }
+        }
+        return saxParser;
+    }
+
     private void parseValidationXML() throws SAXException, IOException, URISyntaxException {
         URL validationXml = Thread.currentThread().getContextClassLoader().getResource(VALIDATION_XML);
         if (validationXml != null) {
-            saxParser.parse(new File(validationXml.toURI()), validationHandler);
+            getSaxParser().parse(new File(validationXml.toURI()), validationHandler);
         }
     }
 
@@ -142,7 +157,7 @@ public class ValidationXMLReader implements Callable<Map<Class<?>, Boolean>> {
         URL constraintsXml = Thread.currentThread().getContextClassLoader().getResource(constraintsFile);
         try {
             //noinspection ConstantConditions
-            saxParser.parse(new File(constraintsXml.toURI()), referencedFileHandler);
+            getSaxParser().parse(new File(constraintsXml.toURI()), referencedFileHandler);
         } catch (SAXException | IOException | URISyntaxException | NullPointerException e) {
             String msg = "Loading of custom constraints file: " + constraintsFile + "failed. Exception: " + e
                     .getMessage();

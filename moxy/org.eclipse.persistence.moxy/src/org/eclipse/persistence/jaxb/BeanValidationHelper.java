@@ -58,21 +58,11 @@ final public class BeanValidationHelper {
     private Future<Map<Class<?>, Boolean>> future;
 
     /**
-     * Executor service (managed or JDK).
-     */
-    private ExecutorService executor;
-
-    /**
-     * True for JDK executor, false for managed.
-     */
-    private boolean shutdownNeeded;
-
-    /**
      * Set of all default BeanValidation field or method annotations and known custom field or method constraints.
      */
     private final Set<Class<? extends Annotation>> knownConstraints = new HashSet<>();
 
-     /**
+    /**
      * Map of all classes that have undergone check for bean validation constraints.
      * Maps the key with boolean value telling whether the class contains an annotation from {@link #knownConstraints}.
      */
@@ -107,15 +97,15 @@ final public class BeanValidationHelper {
     }
 
     /**
-     * Creates a new instance. Starts asynchronous parsing of validation.xml.
+     * Creates a new instance. Starts asynchronous parsing of validation.xml if it exists.
      */
     public BeanValidationHelper() {
-        createExecutor();
-        future = executor.submit(new ValidationXMLReader());
-
-        // Shutdown is needed only for JDK executor
-        if (shutdownNeeded) {
-            executor.shutdown();
+        // Try to run validation.xml parsing asynchronously if validation.xml exists
+        if (ValidationXMLReader.isValidationXmlPresent()) {
+            parseValidationXmlAsync();
+        } else {
+            // validation.xml doesn't exist -> create an empty map
+            constraintsOnClasses = new HashMap<>();
         }
     }
 
@@ -140,22 +130,57 @@ final public class BeanValidationHelper {
      */
     public Map<Class<?>, Boolean> getConstraintsMap() {
         if (constraintsOnClasses == null) {
-            try {
-                constraintsOnClasses = future.get();
-            } catch (InterruptedException | ExecutionException e) {
-                LOGGER.log(Level.WARNING, "Error parsing validation.xml", e);
-
-                // For some reason the async parsing attempt failed. Call it synchronously.
-                final ValidationXMLReader reader = new ValidationXMLReader();
+            if (future == null) {
+                // This happens when submission of async task is failed. Run validation.xml parsing synchronously.
+                constraintsOnClasses = parseValidationXml();
+            } else {
+                // Async task was successfully submitted. get a result from future
                 try {
-                    constraintsOnClasses = reader.call();
-                } catch (Exception e1) {
-                    LOGGER.log(Level.WARNING, "Error parsing validation.xml synchronously", e);
-                    constraintsOnClasses = new HashMap<>();
+                    constraintsOnClasses = future.get();
+                } catch (InterruptedException | ExecutionException e) {
+                    // For some reason the async parsing attempt failed. Call it synchronously.
+                    LOGGER.log(Level.WARNING, "Error parsing validation.xml the async way", e);
+                    constraintsOnClasses = parseValidationXml();
                 }
             }
         }
         return constraintsOnClasses;
+    }
+
+    /**
+     * Tries to run validation.xml parsing asynchronously.
+     */
+    private void parseValidationXmlAsync() {
+        Executor executor = null;
+        try {
+            executor = createExecutor();
+            future = executor.executorService.submit(new ValidationXMLReader());
+        } catch (Throwable e) {
+            // In the rare cases submitting a task throws OutOfMemoryError. In this case we call validation.xml
+            // parsing lazily when requested
+            LOGGER.log(Level.WARNING, "Error creating/submitting async validation.xml parsing task.", e);
+            future = null;
+        } finally {
+            // Shutdown is needed only for JDK executor
+            if (executor != null && executor.shutdownNeeded) {
+                executor.executorService.shutdown();
+            }
+        }
+    }
+
+    /**
+     * Runs validation.xml parsing synchronously.
+     */
+    private Map<Class<?>, Boolean> parseValidationXml() {
+        final ValidationXMLReader reader = new ValidationXMLReader();
+        Map<Class<?>, Boolean> result;
+        try {
+            result = reader.call();
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Error parsing validation.xml synchronously", e);
+            result = new HashMap<>();
+        }
+        return result;
     }
 
     /**
@@ -222,18 +247,28 @@ final public class BeanValidationHelper {
      * Creates an executor service. Tries to get a managed executor service. If failed creates a JDK one.
      * Sets shutdownNeeded property to true in case JDK executor is created.
      */
-    private void createExecutor() {
+    private Executor createExecutor() {
         try {
             InitialContext jndiCtx = new InitialContext();
             // type:      javax.enterprise.concurrent.ManagedExecutorService
             // jndi-name: concurrent/ThreadPool
-            executor = (ExecutorService) jndiCtx.lookup("java:comp/env/concurrent/ThreadPool");
-            shutdownNeeded = false;
-            return;
+            return new Executor((ExecutorService) jndiCtx.lookup("java:comp/env/concurrent/ThreadPool"), false);
         } catch (NamingException ignored) {
             // aka continue to proceed with retrieving jdk executor
         }
-        executor = Executors.newSingleThreadExecutor();
-        shutdownNeeded = true;
+        return new Executor(Executors.newFixedThreadPool(1), true);
+    }
+
+    /**
+     * This class holds a managed or JDK executor instance with a flag indicating do we need to shut it down or not.
+     */
+    private static class Executor {
+        ExecutorService executorService;
+        boolean shutdownNeeded;
+
+        Executor(ExecutorService executorService, boolean shutdownNeeded) {
+            this.executorService = executorService;
+            this.shutdownNeeded = shutdownNeeded;
+        }
     }
 }
