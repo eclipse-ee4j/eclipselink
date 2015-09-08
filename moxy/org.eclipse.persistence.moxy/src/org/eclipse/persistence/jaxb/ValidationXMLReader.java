@@ -23,9 +23,9 @@ import org.xml.sax.helpers.DefaultHandler;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.ArrayList;
@@ -57,18 +57,8 @@ public class ValidationXMLReader implements Callable<Map<Class<?>, Boolean>> {
 
     private Map<Class<?>, Boolean> constraintsOnClasses = new HashMap<>();
 
+    // Created lazily
     private SAXParser saxParser;
-
-    public ValidationXMLReader() {
-        try {
-            SAXParserFactory factory = SAXParserFactory.newInstance();
-            saxParser = factory.newSAXParser();
-        } catch (ParserConfigurationException | SAXException e) {
-            String msg = "ValidationXMLReader initialization failed. Exception: " + e.getMessage();
-            LOGGER.severe(msg);
-            throw new BeanValidationException(msg, e);
-        }
-    }
 
     /**
      * Parses validation.xml.
@@ -89,6 +79,14 @@ public class ValidationXMLReader implements Callable<Map<Class<?>, Boolean>> {
         return constraintsOnClasses;
     }
 
+    /**
+     * Checks if validation.xml exists.
+     */
+    public static boolean isValidationXmlPresent() {
+        final URL url = Thread.currentThread().getContextClassLoader().getResource(VALIDATION_XML);
+        return url != null;
+    }
+
     private void parseConstraintFiles() {
         final class ConstrainedClassesDetector extends DefaultHandler {
 
@@ -97,7 +95,6 @@ public class ValidationXMLReader implements Callable<Map<Class<?>, Boolean>> {
 
             public void startElement(String uri, String localName, String qName,
                                      Attributes attributes) throws SAXException {
-
                 if (DEFAULT_PACKAGE_QNAME.equalsIgnoreCase(qName)) {
                     defaultPackageElement = true;
                 } else if (BEAN_QNAME.equalsIgnoreCase(qName)) {
@@ -142,8 +139,25 @@ public class ValidationXMLReader implements Callable<Map<Class<?>, Boolean>> {
             validationXml = Thread.currentThread().getContextClassLoader().getResourceAsStream(VALIDATION_XML);
         }
         if (validationXml != null) {
-            saxParser.parse(validationXml, validationHandler);
+            getSaxParser().parse(validationXml, validationHandler);
         }
+    }
+
+    /**
+     * Lazy getter for SAX parser.
+     */
+    private SAXParser getSaxParser() {
+        if (saxParser == null) {
+            try {
+                SAXParserFactory factory = SAXParserFactory.newInstance();
+                saxParser = factory.newSAXParser();
+            } catch (ParserConfigurationException | SAXException e) {
+                String msg = "ValidationXMLReader initialization failed. Exception: " + e.getMessage();
+                LOGGER.severe(msg);
+                throw new BeanValidationException(msg, e);
+            }
+        }
+        return saxParser;
     }
 
     /**
@@ -165,7 +179,7 @@ public class ValidationXMLReader implements Callable<Map<Class<?>, Boolean>> {
         }
         try {
             //noinspection ConstantConditions
-            saxParser.parse(constraintsXml, referencedFileHandler);
+            getSaxParser().parse(constraintsXml, referencedFileHandler);
         } catch (SAXException | IOException | NullPointerException e) {
             String msg = "Loading of custom constraints file: " + constraintsFile + " failed. Exception: " + e.getMessage();
             LOGGER.warning(msg);

@@ -8,7 +8,7 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Dmitry Kornilov - 2.6.1 - initial implementation
+ *     Dmitry Kornilov - initial implementation
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.beanvalidation;
 
@@ -32,6 +32,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * This class contains BeanValidationHelper related tests.
@@ -42,14 +43,32 @@ import static org.junit.Assert.assertNotNull;
 public class BeanValidationHelperTestCase {
 
     /**
+     * Tests that validation.xml parsing is not called if validation.xml doesn't exist.
+     */
+    @Test
+    public void testValidationXmlExists(final @Mocked ValidationXMLReader reader) throws NamingException {
+        new Expectations() {{
+            ValidationXMLReader.isValidationXmlPresent(); result = false;
+            new ValidationXMLReader(); times = 0;
+        }};
+
+        BeanValidationHelper beanValidationHelper = new BeanValidationHelper();
+        assertNotNull(beanValidationHelper.getConstraintsMap());
+        assertTrue(beanValidationHelper.getConstraintsMap().size() == 0);
+    }
+
+    /**
      * Tests that managed executor service doesn't get shutdown.
      */
     @Test
     public void testManagedExecutorService(final @Mocked InitialContext initialContext,
-                                           final @Mocked ExecutorService managedExecutorService) throws NamingException {
+                                           final @Mocked ExecutorService managedExecutorService,
+                                           final @Mocked ValidationXMLReader reader) throws NamingException {
         new Expectations() {{
+            ValidationXMLReader.isValidationXmlPresent(); result = true;
             new InitialContext();
             initialContext.lookup("java:comp/env/concurrent/ThreadPool"); returns(managedExecutorService);
+            new ValidationXMLReader();
             managedExecutorService.submit((Callable) any);
             managedExecutorService.shutdown(); times=0;
         }};
@@ -62,18 +81,21 @@ public class BeanValidationHelperTestCase {
      */
     @Test
     public void testJDKExecutorService(final @Mocked InitialContext initialContext,
-                                       final @Mocked ExecutorService jdkExecutorService) throws NamingException {
+                                       final @Mocked ExecutorService jdkExecutorService,
+                                       final @Mocked ValidationXMLReader reader) throws NamingException {
         new MockUp<Executors>() {
             @Mock
-            public ExecutorService newSingleThreadExecutor() {
+            public ExecutorService newFixedThreadPool(int nThreads) {
                 return jdkExecutorService;
             }
         };
 
         new Expectations() {
             {
+                ValidationXMLReader.isValidationXmlPresent(); result = true;
                 new InitialContext();
                 initialContext.lookup("java:comp/env/concurrent/ThreadPool"); result = new NamingException();
+                new ValidationXMLReader();
                 jdkExecutorService.submit((Callable) any);
                 jdkExecutorService.shutdown();
             }
@@ -95,9 +117,41 @@ public class BeanValidationHelperTestCase {
         };
 
         new Expectations() {{
+            ValidationXMLReader.isValidationXmlPresent(); result = true;
             new ValidationXMLReader();
             reader.call();
         }};
+
+        BeanValidationHelper beanValidationHelper = new BeanValidationHelper();
+        assertNotNull(beanValidationHelper.getConstraintsMap());
+    }
+
+    /**
+     * Tests that validation.xml gets parsed if async task submission failed.
+     */
+    @Test
+    public void testAsyncSubmissionFailed(final @Mocked InitialContext initialContext,
+                                          final @Mocked ExecutorService jdkExecutorService,
+                                          final @Mocked ValidationXMLReader reader) throws Exception {
+        new MockUp<Executors>() {
+            @Mock
+            public ExecutorService newFixedThreadPool(int nThreads) {
+                return jdkExecutorService;
+            }
+        };
+
+        new Expectations() {
+            {
+                ValidationXMLReader.isValidationXmlPresent(); result = true;
+                new InitialContext();
+                initialContext.lookup("java:comp/env/concurrent/ThreadPool"); result = new NamingException();
+                new ValidationXMLReader();
+                jdkExecutorService.submit((Callable) any); result = new OutOfMemoryError();
+                jdkExecutorService.shutdown();
+                new ValidationXMLReader();
+                reader.call();
+            }
+        };
 
         BeanValidationHelper beanValidationHelper = new BeanValidationHelper();
         assertNotNull(beanValidationHelper.getConstraintsMap());

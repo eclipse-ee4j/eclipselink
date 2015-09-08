@@ -551,16 +551,16 @@
                     </fileset>
                     <formatter type="xml"/>
                 </batchtest>
-        <test name="org.eclipse.persistence.testing.jaxb.annotations.xmlidref.XmlIdSystemPropertyTestCase" todir="${report.dir}/jaxb">
+                <test name="org.eclipse.persistence.testing.jaxb.annotations.xmlidref.XmlIdSystemPropertyTestCase" todir="${report.dir}/jaxb">
                     <formatter type="xml"/>
                 </test>
-        <test name="org.eclipse.persistence.testing.jaxb.annotations.xmlidref.XmlIdSystemPropertyNotSetTestCase" todir="${report.dir}/jaxb">
+                <test name="org.eclipse.persistence.testing.jaxb.annotations.xmlidref.XmlIdSystemPropertyNotSetTestCase" todir="${report.dir}/jaxb">
                     <formatter type="xml"/>
                 </test>
-        <test name="org.eclipse.persistence.testing.jaxb.annotations.xmlvalue.XmlValueSystemPropertyNotSetTestCase" todir="${report.dir}/jaxb">
+                <test name="org.eclipse.persistence.testing.jaxb.annotations.xmlvalue.XmlValueSystemPropertyNotSetTestCase" todir="${report.dir}/jaxb">
                     <formatter type="xml"/>
                 </test>
-        <test name="org.eclipse.persistence.testing.jaxb.annotations.xmlvalue.XmlValueSystemPropertyTestCase" todir="${report.dir}/jaxb">
+                <test name="org.eclipse.persistence.testing.jaxb.annotations.xmlvalue.XmlValueSystemPropertyTestCase" todir="${report.dir}/jaxb">
                     <formatter type="xml"/>
                 </test>
                 <classpath>

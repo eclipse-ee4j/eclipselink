@@ -133,15 +133,6 @@
         </SOURCES>
       </library>
     </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$EXTENSION_LIB_EXTERNAL$/jmockit-1.0.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
     <orderEntry type="module-library" scope="RUNTIME">
       <library>
         <CLASSES>
@@ -158,17 +149,6 @@
         </CLASSES>
         <JAVADOC />
         <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" scope="RUNTIME">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.nosql_2.6.0.qualifier.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.nosql.source_2.6.0.qualifier.jar!/" />
-        </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="RUNTIME">
@@ -202,15 +182,6 @@
       <library>
         <CLASSES>
           <root url="jar://$EXTENSION_LIB_EXTERNAL$/jboss-logging-3.1.4.GA.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" scope="RUNTIME">
-      <library>
-        <CLASSES>
-          <root url="jar://$EXTENSION_LIB_EXTERNAL$/javax.el-api-2.2.2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -276,6 +247,35 @@
       <library>
         <CLASSES>
           <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/hk2/external/javax.inject/2.1.64/javax.inject-2.1.64.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$EXTENSION_LIB_EXTERNAL$/jmockit-1.10.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$EXTENSION_LIB_EXTERNAL$/jmockit-1.10.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.nosql_2.7.0.qualifier.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$EXTENSION_LIB_EXTERNAL$/javax.el-api-2.2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
