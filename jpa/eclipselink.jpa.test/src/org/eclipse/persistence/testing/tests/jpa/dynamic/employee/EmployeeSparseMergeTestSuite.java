@@ -58,8 +58,13 @@ public class EmployeeSparseMergeTestSuite {
         helper = new JPADynamicHelper(emf);
         deSystem = DynamicEmployeeSystem.buildProject(helper);
         serverSession = JpaHelper.getServerSession(emf);
-        serverSession.executeNonSelectingSQL(
-            "update sequence set SEQ_COUNT = 0 where SEQ_NAME = 'EMP_SEQ'");
+        if (serverSession.getPlatform().isMySQL()) {
+            serverSession.executeNonSelectingSQL(
+                    "UPDATE EMPLOYEE_SEQ SET SEQ_COUNT = 0 WHERE SEQ_NAME = 'EMP_SEQ'");
+        } else {
+            serverSession.executeNonSelectingSQL(
+                    "UPDATE SEQUENCE SET SEQ_COUNT = 0 WHERE SEQ_NAME = 'EMP_SEQ'");
+        }
         deSystem.populate(helper, emf.createEntityManager());
         serverSession.getIdentityMapAccessor().initializeAllIdentityMaps();
         qTracker = QuerySQLTracker.install(serverSession);

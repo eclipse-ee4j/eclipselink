@@ -381,31 +381,29 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
 
     /**
      * INTERNAL: Used by the BuilderInterface when reading a Project from INI files.
+     * @param descriptor The descriptor to be added to the session and the project.
+     * @param session    The current database session.
      */
-    public void addDescriptor(ClassDescriptor descriptor, DatabaseSessionImpl session) {
+    public void addDescriptor(final ClassDescriptor descriptor, final DatabaseSessionImpl session) {
         synchronized (this.descriptorsLock) {
             if (session.isConnected()) {
-                getOrderedDescriptors().add(descriptor);
-                String alias = descriptor.getAlias();
-                // descriptor aliases may be concurrently accessed by other threads.
-                // make a clone, add new descriptor to the clone, override original with the clone.
+                final String alias = descriptor.getAlias();
+                // Descriptor aliases may be concurrently accessed by other threads.
+                // Make a clone, add new descriptor to the clone, override original with the clone.
                 if (alias != null) {
-                    Map aliasDescriptorsClone = null;
-                    if (getAliasDescriptors() != null) {
-                        aliasDescriptorsClone = (Map)((HashMap)getAliasDescriptors()).clone();
-                    } else {
-                        aliasDescriptorsClone = new HashMap();
-                    }
+                    final Map aliasDescriptorsClone = getAliasDescriptors() != null
+                            ? (Map)((HashMap)getAliasDescriptors()).clone() : new HashMap();
                     aliasDescriptorsClone.put(alias, descriptor);
                     setAliasDescriptors(aliasDescriptorsClone);
                 }
-                // descriptors may be concurrently accessed by other threads.
-                // make a clone, add new descriptor to the clone, override original with the clone.
-                Map<Class, ClassDescriptor> descriptorsClone = (Map)((HashMap)getDescriptors()).clone();
+                // Descriptors may be concurrently accessed by other threads.
+                // Make a clone, add new descriptor to the clone, override original with the clone.
+                final Map<Class, ClassDescriptor> descriptorsClone = (Map)((HashMap)getDescriptors()).clone();
                 descriptorsClone.put(descriptor.getJavaClass(), descriptor);
                 setDescriptors(descriptorsClone);
-                session.copyDescriptorsFromProject();    
+                session.copyDescriptorsFromProject();
                 session.initializeDescriptorIfSessionAlive(descriptor);
+                getOrderedDescriptors().add(descriptor);
             } else {
                 addDescriptor(descriptor);
             }
@@ -418,26 +416,22 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      * All persistent classes must have a descriptor registered for them with the session.
      * This method allows for a batch of descriptors to be added at once so that EclipseLink
      * can resolve the dependencies between the descriptors and perform initialization optimally.
+     * @param descriptors The descriptors to be added to the session and the project.
+     * @param session     The current database session.
      */
-    public void addDescriptors(Collection descriptors, DatabaseSessionImpl session) {
+    public void addDescriptors(final Collection descriptors, final DatabaseSessionImpl session) {
         synchronized (this.descriptorsLock) {
             if (session.isConnected()) {
-                // descriptor aliases may be concurrently accessed by other threads.
-                // make a clone, add new descriptors to the clone, override original with the clone.
-                Map aliasDescriptorsClone = null;
-                if (getAliasDescriptors() != null) {
-                    aliasDescriptorsClone = (Map)((HashMap)getAliasDescriptors()).clone();
-                } else {
-                    aliasDescriptorsClone = new HashMap();
-                }
-                // descriptors may be concurrently accessed by other threads.
-                // make a clone, add new descriptors to the clone, override original with the clone.
-                Map<Class, ClassDescriptor> descriptorsClone = (Map)((HashMap)getDescriptors()).clone();
-                Iterator it = descriptors.iterator();
-                while (it.hasNext()) {
-                    ClassDescriptor descriptor = (ClassDescriptor)it.next();
+                // Descriptor aliases may be concurrently accessed by other threads.
+                // Make a clone, add new descriptors to the clone, override original with the clone.
+                final Map aliasDescriptorsClone = getAliasDescriptors() != null
+                        ? (Map)((HashMap)getAliasDescriptors()).clone() : new HashMap();
+                // Descriptors may be concurrently accessed by other threads.
+                // Make a clone, add new descriptors to the clone, override original with the clone.
+                final Map<Class, ClassDescriptor> descriptorsClone = (Map)((HashMap)getDescriptors()).clone();
+                for (ClassDescriptor descriptor : (Collection<ClassDescriptor>) descriptors) {
                     descriptorsClone.put(descriptor.getJavaClass(), descriptor);
-                    String alias = descriptor.getAlias();
+                    final String alias = descriptor.getAlias();
                     if (alias != null) {
                         aliasDescriptorsClone.put(alias, descriptor);
                     }
@@ -446,18 +440,17 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
                     setAliasDescriptors(aliasDescriptorsClone);
                 }
                 setDescriptors(descriptorsClone);
-                session.copyDescriptorsFromProject();    
-                session.initializeDescriptors(descriptors);        
+                session.copyDescriptorsFromProject();
+                session.initializeDescriptors(descriptors);
             } else {
-                Iterator it = descriptors.iterator();
-                while (it.hasNext()) {
-                    ClassDescriptor descriptor = (ClassDescriptor)it.next();
-                    getDescriptors().put(descriptor.getJavaClass(), descriptor);
-                    String alias = descriptor.getAlias();
+                final Map<Class, ClassDescriptor> projectDescriptors = getDescriptors();
+                for (ClassDescriptor descriptor : (Collection<ClassDescriptor>) descriptors) {
+                    final String alias = descriptor.getAlias();
+                    projectDescriptors.put(descriptor.getJavaClass(), descriptor);
                     if (alias != null) {
                         addAlias(alias, descriptor);
                     }
-                }        
+                }
             }
             getOrderedDescriptors().addAll(descriptors);
         }

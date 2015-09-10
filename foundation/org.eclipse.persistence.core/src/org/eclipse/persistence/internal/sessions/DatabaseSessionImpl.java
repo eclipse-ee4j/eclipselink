@@ -353,10 +353,14 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * @see #addDescriptors(Vector)
      * @see #addDescriptors(org.eclipse.persistence.sessions.Project)
      */
-    public void addDescriptor(ClassDescriptor descriptor) {
+    @Override
+    public void addDescriptor(final ClassDescriptor descriptor) {
         // Reset cached data, as may be invalid later on.
         this.lastDescriptorAccessed = null;
-
+        // Bug# 429760: Add descriptor to the session when session Map exists and is not the same as in the project.
+        if (this.descriptors != null && this.descriptors != getProject().getDescriptors()) {
+            this.descriptors.put(descriptor.getJavaClass(), descriptor);
+        }
         getProject().addDescriptor(descriptor, this);
     }
 
@@ -367,10 +371,16 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * This method allows for a batch of descriptors to be added at once so that EclipseLink
      * can resolve the dependencies between the descriptors and perform initialization optimally.
      */
-    public void addDescriptors(Collection descriptors) {
+    @Override
+    public void addDescriptors(final Collection descriptors) {
         // Reset cached data, as may be invalid later on.
         this.lastDescriptorAccessed = null;
-
+        // Bug# 429760: Add descriptors to the session when session Map exists and is not the same as in the project.
+        if (this.descriptors != null && this.descriptors != getProject().getDescriptors()) {
+            for (ClassDescriptor descriptor : (Collection<ClassDescriptor>) descriptors) {
+                this.descriptors.put(descriptor.getJavaClass(), descriptor);
+            }
+        }
         getProject().addDescriptors(descriptors, this);
     }
 

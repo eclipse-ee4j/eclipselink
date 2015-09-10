@@ -25,7 +25,8 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
     org.eclipse.persistence.testing.tests.jpa.dynamic.simple.SimpleTypeTestSuite.class,
-    org.eclipse.persistence.testing.tests.jpa.dynamic.simple.SimpleTypeCompositeKeyTestSuite.class
+    org.eclipse.persistence.testing.tests.jpa.dynamic.simple.SimpleTypeCompositeKeyTestSuite.class,
+    org.eclipse.persistence.testing.tests.jpa.dynamic.simple.SimpleQueryTestSuite.class
     }
 )
 public class AllTests {}

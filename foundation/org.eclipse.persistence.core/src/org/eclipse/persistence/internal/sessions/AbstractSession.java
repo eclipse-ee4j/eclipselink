@@ -2472,21 +2472,24 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
 
     /**
      * PUBLIC:
-     * Return the descriptor for  the alias
+     * Return the descriptor for the alias.
+     * @param alias The descriptor alias.
+     * @param The descriptor for the alias or {@code null} if no descriptor was found.
      */
-    public ClassDescriptor getDescriptorForAlias(String alias) {
+    @Override
+    public ClassDescriptor getDescriptorForAlias(final String alias) {
         // If we have a descriptors list return our sessions descriptor and
         // not that of the project since we may be dealing with a multitenant
         // descriptor which will have been initialized locally on the session.
         // The project descriptor will be not initialized.
-        ClassDescriptor desc = project.getDescriptorForAlias(alias);
-        if (desc != null && this.descriptors != null) {
+        final ClassDescriptor desc = project.getDescriptorForAlias(alias);
+        if (desc != null && desc.hasMultitenantPolicy() && this.descriptors != null) {
             return this.descriptors.get(desc.getJavaClass());
         } else {
             return desc;
         }
     }
-    
+
     /**
      * ADVANCED:
      * Return all registered descriptors.
