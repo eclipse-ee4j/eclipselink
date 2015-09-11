@@ -301,17 +301,20 @@ public class IsolatedHashMapTest extends JUnitTestCase {
     private static void doIsolationCheck(final Map<String, String> map, final String partitionId, final SessionLog log) {
         final String[] sessionNames = initSessionNames(partitionId);
         final Set<String> namesSet = new HashSet<>(sessionNames.length);
-        log.log(SessionLog.FINE, "  Partition ID: " + partitionId);
+        log.log(SessionLog.INFO, "  Partition ID: " + partitionId);
         for (String sessionName : sessionNames) {
-            log.log(SessionLog.FINER, "    Adding session name: " + sessionName);
+            log.log(SessionLog.INFO, "    Adding session name: " + sessionName);
             map.put(sessionName, sessionName);
             namesSet.add(sessionName);
         }
         // Map shall contain session names in current partition context only.
-        assertEquals("Map size does not match session names count.", sessionNames.length, map.size());
+        final int mapSize = map.size();
+        log.log(SessionLog.INFO, "  Checking map size: session names count = "
+                + sessionNames.length + ", map size = " + mapSize );
+        assertEquals("Map size does not match session names count.", sessionNames.length, mapSize);
         // Verify individual session names.
         for (String sessionName : map.keySet()) {
-            log.log(SessionLog.FINER, "    Getting and checking session name: " + sessionName);
+            log.log(SessionLog.INFO, "    Getting and checking session name: " + sessionName);
             assertTrue("Session name " + sessionName + "was not stored in current partition context.",
                     namesSet.contains(sessionName));
         }
@@ -341,14 +344,19 @@ public class IsolatedHashMapTest extends JUnitTestCase {
                     = (ServerPlatform)ReflectionHelper.getPrivateStatic(IsolatedHashMap.class, "serverPlatform");
             final boolean originalsupport
                     = (boolean)ReflectionHelper.getPrivateStatic(IsolatedHashMap.class, "supportPartitions");
-            log.log(SessionLog.FINER,
+            log.log(SessionLog.INFO,
                     "Original platform field instance: " + originalPlatform.getClass().getName());
-            log.log(SessionLog.FINER, "Original partitions support flag: " + Boolean.toString(originalsupport));
+            log.log(SessionLog.INFO, "Original partitions support flag: " + Boolean.toString(originalsupport));
             ReflectionHelper.setPrivateStaticFinal(IsolatedHashMap.class, "serverPlatform", testPlatform);
             ReflectionHelper.setPrivateStaticFinal(
                     IsolatedHashMap.class, "supportPartitions", testPlatform.usesPartitions());
+            log.log(SessionLog.INFO,
+                    "Mocked platform field instance: " + testPlatform.getClass().getName());
+            log.log(SessionLog.INFO, "Mocked partitions support flag: "
+                    + Boolean.toString(testPlatform.usesPartitions()));
             // Run the test in mocked partition context.
             final Map<String, String> map = IsolatedHashMap.newMap();
+            log.log(SessionLog.INFO, "Created " + map.getClass().getName() + "instance");
             final String[] partitionIds = {"first", "second", "third"};
             for (String partitionId : partitionIds) {
                 testPlatform.setPartitionID(partitionId);
