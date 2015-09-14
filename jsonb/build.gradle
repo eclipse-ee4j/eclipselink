@@ -1,7 +1,8 @@
 apply plugin: 'java'
+apply plugin: 'idea'
 
 jar {
-    baseName = 'org.eclipse.persistence.jsonb'
+    baseName = 'org.eclipse.persistence.json.bind'
     version =  '0.1.0'
 }
 
@@ -13,28 +14,19 @@ compileJava {
 repositories {
     mavenLocal()
     mavenCentral()
-}
-
-sourceSets {
-    perf
-}
-
-dependencies {
-    compile group: 'javax.json.bind', name: 'javax.json.bind-api', version: '0.1-SNAPSHOT'
-    compile group: 'javax.json', name: 'javax.json-api', version: '1.0'
+    maven {
+        url "https://maven.java.net/content/repositories/snapshots/"
+    }
+    maven {
+        url "https://maven.java.net/content/repositories/releases/"
+    }
 }
 
 dependencies {
-    perfCompile project
-    perfCompile 'org.openjdk.jmh:jmh-core:0.9.3'
-    perfCompile 'org.openjdk.jmh:jmh-generator-annprocess:0.9.3'
-}
-
-task perf(type: JavaExec) {
-    group 'Application'
-    description 'Execute the benchmark timing of this project'
-    main 'org.openjdk.jmh.Main'
-    classpath = sourceSets.perf.runtimeClasspath
+    compile 'javax.json.bind:javax.json.bind-api:0.1-SNAPSHOT'
+    compile 'javax.json:javax.json-api:1.0'
+    testCompile 'junit:junit:4.12'
+    testRuntime 'org.glassfish:javax.json:1.0.4'
 }
 
 task wrapper(type: Wrapper) {
