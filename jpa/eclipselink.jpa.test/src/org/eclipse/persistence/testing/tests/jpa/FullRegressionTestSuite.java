@@ -45,6 +45,7 @@ import org.eclipse.persistence.testing.tests.jpa.advanced.PersistenceUnitProcess
 import org.eclipse.persistence.testing.tests.jpa.advanced.PessimisticLockEntityRefreshTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.advanced.PessimisticLockingExtendedScopeTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.advanced.QueryCastTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.advanced.JPARCMLocalChangeSetTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.advanced.ReportQueryAdvancedJUnitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.ReportQueryConstructorExpressionTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.advanced.ReportQueryMultipleReturnTestSuite;
@@ -143,6 +144,7 @@ public class FullRegressionTestSuite extends TestSuite {
         suite.addTest(OptimisticConcurrencyJUnitTestSuite.suite());
         suite.addTest(AdvancedJPAJunitTest.suite());
         suite.addTest(AdvancedJunitTest.suite());
+        suite.addTest(JPARCMLocalChangeSetTestSuite.suite());
         suite.addTest(AdvancedCompositePKJunitTest.suite());
         suite.addTest(AdvancedFetchGroupJunitTest.suite());
         suite.addTest(AdvancedMultiTenantJunitTest.suite());

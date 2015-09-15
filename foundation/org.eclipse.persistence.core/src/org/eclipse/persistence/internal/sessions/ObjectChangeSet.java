@@ -1122,7 +1122,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
      * Ensure the change set is populated for cache coordination.
      */
     public void ensureChanges() {
-        if (this.isNew && ((this.changes == null) || this.changes.isEmpty())) {
+        if (this.isNew && ((this.changes == null) || this.changes.isEmpty() || cacheSynchronizationType != ClassDescriptor.SEND_NEW_OBJECTS_WITH_CHANGES)) {
             AbstractSession unitOfWork = this.unitOfWorkChangeSet.getSession();
             // Full change set is only required for cache coordination, not remote.
             if (unitOfWork != null && !unitOfWork.isRemoteUnitOfWork()) {
