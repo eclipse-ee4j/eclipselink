@@ -176,6 +176,7 @@
         <pathelement path="${eclipselink.plugins}/${transaction.jar}"/>
         <pathelement path="${eclipselink.plugins}/${mail.jar}"/>
         <pathelement path="${eclipselink.plugins}/${wsrs.jar}"/>
+        <pathelement path="${eclipselink.plugins}/${slf4j.api.jar}"/>
         <pathelement path="${eclipselink.plugins}/org.eclipse.persistence.nosql_${version.string}.jar"/>
         <pathelement path="${eclipselink.plugins}/org.eclipse.persistence.extension_${version.string}.jar"/>
         <pathelement path="${extensions.depend.dir}/${jgroups.jar}"/>

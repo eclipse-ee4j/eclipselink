@@ -13,6 +13,7 @@
 package org.eclipse.persistence.logging;
 
 import java.io.Writer;
+
 import org.eclipse.persistence.sessions.Session;
 
 /**
@@ -27,15 +28,15 @@ import org.eclipse.persistence.sessions.Session;
  * <p>
  * This class defines Eclipselink logging levels (that are used throughout EclipseLink code) with the following integer values:
  * <table summary="">
- * <tr><td>&nbsp;</td><td>ALL</td>    <td>&nbsp;</td><td>= 0</td></tr>
- * <tr><td>&nbsp;</td><td>FINEST</td> <td>&nbsp;</td><td>= 1</td></tr>
- * <tr><td>&nbsp;</td><td>FINER</td>  <td>&nbsp;</td><td>= 2</td></tr>
- * <tr><td>&nbsp;</td><td>FINE</td>   <td>&nbsp;</td><td>= 3</td></tr>
- * <tr><td>&nbsp;</td><td>CONFIG</td> <td>&nbsp;</td><td>= 4</td></tr>
- * <tr><td>&nbsp;</td><td>INFO</td>   <td>&nbsp;</td><td>= 5</td></tr>
- * <tr><td>&nbsp;</td><td>WARNING</td><td>&nbsp;</td><td>= 6</td></tr>
- * <tr><td>&nbsp;</td><td>SEVERE</td> <td>&nbsp;</td><td>= 7</td></tr>
- * <tr><td>&nbsp;</td><td>OFF</td>    <td>&nbsp;</td><td>= 8</td></tr>
+ * <tr><td>&nbsp;</td><td>ALL</td>    <td>&nbsp;</td><td>= {@value #ALL}</td></tr>
+ * <tr><td>&nbsp;</td><td>FINEST</td> <td>&nbsp;</td><td>= {@value #FINEST}</td></tr>
+ * <tr><td>&nbsp;</td><td>FINER</td>  <td>&nbsp;</td><td>= {@value #FINER}</td></tr>
+ * <tr><td>&nbsp;</td><td>FINE</td>   <td>&nbsp;</td><td>= {@value #FINE}</td></tr>
+ * <tr><td>&nbsp;</td><td>CONFIG</td> <td>&nbsp;</td><td>= {@value #CONFIG}</td></tr>
+ * <tr><td>&nbsp;</td><td>INFO</td>   <td>&nbsp;</td><td>= {@value #INFO}</td></tr>
+ * <tr><td>&nbsp;</td><td>WARNING</td><td>&nbsp;</td><td>= {@value #WARNING}</td></tr>
+ * <tr><td>&nbsp;</td><td>SEVERE</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td></tr>
+ * <tr><td>&nbsp;</td><td>OFF</td>    <td>&nbsp;</td><td>= {@value #OFF}</td></tr>
  * </table>
  * <p>
  * In addition, EclipseLink categories used for logging name space are defined with the following String values:
@@ -43,17 +44,17 @@ import org.eclipse.persistence.sessions.Session;
  * <tr><td>&nbsp;</td><td>{@link #SQL}</td>           <td>&nbsp;</td><td>= {@value #SQL}</td></tr>
  * <tr><td>&nbsp;</td><td>{@link #TRANSACTION}</td>   <td>&nbsp;</td><td>= {@value #TRANSACTION}</td></tr>
  * <tr><td>&nbsp;</td><td>{@link #EVENT}</td>         <td>&nbsp;</td><td>= {@value #EVENT}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link #CONNECTION}</td>         <td>&nbsp;</td><td>= {@value #CONNECTION}</td></tr> 
+ * <tr><td>&nbsp;</td><td>{@link #CONNECTION}</td>    <td>&nbsp;</td><td>= {@value #CONNECTION}</td></tr>
  * <tr><td>&nbsp;</td><td>{@link #QUERY}</td>         <td>&nbsp;</td><td>= {@value #QUERY}</td></tr>
  * <tr><td>&nbsp;</td><td>{@link #CACHE}</td>         <td>&nbsp;</td><td>= {@value #CACHE}</td></tr>
  * <tr><td>&nbsp;</td><td>{@link #PROPAGATION}</td>   <td>&nbsp;</td><td>= {@value #PROPAGATION}</td></tr>
  * <tr><td>&nbsp;</td><td>{@link #SEQUENCING}</td>    <td>&nbsp;</td><td>= {@value #SEQUENCING}</td></tr>
  * <tr><td>&nbsp;</td><td>{@link #EJB}</td>           <td>&nbsp;</td><td>= {@value #EJB}</td></tr>
  * <tr><td>&nbsp;</td><td>{@link #DMS}</td>           <td>&nbsp;</td><td>= {@value #DMS}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link #METADATA}</td><td>&nbsp;</td><td>= {@value #METADATA} </td></tr>
- * <tr><td>&nbsp;</td><td>{@link #METAMODEL}</td><td>&nbsp;</td><td>= {@value #METAMODEL}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@link #METADATA}</td>      <td>&nbsp;</td><td>= {@value #METADATA} </td></tr>
+ * <tr><td>&nbsp;</td><td>{@link #METAMODEL}</td>     <td>&nbsp;</td><td>= {@value #METAMODEL}</td></tr>
  * <tr><td>&nbsp;</td><td>{@link #WEAVER}</td>        <td>&nbsp;</td><td>= {@value #WEAVER}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link #PROPERTIES}</td>        <td>&nbsp;</td><td>= {@value #PROPERTIES}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@link #PROPERTIES}</td>    <td>&nbsp;</td><td>= {@value #PROPERTIES}</td></tr>
  * <tr><td>&nbsp;</td><td>{@link #SERVER}</td>        <td>&nbsp;</td><td>= {@value #SERVER}</td></tr>
  * </table>
  * 

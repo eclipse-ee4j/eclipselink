@@ -3055,7 +3055,7 @@ public class PersistenceUnitProperties {
      * <ul>
      * <li>a string containing a zero or greater integer value
      * </ul>
-     * @see PersistenceUnitProperties.QUERY_TIMEOUT_UNIT
+     * @see #QUERY_TIMEOUT_UNIT
      */
     public static final String QUERY_TIMEOUT = "javax.persistence.query.timeout";
 
@@ -3070,7 +3070,7 @@ public class PersistenceUnitProperties {
      * <li>"<code>java.util.concurrent.TimeUnit.SECONDS</code>" (DEFAULT),
      * <li>"<code>java.util.concurrent.TimeUnit.MINUTES</code>".
      * </ul>
-     * @see PersistenceUnitProperties.QUERY_TIMEOUT
+     * @see #QUERY_TIMEOUT
      */
     public static final String QUERY_TIMEOUT_UNIT = "eclipselink.query.timeout.unit";
 
