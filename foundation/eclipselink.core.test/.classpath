@@ -6,6 +6,6 @@
 	<classpathentry excluding="**/.svn/**" kind="src" path="src"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.core"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.transaction_1.1.0.v201002051055.jar" sourcepath="/ECLIPSELINK_HOME/plugins/javax.transaction/src"/>
-    <classpathentry kind="var" path="ECLIPSELINK_HOME/jpa/plugins/javax.persistence_2.1.0.v201304241213.jar" sourcepath="/ECLIPSELINK_HOME/jpa/plugins/javax.persistence.source_2.1.0.v201304241213.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/jpa/plugins/javax.persistence_2.1.1.v201509150925.jar" sourcepath="/ECLIPSELINK_HOME/jpa/plugins/javax.persistence.source_2.1.1.v201509150925.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
