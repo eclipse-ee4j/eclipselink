@@ -13,6 +13,7 @@
 package org.eclipse.persistence.logging;
 
 import java.io.Writer;
+
 import org.eclipse.persistence.sessions.Session;
 
 /**
@@ -27,15 +28,15 @@ import org.eclipse.persistence.sessions.Session;
  * <p>
  * This class defines Eclipselink logging levels (that are used throughout EclipseLink code) with the following integer values:
  * <table summary="">
- * <tr><td>&nbsp;</td><td>ALL</td>    <td>&nbsp;</td><td>= 0</td></tr>
- * <tr><td>&nbsp;</td><td>FINEST</td> <td>&nbsp;</td><td>= 1</td></tr>
- * <tr><td>&nbsp;</td><td>FINER</td>  <td>&nbsp;</td><td>= 2</td></tr>
- * <tr><td>&nbsp;</td><td>FINE</td>   <td>&nbsp;</td><td>= 3</td></tr>
- * <tr><td>&nbsp;</td><td>CONFIG</td> <td>&nbsp;</td><td>= 4</td></tr>
- * <tr><td>&nbsp;</td><td>INFO</td>   <td>&nbsp;</td><td>= 5</td></tr>
- * <tr><td>&nbsp;</td><td>WARNING</td><td>&nbsp;</td><td>= 6</td></tr>
- * <tr><td>&nbsp;</td><td>SEVERE</td> <td>&nbsp;</td><td>= 7</td></tr>
- * <tr><td>&nbsp;</td><td>OFF</td>    <td>&nbsp;</td><td>= 8</td></tr>
+ * <tr><td>&nbsp;</td><td>ALL</td>    <td>&nbsp;</td><td>= {@value #ALL}</td></tr>
+ * <tr><td>&nbsp;</td><td>FINEST</td> <td>&nbsp;</td><td>= {@value #FINEST}</td></tr>
+ * <tr><td>&nbsp;</td><td>FINER</td>  <td>&nbsp;</td><td>= {@value #FINER}</td></tr>
+ * <tr><td>&nbsp;</td><td>FINE</td>   <td>&nbsp;</td><td>= {@value #FINE}</td></tr>
+ * <tr><td>&nbsp;</td><td>CONFIG</td> <td>&nbsp;</td><td>= {@value #CONFIG}</td></tr>
+ * <tr><td>&nbsp;</td><td>INFO</td>   <td>&nbsp;</td><td>= {@value #INFO}</td></tr>
+ * <tr><td>&nbsp;</td><td>WARNING</td><td>&nbsp;</td><td>= {@value #WARNING}</td></tr>
+ * <tr><td>&nbsp;</td><td>SEVERE</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td></tr>
+ * <tr><td>&nbsp;</td><td>OFF</td>    <td>&nbsp;</td><td>= {@value #OFF}</td></tr>
  * </table>
  * <p>
  * In addition, EclipseLink categories used for logging name space are defined with the following String values:
@@ -43,17 +44,17 @@ import org.eclipse.persistence.sessions.Session;
  * <tr><td>&nbsp;</td><td>{@link #SQL}</td>           <td>&nbsp;</td><td>= {@value #SQL}</td></tr>
  * <tr><td>&nbsp;</td><td>{@link #TRANSACTION}</td>   <td>&nbsp;</td><td>= {@value #TRANSACTION}</td></tr>
  * <tr><td>&nbsp;</td><td>{@link #EVENT}</td>         <td>&nbsp;</td><td>= {@value #EVENT}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link #CONNECTION}</td>         <td>&nbsp;</td><td>= {@value #CONNECTION}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@link #CONNECTION}</td>    <td>&nbsp;</td><td>= {@value #CONNECTION}</td></tr>
  * <tr><td>&nbsp;</td><td>{@link #QUERY}</td>         <td>&nbsp;</td><td>= {@value #QUERY}</td></tr>
  * <tr><td>&nbsp;</td><td>{@link #CACHE}</td>         <td>&nbsp;</td><td>= {@value #CACHE}</td></tr>
  * <tr><td>&nbsp;</td><td>{@link #PROPAGATION}</td>   <td>&nbsp;</td><td>= {@value #PROPAGATION}</td></tr>
  * <tr><td>&nbsp;</td><td>{@link #SEQUENCING}</td>    <td>&nbsp;</td><td>= {@value #SEQUENCING}</td></tr>
  * <tr><td>&nbsp;</td><td>{@link #EJB}</td>           <td>&nbsp;</td><td>= {@value #EJB}</td></tr>
  * <tr><td>&nbsp;</td><td>{@link #DMS}</td>           <td>&nbsp;</td><td>= {@value #DMS}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link #METADATA}</td><td>&nbsp;</td><td>= {@value #METADATA} </td></tr>
- * <tr><td>&nbsp;</td><td>{@link #METAMODEL}</td><td>&nbsp;</td><td>= {@value #METAMODEL}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@link #METADATA}</td>      <td>&nbsp;</td><td>= {@value #METADATA} </td></tr>
+ * <tr><td>&nbsp;</td><td>{@link #METAMODEL}</td>     <td>&nbsp;</td><td>= {@value #METAMODEL}</td></tr>
  * <tr><td>&nbsp;</td><td>{@link #WEAVER}</td>        <td>&nbsp;</td><td>= {@value #WEAVER}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link #PROPERTIES}</td>        <td>&nbsp;</td><td>= {@value #PROPERTIES}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@link #PROPERTIES}</td>    <td>&nbsp;</td><td>= {@value #PROPERTIES}</td></tr>
  * <tr><td>&nbsp;</td><td>{@link #SERVER}</td>        <td>&nbsp;</td><td>= {@value #SERVER}</td></tr>
  * </table>
  *
@@ -100,30 +101,30 @@ public interface SessionLog extends Cloneable {
     public static final String ALL_LABEL = LogLevel.ALL.getName();
 
     //EclipseLink categories used for logging name space.
-    public static final String SQL = LogCategory.SQL.getName();
-    public static final String TRANSACTION = LogCategory.TRANSACTION.getName();
-    public static final String EVENT = LogCategory.EVENT.getName();
-    public static final String CONNECTION = LogCategory.CONNECTION.getName();
-    public static final String QUERY = LogCategory.QUERY.getName();
-    public static final String CACHE = LogCategory.CACHE.getName();
-    public static final String PROPAGATION = LogCategory.PROPAGATION.getName();
-    public static final String SEQUENCING = LogCategory.SEQUENCING.getName();
-    public static final String JPA = LogCategory.JPA.getName();
-    public static final String EJB = LogCategory.EJB.getName();
-    public static final String DMS = LogCategory.DMS.getName();
-    public static final String METADATA = LogCategory.METADATA.getName();
-    public static final String MONITORING = LogCategory.MONITORING.getName();
-    public static final String MISC = LogCategory.MISC.getName();
+    public static final String SQL = "sql";
+    public static final String TRANSACTION = "transaction";
+    public static final String EVENT = "event";
+    public static final String CONNECTION = "connection";
+    public static final String QUERY = "query";
+    public static final String CACHE = "cache";
+    public static final String PROPAGATION = "propagation";
+    public static final String SEQUENCING = "sequencing";
+    public static final String JPA = "jpa";
+    public static final String EJB = "ejb";
+    public static final String DMS = "dms";
+    public static final String METADATA = "metadata";
+    public static final String MONITORING = "monitoring";
+    public static final String MISC = "misc";
 
     /** @deprecated use {@link #METADATA}. */
     @Deprecated
     public static final String EJB_OR_METADATA = METADATA;
-    public static final String METAMODEL = LogCategory.METAMODEL.getName();
-    public static final String WEAVER = LogCategory.WEAVER.getName();
-    public static final String PROPERTIES = LogCategory.PROPERTIES.getName();
-    public static final String SERVER = LogCategory.SERVER.getName();
-    public static final String DDL = LogCategory.DDL.getName();
-    public static final String JPARS = LogCategory.JPARS.getName();
+    public static final String METAMODEL = "metamodel";
+    public static final String WEAVER = "weaver";
+    public static final String PROPERTIES = "properties";
+    public static final String SERVER = "server";
+    public static final String DDL = "ddl";
+    public static final String JPARS = "jpars";
 
     public final String[] loggerCatagories = new String[] {
         SQL,

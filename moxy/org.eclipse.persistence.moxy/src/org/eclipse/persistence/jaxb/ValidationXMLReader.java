@@ -13,16 +13,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.jaxb;
 
-import org.eclipse.persistence.exceptions.BeanValidationException;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedGetContextClassLoader;
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -36,9 +26,20 @@ import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
+import org.eclipse.persistence.exceptions.BeanValidationException;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedGetContextClassLoader;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
+
 /**
  * Parses validation.xml, scanning for constraints file reference. If found,
- * it will parse the constraints file and put all classes declared under <bean class="clazz"> into
+ * it will parse the constraints file and put all classes declared under &lt;bean class="clazz"&gt; into
  * {@link org.eclipse.persistence.jaxb.BeanValidationHelper#constraintsOnClasses} with value
  * {@link Boolean#TRUE}.
  */
@@ -93,6 +94,7 @@ public class ValidationXMLReader implements Callable<Map<Class<?>, Boolean>> {
             private boolean defaultPackageElement = false;
             private String defaultPackage = "";
 
+            @Override
             public void startElement(String uri, String localName, String qName,
                                      Attributes attributes) throws SAXException {
                 if (DEFAULT_PACKAGE_QNAME.equalsIgnoreCase(qName)) {
@@ -113,6 +115,7 @@ public class ValidationXMLReader implements Callable<Map<Class<?>, Boolean>> {
                 }
             }
 
+            @Override
             public void characters(char ch[], int start, int length) throws SAXException {
                 if (defaultPackageElement) {
                     defaultPackage = new String(ch, start, length);
@@ -190,6 +193,7 @@ public class ValidationXMLReader implements Callable<Map<Class<?>, Boolean>> {
 
         private boolean constraintsFileElement = false;
 
+        @Override
         public void startElement(String uri, String localName, String qName,
                                  Attributes attributes) throws SAXException {
 
@@ -198,6 +202,7 @@ public class ValidationXMLReader implements Callable<Map<Class<?>, Boolean>> {
             }
         }
 
+        @Override
         public void characters(char ch[], int start, int length) throws SAXException {
 
             if (constraintsFileElement) {
