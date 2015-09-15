@@ -1132,7 +1132,7 @@
             packagenames="org.eclipse.persistence.**"
             destdir="${unified.javadocs}"
             useexternalfile="yes"
-            additionalparam="-breakiterator -quiet -notimestamp"
+            additionalparam="${javadoc.additionParams}"
             windowtitle="${eclipselink.javadoc.title}"
             failonerror="true"
             >
@@ -1259,7 +1259,7 @@
             packagenames="org.eclipse.persistence.**"
             destdir="${eclipselink.javadocs}"
             useexternalfile="yes"
-            additionalparam="-breakiterator -quiet -notimestamp"
+            additionalparam="${javadoc.additionParams}"
             windowtitle="${eclipselink.javadoc.title}"
             failonerror="true"
             >

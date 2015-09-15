@@ -14,13 +14,6 @@
  */
 package org.eclipse.persistence.jaxb;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,11 +27,22 @@ import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
+import org.eclipse.persistence.exceptions.BeanValidationException;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedGetContextClassLoader;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
+
 import static org.eclipse.persistence.jaxb.BeanValidationHelper.BEAN_VALIDATION_HELPER;
 
 /**
  * Parses validation.xml, scanning for constraints file reference. If found,
- * it will parse the constraints file and put all classes declared under <bean class="clazz"> into
+ * it will parse the constraints file and put all classes declared under &lt;bean class="clazz"&gt; into
  * {@link org.eclipse.persistence.jaxb.BeanValidationHelper#constraintsOnClasses} with value
  * {@link Boolean#TRUE}.
  *
@@ -177,6 +181,7 @@ class ValidationXMLReader implements Callable<Void> {
             private boolean defaultPackageElement = false;
             private String defaultPackage = "";
 
+            @Override
             public void startElement(String uri, String localName, String qName,
                                      Attributes attributes) throws SAXException {
 
@@ -198,8 +203,8 @@ class ValidationXMLReader implements Callable<Void> {
                 }
             }
 
+            @Override
             public void characters(char ch[], int start, int length) throws SAXException {
-
                 if (defaultPackageElement) {
                     defaultPackage = new String(ch, start, length);
                     defaultPackageElement = false;
@@ -242,6 +247,7 @@ class ValidationXMLReader implements Callable<Void> {
 
         private boolean constraintsFileElement = false;
 
+        @Override
         public void startElement(String uri, String localName, String qName,
                                  Attributes attributes) throws SAXException {
 
@@ -250,6 +256,7 @@ class ValidationXMLReader implements Callable<Void> {
             }
         }
 
+        @Override
         public void characters(char ch[], int start, int length) throws SAXException {
 
             if (constraintsFileElement) {
