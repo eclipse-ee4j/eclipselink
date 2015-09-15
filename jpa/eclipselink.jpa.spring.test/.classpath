@@ -5,7 +5,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/eclipselink.jpa.test"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.core"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.jpa"/>
-	<classpathentry kind="var" path="ECLIPSELINK_HOME/jpa/plugins/javax.persistence_2.1.0.v201304241213.jar" sourcepath="/ECLIPSELINK_HOME/jpa/plugins/javax.persistence.source_2.1.0.v201304241213.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/jpa/plugins/javax.persistence_2.1.1.v201509150925.jar" sourcepath="/ECLIPSELINK_HOME/jpa/plugins/javax.persistence.source_2.1.1.v201509150925.jar"/>
 	<classpathentry kind="var" path="SPRING_CGLIB_LIB"/>
 	<classpathentry kind="var" path="SPRING_COMMONS_LOGGING_LIB"/>
 	<classpathentry kind="var" path="SPRING_JOTM_CLIENT_LIB"/>
