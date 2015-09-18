@@ -18,10 +18,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAsmFactory;
 import org.eclipse.persistence.internal.jpa.weaving.PersistenceWeaver;
@@ -32,6 +28,10 @@ import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.models.weaving.SimpleObject;
 import org.eclipse.persistence.testing.models.weaving.SimpleProject;
+
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
 
 public class SimpleWeaverTestSuite extends TestCase {
 
@@ -64,20 +64,26 @@ public class SimpleWeaverTestSuite extends TestCase {
         TestSuite suite = new TestSuite("Simple TopLinkWeaver Tests");
         suite.addTest(new SimpleWeaverTestSuite(
             "test TopLinkWeaver with null Session") {
+            @Override
             public void setUp() {
             }
+            @Override
             public void tearDown() {
             }
+            @Override
             public void runTest() {
                 nullSessionTest();
             }
         });
         suite.addTest(new SimpleWeaverTestSuite(
             "test TopLinkWeaver with null Project") {
+            @Override
             public void setUp() {
             }
+            @Override
             public void tearDown() {
             }
+            @Override
             public void runTest() {
                 Session session = new ServerSession();
                 session.setLogLevel(SessionLog.OFF);
@@ -86,10 +92,13 @@ public class SimpleWeaverTestSuite extends TestCase {
         });
         suite.addTest(new SimpleWeaverTestSuite(
             "test TopLinkWeaver with null list of entities") {
+            @Override
             public void setUp() {
             }
+            @Override
             public void tearDown() {
             }
+            @Override
             public void runTest() {
                 Session session = new ServerSession(new SimpleProject());
                 session.setLogLevel(SessionLog.OFF);
@@ -98,10 +107,13 @@ public class SimpleWeaverTestSuite extends TestCase {
         });
         suite.addTest(new SimpleWeaverTestSuite(
             "test TopLinkWeaver with empty list of entities") {
+            @Override
             public void setUp() {
             }
+            @Override
             public void tearDown() {
             }
+            @Override
             public void runTest() {
                 Session session = new ServerSession(new SimpleProject());
                 session.setLogLevel(SessionLog.OFF);
@@ -109,10 +121,13 @@ public class SimpleWeaverTestSuite extends TestCase {
             }
         });
         suite.addTest(new SimpleWeaverTestSuite("build TopLinkWeaver") {
+            @Override
             public void setUp() {
             }
+            @Override
             public void tearDown() {
             }
+            @Override
             public void runTest() {
                 Session session = new ServerSession(new SimpleProject());
                 session.setLogLevel(SessionLog.OFF);
@@ -125,7 +140,7 @@ public class SimpleWeaverTestSuite extends TestCase {
     public void nullSessionTest() {
         boolean expectedFailure = false;
         try {
-            TransformerFactory.createTransformerAndModifyProject(null, null, Thread.currentThread().getContextClassLoader(), true, false, true, true, true);
+            TransformerFactory.createTransformerAndModifyProject(null, null, Thread.currentThread().getContextClassLoader(), true, false, true, true, true, false);
         }
         catch (IllegalArgumentException iae) {
             expectedFailure = true;
@@ -138,7 +153,7 @@ public class SimpleWeaverTestSuite extends TestCase {
     public void nullProjectTest(Session session) {
         boolean expectedFailure = false;
         try {
-            TransformerFactory.createTransformerAndModifyProject(session, null, Thread.currentThread().getContextClassLoader(), true, false, true, true, true);
+            TransformerFactory.createTransformerAndModifyProject(session, null, Thread.currentThread().getContextClassLoader(), true, false, true, true, true, false);
         }
         catch (IllegalArgumentException iae) {
             expectedFailure = true;
@@ -150,7 +165,7 @@ public class SimpleWeaverTestSuite extends TestCase {
 
     public void nullEntitiesTest(Session session) {
         try {
-            TransformerFactory.createTransformerAndModifyProject(session, null, Thread.currentThread().getContextClassLoader(), true, false, true, true, true);
+            TransformerFactory.createTransformerAndModifyProject(session, null, Thread.currentThread().getContextClassLoader(), true, false, true, true, true, false);
         }
         catch (Exception e) {
             fail(getName() + " failed: " + e.toString());
@@ -159,7 +174,7 @@ public class SimpleWeaverTestSuite extends TestCase {
 
     public void emptyEntitiesTest(Session session) {
         try {
-            TransformerFactory.createTransformerAndModifyProject(session, new ArrayList(), Thread.currentThread().getContextClassLoader(), true, false, true, true, true);
+            TransformerFactory.createTransformerAndModifyProject(session, new ArrayList(), Thread.currentThread().getContextClassLoader(), true, false, true, true, true, false);
         }
         catch (Exception e) {
             fail(getName() + " failed: " + e.toString());
@@ -170,7 +185,7 @@ public class SimpleWeaverTestSuite extends TestCase {
 
         PersistenceWeaver tw = null;
         try {
-            tw = TransformerFactory.createTransformerAndModifyProject(session, entities, Thread.currentThread().getContextClassLoader(), true, false, true, true, true);
+            tw = TransformerFactory.createTransformerAndModifyProject(session, entities, Thread.currentThread().getContextClassLoader(), true, false, true, true, true, false);
         }
         catch (Exception e) {
             fail(getName() + " failed: " + e.toString());

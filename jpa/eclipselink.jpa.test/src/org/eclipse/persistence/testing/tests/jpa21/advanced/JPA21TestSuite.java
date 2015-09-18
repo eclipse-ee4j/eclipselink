@@ -49,6 +49,7 @@ public class JPA21TestSuite extends TestSuite {
         fullSuite.addTest(XMLForeignKeyTestSuite.suite());
         fullSuite.addTest(XMLIndexTestSuite.suite());
         fullSuite.addTest(XMLEntityGraphTestSuite.suite());
+        fullSuite.addTest(WeaverTestSuite.suite());
         return fullSuite;
     }
 }

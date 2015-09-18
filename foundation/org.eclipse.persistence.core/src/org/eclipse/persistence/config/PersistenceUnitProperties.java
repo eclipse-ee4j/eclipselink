@@ -53,6 +53,7 @@ import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.FlushModeType;
+import javax.persistence.MappedSuperclass;
 import javax.persistence.Persistence;
 
 import org.eclipse.persistence.annotations.Cache;
@@ -1861,8 +1862,22 @@ public class PersistenceUnitProperties {
     public static final String WEAVING_FETCHGROUPS = "eclipselink.weaving.fetchgroups";
 
     /**
+     * The "<code>eclipselink.weaving.mappedsuperclass</code>" property configures
+     * whether {@link MappedSuperclass}es with no direct sub-classes will be woven.
+     * <p>
+     * This property will only be considered if weaving is enabled.
+     * <p>
+     * <b>Allowed Values:</b>
+     * <ul>
+     * <li>"<code>true</code>" (DEFAULT)
+     * <li>"<code>false</code>"
+     * </ul>
+     */
+    public static final String WEAVING_MAPPEDSUPERCLASS = "eclipselink.weaving.mappedsuperclass";
+
+    /**
      * The "<code>eclipselink.weaving.rest</code>" property configures
-     * whether classes will be weaved to support EclipseLink JPA_RS functionality
+     * whether classes will be woven to support EclipseLink JPA_RS functionality
      * <p>
      * This property will only be considered if weaving is enabled.
      * <p>
@@ -2479,6 +2494,7 @@ public class PersistenceUnitProperties {
      *
      * @deprecated replaced by {@link #ID_VALIDATION} property with value "<code>NULL</code>".
      */
+    @Deprecated
     public static final String ALLOW_ZERO_ID = "eclipselink.allow-zero-id";
 
     /**

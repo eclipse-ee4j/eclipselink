@@ -69,10 +69,12 @@ public class TransformerFactory {
     protected boolean weaveFetchGroups;
     protected boolean weaveInternal;
     protected boolean weaveRest;
+    protected boolean weaveMappedSuperClass;
 
     public static PersistenceWeaver createTransformerAndModifyProject(
             Session session, Collection<MetadataClass> entityClasses, ClassLoader classLoader,
-            boolean weaveLazy, boolean weaveChangeTracking, boolean weaveFetchGroups, boolean weaveInternal, boolean weaveRest) {
+            boolean weaveLazy, boolean weaveChangeTracking, boolean weaveFetchGroups,
+            boolean weaveInternal, boolean weaveRest, boolean weaveMappedSuperClass) {
         if (session == null) {
             throw new IllegalArgumentException("Weaver session cannot be null");
         }
@@ -80,12 +82,14 @@ public class TransformerFactory {
             ((AbstractSession)session).log(SessionLog.SEVERE, SessionLog.WEAVER, WEAVER_NULL_PROJECT, null);
             throw new IllegalArgumentException("Weaver session's project cannot be null");
         }
-        TransformerFactory tf = new TransformerFactory(session, entityClasses, classLoader, weaveLazy, weaveChangeTracking, weaveFetchGroups, weaveInternal, weaveRest);
+        TransformerFactory tf = new TransformerFactory(session, entityClasses, classLoader, weaveLazy, weaveChangeTracking, weaveFetchGroups, weaveInternal, weaveRest, weaveMappedSuperClass);
         tf.buildClassDetailsAndModifyProject();
         return tf.buildPersistenceWeaver();
     }
 
-    public TransformerFactory(Session session, Collection<MetadataClass> entityClasses, ClassLoader classLoader, boolean weaveLazy, boolean weaveChangeTracking, boolean weaveFetchGroups, boolean weaveInternal, boolean weaveRest) {
+    public TransformerFactory(Session session, Collection<MetadataClass> entityClasses, ClassLoader classLoader,
+            boolean weaveLazy, boolean weaveChangeTracking, boolean weaveFetchGroups,
+            boolean weaveInternal, boolean weaveRest, boolean weaveMappedSuperClass) {
         this.session = session;
         this.entityClasses = entityClasses;
         this.classLoader = classLoader;
@@ -95,6 +99,7 @@ public class TransformerFactory {
         this.weaveFetchGroups = weaveFetchGroups;
         this.weaveInternal = weaveInternal;
         this.weaveRest = weaveRest;
+        this.weaveMappedSuperClass = weaveMappedSuperClass;
     }
 
     /**
@@ -151,34 +156,48 @@ public class TransformerFactory {
             for (MetadataClass metaClass : entityClasses) {
                 // check to ensure that class is present in project
                 // this will be a relational descriptor because MetadataClass only describes relational descriptors
+                boolean isMappedSuperclass = false;
                 ClassDescriptor descriptor = findDescriptor(session.getProject(), metaClass.getName());
                 if (descriptor == null) {
-                    log(SessionLog.FINER, WEAVER_CLASS_NOT_IN_PROJECT, new Object[]{metaClass.getName()});
-                } else {
-                    log(SessionLog.FINER, WEAVER_PROCESSING_CLASS, new Object[]{metaClass.getName()});
-
-                    boolean weaveValueHoldersForClass = weaveLazy && canWeaveValueHolders(metaClass, descriptor.getMappings());
-                    boolean weaveChangeTrackingForClass = canChangeTrackingBeEnabled(descriptor, metaClass, weaveChangeTracking);
-
-                    ClassDetails classDetails = createClassDetails(metaClass, weaveValueHoldersForClass, weaveChangeTrackingForClass, weaveFetchGroups, weaveInternal, weaveRest);
-                    if (descriptor.isDescriptorTypeAggregate()) {
-                        classDetails.setIsEmbedable(true);
-//                        classDetails.setShouldWeaveFetchGroups(false);
+                    if (weaveMappedSuperClass) {
+                        //Bug #466271 - find mapped superclasses which have no implementation
+                        descriptor = session.getProject().getMappedSuperclass(metaClass.getName());
+                        if (descriptor == null) {
+                            log(SessionLog.FINER, WEAVER_CLASS_NOT_IN_PROJECT, new Object[]{metaClass.getName()});
+                            continue;
+                        } else {
+                            isMappedSuperclass = true;
+                        }
+                    } else {
+                        log(SessionLog.FINER, WEAVER_CLASS_NOT_IN_PROJECT, new Object[]{metaClass.getName()});
+                        continue;
                     }
-                    if (!descriptor.usesPropertyAccessForWeaving()){
-                        classDetails.useAttributeAccess();
-                    }
+                }
+                log(SessionLog.FINER, WEAVER_PROCESSING_CLASS, new Object[]{metaClass.getName()});
 
-                    classDetails.getVirtualAccessMethods().addAll(descriptor.getVirtualAttributeMethods());
+                boolean weaveValueHoldersForClass = weaveLazy && canWeaveValueHolders(metaClass, descriptor.getMappings());
+                boolean weaveChangeTrackingForClass = canChangeTrackingBeEnabled(descriptor, metaClass, weaveChangeTracking);
 
-                    List unMappedAttributes = storeAttributeMappings(metaClass, classDetails, descriptor.getMappings(), weaveValueHoldersForClass);
-                    classDetailsMap.put(classDetails.getClassName() ,classDetails);
+                ClassDetails classDetails = createClassDetails(metaClass, weaveValueHoldersForClass, weaveChangeTrackingForClass, weaveFetchGroups, weaveInternal, weaveRest);
+                classDetails.setIsMappedSuperClass(isMappedSuperclass);
+                if (descriptor.isDescriptorTypeAggregate()) {
+                    classDetails.setIsEmbedable(true);
+//                    classDetails.setShouldWeaveFetchGroups(false);
+                }
 
-                    classDetails.setShouldWeaveConstructorOptimization((classDetails.getDescribedClass().getFields().size() - (descriptor.getMappings().size() - unMappedAttributes.size()))<=0);
+                if (!descriptor.usesPropertyAccessForWeaving()){
+                    classDetails.useAttributeAccess();
+                }
 
-                    if (classDetails.getSuperClassName() != null) {
-                        addClassDetailsForMappedSuperClasses(metaClass, descriptor, classDetails, classDetailsMap, unMappedAttributes, weaveChangeTracking);
-                    }
+                classDetails.getVirtualAccessMethods().addAll(descriptor.getVirtualAttributeMethods());
+
+                List unMappedAttributes = storeAttributeMappings(metaClass, classDetails, descriptor.getMappings(), weaveValueHoldersForClass);
+                classDetailsMap.put(classDetails.getClassName() ,classDetails);
+
+                classDetails.setShouldWeaveConstructorOptimization((classDetails.getDescribedClass().getFields().size() - (descriptor.getMappings().size() - unMappedAttributes.size()))<=0);
+
+                if (classDetails.getSuperClassName() != null) {
+                    addClassDetailsForMappedSuperClasses(metaClass, descriptor, classDetails, classDetailsMap, unMappedAttributes, weaveChangeTracking);
                 }
             }
 

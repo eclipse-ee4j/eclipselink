@@ -429,6 +429,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     boolean weaveFetchGroups;
     boolean weaveInternal;
     boolean weaveRest;
+    boolean weaveMappedSuperClass;
 
     /**
      * Used to indicate that an EntityManagerFactoryImpl based on this
@@ -1922,6 +1923,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 weaveFetchGroups = false;
                 weaveInternal = false;
                 weaveRest = false;
+                weaveMappedSuperClass = false;
                 if (enableWeaving) {
                     weaveChangeTracking = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_CHANGE_TRACKING, predeployProperties, "true", session));
                     weaveLazy = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_LAZY, predeployProperties, "true", session));
@@ -1929,6 +1931,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     weaveFetchGroups = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_FETCHGROUPS, predeployProperties, "true", session));
                     weaveInternal = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_INTERNAL, predeployProperties, "true", session));
                     weaveRest = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_REST, predeployProperties, "true", session));
+                    weaveMappedSuperClass = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_MAPPEDSUPERCLASS, predeployProperties, "true", session));
                 }
 
             }
@@ -1987,7 +1990,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     if (enableWeaving) {
                         // build a list of entities the persistence unit represented by this EntityManagerSetupImpl will use
                         Collection entities = PersistenceUnitProcessor.buildEntityList(processor, classLoaderToUse);
-                        this.weaver = TransformerFactory.createTransformerAndModifyProject(session, entities, classLoaderToUse, weaveLazy, weaveChangeTracking, weaveFetchGroups, weaveInternal, weaveRest);
+                        this.weaver = TransformerFactory.createTransformerAndModifyProject(session, entities, classLoaderToUse, weaveLazy, weaveChangeTracking, weaveFetchGroups, weaveInternal, weaveRest, weaveMappedSuperClass);
                         session.getProject().setClassNamesForWeaving(new ArrayList(processor.getProject().getWeavableClassNames()));
                     }
 
@@ -2015,7 +2018,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                             persistenceClasses.add(factory.getMetadataClass(className));
                         }
                     }
-                    this.weaver = TransformerFactory.createTransformerAndModifyProject(session, persistenceClasses, classLoaderToUse, weaveLazy, weaveChangeTracking, weaveFetchGroups, weaveInternal, weaveRest);
+                    this.weaver = TransformerFactory.createTransformerAndModifyProject(session, persistenceClasses, classLoaderToUse, weaveLazy, weaveChangeTracking, weaveFetchGroups, weaveInternal, weaveRest, weaveMappedSuperClass);
                 }
             }
 

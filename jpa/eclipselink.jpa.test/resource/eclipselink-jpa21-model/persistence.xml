@@ -168,4 +168,16 @@
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
 
+    <!-- A test model for bug #466271. -->
+    <persistence-unit name="pu-with-mappedsuperclass" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <shared-cache-mode>NONE</shared-cache-mode>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.Athlete</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.weaving" value="true" />
+            <property name="eclipselink.ddl-generation" value="none" />
+        </properties>
+    </persistence-unit>
+
 </persistence>

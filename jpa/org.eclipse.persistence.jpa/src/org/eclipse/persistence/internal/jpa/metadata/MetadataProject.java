@@ -1323,10 +1323,13 @@ public class MetadataProject {
     /**
      * INTERNAL:
      * Returns all those classes in this project that are available for
-     * weaving. This list currently includes entity and embeddables classes.
+     * weaving. This list currently includes entity, embeddables
+     * and mappedsuperclass with no children classes.
      */
     public Collection<String> getWeavableClassNames() {
-        return Collections.unmodifiableCollection(m_allAccessors.keySet());
+        Set<String> weavableClassNames = new HashSet<String>(m_allAccessors.keySet());
+        weavableClassNames.addAll(m_mappedSuperclasseAccessors.keySet());
+        return Collections.unmodifiableCollection(weavableClassNames);
     }
 
     /**
@@ -1794,8 +1797,8 @@ public class MetadataProject {
      * @see processStage3
      */
     public void processStage2() {
-        // 266912: process metamodel mappedSuperclasses separately from entity descriptors
-        for (MappedSuperclassAccessor msAccessor : m_metamodelMappedSuperclasses.values()) {
+        // process metamodel mappedSuperclasses separately from entity descriptors
+        for (MappedSuperclassAccessor msAccessor : getMappedSuperclasses()) {
             if (! msAccessor.isProcessed()) {
                 msAccessor.processMetamodelDescriptor();
             }

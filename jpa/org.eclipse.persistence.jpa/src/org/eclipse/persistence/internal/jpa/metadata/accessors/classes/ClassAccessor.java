@@ -561,7 +561,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
                 // project for later use by the Metamodel API Note: we must
                 // again reload our accessor from XML or we will be sharing
                 // instances of the descriptor
-                getProject().addMetamodelMappedSuperclass(reloadMappedSuperclass(accessor,  new MetadataDescriptor(metadataClass)), getDescriptor());
+                getProject().addMetamodelMappedSuperclass(reloadMappedSuperclass(accessor,  new MetadataDescriptor(metadataClass, getDescriptor().getClassAccessor())), getDescriptor());
             } else {
                 m_mappedSuperclasses.add(accessor);
             }
