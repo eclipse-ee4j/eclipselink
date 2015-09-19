@@ -155,6 +155,7 @@ import com.sun.xml.xsom.impl.parser.DelayedRef;
  *
  * @author Marcel Valovy - marcel.valovy@oracle.com
  */
+@java.lang.SuppressWarnings("squid:S1191")
 public class BeanValidationPlugin extends Plugin {
 
     /* ######### LAUNCHING ######### */
