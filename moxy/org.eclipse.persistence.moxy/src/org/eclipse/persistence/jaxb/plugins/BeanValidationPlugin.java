@@ -164,6 +164,8 @@ public class BeanValidationPlugin extends Plugin {
     public static final String SIMPLE_REGEX_MOD = "simpleRegex";
     public static final String NS_URI = "http://jaxb.dev.java.net/plugin/bean-validation";
     public static final String FACET = "facet";
+    
+    private static final String VALUE = "value";
 
     private boolean jsr303 = false;
     private boolean simpleRegex = false;
@@ -192,13 +194,14 @@ public class BeanValidationPlugin extends Plugin {
 
     @Override
     public int parseArgument(Options opt, String[] args, int i) throws BadCommandLineException, IOException {
-        int mods = 0;
+        int mods = 0; 
+        int argNumber = i;
         if (("-" + PLUGIN_OPTION).equals(args[i])) {
-            while (++i < args.length) {
-                if (args[i].contains(JSR_303_MOD)) {
+            while (++argNumber < args.length) {
+                if (args[argNumber].contains(JSR_303_MOD)) {
                     jsr303 = true;
                     mods++;
-                } else if (args[i].contains(SIMPLE_REGEX_MOD)) {
+                } else if (args[argNumber].contains(SIMPLE_REGEX_MOD)) {
                     simpleRegex = true;
                     mods++;
                 }
@@ -212,45 +215,47 @@ public class BeanValidationPlugin extends Plugin {
     private static final String PATTERN_ANNOTATION_NOT_APPLICABLE = "Facet \"pattern\" was detected on a DOM node with non-string base type. Annotation was not generated, because it is not supported by the Bean Validation specification.";
     private final boolean securityEnabled = System.getSecurityManager() != null;
 
-    private static final JClass validAnn;
-    private static final JClass notNullAnn;
-    private static final JClass sizeAnn;
-    private static final JClass decimalMinAnn;
-    private static final JClass decimalMaxAnn;
-    private static final JClass digitsAnn;
-    private static final JClass patternAnn;
-    private static final JClass assertFalseAnn;
-    private static final JClass assertTrueAnn;
-    private static final JClass futureAnn;
-    private static final JClass pastAnn;
-    private static final JClass patternListAnn;
-    private static final JClass xmlElementAnn;
+    private static final JClass ANNOTATION_VALID;
+    private static final JClass ANNOTATION_NOTNULL;
+    private static final JClass ANNOTATION_SIZE;
+    private static final JClass ANNOTATION_DECIMALMIN;
+    private static final JClass ANNOTATION_DECIMALMAX;
+    private static final JClass ANNOTATION_DIGITS;
+    private static final JClass ANNOTATION_PATTERN;
+    private static final JClass ANNOTATION_PATTERNLIST;
+    private static final JClass ANNOTATION_ASSERTFALSE;
+    private static final JClass ANNOTATION_ASSERTTRUE;
+    private static final JClass ANNOTATION_FUTURE;
+    private static final JClass ANNOTATION_PAST;
+    private static final JClass ANNOTATION_XMLELEMENT;
 
     // We want this plugin to work without requiring the presence of JSR-303/349 jar.
-    private static final JCodeModel codeModel = new JCodeModel();
+    private static final JCodeModel CODEMODEL = new JCodeModel();
 
     static {
-        validAnn = codeModel.ref("javax.validation.Valid");
-        notNullAnn = codeModel.ref("javax.validation.constraints.NotNull");
-        sizeAnn = codeModel.ref("javax.validation.constraints.Size");
-        decimalMinAnn = codeModel.ref("javax.validation.constraints.DecimalMin");
-        decimalMaxAnn = codeModel.ref("javax.validation.constraints.DecimalMax");
-        digitsAnn = codeModel.ref("javax.validation.constraints.Digits");
-        patternAnn = codeModel.ref("javax.validation.constraints.Pattern");
-        patternListAnn = codeModel.ref("javax.validation.constraints.Pattern.List");
-        assertFalseAnn = codeModel.ref("javax.validation.constraints.AssertFalse");
-        assertTrueAnn = codeModel.ref("javax.validation.constraints.AssertTrue");
-        futureAnn = codeModel.ref("javax.validation.constraints.Future");
-        pastAnn = codeModel.ref("javax.validation.constraints.Past");
-        xmlElementAnn = codeModel.ref("javax.xml.bind.annotation.XmlElement");
+        ANNOTATION_VALID = CODEMODEL.ref("javax.validation.Valid");
+        ANNOTATION_NOTNULL = CODEMODEL.ref("javax.validation.constraints.NotNull");
+        ANNOTATION_SIZE = CODEMODEL.ref("javax.validation.constraints.Size");
+        ANNOTATION_DECIMALMIN = CODEMODEL.ref("javax.validation.constraints.DecimalMin");
+        ANNOTATION_DECIMALMAX = CODEMODEL.ref("javax.validation.constraints.DecimalMax");
+        ANNOTATION_DIGITS = CODEMODEL.ref("javax.validation.constraints.Digits");
+        ANNOTATION_PATTERN = CODEMODEL.ref("javax.validation.constraints.Pattern");
+        ANNOTATION_PATTERNLIST = CODEMODEL.ref("javax.validation.constraints.Pattern.List");
+        ANNOTATION_ASSERTFALSE = CODEMODEL.ref("javax.validation.constraints.AssertFalse");
+        ANNOTATION_ASSERTTRUE = CODEMODEL.ref("javax.validation.constraints.AssertTrue");
+        ANNOTATION_FUTURE = CODEMODEL.ref("javax.validation.constraints.Future");
+        ANNOTATION_PAST = CODEMODEL.ref("javax.validation.constraints.Past");
+        ANNOTATION_XMLELEMENT = CODEMODEL.ref("javax.xml.bind.annotation.XmlElement");
     }
 
     @Override
     public boolean run(Outline outline, Options opts, ErrorHandler errorHandler) {
         final Visitor visitor = this.new Visitor();
-        for (ClassOutline classOutline : outline.getClasses())
-            for (CPropertyInfo property : classOutline.target.getProperties())
+        for (ClassOutline classOutline : outline.getClasses()) {
+            for (CPropertyInfo property : classOutline.target.getProperties()) {
                 property.accept(visitor, classOutline);
+            }
+        }
         return true;
     }
 
@@ -302,7 +307,9 @@ public class BeanValidationPlugin extends Plugin {
         XSSimpleType type = attribute.getDecl().getType();
 
         // Use="required". It makes sense to annotate a required attribute with @NotNull even though it's not 100 % semantically equivalent.
-        if (attribute.isRequired() && !fieldVar.type().isPrimitive()) notNullAnnotate(fieldVar);
+        if (attribute.isRequired() && !fieldVar.type().isPrimitive()) {
+            notNullAnnotate(fieldVar);
+        }
 
         processSimpleType(type, fieldVar, customizations);
     }
@@ -320,10 +327,12 @@ public class BeanValidationPlugin extends Plugin {
         processMinMaxOccurs(particle, fieldVar);
 
         XSTerm term = particle.getTerm();
-        if (term instanceof XSElementDecl) processTermElement(fieldVar, (XSElementDecl) term, customizations);
-            // When a complex type resides inside another complex type and thus gets lazily loaded or processed.
-        else if (term instanceof DelayedRef.Element)
+        if (term instanceof XSElementDecl) {
+            processTermElement(fieldVar, (XSElementDecl) term, customizations);
+        // When a complex type resides inside another complex type and thus gets lazily loaded or processed.
+        } else if (term instanceof DelayedRef.Element) { 
             processTermElement(fieldVar, ((DelayedRef.Element) term).get(), customizations);
+        }
     }
 
     private void processTermElement(JFieldVar fieldVar, XSElementDecl element, List<FacetCustomization> customizations) {
@@ -331,10 +340,15 @@ public class BeanValidationPlugin extends Plugin {
 
         if (elementType.isComplexType()) {
             validAnnotate(fieldVar);
-            if (!element.isNillable()) notNullAnnotate(fieldVar);
-            if (elementType.getBaseType().isSimpleType())
+            if (!element.isNillable()) {
+                notNullAnnotate(fieldVar);
+            }
+            if (elementType.getBaseType().isSimpleType()) {
                 processSimpleType(elementType.getBaseType().asSimpleType(), fieldVar, customizations);
-        } else processSimpleType(elementType.asSimpleType(), fieldVar, customizations);
+            }
+        } else { 
+            processSimpleType(elementType.asSimpleType(), fieldVar, customizations);
+        }
     }
 
     private void processSimpleType(XSSimpleType simpleType, JFieldVar fieldVar, List<FacetCustomization> customizations) {
@@ -356,21 +370,23 @@ public class BeanValidationPlugin extends Plugin {
     private void applyAnnotations(XSSimpleType simpleType, JFieldVar fieldVar, Map<JAnnotationUse, FacetType> a) {
         XSFacet facet = null; // Auxiliary field.
         JType fieldType = fieldVar.type();
-        if (notAnnotated(fieldVar, sizeAnn) && isSizeAnnotationApplicable(fieldType)) {
+        if (notAnnotated(fieldVar, ANNOTATION_SIZE) && isSizeAnnotationApplicable(fieldType)) {
             try {
                 if ((facet = simpleType.getFacet(FACET_LENGTH)) != null) {
                     int length = Integer.parseInt(facet.getValue().value);
-                    a.put(fieldVar.annotate(sizeAnn).param("min", length).param("max", length), FacetType.length);
+                    a.put(fieldVar.annotate(ANNOTATION_SIZE).param("min", length).param("max", length), FacetType.length);
                 } else {
                     Integer minLength = (facet = simpleType.getFacet(FACET_MINLENGTH)) != null ? Integer.parseInt(facet.getValue().value) : null;
                     Integer maxLength = (facet = simpleType.getFacet(FACET_MAXLENGTH)) != null ? Integer.parseInt(facet.getValue().value) : null;
-
-                    if (minLength != null && maxLength != null) // Note: If using both minLength + maxLength, the minLength's customizations are considered.
-                        a.put(fieldVar.annotate(sizeAnn).param("min", minLength).param("max", maxLength), FacetType.minLength);
-                    else if (minLength != null)
-                        a.put(fieldVar.annotate(sizeAnn).param("min", minLength), FacetType.minLength);
-                    else if (maxLength != null)
-                        a.put(fieldVar.annotate(sizeAnn).param("max", maxLength), FacetType.maxLength);
+                    
+                    // Note: If using both minLength + maxLength, the minLength's customizations are considered.
+                    if (minLength != null && maxLength != null) {
+                        a.put(fieldVar.annotate(ANNOTATION_SIZE).param("min", minLength).param("max", maxLength), FacetType.minLength);
+                    } else if (minLength != null) {
+                        a.put(fieldVar.annotate(ANNOTATION_SIZE).param("min", minLength), FacetType.minLength);
+                    } else if (maxLength != null) {
+                        a.put(fieldVar.annotate(ANNOTATION_SIZE).param("max", maxLength), FacetType.maxLength);
+                    }
                 }
             } catch (NumberFormatException nfe) {
                 if (facet != null) {
@@ -379,19 +395,19 @@ public class BeanValidationPlugin extends Plugin {
                 }
             }
         }
-
+        
         if ((facet = simpleType.getFacet(FACET_MAXINCLUSIVE)) != null && isNumberOrCharSequence(fieldType, false)) {
             String maxIncValue = facet.getValue().value;
-            if (notAnnotatedAndNotDefaultBoundary(fieldVar, decimalMaxAnn, maxIncValue)) {
-                a.put(fieldVar.annotate(decimalMaxAnn).param("value", maxIncValue), FacetType.maxInclusive);
+            if (notAnnotatedAndNotDefaultBoundary(fieldVar, ANNOTATION_DECIMALMAX, maxIncValue)) {
+                a.put(fieldVar.annotate(ANNOTATION_DECIMALMAX).param(VALUE, maxIncValue), FacetType.maxInclusive);
                 convertToElement(fieldVar);
             }
         }
 
         if ((facet = simpleType.getFacet(FACET_MININCLUSIVE)) != null && isNumberOrCharSequence(fieldType, false)) {
             String minIncValue = facet.getValue().value;
-            if (notAnnotatedAndNotDefaultBoundary(fieldVar, decimalMinAnn, minIncValue)) {
-                a.put(fieldVar.annotate(decimalMinAnn).param("value", minIncValue), FacetType.minInclusive);
+            if (notAnnotatedAndNotDefaultBoundary(fieldVar, ANNOTATION_DECIMALMIN, minIncValue)) {
+                a.put(fieldVar.annotate(ANNOTATION_DECIMALMIN).param(VALUE, minIncValue), FacetType.minInclusive);
                 convertToElement(fieldVar);
             }
         }
@@ -399,15 +415,15 @@ public class BeanValidationPlugin extends Plugin {
         if ((facet = simpleType.getFacet(FACET_MAXEXCLUSIVE)) != null && isNumberOrCharSequence(fieldType, false)) {
             String maxExcValue = facet.getValue().value;
             if (!jsr303) { // ~ if jsr349
-                if (notAnnotatedAndNotDefaultBoundary(fieldVar, decimalMaxAnn, maxExcValue)) {
-                    a.put(fieldVar.annotate(decimalMaxAnn).param("value", maxExcValue).param("inclusive", false), FacetType.maxExclusive);
+                if (notAnnotatedAndNotDefaultBoundary(fieldVar, ANNOTATION_DECIMALMAX, maxExcValue)) {
+                    a.put(fieldVar.annotate(ANNOTATION_DECIMALMAX).param(VALUE, maxExcValue).param("inclusive", false), FacetType.maxExclusive);
                     convertToElement(fieldVar);
                 }
             } else {
                 Integer intMaxExc = Integer.parseInt(maxExcValue) - 1;
                 maxExcValue = intMaxExc.toString();
-                if (notAnnotatedAndNotDefaultBoundary(fieldVar, decimalMaxAnn, maxExcValue)) {
-                    a.put(fieldVar.annotate(decimalMaxAnn).param("value", maxExcValue), FacetType.maxExclusive);
+                if (notAnnotatedAndNotDefaultBoundary(fieldVar, ANNOTATION_DECIMALMAX, maxExcValue)) {
+                    a.put(fieldVar.annotate(ANNOTATION_DECIMALMAX).param(VALUE, maxExcValue), FacetType.maxExclusive);
                     convertToElement(fieldVar);
                 }
             }
@@ -415,18 +431,19 @@ public class BeanValidationPlugin extends Plugin {
 
         if ((facet = simpleType.getFacet(FACET_MINEXCLUSIVE)) != null && isNumberOrCharSequence(fieldType, false)) {
             String minExcValue = facet.getValue().value;
-            if (!jsr303) // ~ if jsr349
-                if (notAnnotatedAndNotDefaultBoundary(fieldVar, decimalMinAnn, minExcValue)) {
-                    a.put(fieldVar.annotate(decimalMinAnn).param("value", minExcValue).param("inclusive", false), FacetType.minExclusive);
+            if (!jsr303) { // ~ if jsr349
+                if (notAnnotatedAndNotDefaultBoundary(fieldVar, ANNOTATION_DECIMALMIN, minExcValue)) {
+                    a.put(fieldVar.annotate(ANNOTATION_DECIMALMIN).param(VALUE, minExcValue).param("inclusive", false), FacetType.minExclusive);
                     convertToElement(fieldVar);
                 } else {
                     Integer intMinExc = Integer.parseInt(minExcValue) + 1;
                     minExcValue = intMinExc.toString();
-                    if (notAnnotatedAndNotDefaultBoundary(fieldVar, decimalMinAnn, minExcValue)) {
-                        a.put(fieldVar.annotate(decimalMinAnn).param("value", minExcValue), FacetType.minExclusive);
+                    if (notAnnotatedAndNotDefaultBoundary(fieldVar, ANNOTATION_DECIMALMIN, minExcValue)) {
+                        a.put(fieldVar.annotate(ANNOTATION_DECIMALMIN).param(VALUE, minExcValue), FacetType.minExclusive);
                         convertToElement(fieldVar);
                     }
                 }
+            }
         }
 
         if ((facet = simpleType.getFacet(FACET_TOTALDIGITS)) != null && isNumberOrCharSequence(fieldType, true)) {
@@ -441,29 +458,35 @@ public class BeanValidationPlugin extends Plugin {
                         fractionDigs = 0;
                     }
                 }
-                if (notAnnotated(fieldVar, digitsAnn))
-                    a.put(fieldVar.annotate(digitsAnn).param("integer", (digits - fractionDigs)).param("fraction", fractionDigs), FacetType.totalDigits);
+                if (notAnnotated(fieldVar, ANNOTATION_DIGITS)) {
+                    a.put(fieldVar.annotate(ANNOTATION_DIGITS).param("integer", (digits - fractionDigs)).param("fraction", fractionDigs), FacetType.totalDigits);
+                }
             }
         }
 
         List<XSFacet> patternList = simpleType.getFacets(FACET_PATTERN);
         if (patternList.size() > 1) {
-            if (notAnnotated(fieldVar, patternListAnn)) {
-                JAnnotationUse list = fieldVar.annotate(patternListAnn);
-                JAnnotationArrayMember listValue = list.paramArray("value");
+            if (notAnnotated(fieldVar, ANNOTATION_PATTERNLIST)) {
+                JAnnotationUse list = fieldVar.annotate(ANNOTATION_PATTERNLIST);
+                JAnnotationArrayMember listValue = list.paramArray(VALUE);
 
                 for (XSFacet xsFacet : patternList)
                     // If corresponds to <xsd:restriction base="xsd:string">.
-                    if ("String".equals(fieldType.name()))
-                        a.put(listValue.annotate(patternAnn).param("regexp", eliminateShorthands(xsFacet.getValue().value)), FacetType.pattern);
-                    else
+                    if ("String".equals(fieldType.name())) {
+                        a.put(listValue.annotate(ANNOTATION_PATTERN).param("regexp", eliminateShorthands(xsFacet.getValue().value)), FacetType.pattern);
+                    } else {
                         Logger.getLogger(this.getClass().getName()).log(Level.WARNING, PATTERN_ANNOTATION_NOT_APPLICABLE);
+                    }
             }
-        } else if ((facet = simpleType.getFacet(FACET_PATTERN)) != null)
+        } else if ((facet = simpleType.getFacet(FACET_PATTERN)) != null) {
             if ("String".equals(fieldType.name())) { // <xsd:restriction base="xsd:string">
-                if (notAnnotated(fieldVar, patternAnn))
-                    a.put(fieldVar.annotate(patternAnn).param("regexp", eliminateShorthands(facet.getValue().value)), FacetType.pattern);
-            } else Logger.getLogger(this.getClass().getName()).log(Level.WARNING, PATTERN_ANNOTATION_NOT_APPLICABLE);
+                if (notAnnotated(fieldVar, ANNOTATION_PATTERN)) {
+                    a.put(fieldVar.annotate(ANNOTATION_PATTERN).param("regexp", eliminateShorthands(facet.getValue().value)), FacetType.pattern);
+                }
+            } else {
+                Logger.getLogger(this.getClass().getName()).log(Level.WARNING, PATTERN_ANNOTATION_NOT_APPLICABLE);
+            }
+        }
     }
 
     /**
@@ -508,9 +531,10 @@ public class BeanValidationPlugin extends Plugin {
                     String groups = c.element.getAttribute("groups");
                     String message = c.element.getAttribute("message");
                     String type = c.element.getAttribute("type");
-                    if (type.equals(""))
+                    if ("".equals(type)) {
                         throw new RuntimeException("DOM attribute \"type\" is required in custom facet declarations.");
-                    String value = c.element.getAttribute("value");
+                    }
+                    String value = c.element.getAttribute(VALUE);
                     facetCustomizations.add(new FacetCustomization(groups, message, type, value));
                 }
 
@@ -532,21 +556,21 @@ public class BeanValidationPlugin extends Plugin {
             try {
                 switch (FacetType.valueOf(c.type)) {
                     case assertFalse:
-                        customizeAnnotation(fieldVar.annotate(assertFalseAnn), c);
+                        customizeAnnotation(fieldVar.annotate(ANNOTATION_ASSERTFALSE), c);
                         continue;
                     case assertTrue:
-                        customizeAnnotation(fieldVar.annotate(assertTrueAnn), c);
+                        customizeAnnotation(fieldVar.annotate(ANNOTATION_ASSERTTRUE), c);
                         continue;
                     case future:
-                        customizeAnnotation(fieldVar.annotate(futureAnn), c);
+                        customizeAnnotation(fieldVar.annotate(ANNOTATION_FUTURE), c);
                         continue;
                     case past:
-                        customizeAnnotation(fieldVar.annotate(pastAnn), c);
+                        customizeAnnotation(fieldVar.annotate(ANNOTATION_PAST), c);
                         continue;
                 }
             } catch (IllegalArgumentException programmingByException) {
-                JAnnotationUse annotationUse = fieldVar.annotate(codeModel.ref(c.type));
-                if (!c.value.equals("")) annotationUse.param("value", c.value);
+                JAnnotationUse annotationUse = fieldVar.annotate(CODEMODEL.ref(c.type));
+                if (!c.value.equals("")) annotationUse.param(VALUE, c.value);
                 customizeAnnotation(annotationUse, c);
                 continue;
             }
@@ -659,11 +683,11 @@ public class BeanValidationPlugin extends Plugin {
         final int maxOccurs = getOccursValue("maxOccurs", particle);
         final int minOccurs = getOccursValue("minOccurs", particle);
         if (maxOccurs > 1) {
-            if (notAnnotated(fieldVar, sizeAnn))
-                fieldVar.annotate(sizeAnn).param("min", minOccurs).param("max", maxOccurs);
+            if (notAnnotated(fieldVar, ANNOTATION_SIZE))
+                fieldVar.annotate(ANNOTATION_SIZE).param("min", minOccurs).param("max", maxOccurs);
         } else if (maxOccurs == -1) // maxOccurs -1 = "unbounded"
-            if (notAnnotated(fieldVar, sizeAnn))
-                fieldVar.annotate(sizeAnn).param("min", minOccurs);
+            if (notAnnotated(fieldVar, ANNOTATION_SIZE))
+                fieldVar.annotate(ANNOTATION_SIZE).param("min", minOccurs);
     }
 
 
@@ -673,20 +697,20 @@ public class BeanValidationPlugin extends Plugin {
      * also trigger change of the field's type from primitive to object.
      */
     private void convertToElement(JFieldVar fieldVar) {
-        if (notAnnotated(fieldVar, xmlElementAnn)) {
+        if (notAnnotated(fieldVar, ANNOTATION_XMLELEMENT)) {
             fieldVar.annotate(XmlElement.class);
             notNullAnnotate(fieldVar);
         }
     }
 
     private void validAnnotate(JFieldVar fieldVar) {
-        if (notAnnotated(fieldVar, validAnn))
-            fieldVar.annotate(validAnn);
+        if (notAnnotated(fieldVar, ANNOTATION_VALID))
+            fieldVar.annotate(ANNOTATION_VALID);
     }
 
     private void notNullAnnotate(JFieldVar fieldVar) {
-        if (notAnnotated(fieldVar, notNullAnn))
-            fieldVar.annotate(notNullAnn);
+        if (notAnnotated(fieldVar, ANNOTATION_NOTNULL))
+            fieldVar.annotate(ANNOTATION_NOTNULL);
     }
 
     private boolean notAnnotated(JFieldVar fieldVar, JClass annotationClass) {
@@ -711,9 +735,9 @@ public class BeanValidationPlugin extends Plugin {
             if ((annotationUse.getAnnotationClass().toString().equals(annotationClass.toString()))) {
                 boolean previousAnnotationRemoved = false;
                 String annotationName = annotationUse.getAnnotationClass().fullName();
-                if (annotationName.equals(decimalMinAnn.fullName()))
+                if (annotationName.equals(ANNOTATION_DECIMALMIN.fullName()))
                     previousAnnotationRemoved = isMoreSpecificBoundary(fieldVar, boundaryValue, annotationUse, false);
-                else if (annotationName.equals(decimalMaxAnn.fullName()))
+                else if (annotationName.equals(ANNOTATION_DECIMALMAX.fullName()))
                     previousAnnotationRemoved = isMoreSpecificBoundary(fieldVar, boundaryValue, annotationUse, true);
                 // If the previous field's annotation was removed, the fieldVar
                 // now is not annotated and should be given a new annotation,
@@ -850,9 +874,9 @@ public class BeanValidationPlugin extends Plugin {
     }
 
     private boolean isDefaultBoundary(String fieldVarType, String annotationClass, String boundaryValue) {
-        return decimalMinAnn.fullName().equals(annotationClass)
+        return ANNOTATION_DECIMALMIN.fullName().equals(annotationClass)
                 && nonFloatingDigitsClassesBoundaries.get(fieldVarType).min.equals(boundaryValue)
-                || (decimalMaxAnn.fullName().equals(annotationClass)
+                || (ANNOTATION_DECIMALMAX.fullName().equals(annotationClass)
                 && nonFloatingDigitsClassesBoundaries.get(fieldVarType).max.equals(boundaryValue));
     }
 
@@ -1005,10 +1029,10 @@ public class BeanValidationPlugin extends Plugin {
     }
 
     private static String loadExistingBoundaryValue(JAnnotationUse jAnnotationUse) {
-        JAnnotationValue jAnnotationValue = jAnnotationUse.getAnnotationMembers().get("value");
+        JAnnotationValue jAnnotationValue = jAnnotationUse.getAnnotationMembers().get(VALUE);
         Class<? extends JAnnotationValue> clazz = jAnnotationValue.getClass();
         try {
-            Field theValueField = clazz.getDeclaredField("value");
+            Field theValueField = clazz.getDeclaredField(VALUE);
             theValueField.setAccessible(true);
             return ((JStringLiteral) theValueField.get(jAnnotationValue)).str;
         } catch (Exception e) {
