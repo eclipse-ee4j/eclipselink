@@ -16,6 +16,8 @@
  *       - 440594: Tolerate invalid NamedQuery at EntityManager creation.
  *     09/03/2015 - Will Dazey
  *       - 456067 : Added support for defining query timeout units
+ *     09/28/2015 - Will Dazey
+ *       - 478331 : Added support for defining local or server as the default locale for obtaining timestamps
  ******************************************************************************/
 package org.eclipse.persistence.internal.sessions;
 
@@ -220,6 +222,7 @@ public class PropertiesHandler {
             addProp(new BooleanProp(PersistenceUnitProperties.MULTITENANT_SHARED_EMF, "true"));
             //Enhancement
             addProp(new QueryTimeoutUnitProp());
+            addProp(new BooleanProp(PersistenceUnitProperties.USE_LOCAL_TIMESTAMP, "false"));
         }
 
         Prop(String name) {
