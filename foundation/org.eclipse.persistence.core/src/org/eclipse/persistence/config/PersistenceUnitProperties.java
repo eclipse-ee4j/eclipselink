@@ -37,6 +37,8 @@
  *       - 458877 : Add national character support
  *     09/03/2015 - Will Dazey
  *       - 456067 : Added support for defining query timeout units
+ *     09/28/2015 - Will Dazey
+ *       - 478331 : Added support for defining local or server as the default locale for obtaining timestamps
  ******************************************************************************/
 package org.eclipse.persistence.config;
 
@@ -3689,6 +3691,18 @@ public class PersistenceUnitProperties {
      * </ul>
      */
     public static final String JPQL_TOLERATE = "eclipselink.tolerate-invalid-jpql";
+
+    /**
+     * The "<code>eclipselink.locking.timestamp.local</code>" property defines if locking policies
+     * should default to local time(true) or server time(false).
+     * <p>
+     * <b>Allowed Values</b> (case sensitive String)<b>:</b>
+     * <ul>
+     * <li>"<code>false</code>" (DEFAULT)
+     * <li>"<code>true</code>"
+     * </ul>
+     */
+    public static final String USE_LOCAL_TIMESTAMP = "eclipselink.locking.timestamp.local." + PersistenceUnitProperties.DEFAULT;
 
     /**
      * INTERNAL: The following properties will not be displayed through logging

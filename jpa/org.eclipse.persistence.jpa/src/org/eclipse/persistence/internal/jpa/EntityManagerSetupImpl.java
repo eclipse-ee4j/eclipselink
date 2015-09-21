@@ -66,6 +66,8 @@
  *       - 475285 : Create a generic application-id property to generate unique session names
  *     09/03/2015 - Will Dazey
  *       - 456067 : Added support for defining query timeout units
+ *     09/28/2015 - Will Dazey
+ *       - 478331 : Added support for defining local or server as the default locale for obtaining timestamps
  *****************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
@@ -163,6 +165,7 @@ import org.eclipse.persistence.config.SessionCustomizer;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.MultitenantPolicy;
 import org.eclipse.persistence.descriptors.SchemaPerMultitenantPolicy;
+import org.eclipse.persistence.descriptors.TimestampLockingPolicy;
 import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.eis.EISConnectionSpec;
@@ -2775,6 +2778,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             updatePessimisticLockTimeout(m);
             updateQueryTimeout(m);
             updateQueryTimeoutUnit(m);
+            updateLockingTimestampDefault(m);
             if (!session.hasBroker()) {
                 updateCacheCoordination(m, loader);
             }
@@ -3527,6 +3531,22 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             }
         } catch (IllegalArgumentException exception) {
             this.session.handleException(ValidationException.invalidValueForProperty(timeoutUnit, PersistenceUnitProperties.QUERY_TIMEOUT_UNIT, exception));
+        }
+    }
+
+    private void updateLockingTimestampDefault(Map persistenceProperties) {
+        String local = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.USE_LOCAL_TIMESTAMP, persistenceProperties, session);
+        try {
+            if (local != null) {
+                for (ClassDescriptor descriptor: session.getProject().getDescriptors().values()) {
+                    OptimisticLockingPolicy policy = descriptor.getOptimisticLockingPolicy();
+                    if (policy instanceof TimestampLockingPolicy) {
+                        ((TimestampLockingPolicy)policy).setUsesServerTime(!Boolean.parseBoolean(local));
+                    }
+                }
+            }
+        } catch (NumberFormatException exception) {
+            this.session.handleException(ValidationException.invalidValueForProperty(local, PersistenceUnitProperties.USE_LOCAL_TIMESTAMP, exception));
         }
     }
 
