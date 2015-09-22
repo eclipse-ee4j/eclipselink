@@ -8,7 +8,7 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Dmitry Kornilov - initial implementation
+ * Dmitry Kornilov - initial implementation
  ******************************************************************************/
 package org.eclipse.persistence.json.bind.defaultmapping.jsonp;
 
@@ -23,7 +23,7 @@ public class JsonpString implements JsonString {
 
     private final String value;
 
-    JsonpString(String value) {
+    public JsonpString(String value) {
         this.value = value;
     }
 
@@ -52,12 +52,12 @@ public class JsonpString implements JsonString {
         if (!(obj instanceof JsonString)) {
             return false;
         }
-        JsonString other = (JsonString)obj;
+        JsonString other = (JsonString) obj;
         return getString().equals(other.getString());
     }
 
     @Override
     public String toString() {
-        return value;
+        return "\"" + value + "\"";
     }
 }

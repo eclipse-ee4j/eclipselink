@@ -27,6 +27,7 @@ dependencies {
     compile 'javax.json:javax.json-api:1.0'
 
     testCompile 'junit:junit:4.12'
+    testCompile 'org.openjdk.jmh:jmh-core:0.9.3';
     testRuntime 'org.glassfish:javax.json:1.0.4'
 }
 

@@ -1,11 +1,14 @@
 package org.eclipse.persistence.json.bind.model;
 
+import org.eclipse.persistence.json.bind.internal.ReflectionUtils;
+
 import javax.json.bind.JsonbException;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 
 /**
  * A model for class field.
@@ -21,12 +24,12 @@ public class FieldModel implements Comparable<FieldModel> {
     /**
      * Field type.
      */
-    private final Class type;
+    private Type type;
 
     /**
      * Model of the class this field belongs to.
      */
-    private final ClassModel classModel;
+    private ClassModel classModel;
 
     /**
      * Field name as it is written in JSON document during marshalling.
@@ -51,23 +54,36 @@ public class FieldModel implements Comparable<FieldModel> {
     private Method getter;
 
     /**
+     * Cached setter method reference. Null if there is no getter.
+     */
+    private Method setter;
+
+    /**
      * Indicates that getter method for this field is present.
      * Null value means that getter check has not been done yet.
      */
     private Boolean getterPresent = null;
 
-    public FieldModel(ClassModel classModel, String name, Class type) {
+    /**
+     * Indicates that setter method for this field is present.
+     * Null value means that setter check has not been done yet.
+     */
+    private Boolean setterPresent = null;
+
+    public FieldModel(ClassModel classModel, Field field) {
+        this.type = field.getGenericType();
         this.classModel = classModel;
-        this.name = name;
-        this.type = type;
+        this.name = field.getName();
     }
 
     public Object getValue(Object object) {
+        //TODO interchange property descriptors with own implementation
         if (getterPresent == null) {
             // This method is called first time. Try to find a getter and cache it.
             try {
-                PropertyDescriptor propertyDescriptor = new PropertyDescriptor(name, classModel.getType());
+                PropertyDescriptor propertyDescriptor = new PropertyDescriptor(name, classModel.getRawType());
                 getter = propertyDescriptor.getReadMethod();
+                getter.setAccessible(true);
                 getterPresent = true;
             } catch (IntrospectionException e) {
                 getterPresent = false;
@@ -76,7 +92,6 @@ public class FieldModel implements Comparable<FieldModel> {
 
         if (getterPresent) {
             // Getter is present -> invoke it.
-            getter.setAccessible(true);
             try {
                 return getter.invoke(object);
             } catch (IllegalAccessException | InvocationTargetException e) {
@@ -96,11 +111,48 @@ public class FieldModel implements Comparable<FieldModel> {
         }
     }
 
+    /**
+     * TODO interchange property descriptors with own implementation
+     * Set a value to object.
+     * @param value Value to set.
+     * @param object Object to set in.
+     */
+    public void setValue(Object value, Object object) {
+        if (setterPresent == null) {
+            try {
+                PropertyDescriptor propertyDescriptor = new PropertyDescriptor(name, classModel.getRawType());
+                setter = propertyDescriptor.getWriteMethod();
+                setter.setAccessible(true);
+                setterPresent = true;
+            } catch (IntrospectionException e) {
+                setterPresent = false;
+            }
+        }
+
+        if (setterPresent) {
+            try {
+                setter.invoke(object, value);
+            } catch (InvocationTargetException | IllegalAccessException e) {
+                // TODO logging, more detailed text
+                throw new JsonbException("Error setting field value.", e);
+            }
+        } else {
+            try {
+                final Field field = object.getClass().getField(name);
+                field.setAccessible(true);
+                field.set(object, value);
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                // TODO logging, more detailed text
+                throw   new JsonbException("Error setting field value.", e);
+            }
+        }
+    }
+
     public String getName() {
         return name;
     }
 
-    public Class getType() {
+    public Type getType() {
         return type;
     }
 
@@ -136,11 +188,15 @@ public class FieldModel implements Comparable<FieldModel> {
 
     public Method getGetter() {
         try {
-            PropertyDescriptor propertyDescriptor = new PropertyDescriptor(name, type);
+            PropertyDescriptor propertyDescriptor = new PropertyDescriptor(name, ReflectionUtils.getRawType(type));
             return propertyDescriptor.getReadMethod();
         } catch (IntrospectionException e) {
             throw new JsonbException("", e);
         }
+    }
+
+    public ClassModel getClassModel() {
+        return classModel;
     }
 
     @Override

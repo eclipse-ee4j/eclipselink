@@ -10,7 +10,7 @@
  * Contributors:
  *     Dmitry Kornilov - initial implementation
  ******************************************************************************/
-package org.eclipse.persistence.json.bind.defaultmapping.generics;
+package org.eclipse.persistence.json.bind.defaultmapping.generics.model;
 
 /**
  * Test class used in generics tests.

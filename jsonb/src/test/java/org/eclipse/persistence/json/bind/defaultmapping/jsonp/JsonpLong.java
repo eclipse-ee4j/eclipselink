@@ -21,11 +21,11 @@ import java.math.BigInteger;
  *
  * @author Dmitry Kornilov
  */
-final class JsonpLong implements JsonNumber {
+final public class JsonpLong implements JsonNumber {
     private final long num;
     private BigDecimal bigDecimal;  // assigning it lazily on demand
 
-    JsonpLong(long num) {
+    public JsonpLong(long num) {
         this.num = num;
     }
 

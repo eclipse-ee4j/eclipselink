@@ -18,8 +18,6 @@ import org.junit.Test;
 import javax.json.bind.Jsonb;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
@@ -67,7 +65,7 @@ public class BasicTest {
         assertEquals("1.2", jsonb.toJson(new BigDecimal("1.2")));
 
         // Number
-        assertEquals("1.2", jsonb.toJson((Number)1.2));
+        assertEquals("1.2", jsonb.toJson(1.2));
 
         // Boolean true
         assertEquals("true", jsonb.toJson(true));
@@ -84,10 +82,10 @@ public class BasicTest {
         final Jsonb jsonb = (new JsonBindingBuilder()).build();
 
         // Double.NEGATIVE_INFINITY
-        assertEquals("\"INFINITY\"", jsonb.toJson(Double.NEGATIVE_INFINITY));
+        assertEquals("\"NEGATIVE_INFINITY\"", jsonb.toJson(Double.NEGATIVE_INFINITY));
 
         // Double.POSITIVE_INFINITY
-        assertEquals("\"INFINITY\"", jsonb.toJson(Double.POSITIVE_INFINITY));
+        assertEquals("\"POSITIVE_INFINITY\"", jsonb.toJson(Double.POSITIVE_INFINITY));
 
         // Double.NaN
         assertEquals("\"NaN\"", jsonb.toJson(Double.NaN));

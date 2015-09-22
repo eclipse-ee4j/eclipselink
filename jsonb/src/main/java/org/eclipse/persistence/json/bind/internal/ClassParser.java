@@ -23,16 +23,18 @@ import java.lang.reflect.Field;
  * @author Dmitry Kornilov
  */
 class ClassParser {
-    public ClassModel parse(Class clazz) {
+
+    public ClassModel parse(Class<?> clazz) {
         final ClassModel classModel = new ClassModel(clazz);
 
         // Fields
-        for (Field field : clazz.getDeclaredFields()) {
+        for (Field field : classModel.getRawType().getDeclaredFields()) {
             final FieldModel fieldModel = parseField(classModel, field);
             if (fieldModel != null) {
-                classModel.getFieldModels().add(fieldModel);
+                classModel.getFields().put(fieldModel.getName(), fieldModel);
             }
         }
+
 
         return classModel;
     }
@@ -41,6 +43,6 @@ class ClassParser {
         if (field.getName().startsWith("this$")) {
             return null;
         }
-        return new FieldModel(classModel, field.getName(), field.getType());
+        return new FieldModel(classModel, field);
     }
 }

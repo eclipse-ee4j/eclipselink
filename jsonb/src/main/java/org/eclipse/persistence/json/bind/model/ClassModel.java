@@ -12,8 +12,10 @@
  ******************************************************************************/
 package org.eclipse.persistence.json.bind.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.eclipse.persistence.json.bind.internal.MappingContext;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A model for Java class.
@@ -21,7 +23,8 @@ import java.util.List;
  * @author Dmitry Kornilov
  */
 public class ClassModel {
-    private final Class clazz;
+
+    private final Class<?> clazz;
 
     /**
      * Indicates that this class is nillable.
@@ -31,17 +34,51 @@ public class ClassModel {
     /**
      * A list of class fields.
      */
-    private final List<FieldModel> fields = new ArrayList<>();
+    private final Map<String, FieldModel> fields = new HashMap<>();
 
-    public ClassModel(Class clazz) {
+    public FieldModel getFieldModel(String name) {
+        return fields.get(name);
+    }
+
+    /**
+     * Search for field in this class model and superclasses of its class.
+     * @param fieldName name of field to find, not null.
+     * @param mappingContext mapping context to search for superclasses in, not null.
+     * @return FieldModel if found.
+     */
+    public FieldModel findFieldModel(String fieldName, MappingContext mappingContext) {
+        FieldModel result = fields.get(fieldName);
+        if (result != null) {
+            return result;
+        }
+        return searchParents(fieldName, mappingContext);
+    }
+
+    private FieldModel searchParents(String fieldName, MappingContext mappingContext) {
+        Class superclass;
+        for (superclass = clazz.getSuperclass(); superclass != null; superclass = superclass.getSuperclass()) {
+            ClassModel classModel = mappingContext.getClassModel(superclass);
+            if (classModel == null) {
+                return null;
+            }
+            FieldModel fieldModel = classModel.getFieldModel(fieldName);
+            if (fieldModel != null) {
+                return fieldModel;
+            }
+        }
+        return null;
+    }
+
+    public ClassModel(Class<?> clazz) {
         this.clazz = clazz;
     }
 
-    public Class getType() {
+    public Class<?> getRawType() {
         return clazz;
     }
 
-    public List<FieldModel> getFieldModels() {
+    public Map<String, FieldModel> getFields() {
         return fields;
     }
+
 }
