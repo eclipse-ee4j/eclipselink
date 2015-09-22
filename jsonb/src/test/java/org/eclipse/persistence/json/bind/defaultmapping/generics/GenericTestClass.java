@@ -10,36 +10,16 @@
  * Contributors:
  *     Dmitry Kornilov - initial implementation
  ******************************************************************************/
-package org.eclipse.persistence.json.bind;
-
-import javax.json.bind.Jsonb;
-import javax.json.bind.JsonbBuilder;
-import javax.json.bind.JsonbConfig;
-import javax.json.spi.JsonProvider;
+package org.eclipse.persistence.json.bind.defaultmapping.generics;
 
 /**
- * JsonbBuilder implementation.
+ * Test class used in generics tests.
  *
  * @author Dmitry Kornilov
  */
-public class JsonBindingBuilder implements JsonbBuilder {
-    private JsonbConfig config;
-    private JsonProvider provider;
+public class GenericTestClass<T,U> {
+    public T field1;
+    public U field2;
 
-    @Override
-    public JsonbBuilder withConfig(JsonbConfig config) {
-        this.config = config;
-        return this;
-    }
-
-    @Override
-    public JsonbBuilder withProvider(JsonProvider jsonpProvider) {
-        this.provider = jsonpProvider;
-        return this;
-    }
-
-    @Override
-    public Jsonb build() {
-        return new JsonBinding(this);
-    }
+    public GenericTestClass() {}
 }

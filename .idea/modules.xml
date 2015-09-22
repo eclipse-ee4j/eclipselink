@@ -17,6 +17,7 @@
       <module fileurl="file://$PROJECT_DIR$/jpa/eclipselink.jpa.test/jpa.test.iml" filepath="$PROJECT_DIR$/jpa/eclipselink.jpa.test/jpa.test.iml" group="root/jpa" />
       <module fileurl="file://$PROJECT_DIR$/jpa/org.eclipse.persistence.jpars/jpars.iml" filepath="$PROJECT_DIR$/jpa/org.eclipse.persistence.jpars/jpars.iml" group="root/jpars" />
       <module fileurl="file://$PROJECT_DIR$/jpa/eclipselink.jpars.test/jpars.test.iml" filepath="$PROJECT_DIR$/jpa/eclipselink.jpars.test/jpars.test.iml" group="root/jpars" />
+      <module fileurl="file://$PROJECT_DIR$/jsonb/jsonb.iml" filepath="$PROJECT_DIR$/jsonb/jsonb.iml" group="root" />
       <module fileurl="file://$PROJECT_DIR$/moxy/org.eclipse.persistence.moxy/moxy.iml" filepath="$PROJECT_DIR$/moxy/org.eclipse.persistence.moxy/moxy.iml" group="root/moxy" />
       <module fileurl="file://$PROJECT_DIR$/moxy/org.eclipse.persistence.moxy.dynamicxjc/moxy.dynamicxjc.iml" filepath="$PROJECT_DIR$/moxy/org.eclipse.persistence.moxy.dynamicxjc/moxy.dynamicxjc.iml" group="root/moxy" />
       <module fileurl="file://$PROJECT_DIR$/moxy/eclipselink.moxy.test/moxy.test.iml" filepath="$PROJECT_DIR$/moxy/eclipselink.moxy.test/moxy.test.iml" group="root/moxy" />

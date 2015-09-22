@@ -10,36 +10,30 @@
  * Contributors:
  *     Dmitry Kornilov - initial implementation
  ******************************************************************************/
-package org.eclipse.persistence.json.bind;
-
-import javax.json.bind.Jsonb;
-import javax.json.bind.JsonbBuilder;
-import javax.json.bind.JsonbConfig;
-import javax.json.spi.JsonProvider;
+package org.eclipse.persistence.json.bind.defaultmapping.anonymous;
 
 /**
- * JsonbBuilder implementation.
+ * Test class.
  *
  * @author Dmitry Kornilov
  */
-public class JsonBindingBuilder implements JsonbBuilder {
-    private JsonbConfig config;
-    private JsonProvider provider;
+public class OuterPojo {
+    private Integer id;
+    private String name;
 
-    @Override
-    public JsonbBuilder withConfig(JsonbConfig config) {
-        this.config = config;
-        return this;
+    public Integer getId() {
+        return id;
     }
 
-    @Override
-    public JsonbBuilder withProvider(JsonProvider jsonpProvider) {
-        this.provider = jsonpProvider;
-        return this;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    @Override
-    public Jsonb build() {
-        return new JsonBinding(this);
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

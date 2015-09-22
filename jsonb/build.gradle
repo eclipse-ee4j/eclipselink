@@ -25,6 +25,7 @@ repositories {
 dependencies {
     compile 'javax.json.bind:javax.json.bind-api:0.1-SNAPSHOT'
     compile 'javax.json:javax.json-api:1.0'
+
     testCompile 'junit:junit:4.12'
     testRuntime 'org.glassfish:javax.json:1.0.4'
 }
