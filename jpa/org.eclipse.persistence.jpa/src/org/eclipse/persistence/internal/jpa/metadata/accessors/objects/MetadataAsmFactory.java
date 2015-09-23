@@ -120,6 +120,7 @@ public class MetadataAsmFactory extends MetadataFactory {
     /**
      * Return the class metadata for the class name.
      */
+    @Override
     public MetadataClass getMetadataClass(String className) {
         return getMetadataClass(className, false);
     }
@@ -127,6 +128,7 @@ public class MetadataAsmFactory extends MetadataFactory {
     /**
      * Return the class metadata for the class name.
      */
+    @Override
     public MetadataClass getMetadataClass(String className, boolean isLazy) {
         if (className == null) {
             return null;
@@ -150,6 +152,7 @@ public class MetadataAsmFactory extends MetadataFactory {
      * the generic format as built from ASM this method will not work since it
      * is very tied to it.
      */
+    @Override
     public void resolveGenericTypes(MetadataClass child, List<String> genericTypes, MetadataClass parent, MetadataDescriptor descriptor) {
         // If we have a generic parent we need to grab our generic types
         // that may be used (and therefore need to be resolved) to map
@@ -213,6 +216,7 @@ public class MetadataAsmFactory extends MetadataFactory {
             this.classMetadata = metadataClass;
         }
 
+        @Override
         public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
             String className = toClassName(name);
             if ((this.classMetadata == null) || !this.classMetadata.getName().equals(className)) {
@@ -229,6 +233,7 @@ public class MetadataAsmFactory extends MetadataFactory {
             }
         }
 
+        @Override
         public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
             this.processedMemeber = true;
             if (this.classMetadata.isLazy()) {
@@ -237,6 +242,7 @@ public class MetadataAsmFactory extends MetadataFactory {
             return new MetadataFieldVisitor(this.classMetadata, access, name, desc, signature, value);
         }
 
+        @Override
         public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
             this.processedMemeber = true;
             if (this.classMetadata.isLazy() || name.indexOf("init>") != -1) {
@@ -245,15 +251,29 @@ public class MetadataAsmFactory extends MetadataFactory {
             return new MetadataMethodVisitor(this.classMetadata, access, name, signature, desc, exceptions);
         }
 
+        @Override
         public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
-            if (desc.startsWith("Ljavax/persistence") || desc.startsWith("Lorg/eclipse/persistence")) {
-                // If an annotation is found, parse the whole class.
-                if (!this.processedMemeber && this.classMetadata.isLazy()) {
-                    this.classMetadata.setIsLazy(false);
+            boolean isJPA = false;
+            if (desc.startsWith("Ljava")) {
+                char c = desc.charAt(5);
+                //ignore annotations from 'java' namespace
+                if (c == '/') {
+                    return null;
                 }
-                return new MetadataAnnotationVisitor(this.classMetadata, desc);
+                //ignore annotations from other then 'javax/persistence' namespace
+                if (desc.regionMatches(5, "x/", 0, 2)) {
+                    if (desc.regionMatches(7, "persistence", 0, "persistence".length())) {
+                        isJPA = true;
+                    } else {
+                        return null;
+                    }
+                }
             }
-            return null;
+            if (!this.processedMemeber && this.classMetadata.isLazy()) {
+                this.classMetadata.setIsLazy(false);
+            }
+            //this currently forbids us to use meta-annotations defined in EclipseLink packages
+            return new MetadataAnnotationVisitor(this.classMetadata, desc, isJPA || desc.startsWith("Lorg/eclipse/persistence"));
         }
 
     }
@@ -279,10 +299,15 @@ public class MetadataAsmFactory extends MetadataFactory {
         private MetadataAnnotation annotation;
 
         MetadataAnnotationVisitor(MetadataAnnotatedElement element, String name) {
+            this(element, name, true);
+        }
+
+        MetadataAnnotationVisitor(MetadataAnnotatedElement element, String name, boolean isRegular) {
             super(Opcodes.ASM5);
             this.element = element;
             this.annotation = new MetadataAnnotation();
             this.annotation.setName(processDescription(name, false).get(0));
+            this.annotation.setIsMeta(!isRegular);
         }
 
         public MetadataAnnotationVisitor(MetadataAnnotation annotation) {
@@ -290,14 +315,17 @@ public class MetadataAsmFactory extends MetadataFactory {
             this.annotation = annotation;
         }
 
+        @Override
         public void visit(String name, Object value) {
             this.annotation.addAttribute(name, annotationValue(null, value));
         }
 
+        @Override
         public void visitEnum(String name, String desc, String value) {
             this.annotation.addAttribute(name, annotationValue(desc, value));
         }
 
+        @Override
         public AnnotationVisitor visitAnnotation(String name, String desc) {
             MetadataAnnotation mda = new MetadataAnnotation();
             mda.setName(processDescription(desc, false).get(0));
@@ -305,13 +333,19 @@ public class MetadataAsmFactory extends MetadataFactory {
             return new MetadataAnnotationVisitor(mda);
         }
 
+        @Override
         public AnnotationVisitor visitArray(String name) {
             return new MetadataAnnotationArrayVisitor(this.annotation, name);
         }
 
+        @Override
         public void visitEnd() {
             if (this.element != null) {
-                this.element.addAnnotation(this.annotation);
+                if (this.annotation.isMeta()) {
+                    this.element.addMetaAnnotation(this.annotation);
+                } else {
+                    this.element.addAnnotation(this.annotation);
+                }
             }
         }
     }
@@ -335,14 +369,17 @@ public class MetadataAsmFactory extends MetadataFactory {
             this.values = new ArrayList<Object>();
         }
 
+        @Override
         public void visit(String name, Object value) {
             this.values.add(annotationValue(null, value));
         }
 
+        @Override
         public void visitEnum(String name, String desc, String value) {
             this.values.add(annotationValue(desc, value));
         }
 
+        @Override
         public AnnotationVisitor visitAnnotation(String name, String desc) {
             MetadataAnnotation mda = new MetadataAnnotation();
             mda.setName(processDescription(desc, false).get(0));
@@ -350,6 +387,7 @@ public class MetadataAsmFactory extends MetadataFactory {
             return new MetadataAnnotationVisitor(mda);
         }
 
+        @Override
         public void visitEnd() {
             this.annotation.addAttribute(this.attributeName, this.values.toArray());
         }
@@ -373,6 +411,7 @@ public class MetadataAsmFactory extends MetadataFactory {
             this.field.setType(processDescription(desc, false).get(0));
         }
 
+        @Override
         public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
             if (desc.startsWith("Ljavax/persistence") || desc.startsWith("Lorg/eclipse/persistence")) {
                 return new MetadataAnnotationVisitor(this.field, desc);
@@ -380,6 +419,7 @@ public class MetadataAsmFactory extends MetadataFactory {
             return null;
         }
 
+        @Override
         public void visitEnd() {
             this.field.getDeclaringClass().addField(this.field);
         }

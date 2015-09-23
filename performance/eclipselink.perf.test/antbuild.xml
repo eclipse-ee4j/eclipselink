@@ -68,8 +68,18 @@
                else="No user-defined test overrides found to load ('${user.home}/test.properties' non-existant).">
         <available file="${user.home}/test.properties"/>
     </condition>
+    <condition property="custom.cmd.properties.message"
+        value="Loading ${test.properties}"
+        else="Skipping ${test.properties}, file does not exist">
+        <and>
+            <isset property="test.properties"/>
+            <available file="${test.properties}"/>
+        </and>
+    </condition>
     <echo message="${custom.tst.properties.message}"/>
     <property file="${user.home}/test.properties"/>
+    <echo message="${custom.cmd.properties.message}"/>
+    <property file="${test.properties}"/>
     <!-- Allows overriding defaults where access to user.home isn't allowed -->
     <condition property="custom.local.properties.message" value="Loading local overrides from '${basedir}/local.build.properties'..."
                else="No Local overrides found to load. ('${basedir}/local.build.properties' non-existant).">
@@ -130,7 +140,6 @@
         <pathelement path="${perftest.2.core.dir}/target/${classes.dir}"/>
         <pathelement path="${perftest.2.jpa.dir}/target/${classes.dir}"/>
         <pathelement path="${classes.dir}"/>
-        <pathelement path="${resource.dir}"/>
     </path>
 
     <!-- The following compile/run paths reference eclipselink.jar for non-test classes and resources -->
@@ -158,13 +167,16 @@
         <pathelement path="${eclipselink.lib}"/>
         <pathelement path="${json.lib}"/>
         <pathelement path="${classes.dir}"/>
-        <pathelement path="${resource.dir}"/>
     </path>
 
     <!-- Test targets -->
     <target name="test" depends="clean, clean-reports, filter-tokens, compile-and-run-tests"
             description="run perf tests"/>
     <target name="test-against-jar"
+            depends="clean, clean-reports, filter-tokens, compile-and-run-tests-against-jar"
+            description="run perf tests against eclipselink.jar"/>
+
+    <target name="test-jpa"
             depends="clean, clean-reports, filter-tokens, compile-and-run-tests-against-jar"
             description="run perf tests against eclipselink.jar"/>
 
@@ -184,7 +196,9 @@
     </target>
 
     <target name="compile-and-run-tests-against-jar" depends="compile-tests-against-jar" description="build and run perf tests against eclipselink.jar">
-        <run_perf_tests runpathref="perf.run.against.jar.path"/>
+        <available file="${eclipselink.lib}" property="eclipselink.lib.exists"/>
+        <fail unless="${eclipselink.lib.exists}" message="${eclipselink.lib} not found"/>
+        <run_jpa_perf_tests runpathref="perf.run.against.jar.path"/>
     </target>
 
     <!-- Clean targets -->
@@ -201,10 +215,10 @@
     </target>
 
     <target name="filter-tokens" description="Filter tokens in configuration files.">
-        <filter token='%driver%'   value="${db.driver}"/>
-        <filter token='%url%'      value="${db.url}"/>
-        <filter token='%user%'     value="${db.user}"/>
-        <filter token='%pwd%'      value="${db.pwd}"/>
+        <filter token="driver"   value="${db.driver}"/>
+        <filter token="url"      value="${db.url}"/>
+        <filter token="user"     value="${db.user}"/>
+        <filter token="pwd"      value="${db.pwd}"/>
         <copy todir="classes/META-INF" filtering="true" overwrite="true">
             <fileset dir="resource/META-INF" includes="persistence.xml"/>
         </copy>
@@ -213,6 +227,13 @@
     <target name="restore-tokens" description="Restore token symbols from template.">
         <copy file="${persistence.xml}.template" tofile="${persistence.xml}" overwrite="true"/>
     </target>
+
+    <macrodef name="run_jpa_perf_tests">
+        <attribute name="runpathref" />
+        <sequential>
+            <run_perf_test runpathref="@{runpathref}" clsname="org.eclipse.persistence.testing.perf.JPABenchmarks"/>
+        </sequential>
+    </macrodef>
 
     <macrodef name="run_perf_tests">
         <attribute name="runpathref" />
@@ -226,7 +247,9 @@
         <attribute name="runpathref"/>
         <attribute name="clsname"/>
         <sequential>
+            <property name="eclipselink.agent.path" location="${eclipselink.lib}"/>
             <java classname="@{clsname}" dir="${report.dir}" fork="true" failonerror="false">
+                <jvmarg line="-Declipselink.agent=${eclipselink.agent.path}"/>
                 <jvmarg line="${additional.jvmargs}"/>
                 <arg value="${warmup.iterations}"/>
                 <arg value="${run.iterations}"/>
@@ -254,7 +277,7 @@
                    source="${javac.version}"
                    deprecation="${javac.deprecation}"
                    failonerror="false"
-                   includes="org/eclipse/persistence/testing/@{subcomponent}/**/*.java">
+                   includes="org/eclipse/samples/**/*.java,org/eclipse/persistence/testing/@{subcomponent}/**/*.java">
                 <classpath>
                     <path refid="@{compilepathref}"/>
                 </classpath>
@@ -263,6 +286,9 @@
             <copy todir="${classes.dir}">
                 <fileset dir="${src.dir}">
                     <include name="**/*.properties" />
+                </fileset>
+                <fileset dir="${resource.dir}">
+                    <exclude name="**/persistence.xml"/>
                 </fileset>
             </copy>
         </sequential>

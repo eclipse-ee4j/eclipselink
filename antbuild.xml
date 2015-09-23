@@ -1637,6 +1637,9 @@
     <target name="test-perf" description="run the performance tests">
         <ant antfile="antbuild.xml" dir="${eclipselink.perf.test}" target="test"/>
     </target>
+    <target name="test-jpa-perf" description="run the performance tests">
+        <ant antfile="antbuild.xml" dir="${eclipselink.perf.test}" target="test-jpa"/>
+    </target>
     <!-- Run OSGi Tests -->
     <target name="test-osgi" depends="test-osgi-moxy"
             description="run eclipselink osgi tests"/>

@@ -46,6 +46,23 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.ECLIPSELINK_OXM_PACKAGE_PREFIX;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ACCESS;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_BASIC;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ELEMENT_COLLECTION;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_EMBEDDABLE;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_EMBEDDED;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_EMBEDDED_ID;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ENUMERATED;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ID;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_LOB;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_MANY_TO_MANY;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_MANY_TO_ONE;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ONE_TO_MANY;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ONE_TO_ONE;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_TEMPORAL;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_VERSION;
+
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -66,23 +83,6 @@ import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
-
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ACCESS;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_BASIC;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ELEMENT_COLLECTION;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_EMBEDDED;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_EMBEDDED_ID;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_EMBEDDABLE;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ENUMERATED;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ID;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_LOB;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_MANY_TO_MANY;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_MANY_TO_ONE;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ONE_TO_MANY;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ONE_TO_ONE;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_TEMPORAL;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_VERSION;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.ECLIPSELINK_OXM_PACKAGE_PREFIX;
 
 /**
  * INTERNAL:
@@ -136,6 +136,9 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     /** Stores any annotations defined for the element, keyed by annotation name. */
     private Map<String, MetadataAnnotation> m_annotations;
 
+    /** Stores any meta-annotations defined for the element, keyed by meta-annotation name. */
+    private Map<String, MetadataAnnotation> m_metaAnnotations;
+
     /**
      * INTERNAL:
      */
@@ -143,6 +146,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
         super(factory);
 
         m_annotations = new HashMap<String, MetadataAnnotation>();
+        m_metaAnnotations = new HashMap<>();
     }
 
     /**
@@ -150,6 +154,13 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      */
     public void addAnnotation(MetadataAnnotation annotation) {
         m_annotations.put(annotation.getName(), annotation);
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public void addMetaAnnotation(MetadataAnnotation annotation) {
+        m_metaAnnotations.put(annotation.getName(), annotation);
     }
 
     /**
@@ -166,6 +177,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     /**
      * INTERNAL:
      */
+    @Override
     public boolean equals(Object object) {
         if (object == null) {
             return false;
@@ -193,11 +205,20 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * not check against a metadata complete.
      */
     public MetadataAnnotation getAnnotation(String annotation) {
-        if (m_annotations == null) {
+        if (m_annotations == null && m_metaAnnotations == null) {
             return null;
         }
 
-        return m_annotations.get(annotation);
+        MetadataAnnotation metadataAnnotation = m_annotations.get(annotation);
+        if (metadataAnnotation == null) {
+            for (MetadataAnnotation a: m_metaAnnotations.values()) {
+                MetadataAnnotation ma = m_factory.getMetadataClass(a.getName()).getAnnotation(annotation);
+                if (ma != null) {
+                    return ma;
+                }
+            }
+        }
+        return metadataAnnotation;
     }
 
     /**
@@ -205,17 +226,14 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * Return the annotated element for this accessor.
      */
     public MetadataAnnotation getAnnotation(String annotationClassName, ClassAccessor classAccessor) {
-        if (m_annotations != null) {
-            MetadataAnnotation annotation = m_annotations.get(annotationClassName);
+        MetadataAnnotation annotation = getAnnotation(annotationClassName);
 
-            if (annotation != null && classAccessor.ignoreAnnotations()) {
-                getLogger().logConfigMessage(MetadataLogger.IGNORE_ANNOTATION, annotation, this);
-            } else {
-                return annotation;
-            }
+        if (annotation != null && classAccessor.ignoreAnnotations()) {
+            getLogger().logConfigMessage(MetadataLogger.IGNORE_ANNOTATION, annotation, this);
+            return null;
         }
 
-        return null;
+        return annotation;
     }
 
     /**
@@ -229,6 +247,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     /**
      * INTERNAL:
      */
+    @Override
     public String getAttributeName() {
         return m_attributeName;
     }
@@ -279,6 +298,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     /**
      * INTERNAL:
      */
+    @Override
     public String getName() {
         return m_name;
     }
@@ -437,6 +457,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     /**
      * INTERNAL:
      */
+    @Override
     public int hashCode() {
         return getName().hashCode();
     }
@@ -845,6 +866,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     /**
      * INTERNAL:
      */
+    @Override
     public String toString() {
         String className = getClass().getSimpleName();
         return className.substring("Metadata".length(), className.length()).toLowerCase() + " " + getName();

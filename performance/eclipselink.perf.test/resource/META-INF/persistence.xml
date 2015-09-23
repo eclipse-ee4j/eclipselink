@@ -1,16 +1,35 @@
-<persistence xmlns="http://java.sun.com/xml/ns/persistence"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence persistence_1_0.xsd"
-             version="1.0">
+<persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
     <persistence-unit name="my-app" transaction-type="RESOURCE_LOCAL">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <class>org.eclipse.persistence.testing.perf.beanvalidation.Employee</class>
         <class>org.eclipse.persistence.testing.perf.beanvalidation.EmployeeAnnotated</class>
         <properties>
-            <property name="javax.persistence.jdbc.driver"      value="%driver%"/>
-            <property name="javax.persistence.jdbc.url"         value="%url%"/>
-            <property name="javax.persistence.jdbc.user"        value="%user%"/>
-            <property name="javax.persistence.jdbc.password"    value="%pwd%"/>
+            <property name="javax.persistence.jdbc.driver"      value="@driver@"/>
+            <property name="javax.persistence.jdbc.url"         value="@url@"/>
+            <property name="javax.persistence.jdbc.user"        value="@user@"/>
+            <property name="javax.persistence.jdbc.password"    value="@pwd@"/>
+        </properties>
+    </persistence-unit>
+    <persistence-unit name="jpa-performance">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.testing.perf.jpa.model.basic.Address</class>
+        <class>org.eclipse.persistence.testing.perf.jpa.model.basic.Degree</class>
+        <class>org.eclipse.persistence.testing.perf.jpa.model.basic.EmailAddress</class>
+        <class>org.eclipse.persistence.testing.perf.jpa.model.basic.Employee</class>
+        <class>org.eclipse.persistence.testing.perf.jpa.model.basic.EmploymentPeriod</class>
+        <class>org.eclipse.persistence.testing.perf.jpa.model.basic.Gender</class>
+        <class>org.eclipse.persistence.testing.perf.jpa.model.basic.JobTitle</class>
+        <class>org.eclipse.persistence.testing.perf.jpa.model.basic.LargeProject</class>
+        <class>org.eclipse.persistence.testing.perf.jpa.model.basic.PhoneNumber</class>
+        <class>org.eclipse.persistence.testing.perf.jpa.model.basic.Project</class>
+        <class>org.eclipse.persistence.testing.perf.jpa.model.basic.SmallProject</class>
+        <properties>
+            <property name="javax.persistence.jdbc.driver"      value="@driver@"/>
+            <property name="javax.persistence.jdbc.url"         value="@url@"/>
+            <property name="javax.persistence.jdbc.user"        value="@user@"/>
+            <property name="javax.persistence.jdbc.password"    value="@pwd@"/>
         </properties>
     </persistence-unit>
 </persistence>

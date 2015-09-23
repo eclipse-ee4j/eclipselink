@@ -31,6 +31,9 @@ public class MetadataAnnotation {
     /** The name of the annotation. */
     protected String m_name;
 
+    /** Metadata annotation flag */
+    protected boolean isMeta = false;
+
     /** Map of attribute names and values. */
     protected Map<String, Object> m_attributes = new HashMap<String, Object>();
 
@@ -174,6 +177,21 @@ public class MetadataAnnotation {
      */
     public void setName(String name) {
         m_name = name;
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public void setIsMeta(boolean isMeta) {
+        this.isMeta = isMeta;
+    }
+
+    /**
+     * INTERNAL:
+     * @return true if this annotation is a meta-annotation
+     */
+    public boolean isMeta() {
+        return this.isMeta;
     }
 
     /**
