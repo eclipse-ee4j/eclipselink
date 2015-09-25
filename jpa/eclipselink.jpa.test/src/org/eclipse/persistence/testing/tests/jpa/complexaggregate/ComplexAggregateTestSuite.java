@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.complexaggregate;
 
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -25,6 +26,10 @@ import junit.framework.TestSuite;
 import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
+import org.eclipse.persistence.internal.descriptors.changetracking.AttributeChangeListener;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.testing.framework.JoinedAttributeTestHelper;
 import org.eclipse.persistence.testing.framework.QuerySQLTracker;
@@ -38,6 +43,9 @@ import org.eclipse.persistence.testing.models.jpa.complexaggregate.CountryDwelle
 import org.eclipse.persistence.testing.models.jpa.complexaggregate.Heart;
 import org.eclipse.persistence.testing.models.jpa.complexaggregate.HockeyCoach;
 import org.eclipse.persistence.testing.models.jpa.complexaggregate.HockeyPlayer;
+import org.eclipse.persistence.testing.models.jpa.complexaggregate.HockeyPuck;
+import org.eclipse.persistence.testing.models.jpa.complexaggregate.HockeyRink;
+import org.eclipse.persistence.testing.models.jpa.complexaggregate.HockeySponsor;
 import org.eclipse.persistence.testing.models.jpa.complexaggregate.HockeyTeam;
 import org.eclipse.persistence.testing.models.jpa.complexaggregate.Name;
 import org.eclipse.persistence.testing.models.jpa.complexaggregate.PersonalVitals;
@@ -82,6 +90,7 @@ public class ComplexAggregateTestSuite extends JUnitTestCase {
         suite.addTest(new ComplexAggregateTestSuite("testComplexAggregateJoin"));
         suite.addTest(new ComplexAggregateTestSuite("testComplexAggregateBatch"));
         suite.addTest(new ComplexAggregateTestSuite("testAggregateFieldAttributeOverrides"));
+        suite.addTest(new ComplexAggregateTestSuite("testInvalidateAndRefreshEmbeddableParent"));
 
         return suite;
     }
@@ -1105,6 +1114,104 @@ public class ComplexAggregateTestSuite extends JUnitTestCase {
         em.flush();
 
         rollbackTransaction(em);
+    }
+    
+    /**
+     * Bug 474956 RepeatableUnitOfWork linked by Embeddable in shared cache in specific scenario
+     * Test the invalidation and refresh of a parent object with an Embeddable instantiated
+     * with non-null values. After associating the parent with another object, the Embeddable
+     * should not reference a UnitOfWork (via a change listener) within the shared cache.
+     */
+    public void testInvalidateAndRefreshEmbeddableParent() {
+        // test depends on weaving
+        if (!isWeavingEnabled()) {
+            warning("Test depends on weaving and change tracking");
+            return;
+        }
+        
+        HockeyPuck puck = null;
+        HockeyRink rink = null;
+        
+        // setup
+        clearCache();
+        
+        EntityManager em = createEntityManager();
+        try {
+            beginTransaction(em);
+            
+            puck = new HockeyPuck();
+            puck.setId(1);
+            puck.setName("MrWraparound");
+            puck.getSponsor().setName("ACME Cloud Computing Company, Inc.");
+            puck.getSponsor().setSponsorshipValue(1000000);
+            em.persist(puck);
+            
+            commitTransaction(em);
+        } finally {
+            closeEntityManager(em);
+        }
+        
+        // test
+        em = createEntityManager();
+        try {
+            // 1. invalidate existing Entity in the cache
+            JpaHelper.getDatabaseSession(getEntityManagerFactory()).getIdentityMapAccessor().invalidateObject(puck.getId(), HockeyPuck.class);
+            assertFalse("Existing cached HockeyPuck should not be valid", 
+                JpaHelper.getDatabaseSession(getEntityManagerFactory()).getIdentityMapAccessor().isValid(puck.getId(), HockeyPuck.class));
+            
+            beginTransaction(em);
+            
+            // 2. create new Entity and persist
+            rink = new HockeyRink();
+            rink.setId(1);
+            em.persist(rink);
+            
+            // 3. load existing Entity
+            puck = em.createQuery("select object(p) from HockeyPuck p where p.id = " + puck.getId(), HockeyPuck.class).getSingleResult();
+            assertNotNull("HockeyPuck loaded should not be null", puck);
+            
+            // 4. associate loaded existing Entity with persisted new Entity
+            rink.setPuck(puck);
+            
+            commitTransaction(em);
+        } finally {
+            closeEntityManager(em);
+        }
+        
+        // verify, go directly to the shared cache for the parent Entity
+        try {
+            HockeyPuck cachedPuck = (HockeyPuck)JpaHelper.getDatabaseSession(getEntityManagerFactory()).getIdentityMapAccessor().getFromIdentityMap(puck.getId(), HockeyPuck.class);
+            HockeySponsor sponsor = cachedPuck.getSponsor();
+            if (sponsor instanceof ChangeTracker) {
+                PropertyChangeListener listener = ((ChangeTracker)sponsor)._persistence_getPropertyChangeListener();
+                // listener can be null
+                if (listener != null && listener instanceof AttributeChangeListener) {
+                    assertNull("UnitOfWork referenced in Embeddable referenced by an object in the shared cache", ((AttributeChangeListener)listener).getUnitOfWork());
+                }
+            } else {
+                fail("Config error: HockeyPuck/HockeySponsor is not change tracked");
+            }
+        } finally {
+            // reset
+            em = createEntityManager();
+            beginTransaction(em);
+            
+            if (puck != null) {
+                puck = em.find(HockeyPuck.class, puck.getId());
+                if (puck != null) {
+                    em.remove(puck);
+                }
+            }
+            if (rink != null) {
+                rink = em.find(HockeyRink.class, rink.getId());
+                if (rink != null) {
+                    em.remove(rink);
+                }
+            }
+            
+            commitTransaction(em);
+            closeEntityManager(em);
+        }
     }
 
 }

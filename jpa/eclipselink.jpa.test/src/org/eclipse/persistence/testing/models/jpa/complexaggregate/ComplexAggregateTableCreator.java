@@ -46,6 +46,9 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         addTableDefinition(buildBODYTable());
 
         addTableDefinition(buildPLACETable());
+        
+        addTableDefinition(buildHOCKEY_PUCKTable());
+        addTableDefinition(buildHOCKEY_RINKTable());
     }
 
     public TableDefinition buildBODYTable() {
@@ -662,6 +665,87 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         return table;
     }
 
+    public TableDefinition buildHOCKEY_RINKTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_HOCKEY_RINK");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(18);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+        
+        FieldDefinition fieldHOCKEY_PUCK_ID = new FieldDefinition();
+        fieldHOCKEY_PUCK_ID.setName("HOCKEY_PUCK_ID");
+        fieldHOCKEY_PUCK_ID.setTypeName("NUMBER");
+        fieldHOCKEY_PUCK_ID.setSize(18);
+        fieldHOCKEY_PUCK_ID.setSubSize(0);
+        fieldHOCKEY_PUCK_ID.setIsPrimaryKey(false);
+        fieldHOCKEY_PUCK_ID.setIsIdentity(false);
+        fieldHOCKEY_PUCK_ID.setUnique(false);
+        fieldHOCKEY_PUCK_ID.setShouldAllowNull(true);
+        fieldHOCKEY_PUCK_ID.setForeignKeyFieldName("CMP3_HOCKEY_PUCK.ID");
+        table.addField(fieldHOCKEY_PUCK_ID);
+        
+        return table;
+    }
+    
+    public TableDefinition buildHOCKEY_PUCKTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_HOCKEY_PUCK");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(18);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+        
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("NAME");
+        fieldNAME.setTypeName("VARCHAR2");
+        fieldNAME.setSize(36);
+        fieldNAME.setSubSize(0);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setIsIdentity(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setShouldAllowNull(true);
+        table.addField(fieldNAME);
+        
+        FieldDefinition fieldSPONSOR_NAME = new FieldDefinition();
+        fieldSPONSOR_NAME.setName("SPONSOR_NAME");
+        fieldSPONSOR_NAME.setTypeName("VARCHAR2");
+        fieldSPONSOR_NAME.setSize(36);
+        fieldSPONSOR_NAME.setSubSize(0);
+        fieldSPONSOR_NAME.setIsPrimaryKey(false);
+        fieldSPONSOR_NAME.setIsIdentity(false);
+        fieldSPONSOR_NAME.setUnique(false);
+        fieldSPONSOR_NAME.setShouldAllowNull(true);
+        table.addField(fieldSPONSOR_NAME);
+        
+        FieldDefinition fieldSPONSOR_VALUE = new FieldDefinition();
+        fieldSPONSOR_VALUE.setName("SPONSOR_VALUE");
+        fieldSPONSOR_VALUE.setTypeName("NUMBER");
+        fieldSPONSOR_VALUE.setSize(18);
+        fieldSPONSOR_VALUE.setSubSize(0);
+        fieldSPONSOR_VALUE.setIsPrimaryKey(false);
+        fieldSPONSOR_VALUE.setIsIdentity(false);
+        fieldSPONSOR_VALUE.setUnique(false);
+        fieldSPONSOR_VALUE.setShouldAllowNull(true);
+        table.addField(fieldSPONSOR_VALUE);
+        
+        return table;
+    }
+    
     /**
      * Remove pk constraint as there is a identity field, and H2, HSQL do not allow this.
      */
