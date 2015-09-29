@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -317,7 +317,10 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
             }
         }
 
-        if (aggregate == null) {
+        // Build a new aggregate if the target object does not reference an existing aggregate.
+        // EL Bug 474956 - build a new aggregate if the the target object references an existing aggregate, and 
+        // the passed cacheKey is null from the invalidation of the target object in the IdentityMap.
+        if (aggregate == null || (aggregate != null && cacheKey == null)) {
             aggregate = descriptor.getObjectBuilder().buildNewInstance();
             refreshing = false;
         }
@@ -668,17 +671,15 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * be able to populate working copies directly from the row.
      */
     public void buildCloneFromRow(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object clone, CacheKey sharedCacheKey, ObjectBuildingQuery sourceQuery, UnitOfWorkImpl unitOfWork, AbstractSession executionSession) {
-        // This method is a combination of buildggregateFromRow and
-        // buildClonePart on the super class.
-        // none of buildClonePart used, as not an orignal new object, nor
-        // do we worry about creating heavy clones for aggregate objects.
-        Object clonedAttributeValue = buildAggregateFromRow(databaseRow, clone, null, joinManager, sourceQuery, false, executionSession, true);
-        ClassDescriptor descriptor = getReferenceDescriptor(clonedAttributeValue, unitOfWork);
+        // This method is a combination of buildggregateFromRow and buildClonePart on the super class.
+        // None of buildClonePart used, as not an orignal new object, nor do we worry about creating heavy clones for aggregate objects.
+        // Ensure that the shared CacheKey is passed, as this will be set to null for a refresh of an invalid object.
+        Object clonedAttributeValue = buildAggregateFromRow(databaseRow, clone, sharedCacheKey, joinManager, sourceQuery, false, executionSession, true);
         if (clonedAttributeValue != null) {
+            ClassDescriptor descriptor = getReferenceDescriptor(clonedAttributeValue, unitOfWork);
             descriptor.getObjectChangePolicy().setAggregateChangeListener(clone, clonedAttributeValue, unitOfWork, descriptor, getAttributeName());
         }
         setAttributeValueInObject(clone, clonedAttributeValue);
-        return;
     }
 
     /**
