@@ -72,7 +72,7 @@ public class SimpleQueryTestSuite {
         final EntityTransaction et = em.getTransaction();
         et.begin();
         try {
-            em.createNativeQuery("CREATE TABLE SIMPLE_TYPE_1 (SID INT, VAL_1 VARCHAR(15), VAL_2 BOOLEAN)").executeUpdate();
+            em.createNativeQuery("CREATE TABLE SIMPLE_TYPE_1 (SID INTEGER, VAL_1 VARCHAR(15))").executeUpdate();
             et.commit();
         } catch (Exception ex) {
             log.log(WARNING, "Could not create SIMPLE_TYPE_1 table: ." + ex.getMessage());
@@ -98,7 +98,7 @@ public class SimpleQueryTestSuite {
         final EntityTransaction et = em.getTransaction();
         et.begin();
         try {
-            em.createNativeQuery("DROP TABLE SIMPLE_TYPE").executeUpdate();
+            em.createNativeQuery("DROP TABLE SIMPLE_TYPE_1").executeUpdate();
             et.commit();
         } catch (Exception ex) {
             log.log(WARNING, "Could not drop SIMPLE_TYPE_1 table: ." + ex.getMessage());
