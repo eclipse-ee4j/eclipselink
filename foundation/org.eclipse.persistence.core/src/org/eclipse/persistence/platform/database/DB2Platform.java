@@ -438,7 +438,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
     public ValueReadQuery getTimestampQuery() {
         if (timestampQuery == null) {
             timestampQuery = new ValueReadQuery();
-            timestampQuery.setSQLString("SELECT DISTINCT CURRENT TIMESTAMP FROM SYSIBM.SYSTABLES");
+            timestampQuery.setSQLString("SELECT CURRENT TIMESTAMP FROM SYSIBM.SYSDUMMY1");
             timestampQuery.setAllowNativeSQLQuery(true);
         }
         return timestampQuery;
