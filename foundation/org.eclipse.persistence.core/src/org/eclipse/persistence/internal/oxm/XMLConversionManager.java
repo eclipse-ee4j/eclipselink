@@ -467,6 +467,10 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
             }
             return ((Float)sourceObject).toString();
         }
+        // Bug 21561562 - use plain, non-scientific notation for BigDecimal->String conversion
+        if (sourceObject instanceof java.math.BigDecimal) {
+            return ((java.math.BigDecimal) sourceObject).toPlainString();
+        }
 
         return super.convertObjectToString(sourceObject);
     }
@@ -524,6 +528,10 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
                 return Constants.NEGATIVE_INFINITY;
             }
             return ((Float)sourceObject).toString();
+        }
+        // Bug 21561562 - use plain, non-scientific notation for BigDecimal->String conversion
+        if (sourceObject instanceof java.math.BigDecimal) {
+            return ((java.math.BigDecimal) sourceObject).toPlainString();
         }
 
         return super.convertObjectToString(sourceObject);

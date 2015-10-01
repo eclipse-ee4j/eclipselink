@@ -135,6 +135,22 @@ public class NumberTestCases extends OXTestCase {
         assertNull(test);
     }
 
+    // Bug 21561562 - xmlconversionmanager bigdecimal to xsd:decimal is wrong
+    public void testConvertBigDecimalTo_String() {
+        String controlString = "0.000000001";
+        BigDecimal controlBigDecimal = new BigDecimal(controlString);
+        String testString = (String)xmlConversionManager.convertObject(controlBigDecimal, String.class);
+        assertEquals(controlString, testString);
+    }
+
+    // Bug 21561562 - xmlconversionmanager bigdecimal to xsd:decimal is wrong
+    public void testConvertBigDecimalWithQNameTo_String() {
+        String controlString = "0.000000001";
+        BigDecimal controlBigDecimal = new BigDecimal(controlString);
+        String testString = (String)xmlConversionManager.convertObject(controlBigDecimal, String.class, XMLConstants.STRING_QNAME);
+        assertEquals(controlString, testString);
+    }
+
     public static void main(String[] args) {
         String[] arguments = { "-c", "org.eclipse.persistence.testing.oxm.xmlconversionmanager.NumberTestCases" };
         TestRunner.main(arguments);
