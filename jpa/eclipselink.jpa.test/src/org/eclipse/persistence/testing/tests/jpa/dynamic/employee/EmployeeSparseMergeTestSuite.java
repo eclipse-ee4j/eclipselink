@@ -15,33 +15,29 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.dynamic.employee;
 
-//javase imports
+import static org.eclipse.persistence.logging.SessionLog.FINE;
+import static org.eclipse.persistence.logging.SessionLog.WARNING;
+import static org.eclipse.persistence.testing.tests.jpa.dynamic.DynamicTestHelper.DYNAMIC_PERSISTENCE_NAME;
+import static org.junit.Assert.assertEquals;
 
-//java eXtension imports
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
-//JUnit4 imports
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assume.assumeTrue;
-
-//EclipseLink imports
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.dynamic.DynamicType;
+import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.queries.EntityFetchGroup;
 import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.dynamic.JPADynamicHelper;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.eclipse.persistence.sessions.server.Server;
-
-//domain (testing) imports
+import org.eclipse.persistence.testing.tests.jpa.config.ConfigPUTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.dynamic.DynamicTestHelper;
 import org.eclipse.persistence.testing.tests.jpa.dynamic.QuerySQLTracker;
-import static org.eclipse.persistence.testing.tests.jpa.dynamic.DynamicTestHelper.DYNAMIC_PERSISTENCE_NAME;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 public class EmployeeSparseMergeTestSuite {
 
@@ -51,20 +47,62 @@ public class EmployeeSparseMergeTestSuite {
     static Server serverSession = null;
     static DynamicEmployeeSystem deSystem = null;
     static QuerySQLTracker qTracker = null;
+    private static SessionLog log = null;
     
+    /**
+     * {@code SEQ_COUNT} sequence clean up (initialize it to {@code 0} value) SQL statement call.
+     * @param serverSession Current server session.
+     * @throws DatabaseException when sequence does not exist.
+     */
+    private static void runCleanSequence(final Server serverSession) throws DatabaseException {
+        if (serverSession.getPlatform().isMySQL()) {
+            serverSession.executeNonSelectingSQL("UPDATE EMPLOYEE_SEQ SET SEQ_COUNT = 0 WHERE SEQ_NAME = 'EMP_SEQ'");
+        } else {
+            serverSession.executeNonSelectingSQL("UPDATE SEQUENCE SET SEQ_COUNT = 0 WHERE SEQ_NAME = 'EMP_SEQ'");
+        }
+    }
+
+    /**
+     * {@code SEQ_COUNT} sequence initialization.
+     * @param serverSession Current server session.
+     * @throws DatabaseException when sequence initialization failed.
+     */
+    private static void initSequence(final Server serverSession) throws DatabaseException {
+        boolean retry = false;
+        // This may pass if SEQ_COUNT already exists.
+        try {
+            runCleanSequence(serverSession);
+            log.log(FINE, "SEQ_COUNT sequence already exists and was cleaned up.");
+        } catch (DatabaseException ex) {
+            log.log(FINE, "SEQ_COUNT 1st sequence cleanup attempt failed: " + ex.getMessage());
+            retry = true;
+        }
+        // SEQ_COUNT does not exist so it must be created before clean up.
+        if (retry) {
+            // Test suite depends on SEQ_COUNT which is part of common JPA tests.
+            log.log(FINE, "Running SEQ_COUNT sequence initialization.");
+            ConfigPUTestSuite suite = new ConfigPUTestSuite();
+            suite.setUp();
+            suite.testCreateConfigPU();
+            suite.testVerifyConfigPU();
+            try {
+                runCleanSequence(serverSession);
+                log.log(FINE, "SEQ_COUNT sequence cleaned up after being created.");
+            } catch (DatabaseException ex) {
+                log.log(WARNING, "SEQ_COUNT sequence cleanup failed after initialization: " + ex.getMessage());
+                throw ex;
+            }
+        }
+    }
+
     @BeforeClass
     public static void setUp() throws Exception {
         emf = DynamicTestHelper.createEMF(DYNAMIC_PERSISTENCE_NAME);
         helper = new JPADynamicHelper(emf);
         deSystem = DynamicEmployeeSystem.buildProject(helper);
         serverSession = JpaHelper.getServerSession(emf);
-        if (serverSession.getPlatform().isMySQL()) {
-            serverSession.executeNonSelectingSQL(
-                    "UPDATE EMPLOYEE_SEQ SET SEQ_COUNT = 0 WHERE SEQ_NAME = 'EMP_SEQ'");
-        } else {
-            serverSession.executeNonSelectingSQL(
-                    "UPDATE SEQUENCE SET SEQ_COUNT = 0 WHERE SEQ_NAME = 'EMP_SEQ'");
-        }
+        log = serverSession.getSessionLog();
+        initSequence(serverSession);
         deSystem.populate(helper, emf.createEntityManager());
         serverSession.getIdentityMapAccessor().initializeAllIdentityMaps();
         qTracker = QuerySQLTracker.install(serverSession);
@@ -93,6 +131,7 @@ public class EmployeeSparseMergeTestSuite {
         helper = null;
         emf.close();
         emf = null;
+        log = null;
     }
     
     @Test
