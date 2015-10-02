@@ -10,7 +10,7 @@
  * Contributors:
  *              ljungmann - initial implementation
  ******************************************************************************/
-package org.eclipse.persistence.testing.tests.jpa.metadata;
+package org.eclipse.persistence.testing.tests.jpa22.metadata;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;

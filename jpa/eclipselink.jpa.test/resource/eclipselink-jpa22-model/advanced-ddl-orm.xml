@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings xmlns="http://xmlns.jcp.org/xml/ns/persistence/orm"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence/orm orm_2_1.xsd"
+    version="2.1">
+
+    <description>Mapping Document containing persistence unit metadata.</description>
+
+    <package>org.eclipse.persistence.testing.models.jpa22.advanced.xml.ddl</package>
+
+    <mapped-superclass class="Athlete">
+        <attributes>
+            <basic name="age"/>
+            <basic name="firstName">
+                <column name="F_NAME"/>
+            </basic>
+            <basic name="lastName">
+                <column name="L_NAME"/>
+            </basic>
+            <element-collection name="accomplishments">
+                <map-key-column name="ACCOMPLISHMENT"/>
+                <column name="THE_DATE"/>
+                <temporal>DATE</temporal>
+                <collection-table  name="JPA22_XML_DDL_RUNNER_ACS">
+                    <join-column name="ATHLETE_ID"/>
+                    <foreign-key name="XMLAccomplistments_Foreign_Key" foreign-key-definition="FOREIGN KEY (ATHLETE_ID) REFERENCES JPA22_XML_DDL_RUNNER (ID)"/>
+                </collection-table>
+            </element-collection>
+            <element-collection name="endorsements">
+                <map-key-join-column name="ENDORSER_ID"/>
+                <map-key-foreign-key name="XMLEndorsements_Key_Foreign_Key" foreign-key-definition="FOREIGN KEY (ENDORSER_ID) REFERENCES JPA_XML_DDL_ENDORSER (ID)"/>
+                <column name="ENDORSEMENT"/>
+                <collection-table name="JPA22_XML_DDL_ENDORSEMENTS">
+                    <join-column name="ATHLETE_ID"/>
+                    <foreign-key name="XMLEndorsements_Foreign_Key" foreign-key-definition="FOREIGN KEY (ATHLETE_ID) REFERENCES JPA22_XML_DDL_RUNNER (ID)"/>
+                </collection-table>
+            </element-collection>
+        </attributes>
+    </mapped-superclass>
+
+    <mapped-superclass class="Utensil">
+        <attributes>
+            <id name="id">
+                <generated-value strategy="TABLE" generator="XML_UTENSIL_ID_GENERATOR"/>
+                <table-generator name="XML_UTENSIL_ID_GENERATOR" table="JPA22_XML_PK_SEQ" pk-column-name="XML_SEQ_NAME" value-column-name="XML_SEQ_COUNT"  pk-column-value="XML_UTENSIL_SEQ">
+                    <index name="XML_TABLE_GENERATOR_INDEX" column-list="XML_SEQ_COUNT,XML_SEQ_NAME"/>
+                </table-generator>
+            </id>
+            <basic name="serialTag">
+                <column name="SERIAL_TAG"/>
+            </basic>
+        </attributes>
+    </mapped-superclass>
+
+    <entity name="XMLRunner" class="Runner">
+        <table name="JPA22_XML_DLL_RUNNER"/>
+        <inheritance strategy="JOINED"/>
+        <convert attribute-name="accomplishments.key" converter="org.eclipse.persistence.testing.models.jpa22.advanced.converters.AccomplishmentConverter"/>
+        <convert attribute-name="accomplishments" converter="org.eclipse.persistence.testing.models.jpa22.advanced.converters.DateConverter"/>
+        <convert attribute-name="age" converter="org.eclipse.persistence.testing.models.jpa22.advanced.converters.AgeConverter"/>
+        <attributes>
+            <id name="id">
+                <generated-value/>
+            </id>
+            <basic name="gender">
+                <convert converter="org.eclipse.persistence.testing.models.jpa22.advanced.converters.GenderConverter"/>
+            </basic>
+            <one-to-many name="shoes" mapped-by="runner">
+                <map-key-join-column name="TAG_IG"/>
+                <map-key-foreign-key name="XMLRunner_ShoeTag_Foreign_Key" foreign-key-definition="FOREIGN KEY (TAG_ID) REFERENCES JPA22_XML_DDL_SHOE_TAG (ID)"/>
+            </one-to-many>
+            <many-to-many name="races">
+                <join-table name="DDL_RUNNERS_RACES">
+                    <join-column name="RUNNER_ID" referenced-column-name="ID"/>
+                    <foreign-key name="XMLRunners_Races_Foreign_Key" foreign-key-definition="FOREIGN KEY (RUNNER_ID) REFERENCES JPA22_XML_DDL_RUNNER (ID)"/>
+                    <inverse-join-column name="RACE_ID" referenced-column-name="ID"/>
+                    <inverse-foreign-key name="XMLRunners_Races_Inverse_Foreign_Key" foreign-key-definition="FOREIGN KEY (RACE_ID) REFERENCES JPA22_XML_DDL_RACE (ID)"/>
+                </join-table>
+            </many-to-many>
+            <!-- Currently a convert can not be specified with a column as a -->
+            <!-- result of JPA 2.1 xsd bug. Until it is fixed, this is mapped in annotations -->
+            <!-- element-collection name="personalBests">
+                <map-key-convert converter="org.eclipse.persistence.testing.models.jpa21.advanced.converters.DistanceConverter"/>
+                <map-key-column name="DISTANCE"/>
+                <column name="TIME"/>
+                <convert converter="org.eclipse.persistence.testing.models.jpa21.advanced.converters.TimeConverter"/>
+                <collection-table name="JPA21_XML_DDL_RUNNER_PBS">
+                    <join-column name="RUNNER_ID"/>
+                    <foreign-key name="XML_Runner_PBS_Foreign_Key" foreign-key-definition="FOREIGN KEY (RUNNER_ID) REFERENCES JPA21_XML_DDL_RUNNER (ID)"/>
+                </collection-table>
+            </element-collection -->
+            <embedded name="info">
+                <convert attribute-name="level" converter="org.eclipse.persistence.testing.models.jpa22.advanced.converters.LevelConverter"/>
+                <convert attribute-name="health" converter="org.eclipse.persistence.testing.models.jpa22.advanced.converters.HealthConverter"/>
+                <convert attribute-name="status.runningStatus" converter="org.eclipse.persistence.testing.models.jpa22.advanced.converters.RunningStatusConverter"/>
+            </embedded>
+        </attributes>
+    </entity>
+
+    <entity name="XMLSprinter" class="Sprinter">
+        <table name="JPA22_XML_DDL_SPRINTER"/>
+        <primary-key-join-column name="SPRINTER_ID" referenced-column-name="ID"/>
+        <primary-key-foreign-key name="XML_Sprinter_Foreign_Key" foreign-key-definition="FOREIGN KEY (SPRINTER_ID) REFERENCES JPA22_XML_DDL_RUNNER (ID)"/>
+    </entity>
+
+    <entity name="XMLShoe" class="Shoe">
+        <table name="JPA22_XML_DDL_SHOE"/>
+        <attributes>
+            <id name="id">
+                <generated-value/>
+            </id>
+            <many-to-one name="runner">
+                <join-column name="RUNNER_ID"/>
+                <foreign-key name="XMLShoes_Runner_Foreign_Key" foreign-key-definition="FOREIGN KEY (RUNNER_ID) REFERENCES JPA22_XML_DDL_RUNNER (ID)"/>
+            </many-to-one>
+        </attributes>
+    </entity>
+
+    <entity name="XMLShoeTag" class="ShoeTag">
+        <table name="JPA22_XML_DDL_SHOE_TAG"/>
+        <attributes>
+            <id name="id">
+                <generated-value/>
+            </id>
+        </attributes>
+    </entity>
+
+    <entity name="XMLRace" class="Race">
+        <table name="JPA22_XML_DDL_RACE"/>
+        <attributes>
+            <id name="id">
+                <generated-value/>
+            </id>
+            <basic name="name"/>
+            <one-to-many name="organizers" mapped-by="race">
+                <map-key-convert attribute-name="uniqueIdentifier" disable-conversion="true"/>
+                <map-key-convert attribute-name="description" converter="org.eclipse.persistence.testing.models.jpa22.advanced.converters.ResponsibilityConverter"/>
+            </one-to-many>
+            <many-to-many name="runners" mapped-by="races"/>
+        </attributes>
+    </entity>
+
+    <entity name="XMLEndorser" class="Endorser">
+        <table name="JPA22_XML_DDL_ENDORSER"/>
+        <attributes>
+            <id name="id">
+                <generated-value/>
+            </id>
+            <basic name="name"/>
+        </attributes>
+    </entity>
+
+    <entity name="XMLOrganizer" class="Organizer">
+        <table name="JPA22_XML_DDL_ORGANIZER"/>
+        <attributes>
+            <id name="id">
+                <generated-value/>
+            </id>
+            <basic name="name"/>
+            <many-to-one name="race">
+                <join-column name="RACE_ID"/>
+                <foreign-key name="XMLOrganizer_Race_Foreign_Key" foreign-key-definition="FOREIGN KEY (RACE_ID) REFERENCES JPA22_XML_DDL_RACE (ID)"/>
+            </many-to-one>
+        </attributes>
+    </entity>
+
+    <entity name="XMLFork" class="Fork">
+        <table name="JPA22_XML_FORK">
+            <!-- default the name to JPA21_XML_FORK_INDEX_STYLE_COLOR -->
+            <index column-list="STYLE, COLOR"/>
+        </table>
+        <secondary-table name="JPA22_XML_FORK_COSTS">
+            <index name="XML_FORK_COSTS_INDEX" column-list="COST, RENTAL_COST"/>
+        </secondary-table>
+        <attributes>
+            <basic name="price">
+                <column name="COST" table="JPA22_XML_FORK_COSTS"/>
+            </basic>
+            <basic name="rental">
+                <column name="RENTAL_COST" table="JPA22_XML_FORK_COSTS"/>
+            </basic>
+            <many-to-many name="users">
+                <join-table name="JPA22_XML_FORK_FORK_USERS">
+                    <join-column name="FORK_ID" referenced-column-name="ID"/>
+                    <inverse-join-column name="FORK_USER_ID" referenced-column-name="ID"/>
+                    <index name="JPA22_XML_FORK_USERS_INDEX" column-list="FORK_USER_ID, FORK_ID"/>
+                </join-table>
+            </many-to-many>
+            <element-collection name="uses">
+                <column name="DESCRIP"/>
+                <collection-table name="JPA22_XML_FORK_USES">
+                    <index name="JPA22_XML_FORK_USES_INDEX" column-list="DESCRIP"/>
+                </collection-table>
+            </element-collection>
+        </attributes>
+    </entity>
+
+    <entity name="XMLForkUser" class="ForkUser">
+        <table name="JPA22_XML_FORK_USER"/>
+        <attributes>
+            <id name="id">
+                <generated-value/>
+            </id>
+            <many-to-many name="forks" mapped-by="users"/>
+        </attributes>
+    </entity>
+
+    <embeddable class="RunnerInfo">
+        <attributes>
+            <basic name="level">
+                <column name="R_LEVEL"/>
+            </basic>
+            <basic name="health">
+                <column name="R_HEALTH"/>
+            </basic>
+        </attributes>
+    </embeddable>
+
+    <embeddable class="RunnerStatus">
+        <attributes>
+            <basic name="runningStatus">
+                <column name="R_STATUS"/>
+            </basic>
+        </attributes>
+    </embeddable>
+
+    <embeddable class="Responsibility">
+        <attributes>
+            <basic name="uniqueIdentifier"/>
+            <basic name="description"/>
+        </attributes>
+    </embeddable>
+
+    <converter class="org.eclipse.persistence.testing.models.jpa22.advanced.converters.AccomplishmentConverter"/>
+    <converter class="org.eclipse.persistence.testing.models.jpa22.advanced.converters.AgeConverter"/>
+    <converter class="org.eclipse.persistence.testing.models.jpa22.advanced.converters.DateConverter"/>
+    <converter class="org.eclipse.persistence.testing.models.jpa22.advanced.converters.DistanceConverter"/>
+    <converter class="org.eclipse.persistence.testing.models.jpa22.advanced.converters.GenderConverter"/>
+    <converter class="org.eclipse.persistence.testing.models.jpa22.advanced.converters.HealthConverter"/>
+    <converter class="org.eclipse.persistence.testing.models.jpa22.advanced.converters.LevelConverter"/>
+    <converter class="org.eclipse.persistence.testing.models.jpa22.advanced.converters.LongToStringConverter" auto-apply="true"/>
+    <converter class="org.eclipse.persistence.testing.models.jpa22.advanced.converters.ResponsibilityConverter"/>
+    <converter class="org.eclipse.persistence.testing.models.jpa22.advanced.converters.RunningStatusConverter"/>
+    <converter class="org.eclipse.persistence.testing.models.jpa22.advanced.converters.TimeConverter"/>
+
+</entity-mappings>

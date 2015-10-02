@@ -1,0 +1,165 @@
+<persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence
+    http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
+  version="2.1">
+    <persistence-unit name="%%default%%" transaction-type="%%transaction-type%%">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <%%datasource-type%%>%%data-source-name%%</%%datasource-type%%>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+    </persistence-unit>
+    <!-- This is for default persistence unit -->
+    <persistence-unit name="MulitPU-1" transaction-type="%%transaction-type%%">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <%%datasource-type%%>%%data-source-name%%</%%datasource-type%%>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.Address</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.Department</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.Employee</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.EmploymentPeriod</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.LargeProject</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.PhoneNumber</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.PhoneNumberDetails</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.PhoneNumberPK</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.Project</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.SmallProject</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.Athlete</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.Runner</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.RunnerInfo</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.RunnerStatus</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.Sprinter</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.Shoe</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.ShoeTag</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.Race</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.Organizer</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.Responsibility</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.Endorser</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.Item</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.Order</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.converters.AccomplishmentConverter</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.converters.AgeConverter</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.converters.DateConverter</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.converters.DistanceConverter</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.converters.GenderConverter</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.converters.HealthConverter</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.converters.LevelConverter</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.converters.LongToStringConverter</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.converters.RunningStatusConverter</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.converters.TagConverter</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.converters.TimeConverter</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.converters.ResponsibilityConverter</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.target-server" value="%%server-platform%%"/>
+            <property name="eclipselink.target-database" value="%%database-platform%%"/>
+            <property name="eclipselink.validate-existence" value="true"/>
+            <property name="eclipselink.weaving" value="%%server-weaving%%"/>
+            <property name="eclipselink.session-name" value="default-session"/>
+            <property name="eclipselink.orm.validate.schema" value="true"/>
+            <property name="eclipselink.jdbc.uppercase-columns" value="true"/>
+            <property name="javax.persistence.schema-generation.scripts.action" value="drop-and-create"/>
+            <property name="javax.persistence.schema-generation.scripts.drop-target" value="jpa22-model-drop.jdbc"/>
+            <property name="javax.persistence.schema-generation.scripts.create-target" value="jpa22-model-create.jdbc"/>
+        </properties>
+    </persistence-unit>
+    <!-- This is for ddl persistence unit -->
+    <persistence-unit name="MulitPU-2" transaction-type="%%transaction-type%%">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <%%datasource-type%%>%%data-source-name%%</%%datasource-type%%>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.ddl.Fork</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.ddl.ForkUser</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.ddl.Utensil</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.ddl.Runner</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.ddl.RunnerInfo</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.ddl.RunnerStatus</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.ddl.Shoe</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.ddl.ShoeTag</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.ddl.Sprinter</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.ddl.Responsibility</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.ddl.Organizer</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.ddl.Endorser</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.ddl.Athlete</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.ddl.Race</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.ddl.Coach</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.converters.AccomplishmentConverter</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.converters.AgeConverter</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.converters.DateConverter</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.converters.DistanceConverter</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.converters.GenderConverter</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.converters.HealthConverter</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.converters.LevelConverter</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.converters.LongToStringConverter</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.converters.RunningStatusConverter</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.converters.TimeConverter</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.advanced.converters.ResponsibilityConverter</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.target-server" value="%%server-platform%%"/>
+            <property name="eclipselink.target-database" value="%%database-platform%%"/>
+            <property name="eclipselink.validate-existence" value="true"/>
+            <property name="eclipselink.weaving" value="%%server-weaving%%"/>
+            <property name="eclipselink.session-name" value="default-ddl-session"/>
+            <property name="eclipselink.orm.validate.schema" value="true"/>
+            <property name="eclipselink.jdbc.uppercase-columns" value="true"/>
+            <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
+            <property name="javax.persistence.scheme-generation.create-source" value="metadata"/>
+            <property name="javax.persistence.scheme-generation.drop-source" value="metadata"/>
+            <property name="javax.persistence.schema-generation.scripts.action" value="drop-and-create"/>
+            <property name="javax.persistence.schema-generation.scripts.drop-target" value="jpa22-ddl-model-drop.jdbc"/>
+            <property name="javax.persistence.schema-generation.scripts.create-target" value="jpa22-ddl-model-create.jdbc"/>
+        </properties>
+    </persistence-unit>
+    <!-- This is xml-ddl persistence unit -->
+    <persistence-unit name="MulitPU-3" transaction-type="%%transaction-type%%">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <%%datasource-type%%>%%data-source-name%%</%%datasource-type%%>
+        <mapping-file>META-INF/advanced-ddl-orm.xml</mapping-file>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.target-server" value="%%server-platform%%"/>
+            <property name="eclipselink.target-database" value="%%database-platform%%"/>
+            <property name="eclipselink.validate-existence" value="true"/>
+            <property name="eclipselink.weaving" value="%%server-weaving%%"/>
+            <property name="eclipselink.session-name" value="default-xml-ddl-session"/>
+            <property name="eclipselink.orm.validate.schema" value="true"/>
+            <property name="eclipselink.jdbc.uppercase-columns" value="true"/>
+            <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
+            <property name="javax.persistence.schema-generation.create-source" value="script"/>
+            <property name="javax.persistence.schema-generation.drop-source" value="script"/>
+            <property name="javax.persistence.schema-generation.drop-script-source" value="META-INF/jpa22-xml-ddl-model-source-drop.jdbc"/>
+            <property name="javax.persistence.schema-generation.create-script-source" value="META-INF/jpa22-xml-ddl-model-source-create.jdbc"/>
+        </properties>
+    </persistence-unit>
+    <!-- This is xml-default persistence unit -->
+    <persistence-unit name="MulitPU-4" transaction-type="%%transaction-type%%">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <%%datasource-type%%>%%data-source-name%%</%%datasource-type%%>
+        <mapping-file>META-INF/advanced-orm.xml</mapping-file>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.target-server" value="%%server-platform%%"/>
+            <property name="eclipselink.target-database" value="%%database-platform%%"/>
+            <property name="eclipselink.validate-existence" value="true"/>
+            <property name="eclipselink.weaving" value="%%server-weaving%%"/>
+            <property name="eclipselink.session-name" value="default-xml-session"/>
+            <property name="eclipselink.orm.validate.schema" value="true"/>
+            <property name="eclipselink.jdbc.uppercase-columns" value="true"/>
+            <property name="javax.persistence.schema-generation.scripts.action" value="create"/>
+            <property name="javax.persistence.schema-generation.scripts.create-target" value="jpa22-xml-model-create.jdbc"/>
+        </properties>
+    </persistence-unit>
+    <!-- This is ddl-template persistence unit -->
+    <persistence-unit name="MulitPU-5" transaction-type="%%transaction-type%%">
+        <!-- Users of this PU are expected to provide any relevant properties -->
+        <!-- through code, e.g. eclipselink.session-name                      -->
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <%%datasource-type%%>%%data-source-name%%</%%datasource-type%%>
+        <mapping-file>META-INF/advanced-ddl-orm.xml</mapping-file>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.target-server" value="%%server-platform%%"/>
+            <property name="eclipselink.target-database" value="%%database-platform%%"/>
+            <property name="eclipselink.validate-existence" value="true"/>
+            <property name="eclipselink.weaving" value="%%server-weaving%%"/>
+        </properties>
+    </persistence-unit>
+</persistence>

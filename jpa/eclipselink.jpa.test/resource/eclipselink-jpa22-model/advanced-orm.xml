@@ -1,0 +1,504 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings xmlns="http://xmlns.jcp.org/xml/ns/persistence/orm"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence/orm orm_2_1.xsd"
+    version="2.1">
+
+    <description>Mapping Document containing persistence unit metadata.</description>
+
+    <package>org.eclipse.persistence.testing.models.jpa22.advanced.xml</package>
+
+    <mapped-superclass class="Athlete">
+        <attributes>
+            <basic name="age"/>
+            <basic name="firstName">
+                <column name="F_NAME"/>
+            </basic>
+            <basic name="lastName">
+                <column name="L_NAME"/>
+            </basic>
+            <element-collection name="accomplishments">
+                <map-key-column name="ACCOMPLISHMENT"/>
+                <column name="THE_DATE"/>
+                <temporal>DATE</temporal>
+                <collection-table  name="JPA22_XML_RUNNER_ACS">
+                    <join-column name="ATHLETE_ID"/>
+                </collection-table>
+            </element-collection>
+            <element-collection name="endorsements">
+                <map-key-join-column name="ENDORSER_ID"/>
+                <column name="ENDORSEMENT"/>
+                <collection-table name="JPA22_XML_ENDORSEMENTS">
+                    <join-column name="ATHLETE_ID"/>
+                </collection-table>
+            </element-collection>
+        </attributes>
+    </mapped-superclass>
+
+    <entity name="XMLAddress" class="Address">
+        <table name="JPA22_XML_ADDRESS"/>
+        <named-stored-procedure-query name="XMLReadAllAddressesWithNoResultClass" procedure-name="XML_Read_All_Addresses"/>
+        <named-stored-procedure-query name="XMLReadAddressWithResultClass" procedure-name="XML_Read_Address">
+            <parameter name="address_id_v" mode="IN" class="Integer"/>
+            <result-class>Address</result-class>
+        </named-stored-procedure-query>
+        <named-stored-procedure-query name="XMLReadAddressMappedNamedFieldResult" procedure-name="XML_Read_Address_Named">
+            <parameter name="address_id_v" mode="IN" class="Integer"/>
+            <result-set-mapping>xml-address-field-result-map-named</result-set-mapping>
+        </named-stored-procedure-query>
+        <named-stored-procedure-query name="XMLReadAddressMappedNumberedFieldResult" procedure-name="XML_Read_Address_Numbered">
+            <parameter mode="IN" class="Integer"/>
+            <result-set-mapping>xml-address-field-result-map-numbered</result-set-mapping>
+        </named-stored-procedure-query>
+        <named-stored-procedure-query name="XMLReadAddressMappedNamedColumnResult" procedure-name="XML_Read_Address_Named">
+            <parameter name="address_id_v" mode="IN" class="Integer"/>
+            <result-set-mapping>xml-address-column-result-map</result-set-mapping>
+        </named-stored-procedure-query>
+        <sql-result-set-mapping name="xml-address-field-result-map-named">
+            <entity-result entity-class="Address">
+                <field-result name="id" column="address_id_v"/>
+                <field-result name="street" column="street_v"/>
+                <field-result name="city" column="city_v"/>
+                <field-result name="country" column="country_v"/>
+                <field-result name="province" column="province_v"/>
+                <field-result name="postalCode" column="p_code_v"/>
+            </entity-result>
+        </sql-result-set-mapping>
+        <sql-result-set-mapping name="xml-address-field-result-map-numbered">
+            <entity-result entity-class="Address">
+                <field-result name="id" column="1"/>
+                <field-result name="street" column="2"/>
+                <field-result name="city" column="3"/>
+                <field-result name="country" column="4"/>
+                <field-result name="province" column="5"/>
+                <field-result name="postalCode" column="6"/>
+            </entity-result>
+        </sql-result-set-mapping>
+        <sql-result-set-mapping name="xml-address-column-result-map">
+            <column-result name="address_id_v"/>
+            <column-result name="street_v"/>
+            <column-result name="city_v"/>
+            <column-result name="country_v"/>
+            <column-result name="province_v"/>
+            <column-result name="p_code_v"/>
+        </sql-result-set-mapping>
+        <attributes>
+            <id name="id">
+                <column name="ADDRESS_ID" length="23"/>
+                <generated-value generator="XML_ADDRESS_SEQ"/>
+                <sequence-generator name="XML_ADDRESS_SEQ" allocation-size="25"/>
+            </id>
+            <basic name="street"/>
+            <basic name="province"/>
+            <basic name="postalCode">
+                <column name="P_CODE"/>
+            </basic>
+            <basic name="country"/>
+            <version name="version"/>
+            <one-to-many name="employees" mapped-by="address">
+                <cascade>
+                    <cascade-all/>
+                </cascade>
+            </one-to-many>
+        </attributes>
+    </entity>
+
+    <entity name="XMLDepartment" class="Department">
+        <table name="JPA22_XML_DEPT"/>
+        <attributes>
+            <id name="id">
+                <generated-value strategy="TABLE" generator="XML_DEPT_TABLE_GENERATOR"/>
+                <table-generator name="XML_DEPT_TABLE_GENERATOR" table="JPA22_XML_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="XML_DEPT_SEQ"/>
+            </id>
+            <basic name="name"/>
+            <one-to-many name="managers">
+                <join-table name="JPA22_XML_DEPT_EMP">
+                    <join-column name="DEPT_ID"/>
+                    <inverse-join-column name="MANAGERS_ID"/>
+                </join-table>
+                <cascade>
+                    <cascade-persist/>
+                </cascade>
+            </one-to-many>
+            <one-to-many name="employees" mapped-by="department"/>
+            <one-to-one name="departmentHead">
+                <join-column name="DEPT_HEAD" nullable="true"/>
+            </one-to-one>
+        </attributes>
+    </entity>
+
+    <entity name="XMLEmployee" class="Employee">
+        <table name="JPA22_XML_EMPLOYEE"/>
+        <secondary-table name="JPA22_XML_SALARY">
+            <primary-key-join-column name="EMP_ID" referenced-column-name="EMP_ID"/>
+        </secondary-table>
+        <named-stored-procedure-query name="XMLReadUsingMultipleResultSetMappings" procedure-name="XML_Read_Multiple_Result_Sets">
+            <result-set-mapping>XMLEmployeeResultSetMapping</result-set-mapping>
+            <result-set-mapping>XMLAddressResultSetMapping</result-set-mapping>
+            <result-set-mapping>XMLProjectResultSetMapping</result-set-mapping>
+            <result-set-mapping>XMLEmployeeConstructorResultSetMapping</result-set-mapping>
+        </named-stored-procedure-query>
+        <named-stored-procedure-query name="XMLReadUsingUnNamedRefCursor" procedure-name="XML_Read_Using_UnNamed_Cursor">
+            <parameter mode="REF_CURSOR" class="Void"/>
+            <result-class>Employee</result-class>
+        </named-stored-procedure-query>
+        <named-stored-procedure-query name="XMLReadUsingNamedRefCursors" procedure-name="XML_Read_Using_Named_Cursor">
+            <parameter name="CUR1" mode="REF_CURSOR" class="Void"/>
+            <parameter name="CUR2" mode="REF_CURSOR" class="Void"/>
+            <result-class>Employee</result-class>
+            <result-class>Address</result-class>
+        </named-stored-procedure-query>
+        <sql-result-set-mapping name="XMLEmployeeResultSetMapping">
+            <entity-result entity-class="Employee"/>
+        </sql-result-set-mapping>
+        <sql-result-set-mapping name="XMLEmployeeConstructorResultSetMapping">
+            <constructor-result target-class="EmployeeDetails">
+                <column name="EMP_ID" class="Integer"/>
+                <column name="F_NAME" class="String"/>
+                <column name="L_NAME" class="String"/>
+                <column name="R_COUNT" class="Integer"/>
+            </constructor-result>
+        </sql-result-set-mapping>
+        <named-entity-graph>
+            <named-attribute-node name="address"/>
+            <named-attribute-node name="projects" subgraph="projects"/>
+            <subgraph name="projects">
+                <named-attribute-node name="properties"/>
+            </subgraph>
+            <subgraph name="projects" class="LargeProject">
+                <named-attribute-node name="executive"/>
+            </subgraph>
+        </named-entity-graph>
+        <attributes>
+            <id name="id">
+                <column name="EMP_ID" length="21"/>
+                <generated-value strategy="TABLE" generator="XML_EMPLOYEE_TABLE_GENERATOR"/>
+                <table-generator name="XML_EMPLOYEE_TABLE_GENERATOR" table="JPA22_XML_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="XML_EMPLOYEE_SEQ" initial-value="50"/>
+            </id>
+            <basic name="firstName">
+                <column name="F_NAME"/>
+            </basic>
+            <basic name="lastName">
+                <column name="L_NAME"/>
+            </basic>
+            <basic name="salary">
+                <column table="JPA22_XML_SALARY"/>
+            </basic>
+            <basic name="previousSalary">
+                <column table="JPA22_XML_SALARY"/>
+                <convert disable-conversion="true"/>
+            </basic>
+            <basic name="status">
+                <column name="STATUS"/>
+                <enumerated>ORDINAL</enumerated>
+            </basic>
+            <version name="version">
+                <column name="VERSION"/>
+            </version>
+            <many-to-one name="address" fetch="LAZY">
+                <join-column name="ADDR_ID"/>
+                <cascade>
+                    <cascade-persist/>
+                    <cascade-merge/>
+                </cascade>
+            </many-to-one>
+            <many-to-one name="department" fetch="EAGER">
+                <join-column name="DEPT_ID"/>
+            </many-to-one>
+            <many-to-one name="manager" fetch="LAZY">
+                <cascade>
+                    <cascade-persist/>
+                </cascade>
+            </many-to-one>
+            <one-to-many name="managedEmployees" mapped-by="manager">
+                <cascade>
+                    <cascade-all/>
+                </cascade>
+            </one-to-many>
+            <one-to-many name="phoneNumbers" mapped-by="owner" orphan-removal="true">
+                <cascade>
+                    <cascade-all/>
+                </cascade>
+            </one-to-many>
+            <many-to-many name="projects">
+                <join-table name="JPA22_XML_EMP_PROJ">
+                    <join-column name="EMPLOYEES_EMP_ID" referenced-column-name="EMP_ID"/>
+                    <inverse-join-column name="PROJECTS_PROJ_ID" referenced-column-name="PROJ_ID"/>
+                </join-table>
+                <cascade>
+                    <cascade-persist/>
+                    <cascade-merge/>
+                </cascade>
+            </many-to-many>
+            <element-collection name="responsibilities" target-class="String">
+                <column name="DESCRIPTION"/>
+                <collection-table name="JPA22_XML_RESPONS">
+                    <join-column name="EMP_ID"/>
+                </collection-table>
+            </element-collection>
+            <embedded name="period">
+                <attribute-override name="startDate">
+                    <column name="START_DATE" nullable="false"/>
+                </attribute-override>
+                <attribute-override name="endDate">
+                    <column name="END_DATE" nullable="false"/>
+                </attribute-override>
+            </embedded>
+        </attributes>
+    </entity>
+
+    <entity name="XMLProject" class="Project">
+        <table name="JPA22_XML_PROJECT"/>
+        <inheritance strategy="JOINED"/>
+        <discriminator-value>P</discriminator-value>
+        <discriminator-column name="PROJ_TYPE"/>
+        <sql-result-set-mapping name="XMLProjectResultSetMapping">
+            <entity-result entity-class="Project"/>
+            <entity-result entity-class="SmallProject" discriminator-column="SMALL_DESCRIM">
+                <field-result name="id" column="SMALL_ID"/>
+                <field-result name="name" column="SMALL_NAME"/>
+                <field-result name="description" column="SMALL_DESCRIPTION"/>
+                <field-result name="teamLeader" column="SMALL_TEAMLEAD"/>
+                <field-result name="version" column="SMALL_VERSION"/>
+            </entity-result>
+            <column-result name="BUDGET_SUM"/>
+        </sql-result-set-mapping>
+        <pre-persist method-name="prePersist"/>
+        <post-persist method-name="postPersist"/>
+        <pre-remove method-name="preRemove"/>
+        <post-remove method-name="postRemove"/>
+        <pre-update method-name="preUpdate"/>
+        <post-update method-name="postUpdate"/>
+        <post-load method-name="postLoad"/>
+        <attributes>
+            <id name="id">
+                <column name="PROJ_ID" length="37"/>
+                <generated-value strategy="SEQUENCE" generator="XML_PROJECT_SEQUENCE_GENERATOR"/>
+                <sequence-generator name="XML_PROJECT_SEQUENCE_GENERATOR" sequence-name="XML_PROJECT_SEQ" allocation-size="10"/>
+            </id>
+            <basic name="description">
+                <column name="DESCRIP"/>
+            </basic>
+            <basic name="name">
+                <column name="PROJ_NAME"/>
+            </basic>
+            <version name="version">
+                <column name="VERSION"/>
+            </version>
+            <one-to-one name="teamLeader">
+                <join-column name="LEADER_ID"/>
+                <cascade>
+                    <cascade-merge/>
+                </cascade>
+            </one-to-one>
+            <many-to-many name="teamMembers" target-entity="Employee" mapped-by="projects"/>
+            <element-collection name="properties">
+                <column name="PROPS"/>
+                <collection-table name="JPA22_XML_PROJ_PROPS"/>
+            </element-collection>
+            <transient name="pre_update_count"/>
+            <transient name="post_update_count"/>
+            <transient name="pre_remove_count"/>
+            <transient name="post_remove_count"/>
+            <transient name="pre_persist_count"/>
+            <transient name="post_persist_count"/>
+            <transient name="post_load_count"/>
+        </attributes>
+    </entity>
+
+    <entity name="XMLLargeProject" class="LargeProject">
+        <table name="JPA22_XML_LPROJECT"/>
+        <discriminator-value>L</discriminator-value>
+        <attributes>
+            <basic name="budget"/>
+            <many-to-one name="executive" fetch="LAZY">
+                <join-column name="EXEC_ID"/>
+            </many-to-one>
+        </attributes>
+    </entity>
+
+    <entity name="XMLSmallProject" class="SmallProject">
+        <table name="JPA22_XML_PROJECT"/>
+        <discriminator-value>S</discriminator-value>
+    </entity>
+
+    <entity name="XMLPhoneNumber" class="PhoneNumber">
+        <table name="JPA22_XML_PHONENUMBER"/>
+        <id-class class="PhoneNumberPK"/>
+        <attributes>
+            <id name="id">
+                <column name="OWNER_ID" insertable="false" updatable="false"/>
+            </id>
+            <id name="type">
+                <column name="TYPE"/>
+            </id>
+            <basic name="areaCode">
+                <column name="AREA_CODE"/>
+            </basic>
+            <basic name="number">
+                <column name="NUMB"/>
+            </basic>
+            <many-to-one name="owner">
+                <join-column name="OWNER_ID" referenced-column-name="emp_id"/>
+            </many-to-one>
+        </attributes>
+    </entity>
+
+    <entity name="XMLRunner" class="Runner">
+        <table name="JPA22_XML_RUNNER"/>
+        <inheritance strategy="JOINED"/>
+        <convert attribute-name="accomplishments.key" converter="org.eclipse.persistence.testing.models.jpa22.advanced.converters.AccomplishmentConverter"/>
+        <convert attribute-name="accomplishments" converter="org.eclipse.persistence.testing.models.jpa22.advanced.converters.DateConverter"/>
+        <convert attribute-name="age" converter="org.eclipse.persistence.testing.models.jpa22.advanced.converters.AgeConverter"/>
+        <attributes>
+            <id name="id">
+                <generated-value/>
+            </id>
+            <basic name="gender">
+                <convert converter="org.eclipse.persistence.testing.models.jpa22.advanced.converters.GenderConverter">
+
+
+                </convert>
+            </basic>
+            <one-to-many name="shoes" mapped-by="runner">
+                <map-key-join-column name="TAG_IG"/>
+            </one-to-many>
+            <many-to-many name="races">
+                <join-table name="RUNNERS_RACES">
+                    <join-column name="RUNNER_ID" referenced-column-name="ID"/>
+                    <inverse-join-column name="RACE_ID" referenced-column-name="ID"/>
+                </join-table>
+            </many-to-many>
+            <!-- Currently a convert can not be specified with a column as a -->
+            <!-- result of JPA 2.1 xsd bug. Until it is fixed, this is mapped in annotations -->
+            <!-- element-collection name="personalBests">
+                <map-key-convert converter="org.eclipse.persistence.testing.models.jpa22.advanced.converters.DistanceConverter"/>
+                <map-key-column name="DISTANCE"/>
+                <column name="TIME"/>
+                <convert converter="org.eclipse.persistence.testing.models.jpa21.advanced.converters.TimeConverter"/>
+                <collection-table name="JPA22_XML_RUNNER_PBS">
+                    <join-column name="RUNNER_ID"/>
+                </collection-table>
+            </element-collection -->
+            <embedded name="info">
+                <convert attribute-name="level" converter="org.eclipse.persistence.testing.models.jpa22.advanced.converters.LevelConverter"/>
+                <convert attribute-name="health" converter="org.eclipse.persistence.testing.models.jpa22.advanced.converters.HealthConverter"/>
+                <convert attribute-name="status.runningStatus" converter="org.eclipse.persistence.testing.models.jpa22.advanced.converters.RunningStatusConverter"/>
+            </embedded>
+        </attributes>
+    </entity>
+
+    <entity name="XMLSprinter" class="Sprinter">
+        <table name="JPA22_XML_SPRINTER"/>
+        <primary-key-join-column name="SPRINTER_ID" referenced-column-name="ID"/>
+    </entity>
+
+    <entity name="XMLShoe" class="Shoe">
+        <table name="JPA22_XML_SHOE"/>
+        <attributes>
+            <id name="id">
+                <generated-value/>
+            </id>
+            <many-to-one name="runner">
+                <join-column name="RUNNER_ID"/>
+            </many-to-one>
+        </attributes>
+    </entity>
+
+    <entity name="XMLShoeTag" class="ShoeTag">
+        <table name="JPA22_XML_SHOE_TAG"/>
+        <attributes>
+            <id name="id">
+                <generated-value/>
+            </id>
+        </attributes>
+    </entity>
+
+    <entity name="XMLRace" class="Race">
+        <table name="JPA22_XML_RACE"/>
+        <attributes>
+            <id name="id">
+                <generated-value/>
+            </id>
+            <basic name="name"/>
+            <one-to-many name="organizers" mapped-by="race">
+                <map-key-convert attribute-name="uniqueIdentifier" disable-conversion="true"/>
+                <map-key-convert attribute-name="description" converter="org.eclipse.persistence.testing.models.jpa22.advanced.converters.ResponsibilityConverter"/>
+            </one-to-many>
+            <many-to-many name="runners" mapped-by="races"/>
+        </attributes>
+    </entity>
+
+    <entity name="XMLEndorser" class="Endorser">
+        <table name="JPA22_XML_ENDORSER"/>
+        <attributes>
+            <id name="id">
+                <generated-value/>
+            </id>
+            <basic name="name"/>
+        </attributes>
+    </entity>
+
+    <entity name="XMLOrganizer" class="Organizer">
+        <table name="JPA22_XML_ORGANIZER"/>
+        <attributes>
+            <id name="id">
+                <generated-value/>
+            </id>
+            <basic name="name"/>
+            <many-to-one name="race">
+                <join-column name="RACE_ID"/>
+            </many-to-one>
+        </attributes>
+    </entity>
+
+    <embeddable class="RunnerInfo">
+        <attributes>
+            <basic name="level">
+                <column name="R_LEVEL"/>
+            </basic>
+            <basic name="health">
+                <column name="R_HEALTH"/>
+            </basic>
+        </attributes>
+    </embeddable>
+
+    <embeddable class="RunnerStatus">
+        <attributes>
+            <basic name="runningStatus">
+                <column name="R_STATUS"/>
+            </basic>
+        </attributes>
+    </embeddable>
+
+    <embeddable class="Responsibility">
+        <attributes>
+            <basic name="uniqueIdentifier"/>
+            <basic name="description"/>
+        </attributes>
+    </embeddable>
+
+    <embeddable class="EmploymentPeriod">
+        <attributes>
+            <basic name="startDate">
+                <column name="S_DATE"/>
+            </basic>
+            <basic name="endDate">
+                <column name="E_DATE"/>
+            </basic>
+        </attributes>
+    </embeddable>
+
+    <converter class="org.eclipse.persistence.testing.models.jpa22.advanced.converters.AccomplishmentConverter"/>
+    <converter class="org.eclipse.persistence.testing.models.jpa22.advanced.converters.AgeConverter"/>
+    <converter class="org.eclipse.persistence.testing.models.jpa22.advanced.converters.DateConverter"/>
+    <converter class="org.eclipse.persistence.testing.models.jpa22.advanced.converters.DistanceConverter"/>
+    <converter class="org.eclipse.persistence.testing.models.jpa22.advanced.converters.GenderConverter"/>
+    <converter class="org.eclipse.persistence.testing.models.jpa22.advanced.converters.HealthConverter"/>
+    <converter class="org.eclipse.persistence.testing.models.jpa22.advanced.converters.LevelConverter"/>
+    <converter class="org.eclipse.persistence.testing.models.jpa22.advanced.converters.LongToStringConverter" auto-apply="true"/>
+    <converter class="org.eclipse.persistence.testing.models.jpa22.advanced.converters.ResponsibilityConverter"/>
+    <converter class="org.eclipse.persistence.testing.models.jpa22.advanced.converters.RunningStatusConverter"/>
+    <converter class="org.eclipse.persistence.testing.models.jpa22.advanced.converters.TimeConverter"/>
+
+</entity-mappings>

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -8,17 +8,31 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *              ljungmann - initial implementation
+ *     tware - initial contribution for Bug 366748 - JPA 2.1 Injectable Entity Listeners
  ******************************************************************************/
-package org.eclipse.samples;
+package org.eclipse.persistence.testing.models.jpa22.entitylistener;
 
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
-
-import org.eclipse.persistence.testing.tests.jpa22.metadata.LogListener;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
-@EntityListeners({LogListener.class})
-public @interface LoggableEmployee {
+@Table(name="ENT_LIS_HOLD")
+@EntityListeners({EntityListener.class})
+public class EntityListenerHolder {
+
+    @Id
+    @GeneratedValue
+    private int id;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
 }

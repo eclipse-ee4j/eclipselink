@@ -10,15 +10,22 @@
  * Contributors:
  *              ljungmann - initial implementation
  ******************************************************************************/
-package org.eclipse.samples;
+package org.eclipse.persistence.testing.tests.jpa22.metadata;
 
-import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
+import javax.persistence.PostRemove;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 
-import org.eclipse.persistence.testing.tests.jpa22.metadata.LogListener;
+public class LogListener {
 
-@Entity
-@EntityListeners({LogListener.class})
-public @interface LoggableEmployee {
+    public LogListener() {
+    }
+
+    @PrePersist
+    @PreUpdate
+    @PostRemove
+    private void log(Object object) {
+        System.out.println("Your log code here");
+    }
 
 }

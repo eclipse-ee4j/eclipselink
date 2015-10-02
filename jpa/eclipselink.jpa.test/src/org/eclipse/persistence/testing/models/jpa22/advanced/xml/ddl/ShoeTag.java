@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -8,17 +8,30 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *              ljungmann - initial implementation
+ *     12/07/2012-2.5 Guy Pelletier
+ *       - 389090: JPA 2.1 DDL Generation Support
  ******************************************************************************/
-package org.eclipse.samples;
+package org.eclipse.persistence.testing.models.jpa22.advanced.xml.ddl;
 
-import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
+public class ShoeTag {
+    protected Integer id;
+    protected String tag;
 
-import org.eclipse.persistence.testing.tests.jpa22.metadata.LogListener;
+    public ShoeTag() {}
 
-@Entity
-@EntityListeners({LogListener.class})
-public @interface LoggableEmployee {
+    public Integer getId() {
+        return id;
+    }
 
+    public String getTag() {
+        return tag;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public void setTag(String tag) {
+        this.tag = tag;
+    }
 }

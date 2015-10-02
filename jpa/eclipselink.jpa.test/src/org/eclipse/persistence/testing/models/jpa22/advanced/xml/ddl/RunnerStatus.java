@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -8,24 +8,21 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *              ljungmann - initial implementation
+ *     12/07/2012-2.5 Guy Pelletier
+ *       - 389090: JPA 2.1 DDL Generation Support
  ******************************************************************************/
-package org.eclipse.persistence.testing.tests.jpa.metadata;
+package org.eclipse.persistence.testing.models.jpa22.advanced.xml.ddl;
 
-import javax.persistence.PostRemove;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
+import org.eclipse.persistence.testing.models.jpa22.advanced.enums.RunningStatus;
 
-public class LogListener {
+public class RunnerStatus {
+    RunningStatus runningStatus;
 
-    public LogListener() {
+    public RunningStatus getRunningStatus() {
+        return runningStatus;
     }
 
-    @PrePersist
-    @PreUpdate
-    @PostRemove
-    private void log(Object object) {
-        System.out.println("Your log code here");
+    public void setRunningStatus(RunningStatus runningStatus) {
+        this.runningStatus = runningStatus;
     }
-
 }

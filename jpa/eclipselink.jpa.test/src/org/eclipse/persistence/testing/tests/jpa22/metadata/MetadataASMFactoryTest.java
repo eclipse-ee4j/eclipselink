@@ -10,19 +10,34 @@
  * Contributors:
  *              ljungmann - initial implementation
  ******************************************************************************/
-package org.eclipse.persistence.testing.tests.jpa.metadata;
+package org.eclipse.persistence.testing.tests.jpa22.metadata;
 
+import junit.framework.Test;
+import junit.framework.TestSuite;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAsmFactory;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
+import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.junit.Assert;
-import org.junit.Test;
 
-public class MetadataASMFactoryTest {
+public class MetadataASMFactoryTest extends JUnitTestCase {
+    
+    public MetadataASMFactoryTest() {
+    }
 
-    @Test
+    public MetadataASMFactoryTest(String name) {
+        super(name);
+    }
+
+    public static Test suite() {
+        TestSuite suite = new TestSuite();
+        suite.setName("MetadataASMFactoryTest");
+        suite.addTest(new MetadataASMFactoryTest("test"));
+        return suite;
+    }
+
     public void test() {
         MetadataAsmFactory fact = new MetadataAsmFactory(new MetadataLogger(null), MetadataASMFactoryTest.class.getClassLoader());
         MetadataClass metadataClass = fact.getMetadataClass(Employee.class.getName());
