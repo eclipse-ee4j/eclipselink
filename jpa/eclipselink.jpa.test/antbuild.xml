@@ -1589,16 +1589,7 @@
             <param name="RUN_PATH" value="run.extended.classpath"/>
             <param name="DB_URL" value="${db.url}"/>
         </antcall>
-        <!-- dynamic tests are JUnit 4 and can't run as part of the above tests - run them separately -->
-        <antcall target="run-test" inheritRefs="true">
-            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.dynamic.AllTests"/>
-            <param name="TEST_AGENT" value="${test.agent}"/>
-            <param name="TEST_WEAVING" value="${test.weaving}"/>
-            <param name="TEST_WEAVING_OPTION" value="${test.weaving.option}"/>
-            <param name="ORM_TESTING" value="-Dorm.testing=eclipselink"/>
-            <param name="RUN_PATH" value="run.extended.classpath"/>
-            <param name="DB_URL" value="${db.url}"/>
-        </antcall>
+        <antcall target="test-dynamic" inheritRefs="true"/>
         <antcall target="test-remote-jpa" inheritRefs="true"/>
         <antcall target="run-bean-validation-tests" inheritRefs="true"/>
         <antcall target="oracle-test" inheritRefs="true"/>
@@ -1643,15 +1634,7 @@
             <param name="RUN_PATH" value="run.weaver.classpath"/>
             <param name="DB_URL" value="${db.url}"/>
         </antcall>
-        <antcall target="run-test" inheritRefs="true">
-            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.dynamic.AllTests"/>
-            <param name="TEST_AGENT" value="${test.agent}"/>
-            <param name="TEST_WEAVING" value="${test.weaving}"/>
-            <param name="TEST_WEAVING_OPTION" value="${test.weaving.option}"/>
-            <param name="ORM_TESTING" value="-Dorm.testing=eclipselink"/>
-            <param name="RUN_PATH" value="run.extended.classpath"/>
-            <param name="DB_URL" value="${db.url}"/>
-        </antcall>
+        <antcall target="test-dynamic" inheritRefs="true"/>
         <!--
         unstable on (public) hudson, needs to be stabilized first
         <antcall target="test-remote-jpa" inheritRefs="true"/>
@@ -1661,6 +1644,7 @@
         <antcall target="generate-report" inheritRefs="true"/>
     </target>
 
+    <!-- Run dynamic entities tests standalone. -->
     <target name="test-dynamic" depends="clean-test, config-classpath">
         <antcall target="run-test" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.dynamic.AllTests"/>
@@ -1671,8 +1655,10 @@
             <param name="RUN_PATH" value="run.extended.classpath"/>
             <param name="DB_URL" value="${db.url}"/>
         </antcall>
-        <antcall target="generate-report" inheritRefs="true"/>
     </target>
+
+    <!-- Run dynamic entities tests standalone and generate tests report. -->
+    <target name="test-dynamic-report" depends="test-dynamic, generate-report"/>
 
     <!-- Runs JPA 2.0 BeanValidation tests. -->
     <target name="run-bean-validation-tests" depends="config-classpath" if="validate.jar.exists">
