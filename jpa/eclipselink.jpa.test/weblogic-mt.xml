@@ -88,6 +88,7 @@
     <!-- WebLogic classpath. -->
     <path id="wls.mt.path">
         <pathelement location="${wls.mt.install.wl.home}/server/lib/weblogic.jar"/>
+        <pathelement location="${wls.mt.install.wl.home}/modules/features/wlst.wls.classpath.jar"/>
         <pathelement location="${wls.mt.install.wl.home}/common/derby/lib/derby.jar"/>
     </path>
 

@@ -69,6 +69,7 @@
 
     <path id="wls.path">
         <pathelement location="${weblogic.home}/lib/weblogic.jar"/>
+        <pathelement location="${weblogic.installdir}/modules/features/wlst.wls.classpath.jar"/>
     </path>
 
     <!-- This replaces URL in JAX-RS testcases -->
