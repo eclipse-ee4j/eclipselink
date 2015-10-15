@@ -3,9 +3,9 @@ Export-Package: org.eclipse.persistence.jpa.rs.service
 Bundle-Name: EclipseLink JPA-RS
 Created-By: 1.6.0_21 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Require-Bundle: org.eclipse.persistence.dbws;bundle-version="2.6.1"
+Require-Bundle: org.eclipse.persistence.dbws;bundle-version="2.6.2"
 Bundle-Vendor: Eclipse.org - EclipseLink Project
-Bundle-Version: 2.6.1.qualifier
+Bundle-Version: 2.6.2.qualifier
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.eclipse.persistence.jpars
 Import-Package: javax.ejb,
