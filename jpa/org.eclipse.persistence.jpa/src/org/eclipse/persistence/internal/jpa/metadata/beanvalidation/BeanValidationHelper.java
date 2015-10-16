@@ -14,8 +14,9 @@ package org.eclipse.persistence.internal.jpa.metadata.beanvalidation;
 
 import org.eclipse.persistence.internal.cache.AdvancedProcessor;
 import org.eclipse.persistence.internal.cache.ComputableTask;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.validation.Constraint;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
@@ -24,14 +25,17 @@ import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * INTERNAL:
@@ -43,8 +47,8 @@ import java.util.concurrent.TimeUnit;
  * @author Marcel Valovy - marcel.valovy@oracle.com
  * @since 2.6
  */
-public enum BeanValidationHelper {
-    BEAN_VALIDATION_HELPER;
+public final class BeanValidationHelper {
+    private static final Logger LOGGER = Logger.getLogger(BeanValidationHelper.class.getName());
 
     /**
      * # default constraints in {@link #KNOWN_CONSTRAINTS} map.
@@ -62,21 +66,9 @@ public enum BeanValidationHelper {
     /**
      * Size parameter for {@link #KNOWN_CONSTRAINTS} map.
      */
-    private static final int KNOWN_CONSTRAINTS_DEFAULT_SIZE = nextPowerOfTwo(
-            (int) (DEFAULT_CONSTRAINTS_QUANTITY / LOAD_FACTOR));
+    private static final int KNOWN_CONSTRAINTS_DEFAULT_SIZE = nextPowerOfTwo((int) (DEFAULT_CONSTRAINTS_QUANTITY / LOAD_FACTOR));
 
-    /**
-     * How much time to allow {@link ValidationXMLReader#runAsynchronously()} to finish its task, in milliseconds.
-     * This is an interrupt management system. If the asynchronous thread were interrupted and flag {@link
-     * ValidationXMLReader#firstTime} were to be false, deadlock would occur. This prevents such case, as it will
-     * await until timeout expires and then run the processing in forced, synchronous way.
-     */
-    private static final int TIMEOUT = 10; /* in ms, handles precision up to single digits since nanoTime is used. */
-
-    /**
-     * Speed-up flag. Indicates that parsing of validation.xml file has finished.
-     */
-    private static boolean xmlParsed = false;
+    private Future<Map<Class<?>, Boolean>> future;
 
     /**
      * Advanced memoizer.
@@ -99,22 +91,23 @@ public enum BeanValidationHelper {
      * Map of all classes that have undergone check for bean validation constraints.
      * Maps the key with boolean value telling whether the class contains an annotation from {@link #KNOWN_CONSTRAINTS}.
      */
-    private static final Map<Class<?>, Boolean> CONSTRAINTS_ON_CLASSES = Collections.synchronizedMap(new
-            WeakHashMap<>());
+    private static Map<Class<?>, Boolean> CONSTRAINTS_ON_CLASSES = null;
 
     static {
         initializeKnownConstraints();
-        ValidationXMLReader.runAsynchronously();
     }
 
     /**
-     * Put a class to the map of constrained classes with value Boolean.TRUE. Specifying value is not allowed because
-     * there is nothing to detect that would make class not constrained after it was already found to be constrained.
-     *
-     * @return value previously associated with the class or null if the class was not in dictionary before
+     * Creates a new instance. Starts asynchronous parsing of validation.xml if it exists.
      */
-    Boolean putConstrainedClass(Class<?> clazz) {
-        return CONSTRAINTS_ON_CLASSES.put(clazz, Boolean.TRUE);
+    public BeanValidationHelper() {
+        // Try to run validation.xml parsing asynchronously if validation.xml exists
+        if (ValidationXMLReader.isValidationXmlPresent()) {
+            parseValidationXmlAsync();
+        } else {
+            // validation.xml doesn't exist -> create an empty map
+            CONSTRAINTS_ON_CLASSES = new HashMap<>();
+        }
     }
 
     /**
@@ -125,38 +118,100 @@ public enum BeanValidationHelper {
      * @return true or false
      */
     public boolean isConstrained(Class<?> clazz) {
-        if (!xmlParsed) ensureValidationXmlWasParsed();
-
         return memoizer.compute(cds, clazz);
     }
 
     /**
-     * INTERNAL:
-     * Ensures that validation.xml was parsed and classes described externally were added to {@link
-     * #CONSTRAINTS_ON_CLASSES}.
-     * Strategy:
-     *  - if {@link ValidationXMLReader#runAsynchronously()} is not doing anything,
-     *  run parsing synchronously.
-     *  - else if latch count is 0, indicating successful finish of asynchronous processing, return.
-     *  - else wait for {@link #TIMEOUT} seconds to allow async thread to finish. If it does not finish till then,
-     *  run parsing synchronously.
-     *
-     *  Note: Run parsing synchronously is force of last resort. If that fails, we proceed with validation and do not
-     *  account for classes specified in validation.xml - there is high chance that if we cannot read validation.xml
-     *  successfully, neither will be able the Validation implementation.
+     * Lazy getter for constraintsOnClasses property. Waits until the map is
+     * returned by async XML reader.
      */
-    private void ensureValidationXmlWasParsed() {
-        // loop handles InterruptedException
-        while (!xmlParsed) {
-            try {
-                if (ValidationXMLReader.asyncAttemptFailed()
-                        || !ValidationXMLReader.getLatch().await(TIMEOUT, TimeUnit.MILLISECONDS)) {
-                    ValidationXMLReader.runSynchronouslyForced();
+    public Map<Class<?>, Boolean> getConstraintsMap() {
+        if (CONSTRAINTS_ON_CLASSES == null) {
+            if (future == null) {
+                // This happens when submission of async task is failed. Run
+                // validation.xml parsing synchronously.
+                CONSTRAINTS_ON_CLASSES = parseValidationXml();
+            } else {
+                // Async task was successfully submitted. get a result from
+                // future
+                try {
+                    CONSTRAINTS_ON_CLASSES = future.get();
+                } catch (InterruptedException | ExecutionException e) {
+                    // For some reason the async parsing attempt failed. Call it
+                    // synchronously.
+                    LOGGER.log(Level.WARNING, "Error parsing validation.xml the async way", e);
+                    CONSTRAINTS_ON_CLASSES = parseValidationXml();
                 }
-                xmlParsed = true;
-            } catch (InterruptedException ignored) {
-                Thread.currentThread().interrupt();
             }
+        }
+        return CONSTRAINTS_ON_CLASSES;
+    }
+
+    /**
+     * Tries to run validation.xml parsing asynchronously.
+     */
+    private void parseValidationXmlAsync() {
+        Executor executor = null;
+        try {
+            executor = createExecutor();
+            future = executor.executorService.submit(new ValidationXMLReader());
+        } catch (Throwable e) {
+            // In the rare cases submitting a task throws OutOfMemoryError. In
+            // this case we call validation.xml
+            // parsing lazily when requested
+            LOGGER.log(Level.WARNING, "Error creating/submitting async validation.xml parsing task.", e);
+            future = null;
+        } finally {
+            // Shutdown is needed only for JDK executor
+            if (executor != null && executor.shutdownNeeded) {
+                executor.executorService.shutdown();
+            }
+        }
+    }
+
+    /**
+     * Runs validation.xml parsing synchronously.
+     */
+    private Map<Class<?>, Boolean> parseValidationXml() {
+        final ValidationXMLReader reader = new ValidationXMLReader();
+        Map<Class<?>, Boolean> result;
+        try {
+            result = reader.call();
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Error parsing validation.xml synchronously", e);
+            result = new HashMap<>();
+        }
+        return result;
+    }
+
+    /**
+     * Creates an executor service. Tries to get a managed executor service. If
+     * failed creates a JDK one. Sets shutdownNeeded property to true in case
+     * JDK executor is created.
+     */
+    private Executor createExecutor() {
+        try {
+            InitialContext jndiCtx = new InitialContext();
+            // type: javax.enterprise.concurrent.ManagedExecutorService
+            // jndi-name: concurrent/ThreadPool
+            return new Executor((ExecutorService) jndiCtx.lookup("java:comp/env/concurrent/ThreadPool"), false);
+        } catch (NamingException ignored) {
+            // aka continue to proceed with retrieving jdk executor
+        }
+        return new Executor(Executors.newFixedThreadPool(1), true);
+    }
+
+    /**
+     * This class holds a managed or JDK executor instance with a flag
+     * indicating do we need to shut it down or not.
+     */
+    private static class Executor {
+        ExecutorService executorService;
+        boolean shutdownNeeded;
+
+        Executor(ExecutorService executorService, boolean shutdownNeeded) {
+            this.executorService = executorService;
+            this.shutdownNeeded = shutdownNeeded;
         }
     }
 
@@ -170,7 +225,7 @@ public enum BeanValidationHelper {
         }
 
         private Boolean isConstrained0(Class<?> clazz) {
-            Boolean constrained = CONSTRAINTS_ON_CLASSES.get(clazz);
+            Boolean constrained = getConstraintsMap().get(clazz);
             if (constrained == null) {
                 constrained = detectConstraints(clazz);
                 CONSTRAINTS_ON_CLASSES.put(clazz, constrained);
@@ -259,144 +314,11 @@ public enum BeanValidationHelper {
     }
 
     /**
-     * INTERNAL:
-     * Reveals whether any of the class's {@link java.lang.reflect.AccessibleObject}s are constrained by Bean Validation
-     * annotations or custom constraints.
-     *
-     * Will accept upon first detected annotation - faster.
-     */
-    private Boolean detectConstraints(Class<?> clazz) {
-        for (Field f : getDeclaredFields(clazz)) {
-            if (detectFirstClassConstraints(f)) return true;
-        }
-        for (Method m : getDeclaredMethods(clazz)) {
-            if (detectFirstClassConstraints(m) || detectParameterConstraints(m)) return true;
-        }
-        for (Constructor<?> c : getDeclaredConstructors(clazz)) {
-            if (detectFirstClassConstraints(c) || detectParameterConstraints(c)) return true;
-        }
-        return false;
-    }
-
-    private boolean detectFirstClassConstraints(AccessibleObject accessibleObject) {
-        for (Annotation a : accessibleObject.getDeclaredAnnotations()) {
-            final Class<? extends Annotation> annType = a.annotationType();
-            final String annTypeCanonicalName = annType.getCanonicalName();
-
-            if (KNOWN_CONSTRAINTS.contains(annTypeCanonicalName)) {
-                return true;
-            }
-            // Check for custom annotations.
-            for (Annotation annOnAnnType : annType.getAnnotations()) {
-                final Class<? extends Annotation> annTypeOnAnnType = annOnAnnType.annotationType();
-                if ("javax.validation.Constraint".equals(annTypeOnAnnType.getCanonicalName())) {
-                    // Avoid adding anonymous class constraints.
-                    if (annTypeCanonicalName != null) {
-                        KNOWN_CONSTRAINTS.add(annTypeCanonicalName);
-                    }
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    private boolean detectParameterConstraints(Executable c) {
-        for (Annotation[] aa : c.getParameterAnnotations())
-            for (Annotation a : aa) {
-                final Class<? extends Annotation> annType = a.annotationType();
-                final String annTypeCanonicalName = annType.getCanonicalName();
-
-                if (KNOWN_CONSTRAINTS.contains(annTypeCanonicalName)) {
-                    return true;
-                }
-                // Check for custom annotations.
-                for (Annotation annOnAnnType : annType.getAnnotations()) {
-                    final Class<? extends Annotation> annTypeOnAnnType = annOnAnnType.annotationType();
-                    if ("javax.validation.Constraint".equals(annTypeOnAnnType.getCanonicalName())) {
-                        // Avoid adding anonymous class constraints.
-                        if (annTypeCanonicalName != null) {
-                            KNOWN_CONSTRAINTS.add(annTypeCanonicalName);
-                        }
-                        return true;
-                    }
-                }
-            }
-        return false;
-    }
-
-    /**
-     * Retrieves declared fields.
-     * <p/>
-     * If security is enabled, makes {@linkplain java.security.AccessController#doPrivileged(PrivilegedAction)
-     * privileged calls}.
-     *
-     * @param clazz fields of that class will be returned
-     * @return array of declared fields
-     * @see Class#getDeclaredFields()
-     */
-    private Field[] getDeclaredFields(final Class<?> clazz) {
-        return PrivilegedAccessHelper.shouldUsePrivilegedAccess()
-                ? AccessController.doPrivileged(
-                new PrivilegedAction<Field[]>() {
-                    @Override
-                    public Field[] run() {
-                        return clazz.getDeclaredFields();
-                    }
-                })
-                : PrivilegedAccessHelper.getDeclaredFields(clazz);
-    }
-
-    /**
-     * Retrieves declared methods.
-     * <p/>
-     * If security is enabled, makes {@linkplain java.security.AccessController#doPrivileged(PrivilegedAction)
-     * privileged calls}.
-     *
-     * @param clazz methods of that class will be returned
-     * @return array of declared methods
-     * @see Class#getDeclaredMethods()
-     */
-    private Method[] getDeclaredMethods(final Class<?> clazz) {
-        return PrivilegedAccessHelper.shouldUsePrivilegedAccess()
-                ? AccessController.doPrivileged(
-                new PrivilegedAction<Method[]>() {
-                    @Override
-                    public Method[] run() {
-                        return clazz.getDeclaredMethods();
-                    }
-                })
-                : PrivilegedAccessHelper.getDeclaredMethods(clazz);
-    }
-
-    /**
-     * Retrieves declared constructors.
-     * <p/>
-     * If security is enabled, makes {@linkplain java.security.AccessController#doPrivileged(PrivilegedAction)
-     * privileged calls}.
-     *
-     * @param clazz constructors of that class will be returned
-     * @return array of declared constructors
-     * @see Class#getDeclaredConstructors()
-     */
-    private Constructor[] getDeclaredConstructors(final Class<?> clazz) {
-        return PrivilegedAccessHelper.shouldUsePrivilegedAccess()
-                ? AccessController.doPrivileged(
-                new PrivilegedAction<Constructor[]>() {
-                    @Override
-                    public Constructor[] run() {
-                        return clazz.getDeclaredConstructors();
-                    }
-                })
-                : clazz.getDeclaredConstructors();
-    }
-
-    /**
-     * Adds canonical names of bean validation constraints into set of known constraints (internally represented by
-     * map).
-     * Canonical name is the name that would be used in an import statement and uniquely identifies the class,
-     * i.e. anonymous classes receive a 'null' value as their canonical name,
-     * which allows no ambiguity and is what we are looking for.
+     * Adds canonical names of bean validation constraints into set of known
+     * constraints (internally represented by map). Canonical name is the name
+     * that would be used in an import statement and uniquely identifies the
+     * class, i.e. anonymous classes receive a 'null' value as their canonical
+     * name, which allows no ambiguity and is what we are looking for.
      */
     private static void initializeKnownConstraints() {
         KNOWN_CONSTRAINTS.add("javax.validation.Valid");
@@ -412,20 +334,19 @@ public enum BeanValidationHelper {
         KNOWN_CONSTRAINTS.add("javax.validation.constraints.AssertFalse");
         KNOWN_CONSTRAINTS.add("javax.validation.constraints.Future");
         KNOWN_CONSTRAINTS.add("javax.validation.constraints.Past");
-        KNOWN_CONSTRAINTS.add("javax.validation.constraints.List.Max");
-        KNOWN_CONSTRAINTS.add("javax.validation.constraints.List.Min");
-        KNOWN_CONSTRAINTS.add("javax.validation.constraints.List.DecimalMax");
-        KNOWN_CONSTRAINTS.add("javax.validation.constraints.List.DecimalMin");
-        KNOWN_CONSTRAINTS.add("javax.validation.constraints.List.Digits");
-        KNOWN_CONSTRAINTS.add("javax.validation.constraints.List.NotNull");
-        KNOWN_CONSTRAINTS.add("javax.validation.constraints.List.Pattern");
-        KNOWN_CONSTRAINTS.add("javax.validation.constraints.List.Size");
-        KNOWN_CONSTRAINTS.add("javax.validation.constraints.List.AssertTrue");
-        KNOWN_CONSTRAINTS.add("javax.validation.constraints.List.AssertFalse");
-        KNOWN_CONSTRAINTS.add("javax.validation.constraints.List.Future");
-        KNOWN_CONSTRAINTS.add("javax.validation.constraints.List.Past");
+        KNOWN_CONSTRAINTS.add("javax.validation.constraints.Max.List");
+        KNOWN_CONSTRAINTS.add("javax.validation.constraints.Min.List");
+        KNOWN_CONSTRAINTS.add("javax.validation.constraints.DecimalMax.List");
+        KNOWN_CONSTRAINTS.add("javax.validation.constraints.DecimalMin.List");
+        KNOWN_CONSTRAINTS.add("javax.validation.constraints.Digits.List");
+        KNOWN_CONSTRAINTS.add("javax.validation.constraints.NotNull.List");
+        KNOWN_CONSTRAINTS.add("javax.validation.constraints.Pattern.List");
+        KNOWN_CONSTRAINTS.add("javax.validation.constraints.Size.List");
+        KNOWN_CONSTRAINTS.add("javax.validation.constraints.AssertTrue.List");
+        KNOWN_CONSTRAINTS.add("javax.validation.constraints.AssertFalse.List");
+        KNOWN_CONSTRAINTS.add("javax.validation.constraints.Future.List");
+        KNOWN_CONSTRAINTS.add("javax.validation.constraints.Past.List");
     }
-
 
     /**
      * Calculate the next power of 2, greater than or equal to x.<p>

@@ -9,13 +9,10 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.beanvalidation.dynamic;
 
-import java.util.*;
-
-import javax.persistence.*;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.validation.ConstraintViolationException;
 import javax.validation.ConstraintViolation;
-
-import junit.framework.*;
 
 import junit.framework.Test;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
@@ -25,9 +22,17 @@ import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.dynamic.DynamicType;
 import org.eclipse.persistence.internal.jpa.config.metadata.ReflectiveDynamicClassLoader;
 import org.eclipse.persistence.jpa.dynamic.JPADynamicHelper;
+import org.eclipse.persistence.testing.framework.TestSuite;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.junit.Assert;
 
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * Purpose of this test is to verify that bean validation configuration for a
+ * dynamic entity is correctly applied
+ */
 public class BeanValidationDynamicEntityJunitTest extends JUnitTestCase {
 
     public BeanValidationDynamicEntityJunitTest() {
@@ -110,8 +115,4 @@ public class BeanValidationDynamicEntityJunitTest extends JUnitTestCase {
         }
         Assert.fail("ConstraintViolationException not thrown");
     }
-
-//    public String getPersistenceUnitName() {
-//        return "beanvalidation-dynamic";
-//    }
 }
