@@ -23,10 +23,12 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import javax.validation.groups.Default;
 
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.descriptors.DescriptorEventAdapter;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
+import org.eclipse.persistence.internal.jpa.metadata.beanvalidation.BeanValidationHelper;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
@@ -35,8 +37,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.lang.annotation.ElementType;
-
-import static org.eclipse.persistence.internal.jpa.metadata.beanvalidation.BeanValidationHelper.BEAN_VALIDATION_HELPER;
 
 /**
  * Responsible for performing automatic bean validation on call back events.
@@ -49,6 +49,7 @@ public class BeanValidationListener extends DescriptorEventAdapter {
     private final Class[] groupPreRemove;
     private static final Class[] groupDefault = new Class[]{Default.class};
     private final Map<ClassDescriptor, Validator> validatorMap;
+    private final BeanValidationHelper beanValidationHelper = new BeanValidationHelper();
 
     public BeanValidationListener(ValidatorFactory validatorFactory, Class[] groupPrePersit, Class[] groupPreUpdate, Class[] groupPreRemove) {
         this.validatorFactory = validatorFactory;
@@ -97,7 +98,8 @@ public class BeanValidationListener extends DescriptorEventAdapter {
 
     private void validateOnCallbackEvent(DescriptorEvent event, String callbackEventName, Class[] validationGroup) {
         Object source = event.getSource();
-        boolean shouldValidate = BEAN_VALIDATION_HELPER.isConstrained(source.getClass());
+        boolean noOptimization = "true".equalsIgnoreCase((String) event.getSession().getProperty(PersistenceUnitProperties.BEAN_VALIDATION_NO_OPTIMISATION));
+        boolean shouldValidate = noOptimization || beanValidationHelper.isConstrained(source.getClass());
         if (shouldValidate) {
             Set<ConstraintViolation<Object>> constraintViolations = getValidator(event).validate(source, validationGroup);
             if (constraintViolations.size() > 0) {

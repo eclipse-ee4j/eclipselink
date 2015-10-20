@@ -14,6 +14,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jaxb;
 
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+
 /**
  * These are properties that may be passed in to create a JAXBContext:
  * <pre>
@@ -334,7 +336,7 @@ public class JAXBContextProperties {
      * @see org.eclipse.persistence.jaxb.MarshallerProperties#BEAN_VALIDATION_NO_OPTIMISATION
      * @see org.eclipse.persistence.jaxb.UnmarshallerProperties#BEAN_VALIDATION_NO_OPTIMISATION
      */
-    public static final String BEAN_VALIDATION_NO_OPTIMISATION = "eclipselink.beanvalidation.no-optimisation";
+    public static final String BEAN_VALIDATION_NO_OPTIMISATION = PersistenceUnitProperties.BEAN_VALIDATION_NO_OPTIMISATION;
 
 
 }
