@@ -116,6 +116,7 @@
         <!-- Give this a default value if not set in a user.home or test property file -->
         <property name="extensions.depend.dir" value="../${nosql_test.2.base.dir}/extension.lib.external"/>
         <property name="junit.lib" value="${extensions.depend.dir}/junit.jar"/>
+        <property name="jacocoagent.lib" value="${extensions.depend.dir}/${jacocoagent.jar}"/>
         <echo message="nosql_test.src.dir     ='${nosql_test.src.dir}'"/>
         <echo message="nosql_test.resource.dir='${nosql_test.resource.dir}'"/>
         <echo message="nosql_test.classes.dir ='${nosql_test.classes.dir}'"/>
@@ -125,6 +126,7 @@
         <echo message="test.properties='${test.properties}'"/>
         <echo message="extensions.depend.dir ='${extensions.depend.dir}'"/>
         <echo message="junit.lib             ='${junit.lib}'"/>
+        <echo message="jacocoagent.lib       ='${jacocoagent.lib}'"/>
 
         <!-- versioning -->
         <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
@@ -243,7 +245,7 @@
             <and>
                 <isset property="test.framework.exist"/>
                 <isset property="jpatest.framework.exist"/>
-                <isset property="junit.lib.exist"/>
+                <!--isset property="junit.lib.exist"/-->
                 <isset property="mongo.lib"/>
                 <isset property="resource.lib"/>
             </and>
@@ -290,12 +292,14 @@
             <pathelement path="${mongo.lib}"/>
             <pathelement path="${resource.lib}"/>
             <pathelement path="${junit.lib}"/>
+            <pathelement path="${jacocoagent.lib}"/>
         </path>
         <path id="nosql_test.test.infrastructure.path">
             <pathelement path="${coretest.framework.lib}"/>
             <pathelement path="${coretest.lib}"/>
             <pathelement path="${jpatest.framework.lib}"/>
             <pathelement path="${junit.lib}"/>
+            <pathelement path="${jacocoagent.lib}"/>
         </path>
         <path id="nosql_test.public.dependency.path">
             <pathelement path="${persistence.lib}"/>
@@ -312,6 +316,7 @@
             <pathelement path="${nosql_test.run.dir}"/>
             <pathelement path="${jdbc.driver.jar}"/>
             <pathelement path="${nosql_test.2.core.test.dir}/resource"/>
+            <pathelement path="${jacocoagent.lib}"/>
         </path>
         <!-- Classpath used for compiling tests. -->
         <path id="nosql_test.compile.path">
@@ -427,11 +432,14 @@
         <mkdir dir="${nosql_test.run.dir}"/>
         <mkdir dir="${nosql_test.report.dir}"/>
         <copy file="${nosql_test.2.core.test.dir}/${resource.dir}/java.policy.allpermissions" todir="${nosql_test.run.dir}" overwrite="true"/>
+        <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
+        <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
         <java classname="org.eclipse.persistence.testing.framework.ui.TestingBrowserFrame"
              fork="true"
              maxmemory="512m"
              failonerror="false"
              dir="${run.dir}">
+            <jvmarg line="${additional.jvmargs}"/>
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
             <jvmarg value="-Ddb.driver=${db.driver}"/>
             <jvmarg value="-Ddb.url=${db.url}"/>
@@ -452,7 +460,10 @@
         <attribute name="dburl"/>
         <sequential>
             <echo>Running test on @{dburl}</echo>
+            <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
+            <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
             <junit printsummary="yes" failureproperty="junit.failed" fork="yes" forkmode="once" showoutput="true" maxmemory="512m" dir="${run.dir}">
+                <jvmarg line="${additional.jvmargs}"/>
                 <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
                 <jvmarg value="-Ddb.driver=${db.driver}"/>
                 <jvmarg value="-Ddb.url=@{dburl}"/>
@@ -475,9 +486,12 @@
         <attribute name="testclass"/>
         <attribute name="platform"/>
         <sequential>
+            <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
+            <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
             <junit printsummary="yes" failureproperty="junit.failed" fork="yes" forkmode="once" showoutput="true" maxmemory="512m" dir="${nosql_test.resource.dir}">
                 <sysproperty key="platformType" value="@{platform}"/>
                 <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
+                <jvmarg line="${additional.jvmargs}"/>
                 <classpath>
                     <path refid="nosql_test.run.path"/>
                 </classpath>
@@ -505,11 +519,14 @@
         <attribute name="dburl"/>
         <sequential>
             <echo>Running test on @{dburl}</echo>
+            <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
+            <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
             <java classname="org.eclipse.persistence.testing.framework.PromptTestRunner"
                  fork="true"
                  maxmemory="512m"
                  failonerror="false"
                  dir="${nosql_test.run.dir}">
+                <jvmarg line="${additional.jvmargs}"/>
                 <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
                 <jvmarg value="-Ddb.driver=${db.driver}"/>
                 <jvmarg value="-Ddb.url=@{dburl}"/>

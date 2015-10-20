@@ -78,19 +78,20 @@
             />
     <echo message="oep.nosql.lib ='${oep.nosql.lib}'"/>
 
-    <property name="eclipselink.lib" value="${moxytest.2.trunk.dir}/${eclipselink.jar}"/>
-    <property name="xjc-beanval.lib"    value="${moxytest.2.trunk.dir}/beanval/target/${xjc-beanval.jar}"/>
-    <property name="jaxb-xjc.lib"    value="${moxytest.2.common.plugins.dir}/${jaxb-xjc.jar}"/>
-    <property name="jaxb-api.lib"    value="${moxytest.2.common.plugins.dir}/${jaxb-api.jar}"/>
-    <property name="jaxb-impl.lib"   value="${moxytest.2.common.plugins.dir}/${jaxb-impl.jar}"/>
-    <property name="jaxb-core.lib"   value="${moxytest.2.common.plugins.dir}/${jaxb-core.jar}"/>
-    <property name="javax.validation.lib"   value="${moxytest.2.common.plugins.dir}/${javax.validation.jar}"/>
-    <property name="validation-impl.lib"   value="${extensions.depend.dir}/${validation-impl.jar}"/>
-    <property name="jboss-logging.lib"   value="${extensions.depend.dir}/${jboss-logging.jar}"/>
-    <property name="javax.el-api.lib"   value="${extensions.depend.dir}/${javax.el-api.jar}"/>
-    <property name="javax.el.lib"   value="${extensions.depend.dir}/${javax.el.jar}"/>
-    <property name="classmate.lib"   value="${extensions.depend.dir}/${classmate.jar}"/>
-	<property name="jmockit.lib"    value="${extensions.depend.dir}/${jmockit.jar}"/>
+    <property name="eclipselink.lib"      value="${moxytest.2.trunk.dir}/${eclipselink.jar}"/>
+    <property name="xjc-beanval.lib"      value="${moxytest.2.trunk.dir}/beanval/target/${xjc-beanval.jar}"/>
+    <property name="jaxb-xjc.lib"         value="${moxytest.2.common.plugins.dir}/${jaxb-xjc.jar}"/>
+    <property name="jaxb-api.lib"         value="${moxytest.2.common.plugins.dir}/${jaxb-api.jar}"/>
+    <property name="jaxb-impl.lib"        value="${moxytest.2.common.plugins.dir}/${jaxb-impl.jar}"/>
+    <property name="jaxb-core.lib"        value="${moxytest.2.common.plugins.dir}/${jaxb-core.jar}"/>
+    <property name="javax.validation.lib" value="${moxytest.2.common.plugins.dir}/${javax.validation.jar}"/>
+    <property name="validation-impl.lib"  value="${extensions.depend.dir}/${validation-impl.jar}"/>
+    <property name="jboss-logging.lib"    value="${extensions.depend.dir}/${jboss-logging.jar}"/>
+    <property name="javax.el-api.lib"     value="${extensions.depend.dir}/${javax.el-api.jar}"/>
+    <property name="javax.el.lib"         value="${extensions.depend.dir}/${javax.el.jar}"/>
+    <property name="classmate.lib"        value="${extensions.depend.dir}/${classmate.jar}"/>
+    <property name="jmockit.lib"          value="${extensions.depend.dir}/${jmockit.jar}"/>
+    <property name="jacocoagent.lib"      value="${extensions.depend.dir}/${jacocoagent.jar}"/>
 
     <condition property="validate.jar.exists">
         <and>
@@ -122,7 +123,7 @@
         <pathelement path="${moxytest.2.common.plugins.dir}/${jaxrs.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${asm.jar}"/>
         <pathelement path="${oep.nosql.lib}"/>
-	    <pathelement path="${jmockit.lib}"/>
+        <pathelement path="${jmockit.lib}"/>
         <pathelement path="${junit.lib}"/>
         <pathelement path="${moxytest.2.moxy.dir}/target/${classes.dir}"/>
         <pathelement path="${moxytest.2.core.dir}/target/${classes.dir}"/>
@@ -150,7 +151,8 @@
         <pathelement path="${jaxb-xjc.lib}"/>
         <pathelement path="${jaxb-impl.lib}"/>
         <pathelement path="${jaxb-core.lib}"/>
-	    <pathelement path="${jmockit.lib}"/>
+        <pathelement path="${jmockit.lib}"/>
+        <pathelement path="${jacocoagent.lib}"/>
         <pathelement path="${junit.lib}"/>
         <pathelement path="${validation-impl.lib}"/>
         <pathelement path="${jboss-logging.lib}"/>
@@ -188,7 +190,8 @@
         <pathelement path="${classes.dir}"/>
         <pathelement path="${resource.dir}"/>
         <pathelement path="${moxytest.2.core.dir}/target/${classes.dir}"/>
-	<pathelement path="${jmockit.lib}"/>
+        <pathelement path="${jmockit.lib}"/>
+        <pathelement path="${jacocoagent.lib}"/>
         <pathelement path="${junit.lib}"/>
     </path>
 
@@ -216,7 +219,8 @@
     </path>
     <path id="jaxb.run.against.jar.path">
         <path refid="xml.parser.path"/>
-	    <pathelement path="${jmockit.lib}"/>
+        <pathelement path="${jmockit.lib}"/>
+        <pathelement path="${jacocoagent.lib}"/>
         <pathelement path="${junit.lib}"/>
         <pathelement path="${jaxb-api.lib}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${json.jar}"/>
@@ -242,7 +246,7 @@
     <path id="oxm.compile.against.jar.path">
         <path refid="xml.parser.path"/>
         <pathelement path="${jaxb-api.lib}"/>
-	    <pathelement path="${jmockit.lib}"/>
+        <pathelement path="${jmockit.lib}"/>
         <pathelement path="${junit.lib}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${activation.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${resource.jar}"/>
@@ -256,7 +260,7 @@
     </path>
     <path id="oxm.run.against.jar.path">
         <path refid="xml.parser.path"/>
-	    <pathelement path="${jmockit.lib}"/>
+        <pathelement path="${jmockit.lib}"/>
         <pathelement path="${junit.lib}"/>
         <pathelement path="${jaxb-api.lib}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${json.jar}"/>
@@ -453,10 +457,13 @@
             <delete dir="${report.dir}/jaxb" includeEmptyDirs="true" failonerror="false"/>
             <mkdir dir="${report.dir}/jaxb"/>
             <mkdir dir="${resource.dir}/${tmp.dir}"/>
+            <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
+            <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
             <junit printsummary="yes" fork="true" dir="${resource.dir}" showoutput="yes" maxmemory="512m">
                 <!--<jvmarg value="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"/>-->
                 <jvmarg value="-ea"/>
-		        <jvmarg value="-javaagent:${jmockit.lib}"/>
+                <jvmarg value="-javaagent:${jmockit.lib}"/>
+                <jvmarg line="${additional.jvmargs}"/>
                 <env key="T_WORK" value="${tmp.dir}"/>
                 <sysproperty key="platformType" value="SAX"/>
                 <sysproperty key="metadataType" value="JAVA"/>
@@ -510,8 +517,11 @@
             <delete dir="${report.dir}/srg/jaxb" includeEmptyDirs="true" failonerror="false"/>
             <mkdir dir="${report.dir}/srg/jaxb"/>
             <mkdir dir="${resource.dir}/${tmp.dir}"/>
+            <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
+            <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
             <junit printsummary="yes" fork="true" dir="${resource.dir}" showoutput="yes" maxmemory="512m">
                 <jvmarg value="-ea"/>
+                <jvmarg line="${additional.jvmargs}"/>
                 <env key="T_WORK" value="${tmp.dir}"/>
                 <sysproperty key="platformType" value="SAX"/>
                 <sysproperty key="metadataType" value="JAVA"/>

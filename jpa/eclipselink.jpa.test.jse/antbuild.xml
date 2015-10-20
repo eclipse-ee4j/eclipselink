@@ -52,9 +52,9 @@
 
 		
         <mkdir dir="${reports.dir}"/>
-
+        <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
         <junit printsummary="on" haltonfailure="false" failureproperty="fail">
-
+            <jvmarg line="${additional.jvmargs}"/>
             <sysproperty key="javax.persistence.jdbc.url" value="${db.url}"/>
             <sysproperty key="javax.persistence.jdbc.driver" value="${db.driver}"/>
             <sysproperty key="javax.persistence.jdbc.user" value="${db.user}"/>

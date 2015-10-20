@@ -60,6 +60,7 @@
     <property name="dbwsbldrtest.2.plugins.dir" value="${dbwsbldrtest.build.location}/../plugins"/>
     <property name="dbwsbldrtest.2.buildsys.dir" value="${dbwsbldrtest.2.base.dir}/buildsystem"/>
     <property name="dbwsbldrtest.2.dbwsbldr.dir" value="../org.eclipse.persistence.dbws.builder"/>
+    <property name="jacocoagent.lib" value="${extensions.depend.dir}/${jacocoagent.jar}"/>
 
     <!-- OS environment variables have 'env' as a prefix -->
     <property environment="env"/>
@@ -197,6 +198,7 @@
         <!-- Set Run Path -->
         <path id="dbwsbldrtest.run.path">
             <path refid="dbwsbldrtest.compile.path"/>
+            <pathelement path="${jacocoagent.lib}"/>
             <pathelement path="${jdbc.driver.jar}"/>
             <pathelement path="./${dbwsbldrtest.jar}"/>
             <pathelement path="${activation.lib}"/>
@@ -265,6 +267,8 @@
         <mkdir dir="${classes.dir}"/>
         <DeleteDirQuietly dir="./${report.dir}"/>
         <mkdir dir="./${report.dir}"/>
+        <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
+        <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
         <junit
           printsummary="withOutAndErr"
           fork="yes"
@@ -282,6 +286,7 @@
               path="./${dbwsbldrtest.jar}"
             />
           </classpath>
+          <jvmarg line="${additional.jvmargs}"/>
           <sysproperty
             key="eclipselink.logging.level"
             value="${logging.level}"

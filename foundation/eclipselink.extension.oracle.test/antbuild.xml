@@ -109,6 +109,8 @@
         <property name="oracle.extensions.depend.dir" value="../${oracle_test.2.base.dir}/extension.oracle.lib.external"/>
         <property name="extensions.depend.dir" value="../${oracle_test.2.base.dir}/extension.lib.external"/>
         <property name="junit.lib" value="${extensions.depend.dir}/junit.jar"/>
+        <property name="jacocoagent.lib" value="${extensions.depend.dir}/${jacocoagent.jar}"/>
+
         <echo message="oracle_test.src.dir     ='${oracle_test.src.dir}'"/>
         <echo message="oracle_test.resource.dir='${oracle_test.resource.dir}'"/>
         <echo message="oracle_test.classes.dir ='${oracle_test.classes.dir}'"/>
@@ -275,6 +277,7 @@
     <target name="init_classes" if="use.classes">
         <echo message="Using EclipseLink classes directly as 'product' in compile dependency."/>
         <path id="oracle_test.product.path">
+            <pathelement path="${jacocoagent.lib}"/>
             <pathelement path="${oracle_test.2.common.plugins.dir}/${antlr}"/>
             <pathelement path="${oracle_test.2.common.plugins.dir}/${asm}"/>
             <pathelement path="${oracle_test.2.jpa.dir}/${classes.dir}"/>
@@ -296,11 +299,13 @@
             <pathelement path="${oracle.orai18n-mapping.lib}"/>
             <pathelement path="${oracle.ucp.lib}"/>
             <pathelement path="${junit.lib}"/>
+            <pathelement path="${jacocoagent.lib}"/>
         </path>
         <path id="oracle_test.test.infrastructure.path">
             <pathelement path="${oracle_test.2.core.test.dir}/${coretest.framework.jar}"/>
             <pathelement path="${oracle_test.2.core.test.dir}/${core.test.jar}"/>
             <pathelement path="${oracle_test.2.jpa.test.dir}/${jpatest.framework.jar}"/>
+            <pathelement path="${jacocoagent.lib}"/>
             <pathelement path="${junit.lib}"/>
         </path>
         <path id="oracle_test.public.dependency.path">
@@ -472,11 +477,14 @@ CREATE OR REPLACE TYPE MY_GEOMETRY AS OBJECT (id NUMBER, geom MDSYS.SDO_GEOMETRY
         <mkdir dir="${oracle_test.run.dir}"/>
         <mkdir dir="${oracle_test.report.dir}"/>
         <copy file="${oracle_test.2.core.test.dir}/${resource.dir}/java.policy.allpermissions" todir="${oracle_test.run.dir}" overwrite="true"/>
+        <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
+        <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
         <java classname="org.eclipse.persistence.testing.framework.ui.TestingBrowserFrame"
              fork="true"
              maxmemory="512m"
              failonerror="false"
              dir="${run.dir}">
+            <jvmarg line="${additional.jvmargs}"/>
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
             <jvmarg value="-Ddb.driver=${db.driver}"/>
             <jvmarg value="-Ddb.url=${db.url}"/>
@@ -497,7 +505,10 @@ CREATE OR REPLACE TYPE MY_GEOMETRY AS OBJECT (id NUMBER, geom MDSYS.SDO_GEOMETRY
         <attribute name="dburl"/>
         <sequential>
             <echo>Running test on @{dburl}</echo>
+            <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
+            <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
             <junit printsummary="yes" failureproperty="junit.failed" fork="yes" forkmode="once" showoutput="true" maxmemory="512m" dir="${run.dir}">
+                <jvmarg line="${additional.jvmargs}"/>
                 <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
                 <jvmarg value="-Ddb.driver=${db.driver}"/>
                 <jvmarg value="-Ddb.url=@{dburl}"/>
@@ -533,11 +544,14 @@ CREATE OR REPLACE TYPE MY_GEOMETRY AS OBJECT (id NUMBER, geom MDSYS.SDO_GEOMETRY
         <attribute name="dburl"/>
         <sequential>
             <echo>Running test on @{dburl}</echo>
+            <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
+            <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
             <java classname="org.eclipse.persistence.testing.framework.PromptTestRunner"
                  fork="true"
                  maxmemory="512m"
                  failonerror="false"
                  dir="${oracle_test.run.dir}">
+                <jvmarg line="${additional.jvmargs}"/>
                 <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
                 <jvmarg value="-Ddb.driver=${db.driver}"/>
                 <jvmarg value="-Ddb.url=@{dburl}"/>

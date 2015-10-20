@@ -128,6 +128,8 @@
         <!-- Give this a default value if not set in a user.home or test property file -->
         <property name="extensions.depend.dir" value="../${core_test.2.base.dir}/extension.lib.external"/>
         <property name="junit.lib"             value="${extensions.depend.dir}/junit.jar"/>
+        <property name="jacocoagent.lib" value="${extensions.depend.dir}/${jacocoagent.jar}"/>
+
         <echo message="core_test.src.dir     ='${core_test.src.dir}'"/>
         <echo message="core_test.resource.dir='${core_test.resource.dir}'"/>
         <echo message="core_test.classes.dir ='${core_test.classes.dir}'"/>
@@ -243,6 +245,7 @@
             <pathelement path="${core_test.2.common.plugins.dir}/${connector.jar}"/>
         </path>
         <path id="core_test.runtime.only.path">
+            <pathelement path="${jacocoagent.lib}"/>
             <pathelement path="${core_test.build.location}/${coretest.framework.jar}"/>
             <pathelement path="${core_test.build.location}/${core.test.jar}"/>
             <pathelement path="${core_test.run.dir}"/>
@@ -485,6 +488,8 @@
         <echo>Running test browser</echo>
         <mkdir dir="${core_test.run.dir}"/>
         <mkdir dir="${core_test.report.dir}"/>
+        <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
+        <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
         <java classname="org.eclipse.persistence.testing.framework.ui.TestingBrowserFrame"
              fork="true"
              maxmemory="512m"
@@ -506,6 +511,8 @@
         <echo>Running test on ${db.url}</echo>
         <mkdir dir="${core_test.run.dir}"/>
         <mkdir dir="${core_test.report.dir}"/>
+        <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
+        <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
         <!-- 282012: On a 64-bit JVM - The XML processing at the end of the testing requires at least 1536 -->
         <!-- Note: on a legacy XP OS with 4GB ram - the max is 1536 - use of 2048 will cause [junit] [WARN ] Unable to acquire some virtual address space - reduced from 2048 to 1908MB. -->
         <junit printsummary="yes" failureproperty="junit.failed" fork="yes" forkmode="once" showoutput="true" maxmemory="${max.heap.memory}" dir="${core_test.run.dir}" jvm="${junit.java.home}/bin/java">
@@ -552,6 +559,8 @@
         <echo>Running test on ${db.url}</echo>
         <mkdir dir="${core_test.run.dir}"/>
         <mkdir dir="${core_test.report.dir}"/>
+        <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
+        <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
         <java classname="org.eclipse.persistence.testing.framework.PromptTestRunner"
              fork="true"
              maxmemory="512m"
@@ -582,6 +591,8 @@
         <echo>Running test on ${db.url}</echo>
         <mkdir dir="${core_test.run.dir}"/>
         <mkdir dir="${core_test.report.dir}"/>
+        <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
+        <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
         <java classname="org.eclipse.persistence.testing.framework.PromptTestRunner"
              fork="true"
              maxmemory="512m"

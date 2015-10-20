@@ -73,6 +73,8 @@
     <fail unless="ant_customizations.exist" message="Cannot find custom tasks library: '${custom.tasks.lib}' directory"/>
     <taskdef  name="toLower" classname="${custom.tolower.task.class}" classpath="${custom.tasks.lib}"/>
 
+    <property name="jacocoagent.lib" value="${extensions.depend.dir}/${jacocoagent.jar}"/>
+
   <!-- OS environment variables have 'env' as a prefix -->
   <property environment="env"/>
   <presetdef
@@ -164,7 +166,6 @@
   <available file="${jdbc.driver.jar}" property="jdbc.jar.exist"/>
   <condition property="support.test">
     <and>
-      <isset property="junit.jar.exist"/>
       <isset property="jdbc.jar.exist"/>
       <isset property="db.platform"/>
         <!-- bit too lenient, but means we don't have to change for Oracle12, Oracle13 .. -->
@@ -183,6 +184,7 @@
   -->
   <!-- Set Compile Path-->
   <path id="dbws.test.oracle.compile.path">
+    <pathelement path="${jacocoagent.lib}"/>
     <pathelement path="${junit.lib}"/>
     <fileset
       dir="${dbws_test_oracle.2.common.plugins.dir}"
@@ -193,6 +195,7 @@
   <!-- Test Path-->
   <path id="dbws.test.oracle.test.path">
     <pathelement location="${jdbc.driver.jar}"/>
+    <pathelement path="${jacocoagent.lib}"/>
     <pathelement path="${junit.lib}"/>
     <fileset
       dir="${dbws_test_oracle.2.common.plugins.dir}"
@@ -245,6 +248,8 @@
     <attribute name="testsuite-name"/>
     <attribute name="package-name"/>
     <sequential>
+      <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
+      <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
       <junit
         printsummary="withOutAndErr"
         fork="yes"
@@ -279,6 +284,7 @@
           key="db.platform"
           value="${db.platform}"
         />
+        <jvmarg line="${additional.jvmargs}"/>
         <test
           name="dbws.testing.@{package-name}.@{testsuite-name}TestSuite"
         />

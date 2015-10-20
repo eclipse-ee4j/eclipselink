@@ -80,6 +80,8 @@
     <!-- testing properties checked into SVN -->
     <property file="${dbws_test.build.location}/test.properties"/>
 
+    <property name="jacocoagent.lib" value="${extensions.depend.dir}/${jacocoagent.jar}"/>
+
     <!-- versioning -->
     <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
     <tstamp>
@@ -105,6 +107,7 @@
     <!-- Set Run Path-->
     <path id="dbws_test.run.path">
         <path refid="dbws_test.compile.path"/>
+        <pathelement path="${jacocoagent.lib}"/>
         <pathelement path="${jdbc.driver.jar}"/>
         <pathelement path="./${eclipselink.dbws.test.common.jar}"/>
     </path>
@@ -208,6 +211,8 @@
     <attribute name="testsuite-name"/>
     <attribute name="package-name"/>
     <sequential>
+      <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
+      <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
       <junit
         printsummary="withOutAndErr"
         fork="yes"
@@ -249,6 +254,7 @@
           key="db.platform"
           value="${db.platform}"
         />
+        <jvmarg line="${additional.jvmargs}"/>
         <test
           name="dbws.testing.@{package-name}.@{testsuite-name}TestSuite"
         />
