@@ -29,6 +29,9 @@ public class JUnitTestCaseHelper {
     public static final String DB_USER_KEY = "db.user";
     public static final String DB_PWD_KEY = "db.pwd";
     public static final String DB_PLATFORM_KEY = "db.platform";
+    /** EISConnectionSpec class name used to connect to the NoSQL data source (used in MongoDB test setup). */
+    public static final String DB_SPEC_KEY = "db.spec";
+    /** EclipseLink logging level. */
     public static final String LOGGING_LEVEL_KEY = "eclipselink.logging.level";
 
     public static final String TEST_PROPERTIES_FILE_KEY = "test.properties";
@@ -118,54 +121,46 @@ public class JUnitTestCaseHelper {
             return getDatabaseProperties();
         }
     }
-    
-    // No index corresponds to db.user, db.pwd,...
-    // index = 2 -> db2.user, db2.pwd,... etc
-    static Map<String, String> createDatabaseProperties(String dbIndex) {
-        boolean addLoggingLevel = dbIndex == null || dbIndex.length() == 0;
-        
-        String db_driver_key = insertIndex(DB_DRIVER_KEY, dbIndex);
-        String db_url_key = insertIndex(DB_URL_KEY, dbIndex);
-        String db_user_key = insertIndex(DB_USER_KEY, dbIndex);
-        String db_pwd_key = insertIndex(DB_PWD_KEY, dbIndex);
-        String db_platform_key = insertIndex(DB_PLATFORM_KEY, dbIndex);
-        
-        String dbDriver = System.getProperty(db_driver_key);
-        String dbUrl = System.getProperty(db_url_key);
-        String dbUser = System.getProperty(db_user_key);
-        String dbPwd = System.getProperty(db_pwd_key);
-        String platform = System.getProperty(db_platform_key);
-        String logLevel = System.getProperty(LOGGING_LEVEL_KEY);
 
-        //if not all of these properties available from System, read unavailable ones from test.properties file
-        if ((dbDriver == null) || (dbUrl == null) || (dbUser == null) || (dbPwd == null) || (platform == null) || (logLevel == null))
-        {
-            if (propertiesFromFile == null) {                
-                createPropertiesFromFile();
-            }
-            if (dbDriver == null) {
-                dbDriver = (String) propertiesFromFile.get(db_driver_key);
-            }
-            if (dbUrl == null) {
-                dbUrl = (String) propertiesFromFile.get(db_url_key);
-            }
-            if (dbUser == null) {
-                dbUser = (String) propertiesFromFile.get(db_user_key);
-            }
-            if (dbPwd == null) {
-                dbPwd = (String) propertiesFromFile.get(db_pwd_key);
-            }
-            if (platform == null) {
-                platform = (String) propertiesFromFile.get(db_platform_key);
-            }
-            if (addLoggingLevel) {
-                if (logLevel == null) {
-                    logLevel = (String) propertiesFromFile.get(PersistenceUnitProperties.LOGGING_LEVEL);
-                }
-            }
+    /**
+     * Get the property value from the {@link System} or from the properties file as a fall back option.
+     * @param key The name of the property.
+     * @return The {@link String} value of the property.
+     */
+    public static String getProperty(final String key) {
+        final String property = System.getProperty(key);
+        return property != null ? property : JUnitTestCaseHelper.getPropertyFromFile(key);
+    }
+
+    /**
+     * Get the property value from the properties file.
+     * @param key The name of the property.
+     * @return The {@link String} value of the property.
+     */
+    private static String getPropertyFromFile(final String key) {
+        if (propertiesFromFile == null) {
+            createPropertiesFromFile();
         }
+        return (String) propertiesFromFile.get(key);
+    }
 
-        Map properties = new HashMap();
+    static Map<String, String> createDatabaseProperties(final String dbIndex) {
+        final boolean addLoggingLevel = dbIndex == null || dbIndex.length() == 0;
+
+        final String db_driver_key = insertIndex(DB_DRIVER_KEY, dbIndex);
+        final String db_url_key = insertIndex(DB_URL_KEY, dbIndex);
+        final String db_user_key = insertIndex(DB_USER_KEY, dbIndex);
+        final String db_pwd_key = insertIndex(DB_PWD_KEY, dbIndex);
+        final String db_platform_key = insertIndex(DB_PLATFORM_KEY, dbIndex);
+
+        final String dbDriver = getProperty(db_driver_key);
+        final String dbUrl = getProperty(db_url_key);
+        final String dbUser = getProperty(db_user_key);
+        final String dbPwd = getProperty(db_pwd_key);
+        final String platform = getProperty(db_platform_key);
+        final String logLevel = getProperty(LOGGING_LEVEL_KEY);
+
+        final Map<String, String> properties = new HashMap<>();
 
         if (dbDriver != null) {
             properties.put(PersistenceUnitProperties.JDBC_DRIVER, dbDriver);
@@ -189,10 +184,10 @@ public class JUnitTestCaseHelper {
         }
         return properties;
     }
-    
+
     public static Map createCompositeProperties(String[] sessions) {
         Map properties = new HashMap();
-        
+
         Map compositeMap = new HashMap();
         properties.put(PersistenceUnitProperties.COMPOSITE_UNIT_PROPERTIES, compositeMap);
         Map defaultProperties = getDatabaseProperties();
@@ -263,16 +258,13 @@ public class JUnitTestCaseHelper {
             }
         }
     }
-    
+
     public static boolean shouldUseSingleDb() {
         if (shouldUseSingleDb == null) {
             shouldUseSingleDb = Boolean.TRUE;
             String property = System.getProperty(SINGLE_DB);
             if (property == null) {
-                if (propertiesFromFile == null) {                
-                    createPropertiesFromFile();
-                }
-                property = (String) propertiesFromFile.get(SINGLE_DB);
+                property = getPropertyFromFile(SINGLE_DB);
             }
             if (property != null) {
                 if (property.toUpperCase().equals("FALSE")) {
@@ -282,5 +274,5 @@ public class JUnitTestCaseHelper {
         }
         return shouldUseSingleDb;
     }
-    
+
 }
