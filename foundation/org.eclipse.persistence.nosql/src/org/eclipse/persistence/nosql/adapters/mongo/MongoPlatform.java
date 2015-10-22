@@ -400,17 +400,31 @@ public class MongoPlatform extends EISPlatform {
                 nested.put("$regex", pattern);
                 row.put(left, nested);
             } else if (function.getOperator().getSelector() == ExpressionOperator.Not) {
-                DatabaseRecord nested = new DatabaseRecord();
-                appendExpressionToQueryRow((Expression)function.getChildren().get(0), nested, query);
-                row.put("$not", nested);
+                // Detect situation 'not(a = b)' and change it to '(a != b)'
+                Expression expr = (Expression)function.getChildren().get(0);
+                if (expr.isRelationExpression()) {
+                    RelationExpression relation = (RelationExpression)expr;
+                    Object left = extractValueFromExpression(relation.getFirstChild(), query);
+                    Object right = extractValueFromExpression(relation.getSecondChild(), query);
+
+                    DatabaseRecord nested = new DatabaseRecord();
+                    if (expr.getOperator().getSelector() == ExpressionOperator.Equal) {
+                        nested.put("$ne", right);
+                    } else {
+                        nested.put("not", right);
+                    }
+                    row.put(left, nested);
+                } else {
+                    throw new EISException("Query too complex for Mongo translation, function [" + expression + "] not supported in query: " + query);
+                }
             } else {
-                throw new EISException("Query too complex for Mongo translation, function [" + expression + "] not supported in query: " + query);            
+                throw new EISException("Query too complex for Mongo translation, function [" + expression + "] not supported in query: " + query);
             }
         } else {
-            throw new EISException("Query too complex for Mongo translation, expression [" + expression + "] not supported in query: " + query);            
+            throw new EISException("Query too complex for Mongo translation, expression [" + expression + "] not supported in query: " + query);
         }
     }
-    
+
     /**
      * Append the order by expression to the sort row.
      */

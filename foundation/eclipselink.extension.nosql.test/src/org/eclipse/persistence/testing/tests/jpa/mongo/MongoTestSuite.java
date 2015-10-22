@@ -702,6 +702,13 @@ public class MongoTestSuite extends JUnitTestCase {
             if (results.size() != 1) {
                 fail("Expected 1 result: " + results);
             }
+            // not + operator
+            query = em.createQuery("Select o from Order o where o.id = :nextId or not(o.id <> :nextId)");
+            query.setParameter("nextId", order.id);
+            results = query.getResultList();
+            if (results.size() != 1) {
+                fail("Expected 10 result: " + results);
+            }
             // > <
             query = em.createQuery("Select o from Order o where o.id > :nextId and o.id < :nextId");
             query.setParameter("nextId", order.id);
