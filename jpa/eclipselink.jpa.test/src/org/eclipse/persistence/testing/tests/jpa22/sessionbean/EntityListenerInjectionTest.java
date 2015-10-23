@@ -13,11 +13,11 @@ import junit.framework.TestSuite;
 
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa22.entitylistener.EntityListenerTableCreator;
-import org.eclipse.persistence.testing.models.jpa22.sessionbean.EntityListenerTest;
+import org.eclipse.persistence.testing.models.jpa22.sessionbean.InjectionTest;
 
 public class EntityListenerInjectionTest extends JUnitTestCase {
 
-    protected EntityListenerTest entityListenerTest;
+    protected InjectionTest entityListenerTest;
 
     public EntityListenerInjectionTest(){
         super();
@@ -35,7 +35,7 @@ public class EntityListenerInjectionTest extends JUnitTestCase {
     private static final String[] LOOKUP_STRINGS = new String[] {
 
     // WLS
-    "EntityListenerTest#org.eclipse.persistence.testing.models.jpa22.sessionbean.EntityListenerTest",
+    "java:global/eclipselink-jpa22-sessionbean-model/eclipselink-jpa22-sessionbean-model_ejb/EntityListenerTestBean",
     // WAS
     "org.eclipse.persistence.testing.models.jpa22.sessionbean.EntityListenerTest",
     // jboss
@@ -43,7 +43,7 @@ public class EntityListenerInjectionTest extends JUnitTestCase {
     // NetWeaver
     "JavaEE/servertest/REMOTE/EntityListenerTestBean/org.eclipse.persistence.testing.models.jpa22.sessionbean.EntityListenerTest" };
 
-    public EntityListenerTest getEntityListenerTest() throws Exception {
+    public InjectionTest getEntityListenerTest() throws Exception {
         if (entityListenerTest != null) {
             return entityListenerTest;
         }
@@ -57,18 +57,18 @@ public class EntityListenerInjectionTest extends JUnitTestCase {
 
         for (String candidate : LOOKUP_STRINGS) {
             try {
-                entityListenerTest = (EntityListenerTest) PortableRemoteObject.narrow(context.lookup(candidate), EntityListenerTest.class);
+                entityListenerTest = (InjectionTest) PortableRemoteObject.narrow(context.lookup(candidate), InjectionTest.class);
                 return entityListenerTest;
             } catch (NamingException namingException) {
                 // OK, try next
             }
         }
 
-        throw new RuntimeException("EmployeeService bean could not be looked up under any of the following names:\n" + Arrays.asList(LOOKUP_STRINGS));
+        throw new RuntimeException("EntityListenerTest bean could not be looked up under any of the following names:\n" + Arrays.asList(LOOKUP_STRINGS));
     }
 
     public static Test suite() {
-        TestSuite suite = new TestSuite("SessionBeanTests");
+        TestSuite suite = new TestSuite("EntityListenerInjectionTests");
         suite.addTest(new EntityListenerInjectionTest("testInjection", true));
         suite.addTest(new EntityListenerInjectionTest("testPreDestroy", true));
 
@@ -88,7 +88,7 @@ public class EntityListenerInjectionTest extends JUnitTestCase {
 
     public void testPreDestroy(){
         try{
-            assertTrue("Predestroyo was not triggered.", getEntityListenerTest().triggerPreDestroy());
+            assertTrue("Predestroy was not triggered.", getEntityListenerTest().triggerPreDestroy());
         } catch (Exception e){
             e.printStackTrace();
             fail("Exception thrown testing injection clean up " + e);

@@ -29,7 +29,7 @@ import org.eclipse.persistence.exceptions.ValidationException;
  * @author Guy Pelletier
  * @since EclipseLink 1.0
  */
-public class EntityClassListener extends EntityListener {
+public class EntityClassListener<T> extends EntityListener<T> {
     /**
      * INTERNAL:
      */
@@ -72,7 +72,7 @@ public class EntityClassListener extends EntityListener {
             for (int i = eventMethods.size() - 1; i >= 0; i--) {
                 Method method = eventMethods.get(i);
                 Object[] objectList = {};
-                invokeMethod(method, descriptorEvent.getObject(), objectList, descriptorEvent);
+                invokeMethod(method, descriptorEvent.getObject(), objectList);
             }
         }
     }

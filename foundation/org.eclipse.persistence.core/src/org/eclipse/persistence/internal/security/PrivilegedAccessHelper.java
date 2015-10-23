@@ -477,7 +477,7 @@ public class PrivilegedAccessHelper {
      * Get a new instance of a class using the default constructor.  Wrap the call in a privileged block
      * if necessary.
      */
-    public static Object newInstanceFromClass(final Class clazz) throws IllegalAccessException, InstantiationException {
+    public static <T> T newInstanceFromClass(final Class<T> clazz) throws IllegalAccessException, InstantiationException {
         return clazz.newInstance();
     }
 

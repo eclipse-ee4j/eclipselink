@@ -14,16 +14,16 @@ package org.eclipse.persistence.internal.security;
 
 import java.security.PrivilegedExceptionAction;
 
-public class PrivilegedNewInstanceFromClass implements PrivilegedExceptionAction{
+public class PrivilegedNewInstanceFromClass<T> implements PrivilegedExceptionAction<T> {
 
-    private final Class clazz;
+    private final Class<T> clazz;
 
-    public PrivilegedNewInstanceFromClass(Class clazz) {
+    public PrivilegedNewInstanceFromClass(Class<T> clazz) {
         this.clazz = clazz;
     }
 
     @Override
-    public Object run() throws IllegalAccessException, InstantiationException {
+    public T run() throws IllegalAccessException, InstantiationException {
         return PrivilegedAccessHelper.newInstanceFromClass(clazz);
     }
 

@@ -218,6 +218,7 @@ public class ConverterAccessor extends ORMetadata {
      */
     public void process(DatabaseMapping mapping, boolean isForMapKey, String attributeName, boolean disableConversion) {
         ConverterClass converterClass = new ConverterClass(getJavaClassName(), isForMapKey, fieldClassification.getName(), disableConversion);
+        converterClass.setSession(getProject().getSession());
 
         if (mapping.isDirectMapMapping() && isForMapKey) {
             ((DirectMapMapping) mapping).setKeyConverter(converterClass);

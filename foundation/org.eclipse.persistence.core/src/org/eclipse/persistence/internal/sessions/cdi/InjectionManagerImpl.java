@@ -32,53 +32,49 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
 
 /**
- * Manages calls to CDI to inject into EntityListeners
+ * Manages calls to CDI to inject into managed beans
  * This class will be created reflectively to avoid dependencies on CDI classes in environments
  * that do not support CDI
  */
-public class EntityListenerInjectionManagerImpl implements EntityListenerInjectionManager {
-
+public class InjectionManagerImpl<T> implements InjectionManager<T> {
     protected BeanManager beanManager = null;
-    protected CreationalContext<Object> creationalContext = null;
-    protected Map<Object, InjectionTarget<Object>> injectionTargets = null;
+    protected CreationalContext<T> creationalContext = null;
+    protected final Map<T, InjectionTarget<T>> injectionTargets = new HashMap<>();
 
-
-    public EntityListenerInjectionManagerImpl(Object beanManagerInstance) throws NamingException {
+    public InjectionManagerImpl(Object beanManagerInstance) throws NamingException {
         if (beanManagerInstance == null) {
             Context context = new InitialContext();
             beanManagerInstance = context.lookup("java:comp/BeanManager");
         }
         beanManager = (BeanManager) beanManagerInstance;
-
-        injectionTargets = new HashMap<Object, InjectionTarget<Object>>();
     }
 
     /**
-     * Creates an instance of {@link javax.persistence.Entity} listener.
-     * Calls CDI API to inject into listener.
-     * @param entityListenerClass Listener class to be instantiated.
-     * @return New instance of listener class with injected content.
+     * Creates an instance of the CDI managed bean.
+     * Calls CDI API to inject into the bean.
+     * @param managedBeanClass bean class to be instantiated.
+     * @return New instance of bean class with injected content.
      */
-    public Object createEntityListenerAndInjectDependancies(final Class entityListenerClass) throws NamingException{
-        final AnnotatedType<Object> aType = beanManager.createAnnotatedType(entityListenerClass);
-        final InjectionTarget<Object> injectionTarget = beanManager.<Object>createInjectionTarget(aType);
-        creationalContext = beanManager.<Object>createCreationalContext(null);
-        final Object entityListener = injectionTarget.produce(creationalContext);
+    public T createManagedBeanAndInjectDependencies(final Class<T> managedBeanClass) throws NamingException{
+        final AnnotatedType<T> aType = beanManager.createAnnotatedType(managedBeanClass);
+        final InjectionTarget<T> injectionTarget = beanManager.createInjectionTarget(aType);
+        creationalContext = beanManager.createCreationalContext(null);
+        final T beanInstance = injectionTarget.produce(creationalContext);
         synchronized (injectionTargets) {
-            injectionTargets.put(entityListener, injectionTarget);
+            injectionTargets.put(beanInstance, injectionTarget);
         }
-        injectionTarget.inject(entityListener, creationalContext);
-        injectionTarget.postConstruct(entityListener);
-        return entityListener;
+        injectionTarget.inject(beanInstance, creationalContext);
+        injectionTarget.postConstruct(beanInstance);
+        return beanInstance;
     }
 
     public void cleanUp(AbstractSession session){
-        Set<Object> keys = new HashSet<Object>();
+        Set<T> keys = new HashSet<>();
         synchronized(injectionTargets){
             keys.addAll(injectionTargets.keySet());
-            for (Object listener: keys){
+            for (T listener: keys){
                 try{
-                    InjectionTarget<Object> target = injectionTargets.get(listener);
+                    InjectionTarget<T> target = injectionTargets.get(listener);
                     target.preDestroy(listener);
                     target.dispose(listener);
                     injectionTargets.remove(listener);

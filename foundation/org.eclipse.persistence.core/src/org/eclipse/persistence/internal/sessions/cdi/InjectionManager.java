@@ -21,11 +21,11 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  * Any references to CDI specific classes should be reserved for implementers to allow this
  * interface to load in an environment that does not include CDI.
  */
-public interface EntityListenerInjectionManager {
+public interface InjectionManager<T> {
 
-    public static String DEFAULT_CDI_INJECTION_MANAGER = "org.eclipse.persistence.internal.sessions.cdi.EntityListenerInjectionManagerImpl";
+    String DEFAULT_CDI_INJECTION_MANAGER = "org.eclipse.persistence.internal.sessions.cdi.InjectionManagerImpl";
 
-    public Object createEntityListenerAndInjectDependancies(Class entityListenerClass) throws NamingException;
+    T createManagedBeanAndInjectDependencies(Class<T> managedBeanClass) throws NamingException;
 
-    public void cleanUp(AbstractSession session);
+    void cleanUp(AbstractSession session);
 }

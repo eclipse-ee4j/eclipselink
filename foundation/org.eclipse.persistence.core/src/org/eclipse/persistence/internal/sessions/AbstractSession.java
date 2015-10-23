@@ -89,8 +89,8 @@ import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
 import org.eclipse.persistence.internal.security.PrivilegedInvokeConstructor;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.sequencing.Sequencing;
-import org.eclipse.persistence.internal.sessions.cdi.DisabledEntityListenerInjectionManager;
-import org.eclipse.persistence.internal.sessions.cdi.EntityListenerInjectionManager;
+import org.eclipse.persistence.internal.sessions.cdi.DisabledInjectionManager;
+import org.eclipse.persistence.internal.sessions.cdi.InjectionManager;
 import org.eclipse.persistence.logging.DefaultSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.logging.SessionLogEntry;
@@ -329,7 +329,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     transient protected Serializer serializer;
 
     /** Allow CDI injection of entity listeners **/
-    transient protected EntityListenerInjectionManager entityListenerInjectionManager;
+    transient protected InjectionManager injectionManager;
 
     /**
      * Indicates whether ObjectLevelReadQuery should by default use ResultSet Access optimization.
@@ -915,7 +915,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     /**
      * Check to see if the descriptor of a superclass can be used to describe this class
      *
-     * @param Class
+     * @param theClass
      * @return ClassDescriptor
      */
     protected ClassDescriptor checkHierarchyForDescriptor(Class theClass){
@@ -925,9 +925,9 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     /**
      * allow the entity listener injection manager to clean itself up.
      */
-    public void cleanUpEntityListenerInjectionManager(){
-        if (entityListenerInjectionManager != null){
-            entityListenerInjectionManager.cleanUp(this);
+    public void cleanUpInjectionManager(){
+        if (injectionManager != null){
+            injectionManager.cleanUp(this);
         }
     }
 
@@ -1204,21 +1204,21 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         return new ProtectedValueHolder(attributeValue, mapping, this);
     }
 
-    public EntityListenerInjectionManager createEntityListenerInjectionManager(Object beanManager){
+    public <T> InjectionManager<T> createInjectionManager(Object beanManager){
         try{
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    Class elim = AccessController.doPrivileged(new PrivilegedClassForName(EntityListenerInjectionManager.DEFAULT_CDI_INJECTION_MANAGER, true, getLoader()));
+                    Class elim = AccessController.doPrivileged(new PrivilegedClassForName(InjectionManager.DEFAULT_CDI_INJECTION_MANAGER, true, getLoader()));
                     Constructor constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(elim, new Class[] {String.class}, false));
-                    return (EntityListenerInjectionManager) AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, new Object[] {beanManager}));
+                    return (InjectionManager<T>) AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, new Object[] {beanManager}));
             } else {
-                Class elim = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(EntityListenerInjectionManager.DEFAULT_CDI_INJECTION_MANAGER, true, getLoader());
+                Class elim = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(InjectionManager.DEFAULT_CDI_INJECTION_MANAGER, true, getLoader());
                 Constructor constructor = PrivilegedAccessHelper.getConstructorFor(elim, new Class[] {Object.class}, false);
-                return (EntityListenerInjectionManager) PrivilegedAccessHelper.invokeConstructor(constructor, new Object[] {beanManager});
+                return (InjectionManager<T>) PrivilegedAccessHelper.invokeConstructor(constructor, new Object[] {beanManager});
             }
         } catch (Exception e){
             logThrowable(SessionLog.FINEST, SessionLog.JPA, e);
         }
-        return new DisabledEntityListenerInjectionManager();
+        return new DisabledInjectionManager<>();
     }
 
     /**
@@ -2329,11 +2329,12 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         return queryTimeoutUnitDefault;
     }
 
-    public EntityListenerInjectionManager getEntityListenerInjectionManager() {
-        if (entityListenerInjectionManager == null){
-            entityListenerInjectionManager = createEntityListenerInjectionManager(this.getProperty(PersistenceUnitProperties.CDI_BEANMANAGER));
+    @SuppressWarnings("unchecked")
+    public <T> InjectionManager<T> getInjectionManager() {
+        if (injectionManager == null){
+            injectionManager = createInjectionManager(this.getProperty(PersistenceUnitProperties.CDI_BEANMANAGER));
         }
-        return entityListenerInjectionManager;
+        return injectionManager;
     }
 
     /**
@@ -2384,7 +2385,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * INTERNAL:
      * Returns the set of read-only classes that gets assigned to each newly created UnitOfWork.
      *
-     * @see org.eclipse.persistence.sessions.Project#setDefaultReadOnlyClasses(Vector)
+     * @see org.eclipse.persistence.sessions.Project#setDefaultReadOnlyClasses(Collection)
      */
     public Vector getDefaultReadOnlyClasses() {
         //Bug#3911318  All brokered sessions share the same DefaultReadOnlyClasses.
@@ -2521,7 +2522,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * PUBLIC:
      * Return the descriptor for the alias.
      * @param alias The descriptor alias.
-     * @param The descriptor for the alias or {@code null} if no descriptor was found.
+     * @return The descriptor for the alias or {@code null} if no descriptor was found.
      */
     @Override
     public ClassDescriptor getDescriptorForAlias(final String alias) {
@@ -2666,7 +2667,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * If not set, this reference defaults to a writer on System.out.
      * To enable logging, logMessages must be turned on.
      *
-     * @see #logMessages()
+     * @see #setLoggingOff(boolean) 
      */
     @Override
     public Writer getLog() {
@@ -3081,8 +3082,8 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * This method should be used if the Session has multiple queries with the same name but
      * different arguments.
      *
-     * @parameter shouldSearchParent indicates whether parent should be searched if query not found.
-     * @see #getQuery(String, arguments)
+     * @param shouldSearchParent indicates whether parent should be searched if query not found.
+     * @see #getQuery(String, List)
      */
     public DatabaseQuery getQuery(String name, Vector arguments, boolean shouldSearchParent) {
         Vector queries = (Vector)getQueries().get(name);
@@ -3165,7 +3166,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * If not set, this will default to a session log on a writer on System.out.
      * To enable logging, logMessages must be turned on.
      *
-     * @see #logMessages()
+     * @see #setLoggingOff(boolean) 
      */
     @Override
     public SessionLog getSessionLog() {
@@ -3820,7 +3821,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * The object will be pessimisticly locked on the database for the duration of the transaction.
      * If the object is already locked this method will wait until the lock is released.
      * A no wait option is available through setting the lock mode.
-     * @see #refreshAndLockObject(Object, lockMode)
+     * @see #refreshAndLockObject(Object, short)
      */
     public Object refreshAndLockObject(Object object) throws DatabaseException {
         return refreshAndLockObject(object, ObjectBuildingQuery.LOCK);
@@ -4001,9 +4002,9 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         this.commitManager = commitManager;
     }
 
-    public void setEntityListenerInjectionManager(
-            EntityListenerInjectionManager entityListenerInjectionManager) {
-        this.entityListenerInjectionManager = entityListenerInjectionManager;
+    public void setInjectionManager(
+            InjectionManager injectionManager) {
+        this.injectionManager = injectionManager;
     }
 
     /**
@@ -4065,7 +4066,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * If not set, this reference defaults to a writer on System.out.
      * To enable logging logMessages() is used.
      *
-     * @see #logMessages()
+     * @see #setLoggingOff(boolean) 
      */
     @Override
     public void setLog(Writer log) {

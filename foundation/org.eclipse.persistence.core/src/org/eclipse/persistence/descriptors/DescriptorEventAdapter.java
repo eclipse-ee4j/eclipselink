@@ -29,7 +29,7 @@ public class DescriptorEventAdapter implements DescriptorEventListener {
 
     public void aboutToDelete(DescriptorEvent event) {}
 
-    public boolean isOverriddenEvent(DescriptorEvent event, Vector eventManagers) {
+    public boolean isOverriddenEvent(DescriptorEvent event, Vector<DescriptorEventManager> eventManagers) {
         return false;
     }
 

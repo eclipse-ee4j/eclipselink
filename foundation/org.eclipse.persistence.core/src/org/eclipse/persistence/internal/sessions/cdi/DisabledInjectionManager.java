@@ -8,16 +8,23 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     tware - initial contribution for Bug 366748 - JPA 2.1 Injectable Entity Listeners
- ******************************************************************************/
-package org.eclipse.persistence.testing.models.jpa22.sessionbean;
+ *     tware - initial implementation
+ */
+package org.eclipse.persistence.internal.sessions.cdi;
 
-import javax.ejb.Remote;
+import javax.naming.NamingException;
 
-@Remote
-public interface EntityListenerTest {
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 
-    public boolean triggerInjection();
+public class DisabledInjectionManager<T> implements InjectionManager<T> {
 
-    public boolean triggerPreDestroy();
+    @Override
+    public T createManagedBeanAndInjectDependencies(Class<T> managedBeanClass) throws NamingException {
+        return null;
+    }
+
+    @Override
+    public void cleanUp(AbstractSession session) {
+    }
+
 }

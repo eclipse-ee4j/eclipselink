@@ -12,11 +12,8 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
-import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa21.entitylistener.EntityListenerTableCreator;
 import org.eclipse.persistence.testing.models.jpa21.sessionbean.EntityListenerTest;
-
-import static junit.framework.Assert.assertTrue;
 
 public class EntityListenerInjectionTest extends JUnitTestCase {
 
@@ -38,7 +35,7 @@ public class EntityListenerInjectionTest extends JUnitTestCase {
     private static final String[] LOOKUP_STRINGS = new String[] {
 
     // WLS
-    "EntityListenerTest#org.eclipse.persistence.testing.models.jpa21.sessionbean.EntityListenerTest",
+    "java:global/eclipselink-jpa21-sessionbean-model/eclipselink-jpa21-sessionbean-model_ejb/EntityListenerTestBean",
     // WAS
     "org.eclipse.persistence.testing.models.jpa21.sessionbean.EntityListenerTest",
     // jboss
@@ -67,7 +64,7 @@ public class EntityListenerInjectionTest extends JUnitTestCase {
             }
         }
 
-        throw new RuntimeException("EmployeeService bean could not be looked up under any of the following names:\n" + Arrays.asList(LOOKUP_STRINGS));
+        throw new RuntimeException("EntityListenerTest bean could not be looked up under any of the following names:\n" + Arrays.asList(LOOKUP_STRINGS));
     }
 
     public static Test suite() {
@@ -91,7 +88,7 @@ public class EntityListenerInjectionTest extends JUnitTestCase {
 
     public void testPreDestroy(){
         try{
-            assertTrue("Predestroyo was not triggered.", getEntityListenerTest().triggerPreDestroy());
+            assertTrue("Predestroy was not triggered.", getEntityListenerTest().triggerPreDestroy());
         } catch (Exception e){
             e.printStackTrace();
             fail("Exception thrown testing injection clean up " + e);

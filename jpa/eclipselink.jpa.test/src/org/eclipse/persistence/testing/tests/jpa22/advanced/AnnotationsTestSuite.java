@@ -62,9 +62,8 @@ import static org.eclipse.persistence.testing.tests.jpa22.advanced.AnnotationsTe
 @PersistenceContext(name = "MulitPU-1")
 @PersistenceContext(name = "MulitPU-2")
 @PersistenceContext(name = "MulitPU-3")
-@PersistenceUnit(name = "MulitPU-1")
-@PersistenceUnit(name = "MulitPU-2")
-@PersistenceUnit(name = "MulitPU-3")
+@PersistenceUnit(name = "MulitPU-4")
+@PersistenceUnit(name = "MulitPU-5")
 public class AnnotationsTestSuite extends JUnitTestCase {
 
     public AnnotationsTestSuite() {
@@ -150,9 +149,9 @@ public class AnnotationsTestSuite extends JUnitTestCase {
         verifyMetadata(AnnotationsTestSuite.class, "javax.persistence.PersistenceContexts", 3);
 
         // @PersistenceUnit
-        verifyContainerAnnotation(AnnotationsTestSuite.class, PersistenceUnits.class, 3);
-        verifyAnnotation(AnnotationsTestSuite.class, PersistenceUnit.class, 3);
-        verifyMetadata(AnnotationsTestSuite.class, "javax.persistence.PersistenceUnits", 3);
+        verifyContainerAnnotation(AnnotationsTestSuite.class, PersistenceUnits.class, 2);
+        verifyAnnotation(AnnotationsTestSuite.class, PersistenceUnit.class, 2);
+        verifyMetadata(AnnotationsTestSuite.class, "javax.persistence.PersistenceUnits", 2);
 
         // @PrimaryKeyJoinColumn
         verifyContainerAnnotation(PhoneNumber.class, PROPERTY, "getPhoneNumberDetails", PrimaryKeyJoinColumns.class, 2);

@@ -55,7 +55,7 @@ public interface DescriptorEventListener extends EventListener {
      * Implementers should define this method if they need or want to restrict
      * the calling of inherited events.
      */
-     public boolean isOverriddenEvent(DescriptorEvent event, Vector eventManagers);
+     public boolean isOverriddenEvent(DescriptorEvent event, Vector<DescriptorEventManager> eventManagers);
 
     /**
      * This event is raised after an object is built from its row on a read operation.

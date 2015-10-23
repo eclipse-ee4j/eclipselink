@@ -16,8 +16,8 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
-import javax.persistence.spi.PersistenceProvider;
 
+import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
 import org.eclipse.persistence.testing.models.jpa21.entitylistener.EntityListener;
 import org.eclipse.persistence.testing.models.jpa21.entitylistener.EntityListenerHolder;
 
@@ -26,7 +26,6 @@ public class EntityListenerTestBean implements EntityListenerTest {
 
     @PersistenceUnit(name="jpa21-sessionbean")
     private EntityManagerFactory emf;
-
 
     public boolean triggerInjection(){
         EntityListener.INJECTED_RETURN_VALUE = false;
@@ -39,7 +38,7 @@ public class EntityListenerTestBean implements EntityListenerTest {
 
     public boolean triggerPreDestroy(){
         EntityListener.PRE_DESTROY_CALLS = 0;
-        emf.close();
+        emf.unwrap(JpaEntityManagerFactory.class).unwrap().close();
         return EntityListener.PRE_DESTROY_CALLS == 1;
     }
 }

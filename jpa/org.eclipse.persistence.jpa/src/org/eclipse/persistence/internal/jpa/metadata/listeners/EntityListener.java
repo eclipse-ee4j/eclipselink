@@ -48,7 +48,7 @@ import org.eclipse.persistence.logging.SessionLog;
  * @author Guy Pelletier
  * @since Eclipselink 1.0
  */
-public class EntityListener extends DescriptorEventAdapter {
+public class EntityListener<T> extends DescriptorEventAdapter {
     public final static String POST_BUILD = "postBuild";
     public final static String POST_CLONE = "postClone";
     public final static String POST_DELETE = "postDelete";
@@ -59,8 +59,8 @@ public class EntityListener extends DescriptorEventAdapter {
     public final static String PRE_REMOVE = "preRemove";
     public final static String PRE_UPDATE_WITH_CHANGES = "preUpdateWithChanges";
 
-    private Object m_listener;
-    private Class m_listenerClass;
+    private T m_listener;
+    private Class<T> m_listenerClass;
     private Class m_entityClass;
     private Hashtable<String, List<Method>> m_methods;
     private Hashtable<String, Hashtable<Integer, Boolean>> m_overriddenEvents;
@@ -69,16 +69,16 @@ public class EntityListener extends DescriptorEventAdapter {
 
     static {
         // For quick look up of equivalent event strings from event codes.
-        Map<Integer, String> mappings = new HashMap<Integer, String>(9);
-        mappings.put(Integer.valueOf(DescriptorEventManager.PostBuildEvent), POST_BUILD);
-        mappings.put(Integer.valueOf(DescriptorEventManager.PostCloneEvent), POST_CLONE);
-        mappings.put(Integer.valueOf(DescriptorEventManager.PostDeleteEvent), POST_DELETE);
-        mappings.put(Integer.valueOf(DescriptorEventManager.PostInsertEvent), POST_INSERT);
-        mappings.put(Integer.valueOf(DescriptorEventManager.PostRefreshEvent), POST_REFRESH);
-        mappings.put(Integer.valueOf(DescriptorEventManager.PostUpdateEvent), POST_UPDATE);
-        mappings.put(Integer.valueOf(DescriptorEventManager.PrePersistEvent), PRE_PERSIST);
-        mappings.put(Integer.valueOf(DescriptorEventManager.PreRemoveEvent), PRE_REMOVE);
-        mappings.put(Integer.valueOf(DescriptorEventManager.PreUpdateWithChangesEvent), PRE_UPDATE_WITH_CHANGES);
+        Map<Integer, String> mappings = new HashMap<>(9);
+        mappings.put(DescriptorEventManager.PostBuildEvent, POST_BUILD);
+        mappings.put(DescriptorEventManager.PostCloneEvent, POST_CLONE);
+        mappings.put(DescriptorEventManager.PostDeleteEvent, POST_DELETE);
+        mappings.put(DescriptorEventManager.PostInsertEvent, POST_INSERT);
+        mappings.put(DescriptorEventManager.PostRefreshEvent, POST_REFRESH);
+        mappings.put(DescriptorEventManager.PostUpdateEvent, POST_UPDATE);
+        mappings.put(DescriptorEventManager.PrePersistEvent, PRE_PERSIST);
+        mappings.put(DescriptorEventManager.PreRemoveEvent, PRE_REMOVE);
+        mappings.put(DescriptorEventManager.PreUpdateWithChangesEvent, PRE_UPDATE_WITH_CHANGES);
         m_eventStrings = Collections.unmodifiableMap(mappings);
     }
     /**
@@ -86,14 +86,14 @@ public class EntityListener extends DescriptorEventAdapter {
      */
     protected EntityListener(Class entityClass) {
         m_entityClass = entityClass;
-        m_methods = new Hashtable<String, List<Method>>();
+        m_methods = new Hashtable<>();
 
-        // Remember which events are overridden in subclasses. Overriden events
+        // Remember which events are overridden in subclasses. Overridden events
         // must be built for each subclass chain.
-        m_overriddenEvents = new Hashtable<String, Hashtable<Integer, Boolean>>();
+        m_overriddenEvents = new Hashtable<>();
     }
 
-    public EntityListener(Class listenerClass, Class entityClass){
+    public EntityListener(Class<T> listenerClass, Class entityClass){
         this(entityClass);
         this.m_listenerClass = listenerClass;
     }
@@ -120,7 +120,7 @@ public class EntityListener extends DescriptorEventAdapter {
             validateMethod(method);
 
             // Create the methods list and add this method to it.
-            List methods = new ArrayList<Method>();
+            List<Method> methods = new ArrayList<>();
             methods.add(method);
             m_methods.put(event, methods);
         }
@@ -128,12 +128,12 @@ public class EntityListener extends DescriptorEventAdapter {
 
     /**
      * Create the wrapped listener and trigger CDI injection.
-     * @param entityListenerClass
-     * @return the class instance that has had injection run on it. If injection failes, null.
+     * @param entityListenerClass the {@link EntityListener} class
+     * @return the class instance that has had injection run on it. If injection fails, null.
      */
-    protected Object createEntityListenerAndInjectDependancies(Class entityListenerClass){
+    protected T createEntityListenerAndInjectDependencies(Class<T> entityListenerClass){
         try{
-            return owningSession.getEntityListenerInjectionManager().createEntityListenerAndInjectDependancies(entityListenerClass);
+            return owningSession.<T>getInjectionManager().createManagedBeanAndInjectDependencies(entityListenerClass);
         } catch (Exception e){
             owningSession.logThrowable(SessionLog.FINEST, SessionLog.JPA, e);
         }
@@ -144,15 +144,15 @@ public class EntityListener extends DescriptorEventAdapter {
      * Construct an instance of the wrapped entity listener
      * This method will attempt to create the listener in a CDI injection
      * friendly manner and if that fails, reflectively instantiate the class
-     * @return
+     * @return the entity listener instance
      */
-    protected Object constructListenerInstance(AbstractSession session){
-        Object entityListenerClassInstance =  createEntityListenerAndInjectDependancies(m_listenerClass);
+    protected T constructListenerInstance(){
+        T entityListenerClassInstance =  createEntityListenerAndInjectDependencies(m_listenerClass);
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
                     if (entityListenerClassInstance == null){
-                        entityListenerClassInstance = AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(m_listenerClass));
+                        entityListenerClassInstance = AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(m_listenerClass));
                     }
                 } catch (PrivilegedActionException exception) {
                     throw ValidationException.errorInstantiatingClass(m_listenerClass, exception.getException());
@@ -162,9 +162,7 @@ public class EntityListener extends DescriptorEventAdapter {
                     entityListenerClassInstance = PrivilegedAccessHelper.newInstanceFromClass(m_listenerClass);
                 }
             }
-        } catch (IllegalAccessException exception) {
-            throw ValidationException.errorInstantiatingClass(m_listenerClass, exception);
-        } catch (InstantiationException exception) {
+        } catch (IllegalAccessException | InstantiationException exception) {
             throw ValidationException.errorInstantiatingClass(m_listenerClass, exception);
         }
         return entityListenerClassInstance;
@@ -228,12 +226,13 @@ public class EntityListener extends DescriptorEventAdapter {
         return methods.get(methods.size()-1);
     }
 
-    public Object getListener(AbstractSession session) {
+    public T getListener() {
         if (m_listener == null){
-            m_listener = constructListenerInstance(session);
+            m_listener = constructListenerInstance();
         }
         return m_listener;
     }
+    
     /**
      * INTERNAL:
      */
@@ -301,7 +300,7 @@ public class EntityListener extends DescriptorEventAdapter {
     /**
      * INTERNAL:
      */
-    void invokeMethod(Method method, Object onObject, Object[] objectList, DescriptorEvent event) {
+    void invokeMethod(Method method, Object onObject, Object[] objectList) {
         if (method != null) {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
@@ -346,7 +345,7 @@ public class EntityListener extends DescriptorEventAdapter {
         if (eventMethods != null) {
             for (Method method : eventMethods) {
                 Object[] objectList = { descriptorEvent.getSource() };
-                invokeMethod(method, getListener(descriptorEvent.getSession()), objectList, descriptorEvent);
+                invokeMethod(method, getListener(), objectList);
             }
         }
     }
@@ -357,14 +356,14 @@ public class EntityListener extends DescriptorEventAdapter {
      * overridden in a subclass.
      */
     @Override
-    public boolean isOverriddenEvent(DescriptorEvent event, Vector eventManagers) {
+    public boolean isOverriddenEvent(DescriptorEvent event, Vector<DescriptorEventManager> eventManagers) {
         int eventCode = event.getEventCode();
         String forSubclass = event.getDescriptor().getJavaClassName();
         Hashtable<Integer, Boolean> subClassMap = m_overriddenEvents.get(forSubclass);
 
         // If we haven't built an overridden events map for this subclass, do so now.
         if (subClassMap == null) {
-            subClassMap = new Hashtable<Integer, Boolean>();
+            subClassMap = new Hashtable<>();
         }
 
         // Now check the individual events for this subclass.
@@ -373,10 +372,10 @@ public class EntityListener extends DescriptorEventAdapter {
             if (hasEventMethods(eventCode)) {
                 List<Method> eventMethods = getEventMethods(eventCode);
                 for (Method eventMethod : eventMethods) {
-                    for (DescriptorEventManager eventManager : (Vector<DescriptorEventManager>) eventManagers) {
+                    for (DescriptorEventManager eventManager : eventManagers) {
                         EntityListener childListener = (EntityListener) eventManager.getEntityEventListener();
 
-                        // We can't override ourself ...
+                        // We can't override ourselves ...
                         if (childListener == this) {
                             break;
                         } else {

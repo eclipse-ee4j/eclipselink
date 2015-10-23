@@ -33,11 +33,12 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectCollectionMapping;
 import org.eclipse.persistence.mappings.DirectMapMapping;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
-import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.sessions.Session;
 
 import javax.persistence.AttributeConverter;
@@ -50,13 +51,14 @@ import javax.persistence.PersistenceException;
  * @author Guy Pelletier
  * @since Eclipselink 2.5
  */
-public class ConverterClass implements Converter, ClassNameConversionRequired {
+public class ConverterClass<T extends AttributeConverter<X,Y>,X,Y> implements Converter, ClassNameConversionRequired {
     protected boolean isForMapKey;
     protected boolean disableConversion;
     protected Class fieldClassification;
     protected String fieldClassificationName;
     protected String attributeConverterClassName;
-    protected AttributeConverter attributeConverter;
+    protected AttributeConverter<X,Y> attributeConverter;
+    protected AbstractSession session;
 
     /**
      * INTERNAL:
@@ -77,29 +79,63 @@ public class ConverterClass implements Converter, ClassNameConversionRequired {
      * class-based settings. This method is used when converting a project
      * that has been built with class names to a project with classes.
      */
-    public void convertClassNamesToClasses(ClassLoader classLoader){
-        Class attributeConverterClass = null;
+    public void convertClassNamesToClasses(ClassLoader classLoader) {
+        constructAttributeConverter(classLoader);
+        constructFieldClassification(classLoader);
+    }
 
+    private void constructAttributeConverter(ClassLoader classLoader) {
+        Class<T> attributeConverterClass = getAttributeConverterClass(classLoader);
+        T attributeConverterInstance = getAttributeConverterInstance(attributeConverterClass);
+        
+        try {
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                try {
+                    if (attributeConverterInstance == null){
+                        attributeConverterInstance = AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(attributeConverterClass));
+                    }
+                } catch (PrivilegedActionException exception) {
+                    throw ValidationException.errorInstantiatingClass(attributeConverterClass, exception.getException());
+                }
+            } else {
+                if (attributeConverterInstance == null){
+                    attributeConverterInstance = PrivilegedAccessHelper.newInstanceFromClass(attributeConverterClass);
+                }
+            }
+        } catch (IllegalAccessException | InstantiationException exception) {
+            throw ValidationException.errorInstantiatingClass(attributeConverterClass, exception);
+        }
+        
+        attributeConverter = attributeConverterInstance;
+    }
+
+    private T getAttributeConverterInstance(Class<T> attributeConverterClass) {
+        try{
+            return session.<T>getInjectionManager().createManagedBeanAndInjectDependencies(attributeConverterClass);
+        } catch (Exception e){
+            session.logThrowable(SessionLog.FINEST, SessionLog.JPA, e);
+            return null;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private Class<T> getAttributeConverterClass(ClassLoader classLoader) {
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                 try {
-                    attributeConverterClass = AccessController.doPrivileged(new PrivilegedClassForName(attributeConverterClassName, true, classLoader));
-                    attributeConverter = (AttributeConverter) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(attributeConverterClass));
+                    return AccessController.doPrivileged(new PrivilegedClassForName(attributeConverterClassName, true, classLoader));
                 } catch (PrivilegedActionException exception) {
                     throw ValidationException.classNotFoundWhileConvertingClassNames(attributeConverterClassName, exception.getException());
                 }
             } else {
-                attributeConverterClass = PrivilegedAccessHelper.getClassForName(attributeConverterClassName, true, classLoader);
-                attributeConverter = (AttributeConverter) PrivilegedAccessHelper.newInstanceFromClass(attributeConverterClass);
+                return PrivilegedAccessHelper.getClassForName(attributeConverterClassName, true, classLoader);
             }
         } catch (ClassNotFoundException exception) {
             throw ValidationException.classNotFoundWhileConvertingClassNames(attributeConverterClassName, exception);
-        } catch (IllegalAccessException exception) {
-            throw ValidationException.errorInstantiatingClass(attributeConverterClass, exception);
-        } catch (InstantiationException exception) {
-            throw ValidationException.errorInstantiatingClass(attributeConverterClass, exception);
         }
+    }
 
+    private void constructFieldClassification(ClassLoader classLoader) {
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
@@ -111,7 +147,7 @@ public class ConverterClass implements Converter, ClassNameConversionRequired {
                 fieldClassification = PrivilegedAccessHelper.getClassForName(fieldClassificationName, true, classLoader);
             }
         } catch (ClassNotFoundException exception) {
-            throw ValidationException.classNotFoundWhileConvertingClassNames(attributeConverterClassName, exception);
+            throw ValidationException.classNotFoundWhileConvertingClassNames(fieldClassificationName, exception);
         }
     }
 
@@ -119,9 +155,10 @@ public class ConverterClass implements Converter, ClassNameConversionRequired {
      * INTERNAL:
      */
     @Override
+    @SuppressWarnings("unchecked")
     public Object convertDataValueToObjectValue(Object dataValue, Session session) {
         try {
-            return attributeConverter.convertToEntityAttribute(dataValue);
+            return attributeConverter.convertToEntityAttribute((Y)dataValue);
         } catch (RuntimeException re) {
             throw new PersistenceException(ExceptionLocalization.buildMessage("wrap_convert_exception",
                     new Object[]{"convertToEntityAttribute", attributeConverterClassName, dataValue}), re);
@@ -132,9 +169,10 @@ public class ConverterClass implements Converter, ClassNameConversionRequired {
      * INTERNAL:
      */
     @Override
+    @SuppressWarnings("unchecked")
     public Object convertObjectValueToDataValue(Object objectValue, Session session) {
         try {
-            return attributeConverter.convertToDatabaseColumn(objectValue);
+            return attributeConverter.convertToDatabaseColumn((X) objectValue);
         } catch (RuntimeException re) {
             throw new PersistenceException(ExceptionLocalization.buildMessage("wrap_convert_exception",
                     new Object[]{"convertToDatabaseColumn", attributeConverterClassName, objectValue}), re);
@@ -188,5 +226,9 @@ public class ConverterClass implements Converter, ClassNameConversionRequired {
     @Override
     public boolean isMutable() {
         return false;
+    }
+
+    public void setSession(AbstractSession session) {
+        this.session = session;
     }
 }
