@@ -282,16 +282,16 @@ public class EntityListener extends DescriptorEventAdapter {
     public boolean isOverriddenEvent(DescriptorEvent event, Vector eventManagers) {
         int eventCode = event.getEventCode();
         String forSubclass = event.getDescriptor().getJavaClassName();
+        Hashtable<Integer, Boolean> subClassMap = m_overriddenEvents.get(forSubclass);
         
         // If we haven't built an overridden events map for this subclass, do so now.
-        if (! m_overriddenEvents.containsKey(forSubclass)) {
-            m_overriddenEvents.put(forSubclass, new Hashtable<Integer, Boolean>());
+        if (subClassMap == null) {
+            subClassMap = new Hashtable<Integer, Boolean>();
         }
         
         // Now check the individual events for this subclass.
-        if (! m_overriddenEvents.get(forSubclass).containsKey(eventCode)) {
-            m_overriddenEvents.get(forSubclass).put(eventCode, false); // default
-
+        if (! subClassMap.containsKey(eventCode)) {
+            boolean hasOverrides = false;
             if (hasEventMethods(eventCode)) {
                 List<Method> eventMethods = getEventMethods(eventCode);
                 
@@ -304,16 +304,23 @@ public class EntityListener extends DescriptorEventAdapter {
                             break;
                         } else {
                             if (childListener.hasOverriddenEventMethod(eventMethod, eventCode)) {
-                                m_overriddenEvents.get(forSubclass).put(eventCode, true);
-                                break; // stop looking
+                                hasOverrides = true;
+                                break;
                             }
                         }
                     }
+                    if (hasOverrides){
+                        break;
+                    }
                 }
             }
+            subClassMap.put(eventCode, hasOverrides);
+            //putting this here prevents a vm reorder from putting an unbuilt Map in the 
+            //m_overriddenEvents collection
+            m_overriddenEvents.put(forSubclass, subClassMap);
         }
         
-        return m_overriddenEvents.get(forSubclass).get(eventCode);
+        return subClassMap.get(eventCode);
     }
     
     /**
