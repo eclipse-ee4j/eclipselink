@@ -61,6 +61,26 @@ public class WebLogic_12_PlatformTest extends TestCase {
     }
 
     @Test
+    public void testGetPartitionName() {
+        setContextHelper();
+        WebLogic_12_Platform platform = new WebLogic_12_Platform(null);
+        ICtx.nameCtx = "test3";
+        Assert.assertEquals("test3", platform.getPartitionName());
+        ICtx.nameCtx = "test1";
+        Assert.assertEquals("test1", platform.getPartitionName());
+    }
+
+    @Test
+    public void testIsGlobalRuntime() {
+        setContextHelper();
+        WebLogic_12_Platform platform = new WebLogic_12_Platform(null);
+        ICtx.isGlobal = true;
+        Assert.assertTrue(platform.isGlobalRuntime());
+        ICtx.isGlobal = false;
+        Assert.assertFalse(platform.isGlobalRuntime());
+    }
+
+    @Test
     public void testContextHelper() {
         Class contextHelperClass = null;
         for (Class<?> declaredClass : WebLogic_12_Platform.class.getDeclaredClasses()) {
@@ -189,12 +209,22 @@ public class WebLogic_12_PlatformTest extends TestCase {
     private static final class ICtx {
 
         static volatile String ctx;
+        static volatile String nameCtx;
+        static volatile boolean isGlobal;
 
         public ICtx() {
         }
 
         public String getPartitionId() {
             return ctx;
+        }
+
+        public String getPartitionName() {
+            return nameCtx;
+        }
+
+        public boolean isGlobalRuntime() {
+            return isGlobal;
         }
 
     }

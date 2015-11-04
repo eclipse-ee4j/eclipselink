@@ -124,6 +124,7 @@ import org.eclipse.persistence.platform.server.ServerPlatform;
 import org.eclipse.persistence.platform.server.ServerPlatformBase;
 import org.eclipse.persistence.platform.server.ServerPlatformUtils;
 import org.eclipse.persistence.platform.server.was.WebSphere_7_Platform;
+import org.eclipse.persistence.platform.server.wls.WebLogic_12_Platform;
 import org.eclipse.persistence.queries.CursoredStreamPolicy;
 import org.eclipse.persistence.queries.DataModifyQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
@@ -5428,12 +5429,23 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
      * The same persistence unit in the server should have the same session for container or application managed.
      */
     public void testApplicationManagedInServer() {
-        /* This is a temporary workaround for Bug 454477. Commented out code should be restored when a proper solution is implemented */
-        HashMap<String, String> properties = new HashMap<>();
-        properties.put("weblogic.application-id", "eclipselink-advanced-model");
-        EntityManagerFactoryImpl factory = (EntityManagerFactoryImpl)Persistence.createEntityManagerFactory("default", properties);
-//        EntityManagerFactoryImpl factory = (EntityManagerFactoryImpl)Persistence.createEntityManagerFactory("default");
-        /* End of temporary workaround */
+        EntityManagerFactoryImpl factory;
+        if (getServerPlatform().isWeblogic()) {
+            HashMap<String, String> properties = new HashMap<>();
+            String applicationId = "eclipselink-advanced-model";
+            ServerPlatform serverPlatform = getServerSession().getServerPlatform();
+            if (serverPlatform.usesPartitions()) {
+                WebLogic_12_Platform webLogic12Platform = (WebLogic_12_Platform) serverPlatform;
+                if (!webLogic12Platform.isGlobalRuntime()) {
+                    applicationId += ("$" + webLogic12Platform.getPartitionName());
+                }
+            }
+            properties.put("weblogic.application-id", applicationId);
+            factory = (EntityManagerFactoryImpl) Persistence.createEntityManagerFactory("default", properties);
+        } else {
+            factory = (EntityManagerFactoryImpl) Persistence.createEntityManagerFactory("default");
+        }
+
         try {
             if (getDatabaseSession() != factory.getServerSession()) {
                 fail("Application managed persistence unit is not the same as the container managed session.  Deployment is broken."

@@ -39,6 +39,14 @@ public class WebLogic_12_Platform extends WebLogic_10_Platform {
         return ctxHelper != null ? ctxHelper.getPartitionID() : super.getPartitionID();
     }
 
+    public String getPartitionName() {
+        return ctxHelper != null ? ctxHelper.getPartitionName() : "GLOBAL";
+    }
+
+    public boolean isGlobalRuntime() {
+        return ctxHelper == null || ctxHelper.isGlobalRuntime();
+    }
+
     private static final class ContextHelper {
 
         /**
@@ -48,6 +56,8 @@ public class WebLogic_12_Platform extends WebLogic_10_Platform {
         private Object cicManagerInstance;
         private Method getCurrentCicMethod;
         private Method getPartitionIdMethod;
+        private Method getPartitionNameMethod;
+        private Method isGlobalRuntimeMethod;
         private static final Class cicManagerClass;
         private static volatile ContextHelper instance;
         private static final String CIC_MANAGER_RESOURCE_NAME = "META-INF/services/weblogic.invocation.ComponentInvocationContextManager";
@@ -101,6 +111,8 @@ public class WebLogic_12_Platform extends WebLogic_10_Platform {
                 getCurrentCicMethod = PrivilegedAccessHelper.getMethod(managerClass, "getCurrentComponentInvocationContext", new Class[]{}, true);
                 final Class cicClass = PrivilegedAccessHelper.getClassForName(contextClassName);
                 getPartitionIdMethod = PrivilegedAccessHelper.getDeclaredMethod(cicClass, "getPartitionId", new Class[]{});
+                getPartitionNameMethod = PrivilegedAccessHelper.getDeclaredMethod(cicClass, "getPartitionName", new Class[]{});
+                isGlobalRuntimeMethod = PrivilegedAccessHelper.getDeclaredMethod(cicClass, "isGlobalRuntime", new Class[]{});
             } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | ClassNotFoundException ex) {
                 AbstractSessionLog.getLog().logThrowable(SessionLog.WARNING, null, ex);
             }
@@ -124,6 +136,25 @@ public class WebLogic_12_Platform extends WebLogic_10_Platform {
          * Gets partition ID. Calls cicInstance.getPartitionIdMethod().
          */
         String getPartitionID() {
+            return getStringFromMethod(getPartitionIdMethod);
+        }
+
+        /**
+         * Gets partition name. Calls cicInstance.getPartitionNameMethod().
+         */
+        String getPartitionName() {
+            return getStringFromMethod(getPartitionNameMethod);
+        }
+
+        /**
+         * Calls the method passed against cicInstance returning the result as
+         * String.
+         *
+         * @param methodToCall
+         *            The cicInstance method to call
+         * @return the method result as String
+         */
+        private String getStringFromMethod(final Method methodToCall) {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                     return AccessController.doPrivileged(new PrivilegedAction<String>() {
@@ -131,8 +162,8 @@ public class WebLogic_12_Platform extends WebLogic_10_Platform {
                         public String run() {
                             try {
                                 final Object cicInstance = PrivilegedAccessHelper.invokeMethod(getCurrentCicMethod, cicManagerInstance);
-                                return (String) PrivilegedAccessHelper.invokeMethod(getPartitionIdMethod, cicInstance);
-                            } catch (IllegalAccessException | InvocationTargetException ex) {
+                                return (String) PrivilegedAccessHelper.invokeMethod(methodToCall, cicInstance);
+                            } catch (ReflectiveOperationException ex) {
                                 AbstractSessionLog.getLog().logThrowable(SessionLog.WARNING, null, ex);
                                 return "UNKNOWN";
                             }
@@ -140,11 +171,40 @@ public class WebLogic_12_Platform extends WebLogic_10_Platform {
                     });
                 } else {
                     final Object cicInstance = PrivilegedAccessHelper.invokeMethod(getCurrentCicMethod, cicManagerInstance);
-                    return (String) PrivilegedAccessHelper.invokeMethod(getPartitionIdMethod, cicInstance);
+                    return (String) PrivilegedAccessHelper.invokeMethod(methodToCall, cicInstance);
                 }
-            } catch (IllegalAccessException | InvocationTargetException ex) {
+            } catch (ReflectiveOperationException ex) {
                 AbstractSessionLog.getLog().logThrowable(SessionLog.WARNING, null, ex);
                 return "UNKNOWN";
+            }
+        }
+
+        /**
+         * Returns whether code is running globally as opposed to running in
+         * partition. Calls cicInstance.isGlobalRuntime().
+         */
+        boolean isGlobalRuntime() {
+            try {
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                    return AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
+                        @Override
+                        public Boolean run() {
+                            try {
+                                final Object cicInstance = PrivilegedAccessHelper.invokeMethod(getCurrentCicMethod, cicManagerInstance);
+                                return (Boolean) PrivilegedAccessHelper.invokeMethod(isGlobalRuntimeMethod, cicInstance);
+                            } catch (ReflectiveOperationException ex) {
+                                AbstractSessionLog.getLog().logThrowable(SessionLog.WARNING, null, ex);
+                                return true;
+                            }
+                        }
+                    });
+                } else {
+                    final Object cicInstance = PrivilegedAccessHelper.invokeMethod(getCurrentCicMethod, cicManagerInstance);
+                    return (boolean) PrivilegedAccessHelper.invokeMethod(isGlobalRuntimeMethod, cicInstance);
+                }
+            } catch (ReflectiveOperationException ex) {
+                AbstractSessionLog.getLog().logThrowable(SessionLog.WARNING, null, ex);
+                return true;
             }
         }
     }
