@@ -68,6 +68,8 @@
  *       - 456067 : Added support for defining query timeout units
  *     09/28/2015 - Will Dazey
  *       - 478331 : Added support for defining local or server as the default locale for obtaining timestamps
+ *     11/05/2015 - Dalia Abo Sheasha
+ *       - 480787 : Wrap several privileged method calls with a doPrivileged block
  *****************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
@@ -121,6 +123,7 @@ import java.net.URLDecoder;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -1958,7 +1961,18 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     }
                     
                     // Process the Object/relational metadata from XML and annotations.
-                    PersistenceUnitProcessor.processORMetadata(processor, throwExceptionOnFail, mode);
+                    // If Java Security is enabled, surround this call with a doPrivileged block.
+                    if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                        AccessController.doPrivileged(new PrivilegedAction<Void>() {
+                            @Override
+                            public Void run() {
+                                PersistenceUnitProcessor.processORMetadata(processor, throwExceptionOnFail, mode);
+                                return null;
+                            }
+                        });
+                    } else {
+                        PersistenceUnitProcessor.processORMetadata(processor, throwExceptionOnFail, mode);
+                    }
                     
                     if (mode == PersistenceUnitProcessor.Mode.COMPOSITE_MEMBER_INITIAL) {
                         mode = PersistenceUnitProcessor.Mode.COMPOSITE_MEMBER_MIDDLE;
