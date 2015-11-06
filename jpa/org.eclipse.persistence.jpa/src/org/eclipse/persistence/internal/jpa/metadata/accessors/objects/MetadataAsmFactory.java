@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle, Hans Harz, Andrew Rustleund. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle, Hans Harz, Andrew Rustleund, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -19,11 +19,15 @@
  *       - 373092: Exceptions using generics, embedded key and entity inheritance
  *     19/04/2014-2.6 Lukas Jungmann
  *       - 429992: JavaSE 8/ASM 5.0.1 support (EclipseLink silently ignores Entity classes with lambda expressions)
+ *     11/05/2015-2.6 Dalia Abo Sheasha
+ *       - 480787 : Wrap several privileged method calls with a doPrivileged block
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,6 +42,7 @@ import org.eclipse.persistence.internal.libraries.asm.FieldVisitor;
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 import org.eclipse.persistence.internal.libraries.asm.Type;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 
 /**
  * INTERNAL: A metadata factory that uses ASM technology and no reflection
@@ -77,7 +82,17 @@ public class MetadataAsmFactory extends MetadataFactory {
         InputStream stream = null;
         try {
             String resourceString = className.replace('.', '/') + ".class";
-            stream = m_loader.getResourceAsStream(resourceString);
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                final String f_resourceString = resourceString;
+                stream = AccessController.doPrivileged(new PrivilegedAction<InputStream>() {
+                    @Override
+                    public InputStream run() {
+                        return m_loader.getResourceAsStream(f_resourceString);
+                    }
+                });
+            } else {
+                stream = m_loader.getResourceAsStream(resourceString);
+            }
 
             ClassReader reader = new ClassReader(stream);
             Attribute[] attributes = new Attribute[0];

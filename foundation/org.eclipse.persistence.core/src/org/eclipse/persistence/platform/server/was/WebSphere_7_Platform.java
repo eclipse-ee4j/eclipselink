@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -16,6 +16,8 @@
  *     05/10/2014 - 428675 - 2.5.2 - Rick Curtis - Add support for WebSphere logger.
  *     04/01/2015 Will Dazey
  *       - 463726: Added DatabaseSession null check
+ *     11/05/2015 Dalia Abo Sheasha
+ *       - 480787: Wrap several privileged method calls with a doPrivileged block
  ******************************************************************************/
 package org.eclipse.persistence.platform.server.was;
 
@@ -58,6 +60,9 @@ public class WebSphere_7_Platform extends WebSphere_6_1_Platform implements JMXE
         /** Override by subclass: Search String in application server session for war modules */
         APP_SERVER_CLASSLOADER_MODULE_WAR_SEARCH_STRING_PREFIX = ".war!/";
         APP_SERVER_CLASSLOADER_MODULE_EJB_WAR_SEARCH_STRING_POSTFIX = "]";
+
+        // Change the default value of property "eclipselink.security.usedoprivileged".
+        PrivilegedAccessHelper.setDefaultUseDoPrivilegedValue(true);
     }
 
     /**
