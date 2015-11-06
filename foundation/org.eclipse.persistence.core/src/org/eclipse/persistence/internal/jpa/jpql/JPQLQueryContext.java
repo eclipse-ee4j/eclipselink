@@ -476,12 +476,6 @@ final class JPQLQueryContext {
         Expression expression = getQueryExpressionImp(variableName);
         if ((expression == null) && (parent != null)) {
             expression = parent.findQueryExpressionImp(variableName);
-            // Bug 481530
-            // We are in a sub-select, if the expression from the parent is an ExpressionBuilder, it must
-            // be cloned so that it is not shared between the outer/main expression and this sub-select.
-            if (expression != null && expression.isExpressionBuilder()) {
-                expression = (Expression) expression.clone();
-            }
         }
         return expression;
     }

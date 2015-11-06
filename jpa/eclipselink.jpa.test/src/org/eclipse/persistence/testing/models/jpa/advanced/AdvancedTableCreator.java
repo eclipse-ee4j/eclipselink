@@ -112,10 +112,6 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildEventTable());
         addTableDefinition(buildCMP3_TODOLISTTable());
         addTableDefinition(buildCMP3_TODOLISTITEMTable());
-        addTableDefinition(buildJPA_WIDGETTable());
-        addTableDefinition(buildJPA_WIDGET_PARTTable());
-        addTableDefinition(buildJPA_WIDGET_HOLDER_ATable());
-        addTableDefinition(buildJPA_WIDGET_HOLDER_BTable());
     }
 
     public TableDefinition buildADDRESSTable() {
@@ -3075,115 +3071,6 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fk_TODOLISTITEM_TODOLIST.addSourceField("TODOLIST_ID");
         fk_TODOLISTITEM_TODOLIST.addTargetField("ID");
         table.addForeignKeyConstraint(fk_TODOLISTITEM_TODOLIST);
-        
-        return table;
-    }
-    
-    public TableDefinition buildJPA_WIDGETTable() {
-        TableDefinition table = new TableDefinition();
-        table.setName("JPA_WIDGET");
-        
-        FieldDefinition fieldID = new FieldDefinition();
-        fieldID.setName("W_ID");
-        fieldID.setTypeName("NUMBER");
-        fieldID.setSize(15);
-        fieldID.setIsPrimaryKey(true);
-        fieldID.setIsIdentity(false);
-        fieldID.setUnique(false);
-        fieldID.setShouldAllowNull(false);
-        table.addField(fieldID);
-        
-        FieldDefinition fieldHOLDER_A = new FieldDefinition();
-        fieldHOLDER_A.setName("HOLDER_A_ID");
-        fieldHOLDER_A.setTypeName("NUMBER");
-        fieldHOLDER_A.setSize(15);
-        fieldHOLDER_A.setIsPrimaryKey(false);
-        fieldHOLDER_A.setIsIdentity(false);
-        fieldHOLDER_A.setUnique(false);
-        fieldHOLDER_A.setShouldAllowNull(true);
-        table.addField(fieldHOLDER_A);
-        
-        FieldDefinition fieldHOLDER_B = new FieldDefinition();
-        fieldHOLDER_B.setName("HOLDER_B_ID");
-        fieldHOLDER_B.setTypeName("NUMBER");
-        fieldHOLDER_B.setSize(15);
-        fieldHOLDER_B.setIsPrimaryKey(false);
-        fieldHOLDER_B.setIsIdentity(false);
-        fieldHOLDER_B.setUnique(false);
-        fieldHOLDER_B.setShouldAllowNull(true);
-        table.addField(fieldHOLDER_B);
-        
-        ForeignKeyConstraint fk_JPA_WIDGET_HOLDER_A_ID = new ForeignKeyConstraint();
-        fk_JPA_WIDGET_HOLDER_A_ID.setName("FK_JPA_WIDGET_HOLDER_A_ID");
-        fk_JPA_WIDGET_HOLDER_A_ID.setTargetTable("JPA_WIDGET_HOLDER_A");
-        fk_JPA_WIDGET_HOLDER_A_ID.addSourceField("HOLDER_A_ID");
-        fk_JPA_WIDGET_HOLDER_A_ID.addTargetField("A_ID");
-        table.addForeignKeyConstraint(fk_JPA_WIDGET_HOLDER_A_ID);
-        
-        ForeignKeyConstraint fk_JPA_WIDGET_HOLDER_B_ID = new ForeignKeyConstraint();
-        fk_JPA_WIDGET_HOLDER_B_ID.setName("FK_JPA_WIDGET_HOLDER_B_ID");
-        fk_JPA_WIDGET_HOLDER_B_ID.setTargetTable("JPA_WIDGET_HOLDER_B");
-        fk_JPA_WIDGET_HOLDER_B_ID.addSourceField("HOLDER_B_ID");
-        fk_JPA_WIDGET_HOLDER_B_ID.addTargetField("B_ID");
-        table.addForeignKeyConstraint(fk_JPA_WIDGET_HOLDER_B_ID);
-        
-        return table;
-    }
-    
-    public TableDefinition buildJPA_WIDGET_PARTTable() {
-        TableDefinition table = new TableDefinition();
-        table.setName("JPA_WIDGET_PART");
-        
-        FieldDefinition fieldID = new FieldDefinition();
-        fieldID.setName("WIDGET_ID");
-        fieldID.setTypeName("NUMBER");
-        fieldID.setSize(15);
-        fieldID.setIsPrimaryKey(true);
-        fieldID.setIsIdentity(false);
-        fieldID.setUnique(false);
-        fieldID.setShouldAllowNull(false);
-        table.addField(fieldID);
-        
-        ForeignKeyConstraint fk_FK_JPA_WIDGET_PART_WIDGET_ID = new ForeignKeyConstraint();
-        fk_FK_JPA_WIDGET_PART_WIDGET_ID.setName("FK_JPA_WIDGET_PART_WIDGET_ID");
-        fk_FK_JPA_WIDGET_PART_WIDGET_ID.setTargetTable("JPA_WIDGET");
-        fk_FK_JPA_WIDGET_PART_WIDGET_ID.addSourceField("WIDGET_ID");
-        fk_FK_JPA_WIDGET_PART_WIDGET_ID.addTargetField("W_ID");
-        table.addForeignKeyConstraint(fk_FK_JPA_WIDGET_PART_WIDGET_ID);
-        
-        return table;
-    }
-    
-    public TableDefinition buildJPA_WIDGET_HOLDER_ATable() {
-        TableDefinition table = new TableDefinition();
-        table.setName("JPA_WIDGET_HOLDER_A");
-        
-        FieldDefinition fieldID = new FieldDefinition();
-        fieldID.setName("A_ID");
-        fieldID.setTypeName("NUMBER");
-        fieldID.setSize(15);
-        fieldID.setIsPrimaryKey(true);
-        fieldID.setIsIdentity(false);
-        fieldID.setUnique(false);
-        fieldID.setShouldAllowNull(false);
-        table.addField(fieldID);
-        
-        return table;
-    }
-    
-    public TableDefinition buildJPA_WIDGET_HOLDER_BTable() {
-        TableDefinition table = new TableDefinition();
-        table.setName("JPA_WIDGET_HOLDER_B");
-        
-        FieldDefinition fieldID = new FieldDefinition();
-        fieldID.setName("B_ID");
-        fieldID.setTypeName("NUMBER");
-        fieldID.setSize(15);
-        fieldID.setIsPrimaryKey(true);
-        fieldID.setIsIdentity(false);
-        fieldID.setUnique(false);
-        fieldID.setShouldAllowNull(false);
-        table.addField(fieldID);
         
         return table;
     }

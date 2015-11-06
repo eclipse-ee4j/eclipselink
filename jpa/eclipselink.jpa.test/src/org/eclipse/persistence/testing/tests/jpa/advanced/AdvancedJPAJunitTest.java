@@ -262,7 +262,6 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             
             suite.addTest(new AdvancedJPAJunitTest("testHistoryRelationshipQueryInitialization"));
             suite.addTest(new AdvancedJPAJunitTest("testQueryJoinBasicCollectionTableUsingQueryResultsCache"));
-            suite.addTest(new AdvancedJPAJunitTest("testJPQLQueryReferencingOuterExpressionWithinParallelSubSelects"));
         }
 
         return suite;
@@ -3305,29 +3304,6 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         }
     }
 
-    /*
-     * Bug 481530 - JPQL Query with parallel sub-selects using "MEMBER OF" produces incorrect SQL
-     * In a JPQL query utilizing parallel sub-selects, if an ExpressionBuilder within the outer 
-     * statement is reused, it should be cloned so that it is not shared between the outer/main 
-     * expression and the sub-select expression(s), for correct SQL and aliasing generation.
-     */
-    public void testJPQLQueryReferencingOuterExpressionWithinParallelSubSelects() {
-        EntityManager em = createEntityManager();
-        try {
-            String jpql = "DELETE FROM WidgetPart p WHERE " +
-                    "NOT EXISTS (SELECT a FROM WidgetHolderA a WHERE p.widget MEMBER OF a.widgets) AND " +
-                    "NOT EXISTS (SELECT b FROM WidgetHolderB b WHERE p.widget MEMBER OF b.widgets)";
-            beginTransaction(em);
-            em.createQuery(jpql).executeUpdate();
-            commitTransaction(em);
-        } finally {
-            if (isTransactionActive(em)) {
-                rollbackTransaction(em);
-            }
-            closeEntityManager(em);
-        }
-    }
-    
     protected int getVersion(EntityManager em, Dealer dealer) {
         Vector pk = new Vector(1);
         pk.add(dealer.getId());
