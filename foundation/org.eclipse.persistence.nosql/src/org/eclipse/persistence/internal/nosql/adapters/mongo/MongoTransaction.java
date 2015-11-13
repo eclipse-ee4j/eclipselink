@@ -23,12 +23,12 @@ import javax.resource.cci.*;
  */
 public class MongoTransaction implements LocalTransaction {
     protected boolean isInTransaction;
-    protected MongoConnection connection;
+    protected Connection connection;
 
     /**
      * Default constructor.
      */
-    public MongoTransaction(MongoConnection connection) {
+    public MongoTransaction(Connection connection) {
         this.connection = connection;
         this.isInTransaction = false;
     }

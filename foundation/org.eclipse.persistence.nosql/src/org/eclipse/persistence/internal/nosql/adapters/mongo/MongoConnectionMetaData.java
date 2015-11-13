@@ -15,6 +15,9 @@ package org.eclipse.persistence.internal.nosql.adapters.mongo;
 import javax.resource.*;
 import javax.resource.cci.*;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.CommandResult;
+
 /**
  * Defines the meta-data for the Mongo adaptor
  *
@@ -22,7 +25,7 @@ import javax.resource.cci.*;
  * @since EclipseLink 2.4
  */
 public class MongoConnectionMetaData implements ConnectionMetaData {
-    protected MongoConnection connection;
+    private MongoConnection connection;
 
     /**
      * Default constructor.
@@ -31,9 +34,21 @@ public class MongoConnectionMetaData implements ConnectionMetaData {
         this.connection = connection;
     }
 
+    /**
+     * Constructor for inheritors
+     */
+    protected MongoConnectionMetaData() {
+    }
+
+    protected String getVersion() {
+        BasicDBObject command = new BasicDBObject("buildInfo", null);
+        CommandResult buildInfo = this.connection.getDB().command(command);
+        return buildInfo.getString("version");
+    }
+
     public String getEISProductName() throws ResourceException {
         try {
-            return this.connection.getDB().getMongo().getVersion();
+            return getVersion();
         } catch (Exception exception) {
             throw new ResourceException(exception.toString());
         }
@@ -41,7 +56,7 @@ public class MongoConnectionMetaData implements ConnectionMetaData {
 
     public String getEISProductVersion() throws ResourceException {
         try {
-            return this.connection.getDB().getMongo().getVersion();
+            return getVersion();
         } catch (Exception exception) {
             throw new ResourceException(exception.toString());
         }

@@ -178,4 +178,11 @@
          version="@SLF4J_VERSION@"
          unpack="false"/>
 
+   <plugin
+         id="org.mongodb.mongo-java-driver"
+         download-size="0"
+         install-size="0"
+         version="@MONGODB_VERSION@"
+         unpack="false"/>
+
 </feature>

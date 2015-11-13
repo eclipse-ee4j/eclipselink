@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests;
 
+import org.eclipse.persistence.testing.tests.jpa.mongo.MongoDatabaseTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.mongo.MongoDatabaseXMLTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.mongo.MongoTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.mongo.MongoXMLTestSuite;
 
@@ -24,8 +26,16 @@ public class NoSQLJPATestSuite extends TestSuite{
         TestSuite fullSuite = new TestSuite();
         fullSuite.setName("NoSQLJPATestSuite");
 
-        fullSuite.addTest(MongoTestSuite.suite());
-        fullSuite.addTest(MongoXMLTestSuite.suite());
+        try {
+            Class.forName("com.mongodb.client.MongoDatabase");
+            System.out.println("Testing MongoDatabaseTestSuite");
+            fullSuite.addTest(MongoDatabaseTestSuite.suite());
+            fullSuite.addTest(MongoDatabaseXMLTestSuite.suite());
+        } catch (ClassNotFoundException e) {
+            System.out.println("Testing MongoTestSuite");
+            fullSuite.addTest(MongoXMLTestSuite.suite());
+            fullSuite.addTest(MongoTestSuite.suite());
+        }
         return fullSuite;
     }
 }

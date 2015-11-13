@@ -51,6 +51,21 @@ public class MongoJCAConnectionSpec implements ConnectionSpec {
     protected WriteConcern writeConcern;
 
     /**
+     * <p>
+     * Timeout in milliseconds, which defines how long the driver will wait for
+     * server selection to succeed before throwing an exception.
+     * </p>
+     *
+     * <p>
+     * A value of 0 means that it will timeout immediately if no server is
+     * available. A negative value means to wait indefinitely.
+     * </p>
+     *
+     * <p>Used by {@link org.eclipse.persistence.testing.tests.jpa.mongo.MongoDatabaseTestSuite} only.
+     */
+    private int serverSelectionTimeout = 1000 * 30;
+
+    /**
      * PUBLIC:
      * Default constructor.
      */
@@ -131,5 +146,13 @@ public class MongoJCAConnectionSpec implements ConnectionSpec {
 
     public void setWriteConcern(WriteConcern writeConcern) {
         this.writeConcern = writeConcern;
+    }
+
+    public int getServerSelectionTimeout() {
+        return serverSelectionTimeout;
+    }
+
+    public void setServerSelectionTimeout(int serverSelectionTimeout) {
+        this.serverSelectionTimeout = serverSelectionTimeout;
     }
 }

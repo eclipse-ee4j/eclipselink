@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -17,17 +17,23 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.resource.*;
-import javax.resource.cci.*;
+import javax.resource.ResourceException;
+import javax.resource.cci.Connection;
+import javax.resource.cci.Interaction;
+import javax.resource.cci.InteractionSpec;
+import javax.resource.cci.Record;
+import javax.resource.cci.ResourceWarning;
 
+import org.bson.Document;
 import org.eclipse.persistence.eis.EISException;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
-import com.mongodb.WriteResult;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.model.UpdateOptions;
+import com.mongodb.client.result.UpdateResult;
 
 /**
  * Interaction to Mongo JCA adapter.
@@ -36,15 +42,15 @@ import com.mongodb.WriteResult;
  * @author James
  * @since EclipseLink 2.4
  */
-public class MongoInteraction implements Interaction {
+public class MongoDatabaseInteraction implements Interaction {
 
     /** Store the connection the interaction was created from. */
-    protected MongoConnection connection;
+    protected MongoDatabaseConnection connection;
 
     /**
      * Default constructor.
      */
-    public MongoInteraction(MongoConnection connection) {
+    public MongoDatabaseInteraction(MongoDatabaseConnection connection) {
         this.connection = connection;
     }
 
@@ -59,6 +65,7 @@ public class MongoInteraction implements Interaction {
     /**
      * Output records are not supported/required.
      */
+    @Override
     public boolean execute(InteractionSpec spec, Record input, Record output) throws ResourceException {
         if (!(spec instanceof MongoInteractionSpec)) {
             throw EISException.invalidInteractionSpecType();
@@ -78,12 +85,19 @@ public class MongoInteraction implements Interaction {
             throw new ResourceException("DB Collection name must be set");
         }
         try {
-            DBCollection collection = this.connection.getDB().getCollection(collectionName);
-            DBObject object = buildDBObject(record);
-            DBObject translation = buildDBObject(translationRecord);
+            MongoCollection<Document> collection = this.connection.getDB().getCollection(collectionName);
+            BasicDBObject object = buildDBObject(record);
+            BasicDBObject translation = buildDBObject(translationRecord);
             if (operation == MongoOperation.UPDATE) {
-                WriteResult result = collection.update(translation, object, mongoSpec.isUpsert(), mongoSpec.isMulti());
-                return result.getN() > 0;
+                Document update = new Document("$set", object);
+                UpdateOptions options = new UpdateOptions().upsert(mongoSpec.isUpsert());
+                UpdateResult result;
+                if (mongoSpec.isMulti()) {
+                    result = collection.updateMany(translation, update, options);
+                } else {
+                    result = collection.updateOne(translation, update, options);
+                }
+                return result.getModifiedCount() > 0;
             } else {
                 throw new ResourceException("Invalid operation: " + operation);
             }
@@ -98,6 +112,7 @@ public class MongoInteraction implements Interaction {
      * Execute the interaction and return output record.
      * The spec is either GET, PUT or DELETE interaction.
      */
+    @Override
     public Record execute(InteractionSpec spec, Record record) throws ResourceException {
         if (!(spec instanceof MongoInteractionSpec)) {
             throw EISException.invalidInteractionSpecType();
@@ -114,62 +129,64 @@ public class MongoInteraction implements Interaction {
             throw resourceException;
         }
         if (operation == MongoOperation.EVAL) {
-            Object result = this.connection.getDB().eval(mongoSpec.getCode());
-            return buildRecordFromDBObject((DBObject)result);
+            Document commandDocument = new Document("$eval", mongoSpec.getCode())/*.append("args", asList(args))*/;
+            Document result = this.connection.getDB().runCommand(commandDocument);
+            return buildRecordFromDBObject((Document)result.get("retval"));
         }
         if (collectionName == null) {
             ResourceException resourceException = new ResourceException("DB Collection name must be set");
             throw resourceException;
         }
         try {
-            DBCollection collection = this.connection.getDB().getCollection(collectionName);
+            MongoCollection<Document> collection = this.connection.getDB().getCollection(collectionName);
             if (mongoSpec.getOptions() > 0) {
-                collection.setOptions(mongoSpec.getOptions());
+                // FIXME: collection.setOptions(mongoSpec.getOptions());
             }
             if (mongoSpec.getReadPreference() != null) {
-                collection.setReadPreference(mongoSpec.getReadPreference());
+                collection = collection.withReadPreference(mongoSpec.getReadPreference());
             }
             if (mongoSpec.getWriteConcern() != null) {
-                collection.setWriteConcern(mongoSpec.getWriteConcern());
+                collection = collection.withWriteConcern(mongoSpec.getWriteConcern());
             }
             if (operation == MongoOperation.INSERT) {
-                DBObject object = buildDBObject(input);
-                collection.insert(object);
+                Document object = buildDocument(input);
+                collection.insertOne(object);
             } else if (operation == MongoOperation.REMOVE) {
-                DBObject object = buildDBObject(input);
-                collection.remove(object);
+                Document object = buildDocument(input);
+                collection.deleteOne(object);
             } else if (operation == MongoOperation.FIND) {
-                DBObject sort = null;
+                BasicDBObject sort = null;
                 if (input.containsKey(MongoRecord.SORT)) {
                     sort = buildDBObject((MongoRecord)input.get(MongoRecord.SORT));
                     input.remove(MongoRecord.SORT);
                 }
-                DBObject select = null;
+                BasicDBObject select = null; // FIXME: select?
                 if (input.containsKey("$select")) {
                     select = buildDBObject((MongoRecord)input.get("$select"));
                     input.remove("$select");
                 }
-                DBObject object = buildDBObject(input);
-                DBCursor cursor = collection.find(object, select);
+                BasicDBObject object = buildDBObject(input);
+                FindIterable<Document> iterable = collection.find(object);
                 if (sort != null) {
-                    cursor.sort(sort);
+                    iterable.sort(sort);
                 }
+                MongoCursor<Document> cursor = iterable.iterator();
                 try {
                     if (mongoSpec.getSkip() > 0) {
-                        cursor.skip(mongoSpec.getSkip());
+                        iterable.skip(mongoSpec.getSkip());
                     }
                     if (mongoSpec.getLimit() != 0) {
-                        cursor.limit(mongoSpec.getLimit());
+                        iterable.limit(mongoSpec.getLimit());
                     }
                     if (mongoSpec.getBatchSize() != 0) {
-                        cursor.batchSize(mongoSpec.getBatchSize());
+                        iterable.batchSize(mongoSpec.getBatchSize());
                     }
                     if (!cursor.hasNext()) {
                         return null;
                     }
                     MongoListRecord results = new MongoListRecord();
                     while (cursor.hasNext()) {
-                        DBObject result = cursor.next();
+                        Document result = cursor.next();
                         results.add(buildRecordFromDBObject(result));
                     }
                     return results;
@@ -191,8 +208,8 @@ public class MongoInteraction implements Interaction {
     /**
      * Build the Mongo DBObject from the Map record.
      */
-    public DBObject buildDBObject(MongoRecord record) {
-        DBObject object = new BasicDBObject();
+    public BasicDBObject buildDBObject(MongoRecord record) {
+        BasicDBObject object = new BasicDBObject();
         for (Iterator iterator = record.entrySet().iterator(); iterator.hasNext(); ) {
             Map.Entry entry = (Map.Entry)iterator.next();
             if (entry.getValue() instanceof MongoRecord) {
@@ -205,28 +222,44 @@ public class MongoInteraction implements Interaction {
     }
 
     /**
-     * Build the Map record from the Mongo DBObject.
+     * Build the Mongo Document from the Map record.
      */
-    public MongoRecord buildRecordFromDBObject(DBObject object) {
+    public Document buildDocument(MongoRecord record) {
+        Document object = new Document();
+        for (Iterator iterator = record.entrySet().iterator(); iterator.hasNext(); ) {
+            Map.Entry entry = (Map.Entry)iterator.next();
+            if (entry.getValue() instanceof MongoRecord) {
+                object.put((String)entry.getKey(), buildDBObject((MongoRecord)entry.getValue()));
+            } else {
+                object.put((String)entry.getKey(), entry.getValue());
+            }
+        }
+        return object;
+    }
+
+    /**
+     * Build the Map record from the Mongo Document.
+     */
+    public MongoRecord buildRecordFromDBObject(Document object) {
         MongoRecord record = new MongoRecord();
-        for (Iterator iterator = object.toMap().entrySet().iterator(); iterator.hasNext(); ) {
+        for (Iterator iterator = object.entrySet().iterator(); iterator.hasNext(); ) {
             Map.Entry entry = (Map.Entry)iterator.next();
             if (entry.getValue() instanceof BasicDBList) {
                 List values = new ArrayList();
                 for (Iterator valuesIterator = ((BasicDBList)entry.getValue()).iterator(); valuesIterator.hasNext(); ) {
                     Object value = valuesIterator.next();
-                    if (value instanceof DBObject) {
-                        values.add(buildRecordFromDBObject((DBObject)value));
+                    if (value instanceof Document) {
+                        values.add(buildRecordFromDBObject((Document)value));
                     } else {
                         values.add(value);
                     }
                 }
-                record.put((String)entry.getKey(), values);
-            } else if (entry.getValue() instanceof DBObject) {
-                MongoRecord nestedRecord = buildRecordFromDBObject((DBObject)entry.getValue());
-                record.put((String)entry.getKey(), nestedRecord);
+                record.put(entry.getKey(), values);
+            } else if (entry.getValue() instanceof Document) {
+                MongoRecord nestedRecord = buildRecordFromDBObject((Document)entry.getValue());
+                record.put(entry.getKey(), nestedRecord);
             } else {
-                record.put((String)entry.getKey(), entry.getValue());
+                record.put(entry.getKey(), entry.getValue());
             }
         }
         return record;

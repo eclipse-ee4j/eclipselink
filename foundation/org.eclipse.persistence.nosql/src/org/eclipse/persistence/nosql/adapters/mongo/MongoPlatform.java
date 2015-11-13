@@ -21,6 +21,7 @@ import javax.resource.cci.InteractionSpec;
 import javax.resource.cci.MappedRecord;
 import javax.resource.cci.Record;
 
+import org.bson.types.Binary;
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.eis.EISAccessor;
 import org.eclipse.persistence.eis.EISDescriptor;
@@ -28,6 +29,7 @@ import org.eclipse.persistence.eis.EISException;
 import org.eclipse.persistence.eis.EISPlatform;
 import org.eclipse.persistence.eis.interactions.EISInteraction;
 import org.eclipse.persistence.eis.interactions.MappedInteraction;
+import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
@@ -151,9 +153,9 @@ public class MongoPlatform extends EISPlatform {
             } else if (preference instanceof String) {
                 String constant = (String)preference;
                 if (constant.equals("PRIMARY")) {
-                    mongoSpec.setReadPreference(ReadPreference.PRIMARY);
+                    mongoSpec.setReadPreference(ReadPreference.primary());
                 } else if (constant.equals("SECONDARY")) {
-                    mongoSpec.setReadPreference(ReadPreference.SECONDARY );
+                    mongoSpec.setReadPreference(ReadPreference.secondary() );
                 } else {
                     throw new EISException("Invalid read preference property value: " + constant);
                 }
@@ -172,7 +174,7 @@ public class MongoPlatform extends EISPlatform {
                 } else if (constant.equals("MAJORITY")) {
                     mongoSpec.setWriteConcern(WriteConcern.MAJORITY);
                 } else if (constant.equals("NONE")) {
-                    mongoSpec.setWriteConcern(WriteConcern.NONE);
+                    mongoSpec.setWriteConcern(/* WriteConcern.NONE */ new WriteConcern("none"));
                 } else if (constant.equals("NORMAL")) {
                     mongoSpec.setWriteConcern(WriteConcern.NORMAL);
                 } else if (constant.equals("REPLICAS_SAFE")) {

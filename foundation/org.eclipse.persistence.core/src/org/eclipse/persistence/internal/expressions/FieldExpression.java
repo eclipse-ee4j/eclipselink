@@ -178,7 +178,7 @@ public class FieldExpression extends DataExpression {
         // Bug 418705
         if (getField() != null && value != null && (value.getClass() != getField().getType()) && !(value instanceof Collection) && !(value instanceof Enum)) {
             try {
-                return session.getPlatform().convertObject(value, getField().getType());
+                return session.getDatasourcePlatform().convertObject(value, getField().getType());
             } catch (ConversionException c) {}
         }
         return super.getFieldValue(value, session);

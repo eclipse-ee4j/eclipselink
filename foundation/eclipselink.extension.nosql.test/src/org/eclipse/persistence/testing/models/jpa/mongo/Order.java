@@ -14,6 +14,7 @@ package org.eclipse.persistence.testing.models.jpa.mongo;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.sql.Timestamp;
 import java.util.*;
 
 import javax.persistence.Column;
@@ -54,12 +55,12 @@ public class Order {
     public long version;
     public String orderedBy;
     @Temporal(TemporalType.TIMESTAMP)
-    public Date orderDate = new Date();
+    public Date orderDate = new Date(Helper.timeWithRoundMiliseconds());
     public java.sql.Time orderTime = Helper.timeFromDate(new Date());
-    public java.sql.Timestamp orderTimestamp = new java.sql.Timestamp(new Date().getTime());
+    public java.sql.Timestamp orderTimestamp = new Timestamp(Helper.timeWithRoundMiliseconds());
     public java.sql.Date orderDateDate = Helper.dateFromCalendar(Calendar.getInstance());
     @Temporal(TemporalType.TIMESTAMP)
-    public Calendar orderCal = Calendar.getInstance();
+    public Calendar orderCal = Helper.calendarFromUtilDate(new Date(Helper.timeWithRoundMiliseconds()));
     public byte[] image = "bytes".getBytes();
     public BigDecimal amount = BigDecimal.valueOf(0);
     public BigInteger amountBigInt = BigInteger.valueOf(0);

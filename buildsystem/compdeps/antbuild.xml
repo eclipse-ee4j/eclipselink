@@ -172,6 +172,8 @@
         <property name="oracleddl.criteria" value="[0.0.1,5.0)"/>
         <property name="slf4j.prefix" value="org.slf4j.api"/>
         <property name="slf4j.criteria" value="[0.0.1,5.0)"/>
+        <property name="mongodb.prefix" value="org.mongodb.mongo-java-driver"/>
+        <property name="mongodb.criteria" value="[3.0.0,4.0)"/>
     </target>
 
     <!-- Need to copy only the bundles that will be in the features into the "p2repo.dir/plugins" dir
@@ -235,6 +237,9 @@
         <selectbundle basename="${slf4j.prefix}"  directory="${compdeps.2.common.plugins.dir}"
                      criterion="${slf4j.criteria}" property="slf4j.version" versiononly="true"
         />
+        <selectbundle basename="${mongodb.prefix}"  directory="${compdeps.2.common.plugins.dir}"
+                     criterion="${mongodb.criteria}" property="mongodb.version" versiononly="true"
+        />
 
         <say  message="   javax.xml.bind.version   = '${javax.xml.bind.version}'"                                                   if="javax.xml.bind.version"/>
         <say  message="   '{$javax.xml.bind.prefix}_{$javax.xml.bind.criteria}' not found! Generated features will be invalid."   unless="javax.xml.bind.version"/>
@@ -266,6 +271,8 @@
         <say  message="   '${slf4j.prefix}_${slf4j.criteria}.jar' not found! Generated features will be invalid."               unless="slf4j.version"/>
         <say  message="   wsrs.version             = '${wsrs.version}'"                                                                   if="wsrs.version"/>
         <say  message="   '${wsrs.prefix}_${wsrs.criteria}.jar' not found! Generated features will be invalid."                 unless="wsrs.version"/>
+        <say  message="   mongodb.version             = '${mongodb.version}'"                                                                   if="mongodb.version"/>
+        <say  message="   '${mongodb.prefix}_${mongodb.criteria}.jar' not found! Generated features will be invalid."                 unless="mongodb.version"/>
 
         <echo message="Searching ${compdeps.2.jpa.plugins.dir}..."/>
         <selectbundle basename="${persistence.prefix}"  directory="${compdeps.2.jpa.plugins.dir}"
@@ -335,6 +342,7 @@
         <filter token="JSON_VERSION"         value="${json.version}"/>
         <filter token="WSDL_VERSION"         value="${wsdl.version}"/>
         <filter token="WSRS_VERSION"         value="${wsrs.version}"/>
+        <filter token="MONGODB_VERSION"      value="${mongodb.version}"/>
         <!--          Filters for product bundles in feature.xml files -->
         <filter token="ANTLR_VERSION"        value="${antlr.version}"/>
         <filter token="ASM_VERSION"          value="${asm.version}"/>
@@ -379,6 +387,7 @@
                           ${json.prefix}_${json.version}.jar,
                           ${slf4j.prefix}_${slf4j.version}.jar,
                           ${wsrs.prefix}_${wsrs.version}.jar,
+                          ${mongodb.prefix}_${mongodb.version}.jar,
                           ${sun.tools.xjc.prefix}_${sun.tools.xjc.version}.jar,
                           ${sun.tools.xjc.prefix}.source_${sun.tools.xjc.version}.jar,
                           ${sun.xml.bind.prefix}_${sun.xml.bind.version}.jar,

@@ -34,7 +34,7 @@
          unpack="false"/ -->
 
    <plugin
-         id="org.eclipse.orbit.mongodb"
+         id="org.mongodb.mongo-java-driver"
          download-size="0"
          install-size="0"
          version="@MONGODB_VERSION@"

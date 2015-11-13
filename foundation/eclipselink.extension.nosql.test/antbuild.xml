@@ -183,6 +183,9 @@
         <selectbundle basename="org.eclipse.orbit.mongodb" directory="${nosql_test.build.location}/${nosql_test.2.common.plugins.dir}" separator="_"
             criterion="[2.0.0,9.0.0)" property="mongo.lib" includepath="true"
         />
+        <selectbundle basename="org.mongodb.mongo-java-driver" directory="${nosql_test.build.location}/${nosql_test.2.common.plugins.dir}" separator="_"
+            criterion="[2.0.0,9.0.0)" property="mongodb.lib" includepath="true"
+        />
         <selectbundle basename="javax.persistence" directory="${nosql_test.build.location}/${nosql_test.2.jpa.plugins.dir}" separator="_"
             criterion="[2.0.0,3.0.0)" property="persistence.lib" includepath="true"
         />
@@ -219,6 +222,7 @@
         <available file="${jdbc.driver.jar}"                                         property="jdbc.jar.exist"/>
 
         <say  message="mongo.lib:         '${mongo.lib}'"            if="mongo.lib"/>
+        <say  message="mongodb.lib:       '${mongodb.lib}'"          if="mongodb.lib"/>
         <say  message="persistence.lib:   '${persistence.lib}'"      if="persistence.lib"/>
         <say  message="resource.lib:      '${resource.lib}'"         if="resource.lib"/>
         <say  message="antlr.lib:         '${antlr.lib}'"            if="antlr.lib"/>
@@ -270,6 +274,7 @@
                 <isset property="jpatest.framework.exist"/>
                 <!--isset property="junit.lib.exist"/-->
                 <isset property="mongo.lib"/>
+                <isset property="mongodb.lib"/>
                 <isset property="resource.lib"/>
             </and>
         </condition>
@@ -311,11 +316,14 @@
         </path>
     </target>
     <target name="init_dependency" if="dependency.ok" depends="announce_missing_dependencies">
-        <path id="nosql_test.nosql.dependency.path">
-            <pathelement path="${mongo.lib}"/>
+        <path id="nosql_test.nosql.dependency.base.path">
             <pathelement path="${resource.lib}"/>
             <pathelement path="${junit.lib}"/>
             <pathelement path="${jacocoagent.lib}"/>
+        </path>
+        <path id="nosql_test.nosql.dependency.path">
+            <path refid="nosql_test.nosql.dependency.base.path"/>
+            <pathelement path="${mongodb.lib}"/>
         </path>
         <path id="nosql_test.test.infrastructure.path">
             <pathelement path="${coretest.framework.lib}"/>
@@ -342,16 +350,25 @@
             <pathelement path="${jacocoagent.lib}"/>
         </path>
         <!-- Classpath used for compiling tests. -->
-        <path id="nosql_test.compile.path">
+        <path id="nosql_test.compile.base.path">
             <path refid="nosql_test.product.path"/>
             <path refid="nosql_test.public.dependency.path"/>
-            <path refid="nosql_test.nosql.dependency.path"/>
             <path refid="nosql_test.test.infrastructure.path"/>
             <pathelement path="${nosql_test.resource.dir}"/>
+        </path>
+        <path id="nosql_test.compile.path">
+            <path refid="nosql_test.compile.base.path"/>
+            <path refid="nosql_test.nosql.dependency.path"/>
         </path>
         <!-- Classpath used for running tests. -->
         <path id="nosql_test.run.path">
             <path refid="nosql_test.compile.path"/>
+            <path refid="nosql_test.runtime.only.path"/>
+        </path>
+        <path id="nosql_test.run.mongo.path">
+            <path refid="nosql_test.compile.base.path"/>
+            <path refid="nosql_test.nosql.dependency.base.path"/>
+            <pathelement path="${mongo.lib}"/>
             <path refid="nosql_test.runtime.only.path"/>
         </path>
     </target>
@@ -372,13 +389,15 @@
         <say  message="        missing! :: '${extensions.depend.dir}'"                                      unless="ext.depend.dir.exist"/>
         <say  message="        found.   :: '${mongo.lib}'"                                                      if="mongo.lib"/>
         <say  message="        missing! :: '${extensions.depend.dir}/${mongo.jar}'"                         unless="mongo.lib"/>
+        <say  message="        found.   :: '${mongodb.lib}'"                                                      if="mongodb.lib"/>
+        <say  message="        missing! :: '${extensions.depend.dir}/${mongodb.jar}'"                         unless="mongodb.lib"/>
         <fail message="Missing dependencies!" unless="dependency.ok"/>
     </target>
 
     <!-- Compiles all tests. -->
     <target name="compile" depends="init_paths" description="compile EclipseLink nosql tests">
         <echo message="Using the following nosql dependencies:"/>
-        <echo message="    '${mongo.lib}'"/>
+        <echo message="    '${mongodb.lib}'"/>
         <mkdir dir="${nosql_test.classes.dir}"/>
         <javac srcdir="${nosql_test.src.dir}"
                destdir="${nosql_test.classes.dir}"
@@ -501,6 +520,23 @@
                 </classpath>
                 <formatter type="xml"/>
                 <test name="@{testclass}" haltonfailure="no" outfile="${report.dir}/@{testclass}-test-results">
+                </test>
+            </junit>
+            <junit printsummary="yes" failureproperty="junit.failed" fork="yes" forkmode="once" showoutput="true" maxmemory="512m" dir="${run.dir}">
+                <jvmarg line="${additional.jvmargs}"/>
+                <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
+                <jvmarg value="-Ddb.driver=${db.driver}"/>
+                <jvmarg value="-Ddb.url=@{dburl}"/>
+                <jvmarg value="-Ddb.user=${db.user}"/>
+                <jvmarg value="-Ddb.pwd=${db.pwd}"/>
+                <jvmarg value="-Ddb.platform=${db.platform}"/>
+                <jvmarg value="-Djava.security.manager"/>
+                <jvmarg value="-Djava.security.policy=./java.policy.allpermissions"/>
+                <classpath>
+                    <path refid="nosql_test.run.mongo.path"/>
+                </classpath>
+                <formatter type="xml"/>
+                <test name="@{testclass}" haltonfailure="no" outfile="${report.dir}/@{testclass}Bak-test-results">
                 </test>
             </junit>
         </sequential>

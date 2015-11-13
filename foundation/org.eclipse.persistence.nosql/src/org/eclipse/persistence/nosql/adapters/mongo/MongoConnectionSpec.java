@@ -15,6 +15,7 @@ package org.eclipse.persistence.nosql.adapters.mongo;
 import java.util.Properties;
 
 import javax.resource.cci.Connection;
+import javax.resource.cci.ConnectionFactory;
 
 import org.eclipse.persistence.eis.EISAccessor;
 import org.eclipse.persistence.eis.EISConnectionSpec;
@@ -22,6 +23,7 @@ import org.eclipse.persistence.eis.EISException;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.nosql.adapters.mongo.MongoConnectionFactory;
+import org.eclipse.persistence.internal.nosql.adapters.mongo.MongoDatabaseConnectionFactory;
 import org.eclipse.persistence.internal.nosql.adapters.mongo.MongoJCAConnectionSpec;
 
 import com.mongodb.ReadPreference;
@@ -42,6 +44,7 @@ public class MongoConnectionSpec extends EISConnectionSpec {
     public static final String OPTIONS = "mongo.options";
     public static final String READ_PREFERENCE = "mongo.read-preference";
     public static final String WRITE_CONCERN = "mongo.write-concern";
+    public static final String SERVER_SELECTION_TIMEOUT = "mongo.server-selection-timeout";
 
     /**
      * PUBLIC:
@@ -57,7 +60,7 @@ public class MongoConnectionSpec extends EISConnectionSpec {
     @Override
     public Connection connectToDataSource(EISAccessor accessor, Properties properties) throws DatabaseException, ValidationException {
         if ((this.connectionFactory == null) && (this.name == null)) {
-            this.connectionFactory = new MongoConnectionFactory();
+            this.connectionFactory = createMongoConnectionFactory();
         }
         if (!properties.isEmpty()) {
             if (this.connectionSpec == null) {
@@ -116,9 +119,9 @@ public class MongoConnectionSpec extends EISConnectionSpec {
             } else if (preference instanceof String) {
                 String constant = (String)preference;
                 if (constant.equals("PRIMARY")) {
-                    spec.setReadPreference(ReadPreference.PRIMARY);
+                    spec.setReadPreference(ReadPreference.primary());
                 } else if (constant.equals("SECONDARY")) {
-                    spec.setReadPreference(ReadPreference.SECONDARY );
+                    spec.setReadPreference(ReadPreference.secondary());
                 } else {
                     throw new EISException("Invalid read preference property value: " + constant);
                 }
@@ -137,7 +140,7 @@ public class MongoConnectionSpec extends EISConnectionSpec {
                 } else if (constant.equals("MAJORITY")) {
                     spec.setWriteConcern(WriteConcern.MAJORITY);
                 } else if (constant.equals("NONE")) {
-                    spec.setWriteConcern(WriteConcern.NONE);
+                    spec.setWriteConcern(/*FIXME: WriteConcern.NONE*/ new WriteConcern("none"));
                 } else if (constant.equals("NORMAL")) {
                     spec.setWriteConcern(WriteConcern.NORMAL);
                 } else if (constant.equals("REPLICAS_SAFE")) {
@@ -156,8 +159,26 @@ public class MongoConnectionSpec extends EISConnectionSpec {
             } else if (options instanceof String) {
                 spec.setOptions(Integer.parseInt(((String)options)));
             }
+
+            // Allows setting of serverSelectionTimeout as a property.
+            Object serverSelectionTimeout = properties.get(SERVER_SELECTION_TIMEOUT);
+            if (serverSelectionTimeout instanceof Number) {
+                spec.setServerSelectionTimeout(((Number)serverSelectionTimeout).intValue());
+            } else if (serverSelectionTimeout instanceof String) {
+                spec.setServerSelectionTimeout(Integer.parseInt(((String)serverSelectionTimeout)));
+            }
         }
 
         return super.connectToDataSource(accessor, properties);
     }
+
+    protected ConnectionFactory createMongoConnectionFactory() {
+        try {
+            Class.forName("com.mongodb.client.MongoDatabase");
+            return new MongoDatabaseConnectionFactory();
+        } catch (ClassNotFoundException e) {
+            return new MongoConnectionFactory();
+        }
+    }
+
 }

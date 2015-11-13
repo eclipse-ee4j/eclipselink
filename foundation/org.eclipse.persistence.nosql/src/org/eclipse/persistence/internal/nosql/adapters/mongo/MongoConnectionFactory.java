@@ -13,7 +13,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.nosql.adapters.mongo;
 
-import java.net.UnknownHostException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -96,8 +96,13 @@ public class MongoConnectionFactory implements ConnectionFactory {
                 }
                 db = mongo.getDB(connectionSpec.getDB());
                 if ((connectionSpec.getUser() != null) && (connectionSpec.getUser().length() > 0)) {
-                    if (!db.authenticate(connectionSpec.getUser(), connectionSpec.getPassword())) {
-                        throw new ResourceException("authenticate failed for user: " + connectionSpec.getUser());
+                    try {
+                        Method method = DB.class.getMethod("authenticate", String.class, char[].class);
+                        if (!(Boolean) method.invoke(db, connectionSpec.getUser(), connectionSpec.getPassword())) {
+                            throw new ResourceException("authenticate failed for user: " + connectionSpec.getUser());
+                        }
+                    } catch (ReflectiveOperationException e) {
+                        throw new ResourceException("authenticate method not supported: " + e.getMessage(), e);
                     }
                 }
                 if (connectionSpec.getOptions() > 0) {
@@ -109,7 +114,7 @@ public class MongoConnectionFactory implements ConnectionFactory {
                 if (connectionSpec.getWriteConcern() != null) {
                     db.setWriteConcern(connectionSpec.getWriteConcern());
                 }
-            } catch (UnknownHostException exception) {
+            } catch (/*UnknownHost*/Exception exception) {
                 ResourceException resourceException = new ResourceException(exception.toString());
                 resourceException.initCause(exception);
                 throw resourceException;

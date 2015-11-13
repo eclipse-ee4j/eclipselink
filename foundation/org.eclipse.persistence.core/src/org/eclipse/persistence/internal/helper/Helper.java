@@ -39,6 +39,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -2424,5 +2425,9 @@ public class Helper extends CoreHelper implements Serializable {
             }
         }
         return false;
+    }
+
+    public static long timeWithRoundMiliseconds() {
+        return new Date().getTime() / 1000 * 1000;
     }
 }

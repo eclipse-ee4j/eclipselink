@@ -252,8 +252,8 @@
         <property name="sun.tools.xjc.criteria" value="[2.2.11,5.0.0)"/>
         <property name="sun.xml.bind.prefix" value="jaxb-core"/>
         <property name="sun.xml.bind.criteria" value="[2.2.11,5.0.0)"/>
-        <property name="mongodb.prefix" value="org.eclipse.orbit.mongodb"/>
-        <property name="mongodb.criteria" value="[2.7.2,2.8.0)"/>
+        <property name="mongodb.prefix" value="org.mongodb.mongo-java-driver"/>
+        <property name="mongodb.criteria" value="[2.0.0,9.0.0)"/>
         <property name="json.prefix" value="org.glassfish.javax.json"/>
         <property name="json.criteria" value="[1.0.4,5.0.0)"/>
 
