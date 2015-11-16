@@ -305,25 +305,33 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
         if(null != jaxbContext) {
             return jaxbContext;
         }
-        ContextResolver<JAXBContext> resolver = null;
-        if(null != providers) {
-            resolver = providers.getContextResolver(JAXBContext.class, mediaType);
-        }
 
-        if (null != resolver && domainClasses.size() == 1) {
-            jaxbContext = resolver.getContext(domainClasses.iterator().next());
-        }
+        synchronized (contextCache) {
+            jaxbContext = contextCache.get(domainClasses);
+            if(null != jaxbContext) {
+                return jaxbContext;
+            }
 
-        if(null == jaxbContext) {
-            jaxbContext = JAXBContextFactory.createContext(domainClasses.toArray(new Class[0]), null);
-            contextCache.put(domainClasses, jaxbContext);
-            return jaxbContext;
-        } else if (jaxbContext instanceof org.eclipse.persistence.jaxb.JAXBContext) {
-            return jaxbContext;
-        } else {
-            jaxbContext = JAXBContextFactory.createContext(domainClasses.toArray(new Class[0]), null);
-            contextCache.put(domainClasses, jaxbContext);
-            return jaxbContext;
+            ContextResolver<JAXBContext> resolver = null;
+            if(null != providers) {
+                resolver = providers.getContextResolver(JAXBContext.class, mediaType);
+            }
+
+            if (null != resolver && domainClasses.size() == 1) {
+                jaxbContext = resolver.getContext(domainClasses.iterator().next());
+            }
+
+            if(null == jaxbContext) {
+                jaxbContext = JAXBContextFactory.createContext(domainClasses.toArray(new Class[0]), null);
+                contextCache.put(domainClasses, jaxbContext);
+                return jaxbContext;
+            } else if (jaxbContext instanceof org.eclipse.persistence.jaxb.JAXBContext) {
+                return jaxbContext;
+            } else {
+                jaxbContext = JAXBContextFactory.createContext(domainClasses.toArray(new Class[0]), null);
+                contextCache.put(domainClasses, jaxbContext);
+                return jaxbContext;
+            }
         }
     }
 
