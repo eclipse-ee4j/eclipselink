@@ -35,7 +35,7 @@
         <!-- BUILD Properties -->
         <orbit.drop>R20130827064939</orbit.drop>
         <eclipse.drop>luna</eclipse.drop>
-        <findbugs.version>3.0.0</findbugs.version>
+        <findbugs.version>3.0.1</findbugs.version>
         <findbugs.threshold>Normal</findbugs.threshold>
     </properties>
 
