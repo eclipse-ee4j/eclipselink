@@ -36,7 +36,7 @@
         <orbit.drop>R20130827064939</orbit.drop>
         <!-- orbit.drop>R20130517111416</orbit.drop -->
         <eclipse.drop>kepler</eclipse.drop>
-        <findbugs.version>2.5.5</findbugs.version>
+        <findbugs.version>3.0.0</findbugs.version>
         <findbugs.threshold>High</findbugs.threshold>
     </properties>
 
