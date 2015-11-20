@@ -49,7 +49,7 @@ public class PrivilegedGetSystemProperty implements PrivilegedAction<String> {
      */
     public PrivilegedGetSystemProperty(final String key, final String def) {
         this.key = key;
-        this.def = null;
+        this.def = def;
     }
 
     /**
