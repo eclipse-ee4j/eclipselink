@@ -76,7 +76,9 @@ public class SessionManager {
     private static void init() {
         String platformClass = ServerPlatformUtils.detectServerPlatform(null);
         try {
-            detectedPlatform = ServerPlatformUtils.createServerPlatform(null, platformClass, SessionManager.class.getClassLoader());
+            detectedPlatform = platformClass != null
+                    ? ServerPlatformUtils.createServerPlatform(null, platformClass, SessionManager.class.getClassLoader())
+                    : null;
         } catch (ServerPlatformException e) {
             // some platforms may not be handling 'null' session well or
             // detected class as such may not be valid for some reason (ie
