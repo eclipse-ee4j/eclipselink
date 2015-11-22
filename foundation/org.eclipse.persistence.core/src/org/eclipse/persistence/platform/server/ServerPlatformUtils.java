@@ -32,6 +32,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.PropertiesHandler;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.platform.server.glassfish.GlassfishPlatformDetector;
 import org.eclipse.persistence.platform.server.was.WebSpherePlatformDetector;
 import org.eclipse.persistence.platform.server.wls.WebLogicPlatformDetector;
 import org.eclipse.persistence.sessions.DatabaseSession;
@@ -44,6 +45,7 @@ public final class ServerPlatformUtils {
         add(new NoServerPlatformDetector());
         add(new WebSpherePlatformDetector());
         add(new WebLogicPlatformDetector());
+        add(new GlassfishPlatformDetector());
     }};
 
     private static final String UNKNOWN_MARKER = "UNKNOWN";
