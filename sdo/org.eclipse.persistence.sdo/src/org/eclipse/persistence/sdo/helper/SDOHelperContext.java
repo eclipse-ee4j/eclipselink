@@ -779,8 +779,8 @@ public class SDOHelperContext implements HelperContext {
      * @param applicationName
      */
     private static void addWLSNotificationListener(String applicationName) {
-        if (getWLSMBeanServer() != null) {
-            try {
+        try {
+            if (getWLSMBeanServer() != null) {
                 ObjectName service = new ObjectName(WLS_SERVICE_KEY);
                 ObjectName serverRuntime = (ObjectName) wlsMBeanServer.getAttribute(service, WLS_SERVER_RUNTIME);
                 ObjectName[] appRuntimes = (ObjectName[]) wlsMBeanServer.getAttribute(serverRuntime, WLS_APP_RUNTIMES);
@@ -801,9 +801,17 @@ public class SDOHelperContext implements HelperContext {
                                 break;
                             }
                         }
-                    } catch (Exception ex) {}
+                    } catch (Exception ex) {
+                        if (LOGGER.isLoggable(Level.FINE)) {
+                            LOGGER.fine("Failed to retrieve application name in runtime " + appRuntimes[i].toString() + ": " + ex.getMessage());
+                        }
+                    }
                 }
-            } catch (Exception x) {}
+            }
+        } catch (Exception x) {
+            if (LOGGER.isLoggable(Level.WARNING)) {
+                LOGGER.warning("Failed to add notification listener for application " + applicationName + ": " + x.getMessage());
+            }
         }
     }
 
