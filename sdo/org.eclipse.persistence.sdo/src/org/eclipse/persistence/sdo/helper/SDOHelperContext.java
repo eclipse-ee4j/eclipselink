@@ -24,6 +24,7 @@ import commonj.sdo.helper.XMLHelper;
 import commonj.sdo.helper.XSDHelper;
 import commonj.sdo.impl.ExternalizableDelegator;
 import org.eclipse.persistence.exceptions.SDOException;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetMethod;
 import org.eclipse.persistence.sdo.SDOConstants;
@@ -803,14 +804,14 @@ public class SDOHelperContext implements HelperContext {
                         }
                     } catch (Exception ex) {
                         if (LOGGER.isLoggable(Level.FINE)) {
-                            LOGGER.fine("Failed to retrieve application name in runtime " + appRuntimes[i].toString() + ": " + ex.getMessage());
+                            LOGGER.fine("Failed to retrieve application name in runtime " + appRuntimes[i].toString() + ":\n" + Helper.printStackTraceToString(ex));
                         }
                     }
                 }
             }
         } catch (Exception x) {
             if (LOGGER.isLoggable(Level.WARNING)) {
-                LOGGER.warning("Failed to add notification listener for application " + applicationName + ": " + x.getMessage());
+                LOGGER.warning("Failed to add notification listener for application " + applicationName + ":\n" + Helper.printStackTraceToString(x));
             }
         }
     }
