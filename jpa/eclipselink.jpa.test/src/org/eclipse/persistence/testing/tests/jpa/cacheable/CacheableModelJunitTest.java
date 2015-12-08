@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -16,6 +16,8 @@
  *       - 313401: shared-cache-mode defaults to NONE when the element value is unrecognized
  *     06/19/2014-2.6: - Tomas Kraus (Oracle)
  *       - 437578: Tests to verify @Cacheable inheritance in JPA 2.1
+ *     12/03/2015-2.6 Dalia Abo Sheasha
+ *       - 483582: Add the javax.persistence.sharedCache.mode property
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.cacheable;
 
@@ -38,6 +40,7 @@ import junit.framework.*;
 import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.EntityManagerProperties;
 import org.eclipse.persistence.config.HintValues;
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
@@ -47,6 +50,7 @@ import org.eclipse.persistence.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.QuerySQLTracker;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
 import org.eclipse.persistence.testing.models.jpa.cacheable.CacheableFalseDetail;
 import org.eclipse.persistence.testing.models.jpa.cacheable.CacheableFalseDetailWithBackPointer;
 import org.eclipse.persistence.testing.models.jpa.cacheable.CacheableFalseEntity;
@@ -212,6 +216,13 @@ public class CacheableModelJunitTest extends JUnitTestCase {
         return JUnitTestCase.getServerSession(puName);
     }
     
+    /**
+     * Convenience method.
+     */
+    public ServerSession getPUServerSession(String puName, Map properties) {
+        return JUnitTestCase.getServerSession(puName, properties);
+    }
+    
     public void setUp() {
         clearDSCache();
     }
@@ -223,10 +234,17 @@ public class CacheableModelJunitTest extends JUnitTestCase {
         if (! JUnitTestCase.isJPA10()) {
             suite.addTest(new CacheableModelJunitTest("testSetup"));
             suite.addTest(new CacheableModelJunitTest("testCachingOnALL"));
+            suite.addTest(new CacheableModelJunitTest("testCachingOnALLProperty"));
             suite.addTest(new CacheableModelJunitTest("testCachingOnNONE"));
+            suite.addTest(new CacheableModelJunitTest("testCachingOnNONEProperty"));
+            suite.addTest(new CacheableModelJunitTest("testCachingOnNONEPropertyEMF"));
+            suite.addTest(new CacheableModelJunitTest("testCachingOnNONEPropertyConflict"));
             suite.addTest(new CacheableModelJunitTest("testCachingOnENABLE_SELECTIVE"));
+            suite.addTest(new CacheableModelJunitTest("testCachingOnENABLE_SELECTIVEProperty"));
             suite.addTest(new CacheableModelJunitTest("testCachingOnDISABLE_SELECTIVE"));
+            suite.addTest(new CacheableModelJunitTest("testCachingOnDISABLE_SELECTIVEProperty"));
             suite.addTest(new CacheableModelJunitTest("testCachingOnUNSPECIFIED"));
+            suite.addTest(new CacheableModelJunitTest("testCachingOnUNSPECIFIEDProperty"));
             
             // Test cache retrieve mode of BYPASS and USE through the EM.
             suite.addTest(new CacheableModelJunitTest("testCreateEntities"));
@@ -859,10 +877,20 @@ public class CacheableModelJunitTest extends JUnitTestCase {
     }
     
     /**
-     * Verifies the cacheable settings when caching (from persistence.xml) is set to ALL.
+     * Verifies the cacheable settings when caching (from persistence.xml) is set to ALL using shared-cache-mode element.
      */
     public void testCachingOnALL() {
-        ServerSession session = getPUServerSession("ALL");
+        assertCachingOnALL(getPUServerSession("ALL"));
+    }
+    
+    /**
+     * Verifies the cacheable settings when caching (from persistence.xml) is set to ALL using javax.persistence.sharedCache.mode property.
+     */
+    public void testCachingOnALLProperty() {
+        assertCachingOnALL(getPUServerSession("ALL-Property"));
+    }
+    
+    public void assertCachingOnALL(ServerSession session) {
         ClassDescriptor falseEntityDescriptor = session.getDescriptorForAlias("JPA_CACHEABLE_FALSE");
         assertFalse("CacheableFalseEntity (ALL) from annotations has caching turned off", usesNoCache(falseEntityDescriptor));
     
@@ -897,10 +925,41 @@ public class CacheableModelJunitTest extends JUnitTestCase {
     }
     
     /**
-     * Verifies the cacheable settings when caching (from persistence.xml) is set to NONE.
+     * Verifies the cacheable settings when caching (from persistence.xml) is set to NONE using shared-cache-mode element.
      */
     public void testCachingOnNONE() {
-        ServerSession session = getPUServerSession("NONE");
+        assertCachingOnNONE(getPUServerSession("NONE"));
+    }
+    
+    /**
+     * Verifies the cacheable settings when caching (from persistence.xml) is set to NONE using javax.persistence.sharedCache.mode property.
+     */
+    public void testCachingOnNONEProperty() {
+        assertCachingOnNONE(getPUServerSession("NONE-Property"));
+    }
+    
+    /**
+     * Verifies the cacheable settings when passing the javax.persistence.sharedCache.mode property
+     * as NONE when creating an EntityManagerFactory.
+     */
+    public void testCachingOnNONEPropertyEMF() {
+        Map<String, String> properties = new HashMap<String, String>();
+        properties.putAll(JUnitTestCaseHelper.getDatabaseProperties());
+        properties.put(PersistenceUnitProperties.SHARED_CACHE_MODE, "NONE");
+        assertCachingOnNONE(getPUServerSession("CacheUnlisted", properties));
+    }
+    
+    /**
+     * Verifies that when the shared-cache-mode element and javax.persistence.sharedCache.mode property
+     * are set, the javax.persistence.sharedCache.mode property will win. In the persistence.xml,
+     * javax.persistence.sharedCache.mode property is set to NONE while shared-cache-mode element is set to
+     * ALL.
+     */
+    public void testCachingOnNONEPropertyConflict() {
+        assertCachingOnNONE(getPUServerSession("NONE-Property-Conflict"));
+    }
+    
+    public void assertCachingOnNONE(ServerSession session) {
         ClassDescriptor falseEntityDescriptor = session.getDescriptorForAlias("JPA_CACHEABLE_FALSE");
         assertTrue("CacheableFalseEntity (NONE) from annotations has caching turned on", usesNoCache(falseEntityDescriptor));
     
@@ -935,10 +994,20 @@ public class CacheableModelJunitTest extends JUnitTestCase {
     }
     
     /**
-     * Verifies the cacheable settings when caching (from persistence.xml) is set to ENABLE_SELECTIVE.
+     * Verifies the cacheable settings when caching (from persistence.xml) is set to ENABLE_SELECTIVE using shared-cache-mode element.
      */
     public void testCachingOnENABLE_SELECTIVE() {
-        ServerSession session = getPUServerSession("ENABLE_SELECTIVE");
+        assertCachingOnENABLE_SELECTIVE(getPUServerSession("ENABLE_SELECTIVE"));
+    }
+    
+    /**
+     * Verifies the cacheable settings when caching (from persistence.xml) is set to ENABLE_SELECTIVE using javax.persistence.sharedCache.mode property.
+     */
+    public void testCachingOnENABLE_SELECTIVEProperty() {
+        assertCachingOnENABLE_SELECTIVE(getPUServerSession("ENABLE_SELECTIVE-Property"));
+    }
+    
+    public void assertCachingOnENABLE_SELECTIVE(ServerSession session) {
         ClassDescriptor falseEntityDescriptor = session.getDescriptorForAlias("JPA_CACHEABLE_FALSE");
         assertTrue("CacheableFalseEntity (ENABLE_SELECTIVE) from annotations has caching turned on", usesNoCache(falseEntityDescriptor));
         
@@ -970,10 +1039,20 @@ public class CacheableModelJunitTest extends JUnitTestCase {
     }
     
     /**
-     * Verifies the cacheable settings when caching (from persistence.xml) is set to DISABLE_SELECTIVE.
+     * Verifies the cacheable settings when caching (from persistence.xml) is set to DISABLE_SELECTIVE using shared-cache-mode element.
      */
     public void testCachingOnDISABLE_SELECTIVE() {
-        ServerSession session = getPUServerSession("DISABLE_SELECTIVE");
+        assertCachingOnDISABLE_SELECTIVE(getPUServerSession("DISABLE_SELECTIVE"));
+    }
+    
+    /**
+     * Verifies the cacheable settings when caching (from persistence.xml) is set to DISABLE_SELECTIVE using javax.persistence.sharedCache.mode property.
+     */
+    public void testCachingOnDISABLE_SELECTIVEProperty() {
+        assertCachingOnDISABLE_SELECTIVE(getPUServerSession("DISABLE_SELECTIVE-Property"));
+    }
+    
+    public void assertCachingOnDISABLE_SELECTIVE(ServerSession session) {
         ClassDescriptor falseEntityDescriptor = session.getDescriptorForAlias("JPA_CACHEABLE_FALSE");
         assertTrue("CacheableFalseEntity (DISABLE_SELECTIVE) from annotations has caching turned on", usesNoCache(falseEntityDescriptor));
         
@@ -1005,10 +1084,20 @@ public class CacheableModelJunitTest extends JUnitTestCase {
     }
     
     /**
-     * Verifies the cacheable settings when caching (from persistence.xml) is set to UNSPECIFIED.
+     * Verifies the cacheable settings when caching (from persistence.xml) is set to UNSPECIFIED using shared-cache-mode element.
      */
     public void testCachingOnUNSPECIFIED() {
-        ServerSession session = getPUServerSession("UNSPECIFIED");
+        assertCachingOnUNSPECIFIED(getPUServerSession("UNSPECIFIED"));
+    }
+    
+    /**
+     * Verifies the cacheable settings when caching (from persistence.xml) is set to UNSPECIFIED using javax.persistence.sharedCache.mode property.
+     */
+    public void testCachingOnUNSPECIFIEDProperty() {
+        assertCachingOnUNSPECIFIED(getPUServerSession("UNSPECIFIED-Property"));
+    }
+    
+    public void assertCachingOnUNSPECIFIED(ServerSession session) {
         ClassDescriptor falseEntityDescriptor = session.getDescriptorForAlias("JPA_CACHEABLE_FALSE");
         assertTrue("CacheableFalseEntity (UNSPECIFIED) from annotations has caching turned on", usesNoCache(falseEntityDescriptor));
         

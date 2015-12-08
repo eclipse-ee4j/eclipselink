@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -99,6 +99,8 @@
  *       - 412384: Applying Converter for parameterized basic-type for joda-time's DateTime does not work
  *     09/01/2014-2.6.0 Dmitry Kornilov
  *       - JPARS 2.0 related changes
+ *     12/03/2015-2.6 Dalia Abo Sheasha
+ *       - 483582: Add the javax.persistence.sharedCache.mode property
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -1272,7 +1274,7 @@ public class MetadataProject {
      * this information from a JPA 1.0 container.   
      */
     protected String getSharedCacheModeName() {
-        if (! m_isSharedCacheModeInitialized) {
+        if (! m_isSharedCacheModeInitialized && m_sharedCacheMode == null) {
             try {
                 Method method = null;
             
@@ -1294,6 +1296,14 @@ public class MetadataProject {
         }
         
         return (m_sharedCacheMode == null) ? null : m_sharedCacheMode.name();
+    }
+
+    /**
+     * INTERNAL:
+     * Sets the SharedCacheMode value.
+     */
+    public void setSharedCacheMode(SharedCacheMode m_sharedCacheMode) {
+        this.m_sharedCacheMode = m_sharedCacheMode;
     }
 
     /**

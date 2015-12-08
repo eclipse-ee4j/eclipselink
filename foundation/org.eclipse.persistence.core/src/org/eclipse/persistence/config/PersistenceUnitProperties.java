@@ -39,6 +39,8 @@
  *       - 456067 : Added support for defining query timeout units
  *     09/28/2015 - Will Dazey
  *       - 478331 : Added support for defining local or server as the default locale for obtaining timestamps
+ *     12/03/2015-2.6 Dalia Abo Sheasha
+ *       - 483582: Add the javax.persistence.sharedCache.mode property
  ******************************************************************************/
 package org.eclipse.persistence.config;
 
@@ -1210,6 +1212,24 @@ public class PersistenceUnitProperties {
      * @see #CACHE_SHARED_DEFAULT
      */
     public static final String CACHE_SHARED_ = "eclipselink.cache.shared.";
+
+    /**
+     * The "<code>javax.persistence.sharedCache.mode</code>" property determines whether
+     * second-level caching is in effect for the persistence unit. This property overrides the value
+     * specified by the &lt;shared-cache-mode&gt; element in the persistence.xml.
+     * <p>
+     * <b>Allowed Values:</b>
+     * <ul>
+     * <li>"<code>ALL</code>"
+     * <li>"<code>NONE</code>"
+     * <li>"<code>ENABLE_SELECTIVE</code>"
+     * <li>"<code>DISABLE_SELECTIVE</code>"
+     * <li>"<code>UNSPECIFIED</code>"
+     * </ul>
+     * 
+     * @see javax.persistence.SharedCacheMode
+     */
+    public static final String SHARED_CACHE_MODE = "javax.persistence.sharedCache.mode";
 
     /**
      * Default caching properties - apply to all entities. May be overridden by

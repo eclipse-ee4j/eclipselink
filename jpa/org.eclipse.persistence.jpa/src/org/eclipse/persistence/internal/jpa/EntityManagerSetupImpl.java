@@ -70,6 +70,8 @@
  *       - 478331 : Added support for defining local or server as the default locale for obtaining timestamps
  *     11/05/2015 - Dalia Abo Sheasha
  *       - 480787 : Wrap several privileged method calls with a doPrivileged block
+ *     12/03/2015-2.6 Dalia Abo Sheasha
+ *       - 483582: Add the javax.persistence.sharedCache.mode property
  *****************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
@@ -140,6 +142,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.persistence.OptimisticLockException;
 import javax.persistence.PersistenceException;
+import javax.persistence.SharedCacheMode;
 import javax.persistence.ValidationMode;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.CollectionAttribute;
@@ -1960,6 +1963,9 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                         EntityManagerSetupImpl.updateCaseSensitivitySettings(predeployProperties, processor.getProject(), session);
                     }
                     
+                    // Set the shared cache mode to the javax.persistence.sharedCache.mode property value.
+                    updateSharedCacheMode(predeployProperties);
+
                     // Process the Object/relational metadata from XML and annotations.
                     // If Java Security is enabled, surround this call with a doPrivileged block.
                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
@@ -3460,6 +3466,19 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         String idValidationString = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.ID_VALIDATION, m, session);
         if (idValidationString != null) {
             session.getProject().setDefaultIdValidation(IdValidation.valueOf(idValidationString));
+        }
+    }
+    
+    /**
+     * Sets the SharedCacheMode with values from the javax.persistence.sharedCache.mode property. If
+     * user enters an invalid caching type, valueOf will throw an illegal argument exception, e.g.
+     * java.lang.IllegalArgumentException: No enum const class
+     * javax.persistence.SharedCacheMode.ALLBOGUS
+     */
+    protected void updateSharedCacheMode(Map m) {
+        String sharedCacheMode = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.SHARED_CACHE_MODE, m, session);
+        if (sharedCacheMode != null) {
+            processor.getProject().setSharedCacheMode(SharedCacheMode.valueOf(sharedCacheMode));
         }
     }
     
