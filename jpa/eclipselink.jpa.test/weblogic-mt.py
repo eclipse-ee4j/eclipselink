@@ -56,6 +56,18 @@ def help_msg():
     print '        jvm_options    :: Command line options to be passed to Java VM executable'
     print '                          (default -XX:PermSize=128m -XX:MaxPermSize=512m'
     print '                          -Dweblogic.Stdout=stdout.log -Dweblogic.Stderr=stderr.log)'
+    print ''
+    print '    start-partition --partition=<partition_name> [--host=<host>] [--port=<port>]'
+    print '                 [--admin-user=<admin_user>] [--admin-password=<admin_password>]'
+    print '                 [--jvm-options=<jvm_options>]'
+    print '        partition_name :: Name of the partition to be started'
+    print '        host           :: WebLogic server host (default 127.0.0.1)'
+    print '        port           :: WebLogic server port (default 7001)'
+    print '        admin_user     :: Admin user name (default weblogic)'
+    print '        admin_password :: Admin password (default welcome1)'
+    print '        jvm_options    :: Command line options to be passed to Java VM executable'
+    print '                          (default -XX:PermSize=128m -XX:MaxPermSize=512m'
+    print '                          -Dweblogic.Stdout=stdout.log -Dweblogic.Stderr=stderr.log)'
 #### Broken, do not publish
 #    print ''
 #    print '    start-script --domain=<domain_path> [--script=<start_script>]'
@@ -98,8 +110,9 @@ def help_msg():
     print '                                Each target is <name>\':\'<type> pair, e.g.'
     print '                                AdminServer:Server'
     print ''
-    print '    create-virtual-target --name=<partition_name> [--host=<host>] [--port=<port>]'
+    print '    create-virtual-target --name=<partition_name> --prefix=<target_prefix> [--host=<host>] [--port=<port>]'
     print '        partition_name :: Name of partition to be created'
+    print '        target_prefix  :: Name of virtual target prefix'
     print '        host           :: WebLogic server host (default to use global option)'
     print '        port           :: WebLogic server port (command argument only,'
     print '                          default not to set any value)'
@@ -534,6 +547,21 @@ def start_domain(globals, command):
     startServer(url=serverURL, username=adminUser, password=adminPassword, \
             domainDir=domain, jvmArgs=jvmOptions)
 
+# Execute start-partition command.
+# Starts the partition passed as an argument.
+#     globals Global command arguments.
+#     command Command and its arguments dictionary.
+def start_partition(globals, command):
+    check_all_options(globals, command, ['partition'])
+    partition = get_option(globals, command, 'partition')
+    jvmOptions = init_option(globals, command, 'jvm-options', \
+            '-XX:PermSize=128m -XX:MaxPermSize=512m -Dweblogic.Stdout=stdout.log -Dweblogic.Stderr=stderr.log')
+    print 'Executing command start-partition'
+    print '    Partition:      ' + partition
+    print '    JVM options:    ' + jvmOptions
+    p = cmo.lookupPartition(partition)
+    startPartitionWait(p)
+
 ##### Broken, do not use.
 # Execute start-script command.
 # Uses default WebLogic startup script to start server. UNIX only feature.
@@ -653,20 +681,22 @@ def create_virtual_host(globals, command):
 #     globals Global command arguments.
 #     command Command and its arguments dictionary.
 def create_virtual_target(globals, command):
-    check_all_options(globals, command, ['name'])
+    check_all_options(globals, command, ['name','prefix'])
     name =  get_option(globals, command, 'name')
+    prefix =  get_option(globals, command, 'prefix')
     host = get_host(globals, command)
     port = get_command_option(command, 'port')
     print 'Executing command create-virtual-target'
-    print '    Name: ' + name
-    print '    Host: ' + host
-    print '    Port: ' + value_to_message(port)
+    print '    Name:   ' + name
+    print '    Prefix: ' + prefix
+    print '    Host:   ' + host
+    print '    Port:   ' + value_to_message(port)
     cd('/')
     vt = cmo.lookupVirtualTarget(name)
     if vt is None:
         print 'Creating virtual target ' + name
         vt = cmo.createVirtualTarget(name)
-        vt.setUriPrefix('/' + name)
+        vt.setUriPrefix('/' + prefix)
         for s in cmo.getServers():
             vt.addTarget(s)
             print 'Added server ' + s.getName() + ' to virtual target ' + name
@@ -690,8 +720,12 @@ def create_resource_group_template(globals, command):
     print 'Executing command create-resource-group-template'
     print '    Name: ' + name
     cd('/')
-    print 'Creating resource group template ' + name
-    cmo.createResourceGroupTemplate(name)
+    t = cmo.lookupResourceGroupTemplate(name)
+    if t is None:
+        print 'Creating resource group template ' + name
+        cmo.createResourceGroupTemplate(name)
+    else:
+        print 'Template ' + name + ' already exists'
 
 # Execute create-resource-group command.
 #     globals Global command arguments.
@@ -706,13 +740,17 @@ def create_resource_group(globals, command):
     print '    Template name: ' + value_to_message(templateName)
     print '    Targets:       ' + value_to_message(targetsList)
     cd('/')
-    print 'Creating resource group ' + name
-    cmo.createResourceGroup(name)
-    cd('ResourceGroups/' + name)
-    if templateName != None:
-        print 'Setting resource group template ' + templateName + ' to resource group ' + name
-        cmo.setResourceGroupTemplate(get_resource_group_template(templateName))
-    set_targets(name, targetsList)
+    rg = cmo.lookupResourceGroup(name)
+    if rg is None:
+        print 'Creating resource group ' + name
+        cmo.createResourceGroup(name)
+        cd('ResourceGroups/' + name)
+        if templateName != None:
+            print 'Setting resource group template ' + templateName + ' to resource group ' + name
+            cmo.setResourceGroupTemplate(get_resource_group_template(templateName))
+        set_targets(name, targetsList)
+    else:
+        print 'Resource group ' + name + ' already exists'
 
 # Execute create-realm command.
 #     globals Global command arguments.
@@ -949,7 +987,6 @@ def create_partition(globals, command):
             cd('Partitions/' + name)
             partition.addAvailableTarget(vt)
             partition.addDefaultTarget(vt)
-            partition.setURL('')
             if vhName != None:
                 print 'Setting partition ' + name + ' host name to ' + vhName + ' virtual host name'
                 set('HostNames', jarray.array([String(vhName)], String))
@@ -1090,24 +1127,27 @@ def create_proxy_resource(globals, command):
     jdbcParamsPath = resourcePath + '/JDBCDriverParams/' + name
     jdbcParamsPropertiesPath =  jdbcParamsPath + '/Properties/' + name
     cd('/')
-    print 'Creating proxy resource ' + name
-    cmo.createJDBCSystemResource(name)
-    cd(resourcePath)
-    cmo.setName(name)
-    cmo.setDatasourceType('PROXY')
-    cd(dsParamsPath)
-    print 'Setting JNDI name ' + jndiName + ' to resoiurce ' + name
-    set('JNDINames',jarray.array([String(jndiName)], String))
-    cd(jdbcParamsPropertiesPath)
-    print 'Creating property dbSwitchingCallbackClassName'
-    print '    with value com.oracle.jrf.mt.datasource.PartitionedJNDIBasedDataSourceSwitchingCallbackImpl'
-    cmo.createProperty('dbSwitchingCallbackClassName')
-    cd('Properties/dbSwitchingCallbackClassName')
-    cmo.setValue('com.oracle.jrf.mt.datasource.PartitionedJNDIBasedDataSourceSwitchingCallbackImpl')
-    cd(jdbcParamsPropertiesPath)
-    print 'Creating property switchingProperties'
-    cd('/JDBCSystemResources/' + name)
-    set_targets(name, targetsList)
+    if cmo.lookupJDBCSystemResource(name) is None:
+        print 'Creating proxy resource ' + name
+        cmo.createJDBCSystemResource(name)
+        cd(resourcePath)
+        cmo.setName(name)
+        cmo.setDatasourceType('PROXY')
+        cd(dsParamsPath)
+        print 'Setting JNDI name ' + jndiName + ' to resoiurce ' + name
+        set('JNDINames',jarray.array([String(jndiName)], String))
+        cd(jdbcParamsPropertiesPath)
+        print 'Creating property dbSwitchingCallbackClassName'
+        print '    with value com.oracle.jrf.mt.datasource.PartitionedJNDIBasedDataSourceSwitchingCallbackImpl'
+        cmo.createProperty('dbSwitchingCallbackClassName')
+        cd('Properties/dbSwitchingCallbackClassName')
+        cmo.setValue('com.oracle.jrf.mt.datasource.PartitionedJNDIBasedDataSourceSwitchingCallbackImpl')
+        cd(jdbcParamsPropertiesPath)
+        print 'Creating property switchingProperties'
+        cd('/JDBCSystemResources/' + name)
+        set_targets(name, targetsList)
+    else:
+        print 'Proxy resource ' + name + ' already exists'
 
 # Execute create-resource-override command.
 #     globals Global command arguments.
@@ -1247,6 +1287,7 @@ commandExecutors = {
     'create-domain'                      : create_domain,
     'add-template'                       : add_template,
     'start-domain'                       : start_domain,
+    'start-partition'                    : start_partition,
     'start-script'                       : start_script,
     'stop-domain'                        : stop_domain,
     'create-partition-admin'             : create_partition_admin,

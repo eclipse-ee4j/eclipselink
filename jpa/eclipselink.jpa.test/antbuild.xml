@@ -3458,7 +3458,6 @@
         <!-- Check whether there is at least one tenant defined. -->
         <condition property="is.test.with.tenant" value="true">
             <and>
-                <isset property="t1.host"/>
                 <isset property="db.t1.url"/>
                 <isset property="db.t1.user"/>
                 <isset property="db.t1.pwd"/>
@@ -3468,7 +3467,6 @@
         <condition property="is.test.with.second.tenant" value="true">
             <and>
                 <isset property="is.test.with.tenant"/>
-                <isset property="t2.host"/>
                 <isset property="db.t2.url"/>
                 <isset property="db.t2.user"/>
                 <isset property="db.t2.pwd"/>
@@ -3476,7 +3474,7 @@
         </condition>
     </target>
 
-    <!-- Switch between runing test in simple environment or in partition (with multitenancy enabled).
+    <!-- Switch between running test in simple environment or in partition (with multitenancy enabled).
        - Both server-run-test-simple and server-run-test-partition tasks execution depends on is.test.with.tenant
        - property:
        -  * server-run-test-simple runs when is.test.with.tenant property is not set
@@ -3484,7 +3482,7 @@
      -->
     <target name="server-run-test-switch" depends="server-run-test-simple,server-run-test-partition"/>
 
-    <!-- Switch between runing test on a single partition or two partitions in parallel.
+    <!-- Switch between running test on a single partition or two partitions in parallel.
        - Both server-run-test-partition-single and server-run-test-partition-parallel tasks execution depends
        - on is.test.with.second.tenant property:
        -  * server-run-test-partition-single runs when is.test.with.second.tenant property is not set
