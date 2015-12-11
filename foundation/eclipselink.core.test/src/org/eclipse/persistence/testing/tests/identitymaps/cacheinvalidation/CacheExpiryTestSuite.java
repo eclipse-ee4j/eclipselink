@@ -195,6 +195,7 @@ public class CacheExpiryTestSuite extends TestSuite {
         addTest(new InvalidateClassRecurseOptionTest(true));
         // invalidate the subtree
         addTest(new InvalidateClassRecurseOptionTest(false));
+        addTest(new InvalidateAllExternalChangeTest());
         addTest(new InvalidateAllTest());
         addTest(new PrimaryKeyQueryInUOWTest());
         // EL bug 276362 - Re-Validate CacheKey before refreshing object graph
