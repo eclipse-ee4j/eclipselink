@@ -1201,7 +1201,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
     @Override
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected, Boolean[] wasCacheUsed) {
         if (this.descriptor.getCachePolicy().isProtectedIsolation()) {
-            if (this.isCacheable && isTargetProtected && cacheKey != null) {
+            if (this.isCacheable && isTargetProtected && cacheKey != null && cacheKey.getInvalidationState() != CacheKey.CACHE_KEY_INVALID) {
                 Object cached = cacheKey.getObject();
                 if (cached != null) {
                     if (wasCacheUsed != null){
