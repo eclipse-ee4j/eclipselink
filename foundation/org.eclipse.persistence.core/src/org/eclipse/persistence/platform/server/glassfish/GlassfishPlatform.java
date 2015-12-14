@@ -16,20 +16,20 @@
  ******************************************************************************/  
 package org.eclipse.persistence.platform.server.glassfish;
 
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.services.glassfish.MBeanGlassfishRuntimeServices;
-import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.transaction.glassfish.GlassfishTransactionController;
-import org.eclipse.persistence.platform.server.JMXEnabledPlatform;
-import org.eclipse.persistence.platform.server.JMXServerPlatformBase;
-import org.eclipse.persistence.platform.server.ServerPlatformBase;
-import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.logging.JavaLog;
-
 import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.sql.Connection;
+
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.logging.JavaLog;
+import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.platform.server.JMXEnabledPlatform;
+import org.eclipse.persistence.platform.server.JMXServerPlatformBase;
+import org.eclipse.persistence.platform.server.ServerPlatformBase;
+import org.eclipse.persistence.services.glassfish.MBeanGlassfishRuntimeServices;
+import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.transaction.glassfish.GlassfishTransactionController;
 
 /**
  * PUBLIC:
@@ -86,6 +86,7 @@ public class GlassfishPlatform extends JMXServerPlatformBase implements JMXEnabl
      * @see ServerPlatformBase#disableJTA()
      * @see ServerPlatformBase#initializeExternalTransactionController()
      */
+    @Override
     public Class getExternalTransactionControllerClass() {
     	if (externalTransactionControllerClass == null){
     		externalTransactionControllerClass = GlassfishTransactionController.class;
@@ -94,11 +95,13 @@ public class GlassfishPlatform extends JMXServerPlatformBase implements JMXEnabl
     }
 
 
+    @Override
     public java.sql.Connection unwrapConnection(final Connection connection)  {
         Connection unwrappedConnection;
 
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
             unwrappedConnection = AccessController.doPrivileged(new PrivilegedAction<Connection>() {
+                @Override
                 public Connection run() {
                     return unwrapGlassFishConnectionHelper(connection);
                 }
@@ -135,6 +138,7 @@ public class GlassfishPlatform extends JMXServerPlatformBase implements JMXEnabl
         return unwrappedConnection;
     }
 
+    @Override
     public SessionLog getServerLog() {
         return  new JavaLog();
     }
@@ -158,9 +162,10 @@ public class GlassfishPlatform extends JMXServerPlatformBase implements JMXEnabl
      * @see #disableRuntimeServices()
      * @see #registerMBean()
      */
+    @Override
     public void prepareServerSpecificServicesMBean() {
         // No check for an existing cached MBean - we will replace it if it exists
-        if(shouldRegisterRuntimeBean) {
+        if (getDatabaseSession() != null && shouldRegisterRuntimeBean) {
             this.setRuntimeServicesMBean(new MBeanGlassfishRuntimeServices(getDatabaseSession()));
         }
     }
