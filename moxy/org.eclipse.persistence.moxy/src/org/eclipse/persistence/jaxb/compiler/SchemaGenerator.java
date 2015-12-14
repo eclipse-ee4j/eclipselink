@@ -1938,7 +1938,7 @@ public class SchemaGenerator {
         keyElement.setMinOccurs(Occurs.ZERO);
 
         JavaClass keyType = property.getKeyType();
-        JavaClass valueType = property.getValueType();
+        JavaClass valueType = property.getActualValueType();
 
         if (keyType == null) {
             keyType = helper.getJavaClass(Object.class);
@@ -1994,6 +1994,9 @@ public class SchemaGenerator {
                 typeName = prefix + COLON + valueSchemaType.getLocalPart();
             } else {
                 typeName = valueSchemaType.getLocalPart();
+            }
+            if (property.getValueGenericType() != null) {
+                valueElement.setMaxOccurs(Occurs.UNBOUNDED);
             }
             valueElement.setType(typeName);
         }

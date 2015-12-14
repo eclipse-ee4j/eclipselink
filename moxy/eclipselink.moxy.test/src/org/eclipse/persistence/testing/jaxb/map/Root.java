@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.map;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -25,6 +27,10 @@ public class Root {
     public Map<String, String> stringStringMap;
     @XmlElement(name="map2")
     public Map<Integer,ComplexValue > integerComplexValueMap;
+    @XmlElement(name="map3")
+    public Map<String,String[] > stringArrayMap;
+    @XmlElement(name="map4")
+    public Map<String,List<String>> stringListMap;
 
     @Override
     public boolean equals(Object o) {
@@ -33,6 +39,10 @@ public class Root {
 
         Root root = (Root) o;
 
+        if (stringArrayMap != null ? root.stringArrayMap == null || !Arrays.deepEquals(stringArrayMap.keySet().toArray(), root.stringArrayMap.keySet().toArray()) || !Arrays.deepEquals(stringArrayMap.values().toArray(), root.stringArrayMap.values().toArray()) : root.stringArrayMap != null)
+            return false;
+        if (stringListMap != null ? root.stringListMap == null || !Arrays.deepEquals(stringListMap.keySet().toArray(), root.stringListMap.keySet().toArray()) || !Arrays.deepEquals(stringListMap.values().toArray(), root.stringListMap.values().toArray()) : root.stringListMap != null)
+            return false;
         if (integerComplexValueMap != null ? !integerComplexValueMap.equals(root.integerComplexValueMap) : root.integerComplexValueMap != null)
             return false;
         if (stringStringMap != null ? !stringStringMap.equals(root.stringStringMap) : root.stringStringMap != null)
@@ -45,6 +55,8 @@ public class Root {
     public int hashCode() {
         int result = stringStringMap != null ? stringStringMap.hashCode() : 0;
         result = 31 * result + (integerComplexValueMap != null ? integerComplexValueMap.hashCode() : 0);
+        result = 62 * result + (stringArrayMap != null ? stringArrayMap.hashCode() : 0);
+        result = 93 * result + (stringListMap != null ? stringListMap.hashCode() : 0);
         return result;
     }
 }

@@ -1129,7 +1129,7 @@ public final class AnnotationsProcessor {
 
             if (property.isMap()){
                 processReferencedClass(property.getKeyType());
-                processReferencedClass(property.getValueType());
+                processReferencedClass(property.getActualValueType());
             }
         }
     }

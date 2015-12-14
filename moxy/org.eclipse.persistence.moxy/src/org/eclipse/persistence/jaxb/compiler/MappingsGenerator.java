@@ -14,6 +14,8 @@ package org.eclipse.persistence.jaxb.compiler;
 
 import java.awt.Image;
 import java.beans.Introspector;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
@@ -44,7 +46,6 @@ import javax.xml.transform.Source;
 
 import org.eclipse.persistence.config.DescriptorCustomizer;
 import org.eclipse.persistence.core.descriptors.CoreDescriptor;
-import org.eclipse.persistence.core.mappings.CoreAttributeAccessor;
 import org.eclipse.persistence.core.mappings.CoreMapping;
 import org.eclipse.persistence.core.mappings.converters.CoreConverter;
 import org.eclipse.persistence.core.queries.CoreAttributeGroup;
@@ -102,6 +103,7 @@ import org.eclipse.persistence.internal.oxm.mappings.VariableXPathObjectMapping;
 import org.eclipse.persistence.internal.oxm.mappings.XMLContainerMapping;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.jaxb.JAXBEnumTypeConverter;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.javamodel.Helper;
@@ -833,7 +835,7 @@ public class MappingsGenerator {
             if (property.isXmlLocation()) {
                 CompositeObjectMapping locationMapping = generateCompositeObjectMapping(property, descriptor, namespaceInfo, referenceClass.getQualifiedName());
                 reference.getDescriptor().setInstantiationPolicy(new NullInstantiationPolicy());
-                descriptor.setLocationAccessor((CoreAttributeAccessor)locationMapping.getAttributeAccessor());
+                descriptor.setLocationAccessor(locationMapping.getAttributeAccessor());
                 return locationMapping;
             } else {
                 return generateCompositeObjectMapping(property, descriptor, namespaceInfo, referenceClass.getQualifiedName());
@@ -1580,7 +1582,7 @@ public class MappingsGenerator {
         initializeXMLMapping((XMLMapping)mapping, property);
 
         // if the XPath is set (via xml-path) use it; otherwise figure it out
-        mapping.setField((XMLField)getXPathForField(property, namespaceInfo, false, false));
+        mapping.setField(getXPathForField(property, namespaceInfo, false, false));
         // handle null policy set via xml metadata
         if (property.isSetNullPolicy()) {
             mapping.setNullPolicy(getNullPolicyFromProperty(property, namespaceInfo.getNamespaceResolverForDescriptor()));
@@ -1966,12 +1968,18 @@ public class MappingsGenerator {
         String qualifiedInternalKeyClassName = keyType.replace('.', '/');
         String qualifiedInternalValueClassName = valueType.replace('.', '/');
 
-        String sig = "Ljava/lang/Object;Lorg/eclipse/persistence/internal/jaxb/many/MapEntry<L"+qualifiedInternalKeyClassName+";L"+qualifiedInternalValueClassName+";>;";
+        String valuePrefix = "L"; // non-array type
+        if (qualifiedInternalValueClassName.startsWith("[L") && qualifiedInternalValueClassName.endsWith(";")) {
+            valuePrefix = "[L"; // array type
+            qualifiedInternalValueClassName = qualifiedInternalValueClassName.substring(2, qualifiedInternalValueClassName.length() - 1);
+        }
+
+        String sig = "Ljava/lang/Object;Lorg/eclipse/persistence/internal/jaxb/many/MapEntry<L"+qualifiedInternalKeyClassName+";" + valuePrefix + qualifiedInternalValueClassName+";>;";
         cw.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, qualifiedInternalClassName, sig, "java/lang/Object", new String[] { "org/eclipse/persistence/internal/jaxb/many/MapEntry" });
 
         cw.visitField(Opcodes.ACC_PRIVATE, "key", "L"+qualifiedInternalKeyClassName+";", null, null);
 
-        cw.visitField(Opcodes.ACC_PRIVATE, "value", "L"+qualifiedInternalValueClassName+";", null, null);
+        cw.visitField(Opcodes.ACC_PRIVATE, "value", valuePrefix + qualifiedInternalValueClassName+";", null, null);
 
         MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "()V", null, null);
         mv.visitVarInsn(Opcodes.ALOAD, 0);
@@ -1995,17 +2003,17 @@ public class MappingsGenerator {
         mv.visitMaxs(2, 2);
         mv.visitEnd();
 
-        mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "getValue", "()L"+qualifiedInternalValueClassName+";", null, null);
+        mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "getValue", "()" + valuePrefix + qualifiedInternalValueClassName+";", null, null);
         mv.visitVarInsn(Opcodes.ALOAD, 0);
-        mv.visitFieldInsn(Opcodes.GETFIELD, qualifiedInternalClassName, "value", "L"+qualifiedInternalValueClassName+";");
+        mv.visitFieldInsn(Opcodes.GETFIELD, qualifiedInternalClassName, "value", valuePrefix + qualifiedInternalValueClassName+";");
         mv.visitInsn(Opcodes.ARETURN);
         mv.visitMaxs(1, 1);
         mv.visitEnd();
 
-        mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "setValue", "(L"+qualifiedInternalValueClassName+";)V", null, null);
+        mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "setValue", "(" + valuePrefix + qualifiedInternalValueClassName+";)V", null, null);
         mv.visitVarInsn(Opcodes.ALOAD, 0);
         mv.visitVarInsn(Opcodes.ALOAD, 1);
-        mv.visitFieldInsn(Opcodes.PUTFIELD, qualifiedInternalClassName, "value", "L"+qualifiedInternalValueClassName+";");
+        mv.visitFieldInsn(Opcodes.PUTFIELD, qualifiedInternalClassName, "value", valuePrefix + qualifiedInternalValueClassName+";");
         mv.visitInsn(Opcodes.RETURN);
         mv.visitMaxs(2, 2);
         mv.visitEnd();
@@ -2013,7 +2021,7 @@ public class MappingsGenerator {
         if(!qualifiedInternalValueClassName.equals("java/lang/Object")){
             mv = cw.visitMethod(Opcodes.ACC_PUBLIC + Opcodes.ACC_BRIDGE + Opcodes.ACC_SYNTHETIC, "getValue", "()Ljava/lang/Object;", null, null);
             mv.visitVarInsn(Opcodes.ALOAD, 0);
-            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, qualifiedInternalClassName, "getValue", "()L"+qualifiedInternalValueClassName+";", false);
+            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, qualifiedInternalClassName, "getValue", "()" + valuePrefix + qualifiedInternalValueClassName+";", false);
             mv.visitInsn(Opcodes.ARETURN);
             mv.visitMaxs(1, 1);
             mv.visitEnd();
@@ -2021,8 +2029,13 @@ public class MappingsGenerator {
             mv = cw.visitMethod(Opcodes.ACC_PUBLIC + Opcodes.ACC_BRIDGE + Opcodes.ACC_SYNTHETIC, "setValue", "(Ljava/lang/Object;)V", null, null);
             mv.visitVarInsn(Opcodes.ALOAD, 0);
             mv.visitVarInsn(Opcodes.ALOAD, 1);
-            mv.visitTypeInsn(Opcodes.CHECKCAST, qualifiedInternalValueClassName);
-            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, qualifiedInternalClassName, "setValue", "(L"+qualifiedInternalValueClassName+";)V", false);
+            // CHECKCAST is slightly different for array types
+            if (valuePrefix.equals("[L")) {
+                mv.visitTypeInsn(Opcodes.CHECKCAST, valuePrefix + qualifiedInternalValueClassName + ";");
+            } else {
+                mv.visitTypeInsn(Opcodes.CHECKCAST, qualifiedInternalValueClassName);
+            }
+            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, qualifiedInternalClassName, "setValue", "(" + valuePrefix + qualifiedInternalValueClassName+";)V", false);
             mv.visitInsn(Opcodes.RETURN);
             mv.visitMaxs(2, 2);
             mv.visitEnd();
@@ -2067,13 +2080,76 @@ public class MappingsGenerator {
             }else{
                 ((CompositeObjectMapping)mapping).setReferenceClassName(theType.getQualifiedName());
             }
+        } else if (theType.isArray() || helper.isCollectionType(theType)) {
+            DirectCollectionMapping directCollectionMapping;
+            mapping = directCollectionMapping = new XMLCompositeDirectCollectionMapping();
+            initializeXMLContainerMapping(directCollectionMapping, theType.isArray());
+            directCollectionMapping.setAttributeName(attributeName);
+            if (theType.isArray()) {
+                JAXBArrayAttributeAccessor accessor = new JAXBArrayAttributeAccessor(directCollectionMapping.getAttributeAccessor(),
+                        directCollectionMapping.getContainerPolicy(), helper.getClassLoader());
+                String componentClassName = theType.getComponentType().getQualifiedName();
+                if (theType.getComponentType().isPrimitive()){
+                    Class primitiveClass = XMLConversionManager.getDefaultManager().convertClassNameToClass(componentClassName);
+                    accessor.setComponentClass(primitiveClass);
+                    directCollectionMapping.setAttributeAccessor(accessor);
+
+                    Class declaredClass = XMLConversionManager.getDefaultManager().getObjectClass(primitiveClass);
+                    directCollectionMapping.setAttributeElementClass(declaredClass);
+                } else {
+                    accessor.setComponentClassName(componentClassName);
+                    directCollectionMapping.setAttributeAccessor(accessor);
+
+                    JavaClass componentType = theType.getComponentType();
+                    try {
+                        Class declaredClass;
+                        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                                try {
+                                    declaredClass = AccessController.doPrivileged(new PrivilegedClassForName(componentType.getRawName(), false, helper.getClassLoader()));
+                                } catch (PrivilegedActionException exception) {
+                                    throw JAXBException.classNotFoundException(componentType.getRawName());
+                                }
+                        } else {
+                            declaredClass = PrivilegedAccessHelper.getClassForName(componentType.getRawName(), false, helper.getClassLoader());
+                        }
+                        directCollectionMapping.setAttributeElementClass(declaredClass);
+                    } catch (ClassNotFoundException e) {
+                        throw JAXBException.classNotFoundException(componentType.getRawName());
+                    }
+                }
+            } else if (helper.isCollectionType(theType)) {
+                Collection args = theType.getActualTypeArguments();
+                if (args.size() > 0) {
+                    JavaClass itemType = (JavaClass)args.iterator().next();
+                    try {
+                        Class declaredClass;
+                        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                                try {
+                                    declaredClass = AccessController.doPrivileged(new PrivilegedClassForName(itemType.getRawName(), false, helper.getClassLoader()));
+                                } catch (PrivilegedActionException exception) {
+                                    throw JAXBException.classNotFoundException(itemType.getRawName());
+                                }
+                        } else {
+                            declaredClass = PrivilegedAccessHelper.getClassForName(itemType.getRawName(), false, helper.getClassLoader());
+                        }
+                        if(declaredClass != String.class){
+                            directCollectionMapping.setAttributeElementClass(declaredClass);
+                        }
+                    } catch (ClassNotFoundException e) {
+                        throw JAXBException.classNotFoundException(itemType.getRawName());
+                    }
+                }
+            }
+            theType = containerClassImpl(theType);
+            directCollectionMapping.useCollectionClassName(theType.getRawName());
+            directCollectionMapping.setXPath(attributeName + TXT);
         } else {
             mapping = new XMLDirectMapping();
             mapping.setAttributeName(attributeName);
             ((DirectMapping)mapping).setNullValueMarshalled(true);
             ((DirectMapping)mapping).setXPath(attributeName + TXT);
 
-            QName schemaType = (QName) userDefinedSchemaTypes.get(theType.getQualifiedName());
+            QName schemaType = userDefinedSchemaTypes.get(theType.getQualifiedName());
 
             if (schemaType == null) {
                 schemaType = (QName) helper.getXMLToJavaTypeMap().get(theType);
@@ -2420,7 +2496,7 @@ public class MappingsGenerator {
         while (javaClasses.hasNext()) {
             String next = (String)javaClasses.next();
             JavaClass javaClass = helper.getJavaClass(next);
-            TypeInfo info = (TypeInfo) this.typeInfo.get(next);
+            TypeInfo info = this.typeInfo.get(next);
             if (info.isEnumerationType()) {
                 continue;
             }
@@ -2814,7 +2890,7 @@ public class MappingsGenerator {
             }
         }
 
-        QName schemaType = (QName) userDefinedSchemaTypes.get(property.getActualType().getQualifiedName());
+        QName schemaType = userDefinedSchemaTypes.get(property.getActualType().getQualifiedName());
         if (property.getSchemaType() != null) {
             schemaType = property.getSchemaType();
         }

@@ -159,9 +159,15 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
         } else if (javaClass == CoreClassConstants.STRING) {
            if(sourceObject instanceof List){
                return convertListToString(sourceObject, null);
-           }else{
+           } else if (sourceObject instanceof Object[]) {
+               return convertArrayToString((Object[]) sourceObject, null);
+           } else {
                return convertObjectToString(sourceObject);
            }
+        } else if (javaClass == CoreClassConstants.ASTRING && sourceObject instanceof String) {
+                return convertStringToList(sourceObject).toArray(new String[] {});
+        // TODO else if (javaClass == CoreClassConstants.ArrayList_class) {
+        //        return convertStringToList((Object[]) sourceObject, null);
         } else if ((javaClass == Constants.QNAME_CLASS) && (sourceObject != null)) {
             return convertObjectToQName(sourceObject);
         } else if ((javaClass == CoreClassConstants.List_Class) && (sourceObject instanceof String)) {
@@ -233,6 +239,8 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
             return convertStringToList(sourceObject);
         } else if ((javaClass == CoreClassConstants.STRING) && (sourceObject instanceof List)) {
             return convertListToString(sourceObject, schemaTypeQName);
+        } else if ((javaClass == CoreClassConstants.STRING) && (sourceObject instanceof Object[])) {
+            return convertArrayToString((Object[]) sourceObject, schemaTypeQName);
         } else if (sourceObject instanceof byte[]) {
             if (schemaTypeQName.getLocalPart().equalsIgnoreCase(Constants.BASE_64_BINARY)) {
                 return buildBase64StringFromBytes((byte[]) sourceObject);
@@ -1719,6 +1727,18 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
                     }
                     returnStringBuilder.append((String)convertObject(next, String.class, schemaType));
             }
+        }
+        return returnStringBuilder.toString();
+    }
+
+    public String convertArrayToString(Object[] sourceObject, QName schemaType) throws ConversionException {
+        StringBuilder returnStringBuilder = new StringBuilder();
+        for (int i = 0, listSize = sourceObject.length; i < listSize; i++) {
+            Object next = sourceObject[i];
+            if (i > 0) {
+                returnStringBuilder.append(' ');
+            }
+            returnStringBuilder.append((String)convertObject(next, String.class, schemaType));
         }
         return returnStringBuilder.toString();
     }
