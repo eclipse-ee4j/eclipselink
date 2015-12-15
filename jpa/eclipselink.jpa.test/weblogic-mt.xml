@@ -51,16 +51,20 @@
     <!-- Internal properties derived from property files. -->
     <!--   Full path to EclipseLink library -->
     <property name="wls.mt.eclipselink.lib"      location="${eclipselink.lib}"/>
-    <!--   Full path to jUnit library -->
+    <!--   Full path to jUnit library. -->
     <property name="wls.mt.junit.lib"            location="${junit.lib}"/>
-    <!--   Full path to JDBC driver JAR -->
+    <!--   Full path to JDBC driver JAR. -->
     <property name="wls.mt.jdbc.driver.jar"      location="${jdbc.driver.jar}"/>
-	<!--   Full path to Oracle products installation directory -->
-	<property name="oracle.mt.install.dir"     location="${oracle.installdir}"/>
-	<!--   Full path to WebLogic installation directory -->
-	<property name="weblogic.mt.install.dir"     location="${weblogic.installdir}"/>
+    <!--   Full path to Oracle products installation directory. -->
+    <property name="oracle.mt.install.dir"       location="${oracle.installdir}"/>
+    <!--   Full path to WebLogic installation directory. -->
+    <property name="weblogic.mt.install.dir"     location="${weblogic.installdir}"/>
+    <!--   Full path to WebLogic modules under installation directory. -->
+    <property name="weblogic.mt.modules.dir"     value="${weblogic.mt.install.dir}/oracle_common/modules"/>
+    <!--   Full path to WebLogic toplink module. -->
+    <property name="weblogic.mt.toplink.dir"     value="${weblogic.mt.modules.dir}/oracle.toplink"/>
 
-	<property name="wls.mt.generic.jar.url"      value="${weblogic.mt.builds.url}/${weblogic.mt.generic.jar}"/>
+    <property name="wls.mt.generic.jar.url"      value="${weblogic.mt.builds.url}/${weblogic.mt.generic.jar}"/>
     <property name="wls.mt.jrf_generic.jar.url"  value="${weblogic.mt.builds.url}/${weblogic.mt.jrf_generic.jar}"/>
     <property name="wls.mt.generic.jar.file"     location="${weblogic.mt.packages.dir}/${weblogic.mt.generic.jar}"/>
     <property name="wls.mt.jrf_generic.jar.file" location="${weblogic.mt.packages.dir}/${weblogic.mt.jrf_generic.jar}"/>
@@ -73,9 +77,9 @@
     <property name="wls.mt.install.orainst.loc"  location="${oracle.mt.install.dir}/oraInst.loc"/>
     <!--   WebLogic installation directory full path. -->
     <property name="wls.mt.install.wl.home"      location="${weblogic.mt.install.dir}/wlserver"/>
-    <!--   Full (absilute) domain directory path. -->
+    <!--   Full (absolute) domain directory path. -->
     <property name="wls.mt.domain.full.path"     location="${weblogic.mt.domain.path}"/>
-    <!--   Full (absilute) domain libraries directory path. -->
+    <!--   Full (absolute) domain libraries directory path. -->
     <property name="wls.mt.domain.lib.full.path" location="${wls.mt.domain.full.path}/lib"/>
     <!--   Domain template path relative to WebLogic installation directory (wls.mt.install.wl.home). -->
     <property name="wls.mt.domain.template"      value="common/templates/wls/wls.jar"/>
@@ -233,9 +237,10 @@
     <!-- INTERNAL: Copy EclipseLink, jUnit and JDBC driver libraries into domain's lib directory -->
     <macrodef name="wls-install-libraries">
         <sequential>
-            <copy file="${wls.mt.eclipselink.lib}" todir="${wls.mt.domain.lib.full.path}"/>
-            <copy file="${wls.mt.jdbc.driver.jar}" todir="${wls.mt.domain.lib.full.path}"/>
-            <copy file="${wls.mt.junit.lib}"       todir="${wls.mt.domain.lib.full.path}"/>
+            <copy file="${wls.mt.eclipselink.lib}" todir="${weblogic.mt.toplink.dir}"     overwrite="true"/>
+            <copy file="${wls.mt.eclipselink.lib}" todir="${wls.mt.domain.lib.full.path}" overwrite="true"/>
+            <copy file="${wls.mt.jdbc.driver.jar}" todir="${wls.mt.domain.lib.full.path}" overwrite="true"/>
+            <copy file="${wls.mt.junit.lib}"       todir="${wls.mt.domain.lib.full.path}" overwrite="true"/>
         </sequential>
     </macrodef>
 
