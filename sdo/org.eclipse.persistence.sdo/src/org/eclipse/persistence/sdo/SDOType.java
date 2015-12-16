@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.sdo.helper.SDOClassLoader;
+import org.eclipse.persistence.sdo.helper.SDOHelperContext;
 import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
 import org.eclipse.persistence.sdo.helper.SDOXMLHelper;
 import org.eclipse.persistence.sdo.helper.SDOXSDHelper;
@@ -202,6 +203,16 @@ public class SDOType implements Type, Serializable {
         if(!clazz.isInterface()) {
             return false;
         }
+        return !isStrictTypeCheckingEnabled() || hasClassGetterForEachProperty(clazz);
+    }
+    
+    /**
+     * Checks that the given class has getter for each property of this type.
+     * 
+     * @param clazz class to be checked
+     * @return {@code true} if given class has getter for each property
+     */
+    private boolean hasClassGetterForEachProperty(Class clazz) {
         for(Object object: this.getDeclaredProperties()) {
             SDOProperty sdoProperty = (SDOProperty) object;
             SDOType sdoPropertyType = sdoProperty.getType();
@@ -225,6 +236,19 @@ public class SDOType implements Type, Serializable {
                 	}
                 }
             }
+        } 
+        return true;
+    }
+    
+    /**
+     * Indicates whether to check instance class strictly.
+     * 
+     * @return boolean
+     */
+    private boolean isStrictTypeCheckingEnabled() {
+        final HelperContext helperContext = getHelperContext();
+        if (helperContext instanceof SDOHelperContext) {
+            return ((SDOHelperContext)helperContext).isStrictTypeCheckingEnabled();
         }
         return true;
     }

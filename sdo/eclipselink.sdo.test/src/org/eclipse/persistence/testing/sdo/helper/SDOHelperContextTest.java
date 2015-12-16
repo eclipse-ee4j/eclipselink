@@ -27,6 +27,8 @@ import java.util.Map;
  */
 public class SDOHelperContextTest extends TestCase {
 
+    private String strictTypeCheckingPropertyValueBackup;
+
     private static Map getMap() throws NoSuchFieldException, IllegalAccessException {
         Field mapField = SDOHelperContext.class.getDeclaredField("HELPER_CONTEXT_RESOLVERS");
         mapField.setAccessible(true);
@@ -37,6 +39,19 @@ public class SDOHelperContextTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         getMap().clear();
+        strictTypeCheckingPropertyValueBackup = System.getProperty(SDOHelperContext.STRICT_TYPE_CHECKING_PROPERTY_NAME);
+        System.clearProperty(SDOHelperContext.STRICT_TYPE_CHECKING_PROPERTY_NAME);
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        super.tearDown();
+        if (strictTypeCheckingPropertyValueBackup != null) {
+            System.setProperty(SDOHelperContext.STRICT_TYPE_CHECKING_PROPERTY_NAME, strictTypeCheckingPropertyValueBackup);
+        } else {
+            System.clearProperty(SDOHelperContext.STRICT_TYPE_CHECKING_PROPERTY_NAME);
+        }
+        strictTypeCheckingPropertyValueBackup = null;
     }
 
     public void testSetNullHelperContextResolver() {
@@ -109,6 +124,37 @@ public class SDOHelperContextTest extends TestCase {
         assertTrue("Expected 1 HelperContextResolver to be set", map.size() == 1);
         SDOHelperContext.removeHelerContextResolver();
         assertTrue("Expected map to be empty", map.isEmpty());
+    }
+
+    /**
+     * Checks default value of {@link SDOHelperContext#isStrictTypeCheckingEnabled()}.
+     */
+    public void testTypeCheckingStrictnessFlagDefault() {
+        SDOHelperContext ctx = new SDOHelperContext("testHelperContext");
+        assertTrue("Expected default value of SDOHelperContext#isStrictTypeCheckingEnabled() is true.",
+                ctx.isStrictTypeCheckingEnabled());
+    }
+
+    /**
+     * Checks setting {@link SDOHelperContext#isStrictTypeCheckingEnabled()}
+     * using {@link SDOHelperContext#STRICT_TYPE_CHECKING_PROPERTY_NAME} property.
+     */
+    public void testTypeCheckingStrictnessFlagSystemPropertyFalse() {
+        System.setProperty(SDOHelperContext.STRICT_TYPE_CHECKING_PROPERTY_NAME, "false");
+        SDOHelperContext ctx = new SDOHelperContext("testHelperContext");
+        assertFalse("Expected value of SDOHelperContext#isStrictTypeCheckingEnabled() is false.",
+                ctx.isStrictTypeCheckingEnabled());
+    }
+
+    /**
+     * Checks setting {@link SDOHelperContext#isStrictTypeCheckingEnabled()}
+     * using {@link SDOHelperContext#STRICT_TYPE_CHECKING_PROPERTY_NAME} property.
+     */
+    public void testTypeCheckingStrictnessFlagSystemPropertyTrue() {
+        System.setProperty(SDOHelperContext.STRICT_TYPE_CHECKING_PROPERTY_NAME, "true");
+        SDOHelperContext ctx = new SDOHelperContext("testHelperContext");
+        assertTrue("Expected value of SDOHelperContext#isStrictTypeCheckingEnabled() is true.",
+                ctx.isStrictTypeCheckingEnabled());
     }
 
     private class TestResolver {
