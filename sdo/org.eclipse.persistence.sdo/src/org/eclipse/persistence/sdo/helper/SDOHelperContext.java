@@ -14,6 +14,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.sdo.helper;
 
+import commonj.sdo.Type;
 import commonj.sdo.helper.CopyHelper;
 import commonj.sdo.helper.DataFactory;
 import commonj.sdo.helper.DataHelper;
@@ -85,6 +86,18 @@ public class SDOHelperContext implements HelperContext {
     protected XSDHelper xsdHelper;
     private String identifier;
     private Map<String, Object> properties;
+    private boolean isStrictTypeCheckingEnabled = isStrictTypeCheckingEnabledInitial();
+
+    /**
+     * Property controls strictness of {@link Type#getInstanceClass()} type checking.
+     *
+     * <p>
+     * See {@link #isStrictTypeCheckingEnabled()} for more details.
+     * By this property, the initial value can be changed.
+     * Default value is <tt>true</tt>.
+     * </p>
+     */
+    public static final String STRICT_TYPE_CHECKING_PROPERTY_NAME = "eclipselink.sdo.strict.type.checking";
 
     // Each application will have its own helper context - it is assumed that application
     // names/loaders are unique within each active server instance
@@ -1333,6 +1346,49 @@ public class SDOHelperContext implements HelperContext {
      */
     public Object getProperty(String name) {
         return getProperties().get(name);
+    }
+
+    /**
+     * Indicates whether strict type checking is enabled.
+     *
+     * <p>
+     * If strict type checking is enabled then {@link Type#getInstanceClass()}
+     * interface is checked whether it contains getters for all the properties
+     * of the {@link Type} upon initialization of the {@link Type}.
+     * If any getter is missing then the interface is ignored and
+     * {@link Type#getInstanceClass()} will return {@code null}.
+     * </p>
+     *
+     * <p>
+     * The getters are not checked if the strict type checking is disabled.
+     * </p>
+     *
+     * @return boolean value
+     */
+    public boolean isStrictTypeCheckingEnabled() {
+        return this.isStrictTypeCheckingEnabled;
+    }
+
+    /**
+     * Controls type checking strictness.
+     *
+     * See {@link #isStrictTypeCheckingEnabled()} for more details.
+     *
+     * @param enabled new value ({@code true} to enable the strict validation)
+     */
+    public void setStrictTypeCheckingEnabled(boolean enabled) {
+        this.isStrictTypeCheckingEnabled = enabled;
+    }
+
+    /**
+     * Provides initial value which is defined by {@value #STRICT_TYPE_CHECKING_PROPERTY_NAME} {@link System} property.
+     *
+     * @return boolean value of {@value #STRICT_TYPE_CHECKING_PROPERTY_NAME} property
+     */
+    private static boolean isStrictTypeCheckingEnabledInitial() {
+        final String trueString = Boolean.TRUE.toString();
+        final String property = PrivilegedAccessHelper.getSystemProperty(STRICT_TYPE_CHECKING_PROPERTY_NAME, trueString);
+        return trueString.equalsIgnoreCase(property);
     }
 
     /**
