@@ -51,13 +51,13 @@
     <!-- Internal properties derived from property files. -->
     <!--   Full path to EclipseLink library -->
     <property name="wls.mt.eclipselink.lib"      location="${eclipselink.lib}"/>
-    <!--   Full path to jUnit library -->
+    <!--   Full path to jUnit library. -->
     <property name="wls.mt.junit.lib"            location="${junit.lib}"/>
-    <!--   Full path to JDBC driver JAR -->
+    <!--   Full path to JDBC driver JAR. -->
     <property name="wls.mt.jdbc.driver.jar"      location="${jdbc.driver.jar}"/>
-    <!--   Full path to Oracle products installation directory -->
-    <property name="oracle.mt.install.dir"     location="${oracle.installdir}"/>
-    <!--   Full path to WebLogic installation directory -->
+    <!--   Full path to Oracle products installation directory. -->
+    <property name="oracle.mt.install.dir"       location="${oracle.installdir}"/>
+    <!--   Full path to WebLogic installation directory. -->
     <property name="weblogic.mt.install.dir"     location="${weblogic.installdir}"/>
 
     <property name="wls.mt.generic.jar.url"      value="${weblogic.mt.builds.url}/${weblogic.mt.generic.jar}"/>
@@ -73,13 +73,13 @@
     <property name="wls.mt.install.orainst.loc"  location="${oracle.mt.install.dir}/oraInst.loc"/>
     <!--   WebLogic installation directory full path. -->
     <property name="wls.mt.install.wl.home"      location="${weblogic.mt.install.dir}/wlserver"/>
-	<!--   WebLogic common modules installation directory full path. -->
-	<property name="wls.mt.install.modules"      location="${weblogic.mt.install.dir}/oracle_common/modules"/>
-	<!--   WebLogic toplink module installation directory full path. -->
-	<property name="wls.mt.module.toplink"       location="${wls.mt.install.modules}/oracle.toplink"/>
-    <!--   Full (absilute) domain directory path. -->
+    <!--   Full path to WebLogic modules under installation directory. -->
+    <property name="weblogic.mt.modules.dir"     location="${weblogic.mt.install.dir}/oracle_common/modules"/>
+    <!--   Full path to WebLogic toplink module. -->
+    <property name="weblogic.mt.toplink.dir"     location="${weblogic.mt.modules.dir}/oracle.toplink"/>
+    <!--   Full (absolute) domain directory path. -->
     <property name="wls.mt.domain.full.path"     location="${weblogic.mt.domain.path}"/>
-    <!--   Full (absilute) domain libraries directory path. -->
+    <!--   Full (absolute) domain libraries directory path. -->
     <property name="wls.mt.domain.lib.full.path" location="${wls.mt.domain.full.path}/lib"/>
     <!--   Domain template path relative to WebLogic installation directory (wls.mt.install.wl.home). -->
     <property name="wls.mt.domain.template"      value="common/templates/wls/wls.jar"/>
@@ -237,9 +237,10 @@
     <!-- INTERNAL: Copy EclipseLink, jUnit and JDBC driver libraries into domain's lib directory -->
     <macrodef name="wls-install-libraries">
         <sequential>
-            <copy file="${wls.mt.eclipselink.lib}" todir="${wls.mt.module.toplink}" overwrite="true"/>
-            <copy file="${wls.mt.jdbc.driver.jar}" todir="${wls.mt.domain.lib.full.path}"/>
-            <copy file="${wls.mt.junit.lib}"       todir="${wls.mt.domain.lib.full.path}"/>
+            <copy file="${wls.mt.eclipselink.lib}" todir="${weblogic.mt.toplink.dir}"     overwrite="true"/>
+            <copy file="${wls.mt.eclipselink.lib}" todir="${wls.mt.domain.lib.full.path}" overwrite="true"/>
+            <copy file="${wls.mt.jdbc.driver.jar}" todir="${wls.mt.domain.lib.full.path}" overwrite="true"/>
+            <copy file="${wls.mt.junit.lib}"       todir="${wls.mt.domain.lib.full.path}" overwrite="true"/>
         </sequential>
     </macrodef>
 
@@ -1201,10 +1202,10 @@
             else=" - wls.mt.install.wl.home is not initialized">
             <isset property="wls.mt.install.wl.home"/>
         </condition>
-        <condition property="wls.mt.module.toplink.message"
-            value=" + wls.mt.module.toplink = ${wls.mt.module.toplink}"
-            else=" - wls.mt.module.toplink is not initialized">
-            <isset property="wls.mt.module.toplink"/>
+        <condition property="weblogic.mt.toplink.dir.message"
+            value=" + weblogic.mt.toplink.dir = ${weblogic.mt.toplink.dir}"
+            else=" - weblogic.mt.toplink.dir is not initialized">
+            <isset property="weblogic.mt.toplink.dir"/>
         </condition>
         <condition property="wls.mt.config.tool.message"
             value=" + wls.mt.config.tool = ${wls.mt.config.tool}"
@@ -1267,7 +1268,7 @@
         <echo message="${wls.mt.junit.lib.file.check.message}"/>
         <echo message="Domain creation properties generated:"/>
         <echo message="${wls.mt.install.wl.home.message}"/>
-        <echo message="${wls.mt.module.toplink.message}"/>
+        <echo message="${weblogic.mt.toplink.dir.message}"/>
         <echo message="${wls.mt.config.tool.message}"/>
         <echo message="${wls.mt.domain.full.path.message}"/>
         <echo message="${wls.mt.domain.template.message}"/>
