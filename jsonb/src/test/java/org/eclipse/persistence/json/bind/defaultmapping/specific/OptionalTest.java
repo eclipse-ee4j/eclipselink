@@ -63,7 +63,7 @@ public class OptionalTest {
         assertEquals("[{\"id\":1,\"name\":\"Cust1\"},{\"id\":2,\"name\":\"Cust2\"},null]", jsonb.toJson(array));
     }
 
-    private static class Customer {
+    public static class Customer {
         private int id;
         private String name;
 

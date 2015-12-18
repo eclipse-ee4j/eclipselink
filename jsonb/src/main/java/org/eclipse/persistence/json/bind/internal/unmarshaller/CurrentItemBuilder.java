@@ -1,9 +1,23 @@
+/*******************************************************************************
+ * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * Contributors:
+ * Roman Grigoriadi
+ ******************************************************************************/
 package org.eclipse.persistence.json.bind.internal.unmarshaller;
 
 import org.eclipse.persistence.json.bind.internal.MappingContext;
 import org.eclipse.persistence.json.bind.internal.ReflectionUtils;
+import org.eclipse.persistence.json.bind.internal.conversion.ConvertersMapTypeConverter;
+import org.eclipse.persistence.json.bind.internal.conversion.TypeConverter;
 import org.eclipse.persistence.json.bind.model.ClassModel;
-import org.eclipse.persistence.json.bind.model.FieldModel;
+import org.eclipse.persistence.json.bind.model.PropertyModel;
 
 import javax.json.bind.JsonbException;
 import java.lang.reflect.Constructor;
@@ -40,7 +54,7 @@ public class CurrentItemBuilder {
     /**
      * Common case of a field in arbitrary object.
      */
-    private FieldModel fieldModel;
+    private PropertyModel propertyModel;
 
     /**
      * Key name, that precedes object start in JSON string.
@@ -56,6 +70,8 @@ public class CurrentItemBuilder {
      * Actual instance of an object to be processed.
      */
     private Object instance;
+
+    private final TypeConverter converter = ConvertersMapTypeConverter.getInstance();
 
     /**
      * In case of unknown object genericType.
@@ -90,11 +106,11 @@ public class CurrentItemBuilder {
 
     /**
      * Model of a field for underlying instance. In case model is present, instance type is inferred from it.
-     * @param fieldModel model of a field, not null
+     * @param propertyModel model of a field, not null
      * @return builder instance for call chaining
      */
-    public CurrentItemBuilder withFieldModel(FieldModel fieldModel) {
-        this.fieldModel = fieldModel;
+    public CurrentItemBuilder withFieldModel(PropertyModel propertyModel) {
+        this.propertyModel = propertyModel;
         return this;
     }
 
@@ -127,25 +143,36 @@ public class CurrentItemBuilder {
     public CurrentItem<?> build() {
         runtimeType = resolveRuntimeType();
         Class rawType = ReflectionUtils.getRawType(runtimeType);
-        if (rawType.isArray() || runtimeType instanceof GenericArrayType) {
-            return createArrayItem();
+        switch (jsonValueType) {
+            case ARRAY:
+                if (rawType.isArray() || runtimeType instanceof GenericArrayType) {
+                    return createArrayItem();
+                }
+                if (Collection.class.isAssignableFrom(rawType)) {
+                    return createCollectionItem();
+                }
+                throw new JsonbException(String.format("JSON array not expected for unmarshalling into field %s of type %s.", jsonKeyName, rawType));
+            case OBJECT:
+                if (Map.class.isAssignableFrom(rawType)) {
+                    return createMapItem();
+                }
+                if (rawType.isInterface()) {
+                    throw new JsonbException("Can't infer a type for unmarshalling into: " + rawType.getName());
+                }
+                if (converter.supportsFromJson(rawType)) {
+                    throw new JsonbException(String.format("JSON object not expected for unmarshalling into field %s, of supported type %s.", jsonKeyName, rawType));
+                }
+
+                classModel = mappingContext.getOrCreateClassModel(rawType);
+                instance = createInstance(classModel.getRawType());
+                return new ObjectItem<>(this);
+            default:
+                throw new JsonbException(String.format("Invalid json type %s.", rawType));
         }
-        if (Collection.class.isAssignableFrom(rawType)) {
-            return createCollectionItem();
-        }
-        if (Map.class.isAssignableFrom(rawType)) {
-            return createMapItem();
-        }
-        if (rawType.isInterface()) {
-            throw new JsonbException("Can't infer a type for unmarshalling into: " + rawType.getName());
-        }
-        classModel = mappingContext.getOrCreateClassModel(rawType);
-        instance = createInstance(classModel.getRawType());
-        return new ObjectItem<>(this);
     }
 
     private Type resolveRuntimeType() {
-        Type toResolve = fieldModel != null ? fieldModel.getType() : genericType;
+        Type toResolve = propertyModel != null ? propertyModel.getPropertyType() : genericType;
         Type resolved = ReflectionUtils.resolveType(wrapper, toResolve);
         //If genericType cannot be resolved or is object, unmarshall to Map.
         if (resolved == Object.class) {
@@ -228,8 +255,8 @@ public class CurrentItemBuilder {
      * Model of a field for underlying instance. In case model is present, instance type is inferred from it.
      * @return model of a field
      */
-    public FieldModel getFieldModel() {
-        return fieldModel;
+    public PropertyModel getPropertyModel() {
+        return propertyModel;
     }
 
     /**

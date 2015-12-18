@@ -1,6 +1,18 @@
+/*******************************************************************************
+ * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * Contributors:
+ * Roman Grigoriadi
+ ******************************************************************************/
 package org.eclipse.persistence.json.bind.internal.unmarshaller;
 
-import org.eclipse.persistence.json.bind.model.FieldModel;
+import org.eclipse.persistence.json.bind.model.PropertyModel;
 
 import javax.json.bind.JsonbException;
 
@@ -25,7 +37,7 @@ class ObjectItem<T> extends CurrentItem<T> {
      */
     @Override
     void appendItem(CurrentItem currentItem) {
-        currentItem.getWrapperFieldModel().setValue(currentItem.getInstance(), getInstance());
+        currentItem.getWrapperPropertyModel().setValue(getInstance(), currentItem.getInstance());
     }
 
     /**
@@ -38,30 +50,30 @@ class ObjectItem<T> extends CurrentItem<T> {
     @Override
     void appendValue(String key, String value, JsonValueType jsonValueType) {
         //convert value by field type
-        FieldModel valueFieldModel = getClassModel().findFieldModel(key, getMappingContext());
+        PropertyModel valuePropertyModel = getClassModel().findPropertyModel(key, getMappingContext());
         //skip the field if it is not found in class
-        if (valueFieldModel == null) {
+        if (valuePropertyModel == null) {
             return;
         }
         if (jsonValueType == JsonValueType.NULL) {
-            valueFieldModel.setValue(null, getInstance());
+            valuePropertyModel.setValue(getInstance(), null);
             return;
         }
-        Class<?> valueType = resolveValueType(valueFieldModel.getType(), jsonValueType);
+        Class<?> valueType = resolveValueType(valuePropertyModel.getPropertyType(), jsonValueType);
         if (!getTypeConverter().supportsFromJson(valueType)) {
-            throw new JsonbException("Can't convert JSON value into: " + valueFieldModel.getType());
+            throw new JsonbException("Can't convert JSON value into: " + valuePropertyModel.getPropertyType());
         }
         Object converted = getTypeConverter().fromJson(value, valueType);
-        valueFieldModel.setValue(converted, getInstance());
+        valuePropertyModel.setValue(getInstance(), converted);
     }
 
     @Override
     CurrentItem<?> newItem(String fieldName, JsonValueType jsonValueType) {
         //identify field model of currently processed class model
-        FieldModel newFieldModel = getClassModel().findFieldModel(fieldName, getMappingContext());
+        PropertyModel newPropertyModel = getClassModel().findPropertyModel(fieldName, getMappingContext());
 
         //create current item instance of identified object field
-        return new CurrentItemBuilder(getMappingContext()).withWrapper(this).withFieldModel(newFieldModel).withJsonKeyName(fieldName).withJsonValueType(jsonValueType).build();
+        return new CurrentItemBuilder(getMappingContext()).withWrapper(this).withFieldModel(newPropertyModel).withJsonKeyName(fieldName).withJsonValueType(jsonValueType).build();
     }
 
 }

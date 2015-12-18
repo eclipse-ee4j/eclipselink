@@ -1,3 +1,15 @@
+/*******************************************************************************
+ * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * Contributors:
+ * Roman Grigoriadi
+ ******************************************************************************/
 package org.eclipse.persistence.json.bind.internal;
 
 import org.eclipse.persistence.json.bind.internal.unmarshaller.CurrentItem;
@@ -67,7 +79,7 @@ public class ReflectionUtils {
         if (type instanceof WildcardType) {
             return resolveMostSpecificBound(item, (WildcardType) type);
         } else if (type instanceof TypeVariable) {
-            return resolveVariableType(item, (TypeVariable<?>) type);
+            return resolveItemVariableType(item, (TypeVariable<?>) type);
         }
         return type;
     }
@@ -80,31 +92,28 @@ public class ReflectionUtils {
      * @param typeVariable type to search in item for, not null.
      * @return Type of a generic "runtime" bound, not null.
      */
-    public static Type resolveVariableType(CurrentItem<?> item, TypeVariable<?> typeVariable) {
+    public static Type resolveItemVariableType(CurrentItem<?> item, TypeVariable<?> typeVariable) {
         if (item == null) {
             throw new JsonbException(MessageFormat.format("Field generic bound not found for type var {0}.", typeVariable));
         }
 
         //Embedded items doesn't hold information about variable types
         if (item instanceof EmbeddedItem) {
-            return resolveVariableType(item.getWrapper(), typeVariable);
+            return resolveItemVariableType(item.getWrapper(), typeVariable);
         }
 
         ParameterizedType wrapperParameterizedType = findParameterizedSuperclass(item.getRuntimeType());
-        @SuppressWarnings("unchecked")
-        TypeVariable<? extends Class<?>>[] wrapperBounds = ((Class) wrapperParameterizedType.getRawType()).getTypeParameters();
-        for (int i = 0; i < wrapperBounds.length; i++) {
-            if (wrapperBounds[i].equals(typeVariable)) {
-                Type type = wrapperParameterizedType.getActualTypeArguments()[i];
-                //Propagated generic types to another generic classes
-                if (type instanceof TypeVariable<?>) {
-                    return resolveVariableType(item.getWrapper(), (TypeVariable<?>) type);
-                }
-                //found runtime type
-                return type;
+
+        VariableTypeInheritanceSearch search = new VariableTypeInheritanceSearch();
+        Type foundType = search.searchParametrizedType(wrapperParameterizedType, typeVariable);
+        if (foundType != null) {
+            if (foundType instanceof TypeVariable) {
+                return resolveItemVariableType(item.getWrapper(), (TypeVariable<?>) foundType);
             }
+            return foundType;
         }
-        return resolveVariableType(item.getWrapper(), typeVariable);
+
+        return resolveItemVariableType(item.getWrapper(), typeVariable);
     }
 
     private static ParameterizedType findParameterizedSuperclass(Type type) {

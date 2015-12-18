@@ -8,7 +8,7 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Dmitry Kornilov - initial implementation
+ * Roman Grigoriadi
  ******************************************************************************/
 package org.eclipse.persistence.json.bind.defaultmapping.generics.model;
 
@@ -22,4 +22,20 @@ public class GenericTestClass<T,U> {
     public U field2;
 
     public GenericTestClass() {}
+
+    public T getField1() {
+        return field1;
+    }
+
+    public void setField1(T field1) {
+        this.field1 = field1;
+    }
+
+    public U getField2() {
+        return field2;
+    }
+
+    public void setField2(U field2) {
+        this.field2 = field2;
+    }
 }

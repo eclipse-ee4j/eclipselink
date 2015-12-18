@@ -13,9 +13,14 @@
 package org.eclipse.persistence.json.bind.internal;
 
 import org.eclipse.persistence.json.bind.model.ClassModel;
-import org.eclipse.persistence.json.bind.model.FieldModel;
+import org.eclipse.persistence.json.bind.model.Property;
+import org.eclipse.persistence.json.bind.model.PropertyModel;
 
+import java.beans.Introspector;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created a class internal model.
@@ -24,25 +29,69 @@ import java.lang.reflect.Field;
  */
 class ClassParser {
 
+    public static final String IS_PREFIX = "is";
+
+    public static final String GET_PREFIX = "get";
+
+    public static final String SET_PREFIX = "set";
+
+    public static final String GENERATED_PREFIX = "this$";
+
+    /**
+     * Parse class fields and getters setters. Merge to java bean like properties.
+     *
+     * @param clazz Class to parse
+     * @return model of a class
+     */
     public ClassModel parse(Class<?> clazz) {
         final ClassModel classModel = new ClassModel(clazz);
 
-        // Fields
-        for (Field field : classModel.getRawType().getDeclaredFields()) {
-            final FieldModel fieldModel = parseField(classModel, field);
-            if (fieldModel != null) {
-                classModel.getFields().put(fieldModel.getName(), fieldModel);
-            }
-        }
+        final Map<String, Property> classProperties = new HashMap<>();
 
+        parseFields(classModel, classProperties);
+
+        parseMethods(classModel, classProperties);
+
+        classProperties.values().stream().forEach((property)->{
+            PropertyModel propertyModel = new PropertyModel(classModel, property);
+            classModel.getFields().put(propertyModel.getPropertyName(), propertyModel);
+        });
 
         return classModel;
     }
 
-    private FieldModel parseField(ClassModel classModel, Field field) {
-        if (field.getName().startsWith("this$")) {
-            return null;
+    private void parseMethods(ClassModel classModel, Map<String, Property> classProperties) {
+        for (Method method : classModel.getRawType().getDeclaredMethods()) {
+            String name = method.getName();
+            if (!name.startsWith(GET_PREFIX) && !name.startsWith(SET_PREFIX) && !name.startsWith(IS_PREFIX)) {
+                continue;
+            }
+            final String propertyName = Introspector.decapitalize(name.substring(name.startsWith(IS_PREFIX) ? 2 : 3, name.length()));
+
+            Property property = classProperties.get(propertyName);
+            if (property == null) {
+                property= new Property(propertyName);
+                classProperties.put(propertyName, property);
+            }
+
+            if (name.startsWith(SET_PREFIX)) {
+                property.setSetter(method);
+            } else {
+                property.setGetter(method);
+            }
         }
-        return new FieldModel(classModel, field);
     }
+
+    private void parseFields(ClassModel classModel, Map<String, Property> classProperties) {
+        for (Field field : classModel.getRawType().getDeclaredFields()) {
+            final String name = field.getName();
+            if (field.getName().startsWith(GENERATED_PREFIX)) {
+                continue;
+            }
+            final Property property = new Property(name);
+            property.setField(field);
+            classProperties.put(name, property);
+        }
+    }
+
 }

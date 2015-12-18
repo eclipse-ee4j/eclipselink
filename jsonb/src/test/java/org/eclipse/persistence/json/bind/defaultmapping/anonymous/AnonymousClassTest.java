@@ -12,10 +12,11 @@
  ******************************************************************************/
 package org.eclipse.persistence.json.bind.defaultmapping.anonymous;
 
-import org.eclipse.persistence.json.bind.JsonBindingBuilder;
+import org.junit.Before;
 import org.junit.Test;
 
 import javax.json.bind.Jsonb;
+import javax.json.bind.JsonbBuilder;
 
 import static org.junit.Assert.assertEquals;
 
@@ -25,11 +26,17 @@ import static org.junit.Assert.assertEquals;
  * @author Dmitry Kornilov
  */
 public class AnonymousClassTest {
+
+    private Jsonb jsonb;
+
+    @Before
+    public void before() {
+        jsonb = JsonbBuilder.create();
+    }
+
     @Test
     public void testMarshallInnerClass() {
-        final Jsonb jsonb = (new JsonBindingBuilder()).build();
-
-        assertEquals("{\"id\":1,\"name\":\"pojoName\",\"anonymousField\":\"anonymousValue\"}", jsonb.toJson(new InnerPojo() {
+        assertEquals("{\"anonymousField\":\"anonymousValue\",\"id\":1,\"name\":\"pojoName\"}", jsonb.toJson(new InnerPojo() {
             public String anonymousField = "anonymousValue";
 
             @Override
@@ -46,24 +53,12 @@ public class AnonymousClassTest {
 
     @Test
     public void testMarshallOuterClass() {
-        final Jsonb jsonb = (new JsonBindingBuilder()).build();
-
-        assertEquals("{\"id\":1,\"name\":\"pojoName\",\"anonymousField\":\"anonymousValue\"}", jsonb.toJson(new OuterPojo() {
+        assertEquals("{\"id\":1,\"anonymousField\":\"anonymousValue\"}", jsonb.toJson(new OuterPojo() {
             public String anonymousField = "anonymousValue";
-
-            @Override
-            public Integer getId() {
-                return 1;
-            }
-
-            @Override
-            public String getName() {
-                return "pojoName";
-            }
         }));
     }
 
-    private static class InnerPojo {
+    public static class InnerPojo {
         private Integer id;
         private String name;
 

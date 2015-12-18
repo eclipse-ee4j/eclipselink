@@ -12,7 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.json.bind.internal;
 
-import org.eclipse.persistence.json.bind.model.FieldModel;
+import org.eclipse.persistence.json.bind.model.PropertyModel;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -21,6 +21,7 @@ import java.lang.reflect.Type;
 import java.util.*;
 
 import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
 
 /**
  * JSONB marshaller. Created each time marshalling operation called.
@@ -95,28 +96,28 @@ public class Marshaller extends JsonTextProcessor {
 
     private String marshallObject(Object object) {
         // Deal with inheritance
-        final List<FieldModel> allFields = new LinkedList<>();
+        final List<PropertyModel> allFields = new LinkedList<>();
         for (Class clazz = object.getClass(); clazz.getSuperclass() != null; clazz = clazz.getSuperclass()) {
-            final List<FieldModel> fields = new ArrayList<>(mappingContext.getOrCreateClassModel(clazz).getFields().values());
-            Collections.sort(fields);
-            allFields.addAll(0, fields);
+            final List<PropertyModel> properties = new ArrayList<>(mappingContext.getOrCreateClassModel(clazz).getFields().values());
+            List<PropertyModel> filteredAndSorted = properties.stream().filter(propertyModel -> !allFields.contains(propertyModel)).sorted().collect(toList());
+            allFields.addAll(0, filteredAndSorted);
         }
 
         return allFields.stream()
                 .map((model) -> marshallField(object, model))
-                .filter(Objects::nonNull)
+                .filter(Objects::nonNull) //TODO custom null handling
                 .collect(joining(",", "{", "}"));
     }
 
-    private String marshallField(Object object, FieldModel fieldModel) {
-        final Object value = fieldModel.getValue(object);
+    private String marshallField(Object object, PropertyModel propertyModel) {
+        final Object value = propertyModel.getValue(object);
         if (value != null) {
             if (value instanceof OptionalInt && !((OptionalInt) value).isPresent()
                     || value instanceof OptionalLong && !((OptionalLong) value).isPresent()
                     || value instanceof OptionalDouble && !((OptionalDouble) value).isPresent()) {
                 return null;
             }
-            return keyValue(fieldModel.getWriteName(), marshallInternal(value));
+            return keyValue(propertyModel.getWriteName(), marshallInternal(value));
         }
 
         // Null value is returned in case this field doesn't need to be marshaled

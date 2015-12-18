@@ -18,7 +18,7 @@ package org.eclipse.persistence.json.bind.defaultmapping.anonymous;
  * @author Dmitry Kornilov
  */
 public class OuterPojo {
-    private Integer id;
+    private Integer id = 1;
     private String name;
 
     public Integer getId() {

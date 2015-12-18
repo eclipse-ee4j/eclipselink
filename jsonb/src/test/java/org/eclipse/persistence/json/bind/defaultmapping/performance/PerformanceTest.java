@@ -6,6 +6,7 @@ import org.eclipse.persistence.json.bind.defaultmapping.collections.Language;
 import org.eclipse.persistence.json.bind.defaultmapping.generics.model.GenericTestClass;
 import org.eclipse.persistence.json.bind.defaultmapping.jsonp.JsonpLong;
 import org.eclipse.persistence.json.bind.defaultmapping.jsonp.JsonpString;
+import org.eclipse.persistence.json.bind.defaultmapping.specific.ObjectGraphTest;
 import org.openjdk.jmh.annotations.*;
 
 import javax.json.*;
@@ -34,6 +35,13 @@ import static org.junit.Assert.assertTrue;
 public class PerformanceTest {
 
     @Benchmark
+    public void testObjectGraph() {
+        ObjectGraphTest test = new ObjectGraphTest();
+        test.testObjectFromJson();
+        test.testObjectToJson();
+    }
+
+    @Benchmark
     public void testJsonMarshal() throws URISyntaxException, MalformedURLException, ParseException {
         final Jsonb jsonb = (new JsonBindingBuilder()).build();
 
@@ -51,7 +59,7 @@ public class PerformanceTest {
             }
         }));
 
-        assertEquals("{\"id\":1,\"name\":\"pojoName\",\"anonymousField\":\"anonymousValue\"}", jsonb.toJson(new OuterPojo() {
+        assertEquals("{\"id\":1,\"anonymousField\":\"anonymousValue\"}", jsonb.toJson(new OuterPojo() {
             public String anonymousField = "anonymousValue";
 
             @Override

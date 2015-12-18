@@ -34,9 +34,9 @@ public class ClassModel {
     /**
      * A list of class fields.
      */
-    private final Map<String, FieldModel> fields = new HashMap<>();
+    private final Map<String, PropertyModel> fields = new HashMap<>();
 
-    public FieldModel getFieldModel(String name) {
+    public PropertyModel getPropertyModel(String name) {
         return fields.get(name);
     }
 
@@ -44,26 +44,26 @@ public class ClassModel {
      * Search for field in this class model and superclasses of its class.
      * @param fieldName name of field to find, not null.
      * @param mappingContext mapping context to search for superclasses in, not null.
-     * @return FieldModel if found.
+     * @return PropertyModel if found.
      */
-    public FieldModel findFieldModel(String fieldName, MappingContext mappingContext) {
-        FieldModel result = fields.get(fieldName);
+    public PropertyModel findPropertyModel(String fieldName, MappingContext mappingContext) {
+        PropertyModel result = fields.get(fieldName);
         if (result != null) {
             return result;
         }
         return searchParents(fieldName, mappingContext);
     }
 
-    private FieldModel searchParents(String fieldName, MappingContext mappingContext) {
+    private PropertyModel searchParents(String fieldName, MappingContext mappingContext) {
         Class superclass;
         for (superclass = clazz.getSuperclass(); superclass != null; superclass = superclass.getSuperclass()) {
             ClassModel classModel = mappingContext.getClassModel(superclass);
             if (classModel == null) {
                 return null;
             }
-            FieldModel fieldModel = classModel.getFieldModel(fieldName);
-            if (fieldModel != null) {
-                return fieldModel;
+            PropertyModel propertyModel = classModel.getPropertyModel(fieldName);
+            if (propertyModel != null) {
+                return propertyModel;
             }
         }
         return null;
@@ -77,7 +77,7 @@ public class ClassModel {
         return clazz;
     }
 
-    public Map<String, FieldModel> getFields() {
+    public Map<String, PropertyModel> getFields() {
         return fields;
     }
 

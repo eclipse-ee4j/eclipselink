@@ -9,13 +9,12 @@
  *
  * Contributors:
  * Dmitry Kornilov - initial implementation
+ * Roman Grigoriadi
  ******************************************************************************/
 package org.eclipse.persistence.json.bind.defaultmapping.generics;
 
-import org.eclipse.persistence.json.bind.JsonBindingBuilder;
 import org.eclipse.persistence.json.bind.defaultmapping.generics.model.*;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.json.bind.Jsonb;
@@ -59,7 +58,6 @@ public class GenericsTest {
 
     @Test
     public void testMultiLevelGenericClass() {
-        Jsonb jsonb = new JsonBindingBuilder().build();
 
         GenericTestClass<String, Integer> innerMostGenericClass = new GenericTestClass<>();
         innerMostGenericClass.field1 = "innerMostValue3";
@@ -86,7 +84,6 @@ public class GenericsTest {
 
     @Test
     public void testNestedGenericSelfClass() {
-        Jsonb jsonb = new JsonBindingBuilder().build();
         GenericTestClass<String, Integer> inner = new GenericTestClass<>();
         inner.field1 = "innerValue1";
         inner.field2 = 5;
@@ -191,7 +188,6 @@ public class GenericsTest {
 
     @Test
     public void testPropagatedGenerics() {
-        Jsonb jsonb = JsonbBuilder.create();
         List<Integer> integerList = new ArrayList<>();
         integerList.add(1);
         integerList.add(2);
@@ -226,16 +222,8 @@ public class GenericsTest {
     }
 
     @Test
-    @Ignore //TODO looks like PropertyDescriptor requires both getter and setter to be present, so we can't use it.
     public void testFunctional() {
-        //functional interface
-        FunctionalInterface<String> myFunction = () -> {
-            return "value1";
-        };
-
-//        assertEquals("{\"value\":\"value1\"}", jsonb.toJson(myFunction));
-
-        myFunction = new FunctionalInterface<String>() {
+        FunctionalInterface myFunction = new FunctionalInterface<String>() {
 
             private String value = "initValue";
 
