@@ -28,7 +28,9 @@ import java.security.PrivilegedActionException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 
 /**
  * INTERNAL:
@@ -345,6 +347,56 @@ public class PrivilegedAccessHelper {
      */
     public static Class getFieldType(final Field field) {
         return field.getType();
+    }
+
+    /**
+     * Check if {@code getSystemProperty} is allowed for provided property key.
+     * @param key The name of the {@link System} property.
+     * @return Value of {@code true} if {@code getSystemProperty} is allowed for this property key
+     *         or {@code false} otherwise.
+     */
+    private static boolean isIllegalProperty(final String key) {
+        return key == null || !(key.startsWith("eclipselink.") || "line.separator".equals(key)
+                || key.startsWith("javax.persistence.") || key.startsWith("persistence.")
+                || PersistenceUnitProperties.JAVASE_DB_INTERACTION.equals(key));
+    }
+
+    /**
+     * INTERNAL:
+     * Get the {@link System} property indicated by the specified {@code key}.
+     * @param key The name of the {@link System} property.
+     * @return The {@link String} value of the system property or {@code null} if property identified by {@code key}
+     *         does not exist.
+     */
+    public static final String getSystemProperty(final String key) {
+        if (isIllegalProperty(key)) {
+            throw new IllegalArgumentException(
+                    ExceptionLocalization.buildMessage("unexpect_argument", new Object[] {key}));
+        }
+        if (shouldUsePrivilegedAccess()) {
+            return AccessController.doPrivileged(new PrivilegedGetSystemProperty(key));
+        } else {
+            return System.getProperty(key);
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Get the {@link System} property indicated by the specified {@code key}.
+     * @param key The name of the {@link System} property.
+     * @return The {@link String} value of the system property or {@code def} if property identified by {@code key}
+     *         does not exist.
+     */
+    public static final String getSystemProperty(final String key, final String def) {
+        if (isIllegalProperty(key)) {
+            throw new IllegalArgumentException(
+                    ExceptionLocalization.buildMessage("unexpect_argument", new Object[] {key}));
+        }
+        if (shouldUsePrivilegedAccess()) {
+            return AccessController.doPrivileged(new PrivilegedGetSystemProperty(key, def));
+        } else {
+            return System.getProperty(key, def);
+        }
     }
 
     /**
