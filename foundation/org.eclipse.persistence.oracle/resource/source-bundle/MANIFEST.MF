@@ -2,5 +2,5 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: EclipseLink Oracle Extensions Source
 Bundle-SymbolicName: org.eclipse.persistence.oracle.source
-Bundle-Version: 2.6.2
-Eclipse-SourceBundle: org.eclipse.persistence.oracle;version="2.6.2"
+Bundle-Version: 2.6.3
+Eclipse-SourceBundle: org.eclipse.persistence.oracle;version="2.6.3"
