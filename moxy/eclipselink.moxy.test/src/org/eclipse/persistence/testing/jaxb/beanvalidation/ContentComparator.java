@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -103,7 +103,24 @@ public final class ContentComparator {
                 return false;
             }
         }
-        return true;
+        // check remains
+        if (!l1.isEmpty()) {
+            // missing nodes
+            LOGGER.warning("================================================"); //NOI18N
+            LOGGER.warning("Expected " + l1.size() + " more node(s):"); //NOI18N
+            logNodes(l1);
+            LOGGER.warning("================================================"); //NOI18N
+            return false;
+        } else if (!l2.isEmpty()) {
+            // extra nodes
+            LOGGER.warning("================================================"); //NOI18N
+            LOGGER.warning("Got " + l2.size() + " more node(s) than expected:"); //NOI18N
+            logNodes(l2);
+            LOGGER.warning("================================================"); //NOI18N
+            return false;
+        } else {
+            return true;
+        }
     }
 
     //attrs, name, value
@@ -150,4 +167,11 @@ public final class ContentComparator {
         return true;
     }
 
+    private static void logNodes(List<Node> nodes) {
+        if (LOGGER.isLoggable(Level.WARNING)) {
+            for(Node n : nodes) {
+                LOGGER.warning("Node name: " + n.getNodeName()); //NOI18N
+            }
+        }
+    }
 }

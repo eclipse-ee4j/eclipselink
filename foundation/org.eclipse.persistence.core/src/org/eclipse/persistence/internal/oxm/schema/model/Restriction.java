@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -32,7 +32,6 @@ public class Restriction implements SimpleDerivation {
     private String maxExclusive;
     private String totalDigits;
     private String fractionDigits;
-    private String pattern;
     private java.util.List<String> patterns = new ArrayList<String>();
     private String length;
     private String minLength;
@@ -204,14 +203,6 @@ public class Restriction implements SimpleDerivation {
         this.fractionDigits = String.valueOf(fractionDigits);
     }
 
-    public String getPattern() {
-        return pattern;
-    }
-
-    public void setPattern(String pattern) {
-        this.pattern = pattern;
-    }
-
     public List<String> getPatterns() {
         return patterns;
     }
@@ -275,9 +266,7 @@ public class Restriction implements SimpleDerivation {
         if (restriction.getSequence() != null) this.setSequence(restriction.getSequence());
         if (restriction.getChoice() != null) this.setChoice(restriction.getChoice());
         if (restriction.getEnumerationFacets() != null) this.setEnumerationFacets(restriction.getEnumerationFacets());
-
-        if (restriction.getPatterns() != null) this.setPatterns(restriction.getPatterns());
-        if (restriction.getPattern() != null) this.setPattern(restriction.getPattern());
+        if (restriction.getPatterns() != null) this.setPatterns(restriction.getPatterns()); // restriction.getPatterns() is "always" not null
         if (restriction.getMaxInclusive() != null) this.setMaxInclusive(restriction.getMaxInclusive());
         if (restriction.getMinInclusive() != null) this.setMinInclusive(restriction.getMinInclusive());
         if (restriction.getMaxExclusive() != null) this.setMaxExclusive(restriction.getMaxExclusive());
