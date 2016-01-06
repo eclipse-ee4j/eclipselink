@@ -19,7 +19,7 @@
                </xsd:restriction>
             </xsd:simpleType>
          </xsd:element>
-          <xsd:element name="someCollection" type="xsd:anyType" maxOccurs="unbounded"/>
+         <xsd:element name="someCollection" type="xsd:anyType" maxOccurs="unbounded"/>
       </xsd:sequence>
    </xsd:complexType>
    <xsd:complexType name="Numbers">
@@ -91,9 +91,17 @@
                </xsd:restriction>
             </xsd:simpleType>
          </xsd:element>
+         <xsd:element name="singleRegex">
+            <xsd:simpleType>
+               <xsd:restriction base="xsd:string">
+                  <xsd:pattern value="[a-zA-Z]+"/>
+               </xsd:restriction>
+            </xsd:simpleType>
+         </xsd:element>
          <xsd:element name="idType">
             <xsd:simpleType>
                <xsd:restriction base="xsd:ID">
+                  <xsd:pattern value="[\i-[:]][\c-[:]]*"/>
                   <xsd:maxLength value="100"/>
                </xsd:restriction>
             </xsd:simpleType>

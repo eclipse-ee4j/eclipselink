@@ -12,7 +12,9 @@
          </xsd:element>
          <xsd:element name="phoneNumber" minOccurs="0">
             <xsd:simpleType>
-               <xsd:restriction base="xsd:string"/>
+               <xsd:restriction base="xsd:string">
+                  <xsd:pattern value="\(\d{3}\)\d{3}-\d{4}"/>
+               </xsd:restriction>
             </xsd:simpleType>
          </xsd:element>
          <xsd:element name="department" type="department" minOccurs="0"/>
