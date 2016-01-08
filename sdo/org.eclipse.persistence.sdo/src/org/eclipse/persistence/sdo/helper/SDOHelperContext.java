@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -86,7 +86,8 @@ public class SDOHelperContext implements HelperContext {
     protected XSDHelper xsdHelper;
     private String identifier;
     private Map<String, Object> properties;
-    private boolean isStrictTypeCheckingEnabled = isStrictTypeCheckingEnabledInitial();
+    private boolean isStrictTypeCheckingEnabled = PrivilegedAccessHelper.getSystemPropertyBoolean(
+            STRICT_TYPE_CHECKING_PROPERTY_NAME, true);
 
     /**
      * Property controls strictness of {@link Type#getInstanceClass()} type checking.
@@ -1378,17 +1379,6 @@ public class SDOHelperContext implements HelperContext {
      */
     public void setStrictTypeCheckingEnabled(boolean enabled) {
         this.isStrictTypeCheckingEnabled = enabled;
-    }
-
-    /**
-     * Provides initial value which is defined by {@value #STRICT_TYPE_CHECKING_PROPERTY_NAME} {@link System} property.
-     *
-     * @return boolean value of {@value #STRICT_TYPE_CHECKING_PROPERTY_NAME} property
-     */
-    private static boolean isStrictTypeCheckingEnabledInitial() {
-        final String trueString = Boolean.TRUE.toString();
-        final String property = PrivilegedAccessHelper.getSystemProperty(STRICT_TYPE_CHECKING_PROPERTY_NAME, trueString);
-        return trueString.equalsIgnoreCase(property);
     }
 
     /**
