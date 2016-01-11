@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -92,6 +92,8 @@ public class SDOException extends EclipseLinkException {
     public static final int MISSING_DEPENDENCY_FOR_BINARY_MAPPING = 45208;
     public static final int ATTEMPT_TO_RESET_APP_RESOLVER = 45209;
     public static final int DATAOBJECT_FROM_DIFFERENT_HELPERCONTEXT = 45210;
+    public static final int ERROR_DEFINING_TYPE_INVALID_NAME = 45211;
+    public static final int ERROR_DEFINING_PROPERTY_INVALID_NAME = 45212;
 
     protected SDOException(String message) {
         super(message);
@@ -378,6 +380,32 @@ public class SDOException extends EclipseLinkException {
         Object[] args = {  };
         SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(SDOException.class, ERROR_DEFINING_TYPE_NO_NAME, args));
         exception.setErrorCode(ERROR_DEFINING_TYPE_NO_NAME);
+        return exception;
+    }
+
+    /**
+     * INTERNAL:
+     * Exception trying to create a type with invalid name.
+     * @param name type name
+     * @return {@link SDOException}
+     */
+    public static SDOException errorDefiningTypeInvalidName(String name) {
+        Object[] args = { name };
+        SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(SDOException.class, ERROR_DEFINING_TYPE_INVALID_NAME, args));
+        exception.setErrorCode(ERROR_DEFINING_TYPE_INVALID_NAME);
+        return exception;
+    }
+
+    /**
+     * INTERNAL:
+     * Exception trying to create a type with property of invalid name.
+     * @param name property name
+     * @return {@link SDOException}
+     */
+    public static SDOException errorDefiningPropertyInvalidName(String name) {
+        Object[] args = { name };
+        SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(SDOException.class, ERROR_DEFINING_PROPERTY_INVALID_NAME, args));
+        exception.setErrorCode(ERROR_DEFINING_PROPERTY_INVALID_NAME);
         return exception;
     }
 

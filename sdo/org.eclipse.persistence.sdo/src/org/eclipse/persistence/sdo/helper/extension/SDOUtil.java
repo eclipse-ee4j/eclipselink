@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -16,6 +16,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
+import java.util.regex.Pattern;
 
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
@@ -38,6 +39,20 @@ public class SDOUtil {
 	private static final String HEXADECIMAL_DIGITS = "0123456789abcdefABCDEF";
 	/** Warning string to signify that the input to the package generator may not be a valid URI */
 	private static final String INVALID_URI_WARNING = "SDOUtil: The URI [{0}] used for java package name generation is invalid - generating [{1}].";
+
+    /** NCName start character class content - used to compose {@link #XML_NCNAME_VALIDATION_PATTERN}. */
+    private static final String XML_NCNAME_START_CHAR_GROUP =
+            "A-Z_a-z\\x{C0}-\\x{D6}\\x{D8}-\\x{F6}\\x{F8}-\\x{2FF}\\x{370}-\\x{37D}\\x{37F}-\\x{1FFF}\\x{200C}-\\x{200D}\\x{2070}-\\x{218F}\\x{2C00}-\\x{2FEF}\\x{3001}-\\x{D7FF}\\x{F900}-\\x{FDCF}\\x{FDF0}-\\x{FFFD}\\x{10000}-\\x{EFFFF}";
+    /** NCName character class content - used to compose {@link #XML_NCNAME_VALIDATION_PATTERN}. */
+    private static final String XML_NCNAME_CHAR_GROUP =
+            "\\-.0-9\\x{B7}\\x{300}-\\x{36F}\\x{203F}-\\x{2040}";
+
+    /**
+     * Pattern for validation of XML non-colonial name (NCName).
+     * @see <a href="http://www.w3.org/TR/REC-xml-names/#NT-NCName">http://www.w3.org/TR/REC-xml-names/#NT-NCName</a>
+     */
+    private static final Pattern XML_NCNAME_VALIDATION_PATTERN = Pattern.compile(
+            "^[ " + XML_NCNAME_START_CHAR_GROUP + "][" + XML_NCNAME_START_CHAR_GROUP + XML_NCNAME_CHAR_GROUP + "]*$");
 
 	private static final String IS = "is";
     private static final String GET = "get";
@@ -709,4 +724,14 @@ public class SDOUtil {
         return null;
     }
 
+    /**
+     * INTERNAL:
+     * Validates whether given string is a valid XML non-colonial name (NCName).
+     * @param name string
+     * @return {@code true} given string is a valid NCName
+     * @see <a href="http://www.w3.org/TR/REC-xml-names/#NT-NCName">http://www.w3.org/TR/REC-xml-names/#NT-NCName</a>
+     */
+    public static boolean isValidXmlNCName(String name) {
+        return XML_NCNAME_VALIDATION_PATTERN.matcher(name).matches();
+    }
 }

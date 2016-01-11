@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -45,6 +45,7 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
  * Note the usage of do privileged has major impacts on performance, so should normally be avoided.
  */
 public class PrivilegedAccessHelper {
+    private static final String TRUE_STRING = "true";
     private static boolean defaultUseDoPrivilegedValue = false;
     private static boolean shouldCheckPrivilegedAccess = true;
     private static boolean shouldUsePrivilegedAccess = false;
@@ -367,6 +368,7 @@ public class PrivilegedAccessHelper {
      * @param key The name of the {@link System} property.
      * @return The {@link String} value of the system property or {@code null} if property identified by {@code key}
      *         does not exist.
+     * @since 2.6.2
      */
     public static final String getSystemProperty(final String key) {
         if (isIllegalProperty(key)) {
@@ -386,6 +388,7 @@ public class PrivilegedAccessHelper {
      * @param key The name of the {@link System} property.
      * @return The {@link String} value of the system property or {@code def} if property identified by {@code key}
      *         does not exist.
+     * @since 2.6.2
      */
     public static final String getSystemProperty(final String key, final String def) {
         if (isIllegalProperty(key)) {
@@ -397,6 +400,21 @@ public class PrivilegedAccessHelper {
         } else {
             return System.getProperty(key, def);
         }
+    }
+
+    /**
+     * INTERNAL:
+     * Get boolean value of the {@link System} property indicated by the specified {@code key}.
+     * @param key The name of the {@link System} property.
+     * @param def The default value.
+     * @return {@code true} if the property value is {@code "true"} (case insensitive)
+     *         or the property is not defined and {@code def} is {@code true};
+     *         {@code false} otherwise.
+     * @since 2.6.3
+     */
+    public static final boolean getSystemPropertyBoolean(final String key, final boolean def) {
+        return TRUE_STRING.equalsIgnoreCase(
+                getSystemProperty(key, def ? TRUE_STRING : ""));
     }
 
     /**
@@ -505,7 +523,7 @@ public class PrivilegedAccessHelper {
                 if (usePrivileged == null) {
                     shouldUsePrivilegedAccess = defaultUseDoPrivilegedValue;
                 } else {
-                    shouldUsePrivilegedAccess = usePrivileged.equalsIgnoreCase("true");
+                    shouldUsePrivilegedAccess = usePrivileged.equalsIgnoreCase(TRUE_STRING);
                 }
             } else {
                 shouldUsePrivilegedAccess = false;

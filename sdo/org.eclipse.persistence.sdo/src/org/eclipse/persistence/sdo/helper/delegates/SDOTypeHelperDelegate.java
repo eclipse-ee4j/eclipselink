@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -35,10 +35,12 @@ import org.eclipse.persistence.sdo.types.SDOXMLHelperLoadOptionsType;
 import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
 import org.eclipse.persistence.sdo.helper.SDOXMLHelper;
 import org.eclipse.persistence.sdo.helper.SDOXSDHelper;
+import org.eclipse.persistence.sdo.helper.extension.SDOUtil;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sdo.types.*;
 import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
@@ -139,6 +141,26 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
             "typesHashMap",
             "anonymousTypes",
             "commonjHashMap"};
+
+    /** Name of property that controls name validation.
+     * @see #isXmlNameValidationEnabled
+     */
+    private static final String XML_NAME_VALIDATION_ENABLED_PROPERTY_NAME = "eclipselink.sdo.dynamic.type.names.validation";
+
+    /**
+     * Indicates whether to validate XML names.
+     * <p>
+     * XML name validation happens on dynamic type definition using
+     * {@link #define(List)}, {@link #define(DataObject)} and {@link #define(DataObject, List)}
+     * methods. If enabled, names of types and properties are checked whether they are
+     * valid XML NCNames - see {@link SDOUtil#isValidXmlNCName(String)}.
+     * </p>
+     * <p>
+     * Default value is {@code true}.
+     * </p>
+     */
+    private final boolean isXmlNameValidationEnabled = PrivilegedAccessHelper.getSystemPropertyBoolean(
+            XML_NAME_VALIDATION_ENABLED_PROPERTY_NAME, true);
 
     // create these maps once to avoid threading issues
     static {
@@ -754,6 +776,10 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
             return type;
         }
 
+        if (isXmlNameValidationEnabled && !SDOUtil.isValidXmlNCName(name)) {
+            throw new IllegalArgumentException(SDOException.errorDefiningTypeInvalidName(name));
+        }
+
         boolean isDataType = dataObject.getBoolean("dataType");
         if(isDataType) {
             type = new SDODataType(uri, name, this);
@@ -876,6 +902,10 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
     private SDOProperty buildPropertyFromDataObject(DataObject dataObject, Type containingType, List types) {
         String nameValue = dataObject.getString("name");
         Object typeObjectValue = dataObject.get("type");
+
+        if (isXmlNameValidationEnabled && !SDOUtil.isValidXmlNCName(nameValue)) {
+            throw new IllegalArgumentException(SDOException.errorDefiningPropertyInvalidName(nameValue));
+        }
 
         SDOProperty newProperty = new SDOProperty(aHelperContext);
 

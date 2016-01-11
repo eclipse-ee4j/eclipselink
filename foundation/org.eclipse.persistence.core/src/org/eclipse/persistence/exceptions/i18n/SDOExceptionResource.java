@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -77,6 +77,8 @@ public class SDOExceptionResource extends ListResourceBundle {
                                            { "45208", "Unable to map property {0} from type {1}. The javax.activation and javax.mail packages are required to map properties of type DataHandler. Ensure that both of these are available on the classpath."},
                                            { "45209", "An attempt was made to reset the ApplicationResolver instance on SDOHelperContext.  Only one set is permitted."},
                                            { "45210", "The DataObject being marshalled is not from the same HelperContext as the XMLHelper."},
+                                           { "45211", "Could not define type with name [{0}]. The name is not a valid XML name."},
+                                           { "45212", "Could not define property with [{0}]. The name is not a valid XML name."},
                                            
     };
 
