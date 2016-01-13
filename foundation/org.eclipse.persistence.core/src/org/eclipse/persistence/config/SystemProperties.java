@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -72,4 +72,20 @@ public class SystemProperties {
      * with the one either set in persistence.xml or auto detected.
      */
     public static final String ENFORCE_TARGET_SERVER = "eclipselink.target-server.enforce";
+    
+    /**
+     * This system property is used by the IndirectCollectionsFactory to configure if the Java SE 7 API-specific  
+     * indirect collection implementation classes should be instantiated at runtime. Configure this system property 
+     * to true if the Java SE 7 API-specific indirect collection classes should be used instead of the 
+     * Java SE 8 API-specific indirect collection classes.
+     * 
+     * If the Java SE 8 API-specific indirect collection classes should be used at runtime when running in a 
+     * Java SE 8 JVM (the default IndirectCollectionsFactory behavior), or when running in a Java SE 7 JVM, 
+     * do not configure this system property, and the default behavior will be used.
+     * 
+     * Note: This (deprecated) API is specific to EclipseLink 2.6 only.
+     */
+    @Deprecated
+    public static final String JAVASE7_INDIRECT_COLLECTIONS = "eclipselink.indirection.javase7-indirect-collections";
+    
 }

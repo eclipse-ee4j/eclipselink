@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.transparentindirection;
 
+import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.indirection.IndirectList;
 import org.eclipse.persistence.indirection.IndirectMap;
 import org.eclipse.persistence.indirection.IndirectSet;
@@ -100,8 +101,18 @@ public class TransparentIndirectionModel extends TestModel {
         addTest(getBidirectionalRelationshipTestSuite());
         // Bug 345495
         addTest(getNullDelegateInValueHolderTestSuite());
+        // Bug 485585
+        addTest(getJavaSE7IndirectCollectionsConfigurationTestSuite());
     }
 
+    public TestSuite getJavaSE7IndirectCollectionsConfigurationTestSuite() {
+        TestSuite suite = new TestSuite();
+        suite.setName("JavaSE7IndirectCollectionsConfigurationTestSuite");
+        suite.setDescription("This suite tests the configuration of JavaSE 7 Indirect Collections in JavaSE 8.");
+        suite.addTest(new ConfigureJavaSE7IndirectCollectionsTest());        
+        return suite;
+    }
+    
     public TestSuite getCustomIndirectContainerTestSuite() {
         TestSuite suite = new TestSuite();
         suite.setName("CustomIndirectContainerTestSuite");

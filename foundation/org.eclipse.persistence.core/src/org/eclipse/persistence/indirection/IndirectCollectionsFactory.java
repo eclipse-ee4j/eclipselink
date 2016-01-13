@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -17,9 +17,11 @@ import java.security.PrivilegedAction;
 import java.util.Collection;
 import java.util.Map;
 
+import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.internal.helper.JavaSEPlatform;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
+import org.eclipse.persistence.internal.security.PrivilegedGetSystemProperty;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.logging.SessionLogEntry;
@@ -186,8 +188,18 @@ public final class IndirectCollectionsFactory {
      * of {@link IndirectCollection}s
      */
     private static IndirectCollectionsProvider getProvider() {
+        // Bug 485585 - specify the instantiation of the JDK 1.7 API-specific indirect collection classes at runtime 
+        // through the use of the (deprecated) SystemProperties.JAVASE7_INDIRECT_COLLECTIONS property.
+        String propertyValue = null;
+        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+            propertyValue = AccessController.doPrivileged(new PrivilegedGetSystemProperty(SystemProperties.JAVASE7_INDIRECT_COLLECTIONS));
+        } else {
+            propertyValue = System.getProperty(SystemProperties.JAVASE7_INDIRECT_COLLECTIONS);
+        }
+        boolean useJ2SE7IndirectCollections = Boolean.valueOf(propertyValue);
+        
         //try this on JDK 8+ only (see bug 464096)
-        if (JavaSEPlatform.CURRENT.atLeast(JavaSEPlatform.v1_8)) {
+        if (!useJ2SE7IndirectCollections && JavaSEPlatform.CURRENT.atLeast(JavaSEPlatform.v1_8)) {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                     final Class support = AccessController.doPrivileged(new PrivilegedClassForName(JDK8_SUPPORT_PROVIDER, true, IndirectCollectionsFactory.class.getClassLoader()));
