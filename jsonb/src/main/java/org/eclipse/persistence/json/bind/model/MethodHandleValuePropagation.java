@@ -12,6 +12,9 @@
  ******************************************************************************/
 package org.eclipse.persistence.json.bind.model;
 
+import org.eclipse.persistence.json.bind.internal.properties.MessageKeys;
+import org.eclipse.persistence.json.bind.internal.properties.Messages;
+
 import javax.json.bind.JsonbException;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -53,7 +56,7 @@ class MethodHandleValuePropagation extends PropertyValuePropagation {
                     throw new IllegalStateException("Unknown mode");
             }
         } catch (IllegalAccessException e) {
-            throw new JsonbException("Error creating handles.", e);
+            throw new JsonbException(Messages.getMessage(MessageKeys.CREATING_HANDLES), e);
         }
     }
 
@@ -74,7 +77,7 @@ class MethodHandleValuePropagation extends PropertyValuePropagation {
                     throw new IllegalStateException("Unknown mode");
             }
         } catch (IllegalAccessException e) {
-            throw new JsonbException("Error creating handles.", e);
+            throw new JsonbException(Messages.getMessage(MessageKeys.CREATING_HANDLES), e);
         }
     }
 
@@ -87,7 +90,7 @@ class MethodHandleValuePropagation extends PropertyValuePropagation {
         try {
             setHandle.invoke(object, value);
         } catch (Throwable throwable) {
-            throw new JsonbException("Error setting value with: " + setHandle, throwable);
+            throw new JsonbException(Messages.getMessage(MessageKeys.SETTING_VALUE_WITH, setHandle), throwable);
         }
     }
 
@@ -99,7 +102,7 @@ class MethodHandleValuePropagation extends PropertyValuePropagation {
         try {
             return getHandle.invoke(object);
         } catch (Throwable throwable) {
-            throw new JsonbException("Error getting value with: " + getHandle, throwable);
+            throw new JsonbException(Messages.getMessage(MessageKeys.GETTING_VALUE_WITH, getHandle), throwable);
         }
     }
 

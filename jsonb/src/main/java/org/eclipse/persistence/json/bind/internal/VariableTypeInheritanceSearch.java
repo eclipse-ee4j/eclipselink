@@ -13,6 +13,9 @@
 
 package org.eclipse.persistence.json.bind.internal;
 
+import org.eclipse.persistence.json.bind.internal.properties.MessageKeys;
+import org.eclipse.persistence.json.bind.internal.properties.Messages;
+
 import javax.json.bind.JsonbException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -112,7 +115,7 @@ public class VariableTypeInheritanceSearch {
             return (ParameterizedType) type;
         }
         if (!(type instanceof Class)) {
-            throw new JsonbException("Can't resolve ParameterizedType superclass for: " + type);
+            throw new JsonbException(Messages.getMessage(MessageKeys.RESOLVE_PARAMETRIZED_TYPE, type));
         }
         return findParameterizedSuperclass(((Class) type).getGenericSuperclass());
     }

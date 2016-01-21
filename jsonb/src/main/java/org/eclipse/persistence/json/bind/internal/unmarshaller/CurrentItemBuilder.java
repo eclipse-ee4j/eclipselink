@@ -16,6 +16,8 @@ import org.eclipse.persistence.json.bind.internal.MappingContext;
 import org.eclipse.persistence.json.bind.internal.ReflectionUtils;
 import org.eclipse.persistence.json.bind.internal.conversion.ConvertersMapTypeConverter;
 import org.eclipse.persistence.json.bind.internal.conversion.TypeConverter;
+import org.eclipse.persistence.json.bind.internal.properties.MessageKeys;
+import org.eclipse.persistence.json.bind.internal.properties.Messages;
 import org.eclipse.persistence.json.bind.model.ClassModel;
 import org.eclipse.persistence.json.bind.model.PropertyModel;
 
@@ -157,7 +159,7 @@ public class CurrentItemBuilder {
                     return createMapItem();
                 }
                 if (rawType.isInterface()) {
-                    throw new JsonbException("Can't infer a type for unmarshalling into: " + rawType.getName());
+                    throw new JsonbException(Messages.getMessage(MessageKeys.INFER_TYPE_FOR_UNMARSHALL, rawType.getName()));
                 }
                 if (converter.supportsFromJson(rawType)) {
                     throw new JsonbException(String.format("JSON object not expected for unmarshalling into field %s, of supported type %s.", jsonKeyName, rawType));
@@ -222,9 +224,9 @@ public class CurrentItemBuilder {
             declaredConstructor.setAccessible(true);
             return declaredConstructor.newInstance();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw new JsonbException("Can't create instance", e);
+            throw new JsonbException(Messages.getMessage(MessageKeys.CANT_CREATE_INSTANCE), e);
         } catch (NoSuchMethodException e) {
-            throw new JsonbException("No default constructor found.", e);
+            throw new JsonbException(Messages.getMessage(MessageKeys.NO_DEFAULT_CONSTRUCTOR), e);
         }
     }
 

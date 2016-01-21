@@ -84,20 +84,22 @@ public class ConvertersMapTypeConverter implements TypeConverter {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T fromJson(String value, Class<T> clazz) {
-        return (T) findConvertorFromJson(clazz).fromJson(value, clazz);
+        SupportedTypeConverter<?> supportedTypeConverter = findConvertorFromJson(clazz);
+        return (T) supportedTypeConverter.fromJson(value, clazz);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public <T> String toJson(T object) {
-        return ((SupportedTypeConverter<T>)findConvertorToJson(object.getClass())).toJson(object);
+        SupportedTypeConverter<T> supportedTypeConverter = ((SupportedTypeConverter<T>) findConvertorToJson(object.getClass()));
+        return supportedTypeConverter.toJson(object);
     }
 
     private <T> SupportedTypeConverter<?> findConvertorToJson(Class<T> clazz) {
         SupportedTypeConverter<?> convertor = converters.get(clazz);
         if (convertor == null) {
             for (SupportedTypeConverter<?> conv : converters.values()) {
-                if (conv.supportsToJson(clazz)){
+                if (conv.supportsToJson(clazz)) {
                     return conv;
                 }
             }
@@ -109,7 +111,7 @@ public class ConvertersMapTypeConverter implements TypeConverter {
         SupportedTypeConverter<?> convertor = converters.get(clazz);
         if (convertor == null) {
             for (SupportedTypeConverter<?> conv : converters.values()) {
-                if (conv.supportsFromJson(clazz)){
+                if (conv.supportsFromJson(clazz)) {
                     return conv;
                 }
             }

@@ -12,6 +12,9 @@
  ******************************************************************************/
 package org.eclipse.persistence.json.bind.internal.unmarshaller;
 
+import org.eclipse.persistence.json.bind.internal.properties.MessageKeys;
+import org.eclipse.persistence.json.bind.internal.properties.Messages;
+
 import javax.json.bind.JsonbException;
 import javax.json.stream.JsonParser;
 import java.math.BigDecimal;
@@ -58,7 +61,7 @@ public enum JsonValueType {
             case START_OBJECT:
                 return OBJECT;
             default:
-                throw new JsonbException("Not a value type: " + event.name());
+                throw new JsonbException(Messages.getMessage(MessageKeys.NOT_VALUE_TYPE, event.name()));
         }
     }
 }

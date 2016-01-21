@@ -12,12 +12,13 @@
  ******************************************************************************/
 package org.eclipse.persistence.json.bind.internal;
 
+import org.eclipse.persistence.json.bind.internal.properties.MessageKeys;
+import org.eclipse.persistence.json.bind.internal.properties.Messages;
 import org.eclipse.persistence.json.bind.internal.unmarshaller.CurrentItem;
 import org.eclipse.persistence.json.bind.internal.unmarshaller.EmbeddedItem;
 
 import javax.json.bind.JsonbException;
 import java.lang.reflect.*;
-import java.text.MessageFormat;
 
 /**
  * Utility class for resolution of generics during unmarshalling.
@@ -42,7 +43,7 @@ public class ReflectionUtils {
         } else if (type instanceof GenericArrayType) {
             return ((GenericArrayType) type).getClass();
         }
-        throw new JsonbException(MessageFormat.format("Unsupported type: {0}", type));
+        throw new JsonbException(Messages.getMessage(MessageKeys.UNSUPPORTED_TYPE, type));
     }
 
     /**
@@ -94,7 +95,7 @@ public class ReflectionUtils {
      */
     public static Type resolveItemVariableType(CurrentItem<?> item, TypeVariable<?> typeVariable) {
         if (item == null) {
-            throw new JsonbException(MessageFormat.format("Field generic bound not found for type var {0}.", typeVariable));
+            throw new JsonbException(Messages.getMessage(MessageKeys.GENERIC_BOUND_NOT_FOUND, typeVariable));
         }
 
         //Embedded items doesn't hold information about variable types
@@ -121,7 +122,7 @@ public class ReflectionUtils {
             return (ParameterizedType) type;
         }
         if (!(type instanceof Class)) {
-            throw new JsonbException("Can't resolve ParameterizedType superclass for: " + type);
+            throw new JsonbException(Messages.getMessage(MessageKeys.RESOLVE_PARAMETRIZED_TYPE, type));
         }
         return findParameterizedSuperclass(((Class) type).getGenericSuperclass());
     }

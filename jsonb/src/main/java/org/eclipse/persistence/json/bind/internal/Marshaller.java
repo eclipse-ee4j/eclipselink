@@ -68,10 +68,7 @@ public class Marshaller extends JsonTextProcessor {
      */
     private String marshallInternal(Object object) {
         if (object == null
-                || object instanceof Optional && !((Optional) object).isPresent()
-                || object instanceof OptionalInt && !((OptionalInt) object).isPresent()
-                || object instanceof OptionalLong && !((OptionalLong) object).isPresent()
-                || object instanceof OptionalDouble && !((OptionalDouble) object).isPresent()) {
+                || object instanceof Optional && !((Optional) object).isPresent()) {
             return NULL;
 
         } else if (object instanceof Optional) {

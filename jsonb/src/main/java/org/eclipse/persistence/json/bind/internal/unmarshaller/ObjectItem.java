@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.json.bind.internal.unmarshaller;
 
+import org.eclipse.persistence.json.bind.internal.properties.MessageKeys;
+import org.eclipse.persistence.json.bind.internal.properties.Messages;
 import org.eclipse.persistence.json.bind.model.PropertyModel;
 
 import javax.json.bind.JsonbException;
@@ -61,7 +63,7 @@ class ObjectItem<T> extends CurrentItem<T> {
         }
         Class<?> valueType = resolveValueType(valuePropertyModel.getPropertyType(), jsonValueType);
         if (!getTypeConverter().supportsFromJson(valueType)) {
-            throw new JsonbException("Can't convert JSON value into: " + valuePropertyModel.getPropertyType());
+            throw new JsonbException(Messages.getMessage(MessageKeys.CANT_CONVERT_JSON_VALUE, valuePropertyModel.getPropertyType()));
         }
         Object converted = getTypeConverter().fromJson(value, valueType);
         valuePropertyModel.setValue(getInstance(), converted);

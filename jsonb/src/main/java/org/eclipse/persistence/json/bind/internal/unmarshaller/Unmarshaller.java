@@ -15,6 +15,8 @@ package org.eclipse.persistence.json.bind.internal.unmarshaller;
 
 import org.eclipse.persistence.json.bind.internal.JsonTextProcessor;
 import org.eclipse.persistence.json.bind.internal.MappingContext;
+import org.eclipse.persistence.json.bind.internal.properties.MessageKeys;
+import org.eclipse.persistence.json.bind.internal.properties.Messages;
 
 import javax.json.Json;
 import javax.json.bind.JsonbException;
@@ -88,7 +90,7 @@ public class Unmarshaller extends JsonTextProcessor {
                     currentFieldName = parser.getString();
                     break;
                 default:
-                    throw new JsonbException("Unexpected parser event: " + event);
+                    throw new JsonbException(Messages.getMessage(MessageKeys.NOT_VALUE_TYPE, event));
             }
         }
         return (T) currentItem.getInstance();

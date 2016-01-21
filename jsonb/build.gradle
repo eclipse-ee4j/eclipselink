@@ -6,10 +6,16 @@ jar {
     version =  '0.1.0'
 }
 
+def defaultEncoding = 'UTF-8'
 compileJava {
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
+    options.encoding = defaultEncoding
+    compileTestJava {
+        options.encoding = defaultEncoding
+    }
 }
+
 
 repositories {
     mavenLocal()
@@ -26,6 +32,8 @@ dependencies {
     compile 'javax.json.bind:javax.json.bind-api:0.1-SNAPSHOT'
     compile 'javax.json:javax.json-api:1.0'
 
+    testCompile 'org.openjdk.jmh:jmh-core:0.9.3'
+    testCompile 'org.openjdk.jmh:jmh-generator-annprocess:0.9.3'
     testCompile 'junit:junit:4.12'
     testCompile 'org.openjdk.jmh:jmh-core:0.9.3';
     testRuntime 'org.glassfish:javax.json:1.0.4'

@@ -14,6 +14,8 @@ package org.eclipse.persistence.json.bind;
 
 import org.eclipse.persistence.json.bind.internal.MappingContext;
 import org.eclipse.persistence.json.bind.internal.Marshaller;
+import org.eclipse.persistence.json.bind.internal.properties.MessageKeys;
+import org.eclipse.persistence.json.bind.internal.properties.Messages;
 import org.eclipse.persistence.json.bind.internal.unmarshaller.Unmarshaller;
 
 import javax.json.bind.Jsonb;
@@ -86,7 +88,7 @@ public class JsonBinding implements Jsonb {
         try {
             marshaller.marshall(object, appendable);
         } catch (IOException e) {
-            throw new JsonbException("Cannot marshall object.", e);
+            throw new JsonbException(Messages.getMessage(MessageKeys.CANNOT_MARSHAL_OBJECT), e);
         }
     }
 
@@ -96,7 +98,7 @@ public class JsonBinding implements Jsonb {
         try {
             marshaller.marshall(object, appendable);
         } catch (IOException e) {
-            throw new JsonbException("Cannot marshall object.", e);
+            throw new JsonbException(Messages.getMessage(MessageKeys.CANNOT_MARSHAL_OBJECT), e);
         }
     }
 
@@ -106,7 +108,7 @@ public class JsonBinding implements Jsonb {
         try {
             marshaller.marshall(object, stream);
         } catch (IOException e) {
-            throw new JsonbException("Cannot marshall object.", e);
+            throw new JsonbException(Messages.getMessage(MessageKeys.CANNOT_MARSHAL_OBJECT), e);
         }
     }
 
@@ -116,7 +118,7 @@ public class JsonBinding implements Jsonb {
         try {
             marshaller.marshall(object, stream);
         } catch (IOException e) {
-            throw new JsonbException("Cannot marshall object.", e);
+            throw new JsonbException(Messages.getMessage(MessageKeys.CANNOT_MARSHAL_OBJECT), e);
         }
     }
 }

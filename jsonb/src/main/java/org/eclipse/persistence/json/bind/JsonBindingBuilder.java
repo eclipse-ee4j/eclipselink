@@ -40,6 +40,9 @@ public class JsonBindingBuilder implements JsonbBuilder {
 
     @Override
     public Jsonb build() {
+        if (config == null){
+            config = new JsonbConfig();
+        }
         return new JsonBinding(this);
     }
 }
