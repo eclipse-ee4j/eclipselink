@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -10,12 +10,12 @@
  * Contributors:
  *      Marcel Valovy - initial API and implementation
  *      Dmitry Kornilov - BeanValidationHelper refactoring
+ *      Miroslav Kos - BeanValidationHelper refactoring
  ******************************************************************************/
 package org.eclipse.persistence.jaxb;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.ArrayList;
@@ -38,10 +38,25 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
- * Parses validation.xml, scanning for constraints file reference. If found,
- * it will parse the constraints file and put all classes declared under &lt;bean class="clazz"&gt; into
- * {@link org.eclipse.persistence.jaxb.BeanValidationHelper#constraintsOnClasses} with value
- * {@link Boolean#TRUE}.
+ * Detects external Bean Validation configuration.
+ * <p>
+ * Strategy:<br>
+ * 1. Parse validation.xml, looking for a constraints-file reference.<br>
+ * 2. For each reference, if file is found, parses the constraints file and puts all classes declared under
+ * {@literal <bean class="clazz">} into
+ * {@link org.eclipse.persistence.jaxb.BeanValidationHelper#constraintsOnClasses}
+ * with value {@link Boolean#TRUE}.
+ * <p>
+ * This class contains resources-burdening instance fields (e.g. SAXParser) and as such was designed to be instantiated
+ * once (make the instance BOUNDED) and have {@link #call()} method called on that instance once.
+ * <p>
+ * Not suitable for singleton (memory burden). The method #parse() will be invoked only once per class load of this
+ * class. After that the instance and all its fields should be made collectible by GC.
+ *
+ * @author Marcel Valovy
+ * @author Dmitry Kornilov
+ * @author Miroslav Kos
+ * @since 2.6
  */
 public class ValidationXMLReader implements Callable<Map<Class<?>, Boolean>> {
 
@@ -67,12 +82,7 @@ public class ValidationXMLReader implements Callable<Map<Class<?>, Boolean>> {
      */
     @Override
     public Map<Class<?>, Boolean> call() throws Exception {
-        try {
-            parseValidationXML();
-        } catch (SAXException | IOException e) {
-            String msg = "Parsing of validation.xml failed. Exception: " + e.getMessage();
-            LOGGER.warning(msg);
-        }
+        parseValidationXML(VALIDATION_XML, validationHandler);
 
         if (!constraintsFiles.isEmpty()) {
             parseConstraintFiles();
@@ -84,8 +94,12 @@ public class ValidationXMLReader implements Callable<Map<Class<?>, Boolean>> {
      * Checks if validation.xml exists.
      */
     public static boolean isValidationXmlPresent() {
-        final URL url = Thread.currentThread().getContextClassLoader().getResource(VALIDATION_XML);
-        return url != null;
+        try {
+            return getThreadContextClassLoader().getResource(VALIDATION_XML) != null;
+        } catch (PrivilegedActionException ignored) {
+            LOGGER.log(Level.WARNING, "Loading of " + VALIDATION_XML + " file failed. ", ignored);
+            return false;
+        }
     }
 
     private void parseConstraintFiles() {
@@ -97,6 +111,7 @@ public class ValidationXMLReader implements Callable<Map<Class<?>, Boolean>> {
             @Override
             public void startElement(String uri, String localName, String qName,
                                      Attributes attributes) throws SAXException {
+
                 if (DEFAULT_PACKAGE_QNAME.equalsIgnoreCase(qName)) {
                     defaultPackageElement = true;
                 } else if (BEAN_QNAME.equalsIgnoreCase(qName)) {
@@ -122,27 +137,12 @@ public class ValidationXMLReader implements Callable<Map<Class<?>, Boolean>> {
                     defaultPackageElement = false;
                 }
             }
-        };
+        }
 
+        // Parse constraints file referenced in validation.xml. Add all classes declared under <bean class="clazz"> to
+        // org.eclipse.persistence.jaxb.BeanValidationHelper#constraintsOnClasses with value Boolean#TRUE.
         for (String file : constraintsFiles) {
-            parseConstraintFile(file, new ConstrainedClassesDetector());
-        }
-    }
-
-    private void parseValidationXML() throws SAXException, IOException {
-        InputStream validationXml = null;
-        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-            try {
-                validationXml = AccessController.doPrivileged(new PrivilegedGetContextClassLoader(Thread.currentThread())).getResourceAsStream(VALIDATION_XML);
-            } catch (PrivilegedActionException e) {
-                String msg = "Loading of " + VALIDATION_XML + " file failed. Exception: " + e.getMessage();
-                LOGGER.warning(msg);
-            }
-        } else {
-            validationXml = Thread.currentThread().getContextClassLoader().getResourceAsStream(VALIDATION_XML);
-        }
-        if (validationXml != null) {
-            getSaxParser().parse(validationXml, validationHandler);
+            parseValidationXML(file, new ConstrainedClassesDetector());
         }
     }
 
@@ -163,29 +163,21 @@ public class ValidationXMLReader implements Callable<Map<Class<?>, Boolean>> {
         return saxParser;
     }
 
-    /**
-     * Parse constraints file (referenced in validation.xml). Add all classes declared under <bean
-     * class="clazz"> to {@link org.eclipse.persistence.jaxb.BeanValidationHelper#constraintsOnClasses} with value
-     * {@link Boolean#TRUE}.
-     */
-    private void parseConstraintFile(String constraintsFile, DefaultHandler referencedFileHandler) {
-        InputStream constraintsXml = null;
-        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-            try {
-                constraintsXml = AccessController.doPrivileged(new PrivilegedGetContextClassLoader(Thread.currentThread())).getResourceAsStream(constraintsFile);
-            } catch (PrivilegedActionException e) {
-                String msg = "Loading of custom constraints file: " + constraintsFile + " failed. Exception: " + e.getMessage();
-                LOGGER.warning(msg);
+    private void parseValidationXML(String constraintsFilePath, DefaultHandler handler) {
+        try (InputStream validationXml = getThreadContextClassLoader().getResourceAsStream(constraintsFilePath)) {
+            if (validationXml != null) {
+                getSaxParser().parse(validationXml, handler);
             }
-        } else {
-            constraintsXml = Thread.currentThread().getContextClassLoader().getResourceAsStream(constraintsFile);
+        } catch (PrivilegedActionException | SAXException | IOException ignored) {
+            LOGGER.log(Level.WARNING, "Parsing of validation.xml failed.", ignored);
         }
-        try {
-            //noinspection ConstantConditions
-            getSaxParser().parse(constraintsXml, referencedFileHandler);
-        } catch (SAXException | IOException | NullPointerException e) {
-            String msg = "Loading of custom constraints file: " + constraintsFile + " failed. Exception: " + e.getMessage();
-            LOGGER.warning(msg);
+    }
+
+    private static ClassLoader getThreadContextClassLoader() throws PrivilegedActionException {
+        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+            return AccessController.doPrivileged(new PrivilegedGetContextClassLoader(Thread.currentThread()));
+        } else {
+            return Thread.currentThread().getContextClassLoader();
         }
     }
 
