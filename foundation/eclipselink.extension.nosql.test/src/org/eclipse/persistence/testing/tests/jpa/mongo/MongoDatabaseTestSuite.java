@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -105,6 +105,20 @@ public class MongoDatabaseTestSuite extends JUnitTestCase {
         properties = initProperties();
     }
 
+    boolean isEnabled() {
+        EntityManager em = createEntityManager();
+        try {
+            beginTransaction(em);
+            MongoDatabaseConnection con = ((MongoDatabaseConnection)em.unwrap(javax.resource.cci.Connection.class));
+            String version = con.getMetaData().getEISProductVersion();
+            return version.compareTo("2.6") > 0;
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        } finally {
+            closeEntityManagerAndTransaction(em);
+        }
+    }
+
     /**
      * Build MongoDB database test suite. Creates an instance of the {@link TestSuite} class and adds all the tests
      * into it.
@@ -112,24 +126,27 @@ public class MongoDatabaseTestSuite extends JUnitTestCase {
      */
     public static Test suite() {
         TestSuite suite = new TestSuite();
-        suite.setName("MongoTestSuite");
-        suite.addTest(new MongoDatabaseTestSuite("testSetup"));
-        suite.addTest(new MongoDatabaseTestSuite("testInsert"));
-        suite.addTest(new MongoDatabaseTestSuite("testFind"));
-        suite.addTest(new MongoDatabaseTestSuite("testUpdate"));
-        suite.addTest(new MongoDatabaseTestSuite("testUpdateAdd"));
-        suite.addTest(new MongoDatabaseTestSuite("testMerge"));
-        suite.addTest(new MongoDatabaseTestSuite("testLockError"));
-        suite.addTest(new MongoDatabaseTestSuite("testRefresh"));
-        suite.addTest(new MongoDatabaseTestSuite("testDelete"));
-        suite.addTest(new MongoDatabaseTestSuite("testSimpleJPQL"));
-        suite.addTest(new MongoDatabaseTestSuite("testJPQLLike"));
-        suite.addTest(new MongoDatabaseTestSuite("testComplexJPQL"));
-        suite.addTest(new MongoDatabaseTestSuite("testJPQLEnum"));
-        suite.addTest(new MongoDatabaseTestSuite("testNativeQuery"));
-        suite.addTest(new MongoDatabaseTestSuite("testExternalFactory"));
-        suite.addTest(new MongoDatabaseTestSuite("testUserPassword"));
-        suite.addTest(new MongoDatabaseTestSuite("testDynamicEntities"));
+        suite.setName("MongoDatabaseTestSuite");
+        MongoDatabaseTestSuite testSetup = new MongoDatabaseTestSuite("testSetup");
+        if (testSetup.isEnabled()) {
+            suite.addTest(testSetup);
+            suite.addTest(new MongoDatabaseTestSuite("testInsert"));
+            suite.addTest(new MongoDatabaseTestSuite("testFind"));
+            suite.addTest(new MongoDatabaseTestSuite("testUpdate"));
+            suite.addTest(new MongoDatabaseTestSuite("testUpdateAdd"));
+            suite.addTest(new MongoDatabaseTestSuite("testMerge"));
+            suite.addTest(new MongoDatabaseTestSuite("testLockError"));
+            suite.addTest(new MongoDatabaseTestSuite("testRefresh"));
+            suite.addTest(new MongoDatabaseTestSuite("testDelete"));
+            suite.addTest(new MongoDatabaseTestSuite("testSimpleJPQL"));
+            suite.addTest(new MongoDatabaseTestSuite("testJPQLLike"));
+            suite.addTest(new MongoDatabaseTestSuite("testComplexJPQL"));
+            suite.addTest(new MongoDatabaseTestSuite("testJPQLEnum"));
+            suite.addTest(new MongoDatabaseTestSuite("testNativeQuery"));
+            suite.addTest(new MongoDatabaseTestSuite("testExternalFactory"));
+            suite.addTest(new MongoDatabaseTestSuite("testUserPassword"));
+            suite.addTest(new MongoDatabaseTestSuite("testDynamicEntities"));
+        }
         return suite;
     }
 
@@ -400,7 +417,7 @@ public class MongoDatabaseTestSuite extends JUnitTestCase {
             factory = Persistence.createEntityManagerFactory(getPersistenceUnitName(), properties);
             em = factory.createEntityManager();
         } catch (Exception expected) {
-            if (expected.getMessage().indexOf("Authentication failed") == -1) {
+            if (expected.getMessage().indexOf("Authentication failed") == -1 && expected.getMessage().indexOf("auth failed") == -1) {
                 throw expected;
             }
             errorCaught = true;
@@ -426,7 +443,7 @@ public class MongoDatabaseTestSuite extends JUnitTestCase {
             factory = Persistence.createEntityManagerFactory(getPersistenceUnitName(), properties);
             em = factory.createEntityManager();
         } catch (Exception expected) {
-            if (expected.getMessage().indexOf("Authentication failed") == -1) {
+            if (expected.getMessage().indexOf("Authentication failed") == -1 && expected.getMessage().indexOf("auth failed") == -1) {
                 throw expected;
             }
             errorCaught = true;

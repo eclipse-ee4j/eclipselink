@@ -345,7 +345,6 @@
             <pathelement path="${nosql_test.build.location}/${mongo.model.jar}"/>
             <pathelement path="${nosql_test.build.location}/${nosql.test.jar}"/>
             <pathelement path="${nosql_test.run.dir}"/>
-            <pathelement path="${jdbc.driver.jar}"/>
             <pathelement path="${nosql_test.2.core.test.dir}/resource"/>
             <pathelement path="${jacocoagent.lib}"/>
         </path>
