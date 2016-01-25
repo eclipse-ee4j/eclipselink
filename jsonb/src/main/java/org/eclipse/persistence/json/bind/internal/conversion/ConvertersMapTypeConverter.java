@@ -22,7 +22,7 @@ public class ConvertersMapTypeConverter implements TypeConverter {
     /**
      * Supported type converters.
      */
-    private Map<Class<?>, SupportedTypeConverter<?>> converters = new HashMap<>();
+    private final Map<Class<?>, SupportedTypeConverter<?>> converters = new HashMap<>();
 
     private ConvertersMapTypeConverter() {
         initialize();

@@ -35,11 +35,11 @@ public enum JsonValueType {
     OBJECT(HashMap.class),
     NULL(null);
 
-    private JsonValueType(Class<?> supportedByType) {
+    JsonValueType(Class<?> supportedByType) {
         this.supportedByType = supportedByType;
     }
 
-    private Class<?> supportedByType;
+    private final Class<?> supportedByType;
 
     public Class<?> getConversionType() {
         return supportedByType;

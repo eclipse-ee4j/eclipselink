@@ -45,12 +45,12 @@ public class MapItem extends CurrentItem<Map<?, ?>> implements EmbeddedItem {
 
 
     @Override
-    void appendItem(CurrentItem valueItem) {
+    public void appendItem(CurrentItem valueItem) {
         appendCaptor(valueItem.getJsonKeyName(), valueItem.getInstance());
     }
 
     @Override
-    void appendValue(String key, String value, JsonValueType jsonValueType) {
+    public void appendValue(String key, String value, JsonValueType jsonValueType) {
         if (jsonValueType == JsonValueType.NULL) {
             appendCaptor(key, null);
             return;
@@ -65,7 +65,7 @@ public class MapItem extends CurrentItem<Map<?, ?>> implements EmbeddedItem {
     }
 
     @Override
-    CurrentItem<?> newItem(String fieldName, JsonValueType jsonValueType) {
+    public CurrentItem<?> newItem(String fieldName, JsonValueType jsonValueType) {
         return newCollectionOrMapItem(fieldName, mapValueRuntimeType, jsonValueType);
     }
 

@@ -12,7 +12,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.json.bind.internal.unmarshaller;
 
-import org.eclipse.persistence.json.bind.internal.MappingContext;
 import org.eclipse.persistence.json.bind.internal.ReflectionUtils;
 import org.eclipse.persistence.json.bind.internal.conversion.ConvertersMapTypeConverter;
 import org.eclipse.persistence.json.bind.internal.conversion.TypeConverter;
@@ -36,8 +35,6 @@ public abstract class CurrentItem<T> {
      * Null in case of a root object.
      */
     private final CurrentItem<?> wrapper;
-
-    private final MappingContext mappingContext;
 
     private final Type runtimeType;
 
@@ -68,7 +65,6 @@ public abstract class CurrentItem<T> {
      */
     @SuppressWarnings("unchecked")
     protected CurrentItem(CurrentItemBuilder builder) {
-        this.mappingContext = builder.getMappingContext();
         this.wrapper = builder.getWrapper();
         this.wrapperPropertyModel = builder.getPropertyModel();
         this.classModel = builder.getClassModel();
@@ -86,7 +82,7 @@ public abstract class CurrentItem<T> {
      *
      * @param valueItem Item containing finished, deserialized object.
      */
-    abstract void appendItem(CurrentItem valueItem);
+    public abstract void appendItem(CurrentItem valueItem);
 
     /**
      * Convert and append a JSON value to current item.
@@ -96,7 +92,7 @@ public abstract class CurrentItem<T> {
      * @param value     value
      * @param jsonValueType Type of json value. Used when field to bind value is of type object and value type cannot be determined.
      */
-    abstract void appendValue(String key, String value, JsonValueType jsonValueType);
+    public abstract void appendValue(String key, String value, JsonValueType jsonValueType);
 
     /**
      * Create new item from this item by a field name.
@@ -104,22 +100,18 @@ public abstract class CurrentItem<T> {
      * @param fieldName name of a field
      * @return new populated item.
      */
-    abstract CurrentItem<?> newItem(String fieldName, JsonValueType jsonValueType);
+    public abstract CurrentItem<?> newItem(String fieldName, JsonValueType jsonValueType);
 
     ClassModel getClassModel() {
         return classModel;
     }
 
-    T getInstance() {
+    public T getInstance() {
         return instance;
     }
 
     PropertyModel getWrapperPropertyModel() {
         return wrapperPropertyModel;
-    }
-
-    protected MappingContext getMappingContext() {
-        return mappingContext;
     }
 
     protected TypeConverter getTypeConverter() {
@@ -141,7 +133,7 @@ public abstract class CurrentItem<T> {
     protected CurrentItem<?> newCollectionOrMapItem(String fieldName, Type valueType, JsonValueType jsonValueType) {
         Type actualValueType = ReflectionUtils.resolveType(this, valueType);
         actualValueType = actualValueType != Object.class ? actualValueType : jsonValueType.getConversionType();
-        return new CurrentItemBuilder(getMappingContext()).withWrapper(this).withType(actualValueType).withJsonKeyName(fieldName).withJsonValueType(jsonValueType).build();
+        return new CurrentItemBuilder().withWrapper(this).withType(actualValueType).withJsonKeyName(fieldName).withJsonValueType(jsonValueType).build();
     }
 
     protected Class<?> resolveValueType(Type actualType, JsonValueType jsonValueType) {

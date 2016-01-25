@@ -12,7 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.json.bind.internal.unmarshaller;
 
-import org.eclipse.persistence.json.bind.internal.MappingContext;
+import org.eclipse.persistence.json.bind.internal.JsonbContext;
 import org.eclipse.persistence.json.bind.internal.ReflectionUtils;
 import org.eclipse.persistence.json.bind.internal.conversion.ConvertersMapTypeConverter;
 import org.eclipse.persistence.json.bind.internal.conversion.TypeConverter;
@@ -34,8 +34,6 @@ import java.util.*;
  * @author Roman Grigoriadi
  */
 public class CurrentItemBuilder {
-
-    private final MappingContext mappingContext;
 
     /**
      * Not null with an exception of a root item.
@@ -81,8 +79,7 @@ public class CurrentItemBuilder {
      */
     private ClassModel classModel;
 
-    public CurrentItemBuilder(MappingContext mappingContext) {
-        this.mappingContext = mappingContext;
+    public CurrentItemBuilder() {
     }
 
     /**
@@ -165,7 +162,7 @@ public class CurrentItemBuilder {
                     throw new JsonbException(String.format("JSON object not expected for unmarshalling into field %s, of supported type %s.", jsonKeyName, rawType));
                 }
 
-                classModel = mappingContext.getOrCreateClassModel(rawType);
+                classModel = JsonbContext.getMappingContext().getOrCreateClassModel(rawType);
                 instance = createInstance(classModel.getRawType());
                 return new ObjectItem<>(this);
             default:
@@ -235,14 +232,6 @@ public class CurrentItemBuilder {
             return ((Class) type).getGenericSuperclass();
         }
         return type;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public MappingContext getMappingContext() {
-        return mappingContext;
     }
 
     /**

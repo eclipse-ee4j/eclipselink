@@ -46,12 +46,12 @@ public class ArrayItem extends CurrentItem<Object[]> implements EmbeddedItem {
     }
 
     @Override
-    void appendItem(CurrentItem valueItem) {
+    public void appendItem(CurrentItem valueItem) {
         appendCaptor(valueItem.getInstance());
     }
 
     @Override
-    void appendValue(String key, String value, JsonValueType jsonValueType) {
+    public void appendValue(String key, String value, JsonValueType jsonValueType) {
         if (jsonValueType == JsonValueType.NULL) {
             appendCaptor(null);
             return;
@@ -66,13 +66,13 @@ public class ArrayItem extends CurrentItem<Object[]> implements EmbeddedItem {
     }
 
     @Override
-    CurrentItem<?> newItem(String fieldName, JsonValueType jsonValueType) {
+    public CurrentItem<?> newItem(String fieldName, JsonValueType jsonValueType) {
         Type actualValueType = componentClass;
-        return new CurrentItemBuilder(getMappingContext()).withWrapper(this).withType(actualValueType).withJsonValueType(jsonValueType).build();
+        return new CurrentItemBuilder().withWrapper(this).withType(actualValueType).withJsonValueType(jsonValueType).build();
     }
 
     @Override
-    Object[] getInstance() {
+    public Object[] getInstance() {
         if (arrayInstance == null || arrayInstance.length != items.size()) {
             arrayInstance = (Object[]) Array.newInstance(componentClass, items.size());
         }

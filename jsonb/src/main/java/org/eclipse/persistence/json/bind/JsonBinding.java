@@ -14,11 +14,12 @@ package org.eclipse.persistence.json.bind;
 
 import org.eclipse.persistence.json.bind.internal.MappingContext;
 import org.eclipse.persistence.json.bind.internal.Marshaller;
+import org.eclipse.persistence.json.bind.internal.Unmarshaller;
 import org.eclipse.persistence.json.bind.internal.properties.MessageKeys;
 import org.eclipse.persistence.json.bind.internal.properties.Messages;
-import org.eclipse.persistence.json.bind.internal.unmarshaller.Unmarshaller;
 
 import javax.json.bind.Jsonb;
+import javax.json.bind.JsonbConfig;
 import javax.json.bind.JsonbException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,59 +33,65 @@ import java.lang.reflect.Type;
  */
 public class JsonBinding implements Jsonb {
     private final MappingContext mappingContext;
+    private final JsonbConfig jsonbConfig;
 
     JsonBinding(JsonBindingBuilder builder) {
         // TODO set internal properties of the mappingContext from builder
-        mappingContext = new MappingContext();
+        this.mappingContext = new MappingContext();
+        this.jsonbConfig = builder.getConfig();
     }
 
     @Override
     public <T> T fromJson(String str, Class<T> type) throws JsonbException {
-        Unmarshaller unmarshaller = new Unmarshaller(mappingContext, str, type);
+        Unmarshaller unmarshaller = new Unmarshaller(mappingContext, jsonbConfig, type, str);
         return unmarshaller.parse();
     }
 
     @Override
     public <T> T fromJson(String str, Type runtimeType) throws JsonbException {
-        Unmarshaller unmarshaller = new Unmarshaller(mappingContext, str, runtimeType);
+        Unmarshaller unmarshaller = new Unmarshaller(mappingContext, jsonbConfig, runtimeType, str);
         return unmarshaller.parse();
     }
 
     @Override
     public <T> T fromJson(Readable readable, Class<T> type) throws JsonbException {
-        return null;
+        Unmarshaller unmarshaller = new Unmarshaller(mappingContext, jsonbConfig, type, readable);
+        return unmarshaller.parse();
     }
 
     @Override
     public <T> T fromJson(Readable readable, Type runtimeType) throws JsonbException {
-        return null;
+        Unmarshaller unmarshaller = new Unmarshaller(mappingContext, jsonbConfig, runtimeType, readable);
+        return unmarshaller.parse();
     }
 
     @Override
     public <T> T fromJson(InputStream stream, Class<T> type) throws JsonbException {
-        return null;
+        Unmarshaller unmarshaller = new Unmarshaller(mappingContext, jsonbConfig, type, stream);
+        return unmarshaller.parse();
     }
 
     @Override
     public <T> T fromJson(InputStream stream, Type runtimeType) throws JsonbException {
-        return null;
+        Unmarshaller unmarshaller = new Unmarshaller(mappingContext, jsonbConfig, runtimeType, stream);
+        return unmarshaller.parse();
     }
 
     @Override
     public String toJson(Object object) throws JsonbException {
-        final Marshaller marshaller = new Marshaller(mappingContext);
+        final Marshaller marshaller = new Marshaller(mappingContext, jsonbConfig);
         return marshaller.marshall(object);
     }
 
     @Override
     public String toJson(Object object, Type runtimeType) throws JsonbException {
-        final Marshaller marshaller = new Marshaller(mappingContext, runtimeType);
+        final Marshaller marshaller = new Marshaller(mappingContext, jsonbConfig, runtimeType);
         return marshaller.marshall(object);
     }
 
     @Override
     public void toJson(Object object, Appendable appendable) throws JsonbException {
-        final Marshaller marshaller = new Marshaller(mappingContext);
+        final Marshaller marshaller = new Marshaller(mappingContext, jsonbConfig);
         try {
             marshaller.marshall(object, appendable);
         } catch (IOException e) {
@@ -94,7 +101,7 @@ public class JsonBinding implements Jsonb {
 
     @Override
     public void toJson(Object object, Type runtimeType, Appendable appendable) throws JsonbException {
-        final Marshaller marshaller = new Marshaller(mappingContext, runtimeType);
+        final Marshaller marshaller = new Marshaller(mappingContext, jsonbConfig, runtimeType);
         try {
             marshaller.marshall(object, appendable);
         } catch (IOException e) {
@@ -104,7 +111,7 @@ public class JsonBinding implements Jsonb {
 
     @Override
     public void toJson(Object object, OutputStream stream) throws JsonbException {
-        final Marshaller marshaller = new Marshaller(mappingContext);
+        final Marshaller marshaller = new Marshaller(mappingContext, jsonbConfig);
         try {
             marshaller.marshall(object, stream);
         } catch (IOException e) {
@@ -114,7 +121,7 @@ public class JsonBinding implements Jsonb {
 
     @Override
     public void toJson(Object object, Type runtimeType, OutputStream stream) throws JsonbException {
-        final Marshaller marshaller = new Marshaller(mappingContext, runtimeType);
+        final Marshaller marshaller = new Marshaller(mappingContext, jsonbConfig, runtimeType);
         try {
             marshaller.marshall(object, stream);
         } catch (IOException e) {

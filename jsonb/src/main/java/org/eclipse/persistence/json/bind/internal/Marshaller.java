@@ -12,8 +12,10 @@
  ******************************************************************************/
 package org.eclipse.persistence.json.bind.internal;
 
+import org.eclipse.persistence.json.bind.internal.naming.PropertyNamingStrategy;
 import org.eclipse.persistence.json.bind.model.PropertyModel;
 
+import javax.json.bind.JsonbConfig;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Array;
@@ -30,14 +32,17 @@ import static java.util.stream.Collectors.toList;
  */
 public class Marshaller extends JsonTextProcessor {
 
+    private static final String QUOTE = "\"";
+
+    //TODO remove after fixing spec. No need for the marshaller.
     private Type rootRuntimeType;
 
-    public Marshaller(MappingContext mappingContext) {
-        super(mappingContext);
+    public Marshaller(MappingContext mappingContext, JsonbConfig jsonbConfig) {
+        super(mappingContext, jsonbConfig);
     }
 
-    public Marshaller(MappingContext mappingContext, Type rootRuntimeType) {
-        super(mappingContext);
+    public Marshaller(MappingContext mappingContext, JsonbConfig jsonbConfig, Type rootRuntimeType) {
+        super(mappingContext, jsonbConfig);
         this.rootRuntimeType = rootRuntimeType;
     }
 
@@ -48,15 +53,31 @@ public class Marshaller extends JsonTextProcessor {
      * @return JSON representation of object
      */
     public String marshall(Object object) {
-        return marshallInternal(object);
+        return new JsonbContextCommand<String>() {
+            @Override
+            protected String doInJsonbContext() {
+                return marshallInternal(object);
+            }
+        }.execute(new JsonbContext(jsonbConfig, mappingContext));
     }
 
     public void marshall(Object object, Appendable appendable) throws IOException {
-        appendable.append(marshallInternal(object));
+        appendable.append(new JsonbContextCommand<String>() {
+            @Override
+            protected String doInJsonbContext() {
+                return marshallInternal(object);
+            }
+        }.execute(new JsonbContext(jsonbConfig, mappingContext)));
     }
 
+
     public void marshall(Object object, OutputStream stream) throws IOException {
-        stream.write(marshallInternal(object).getBytes("UTF-8"));
+        stream.write(new JsonbContextCommand<String>() {
+            @Override
+            protected String doInJsonbContext() {
+                return marshallInternal(object);
+            }
+        }.execute(new JsonbContext(jsonbConfig, mappingContext)).getBytes("UTF-8"));
     }
 
 
@@ -66,7 +87,7 @@ public class Marshaller extends JsonTextProcessor {
      * @param object object to marshal.
      * @return JSON representation of object
      */
-    private String marshallInternal(Object object) {
+    private String marshallInternal(final Object object) {
         if (object == null
                 || object instanceof Optional && !((Optional) object).isPresent()) {
             return NULL;
@@ -93,16 +114,16 @@ public class Marshaller extends JsonTextProcessor {
 
     private String marshallObject(Object object) {
         // Deal with inheritance
-        final List<PropertyModel> allFields = new LinkedList<>();
+        final List<PropertyModel> allProperties = new LinkedList<>();
         for (Class clazz = object.getClass(); clazz.getSuperclass() != null; clazz = clazz.getSuperclass()) {
-            final List<PropertyModel> properties = new ArrayList<>(mappingContext.getOrCreateClassModel(clazz).getFields().values());
-            List<PropertyModel> filteredAndSorted = properties.stream().filter(propertyModel -> !allFields.contains(propertyModel)).sorted().collect(toList());
-            allFields.addAll(0, filteredAndSorted);
+            final List<PropertyModel> properties = new ArrayList<>(mappingContext.getOrCreateClassModel(clazz).getProperties().values());
+            List<PropertyModel> filteredAndSorted = properties.stream().filter(propertyModel -> !allProperties.contains(propertyModel)).sorted().collect(toList());
+            allProperties.addAll(0, filteredAndSorted);
         }
 
-        return allFields.stream()
+        return allProperties.stream()
                 .map((model) -> marshallField(object, model))
-                .filter(Objects::nonNull) //TODO custom null handling
+                .filter(Objects::nonNull)
                 .collect(joining(",", "{", "}"));
     }
 
@@ -114,7 +135,9 @@ public class Marshaller extends JsonTextProcessor {
                     || value instanceof OptionalDouble && !((OptionalDouble) value).isPresent()) {
                 return null;
             }
-            return keyValue(propertyModel.getWriteName(), marshallInternal(value));
+            return keyValue(propertyModel.getCustomization().getJsonWriteName(), marshallInternal(value));
+        } else if (propertyModel.getCustomization().isNillable()){
+            return keyValue(propertyModel.getCustomization().getJsonWriteName(), "null");
         }
 
         // Null value is returned in case this field doesn't need to be marshaled
@@ -154,14 +177,15 @@ public class Marshaller extends JsonTextProcessor {
     }
 
     private String keyValue(String key, Object value) {
-        return quoteString(key) + ":" + value;
+        return quoteString(getJsonPropertyName(key)) + ":" + value;
+    }
+
+    private String getJsonPropertyName(String classPropertyName) {
+        final PropertyNamingStrategy namingStrategy = JsonbContext.getPropertyNamingStrategy();
+        return namingStrategy != null ? namingStrategy.toJsonPropertyName(classPropertyName) : classPropertyName;
     }
 
     private String quoteString(String string) {
-        return quoteString("\"", string);
-    }
-
-    private String quoteString(String quote, String string) {
-        return String.join("", quote, string, quote);
+        return String.join("", QUOTE, string, QUOTE);
     }
 }

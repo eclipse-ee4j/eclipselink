@@ -17,6 +17,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * Just a dummy pojo object, for testing object tree encapsulation.
+ * Not much business sense here to look for.
+ *
  * @author Roman Grigoriadi
  */
 public class Customer {

@@ -12,19 +12,17 @@
  ******************************************************************************/
 package org.eclipse.persistence.json.bind.model;
 
-import org.eclipse.persistence.json.bind.internal.ReflectionUtils;
+import org.eclipse.persistence.json.bind.internal.AnnotationIntrospector;
 
-import javax.json.bind.JsonbException;
-import java.beans.IntrospectionException;
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Objects;
 
 /**
- * A model for class field.
+ * A model for class property.
+ * Property is JavaBean alike meta information field / getter / setter of a property in class.
  *
  * @author Dmitry Kornilov
+ * @author Roman Grigoriadi
  */
 public class PropertyModel implements Comparable<PropertyModel> {
     /**
@@ -43,29 +41,38 @@ public class PropertyModel implements Comparable<PropertyModel> {
     private final ClassModel classModel;
 
     /**
-     * Field propertyName as it is written in JSON document during marshalling.
-     * {@link javax.json.bind.annotation.JsonbProperty} customization on getter. Defaults to {@see propertyName} if not set.
+     * Customization of this property.
      */
-    private String writeName;
-
-    /**
-     * Field propertyName to read from JSON document during unmarshalling.
-     * {@link javax.json.bind.annotation.JsonbProperty} customization on setter. Defaults to {@see propertyName} if not set.
-     */
-    private String readName;
-
-    /**
-     * Indicates that this field is nillable (@JsonbProperty(nillable=true)).
-     */
-    private boolean nillable;
+    final private PropertyCustomization customization;
 
     private final PropertyValuePropagation propagation;
 
+    /**
+     * Creates instance.
+     * @param classModel classModel of declaring class.
+     * @param property javabean like property to model.
+     */
     public PropertyModel(ClassModel classModel, Property property) {
+        this.classModel = classModel;
         this.propertyName = property.getName();
         this.propertyType = property.getPropertyType();
-        this.classModel = classModel;
         this.propagation = PropertyValuePropagation.createInstance(property);
+        this.customization = introspectCustomization(property);
+    }
+
+    private PropertyCustomization introspectCustomization(Property property) {
+        final AnnotationIntrospector introspector = AnnotationIntrospector.getInstance();
+        final CustomizationBuilder builder = new CustomizationBuilder();
+        //drop all other annotations for transient properties
+        if (introspector.isTransient(property)) {
+            builder.setJsonbTransient(true);
+            return builder.buildPropertyCustomization();
+        }
+        builder.setJsonReadName(introspector.getJsonbPropertyJsonReadName(property));
+        builder.setJsonWriteName(introspector.getJsonbPropertyJsonWriteName(property));
+        builder.setNillable(classModel.getClassCustomization().isNillable()
+                || introspector.isPropertyNillable(property));
+        return builder.buildPropertyCustomization();
     }
 
     /**
@@ -102,7 +109,7 @@ public class PropertyModel implements Comparable<PropertyModel> {
      * @return true if can be serialized to JSON
      */
     public boolean isReadable() {
-        return propagation.isReadable();
+        return !customization.isJsonbTransient() && propagation.isReadable();
     }
 
     /**
@@ -110,58 +117,42 @@ public class PropertyModel implements Comparable<PropertyModel> {
      * @return true if can be deserialized from JSON
      */
     public boolean isWritable() {
-        return propagation.isWritable();
+        return !customization.isJsonbTransient() && propagation.isWritable();
     }
 
+    /**
+     * Default property name according to Field / Getter / Setter method names.
+     * This name is use for identifying properties, for JSON serialization is used customized name
+     * which may be derived from default name.
+     * @return default name
+     */
     public String getPropertyName() {
         return propertyName;
     }
 
+    /**
+     * Runtime type of a property. May be a TypeVariable or WildcardType.
+     *
+     * @return type of a property
+     */
     public Type getPropertyType() {
         return propertyType;
     }
 
-    public String getWriteName() {
-        if (writeName == null) {
-            return propertyName;
-        }
-        return writeName;
-    }
-
-    public void setWriteName(String writeName) {
-        this.writeName = writeName;
-    }
-
-    public String getReadName() {
-        if (readName == null) {
-            return propertyName;
-        }
-        return readName;
-    }
-
-    public void setReadName(String readName) {
-        this.readName = readName;
-    }
-
-    public boolean isNillable() {
-        return nillable;
-    }
-
-    public void setNillable(boolean nillable) {
-        this.nillable = nillable;
-    }
-
-    public Method getGetter() {
-        try {
-            PropertyDescriptor propertyDescriptor = new PropertyDescriptor(propertyName, ReflectionUtils.getRawType(propertyType));
-            return propertyDescriptor.getReadMethod();
-        } catch (IntrospectionException e) {
-            throw new JsonbException("", e);
-        }
-    }
-
+    /**
+     * Model of declaring class of this property.
+     * @return class model
+     */
     public ClassModel getClassModel() {
         return classModel;
+    }
+
+    /**
+     * Introspected customization of a property.
+     * @return immutable property customization
+     */
+    public PropertyCustomization getCustomization() {
+        return customization;
     }
 
     @Override

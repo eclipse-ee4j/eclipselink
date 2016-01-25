@@ -6,27 +6,29 @@
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
- *
+ * <p>
  * Contributors:
- *     Dmitry Kornilov - initial implementation
+ * Dmitry Kornilov - initial implementation
  ******************************************************************************/
 package org.eclipse.persistence.json.bind.internal;
 
 import org.eclipse.persistence.json.bind.model.ClassModel;
 
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * JSONB mappingContext. Created once per {@link javax.json.bind.Jsonb} instance. Represents a global scope.
  * Holds internal model.
  *
+ * TODO make mapping context be shared cache between threads working with same payload classes
+ *
  * Thread safe
  *
  * @author Dmitry Kornilov
+ * @author Roman Grigoriadi
  */
 public class MappingContext {
-    private final Map<Class<?>, ClassModel> classes = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Class<?>, ClassModel> classes = new ConcurrentHashMap<>();
     private final ClassParser classParser = new ClassParser();
 
     /**
@@ -36,12 +38,7 @@ public class MappingContext {
      * @return Model of a class
      */
     public ClassModel getOrCreateClassModel(Class<?> clazz) {
-        ClassModel classModel = classes.get(clazz);
-        if (classModel == null) {
-            classModel = classParser.parse(clazz);
-            classes.put(clazz, classModel);
-        }
-        return classModel;
+        return classes.computeIfAbsent(clazz, aClass -> classParser.parse(clazz));
     }
 
     /**

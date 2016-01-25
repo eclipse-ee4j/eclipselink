@@ -27,7 +27,8 @@ class ObjectItem<T> extends CurrentItem<T> {
 
 
     /**
-     * @param builder
+     * Creates instance of an item.
+     * @param builder builder to build from
      */
     protected ObjectItem(CurrentItemBuilder builder) {
         super(builder);
@@ -38,7 +39,7 @@ class ObjectItem<T> extends CurrentItem<T> {
      * pushed to stack queue for resume parse later.
      */
     @Override
-    void appendItem(CurrentItem currentItem) {
+    public void appendItem(CurrentItem currentItem) {
         currentItem.getWrapperPropertyModel().setValue(getInstance(), currentItem.getInstance());
     }
 
@@ -50,9 +51,9 @@ class ObjectItem<T> extends CurrentItem<T> {
      * @param jsonValueType Type of json value. Used when field to bind value is of type object and value type cannot be determined. not null
      */
     @Override
-    void appendValue(String key, String value, JsonValueType jsonValueType) {
+    public void appendValue(String key, String value, JsonValueType jsonValueType) {
         //convert value by field type
-        PropertyModel valuePropertyModel = getClassModel().findPropertyModel(key, getMappingContext());
+        PropertyModel valuePropertyModel = getClassModel().findPropertyModelByJsonReadName(key);
         //skip the field if it is not found in class
         if (valuePropertyModel == null) {
             return;
@@ -70,12 +71,14 @@ class ObjectItem<T> extends CurrentItem<T> {
     }
 
     @Override
-    CurrentItem<?> newItem(String fieldName, JsonValueType jsonValueType) {
+    public CurrentItem<?> newItem(String fieldName, JsonValueType jsonValueType) {
         //identify field model of currently processed class model
-        PropertyModel newPropertyModel = getClassModel().findPropertyModel(fieldName, getMappingContext());
+        PropertyModel newPropertyModel = getClassModel().findPropertyModelByJsonReadName(fieldName);
+
+        //TODO missing json object skip (implement empty stub item for such cases).
 
         //create current item instance of identified object field
-        return new CurrentItemBuilder(getMappingContext()).withWrapper(this).withFieldModel(newPropertyModel).withJsonKeyName(fieldName).withJsonValueType(jsonValueType).build();
+        return new CurrentItemBuilder().withWrapper(this).withFieldModel(newPropertyModel).withJsonKeyName(fieldName).withJsonValueType(jsonValueType).build();
     }
 
 }

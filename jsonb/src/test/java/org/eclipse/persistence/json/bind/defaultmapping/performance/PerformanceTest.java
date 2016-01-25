@@ -83,7 +83,7 @@ public class PerformanceTest {
         assertEquals("1.2", jsonb.toJson(1.2));
         assertEquals("1", jsonb.toJson(new BigInteger("1")));
         assertEquals("1.2", jsonb.toJson(new BigDecimal("1.2")));
-        assertEquals("1.2", jsonb.toJson((Number) 1.2));
+        assertEquals("1.2", jsonb.toJson(1.2));
         assertEquals("true", jsonb.toJson(true));
         assertEquals("false", jsonb.toJson(false));
         assertEquals("null", jsonb.toJson(null));

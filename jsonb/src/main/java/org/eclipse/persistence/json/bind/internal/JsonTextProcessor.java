@@ -16,6 +16,8 @@ package org.eclipse.persistence.json.bind.internal;
 import org.eclipse.persistence.json.bind.internal.conversion.ConvertersMapTypeConverter;
 import org.eclipse.persistence.json.bind.internal.conversion.TypeConverter;
 
+import javax.json.bind.JsonbConfig;
+
 /**
  * Common parent for marshalling and unmarshalling shared logic.
  *
@@ -30,11 +32,20 @@ public abstract class JsonTextProcessor {
 
     protected final MappingContext mappingContext;
 
-    protected TypeConverter converter;
+    protected final TypeConverter converter;
 
-    public JsonTextProcessor(MappingContext mappingContext) {
+    protected final JsonbConfig jsonbConfig;
+
+    /**
+     * Parent instance for marshaller and unmarshaller.
+     *
+     * @param mappingContext class mapping
+     * @param jsonbConfig    jsonb config
+     */
+    public JsonTextProcessor(MappingContext mappingContext, JsonbConfig jsonbConfig) {
         this.mappingContext = mappingContext;
         this.converter = ConvertersMapTypeConverter.getInstance();
+        this.jsonbConfig = jsonbConfig;
     }
 
 }

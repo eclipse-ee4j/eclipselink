@@ -1,7 +1,8 @@
 package org.eclipse.persistence.json.bind.internal.conversion;
 
-import javax.json.*;
-import java.io.StringReader;
+import javax.json.Json;
+import javax.json.JsonStructure;
+import javax.json.JsonWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Type;
 
@@ -16,12 +17,7 @@ public class JsonStructureTypeConverter extends AbstractTypeConverter<JsonStruct
 
     @Override
     public JsonStructure fromJson(String jsonValue, Type type) {
-        StringReader stringReader = new StringReader(jsonValue);
-        JsonReader jsonReader = Json.createReader(stringReader);
-        JsonObject jsonObject = jsonReader.readObject();
-        jsonReader.close();
-
-        return jsonObject;
+        return getJsonObject(jsonValue);
     }
 
     @Override

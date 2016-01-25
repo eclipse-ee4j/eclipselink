@@ -44,6 +44,7 @@ class ClassParser {
      * @return model of a class
      */
     public ClassModel parse(Class<?> clazz) {
+
         final ClassModel classModel = new ClassModel(clazz);
 
         final Map<String, Property> classProperties = new HashMap<>();
@@ -54,7 +55,7 @@ class ClassParser {
 
         classProperties.values().stream().forEach((property)->{
             PropertyModel propertyModel = new PropertyModel(classModel, property);
-            classModel.getFields().put(propertyModel.getPropertyName(), propertyModel);
+            classModel.addProperty(propertyModel);
         });
 
         return classModel;
@@ -70,7 +71,7 @@ class ClassParser {
 
             Property property = classProperties.get(propertyName);
             if (property == null) {
-                property= new Property(propertyName);
+                property= new Property(propertyName, classModel.getRawType());
                 classProperties.put(propertyName, property);
             }
 
@@ -88,7 +89,7 @@ class ClassParser {
             if (field.getName().startsWith(GENERATED_PREFIX)) {
                 continue;
             }
-            final Property property = new Property(name);
+            final Property property = new Property(name, classModel.getRawType());
             property.setField(field);
             classProperties.put(name, property);
         }

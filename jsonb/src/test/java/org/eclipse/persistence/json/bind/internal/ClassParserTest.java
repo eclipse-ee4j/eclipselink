@@ -19,6 +19,7 @@ import org.eclipse.persistence.json.bind.model.ClassModel;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.json.bind.JsonbConfig;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
@@ -33,39 +34,55 @@ public class ClassParserTest {
 
     private ClassParser classParser;
 
+    private JsonbContext jsonbContext;
+
     @Before
     public void before() {
         classParser = new ClassParser();
+        jsonbContext = new JsonbContext(new JsonbConfig(), new MappingContext());
     }
 
     @Test
     public void testDefaultMappingFieldModifiers() {
-        ClassModel model = classParser.parse(FieldModifiersClass.class);
-        assertTrue(model.getPropertyModel("finalString").isReadable());
-        assertFalse(model.getPropertyModel("finalString").isWritable());
-        assertFalse(model.getPropertyModel("staticString").isReadable());
-        assertFalse(model.getPropertyModel("staticString").isWritable());
-        assertFalse(model.getPropertyModel("transientString").isReadable());
-        assertFalse(model.getPropertyModel("transientString").isWritable());
+        new JsonbContextCommand<Void>() {
+            @Override
+            protected Void doInJsonbContext() {
+                ClassModel model = classParser.parse(FieldModifiersClass.class);
+                assertTrue(model.getPropertyModel("finalString").isReadable());
+                assertFalse(model.getPropertyModel("finalString").isWritable());
+                assertFalse(model.getPropertyModel("staticString").isReadable());
+                assertFalse(model.getPropertyModel("staticString").isWritable());
+                assertFalse(model.getPropertyModel("transientString").isReadable());
+                assertFalse(model.getPropertyModel("transientString").isWritable());
+                return null;
+            }
+        }.execute(jsonbContext);
+
     }
 
     @Test
     public void testDefaultMappingMethodModifiers() {
-        ClassModel model = classParser.parse(MethodModifiersClass.class);
-        assertFalse(model.getPropertyModel("publicFieldWithPrivateMethods").isReadable());
-        assertFalse(model.getPropertyModel("publicFieldWithPrivateMethods").isWritable());
-        assertTrue(model.getPropertyModel("publicFieldWithoutMethods").isReadable());
-        assertTrue(model.getPropertyModel("publicFieldWithoutMethods").isWritable());
-        assertTrue(model.getPropertyModel("getterWithoutFieldValue").isReadable());
-        assertTrue(model.getPropertyModel("getterWithoutFieldValue").isWritable());
+        new JsonbContextCommand<Void>() {
+            @Override
+            protected Void doInJsonbContext() {
+                ClassModel model = classParser.parse(MethodModifiersClass.class);
+                assertFalse(model.getPropertyModel("publicFieldWithPrivateMethods").isReadable());
+                assertFalse(model.getPropertyModel("publicFieldWithPrivateMethods").isWritable());
+                assertTrue(model.getPropertyModel("publicFieldWithoutMethods").isReadable());
+                assertTrue(model.getPropertyModel("publicFieldWithoutMethods").isWritable());
+                assertTrue(model.getPropertyModel("getterWithoutFieldValue").isReadable());
+                assertTrue(model.getPropertyModel("getterWithoutFieldValue").isWritable());
 
 
-        MethodModifiersClass object = new MethodModifiersClass();
-        final AtomicReference<String> accepted = new AtomicReference<>();
-        Consumer<String> withoutFieldConsumer = accepted::set;
-        object.setSetterWithoutFieldConsumer(withoutFieldConsumer);
-        model.getPropertyModel("getterWithoutFieldValue").setValue(object, "ACCEPTED_VALUE");
-        assertEquals("ACCEPTED_VALUE", accepted.get());
+                MethodModifiersClass object = new MethodModifiersClass();
+                final AtomicReference<String> accepted = new AtomicReference<>();
+                Consumer<String> withoutFieldConsumer = accepted::set;
+                object.setSetterWithoutFieldConsumer(withoutFieldConsumer);
+                model.getPropertyModel("getterWithoutFieldValue").setValue(object, "ACCEPTED_VALUE");
+                assertEquals("ACCEPTED_VALUE", accepted.get());
+                return null;
+            }
+        }.execute(jsonbContext);
     }
 
 }

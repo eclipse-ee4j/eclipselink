@@ -339,7 +339,7 @@ public class GenericsTest {
     }
 
     public interface FunctionalInterface<T> {
-        public T getValue();
+        T getValue();
     }
 
     public static class ExtendsBigDecimal extends BigDecimal {

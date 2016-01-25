@@ -38,9 +38,17 @@ public class JsonBindingBuilder implements JsonbBuilder {
         return this;
     }
 
+    public JsonbConfig getConfig() {
+        return config;
+    }
+
+    public JsonProvider getProvider() {
+        return provider;
+    }
+
     @Override
     public Jsonb build() {
-        if (config == null){
+        if (config == null) {
             config = new JsonbConfig();
         }
         return new JsonBinding(this);

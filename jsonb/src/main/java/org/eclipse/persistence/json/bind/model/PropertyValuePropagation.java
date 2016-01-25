@@ -13,6 +13,9 @@
 
 package org.eclipse.persistence.json.bind.model;
 
+import org.eclipse.persistence.json.bind.internal.JsonbContext;
+
+import javax.json.bind.config.PropertyVisibilityStrategy;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -68,8 +71,8 @@ public abstract class PropertyValuePropagation {
             return;
         }
         if (getter != null) {
-            if (!Modifier.isPublic(getter.getModifiers())) {
-                return; //don't check field if getter is not public
+            if (!isVisible(getter)) {
+                return; //don't check field if getter is not visible
             }
             //support anonymous classes serialization
             if (getter.getDeclaringClass().isAnonymousClass()) {
@@ -77,7 +80,7 @@ public abstract class PropertyValuePropagation {
             }
             acceptMethod(getter, OperationMode.GET);
             readable = true;
-        } else if (field != null && Modifier.isPublic(field.getModifiers())) {
+        } else if (isVisible(field)) {
             //support anonymous classes serialization
             if (field.getDeclaringClass().isAnonymousClass()) {
                 field.setAccessible(true);
@@ -95,15 +98,31 @@ public abstract class PropertyValuePropagation {
             return;
         }
         if (setter != null) {
-            if (!Modifier.isPublic(setter.getModifiers()) || setter.getDeclaringClass().isAnonymousClass()) {
+            if (!isVisible(setter) || setter.getDeclaringClass().isAnonymousClass()) {
                 return;
             }
             acceptMethod(setter, OperationMode.SET);
             writable = true;
-        } else if (field != null && Modifier.isPublic(field.getModifiers()) && !field.getDeclaringClass().isAnonymousClass()) {
+        } else if (isVisible(field) && !field.getDeclaringClass().isAnonymousClass()) {
             acceptField(field, OperationMode.SET);
             writable = true;
         }
+    }
+
+    private boolean isVisible(Field field) {
+        if (field == null) {
+            return false;
+        }
+        final PropertyVisibilityStrategy visibilityStrategy = JsonbContext.getPropertyVisibilityStrategy();
+        return visibilityStrategy != null ? visibilityStrategy.isVisible(field) : Modifier.isPublic(field.getModifiers());
+    }
+
+    private boolean isVisible(Method method) {
+        if (method == null) {
+            return false;
+        }
+        final PropertyVisibilityStrategy visibilityStrategy = JsonbContext.getPropertyVisibilityStrategy();
+        return visibilityStrategy != null ? visibilityStrategy.isVisible(method) : Modifier.isPublic(method.getModifiers());
     }
 
     /**

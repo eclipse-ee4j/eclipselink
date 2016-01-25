@@ -1,6 +1,9 @@
 package org.eclipse.persistence.json.bind.internal.conversion;
 
-import java.lang.reflect.Type;
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
+import java.io.StringReader;
 
 /**
  * @author David Král
@@ -15,11 +18,7 @@ public abstract class AbstractTypeConverter<T> implements SupportedTypeConverter
     }
 
     protected String quoteString(String string) {
-        return quoteString("\"", string);
-    }
-
-    protected String quoteString(String quote, String string) {
-        return String.join("", quote, string, quote);
+        return String.join("", "\"", string, "\"");
     }
 
     @Override
@@ -30,5 +29,13 @@ public abstract class AbstractTypeConverter<T> implements SupportedTypeConverter
     @Override
     public boolean supportsToJson(Class<?> type) {
         return clazzType.isAssignableFrom(type);
+    }
+
+    protected JsonObject getJsonObject(String jsonValue) {
+        StringReader stringReader = new StringReader(jsonValue);
+        JsonReader jsonReader = Json.createReader(stringReader);
+        JsonObject jsonObject = jsonReader.readObject();
+        jsonReader.close();
+        return jsonObject;
     }
 }

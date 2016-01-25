@@ -46,7 +46,7 @@ class CollectionItem<T extends Collection<?>> extends CurrentItem<T> implements 
     }
 
     @Override
-    void appendValue(String key, String value, JsonValueType jsonValueType) {
+    public void appendValue(String key, String value, JsonValueType jsonValueType) {
         if (jsonValueType == JsonValueType.NULL) {
             appendCaptor(null);
             return;
@@ -61,7 +61,7 @@ class CollectionItem<T extends Collection<?>> extends CurrentItem<T> implements 
     }
 
     @Override
-    protected CurrentItem<?> newItem(String fieldName, JsonValueType jsonValueType) {
+    public CurrentItem<?> newItem(String fieldName, JsonValueType jsonValueType) {
         return newCollectionOrMapItem(fieldName, collectionValueType, jsonValueType);
     }
 
