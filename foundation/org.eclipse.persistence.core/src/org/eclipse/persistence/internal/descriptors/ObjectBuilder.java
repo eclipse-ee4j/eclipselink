@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -17,6 +17,8 @@
  *       - 356197: Add new VPD type to MultitenantType
  *     11/10/2011-2.4 Guy Pelletier
  *       - 357474: Address primaryKey option from tenant discriminator column
+ *     01/15/2016-2.7 Mythily Parthasarathy
+ *       - 485984: Retrieve FetchGroup info along with getReference() from cache
  ******************************************************************************/
 package org.eclipse.persistence.internal.descriptors;
 
@@ -2250,7 +2252,12 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             buildAttributesIntoWorkingCopyClone(workingClone, originalCacheKey, query, joinManager, databaseRow, unitOfWork, wasAClone);
             // Set fetch group after building object if not a refresh to avoid checking fetch during building.
             if ((!isARefresh) && fetchGroupManager != null) {
-                fetchGroupManager.setObjectFetchGroup(workingClone, query.getExecutionFetchGroup(this.descriptor), unitOfWork);
+               if (wasAnOriginal) {
+                 //485984: Save the FetchGroup from the original
+                   fetchGroupManager.setObjectFetchGroup(workingClone, fetchGroupManager.getObjectFetchGroup(original), unitOfWork);
+               } else {
+                   fetchGroupManager.setObjectFetchGroup(workingClone, query.getExecutionFetchGroup(this.descriptor), unitOfWork);
+               }
             }
             Object backupClone = policy.buildBackupClone(workingClone, this, unitOfWork);
 

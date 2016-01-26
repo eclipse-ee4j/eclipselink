@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -10,6 +10,8 @@
  * Contributors:
  *     01/19/2010-2.1 Guy Pelletier
  *       - 211322: Add fetch-group(s) support to the EclipseLink-ORM.XML Schema
+ *     01/15/2016-2.7 Mythily Parthasarathy
+ *       - 485984: Add test for retrieval of cached getReference within a txn
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.advanced.fetchgroup;
 
@@ -25,14 +27,16 @@ import org.eclipse.persistence.config.QueryHints;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
+import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
+import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
-
 import org.eclipse.persistence.testing.models.jpa.advanced.fetchgroup.AdvancedFetchGroupTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.fetchgroup.ChestProtector;
 import org.eclipse.persistence.testing.models.jpa.advanced.fetchgroup.Helmet;
 import org.eclipse.persistence.testing.models.jpa.advanced.fetchgroup.HockeyGear;
 import org.eclipse.persistence.testing.models.jpa.advanced.fetchgroup.Pads;
 import org.eclipse.persistence.testing.models.jpa.advanced.fetchgroup.GoalieGear.AgeGroup;
+import org.eclipse.persistence.testing.models.jpa.advanced.fetchgroup.Shelf;
 
 public class AdvancedFetchGroupJunitTest extends JUnitTestCase {
     private static Integer padsId;
@@ -62,6 +66,8 @@ public class AdvancedFetchGroupJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedFetchGroupJunitTest("testFetchGroupOnPadsFromInheritanceParent"));
         // Bug 434120
         suite.addTest(new AdvancedFetchGroupJunitTest("testFetchGroupMergeMapAttribute"));
+        // Bug 485984
+        suite.addTest(new AdvancedFetchGroupJunitTest("testFetchGroupForCachedReference"));
 
         return suite;
     }
@@ -250,6 +256,66 @@ public class AdvancedFetchGroupJunitTest extends JUnitTestCase {
             commitTransaction(em);
             closeEntityManager(em);
         }
+    }
+    
+    public void testFetchGroupForCachedReference() {
+        if (isWeavingEnabled()) {
+            EntityManager em = createEntityManager();
+            beginTransaction(em);
+
+            Shelf original = new Shelf();
+            original.setId(1L);
+            original.setName("original");
+            em.persist(original);
+
+            Shelf modified = new Shelf();
+            modified.setId(2L);
+            modified.setName("modified");
+            em.persist(modified);
+
+            Helmet helmet = new Helmet();
+            helmet.setId(3);
+            helmet.setShelf(original);
+            em.persist(helmet);
+
+            commitTransaction(em);
+            em.close();
+            clearCache();
+
+            em = createEntityManager();
+            //Create a changeset to ensure that the getReference() result is pushed to cache
+            UnitOfWork uw = UnitOfWork.class.cast(((EntityManagerImpl)em.getDelegate()).getActiveSession());
+            uw.beginEarlyTransaction();
+            helmet = em.find(Helmet.class,  helmet.getId());
+            modified = em.getReference(Shelf.class, modified.getId());
+            helmet.setShelf(modified);
+
+            uw.commit();
+            em.close();
+
+            try {
+                em = createEntityManager();
+                uw = UnitOfWork.class.cast(((EntityManagerImpl) em.getDelegate()).getActiveSession());
+                uw.beginEarlyTransaction();
+                modified = em.find(Shelf.class, modified.getId());
+                if (modified.getName() == null) {
+                    fail("find returned entity with missing attribute");
+                }
+            } finally {
+                uw.commit();
+                clearCache();
+                beginTransaction(em);
+                helmet = em.find(Helmet.class,  helmet.getId());
+                em.remove(helmet);
+                modified = em.find(Shelf.class,  modified.getId());
+                em.remove(modified);
+                original = em.find(Shelf.class,  original.getId());
+                em.remove(original);
+                commitTransaction(em);
+                closeEntityManager(em);
+            }
+        }
+
     }
 
     protected void verifyFetchedField(Field field, Object obj, Object value) {
