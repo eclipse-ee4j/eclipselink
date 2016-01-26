@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -277,7 +277,9 @@ public class WriteLockManager {
                         if (this.prevailingQueue.getFirst() == mergeManager) {
                             // wait on this object until it is free,  or until wait time expires because
                             // this thread is the prevailing thread
-                            activeCacheKey = waitOnObjectLock(descriptor, objectChangeSet.getId(), targetSession, (int)Math.round((Math.random()*500)));
+                            // see bug 483478
+                            activeCacheKey = waitOnObjectLock(descriptor, objectChangeSet.getId(),
+                                    targetSession, (int) Math.round(((0.001d + Math.random()) * 500)));
                         }
                         if (activeCacheKey == null) {
                             // failed to acquire lock, release all acquired
