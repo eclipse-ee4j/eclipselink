@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -480,6 +480,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         // 282751
         { "removing_unique_constraint", "Removing UNIQUE constraint definition from [{0}] because it is also a primary key."},
         { "session_manager_no_partition", "No partition instance associated with current SessionManager instance."},
+        { "cannot_get_nested_collection_type", "Cannot get nested collection type"},
         // MESSAGES end
 
 

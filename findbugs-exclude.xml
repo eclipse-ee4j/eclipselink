@@ -1,11 +1,12 @@
 <!--/*******************************************************************************
+* Copyright (c) 2015, 2016 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
 * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
 * and the Eclipse Distribution License is available at
 * http://www.eclipse.org/org/documents/edl-v10.php.
-#******************************************************************************/-->
+******************************************************************************/-->
 
 <FindBugsFilter>
 
@@ -45,6 +46,26 @@
     </Match>
 
     <!--
+        Serialization in these classes is broken in a big way already, does not make sense
+        to care about serialization warnings there.
+    -->
+    <Match>
+        <Or>
+            <Class name="org.eclipse.persistence.descriptors.ClassDescriptor"/>
+            <Class name="org.eclipse.persistence.descriptors.DescriptorEventManager"/>
+            <Class name="org.eclipse.persistence.descriptors.InheritancePolicy"/>
+            <Class name="org.eclipse.persistence.descriptors.ReturningPolicy"/>
+            <Class name="org.eclipse.persistence.internal.queries.JoinedAttributeManager"/>
+            <Class name="org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping"/>
+        </Or>
+        <Or>
+            <Bug pattern="SE_BAD_FIELD"/>
+            <Bug pattern="SE_BAD_FIELD_STORE"/>
+            <Bug pattern="SE_TRANSIENT_FIELD_NOT_RESTORED"/>
+        </Or>
+    </Match>
+
+    <!--
         Unfortunate, but it is not safe to make these public static fields final now.
         Should make them final in 3.0 and replace with proper apis if needed.
     -->
@@ -63,6 +84,18 @@
     </Match>
 
     <Match>
+        <Or>
+            <Class name="org.eclipse.persistence.services.ClassSummaryDetailBase"/>
+        </Or>
+        <Bug pattern="MS_SHOULD_BE_REFACTORED_TO_BE_FINAL"/>
+    </Match>
+
+    <Match>
+        <Class name="org.eclipse.persistence.sdo.SDOConstants"/>
+        <Bug pattern="MS_MUTABLE_ARRAY"/>
+    </Match>
+
+    <Match>
         <Class name="org.eclipse.persistence.jaxb.compiler.CompilerHelper"/>
         <or>
             <Field name="ACCESSOR_FACTORY_ANNOTATION_CLASS"/>
@@ -75,6 +108,19 @@
         <Bug pattern="MS_SHOULD_BE_REFACTORED_TO_BE_FINAL"/>
     </Match>
 
+    <Match>
+        <Class name="org.eclipse.persistence.internal.oxm.XMLMarshaller"/>
+        <Or>
+            <Field name="staxResultClass"/>
+            <Field name="staxResultGetStreamWriterMethod"/>
+            <Field name="staxResultGetEventWriterMethod"/>
+            <Field name="domToStreamWriterClass"/>
+            <Field name="writeToStreamMethod"/>
+            <Field name="domToEventWriterClass"/>
+            <Field name="writeToEventWriterMethod"/>
+        </Or>
+        <Bug pattern="MS_SHOULD_BE_FINAL"/>
+    </Match>
     <Match>
         <Class name="org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataFactory"/>
         <Field name="ALLOW_JDK"/>
@@ -102,17 +148,20 @@
     <!--
         Adding a serialVersionUID field to public classes
         would be backward incompatible change.
+        Many classes within internal packages are used outside as well.
         Should fix this in 3.0.
     -->
     <Match>
-        <Package name="~(?s)^((?!internal).)*"/>
         <Bug pattern="SE_NO_SERIALVERSIONID"/>
     </Match>
 
+    <!--
+        Would be backwards compatible change, there's also typo in the field name. Fix with 3.0.
+    -->
     <Match>
-        <Class name="_dbws.ProviderListener"/>
-        <Method name="contextInitialized"/>
-        <Bug pattern="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD"/>
+        <Class name="org.eclipse.persistence.logging.SessionLog"/>
+        <Field name="loggerCatagories"/>
+        <Bug pattern="MS_MUTABLE_ARRAY"/>
     </Match>
 
     <Match>
@@ -121,15 +170,285 @@
         <Bug pattern="MS_MUTABLE_ARRAY"/>
     </Match>
 
+    <!--
+        Would be backw. incompatible change. Fix in 3.0
+    -->
+    <Match>
+        <Or>
+            <And>
+                <Class name="org.eclipse.persistence.Version"/>
+                <Field name="JDK_VERSION"/>
+            </And>
+            <And>
+                <Class name="org.eclipse.persistence.eis.EISDOMRecord"/>
+                <Field name="domMethod"/>
+            </And>
+            <And>
+                <Class name="org.eclipse.persistence.exceptions.EclipseLinkException"/>
+                <Field name="shouldPrintInternalException"/>
+            </And>
+            <And>
+                <Class name="org.eclipse.persistence.expressions.ExpressionOperator"/>
+                <Field name="allOperators"/>
+            </And>
+            <And>
+                <Class name="org.eclipse.persistence.internal.core.helper.CoreHelper"/>
+                <Field name="CR"/>
+            </And>
+            <And>
+                <Class name="org.eclipse.persistence.internal.helper.ConcurrencyManager"/>
+                <Field name="shouldTrackStack"/>
+            </And>
+            <And>
+                <Class name="org.eclipse.persistence.internal.helper.ConversionManager"/>
+                <Field name="defaultManager"/>
+            </And>
+            <And>
+                <Class name="org.eclipse.persistence.internal.helper.Helper"/>
+                <Or>
+                    <Field name="CR"/>
+                    <Field name="PATH_SEPARATOR"/>
+                    <Field name="FILE_SEPARATOR"/>
+                    <Field name="CURRENT_WORKING_DIRECTORY"/>
+                    <Field name="TEMP_DIRECTORY"/>
+                </Or>
+            </And>
+            <And>
+                <Class name="org.eclipse.persistence.internal.helper.JavaPlatform"/>
+                <Field name="platform"/>
+            </And>
+            <And>
+                <Class name="org.eclipse.persistence.internal.indirection.TransparentIndirectionPolicy"/>
+                <Field name="defaultContainerSize"/>
+            </And>
+            <And>
+                <Class name="org.eclipse.persistence.internal.oxm.XMLBinaryDataHelper"/>
+                <Field name="binaryDataHelper"/>
+            </And>
+            <And>
+                <Class name="org.eclipse.persistence.internal.oxm.XMLConversionManager"/>
+                <Or>
+                    <Field name="defaultJavaTypes"/>
+                    <Field name="defaultXMLManager"/>
+                    <Field name="defaultXMLTypes"/>
+                </Or>
+            </And>
+            <And>
+                <Class name="org.eclipse.persistence.internal.oxm.schema.SchemaModelGenerator"/>
+                <Field name="SWAREF_LOCATION"/>
+            </And>
+            <And>
+                <Class name="org.eclipse.persistence.internal.queries.ContainerPolicy"/>
+                <Field name="defaultContainerClass"/>
+            </And>
+            <And>
+                <Class name="org.eclipse.persistence.internal.sessions.UnitOfWorkImpl"/>
+                <Field name="SmartMerge"/>
+            </And>
+            <And>
+                <Class name="org.eclipse.persistence.logging.AbstractSessionLog"/>
+                <Or>
+                    <Field name="defaultLog"/>
+                    <Field name="SEVERE_PREFIX"/>
+                    <Field name="WARNING_PREFIX"/>
+                    <Field name="INFO_PREFIX"/>
+                    <Field name="CONFIG_PREFIX"/>
+                    <Field name="FINE_PREFIX"/>
+                    <Field name="FINER_PREFIX"/>
+                    <Field name="FINEST_PREFIX"/>
+                    <Field name="TOPLINK_PREFIX"/>
+                </Or>
+            </And>
+            <And>
+                <Class name="org.eclipse.persistence.oxm.record.OutputStreamRecord"/>
+                <Field name="OPEN_XML_PI_AND_VERSION_ATTRIBUTE"/>
+            </And>
+            <And>
+                <Class name="org.eclipse.persistence.oxm.record.OutputStreamRecord"/>
+                <Or>
+                    <Field name="OPEN_ENCODING_ATTRIBUTE"/>
+                    <Field name="CLOSE_PI"/>
+                    <Field name="OPEN_CDATA"/>
+                    <Field name="CLOSE_CDATA"/>
+                    <Field name="OPEN_COMMENT"/>
+                    <Field name="CLOSE_COMMENT"/>
+                    <Field name="AMP"/>
+                    <Field name="LT"/>
+                    <Field name="QUOT"/>
+                    <Field name="ENCODING"/>
+                    <Field name="SLASH_N"/>
+                    <Field name="SLASH_R"/>
+                </Or>
+            </And>
+            <And>
+                <Class name="org.eclipse.persistence.platform.database.OraclePlatform"/>
+                <Field name="vpdSetIdentifierQuery"/>
+            </And>
+            <And>
+                <Class name="org.eclipse.persistence.platform.database.OraclePlatform"/>
+                <Field name="vpdClearIdentifierQuery"/>
+            </And>
+            <And>
+                <Class name="org.eclipse.persistence.services.ClassSummaryDetailBase"/>
+                <Field name="itemNames_"/>
+            </And>
+            <And>
+                <Class name="org.eclipse.persistence.sessions.DatasourceLogin"/>
+                <Field name="versionString"/>
+            </And>
+            <And>
+                <Class name="org.eclipse.persistence.sessions.factories.SessionManager"/>
+                <Field name="shouldUseSchemaValidation"/>
+            </And>
+            <And>
+                <Class name="org.eclipse.persistence.sessions.factories.XMLProjectReader"/>
+                <Field name="project"/>
+            </And>
+            <And>
+                <Class name="org.eclipse.persistence.sessions.factories.XMLProjectReader"/>
+                <Field name="shouldUseSchemaValidation"/>
+            </And>
+            <And>
+                <Class name="org.eclipse.persistence.tools.profiler.FetchGroupMonitor"/>
+                <Field name="shouldMonitor"/>
+            </And>
+            <And>
+                <Class name="org.eclipse.persistence.tools.profiler.QueryMonitor"/>
+                <Field name="shouldMonitor"/>
+            </And>
+            <And>
+                <Class name="org.eclipse.persistence.tools.profiler.QueryMonitor"/>
+                <Field name="dumpTime"/>
+            </And>
+            <And>
+                <Class name="org.eclipse.persistence.tools.schemaframework.PopulationManager"/>
+                <Field name="defaultManager"/>
+            </And>
+            <And>
+                <Class name="org.eclipse.persistence.transaction.JTATransactionController"/>
+                <Field name="defaultTransactionManager"/>
+            </And>
+            <And>
+                <Class name="org.eclipse.persistence.internal.eis.cobol.helper.ByteConverter"/>
+                <Field name="wordSize"/>
+            </And>
+            <And>
+                <Class name="org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider"/>
+                <Field name="oldPropertyNames"/>
+            </And>
+            <And>
+                <Class name="org.eclipse.persistence.internal.jpa.deployment.JavaSECMPInitializer"/>
+                <Or>
+                    <Field name="isInContainer"/>
+                    <Field name="usesAgent"/>
+                    <Field name="initializer"/>
+                    <Field name="globalInstrumentation"/>
+                    <Field name="isInitialized"/>
+                </Or>
+            </And>
+            <And>
+                <Class name="org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor"/>
+                <Field name="ARCHIVE_FACTORY"/>
+            </And>
+            <And>
+                <Class name="org.eclipse.persistence.sdo.helper.XPathEngine"/>
+                <Field name="defaultXPathEngine"/>
+            </And>
+        </Or>
+        <Bug pattern="MS_PKGPROTECT"/>
+    </Match>
+    <Match>
+        <Or>
+            <And>
+                <Class name="org.eclipse.persistence.expressions.ExpressionOperator"/>
+                <Method name="setArgumentIndices"/>
+            </And>
+            <And>
+                <Class name="org.eclipse.persistence.expressions.ListExpressionOperator"/>
+                <Or>
+                    <Method name="setStartStrings"/>
+                    <Method name="setSeparators"/>
+                    <Method name="setTerminationStrings"/>
+                </Or>
+            </And>
+            <And>
+                <Class name="org.eclipse.persistence.expressions.spatial.SpatialParameters"/>
+                <Method name="setMasks"/>
+            </And>
+            <And>
+                <Class name="org.eclipse.persistence.internal.identitymaps.CacheId"/>
+                <Method name="&lt;init&gt;"/>
+            </And>
+            <And>
+                <Class name="org.eclipse.persistence.internal.identitymaps.CacheId"/>
+                <Method name="setPrimaryKey"/>
+            </And>
+            <And>
+                <Class name="org.eclipse.persistence.internal.indirection.CacheBasedValueHolder"/>
+                <Method name="&lt;init&gt;"/>
+            </And>
+            <And>
+                <Class name="org.eclipse.persistence.internal.indirection.ProxyIndirectionPolicy"/>
+                <Method name="&lt;init&gt;"/>
+            </And>
+            <And>
+                <Class name="org.eclipse.persistence.internal.oxm.ByteArrayDataSource"/>
+                <Method name="&lt;init&gt;"/>
+            </And>
+            <And>
+                <Class name="org.eclipse.persistence.internal.oxm.XMLBinaryDataHelper$EncodedData"/>
+                <Method name="&lt;init&gt;"/>
+            </And>
+            <And>
+                <Class name="org.eclipse.persistence.internal.oxm.XMLBinaryDataHelper$EncodedData"/>
+                <Method name="setData"/>
+            </And>
+            <And>
+                <Class name="org.eclipse.persistence.expressions.ExpressionOperator"/>
+                <Method name="setArgumentIndices"/>
+            </And>
+            <And>
+                <Class name="org.eclipse.persistence.expressions.ExpressionOperator"/>
+                <Method name="setArgumentIndices"/>
+            </And>
+            <And>
+                <Class name="org.eclipse.persistence.expressions.ExpressionOperator"/>
+                <Method name="setArgumentIndices"/>
+            </And>
+            <And>
+                <Class name="org.eclipse.persistence.expressions.ExpressionOperator"/>
+                <Method name="setArgumentIndices"/>
+            </And>
+            <And>
+                <Class name="org.eclipse.persistence.expressions.ExpressionOperator"/>
+                <Method name="setArgumentIndices"/>
+            </And>
+            <And>
+                <Class name="org.eclipse.persistence.expressions.ExpressionOperator"/>
+                <Method name="setArgumentIndices"/>
+            </And>
+            <And>
+                <Class name="org.eclipse.persistence.expressions.ExpressionOperator"/>
+                <Method name="setArgumentIndices"/>
+            </And>
+        </Or>
+        <Bug pattern="NS_DANGEROUS_NON_SHORT_CIRCUIT"/>
+    </Match>
 
     <!--
         As designed, not an error
     -->
     <Match>
-        <Or>
-            <Class name="org.eclipse.persistence.jpa.jpql.tools.AbstractContentAssistVisitor$AppendableExpressionVisitor"/>
-        </Or>
+        <Class name="org.eclipse.persistence.jpa.jpql.tools.AbstractContentAssistVisitor$AppendableExpressionVisitor"/>
         <Bug pattern="NS_DANGEROUS_NON_SHORT_CIRCUIT"/>
+    </Match>
+
+    <Match>
+        <Or>
+            <Class name="org.eclipse.persistence.internal.sessions.CommitManager"/>
+            <Class name="org.eclipse.persistence.tools.schemaframework.StoredProcedureDefinition"/>
+        </Or>
+        <Bug pattern="RC_REF_COMPARISON_BAD_PRACTICE"/>
     </Match>
 
     <Match>
@@ -137,6 +456,13 @@
             <Class name="org.eclipse.persistence.jpa.jpql.tools.AbstractContentAssistVisitor$AppendableExpressionVisitor"/>
             <Class name="org.eclipse.persistence.jpa.jpql.tools.DefaultContentAssistProposals"/>
             <Class name="org.eclipse.persistence.jpa.jpql.tools.EclipseLinkContentAssistVisitor$IncompleteCollectionExpressionVisitor"/>
+            <Class name="org.eclipse.persistence.internal.oxm.record.DOMReader"/>
+            <Class name="org.eclipse.persistence.internal.oxm.record.UnmarshalRecordImpl"/>
+            <Class name="org.eclipse.persistence.mappings.AggregateCollectionMapping"/>
+            <Class name="org.eclipse.persistence.oxm.record.ContentHandlerRecord"/>
+            <Class name="org.eclipse.persistence.queries.ObjectLevelReadQuery"/>
+            <Class name="org.eclipse.persistence.tools.schemaframework.StoredProcedureDefinition"/>
+            <Class name="org.eclipse.persistence.sdo.helper.SDODataHelper"/>
         </Or>
         <Bug pattern="ES_COMPARING_PARAMETER_STRING_WITH_EQ"/>
     </Match>
@@ -247,8 +573,15 @@
 
     <Match>
         <!-- This is safe since the real barrier is "private static volatile boolean firstTime = true;" -->
-        <Class name="org.eclipse.persistence.jaxb.ValidationXMLReader"/>
+        <Class name="org.eclipse.persistence.internal.jpa.metadata.beanvalidation.ValidationXMLReader"/>
         <Method name="call"/>
+        <Bug pattern="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD"/>
+    </Match>
+
+    <Match>
+        <!-- as designed -->
+        <Class name="_dbws.ProviderListener"/>
+        <Method name="contextInitialized"/>
         <Bug pattern="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD"/>
     </Match>
 

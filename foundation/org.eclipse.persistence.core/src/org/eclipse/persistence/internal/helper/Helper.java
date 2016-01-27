@@ -98,7 +98,7 @@ public class Helper extends CoreHelper implements Serializable {
     public static final String INDENT = "  ";
 
     /** Store newline string */
-    public static String NL = "\n";
+    public static final String NL = "\n";
 
     /** Prime the platform-dependent path separator */
     protected static String PATH_SEPARATOR = null;

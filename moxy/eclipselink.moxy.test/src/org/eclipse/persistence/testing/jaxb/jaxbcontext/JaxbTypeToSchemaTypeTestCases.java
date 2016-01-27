@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -16,6 +16,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.activation.DataHandler;
 import javax.xml.bind.annotation.XmlAttachmentRef;
@@ -35,7 +36,17 @@ public class JaxbTypeToSchemaTypeTestCases extends OXTestCase{
 
     public String stringField;
 
+    public List<String[]> listOfStringArrayField;
+    public Set<String[]> setOfStringArrayField;
+
+    // collections
     public List<String> listOfStringsField;
+
+    // to test nested collections
+    public Set<List<String>> setOfListsField;
+    public List<List<String>> listOfListsField;
+
+    public Set<List<List<String>>> setOfListOfListOfStringsField;
 
     public JaxbTypeToSchemaTypeTestCases(String name) {
         super(name);
@@ -135,8 +146,7 @@ public class JaxbTypeToSchemaTypeTestCases extends OXTestCase{
     }
 
     public void testStringType() throws Exception{
-        TypeMappingInfo tmi = new TypeMappingInfo();
-        tmi.setType(getClass().getField("stringField").getGenericType());
+        TypeMappingInfo tmi = mappingInfo("stringField");
 
         TypeMappingInfo[] tmis = new TypeMappingInfo[]{tmi};
 
@@ -149,8 +159,7 @@ public class JaxbTypeToSchemaTypeTestCases extends OXTestCase{
     }
 
     public void testListofStringType() throws Exception{
-        TypeMappingInfo tmi = new TypeMappingInfo();
-        tmi.setType(getClass().getField("listOfStringsField").getGenericType());
+        TypeMappingInfo tmi = mappingInfo("listOfStringsField");
 
         TypeMappingInfo[] tmis = new TypeMappingInfo[]{tmi};
 
@@ -162,9 +171,60 @@ public class JaxbTypeToSchemaTypeTestCases extends OXTestCase{
         assertNotNull(tmiMap.get(tmi));
     }
 
+    public void testListOfStringArrayField() throws Exception{
+        TypeMappingInfo tmi1 = mappingInfo("listOfStringArrayField");
+        TypeMappingInfo tmi2 = mappingInfo("setOfStringArrayField");
+
+        TypeMappingInfo[] tmis = new TypeMappingInfo[] { tmi1, tmi2 };
+
+        JAXBContext ctx = (JAXBContext) JAXBContextFactory.createContext(tmis, null, Thread.currentThread().getContextClassLoader());
+        Map<Type, QName> typeMap = ctx.getTypeToSchemaType();
+        assertEquals(0, typeMap.size());
+        Map<TypeMappingInfo, QName> tmiMap = ctx.getTypeMappingInfoToSchemaType();
+        assertEquals(tmis.length, tmiMap.size());
+        assertNotNull(tmiMap.get(tmi1));
+    }
+
+    public void testNestedCollections() throws Exception{
+        TypeMappingInfo tmi1 = mappingInfo("setOfListsField");
+        TypeMappingInfo tmi2 = mappingInfo("listOfListsField");
+        TypeMappingInfo[] tmis = new TypeMappingInfo[]{
+                tmi1,
+                tmi2,
+        };
+
+        ClassLoader tccl = Thread.currentThread().getContextClassLoader();
+        JAXBContext ctx = (JAXBContext) JAXBContextFactory.createContext(tmis, null, tccl);
+        Map<Type, QName> typeMap = ctx.getTypeToSchemaType();
+        assertEquals(0, typeMap.size());
+        Map<TypeMappingInfo, QName> tmiMap = ctx.getTypeMappingInfoToSchemaType();
+        assertEquals(tmis.length, tmiMap.size());
+        assertNotNull(tmiMap.get(tmis[0]));
+    }
+
+    private TypeMappingInfo mappingInfo(String name) throws NoSuchFieldException {
+        TypeMappingInfo tmi = new TypeMappingInfo();
+        tmi.setType(getClass().getField(name).getGenericType());
+        return tmi;
+    }
+
     public void testIntegerArray() throws Exception{
         TypeMappingInfo tmi = new TypeMappingInfo();
         tmi.setType(Integer[].class);
+
+        TypeMappingInfo[] tmis = new TypeMappingInfo[]{tmi};
+
+        JAXBContext ctx = (JAXBContext) JAXBContextFactory.createContext(tmis, null, Thread.currentThread().getContextClassLoader());
+        Map<Type, QName> typeMap = ctx.getTypeToSchemaType();
+        assertEquals(0, typeMap.size());
+        Map<TypeMappingInfo, QName> tmiMap = ctx.getTypeMappingInfoToSchemaType();
+        assertEquals(1, tmiMap.size());
+        assertNotNull(tmiMap.get(tmi));
+    }
+
+    public void testInteger2DArray() throws Exception{
+        TypeMappingInfo tmi = new TypeMappingInfo();
+        tmi.setType(Integer[][].class);
 
         TypeMappingInfo[] tmis = new TypeMappingInfo[]{tmi};
 

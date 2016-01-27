@@ -197,7 +197,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     protected String copyPolicyClassName;
     protected InterfacePolicy interfacePolicy;
     protected OptimisticLockingPolicy optimisticLockingPolicy;
-    protected List<CascadeLockingPolicy> cascadeLockingPolicies;
+    protected transient List<CascadeLockingPolicy> cascadeLockingPolicies;
     protected WrapperPolicy wrapperPolicy;
     protected ObjectChangePolicy changePolicy;
     protected ReturningPolicy returningPolicy;

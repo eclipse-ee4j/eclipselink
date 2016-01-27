@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -18,6 +18,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -876,20 +877,21 @@ public final class AnnotationsProcessor {
 
     private TypeInfo processReferencedClass(JavaClass referencedClass){
         if (shouldGenerateTypeInfo(referencedClass)) {
-            TypeInfo existingInfo = typeInfos.get(referencedClass.getQualifiedName());
+            String qName = referencedClass.getQualifiedName();
+            TypeInfo existingInfo = typeInfos.get(qName);
             if (existingInfo == null || !existingInfo.isPreBuilt()) {
                 PackageInfo pInfo = getPackageInfoForPackage(referencedClass);
-                JavaClass adapterClass = pInfo.getPackageLevelAdaptersByClass().get(referencedClass);
+                JavaClass adapterClass = pInfo.getPackageLevelAdaptersByClass().get(qName);
                 if (adapterClass == null) {
                     CompilerHelper.addClassToClassLoader(referencedClass, helper.getClassLoader());
                     JavaClass[] jClassArray = new JavaClass[] { referencedClass };
                     buildNewTypeInfo(jClassArray);
                 }
-                return typeInfos.get(referencedClass.getQualifiedName());
+                return typeInfos.get(qName);
             } else {
                 if (!existingInfo.isPostBuilt()) {
                     PackageInfo pInfo = getPackageInfoForPackage(referencedClass);
-                    JavaClass adapterClass = pInfo.getPackageLevelAdaptersByClass().get(referencedClass);
+                    JavaClass adapterClass = pInfo.getPackageLevelAdaptersByClass().get(qName);
                     if (adapterClass == null) {
                         CompilerHelper.addClassToClassLoader(referencedClass, helper.getClassLoader());
                         JavaClass[] javaClasses = new JavaClass[] { referencedClass };
@@ -2221,7 +2223,7 @@ public final class AnnotationsProcessor {
 
 
     private void updatePropertyType(Property property, JavaClass ptype, JavaClass componentType){
-        TypeInfo componentTypeInfo = typeInfos.get(componentType);
+        TypeInfo componentTypeInfo = typeInfos.get(componentType.getQualifiedName());
         if((componentTypeInfo != null && !componentTypeInfo.isTransient()) || !helper.isAnnotationPresent(componentType, XmlTransient.class)){
             property.setType(ptype);
         }else{
@@ -4465,10 +4467,11 @@ public final class AnnotationsProcessor {
             componentClass = helper.getJavaClass(getObjectClass(primitiveClass));
         } else if(helper.getJavaClass(Collection.class).isAssignableFrom(componentClass)) {
             multiDimensional = true;
-            Class nestedCollectionClass = collectionClassesToGeneratedClasses.get(componentClass.getName());
+            java.lang.reflect.Type nestedCollectionType = getNestedCollectionType(typeMappingInfo);
+            Class nestedCollectionClass = collectionClassesToGeneratedClasses.get(nestedCollectionType);
             if (nestedCollectionClass == null) {
                 nestedCollectionClass = generateCollectionValue(componentClass, typeMappingInfo, xmlElementType, classesToProcess);
-                arrayClassesToGeneratedClasses.put(componentClass.getName(), nestedCollectionClass);
+                collectionClassesToGeneratedClasses.put(nestedCollectionType, nestedCollectionClass);
                 classesToProcess.add(helper.getJavaClass(nestedCollectionClass));
             }
             componentClass = helper.getJavaClass(nestedCollectionClass);
@@ -4542,6 +4545,20 @@ public final class AnnotationsProcessor {
             classBytes = generateManyValue(typeMappingInfo, namespace, CollectionValue.class, qualifiedInternalClassName, componentClass, collectionClass);
         }
         return generateClassFromBytes(qualifiedClassName, classBytes);
+    }
+
+    private java.lang.reflect.Type getNestedCollectionType(TypeMappingInfo mappingInfo) {
+        java.lang.reflect.Type result = null;
+        if (mappingInfo != null && mappingInfo.getType() != null) {
+            // called for a collection, type must be parametrized ...
+            ParameterizedType pType = (ParameterizedType) mappingInfo.getType();
+            java.lang.reflect.Type[] actualTypeArguments = pType.getActualTypeArguments();
+            result = actualTypeArguments != null && actualTypeArguments.length > 0 ? actualTypeArguments[0] : null;
+        }
+        if (result == null) {
+            getLogger().logWarning("cant_get_nested_collection_type", new Object[]{});
+        }
+        return result;
     }
 
     private byte[] generateManyValue(TypeMappingInfo typeMappingInfo, String namespace, Class superType, String classNameSeparatedBySlash, JavaClass componentType, JavaClass containerType) {

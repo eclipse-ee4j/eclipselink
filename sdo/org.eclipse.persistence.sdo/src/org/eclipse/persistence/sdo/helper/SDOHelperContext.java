@@ -423,7 +423,7 @@ public class SDOHelperContext implements HelperContext {
         }
         WeakHashMap<String, WeakReference<HelperContext>> currentMap = userSetHelperContexts.get(key);
         if(currentMap != null) {
-            currentMap.remove(key);
+            currentMap.remove(identifier);
         }
     }
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -110,6 +110,7 @@ public class XMLUnionField extends XMLField implements UnionField<XMLConversionM
       * Return the first schema type in the list of schema types
       * @return the first item in the collection of schema types
       */
+    @Override
     public QName getSchemaType() {
         if (schemaTypes != null) {
             return (QName) getSchemaTypes().get(0);
@@ -121,6 +122,7 @@ public class XMLUnionField extends XMLField implements UnionField<XMLConversionM
       * Adds the new type value to the list of types
       * @param value The value to be added to the list of schema types
       */
+    @Override
     public void setSchemaType(QName value) {
         addSchemaType(value);
     }
@@ -175,7 +177,7 @@ public class XMLUnionField extends XMLField implements UnionField<XMLConversionM
                 if (nextQName != null) {
                     ConversionManager conversionManager = (ConversionManager) session.getDatasourcePlatform().getConversionManager();
                     Class javaClass = getJavaClass(nextQName, conversionManager);
-                    value = conversionManager.convertObject(value, javaClass, nextQName);
+                    conversionManager.convertObject(value, javaClass, nextQName);
                     schemaType = nextQName;
                     break;
                 }
@@ -248,6 +250,7 @@ public class XMLUnionField extends XMLField implements UnionField<XMLConversionM
     /**
      * INTERNAL
      */
+    @Override
     public boolean isSchemaType(QName schemaType){
         if(getSchemaTypes() == null || getSchemaTypes().size() ==0){
             return false;

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -90,8 +90,22 @@ public class SDOConstants {
     public static final String ATTACHMENT_MARSHALLER_OPTION = "attachmentMarshaller";
     public static final String ATTACHMENT_UNMARSHALLER_OPTION = "attachmentUnmarshaller";
 
-    public static HelperContext globalHelperContext;
-    private static SDOTypeHelper sdoTypeHelper;
+    public static final HelperContext globalHelperContext;
+    private static final SDOTypeHelper sdoTypeHelper;
+
+    static {
+
+        HelperContext ctx = null;
+        SDOTypeHelper helper = null;
+        try {
+            ctx = HelperProvider.getDefaultContext();
+            helper = (SDOTypeHelper) ctx.getTypeHelper();
+        } catch(Throwable ignored) {
+        }
+
+        globalHelperContext = ctx;
+        sdoTypeHelper = helper;
+    }
 
     /** Numeric primitive default instances see p 45 of Java Spec. 4th ed */
     public static final Boolean BOOLEAN_DEFAULT = Boolean.FALSE;
@@ -138,16 +152,6 @@ public class SDOConstants {
     public static final SDOType SDO_INTOBJECT = new SDODataType(SDOJAVA_URL, INTOBJECT, ClassConstants.INTEGER, sdoTypeHelper);
     public static final SDOType SDO_LONGOBJECT = new SDODataType(SDOJAVA_URL, LONGOBJECT, ClassConstants.LONG, sdoTypeHelper);
     public static final SDOType SDO_SHORTOBJECT = new SDODataType(SDOJAVA_URL, SHORTOBJECT, ClassConstants.SHORT, sdoTypeHelper);
-
-    static {
-        try {
-            globalHelperContext = HelperProvider.getDefaultContext();
-            sdoTypeHelper = (SDOTypeHelper) globalHelperContext.getTypeHelper();
-        } catch(Throwable throwable) {
-            globalHelperContext = null;
-            sdoTypeHelper = null;
-        }
-    }
 
     /** XML String names and QName constants missing from org.eclipse.persistence.oxm.XMLConstants  */
     public static final String ANY_TYPE = "anyType";
