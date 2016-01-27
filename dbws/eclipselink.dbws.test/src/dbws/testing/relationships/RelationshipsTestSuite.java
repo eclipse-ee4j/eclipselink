@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,20 +12,26 @@
  ******************************************************************************/
 package dbws.testing.relationships;
 
-//javase imports
-import java.io.ByteArrayInputStream;
-import java.io.StringReader;
-import java.util.Vector;
-import java.util.TimeZone;
-import org.w3c.dom.Document;
-
-//JUnit4 imports
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+//testing imports
+import static dbws.testing.DBWSTestHelper.DATABASE_DDL_CREATE_KEY;
+import static dbws.testing.DBWSTestHelper.DATABASE_DDL_DEBUG_KEY;
+import static dbws.testing.DBWSTestHelper.DATABASE_DDL_DROP_KEY;
+import static dbws.testing.DBWSTestHelper.DATABASE_DRIVER_KEY;
+import static dbws.testing.DBWSTestHelper.DATABASE_PASSWORD_KEY;
+import static dbws.testing.DBWSTestHelper.DATABASE_URL_KEY;
+import static dbws.testing.DBWSTestHelper.DATABASE_USERNAME_KEY;
+import static dbws.testing.DBWSTestHelper.DEFAULT_DATABASE_DDL_CREATE;
+import static dbws.testing.DBWSTestHelper.DEFAULT_DATABASE_DDL_DEBUG;
+import static dbws.testing.DBWSTestHelper.DEFAULT_DATABASE_DDL_DROP;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
+//javase imports
+import java.io.ByteArrayInputStream;
+import java.io.StringReader;
+import java.util.TimeZone;
+import java.util.Vector;
 
 //EclipseLink imports
 import org.eclipse.persistence.dbws.DBWSModel;
@@ -50,21 +56,14 @@ import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.DatasourceLogin;
 import org.eclipse.persistence.sessions.Project;
+//JUnit4 imports
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.w3c.dom.Document;
 
 import dbws.testing.AllTests;
 import dbws.testing.DBWSTestHelper;
-
-//testing imports
-import static dbws.testing.DBWSTestHelper.DATABASE_DDL_CREATE_KEY;
-import static dbws.testing.DBWSTestHelper.DATABASE_DDL_DEBUG_KEY;
-import static dbws.testing.DBWSTestHelper.DATABASE_DDL_DROP_KEY;
-import static dbws.testing.DBWSTestHelper.DATABASE_DRIVER_KEY;
-import static dbws.testing.DBWSTestHelper.DATABASE_PASSWORD_KEY;
-import static dbws.testing.DBWSTestHelper.DATABASE_URL_KEY;
-import static dbws.testing.DBWSTestHelper.DATABASE_USERNAME_KEY;
-import static dbws.testing.DBWSTestHelper.DEFAULT_DATABASE_DDL_CREATE;
-import static dbws.testing.DBWSTestHelper.DEFAULT_DATABASE_DDL_DEBUG;
-import static dbws.testing.DBWSTestHelper.DEFAULT_DATABASE_DDL_DROP;
 
 public class RelationshipsTestSuite {
     
@@ -72,11 +71,15 @@ public class RelationshipsTestSuite {
     
     static {
         int offsetInMillis = TimeZone.getDefault().getRawOffset();
-        String offset = String.format("%02d:%02d", 
-                Math.abs(offsetInMillis / 3600000), 
+        if (offsetInMillis != 0) {
+            String offset = String.format("%02d:%02d",
+                Math.abs(offsetInMillis / 3600000),
                 Math.abs((offsetInMillis / 60000) % 60)
-        );
-        TIMEZONE_OFFSET = (offsetInMillis >= 0 ? "+" : "-") + offset;
+                    );
+            TIMEZONE_OFFSET = (offsetInMillis >= 0 ? "+" : "-") + offset;
+        } else {
+            TIMEZONE_OFFSET = "Z";
+        }
     }
             
     static final String CREATE_DDL =
