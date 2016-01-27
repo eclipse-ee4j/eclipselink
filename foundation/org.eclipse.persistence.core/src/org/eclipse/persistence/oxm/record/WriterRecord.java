@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -208,9 +208,11 @@ public class WriterRecord extends MarshalRecord<XMLMarshaller> {
                 isStartElementOpen = false;
                 builder.append('>');
             }
-            builder.append("<![CDATA[");
-            builder.append(value);
-            builder.append("]]>");
+            for (String part : MarshalRecord.splitCData(value)) {
+                builder.append("<![CDATA[");
+                builder.append(part);
+                builder.append("]]>");
+            }
     }
 
     /**
@@ -244,6 +246,7 @@ public class WriterRecord extends MarshalRecord<XMLMarshaller> {
             charset = defaultCharset;
         }
       char[] chars = value.toCharArray();
+      int nClosingSquareBracketsInRow = 0;
       for (int x = 0, charsSize = chars.length; x < charsSize; x++) {
           char character = chars[x];
           switch (character) {
@@ -253,6 +256,14 @@ public class WriterRecord extends MarshalRecord<XMLMarshaller> {
           }
           case '<': {
               writer.append("&lt;");
+              break;
+          }
+          case '>': {
+              if (nClosingSquareBracketsInRow >= 2) {
+                  writer.append("&gt;");
+              } else {
+                  writer.append(character);
+              }
               break;
           }
           case '"': {
@@ -282,6 +293,14 @@ public class WriterRecord extends MarshalRecord<XMLMarshaller> {
                       writer.append(Integer.toString(character));
                       writer.append(';');
                   }
+              }
+          }
+          if (!isAttribute) {
+              // count ] to escape ]]>
+              if (']' == character) {
+                  ++nClosingSquareBracketsInRow;
+              } else {
+                  nClosingSquareBracketsInRow = 0;
               }
           }
       }

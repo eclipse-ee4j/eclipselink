@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 2011, 2016 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -46,6 +46,10 @@ public class XmlCDATAOverrideTestCases extends JAXBWithJSONTestCases {
         Employee emp = new Employee();
         emp.name = "Jane Doe";
         emp.xmlData = "<root><child>A string wrapped in cdata</child></root>";
+        emp.nestedCData = "<![CDATA[nested]]>";
+        emp.anotherCData1 = "here ]> > ]] ] is no replacement";
+        emp.anotherCData2 = "here ]]]>> is one replacement only";
+        emp.anotherCData3 = "]]>]]>]]>";
         return emp;
     }
     @Override
@@ -57,13 +61,17 @@ public class XmlCDATAOverrideTestCases extends JAXBWithJSONTestCases {
 
         String bindings = 
             "<xml-bindings xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence/oxm\"> " +
-                "<java-types>" + 
-                    "<java-type name=\"org.eclipse.persistence.testing.jaxb.annotations.cdata.Employee\">" + 
-                        "<java-attributes>" + 
-                            "<xml-element java-attribute=\"xmlData\" cdata=\"false\"/>" + 
-                         "</java-attributes>" + 
-                   "</java-type>" + 
-                "</java-types>" + 
+                "<java-types>" +
+                    "<java-type name=\"org.eclipse.persistence.testing.jaxb.annotations.cdata.Employee\">" +
+                        "<java-attributes>" +
+                            "<xml-element java-attribute=\"xmlData\" cdata=\"false\"/>" +
+                            "<xml-element java-attribute=\"nestedCData\" cdata=\"false\"/>" +
+                            "<xml-element java-attribute=\"anotherCData1\" cdata=\"false\"/>" +
+                            "<xml-element java-attribute=\"anotherCData2\" cdata=\"false\"/>" +
+                            "<xml-element java-attribute=\"anotherCData3\" cdata=\"false\"/>" +
+                         "</java-attributes>" +
+                   "</java-type>" +
+                "</java-types>" +
              "</xml-bindings>";
 
         DOMSource src = null;

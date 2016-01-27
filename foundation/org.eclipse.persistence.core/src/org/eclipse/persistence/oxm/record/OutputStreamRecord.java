@@ -1,8 +1,8 @@
 /***************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -74,6 +74,7 @@ public class OutputStreamRecord extends MarshalRecord<XMLMarshaller> {
     protected static final byte CLOSE_ELEMENT = (byte) '>';
     protected static final byte[] AMP = "&amp;".getBytes(Constants.DEFAULT_CHARSET);
     protected static final byte[] LT = "&lt;".getBytes(Constants.DEFAULT_CHARSET);
+    protected static final byte[] GT = "&gt;".getBytes(Constants.DEFAULT_CHARSET);
     protected static final byte[] QUOT = "&quot;".getBytes(Constants.DEFAULT_CHARSET);
     protected static final byte[] ENCODING = Constants.DEFAULT_XML_ENCODING.getBytes(Constants.DEFAULT_CHARSET);
     protected static final byte[] SLASH_N = "&#xa;".getBytes(Constants.DEFAULT_CHARSET);
@@ -249,9 +250,11 @@ public class OutputStreamRecord extends MarshalRecord<XMLMarshaller> {
                 isStartElementOpen = false;
                 outputStreamWrite(CLOSE_ELEMENT);
             }
-            outputStreamWrite(OPEN_CDATA);
-            outputStreamWrite(value.getBytes(Constants.DEFAULT_XML_ENCODING));
-            outputStreamWrite(CLOSE_CDATA);
+            for (String part : MarshalRecord.splitCData(value)) {
+                outputStreamWrite(OPEN_CDATA);
+                outputStreamWrite(part.getBytes(Constants.DEFAULT_XML_ENCODING));
+                outputStreamWrite(CLOSE_CDATA);
+            }
         } catch(UnsupportedEncodingException e) {
             throw XMLMarshalException.marshalException(e);
         }
@@ -289,6 +292,7 @@ public class OutputStreamRecord extends MarshalRecord<XMLMarshaller> {
         //    0x80 - 0x7FF                       110yyyxx 10xxxxxx
         //   0x800 - 0xFFFF             1110yyyy 10yyyyxx 10xxxxxx
         // 0x10000 - 0x10FFFF  11110zzz 10zzyyyy 10yyyyxx 10xxxxxx
+        int nClosingSquareBracketsInRow = 0;
         for (int x = 0, length=value.length(); x < length; x++) {
             final char character = value.charAt(x);
             if (character > 0x7F) {
@@ -327,6 +331,15 @@ public class OutputStreamRecord extends MarshalRecord<XMLMarshaller> {
                         outputStreamWrite(LT, os);
                         break;
                     }
+                    case '>': {
+                        // escape only within ]]>
+                        if (nClosingSquareBracketsInRow >= 2) {
+                            outputStreamWrite(GT, os);
+                        } else {
+                            outputStreamWrite((byte)character, os);
+                        }
+                        break;
+                    }
                     case '"': {
                         outputStreamWrite(QUOT, os);
                         break;
@@ -345,6 +358,14 @@ public class OutputStreamRecord extends MarshalRecord<XMLMarshaller> {
                     }
                     default:
                         outputStreamWrite((byte) character, os);
+                    }
+                    if (!isAttribute) {
+                        // count ] to escape ]]>
+                        if (']' == character) {
+                            ++nClosingSquareBracketsInRow;
+                        } else {
+                            nClosingSquareBracketsInRow = 0;
+                        }
                     }
                 } else {
                     outputStreamWrite((byte) character, os);

@@ -1,4 +1,8 @@
 <employee>
   <name>Jane Doe</name>
   <xmlData><![CDATA[<root><child>A string wrapped in cdata</child></root>]]></xmlData>
+  <nestedCData><![CDATA[<![CDATA[nested]]]]><![CDATA[>]]></nestedCData>
+  <anotherCData1><![CDATA[here ]> > ]] ] is no replacement]]></anotherCData1>
+  <anotherCData2><![CDATA[here ]]]]]><![CDATA[>> is one replacement only]]></anotherCData2>
+  <anotherCData3><![CDATA[]]]]><![CDATA[>]]]]><![CDATA[>]]]]><![CDATA[>]]></anotherCData3>
 </employee>
