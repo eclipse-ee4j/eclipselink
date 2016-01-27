@@ -1,7 +1,10 @@
 <employee>
   <first-name>Jane</first-name>
-  <last-name>Doe</last-name>
+  <last-name>Do]]&gt;e</last-name>
   <data>
     <![CDATA[A string containing bad xml characters like < and > and /> and stuff like that]]>
   </data>
+  <nestedCData>
+    <![CDATA[<![CDATA[nested]]]]><![CDATA[>]]>
+  </nestedCData>
 </employee>

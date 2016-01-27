@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -13,7 +13,9 @@
 package org.eclipse.persistence.oxm.record;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Stack;
@@ -809,4 +811,33 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
     public void flush() {
     }
 
+    /**
+     * INTERNAL:
+     * Convenience method for splitting CDATA content to parts
+     * so that {@code "]]>"} occurrences are eliminated.
+     * <p>
+     * For example {@code splitCData("a]]>b")} returns list of two elements,
+     * {@code "a]]"} and {@code ">b"}.
+     * <p>
+     * This method is intended for use in {@link #cdata(String)}
+     * implementations where appropriate.
+     *
+     * @param value for CDATA section possibly containing {@code "]]>"}
+     * @return list of CDATA-valid chunks of the input
+     */
+    static List<String> splitCData(String value) {
+        if (value == null) {
+            return Collections.emptyList();
+        }
+        List<String> parts = new LinkedList<>();
+        int index = -1;
+        String remainder = value;
+        while (0 <= (index = remainder.indexOf("]]>"))) {
+            String part = remainder.substring(0, index + 2);
+            parts.add(part);
+            remainder = remainder.substring(index + 2);
+        }
+        parts.add(remainder);
+        return parts;
+    }
 }

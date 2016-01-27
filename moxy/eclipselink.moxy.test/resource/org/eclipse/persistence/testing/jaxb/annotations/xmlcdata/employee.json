@@ -1,4 +1,8 @@
 {"employee":{
   "name":"Jane Doe",
-  "xmlData":"<root><child>A string wrapped in cdata</child></root>"
+  "xmlData":"<root><child>A string wrapped in cdata</child></root>",
+  "nestedCData":"<![CDATA[nested]]>",
+  "anotherCData1":"here ]> > ]] ] is no replacement",
+  "anotherCData2":"here ]]]>> is one replacement only",
+  "anotherCData3":"]]>]]>]]>"
 }}

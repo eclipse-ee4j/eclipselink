@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -23,17 +23,20 @@ public class Employee {
     public String lastName;
 
     public String data;
+    public String nestedCData;
 
     public boolean equals(Object obj) {
         if(!(obj instanceof Employee)) {
             return false;
         }
         Employee emp = (Employee) obj;
-        return emp.firstName.equals(firstName) && emp.lastName.equals(lastName) && emp.data.trim().equals(data.trim());
+        return emp.firstName.equals(firstName) && emp.lastName.equals(lastName)
+                && emp.data.trim().equals(data.trim())
+                && emp.nestedCData.trim().equals(nestedCData.trim());
     }
 
     public String toString() {
-        return "Employee: " + firstName + " - " + lastName + " - " + data;
+        return "Employee: " + firstName + " - " + lastName + " - " + data + " - " + nestedCData;
     }
 
 }
