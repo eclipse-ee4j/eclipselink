@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -52,18 +52,25 @@ public class Version {
      * Keep track of JDK version in order to make some decisions about data structures.
      * @deprecated Use {@link JavaSEPlatform} instead. Will be removed in 2.7.
      */
+    @Deprecated
     public static final int JDK_VERSION_NOT_SET = 0;
     /** @deprecated Use {@link JavaSEPlatform} instead. Will be removed in 2.7. */
+    @Deprecated
     public static final int JDK_1_5 = 1;
     /** @deprecated Use {@link JavaSEPlatform} instead. Will be removed in 2.7. */
+    @Deprecated
     public static final int JDK_1_6 = 2;
     /** @deprecated Use {@link JavaSEPlatform} instead. Will be removed in 2.7. */
+    @Deprecated
     public static final int JDK_1_7 = 3;
     /** @deprecated Use {@link JavaSEPlatform} instead. Will be removed in 2.7. */
+    @Deprecated
     public static final int JDK_1_8 = 4;
     /** @deprecated Use {@link JavaSEPlatform} instead. Will be removed in 2.7. */
+    @Deprecated
     public static final int JDK_1_9 = 5;
     /** @deprecated Use {@link JavaSEPlatform} instead. Will be removed in 2.7. */
+    @Deprecated
     public static int JDK_VERSION = JDK_VERSION_NOT_SET;
 
     /**
@@ -122,6 +129,7 @@ public class Version {
      * @deprecated Use {@code JavaSEPlatform.CURRENT} instead.
      *             Will be removed in 2.7.
      */
+    @Deprecated
     public static int getJDKVersion() {
         switch(JavaSEPlatform.CURRENT) {
             case v1_7:
@@ -131,6 +139,7 @@ public class Version {
                 JDK_VERSION = JDK_1_8;
                 break;
             case v1_9:
+            case v9_0:
                 JDK_VERSION = JDK_1_9;
                 break;
             default:
@@ -146,6 +155,7 @@ public class Version {
      *         is not supported by current EclipseLink.
      * @deprecated Use {@link JavaSEPlatform} instead. Will be removed in 2.7.
      */
+    @Deprecated
     public static void useJDK15() {
         throw new UnsupportedOperationException(
                 "Java SE 1.5 is not supported by current EclipseLink.");
@@ -157,6 +167,7 @@ public class Version {
      *         is not supported by current EclipseLink.
      * @deprecated Use {@link JavaSEPlatform} instead. Will be removed in 2.7.
      */
+    @Deprecated
     public static void useJDK16() {
         throw new UnsupportedOperationException(
                 "Java SE 1.6 is not supported by current EclipseLink.");
@@ -218,7 +229,7 @@ public class Version {
      *         when we do not run on Java SE 1.9.
      */
     public static boolean isJDK19() {
-        return JavaSEPlatform.is(JavaSEPlatform.v1_9);
+        return JavaSEPlatform.is(JavaSEPlatform.v9_0) || JavaSEPlatform.is(JavaSEPlatform.v1_9);
     }
 
     public static void printVersion ( ) {

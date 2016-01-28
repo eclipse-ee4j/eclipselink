@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -37,8 +37,10 @@ public enum JavaSEPlatform implements Comparable<JavaSEPlatform> {
     v1_7(1,7),
     /** Java SE 1.8. */
     v1_8(1,8),
-    /** Java SE 1.9. */
-    v1_9(1,9);
+    /** Java SE 9. */
+    v1_9(1,9),
+    /** Java SE 9. */
+    v9_0(9, 0);
 
     /**
      * Stored <code>String</code> values for backward <code>String</code>
@@ -104,7 +106,8 @@ public enum JavaSEPlatform implements Comparable<JavaSEPlatform> {
      *         or <code>null</code> when such a value does not exist.
      */
     public static JavaSEPlatform toValue(final int major, final int minor) {
-        if (major == 1) {
+        switch (major) {
+        case 1:
             switch (minor) {
                 case 1: return v1_1;
                 case 2: return v1_2;
@@ -117,8 +120,9 @@ public enum JavaSEPlatform implements Comparable<JavaSEPlatform> {
                 case 9: return v1_9;
                 default: return null;
             }
-        } else {
-            return null;
+        case 9:
+            return v9_0;
+        default: return null;
         }
     }
 

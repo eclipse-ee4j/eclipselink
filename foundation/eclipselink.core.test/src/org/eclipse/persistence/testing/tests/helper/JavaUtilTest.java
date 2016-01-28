@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,9 +12,9 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.helper;
 
-import org.junit.Test;
 import org.eclipse.persistence.internal.helper.JavaSEPlatform;
 import org.eclipse.persistence.internal.helper.JavaVersion;
+import org.junit.Test;
 
 /**
  * Test Java related utilities.
@@ -35,21 +35,15 @@ public class JavaUtilTest extends junit.framework.TestCase {
      */
     @Test
     public void testJavaVersionCompareTo() {
-        JavaVersion version = new JavaVersion(1, 4, 2, 22);
+        JavaVersion version = new JavaVersion(1, 4);
         // Differs on major numbers.
-        assertEquals( 1, version.comapreTo(new JavaVersion(0, 4, 2, 22)));
-        assertEquals(-1, version.comapreTo(new JavaVersion(2, 4, 2, 22)));
+        assertEquals( 1, version.comapreTo(new JavaVersion(0, 4)));
+        assertEquals(-1, version.comapreTo(new JavaVersion(2, 4)));
         // Differs on minor numbers.
-        assertEquals( 1, version.comapreTo(new JavaVersion(1, 3, 2, 22)));
-        assertEquals(-1, version.comapreTo(new JavaVersion(1, 5, 2, 22)));
-        // Differs on revision numbers.
-        assertEquals( 1, version.comapreTo(new JavaVersion(1, 4, 1, 22)));
-        assertEquals(-1, version.comapreTo(new JavaVersion(1, 4, 3, 22)));
-        // Differs on patch numbers.
-        assertEquals( 1, version.comapreTo(new JavaVersion(1, 4, 2, 21)));
-        assertEquals(-1, version.comapreTo(new JavaVersion(1, 4, 2, 23)));
+        assertEquals( 1, version.comapreTo(new JavaVersion(1, 3)));
+        assertEquals(-1, version.comapreTo(new JavaVersion(1, 5)));
         // Equal values
-        assertEquals( 0, version.comapreTo(new JavaVersion(1, 4, 2, 22)));
+        assertEquals( 0, version.comapreTo(new JavaVersion(1, 4)));
     }
 
     /**
@@ -70,7 +64,7 @@ public class JavaUtilTest extends junit.framework.TestCase {
     public void testStringToPlatform() {
         // Valid version number pairs.
         int[][] valid = {{1, 1}, {1, 2}, {1, 3}, {1, 4}, {1, 5}, {1, 6}, {1, 7},
-                {1, 8}, {1, 9}};
+                {1, 8}, {1, 9}, {9, 0}};
         int[][] invalid = {{0, 0}, {0, 1}, {0, 3}, {0, 5}, {0, 7}, {0, 9},
                 {1, 0}, {2, 0}, {2, 1}, {2, 2}, {3, 0}, {4, 0}, {1, 10}};
         // Verify valid pairs.
@@ -104,7 +98,7 @@ public class JavaUtilTest extends junit.framework.TestCase {
     public void testMajorMinorToPlatform() {
         // Valid version number pairs.
         int[][] valid = {{1, 1}, {1, 2}, {1, 3}, {1, 4}, {1, 5}, {1, 6}, {1, 7},
-                {1, 8}, {1, 9}};
+                {1, 8}, {1, 9}, {9, 0}};
         int[][] invalid = {{0, 0}, {0, 1}, {0, 3}, {0, 5}, {0, 7}, {0, 9},
                 {1, 0}, {2, 0}, {2, 1}, {2, 2}, {3, 0}, {4, 0}, {1, 10}};
         // Verify valid pairs.
