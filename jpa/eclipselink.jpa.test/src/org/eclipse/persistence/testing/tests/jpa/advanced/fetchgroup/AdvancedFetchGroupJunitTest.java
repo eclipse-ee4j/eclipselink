@@ -28,6 +28,7 @@ import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.advanced.fetchgroup.AdvancedFetchGroupTableCreator;
@@ -279,31 +280,34 @@ public class AdvancedFetchGroupJunitTest extends JUnitTestCase {
             em.persist(helmet);
 
             commitTransaction(em);
-            em.close();
+            closeEntityManager(em);
             clearCache();
 
             em = createEntityManager();
             //Create a changeset to ensure that the getReference() result is pushed to cache
-            UnitOfWork uw = UnitOfWork.class.cast(((EntityManagerImpl)em.getDelegate()).getActiveSession());
-            uw.beginEarlyTransaction();
+            beginTransaction(em);
+            em.unwrap(UnitOfWorkImpl.class).beginEarlyTransaction();
+            
             helmet = em.find(Helmet.class,  helmet.getId());
             modified = em.getReference(Shelf.class, modified.getId());
             helmet.setShelf(modified);
 
-            uw.commit();
-            em.close();
+            commitTransaction(em);
+            closeEntityManager(em);
 
             try {
                 em = createEntityManager();
-                uw = UnitOfWork.class.cast(((EntityManagerImpl) em.getDelegate()).getActiveSession());
-                uw.beginEarlyTransaction();
+                beginTransaction(em);
+                em.unwrap(UnitOfWorkImpl.class).beginEarlyTransaction();
+
                 modified = em.find(Shelf.class, modified.getId());
                 if (modified.getName() == null) {
                     fail("find returned entity with missing attribute");
                 }
             } finally {
-                uw.commit();
-                clearCache();
+                if (isTransactionActive(em)){
+                   rollbackTransaction(em); 
+                }
                 beginTransaction(em);
                 helmet = em.find(Helmet.class,  helmet.getId());
                 em.remove(helmet);
