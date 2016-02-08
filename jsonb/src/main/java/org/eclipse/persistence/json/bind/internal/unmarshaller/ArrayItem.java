@@ -25,7 +25,7 @@ import java.util.List;
  *
  * @author Roman Grigoriadi
  */
-public class ArrayItem extends CurrentItem<Object[]> implements EmbeddedItem {
+public class ArrayItem extends AbstractItem<Object[]> implements EmbeddedItem {
 
     /**
      * Runtime type class of an array.
@@ -46,7 +46,7 @@ public class ArrayItem extends CurrentItem<Object[]> implements EmbeddedItem {
     }
 
     @Override
-    public void appendItem(CurrentItem valueItem) {
+    public void appendItem(CurrentItem<?> valueItem) {
         appendCaptor(valueItem.getInstance());
     }
 
@@ -56,7 +56,7 @@ public class ArrayItem extends CurrentItem<Object[]> implements EmbeddedItem {
             appendCaptor(null);
             return;
         }
-        Object converted = getTypeConverter().fromJson(value, resolveValueType(componentClass, jsonValueType));
+        Object converted = getTypeConverter().fromJson(value, ReflectionUtils.getRawType(resolveValueType(componentClass, jsonValueType)));
         appendCaptor(converted);
     }
 

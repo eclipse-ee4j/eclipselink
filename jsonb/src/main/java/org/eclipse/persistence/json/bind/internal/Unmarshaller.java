@@ -141,7 +141,7 @@ public class Unmarshaller extends JsonTextProcessor {
             currentItem = new CurrentItemBuilder().withType(rootType != Object.class ? rootType : jsonValueType.getConversionType()).withJsonValueType(jsonValueType).build();
             return;
         }
-        CurrentItem wrapper = currentItem;
+        CurrentItem<?> wrapper = currentItem;
         currentItem = wrapper.newItem(getClassPropertyName(currentFieldName), jsonValueType);
     }
 

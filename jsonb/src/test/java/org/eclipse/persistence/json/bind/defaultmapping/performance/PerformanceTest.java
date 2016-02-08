@@ -7,13 +7,16 @@ import org.eclipse.persistence.json.bind.defaultmapping.generics.model.GenericTe
 import org.eclipse.persistence.json.bind.defaultmapping.jsonp.JsonpLong;
 import org.eclipse.persistence.json.bind.defaultmapping.jsonp.JsonpString;
 import org.eclipse.persistence.json.bind.defaultmapping.specific.ObjectGraphTest;
-import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.State;
 
 import javax.json.*;
 import javax.json.bind.Jsonb;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.MalformedURLException;
@@ -93,9 +96,9 @@ public class PerformanceTest {
         assertEquals("\"NaN\"", jsonb.toJson(Double.NaN));
         assertEquals("\" \\ \" / \b \f \n \r \t 9\"", jsonb.toJson(" \\ \" / \b \f \n \r \t \u0039"));
 
-        final Appendable appendable = new StringBuilder();
-        jsonb.toJson(5L, appendable);
-        assertEquals("5", appendable.toString());
+        final Writer writer = new StringWriter();
+        jsonb.toJson(5L, writer);
+        assertEquals("5", writer.toString());
 
 
         try (final ByteArrayOutputStream baos = new ByteArrayOutputStream()) {

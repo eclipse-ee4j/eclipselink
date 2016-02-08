@@ -13,6 +13,10 @@
 
 package org.eclipse.persistence.json.bind.model;
 
+import org.eclipse.persistence.json.bind.internal.adapter.JsonbAdapterInfo;
+
+import java.util.Optional;
+
 /**
  * Customization for a property of a class.
  *
@@ -24,6 +28,8 @@ public class PropertyCustomization extends Customization {
 
     private final String jsonWriteName;
 
+    protected final JsonbAdapterInfo adapterInfo;
+
     /**
      * Copies properties from builder an creates immutable instance.
      * @param builder not null
@@ -32,6 +38,7 @@ public class PropertyCustomization extends Customization {
         super(builder);
         this.jsonReadName = builder.getJsonReadName();
         this.jsonWriteName = builder.getJsonWriteName();
+        this.adapterInfo = builder.getAdapterInfo();
     }
 
     /**
@@ -50,4 +57,12 @@ public class PropertyCustomization extends Customization {
         return jsonWriteName;
     }
 
+    /**
+     * Adapter wrapper class with resolved generic information.
+     *
+     * @return adapter info
+     */
+    public Optional<JsonbAdapterInfo> getAdapterInfo() {
+        return Optional.ofNullable(adapterInfo);
+    }
 }

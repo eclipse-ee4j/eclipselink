@@ -72,6 +72,7 @@ public class PropertyModel implements Comparable<PropertyModel> {
         builder.setJsonWriteName(introspector.getJsonbPropertyJsonWriteName(property));
         builder.setNillable(classModel.getClassCustomization().isNillable()
                 || introspector.isPropertyNillable(property));
+        builder.setAdapterInfo(introspector.getAdapter(property));
         return builder.buildPropertyCustomization();
     }
 

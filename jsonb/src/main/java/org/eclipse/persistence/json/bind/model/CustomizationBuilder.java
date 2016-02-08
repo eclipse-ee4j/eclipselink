@@ -13,6 +13,8 @@
 
 package org.eclipse.persistence.json.bind.model;
 
+import org.eclipse.persistence.json.bind.internal.adapter.JsonbAdapterInfo;
+
 /**
  * Builder for ensuring immutable state of {@link Customization} objects.
  *
@@ -27,6 +29,8 @@ public class CustomizationBuilder {
     private String jsonReadName;
 
     private String jsonWriteName;
+
+    private JsonbAdapterInfo adapterInfo;
 
     /**
      * Creates customization for class properties.
@@ -101,5 +105,21 @@ public class CustomizationBuilder {
      */
     public void setJsonWriteName(String jsonWriteName) {
         this.jsonWriteName = jsonWriteName;
+    }
+
+    /**
+     * Adapter a class or a property of a class.
+     * @return adapter
+     */
+    public JsonbAdapterInfo getAdapterInfo() {
+        return adapterInfo;
+    }
+
+    /**
+     * Adapter a class or a property of a class.
+     * @param adapterInfo adapter info
+     */
+    public void setAdapterInfo(JsonbAdapterInfo adapterInfo) {
+        this.adapterInfo = adapterInfo;
     }
 }

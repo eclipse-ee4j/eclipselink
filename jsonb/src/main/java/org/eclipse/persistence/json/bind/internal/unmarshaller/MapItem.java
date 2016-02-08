@@ -25,7 +25,7 @@ import java.util.Map;
  *
  * @author Roman Grigoriadi
  */
-public class MapItem extends CurrentItem<Map<?, ?>> implements EmbeddedItem {
+public class MapItem extends AbstractItem<Map<?, ?>> implements EmbeddedItem {
 
     /**
      * Type of value in the map.
@@ -45,7 +45,7 @@ public class MapItem extends CurrentItem<Map<?, ?>> implements EmbeddedItem {
 
 
     @Override
-    public void appendItem(CurrentItem valueItem) {
+    public void appendItem(CurrentItem<?> valueItem) {
         appendCaptor(valueItem.getJsonKeyName(), valueItem.getInstance());
     }
 

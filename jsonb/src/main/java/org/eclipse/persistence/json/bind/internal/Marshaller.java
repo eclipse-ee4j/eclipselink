@@ -12,15 +12,23 @@
  ******************************************************************************/
 package org.eclipse.persistence.json.bind.internal;
 
+import org.eclipse.persistence.json.bind.internal.adapter.AdapterMatcher;
+import org.eclipse.persistence.json.bind.internal.adapter.JsonbAdapterInfo;
 import org.eclipse.persistence.json.bind.internal.naming.PropertyNamingStrategy;
+import org.eclipse.persistence.json.bind.internal.properties.MessageKeys;
+import org.eclipse.persistence.json.bind.internal.properties.Messages;
 import org.eclipse.persistence.json.bind.model.PropertyModel;
 
 import javax.json.bind.JsonbConfig;
+import javax.json.bind.JsonbException;
+import javax.json.bind.adapter.JsonbAdapter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Array;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
+import java.util.logging.Logger;
 
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
@@ -29,21 +37,32 @@ import static java.util.stream.Collectors.toList;
  * JSONB marshaller. Created each time marshalling operation called.
  *
  * @author Dmitry Kornilov
+ * @author Roman Grigoriadi
  */
 public class Marshaller extends JsonTextProcessor {
 
+    private static final Logger logger = Logger.getLogger(Marshaller.class.getName());
+
     private static final String QUOTE = "\"";
 
-    //TODO remove after fixing spec. No need for the marshaller.
-    private Type rootRuntimeType;
+    /**
+     *  Runtime types in marshaller are used for inferring runtime generic types of processed objects,
+     *  to be able to match generic adapters {@link JsonbAdapter}. In case of Field {@code Box<T>} in Class {@code Pojo<T>}, T is inferred from
+     *  runtimeTypeInfo and correctly adapted by a generic adapter for a {@code Box<T>}.
+     */
+    private Optional<RuntimeTypeInfo> runtimeTypeInfo;
+
+    private Stack<PropertyModel> propertyModelStack = new Stack<>();
 
     public Marshaller(MappingContext mappingContext, JsonbConfig jsonbConfig) {
         super(mappingContext, jsonbConfig);
+        runtimeTypeInfo = Optional.empty();
     }
 
     public Marshaller(MappingContext mappingContext, JsonbConfig jsonbConfig, Type rootRuntimeType) {
         super(mappingContext, jsonbConfig);
-        this.rootRuntimeType = rootRuntimeType;
+        Objects.requireNonNull(rootRuntimeType);
+        this.runtimeTypeInfo = Optional.of(new RuntimeTypeHolder(null, rootRuntimeType));
     }
 
     /**
@@ -87,29 +106,56 @@ public class Marshaller extends JsonTextProcessor {
      * @param object object to marshal.
      * @return JSON representation of object
      */
+    @SuppressWarnings("unchecked")
     private String marshallInternal(final Object object) {
         if (object == null
-                || object instanceof Optional && !((Optional) object).isPresent()) {
+                || object instanceof Optional && !((Optional) object).isPresent()
+                || object instanceof OptionalInt && !((OptionalInt) object).isPresent()
+                || object instanceof OptionalLong && !((OptionalLong) object).isPresent()
+                || object instanceof OptionalDouble && !((OptionalDouble) object).isPresent()) {
             return NULL;
 
-        } else if (object instanceof Optional) {
-            return marshallInternal(((Optional) object).get());
+        }
+        final Type objectRuntimeType = runtimeTypeInfo.map(RuntimeTypeInfo::getRuntimeType).orElse(object.getClass());
+        final Optional<JsonbAdapterInfo> adapterInfoOptional = getMarshallerAdapterInfo(objectRuntimeType);
+        Optional<Object> adaptedValue = adapterInfoOptional.map(info->{
+            logger.fine(Messages.getMessage(MessageKeys.ADAPTER_FOUND, info.getFromType().getTypeName(), info.getToType().getTypeName()));
+            pushRuntimeType(info.getToType());
+            try {
+                return ((JsonbAdapter<Object, Object>) info.getAdapter()).adaptFrom(object);
+            } catch (Exception e) {
+                throw new JsonbException(Messages.getMessage(MessageKeys.ADAPTER_EXCEPTION, objectRuntimeType, info.getToType(), info.getAdapter().getClass()), e);
+            }
+        });
+        final Object value = adaptedValue.orElse(object);
 
-        } else if (object instanceof Collection) {
-            return marshallCollection((Collection<?>) object);
+        String result;
+        if (value instanceof Optional) {
+            result = marshallInternal(((Optional) value).get());
 
-        } else if (object instanceof Map) {
-            return marshallMap((Map<?, ?>) object);
+        } else if (value instanceof Collection) {
+            result = marshallCollection((Collection<?>) value);
 
-        } else if (object.getClass().isArray()) {
-            return marshallArray(object);
+        } else if (value instanceof Map) {
+            result = marshallMap((Map<?, ?>) value);
 
-        } else if (converter.supportsToJson(object.getClass())) {
-            return converter.toJson(object);
+        } else if (value.getClass().isArray()) {
+            result = marshallArray(value);
+
+        } else if (converter.supportsToJson(value.getClass())) {
+            result = converter.toJson(value);
 
         } else {
-            return marshallObject(object);
+            result = marshallObject(value);
         }
+        adapterInfoOptional.ifPresent(adapterInfo->popRuntimeType());
+        return result;
+    }
+
+    private Optional<JsonbAdapterInfo> getMarshallerAdapterInfo(Type runtimeType) {
+        final AdapterMatcher matcher = AdapterMatcher.getInstance();
+        return propertyModelStack.empty() ?
+                matcher.getAdapterInfo(runtimeType) : matcher.getAdapterInfo(runtimeType, propertyModelStack.peek());
     }
 
     private String marshallObject(Object object) {
@@ -122,26 +168,31 @@ public class Marshaller extends JsonTextProcessor {
         }
 
         return allProperties.stream()
-                .map((model) -> marshallField(object, model))
+                .map((model) -> marshallProperty(object, model))
                 .filter(Objects::nonNull)
                 .collect(joining(",", "{", "}"));
     }
 
-    private String marshallField(Object object, PropertyModel propertyModel) {
-        final Object value = propertyModel.getValue(object);
-        if (value != null) {
-            if (value instanceof OptionalInt && !((OptionalInt) value).isPresent()
-                    || value instanceof OptionalLong && !((OptionalLong) value).isPresent()
-                    || value instanceof OptionalDouble && !((OptionalDouble) value).isPresent()) {
-                return null;
-            }
-            return keyValue(propertyModel.getCustomization().getJsonWriteName(), marshallInternal(value));
-        } else if (propertyModel.getCustomization().isNillable()){
-            return keyValue(propertyModel.getCustomization().getJsonWriteName(), "null");
+    @SuppressWarnings("unchecked")
+    private String marshallProperty(Object object, PropertyModel propertyModel) {
+        logger.finest("Serializing property: "+propertyModel.getPropertyName()+" in class "+propertyModel.getClassModel().getRawType().getSimpleName());
+        Object value = propertyModel.getValue(object);
+        if (value == null) {
+            return propertyModel.getCustomization().isNillable() ?
+                    keyValue(propertyModel.getCustomization().getJsonWriteName(), "null") : null;
         }
 
-        // Null value is returned in case this field doesn't need to be marshaled
-        return null;
+        propertyModelStack.push(propertyModel);
+        pushRuntimeType(propertyModel.getPropertyType());
+        String result = null;
+        if (!(value instanceof OptionalInt && !((OptionalInt) value).isPresent()
+                || value instanceof OptionalLong && !((OptionalLong) value).isPresent()
+                || value instanceof OptionalDouble && !((OptionalDouble) value).isPresent())) {
+            result = keyValue(propertyModel.getCustomization().getJsonWriteName(), marshallInternal(value));
+        }
+        popRuntimeType();
+        propertyModelStack.pop();
+        return result;
     }
 
     private String marshallArray(Object array) {
@@ -165,15 +216,21 @@ public class Marshaller extends JsonTextProcessor {
     }
 
     private String marshallCollection(Collection<?> collection) {
-        return collection.stream()
+        runtimeTypeInfo.ifPresent(rti -> pushRuntimeType(((ParameterizedType) rti.getRuntimeType()).getActualTypeArguments()[0]));
+        final String result = collection.stream()
                 .map(this::marshallInternal)
                 .collect(joining(",", "[", "]"));
+        popRuntimeType();
+        return result;
     }
 
     private String marshallMap(Map<?, ?> map) {
-        return map.keySet().stream()
+        runtimeTypeInfo.ifPresent(rti -> pushRuntimeType(((ParameterizedType) rti.getRuntimeType()).getActualTypeArguments()[1]));
+        final String result = map.keySet().stream()
                 .map((key) -> keyValue(key.toString(), marshallInternal(map.get(key))))
                 .collect(joining(",", "{", "}"));
+        popRuntimeType();
+        return result;
     }
 
     private String keyValue(String key, Object value) {
@@ -187,5 +244,20 @@ public class Marshaller extends JsonTextProcessor {
 
     private String quoteString(String string) {
         return String.join("", QUOTE, string, QUOTE);
+    }
+
+    private void pushRuntimeType(Type runtimeType) {
+        runtimeTypeInfo.ifPresent(rti -> {
+            Type resolvedType = ReflectionUtils.resolveType(rti, runtimeType);
+            logger.finest(String.format("Pushed runtime type [%s], resolved from [%s].", resolvedType.getTypeName(), runtimeType.getTypeName()));
+            runtimeTypeInfo = Optional.of(new RuntimeTypeHolder(rti, resolvedType));
+        });
+    }
+
+    private void popRuntimeType() {
+        runtimeTypeInfo.ifPresent(rti -> {
+            logger.finest(String.format("Popping runtime type [%s]", rti.getRuntimeType().getTypeName()));
+            this.runtimeTypeInfo = Optional.ofNullable(rti.getWrapper());
+        });
     }
 }

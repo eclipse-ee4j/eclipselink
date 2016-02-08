@@ -13,12 +13,16 @@
 
 package org.eclipse.persistence.json.bind.internal;
 
+import org.eclipse.persistence.json.bind.internal.adapter.AdapterMatcher;
+import javax.json.bind.adapter.JsonbAdapter;
+import org.eclipse.persistence.json.bind.internal.adapter.JsonbAdapterInfo;
 import org.eclipse.persistence.json.bind.internal.naming.DefaultNamingStrategies;
 import org.eclipse.persistence.json.bind.internal.naming.PropertyNamingStrategy;
 
 import javax.json.bind.JsonbConfig;
 import javax.json.bind.JsonbException;
 import javax.json.bind.config.PropertyVisibilityStrategy;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -39,6 +43,8 @@ public class JsonbContext {
 
     private final PropertyNamingStrategy propertyNamingStrategy;
 
+    private final List<JsonbAdapterInfo> adapters;
+
     /**
      * Creates fully pupolated context.
      *
@@ -52,6 +58,7 @@ public class JsonbContext {
         this.mappingContext = mappingContext;
         this.propertyNamingStrategy = resolvePropertyNamingStrategy();
         this.propertyVisibilityStrategy = resolvePropertyVisibilityStrategy();
+        this.adapters = resolveAdapters();
     }
 
     private PropertyNamingStrategy resolvePropertyNamingStrategy() {
@@ -79,6 +86,10 @@ public class JsonbContext {
         return (PropertyVisibilityStrategy) propertyVisibilityStrategy;
     }
 
+    private List<JsonbAdapterInfo> resolveAdapters() {
+        return AdapterMatcher.getInstance().parseRegisteredAddapters((JsonbAdapter<?, ?>[]) jsonbConfig.getProperty(JsonbConfig.ADAPTERS).orElse(new JsonbAdapter<?,?>[]{}));
+    }
+
     /**
      * Instance of Jsonb jsonbConfig.
      * @return jsonb jsonbConfig
@@ -101,6 +112,10 @@ public class JsonbContext {
      */
     public static PropertyVisibilityStrategy getPropertyVisibilityStrategy() {
         return getInstance().propertyVisibilityStrategy;
+    }
+
+    public static List<JsonbAdapterInfo> getAdapters() {
+        return getInstance().adapters;
     }
 
     public static PropertyNamingStrategy getPropertyNamingStrategy() {

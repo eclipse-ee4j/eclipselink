@@ -38,8 +38,11 @@ public enum MessageKeys {
     UNEXPECTED_PARSE_EVENT("unexpectedParseEvent"),
     CREATING_HANDLES("creatingHandles"),
     GETTING_VALUE_WITH("gettingValueWith"),
-    SETTING_VALUE_WITH("settingValueWith");
-
+    SETTING_VALUE_WITH("settingValueWith"),
+    ADAPTER_EXCEPTION("adapterException"),
+    ADAPTER_FOUND("adapterFound"),
+    ADAPTER_INCOMPATIBLE("adapterIncompatible"),
+    ;
     /** Message bundle key. */
     final String key;
 

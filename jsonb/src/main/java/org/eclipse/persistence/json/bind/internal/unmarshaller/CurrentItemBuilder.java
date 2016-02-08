@@ -14,6 +14,8 @@ package org.eclipse.persistence.json.bind.internal.unmarshaller;
 
 import org.eclipse.persistence.json.bind.internal.JsonbContext;
 import org.eclipse.persistence.json.bind.internal.ReflectionUtils;
+import org.eclipse.persistence.json.bind.internal.adapter.AdapterMatcher;
+import org.eclipse.persistence.json.bind.internal.adapter.JsonbAdapterInfo;
 import org.eclipse.persistence.json.bind.internal.conversion.ConvertersMapTypeConverter;
 import org.eclipse.persistence.json.bind.internal.conversion.TypeConverter;
 import org.eclipse.persistence.json.bind.internal.properties.MessageKeys;
@@ -22,9 +24,7 @@ import org.eclipse.persistence.json.bind.model.ClassModel;
 import org.eclipse.persistence.json.bind.model.PropertyModel;
 
 import javax.json.bind.JsonbException;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.GenericArrayType;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.util.*;
 
@@ -71,6 +71,11 @@ public class CurrentItemBuilder {
      */
     private Object instance;
 
+    /**
+     * Adapter meta data if type is adapted.
+     */
+    private JsonbAdapterInfo adapterInfo;
+
     private final TypeConverter converter = ConvertersMapTypeConverter.getInstance();
 
     /**
@@ -78,9 +83,6 @@ public class CurrentItemBuilder {
      * Null for embedded objects such as collections, or known conversion types.
      */
     private ClassModel classModel;
-
-    public CurrentItemBuilder() {
-    }
 
     /**
      * Wrapper item for this item.
@@ -139,18 +141,30 @@ public class CurrentItemBuilder {
      *
      * @return built item
      */
+    @SuppressWarnings("unchecked")
     public CurrentItem<?> build() {
         runtimeType = resolveRuntimeType();
         Class rawType = ReflectionUtils.getRawType(runtimeType);
+
+        AdapterMatcher matcher = AdapterMatcher.getInstance();
+        final Optional<JsonbAdapterInfo> adapterInfoOptional = matcher.getAdapterInfo(runtimeType, propertyModel);
+        Optional<Class> rawTypeOptional = adapterInfoOptional.map(adapterInfo->{
+            runtimeType = adapterInfo.getToType();
+            return ReflectionUtils.getRawType(runtimeType );
+        });
+        rawType = rawTypeOptional.orElse(rawType);
         switch (jsonValueType) {
             case ARRAY:
+                final CurrentItem<?> item;
+
                 if (rawType.isArray() || runtimeType instanceof GenericArrayType) {
-                    return createArrayItem();
+                    item = createArrayItem();
+                } else if (Collection.class.isAssignableFrom(rawType)) {
+                    item = createCollectionItem();
+                } else {
+                    throw new JsonbException(String.format("JSON array not expected for unmarshalling into field %s of type %s.", jsonKeyName, rawType));
                 }
-                if (Collection.class.isAssignableFrom(rawType)) {
-                    return createCollectionItem();
-                }
-                throw new JsonbException(String.format("JSON array not expected for unmarshalling into field %s of type %s.", jsonKeyName, rawType));
+                return wrapAdapted(adapterInfoOptional, item);
             case OBJECT:
                 if (Map.class.isAssignableFrom(rawType)) {
                     return createMapItem();
@@ -162,12 +176,23 @@ public class CurrentItemBuilder {
                     throw new JsonbException(String.format("JSON object not expected for unmarshalling into field %s, of supported type %s.", jsonKeyName, rawType));
                 }
 
+                if (adapterInfoOptional.isPresent()) {
+                    runtimeType = adapterInfoOptional.get().getToType();
+                    rawType = ReflectionUtils.getRawType(runtimeType );
+                }
+
                 classModel = JsonbContext.getMappingContext().getOrCreateClassModel(rawType);
-                instance = createInstance(classModel.getRawType());
-                return new ObjectItem<>(this);
+                instance = ReflectionUtils.createNoArgConstructorInstance(classModel.getRawType());
+                final ObjectItem<Object> objectItem = new ObjectItem<>(this);
+                return wrapAdapted(adapterInfoOptional, objectItem);
             default:
                 throw new JsonbException(String.format("Invalid json type %s.", rawType));
         }
+    }
+
+    private CurrentItem<?> wrapAdapted(Optional<JsonbAdapterInfo> adapterInfoOptional, CurrentItem<?> item) {
+        final Optional<CurrentItem<?>> adaptedItemOptional = adapterInfoOptional.map(adapterInfo -> new AdaptedObjectItemDecorator<>(item, adapterInfo));
+        return adaptedItemOptional.orElse(item);
     }
 
     private Type resolveRuntimeType() {
@@ -184,11 +209,11 @@ public class CurrentItemBuilder {
      * Instance is not created in case of array items, because, we don't know how long it should be
      * till parser ends parsing.
      */
-    private CurrentItem<?> createArrayItem() {
+    private AbstractItem<?> createArrayItem() {
         return new ArrayItem(this);
     }
 
-    private CurrentItem<?> createCollectionItem() {
+    private AbstractItem<?> createCollectionItem() {
         Class<?> rawType = ReflectionUtils.getRawType(runtimeType);
         assert Collection.class.isAssignableFrom(rawType);
 
@@ -203,28 +228,15 @@ public class CurrentItemBuilder {
                 this.instance = new ArrayDeque<>();
             }
         } else {
-            instance = createInstance(rawType);
+            instance = ReflectionUtils.createNoArgConstructorInstance(rawType);
         }
         return new CollectionItem<>(this);
     }
 
-    private CurrentItem<?> createMapItem() {
+    private AbstractItem<?> createMapItem() {
         Class<?> rawType = ReflectionUtils.getRawType(runtimeType);
-        this.instance = rawType.isInterface() ? new HashMap<>() : createInstance(rawType);
+        this.instance = rawType.isInterface() ? new HashMap<>() : ReflectionUtils.createNoArgConstructorInstance(rawType);
         return new MapItem(this);
-    }
-
-    @SuppressWarnings("unchecked")
-    private Object createInstance(Class clazz) {
-        try {
-            Constructor<?> declaredConstructor = clazz.getDeclaredConstructor();
-            declaredConstructor.setAccessible(true);
-            return declaredConstructor.newInstance();
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw new JsonbException(Messages.getMessage(MessageKeys.CANT_CREATE_INSTANCE), e);
-        } catch (NoSuchMethodException e) {
-            throw new JsonbException(Messages.getMessage(MessageKeys.NO_DEFAULT_CONSTRUCTOR), e);
-        }
     }
 
     private Type unwrapAnonymous(Type type) {
@@ -282,5 +294,16 @@ public class CurrentItemBuilder {
      */
     public ClassModel getClassModel() {
         return classModel;
+    }
+
+    /**
+     * If item type is adapted for unmarshalling, provide adapter to adapt unmarshalled instance later.
+     * After adapted type is populated from JSON and is ready to set into wrapper object, use matching adapter to convert into
+     * field type before appending.
+     *
+     * @return true if item result should be adapterInfo before appending to wrapper object
+     */
+    public JsonbAdapterInfo getAdapterInfo() {
+        return adapterInfo;
     }
 }

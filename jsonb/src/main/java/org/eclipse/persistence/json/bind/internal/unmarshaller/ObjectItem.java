@@ -12,18 +12,24 @@
  ******************************************************************************/
 package org.eclipse.persistence.json.bind.internal.unmarshaller;
 
+import org.eclipse.persistence.json.bind.internal.ReflectionUtils;
+import org.eclipse.persistence.json.bind.internal.adapter.AdapterMatcher;
+import org.eclipse.persistence.json.bind.internal.adapter.JsonbAdapterInfo;
 import org.eclipse.persistence.json.bind.internal.properties.MessageKeys;
 import org.eclipse.persistence.json.bind.internal.properties.Messages;
 import org.eclipse.persistence.json.bind.model.PropertyModel;
 
 import javax.json.bind.JsonbException;
+import javax.json.bind.adapter.JsonbAdapter;
+import java.lang.reflect.Type;
+import java.util.Optional;
 
 /**
  * Item for handling all types of unknown objects by reflection, parsing their fields, according to json key name.
  *
  * @author Roman Grigoriadi
  */
-class ObjectItem<T> extends CurrentItem<T> {
+class ObjectItem<T> extends AbstractItem<T> {
 
 
     /**
@@ -37,10 +43,11 @@ class ObjectItem<T> extends CurrentItem<T> {
     /**
      * Set populated instance of current object to its unfinished wrapper,
      * pushed to stack queue for resume parse later.
+     * @param abstractItem
      */
     @Override
-    public void appendItem(CurrentItem currentItem) {
-        currentItem.getWrapperPropertyModel().setValue(getInstance(), currentItem.getInstance());
+    public void appendItem(CurrentItem<?> abstractItem) {
+        abstractItem.getWrapperPropertyModel().setValue(getInstance(), abstractItem.getInstance());
     }
 
     /**
@@ -51,6 +58,7 @@ class ObjectItem<T> extends CurrentItem<T> {
      * @param jsonValueType Type of json value. Used when field to bind value is of type object and value type cannot be determined. not null
      */
     @Override
+    @SuppressWarnings("unchecked")
     public void appendValue(String key, String value, JsonValueType jsonValueType) {
         //convert value by field type
         PropertyModel valuePropertyModel = getClassModel().findPropertyModelByJsonReadName(key);
@@ -62,11 +70,28 @@ class ObjectItem<T> extends CurrentItem<T> {
             valuePropertyModel.setValue(getInstance(), null);
             return;
         }
-        Class<?> valueType = resolveValueType(valuePropertyModel.getPropertyType(), jsonValueType);
-        if (!getTypeConverter().supportsFromJson(valueType)) {
-            throw new JsonbException(Messages.getMessage(MessageKeys.CANT_CONVERT_JSON_VALUE, valuePropertyModel.getPropertyType()));
+        Type valueType = resolveValueType(valuePropertyModel.getPropertyType(), jsonValueType);
+        Class<?> valueClass = ReflectionUtils.getRawType(valueType);
+        final Optional<JsonbAdapterInfo> adapterInfoOptional = AdapterMatcher.getInstance().getAdapterInfo(valueType, valuePropertyModel);
+        if (adapterInfoOptional.isPresent()) {
+            JsonbAdapterInfo adapterInfo = adapterInfoOptional.get();
+            final Class<?> rawAdaptTo = ReflectionUtils.getRawType(adapterInfo.getToType());
+            Object toAdapt = getTypeConverter().supportsFromJson(rawAdaptTo) ?
+                    getTypeConverter().fromJson(value, rawAdaptTo) : value;
+            Object adapted = null;
+            try {
+                adapted = ((JsonbAdapter<?, Object>)adapterInfo.getAdapter()).adaptTo(toAdapt);
+            } catch (Exception e) {
+                throw new JsonbException(Messages.getMessage(MessageKeys.ADAPTER_EXCEPTION, e));
+            }
+            valuePropertyModel.setValue(getInstance(), adapted);
+            return;
         }
-        Object converted = getTypeConverter().fromJson(value, valueType);
+
+        if (!getTypeConverter().supportsFromJson(valueClass)) {
+            throw new JsonbException("Can't convert JSON value into: " + valuePropertyModel.getPropertyType());
+        }
+        Object converted = getTypeConverter().fromJson(value, valueClass);
         valuePropertyModel.setValue(getInstance(), converted);
     }
 

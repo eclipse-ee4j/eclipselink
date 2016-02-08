@@ -13,9 +13,14 @@
 
 package org.eclipse.persistence.json.bind.internal;
 
+import org.eclipse.persistence.json.bind.internal.adapter.AdapterMatcher;
+import org.eclipse.persistence.json.bind.internal.adapter.JsonbAdapterInfo;
+import org.eclipse.persistence.json.bind.internal.properties.MessageKeys;
+import org.eclipse.persistence.json.bind.internal.properties.Messages;
 import org.eclipse.persistence.json.bind.model.Property;
 
 import javax.json.bind.JsonbException;
+import javax.json.bind.adapter.JsonbAdapter;
 import javax.json.bind.annotation.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -23,6 +28,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Introspects configuration on classes and their properties by reading annotations.
@@ -80,6 +86,25 @@ public class AnnotationIntrospector {
     }
 
     /**
+     * Checks for {@link JsonbAdapter} on a property.
+     * @param property property not null
+     * @return adapter info
+     */
+    public JsonbAdapterInfo getAdapter(Property property) {
+        Objects.requireNonNull(property);
+        Optional<JsonbTypeAdapter> annotation = getAnnotationFromProperty(JsonbTypeAdapter.class, property);
+        final Optional<JsonbAdapterInfo> adapterInfoOptional = annotation.map(annot -> {
+            final JsonbAdapter adapterInstance = ReflectionUtils.createNoArgConstructorInstance(annot.value());
+            final JsonbAdapterInfo adapterInfo = AdapterMatcher.getInstance().introspectAdapterInfo(adapterInstance);
+            if ((property.getPropertyType() instanceof Class<?>) &&
+                    ReflectionUtils.getRawType(property.getPropertyType()) != ReflectionUtils.getRawType(adapterInfo.getFromType())) {
+                throw new JsonbException(Messages.getMessage(MessageKeys.ADAPTER_INCOMPATIBLE, adapterInfo.getFromType(), property.getPropertyType()));
+            }
+            return adapterInfo;
+        });
+        return adapterInfoOptional.orElse(null);
+    }
+    /**
      * Checks if property is nillable.
      * Looks for {@link JsonbProperty} nillable attribute only.
      * JsonbNillable is checked only for ClassModels.
@@ -90,8 +115,8 @@ public class AnnotationIntrospector {
     public boolean isPropertyNillable(Property property) {
         Objects.requireNonNull(property);
 
-        final JsonbProperty jsonbProperty = getAnnotationFromProperty(JsonbProperty.class, property);
-        return jsonbProperty != null && jsonbProperty.nillable();
+        final Optional<JsonbProperty> jsonbProperty = getAnnotationFromProperty(JsonbProperty.class, property);
+        return jsonbProperty.isPresent() && jsonbProperty.get().nillable();
 
     }
 
@@ -125,11 +150,11 @@ public class AnnotationIntrospector {
      */
     public boolean isTransient(Property property) {
         Objects.requireNonNull(property);
-        final JsonbTransient jsonbTransient = getAnnotationFromProperty(JsonbTransient.class, property);
-        if (jsonbTransient != null) {
+        final Optional<JsonbTransient> jsonbTransient = getAnnotationFromProperty(JsonbTransient.class, property);
+        if (jsonbTransient.isPresent()) {
             final Class[] FORBIDDEN_ANNOTATIONS = new Class[]{JsonbProperty.class, JsonbNillable.class, JsonbCreator.class, JsonbDateFormat.class, JsonbNumberFormat.class, JsonbPropertyOrder.class, JsonbVisibility.class};
             for (Class annotClass : FORBIDDEN_ANNOTATIONS) {
-                if (getAnnotationFromProperty(annotClass, property) != null) {
+                if (getAnnotationFromProperty(annotClass, property).isPresent()) {
                     throw new JsonbException(String.format("JsonbTransient annotation collides with %s for property %s", annotClass, property.getName()));
                 }
             }
@@ -148,23 +173,23 @@ public class AnnotationIntrospector {
      * @param <T> Annotation type
      * @return Annotation if found, null otherwise
      */
-    private <T extends Annotation> T getAnnotationFromProperty(Class<T> annotationClass, Property property) {
+    private <T extends Annotation> Optional<T> getAnnotationFromProperty(Class<T> annotationClass, Property property) {
         T fieldAnnotation = getFieldAnnotation(annotationClass, property.getField());
         if (fieldAnnotation != null) {
-            return fieldAnnotation;
+            return Optional.of(fieldAnnotation);
         }
 
         T getterAnnotation = getMethodAnnotation(annotationClass, property.getGetter());
         if (getterAnnotation != null) {
-            return getterAnnotation;
+            return Optional.of(getterAnnotation);
         }
 
         T setterAnnotation = getMethodAnnotation(annotationClass, property.getSetter());
         if (setterAnnotation != null) {
-            return setterAnnotation;
+            return Optional.of(setterAnnotation);
         }
 
-        return null;
+        return Optional.empty();
     }
 
 

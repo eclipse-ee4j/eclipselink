@@ -18,6 +18,8 @@ import org.junit.Test;
 import javax.json.bind.Jsonb;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
@@ -98,11 +100,11 @@ public class BasicTest {
     }
 
     @Test
-    public void testMarshallAppendable() {
+    public void testMarshallWriter() {
         final Jsonb jsonb = (new JsonBindingBuilder()).build();
-        final Appendable appendable = new StringBuilder();
-        jsonb.toJson(5L, appendable);
-        assertEquals("5", appendable.toString());
+        Writer writer = new StringWriter();
+        jsonb.toJson(5L, writer);
+        assertEquals("5", writer.toString());
     }
 
     @Test

@@ -27,6 +27,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.logging.Logger;
 
 import static junit.framework.TestCase.assertEquals;
 
@@ -43,6 +44,8 @@ import static junit.framework.TestCase.assertEquals;
  * @author Roman Grigoriadi
  */
 public class MultiTenancyTest extends CustomerTest {
+
+    private static Logger logger = Logger.getLogger(MultiTenancyTest.class.getName());
 
     /**
      * Expected JSON for defaultJsonBinding instance, default key names.
@@ -177,7 +180,7 @@ public class MultiTenancyTest extends CustomerTest {
                 //actual check, produced json by marshaller is equal to expected by configuration, which triggered marshalling task.
                 assertEquals(marshallerResult.getConfigurationType().getExpectedJson(), marshallerResult.getProducedJson());
                 resultsCheckedCount.incrementAndGet();
-                System.out.println(String.format("Job %-32s dispatched by thread %-16s completed successfully.", result.getJobId(), result.getDispatcherThreadName()));
+                logger.fine(String.format("Job %-32s dispatched by thread %-16s completed successfully.", result.getJobId(), result.getDispatcherThreadName()));
             }
         });
 
@@ -188,7 +191,7 @@ public class MultiTenancyTest extends CustomerTest {
                 //if JsonbConfig is stale, key names will not match, and this assert will not pass.
                 assertCustomerValues(result.getResult(), "MULTI_TENANCY_TEST");
                 resultsCheckedCount.incrementAndGet();
-                System.out.println(String.format("Job %-32s dispatched by thread %-16s completed successfully.", result.getJobId(), result.getDispatcherThreadName()));
+                logger.fine(String.format("Job %-32s dispatched by thread %-16s completed successfully.", result.getJobId(), result.getDispatcherThreadName()));
             }
         });
     }

@@ -78,7 +78,7 @@ public class VariableTypeInheritanceSearch {
         if (parameterizedType == null) {
             return null;
         }
-        Type matchedGenericType = searchBounds(parameterizedType, typeVar);
+        Type matchedGenericType = searchRuntimeTypeArgument(parameterizedType, typeVar);
         if (matchedGenericType != null) {
             return matchedGenericType;
         }
@@ -91,14 +91,17 @@ public class VariableTypeInheritanceSearch {
             return typeVar;
         }
         ParameterizedType parametrizedSubclass = parameterizedSubclasses.pop();
-        return searchBounds(parametrizedSubclass, typeVar);
+        return searchRuntimeTypeArgument(parametrizedSubclass, typeVar);
     }
 
-    private Type searchBounds(ParameterizedType parameterizedType, TypeVariable<?> typeVar) {
-        TypeVariable[] bounds = ((Class) parameterizedType.getRawType()).getTypeParameters();
+    private Type searchRuntimeTypeArgument(ParameterizedType runtimeType, TypeVariable<?> typeVar) {
+        if (ReflectionUtils.getRawType(runtimeType) != typeVar.getGenericDeclaration()) {
+            return null;
+        }
+        TypeVariable[] bounds = typeVar.getGenericDeclaration().getTypeParameters();
         for (int i = 0; i < bounds.length; i++) {
             if (bounds[i].equals(typeVar)) {
-                Type matchedGenericType = parameterizedType.getActualTypeArguments()[i];
+                Type matchedGenericType = runtimeType.getActualTypeArguments()[i];
                 //Propagated generic types to another generic classes
                 if (matchedGenericType instanceof TypeVariable<?>) {
                     return checkSubclassRuntimeInfo((TypeVariable) matchedGenericType);
