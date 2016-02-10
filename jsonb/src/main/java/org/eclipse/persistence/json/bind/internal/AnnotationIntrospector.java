@@ -22,6 +22,7 @@ import org.eclipse.persistence.json.bind.model.Property;
 import javax.json.bind.JsonbException;
 import javax.json.bind.adapter.JsonbAdapter;
 import javax.json.bind.annotation.*;
+import javax.lang.model.type.NullType;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -248,5 +249,18 @@ public class AnnotationIntrospector {
             }
             collectFromInterfaces(annotationClass, interfaceClass, collectedAnnotations);
         }
+    }
+
+    /**
+     * Returns JsonbPropertyOrder annotation if class has one
+     * @param clazz Class to be checked
+     * @return
+     */
+    public Optional<JsonbPropertyOrder> getJsonbPropertyOrderAnnotation(Class<?> clazz) {
+        JsonbPropertyOrder jsonbPropertyOrder = clazz.getAnnotation(JsonbPropertyOrder.class);
+        if (jsonbPropertyOrder == null){
+            return Optional.empty();
+        }
+        return Optional.of(jsonbPropertyOrder);
     }
 }

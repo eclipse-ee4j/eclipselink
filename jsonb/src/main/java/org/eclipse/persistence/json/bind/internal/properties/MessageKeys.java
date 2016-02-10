@@ -42,7 +42,8 @@ public enum MessageKeys {
     ADAPTER_EXCEPTION("adapterException"),
     ADAPTER_FOUND("adapterFound"),
     ADAPTER_INCOMPATIBLE("adapterIncompatible"),
-    ;
+    PROPERTY_ORDER("propertyOrder");
+
     /** Message bundle key. */
     final String key;
 

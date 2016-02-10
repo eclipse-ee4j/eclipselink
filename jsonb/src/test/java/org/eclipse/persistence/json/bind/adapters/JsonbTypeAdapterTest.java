@@ -93,7 +93,7 @@ public class JsonbTypeAdapterTest {
         annotatedPojo.tBox = new GenericBox<>("T_BOX", 110);
         annotatedPojo.xBox = new GenericBox<>("X_BOX", "STR");
         String marshalledJson = jsonb.toJson(annotatedPojo, new AnnotatedPojo<Integer, String>() {}.getClass());
-        assertEquals("{\"tBox\":{\"crateStrField\":\"T_BOX\",\"adaptedT\":{\"x\":[\"110\"]}},\"xBox\":{\"strField\":\"X_BOX\",\"x\":\"STR\"}}", marshalledJson);
+        assertEquals("{\"tBox\":{\"adaptedT\":{\"x\":[\"110\"]},\"crateStrField\":\"T_BOX\"},\"xBox\":{\"strField\":\"X_BOX\",\"x\":\"STR\"}}", marshalledJson);
 
         AnnotatedPojo<Integer,String> result = jsonb.fromJson("{\"tBox\":{\"crateStrField\":\"T_BOX\",\"adaptedT\":{\"x\":[\"110\"]}},\"xBox\":{\"strField\":\"X_BOX\",\"x\":\"STR\"}}", new AnnotatedPojo<Integer,String>(){}.getClass());
         assertEquals("T_BOX", result.tBox.getStrField());

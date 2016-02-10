@@ -14,14 +14,19 @@ package org.eclipse.persistence.json.bind.internal;
 
 import org.eclipse.persistence.json.bind.internal.adapter.AdapterMatcher;
 import org.eclipse.persistence.json.bind.internal.adapter.JsonbAdapterInfo;
+import org.eclipse.persistence.json.bind.internal.internalOrdering.*;
 import org.eclipse.persistence.json.bind.internal.naming.PropertyNamingStrategy;
 import org.eclipse.persistence.json.bind.internal.properties.MessageKeys;
 import org.eclipse.persistence.json.bind.internal.properties.Messages;
+import org.eclipse.persistence.json.bind.model.ClassModel;
 import org.eclipse.persistence.json.bind.model.PropertyModel;
 
 import javax.json.bind.JsonbConfig;
 import javax.json.bind.JsonbException;
 import javax.json.bind.adapter.JsonbAdapter;
+import javax.json.bind.JsonbException;
+import javax.json.bind.annotation.JsonbPropertyOrder;
+import javax.json.bind.config.PropertyOrderStrategy;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Array;
@@ -53,6 +58,13 @@ public class Marshaller extends JsonTextProcessor {
     private Optional<RuntimeTypeInfo> runtimeTypeInfo;
 
     private Stack<PropertyModel> propertyModelStack = new Stack<>();
+    private static final HashMap<String, PropOrderStrategy> orderStrategies = new HashMap<>();
+
+    static {
+        orderStrategies.put(PropertyOrderStrategy.LEXICOGRAPHICAL, new LexicographicalOrderStrategy());
+        orderStrategies.put(PropertyOrderStrategy.REVERSE, new ReverseOrderStrategy());
+        orderStrategies.put(PropertyOrderStrategy.ANY, new AnyOrderStrategy());
+    }
 
     public Marshaller(MappingContext mappingContext, JsonbConfig jsonbConfig) {
         super(mappingContext, jsonbConfig);
@@ -162,8 +174,22 @@ public class Marshaller extends JsonTextProcessor {
         // Deal with inheritance
         final List<PropertyModel> allProperties = new LinkedList<>();
         for (Class clazz = object.getClass(); clazz.getSuperclass() != null; clazz = clazz.getSuperclass()) {
-            final List<PropertyModel> properties = new ArrayList<>(mappingContext.getOrCreateClassModel(clazz).getProperties().values());
-            List<PropertyModel> filteredAndSorted = properties.stream().filter(propertyModel -> !allProperties.contains(propertyModel)).sorted().collect(toList());
+            ClassModel classModel = JsonbContext.getMappingContext().getOrCreateClassModel(clazz);
+            final List<PropertyModel> properties = new ArrayList<>(classModel.getProperties().values());
+            Optional<JsonbPropertyOrder> jsonbPropertyOrder = AnnotationIntrospector.getInstance().getJsonbPropertyOrderAnnotation(clazz);
+            List<PropertyModel> filteredAndSorted;
+            //Check if the class has JsonbPropertyOrder annotation defined
+            if (!jsonbPropertyOrder.isPresent()) {
+                //Sorting fields according to selected or default order
+                String propertyOrderStrategy = JsonbContext.getConfig().getProperty(JsonbConfig.PROPERTY_ORDER_STRATEGY).isPresent() ? (String) JsonbContext.getConfig().getProperty(JsonbConfig.PROPERTY_ORDER_STRATEGY).get() : PropertyOrderStrategy.LEXICOGRAPHICAL;
+                if (!orderStrategies.containsKey(propertyOrderStrategy)) {
+                    throw new JsonbException(Messages.getMessage(MessageKeys.PROPERTY_ORDER, propertyOrderStrategy));
+                }
+                filteredAndSorted = orderStrategies.get(propertyOrderStrategy).sortProperties(properties);
+            } else {
+                filteredAndSorted = new AnnotationOrderStrategy(jsonbPropertyOrder.get().value()).sortProperties(properties);
+            }
+            filteredAndSorted = filteredAndSorted.stream().filter(propertyModel -> !allProperties.contains(propertyModel)).collect(toList());
             allProperties.addAll(0, filteredAndSorted);
         }
 

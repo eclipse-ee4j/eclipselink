@@ -19,6 +19,8 @@ import org.eclipse.persistence.json.bind.internal.unmarshaller.EmbeddedItem;
 import org.eclipse.persistence.json.bind.internal.unmarshaller.ResolvedParameterizedType;
 
 import javax.json.bind.JsonbException;
+import javax.json.bind.annotation.JsonbPropertyOrder;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.util.Arrays;
 import java.util.Objects;
