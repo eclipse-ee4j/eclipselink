@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -95,6 +95,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
     protected boolean isAggregate;
     protected Object oldKey;
     protected Object newKey;
+    protected AbstractRecord protectedForeignKeys;
 
     /** This member variable holds the reference to the parent UnitOfWork Change Set **/
     protected transient UnitOfWorkChangeSet unitOfWorkChangeSet;
@@ -825,6 +826,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
         this.changes = (List)stream.readObject();
         this.oldKey = stream.readObject();
         this.newKey = stream.readObject();
+        this.protectedForeignKeys = (AbstractRecord)stream.readObject();
     }
 
     /**
@@ -1115,6 +1117,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
         stream.writeObject(this.changes);
         stream.writeObject(this.oldKey);
         stream.writeObject(this.newKey);
+        stream.writeObject(this.protectedForeignKeys);
     }
 
     /**
@@ -1353,6 +1356,18 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
 
     public void setIsInvalid(boolean isInvalid) {
         this.isInvalid = isInvalid;
+    }
+    
+    public AbstractRecord getProtectedForeignKeys() {
+        return this.protectedForeignKeys;
+    }
+    
+    public void setProtectedForeignKeys(AbstractRecord protectedForeignKeys) {
+        this.protectedForeignKeys = protectedForeignKeys;
+    }
+    
+    public boolean hasProtectedForeignKeys() {
+        return (this.protectedForeignKeys != null) && (this.protectedForeignKeys.size() > 0);
     }
 
 }
