@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -20,12 +20,12 @@ import java.util.Collection;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import org.eclipse.persistence.tools.workbench.utility.Classpath;
+import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
-import org.eclipse.persistence.tools.workbench.utility.Classpath;
-import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
 
 public class ClasspathTests extends TestCase {
     private static final String JAVA_HOME = System.getProperty("java.home");
@@ -236,7 +236,7 @@ public class ClasspathTests extends TestCase {
     public void testJavaExtensionClasspathEntries() {
         char sep = File.separatorChar;
         String jdk = System.getProperty("java.version");
-        if (jdk.startsWith("1.4") || jdk.startsWith("1.5") || jdk.startsWith("1.6")) {
+        if (jdk.startsWith("1.4") || jdk.startsWith("1.5") || jdk.startsWith("1.6") || jdk.startsWith("1.7") || jdk.startsWith("1.8")) {
             Collection jarNames = new ArrayList();
             Classpath.Entry[] entries = Classpath.javaExtensionClasspath().getEntries();
             for (int i = 0; i < entries.length; i++) {
@@ -251,7 +251,7 @@ public class ClasspathTests extends TestCase {
 
     public void testJavaExtensionClassNames() {
         String jdk = System.getProperty("java.version");
-        if (jdk.startsWith("1.4") || jdk.startsWith("1.5") || jdk.startsWith("1.6")) {
+        if (jdk.startsWith("1.4") || jdk.startsWith("1.5") || jdk.startsWith("1.6") || jdk.startsWith("1.7") || jdk.startsWith("1.8")) {
             String className = "sun.net.spi.nameservice.dns.DNSNameService";
             assertTrue("jdk 1.4.x standard extension class missing: " + className,
                     CollectionTools.contains(Classpath.javaExtensionClasspath().classNames(), className));

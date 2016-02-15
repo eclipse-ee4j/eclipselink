@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringReader;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,10 +63,12 @@ public class Method extends Member {
         super(stream, pool);
     }
 
+    @Override
     short visibleAccessFlagsMask() {
         return VISIBLE_ACCESS_FLAGS_MASK;
     }
 
+    @Override
     public void printDeclarationOn(PrintWriter writer) {
         if (this.isStaticInitializationMethod()) {
             writer.print("<static initialization>");
@@ -190,6 +193,10 @@ public class Method extends Member {
         return (this.getAccessFlags() & ACC_BRIDGE) != 0;
     }
 
+    public boolean isDefault() {
+        return this.classFile().isInterface() && ((getAccessFlags() & (Modifier.ABSTRACT | Modifier.PUBLIC | Modifier.STATIC)) == Modifier.PUBLIC);
+    }
+
     /**
      * Check a bit that cannot (yet?) be interpreted by the
      * Modifier static methods. This bit indicates the method
@@ -200,6 +207,7 @@ public class Method extends Member {
         return (this.getAccessFlags() & ACC_VARARGS) != 0;
     }
 
+    @Override
     public void accept(Visitor visitor) {
         visitor.visit(this);
         this.getReturnDescriptor().accept(visitor);

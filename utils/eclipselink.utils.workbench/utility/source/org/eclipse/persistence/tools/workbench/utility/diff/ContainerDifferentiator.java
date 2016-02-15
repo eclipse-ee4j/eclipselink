@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -14,8 +14,8 @@ package org.eclipse.persistence.tools.workbench.utility.diff;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.IdentityHashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.eclipse.persistence.tools.workbench.utility.ClassTools;
@@ -109,6 +109,7 @@ public class ContainerDifferentiator
     /**
      * @see Differentiator#diff(Object, Object)
      */
+    @Override
     public Diff diff(Object object1, Object object2) {
         return this.diff(object1, object2, true);
     }
@@ -116,6 +117,7 @@ public class ContainerDifferentiator
     /**
      * @see Differentiator#keyDiff(Object, Object)
      */
+    @Override
     public Diff keyDiff(Object object1, Object object2) {
         return this.diff(object1, object2, false);
     }
@@ -191,7 +193,7 @@ public class ContainerDifferentiator
     }
 
     private Map buildCounters(Object container) {
-        Map counters = new IdentityHashMap(this.size(container));
+        Map counters = new LinkedHashMap(this.size(container));
         for (Iterator stream = this.iterator(container); stream.hasNext(); ) {
             Object element = stream.next();
             Counter counter = (Counter) counters.get(element);
@@ -212,6 +214,7 @@ public class ContainerDifferentiator
      * this will probably never be called, but we'll try 'false' for now
      * @see Differentiator#comparesValueObjects()
      */
+    @Override
     public boolean comparesValueObjects() {
         return false;
     }
@@ -267,6 +270,7 @@ public class ContainerDifferentiator
     /**
      * @see Object#toString()
      */
+    @Override
     public String toString() {
         return StringTools.buildToStringFor(this, this.elementDifferentiator);
     }
@@ -307,18 +311,23 @@ public class ContainerDifferentiator
 
         Adapter INVALID_INSTANCE =
             new Adapter() {
+                @Override
                 public boolean diffIsFatal(Object object1, Object object2) {
                     throw new UnsupportedOperationException();
                 }
+                @Override
                 public Class containerClass() {
                     throw new UnsupportedOperationException();
                 }
+                @Override
                 public int size(Object container) {
                     throw new UnsupportedOperationException();
                 }
+                @Override
                 public Iterator iterator(Object container) {
                     throw new UnsupportedOperationException();
                 }
+                @Override
                 public String toString() {
                     return "InvalidAdapter";
                 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -19,10 +19,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 import java.util.prefs.Preferences;
-
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
 
 import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.sessions.Project;
@@ -54,6 +50,10 @@ import org.eclipse.persistence.tools.workbench.utility.Classpath;
 import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
 import org.eclipse.persistence.tools.workbench.utility.io.FileTools;
 
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+
 
 public class ExportModelJavaSourceTests
     extends TestCase
@@ -74,12 +74,14 @@ public class ExportModelJavaSourceTests
 
     // **************** test set up, tear down stuff **************************
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         this.tempDirectory = FileTools.emptyTemporaryDirectory(ClassTools.shortClassNameForObject(this) + "." + this.getName());
         this.project = this.buildProject();
     }
 
+    @Override
     protected void tearDown() throws Exception {
         TestTools.clear(this);
         super.tearDown();
@@ -218,66 +220,84 @@ public class ExportModelJavaSourceTests
 
     private ApplicationContext buildApplicationContext() {
         return new ApplicationContext() {
+            @Override
             public Application getApplication() {
                 return new Application() {
+                    @Override
                     public String getFullProductName() {
                         return null;
                     }
+                    @Override
                     public String getProductName() {
                         return null;
                     }
+                    @Override
                     public String getShortProductName() {
                         return null;
                     }
+                    @Override
                     public String getVersionNumber() {
                         return null;
                     }
+                    @Override
                     public String getReleaseDesignation() {
                         return null;
                     }
+                    @Override
                     public String getFullProductNameAndVersionNumber() {
                         return null;
                     }
+                    @Override
                     public String getBuildNumber() {
                         return null;
                     }
+                    @Override
                     public boolean isDevelopmentMode() {
                         return false;
                     }
+                    @Override
                     public boolean isFirstExecution() {
                         return false;
                     }
                 };
             }
 
+            @Override
             public Preferences getPreferences() {
                 return null;
             }
 
+            @Override
             public ResourceRepository getResourceRepository() {
                 return new DefaultResourceRepository(MappingsPluginResourceBundle.class);
             }
 
+            @Override
             public NodeManager getNodeManager() {
                 return null;
             }
 
+            @Override
             public HelpManager getHelpManager() {
                 return null;
             }
 
+            @Override
             public ApplicationContext buildRedirectedPreferencesContext(String path) {
                 return null;
             }
 
+            @Override
             public ApplicationContext buildExpandedResourceRepositoryContext(Class resourceBundleClass, IconResourceFileNameMap iconResourceFileNameMap) {
                 return null;
             }
 
+            @Override
             public ApplicationContext buildExpandedResourceRepositoryContext(IconResourceFileNameMap iconResourceFileNameMap) {
                 return null;
             }
 
+            @Override
             public ApplicationContext buildExpandedResourceRepositoryContext(Class resourceBundleClass) {
                 return null;
             }
@@ -334,6 +354,7 @@ public class ExportModelJavaSourceTests
         classpathEntries.add(this.tempDirectory.getAbsolutePath());
         classpathEntries.add(Classpath.locationFor(Project.class));
         MWLoginSpec loginSpec = this.project.getDatabase().getDeploymentLoginSpec();
+        classpathEntries.add(Classpath.locationFor(Class.forName(loginSpec.getDriverClassName())));
         for (Iterator stream = loginSpec.fullyQualifiedDriverClasspathFiles(); stream.hasNext(); ) {
             File file = (File) stream.next();
             classpathEntries.add(file.getAbsolutePath());

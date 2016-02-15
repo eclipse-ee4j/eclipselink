@@ -1,9 +1,7 @@
 package foo;
 
-import java.math.BigDecimal;
 import java.util.Vector;
 
-import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.UnitOfWork;
@@ -73,9 +71,9 @@ public class MethodAccessingEndToEndClient {
 
         // Test direct field accessors
 
-        employee.setId(new BigDecimal(10));
-        homePhone.setId(new BigDecimal(20));
-        workPhone.setId(new BigDecimal(30));
+        employee.setId(10);
+        homePhone.setId(20);
+        workPhone.setId(30);
 
         String employeeName = "George \"Dubya\" Bush";
         employee.setName(employeeName);

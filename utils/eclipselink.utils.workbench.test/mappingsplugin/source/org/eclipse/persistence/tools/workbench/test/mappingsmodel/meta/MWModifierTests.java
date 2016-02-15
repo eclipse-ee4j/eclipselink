@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,19 +12,19 @@
 ******************************************************************************/
 package org.eclipse.persistence.tools.workbench.test.mappingsmodel.meta;
 
+import org.eclipse.persistence.tools.workbench.mappingsmodel.meta.MWClass;
+import org.eclipse.persistence.tools.workbench.mappingsmodel.meta.MWModifier;
+import org.eclipse.persistence.tools.workbench.mappingsmodel.project.relational.MWRelationalProject;
+import org.eclipse.persistence.tools.workbench.mappingsmodel.spi.meta.ExternalClassNotFoundException;
 import org.eclipse.persistence.tools.workbench.test.mappingsmodel.MappingsModelTestTools;
 import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
+import org.eclipse.persistence.tools.workbench.uitools.Displayable;
+import org.eclipse.persistence.tools.workbench.utility.Bag;
+import org.eclipse.persistence.tools.workbench.utility.Classpath;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import org.eclipse.persistence.tools.workbench.mappingsmodel.spi.meta.ExternalClassNotFoundException;
-import org.eclipse.persistence.tools.workbench.mappingsmodel.meta.MWClass;
-import org.eclipse.persistence.tools.workbench.mappingsmodel.meta.MWModifier;
-import org.eclipse.persistence.tools.workbench.mappingsmodel.project.relational.MWRelationalProject;
-import org.eclipse.persistence.tools.workbench.uitools.Displayable;
-import org.eclipse.persistence.tools.workbench.utility.Bag;
-import org.eclipse.persistence.tools.workbench.utility.Classpath;
 
 
 public class MWModifierTests extends TestCase {
@@ -32,14 +32,6 @@ public class MWModifierTests extends TestCase {
     private MWClass type;
     private MWModifier modifier;
     private volatile Object volatileField;
-
-    private static final boolean JDK14 = jdkIsVersion("1.4");
-    private static final boolean JDK15 = jdkIsVersion("1.5");
-    private static final boolean JDK16 = jdkIsVersion("1.6");
-
-    private static boolean jdkIsVersion(String version) {
-        return System.getProperty("java.version").indexOf(version) != -1;
-    }
 
     public static Test suite() {
         return new TestSuite(MWModifierTests.class);
@@ -49,6 +41,7 @@ public class MWModifierTests extends TestCase {
         super(name);
     }
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         this.project = this.buildProject();
@@ -63,6 +56,7 @@ public class MWModifierTests extends TestCase {
         return new MWRelationalProject(this.getClass().getName(), MappingsModelTestTools.buildSPIManager(), null);        // we don't need a database platform
     }
 
+    @Override
     protected void tearDown() throws Exception {
         TestTools.clear(this);
         super.tearDown();
@@ -96,23 +90,11 @@ public class MWModifierTests extends TestCase {
         this.verifyMethodModifierDisplayString(java.lang.String.class, "valueOf(java.lang.Object)", "public static");
         this.verifyMethodModifierDisplayString(java.lang.Thread.class, "interrupt0()", "private native");
         this.verifyMethodModifierDisplayString(java.util.Vector.class, "add(java.lang.Object)", "public synchronized");
-        if (JDK16 || JDK15) {
-            this.verifyMethodModifierDisplayString(java.util.Vector.class, "removeRange(int, int)", "protected synchronized");
-        } else {
-            this.verifyMethodModifierDisplayString(java.util.Vector.class, "removeRange(int, int)", "protected");
-        }
+        this.verifyMethodModifierDisplayString(java.util.Vector.class, "removeRange(int, int)", "protected synchronized");
 
-        if (JDK16 || JDK15) {
-            this.verifyMethodModifierDisplayString(java.lang.Math.class, "sin(double)", "public static");
-        } else {
-            this.verifyMethodModifierDisplayString(java.lang.Math.class, "sin(double)", "public static strictfp");
-        }
+        this.verifyMethodModifierDisplayString(java.lang.Math.class, "sin(double)", "public static");
 
-        if (JDK16 || JDK15 || JDK14) {
-            this.verifyAttributeModifierDisplayString(java.util.HashMap.class, "size", "transient");
-        } else {
-            this.verifyAttributeModifierDisplayString(java.util.HashMap.class, "count", "private transient");
-        }
+        this.verifyAttributeModifierDisplayString(java.util.HashMap.class, "size", "transient");
 
         this.volatileField = "something to keep the compiler from complaining...";
         assertEquals(this.volatileField, this.volatileField);

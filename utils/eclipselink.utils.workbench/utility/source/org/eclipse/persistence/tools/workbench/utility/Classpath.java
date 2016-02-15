@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -341,6 +341,9 @@ public class Classpath
             // if the class is in a directory, the URL will look something like this:
             //     file:/C:/dev/main/mwdev/class/oracle/toplink/workbench/utility/ClasspathTools.class
             return path.substring(0, path.length() - convertToClassFileName(javaClass).length() - 1);
+        } else if ("jrt".equals(protocol)) {
+            // jdk9 - jrt:/java.base/java/lang/Object.class
+            return path.substring(0, path.indexOf('/', 5));
         }
 
         throw new IllegalStateException(url.toString());
@@ -357,7 +360,9 @@ public class Classpath
      * Return the directory names used by the Java Extension Mechanism.
      */
     public static String[] javaExtensionDirectoryNames() {
-        return System.getProperty("java.ext.dirs").split(File.pathSeparator);
+        //jdk 9, see http://openjdk.java.net/jeps/220
+        String extDirs = System.getProperty("java.ext.dirs");
+        return extDirs != null ? extDirs.split(File.pathSeparator) : new String[0];
     }
 
 
@@ -385,6 +390,7 @@ public class Classpath
 
     private static FileFilter jarFileFilter() {
         return new FileFilter() {
+            @Override
             public boolean accept(File file) {
                 return FileTools.extension(file.getName()).toLowerCase().equals(".jar");
             }
@@ -580,6 +586,7 @@ public class Classpath
 
     private Iterator entryClassNamesStreams(final Filter filter) {
         return new TransformationIterator(new ArrayIterator(this.entries)) {
+            @Override
             protected Object transform(Object next) {
                 return ((Entry) next).classNamesStream(filter);
             }
@@ -647,6 +654,7 @@ public class Classpath
             return this.canonicalFile.getAbsolutePath();
         }
 
+        @Override
         public boolean equals(Object o) {
             if ( ! (o instanceof Entry)) {
                 return false;
@@ -654,6 +662,7 @@ public class Classpath
             return ((Entry) o).canonicalFile.equals(this.canonicalFile);
         }
 
+        @Override
         public int hashCode() {
             return this.canonicalFile.hashCode();
         }
@@ -781,6 +790,7 @@ public class Classpath
          */
         private Iterator classFilesForDirectory() {
             return new FilteringIterator(FileTools.filesInTree(this.canonicalFile)) {
+                @Override
                 protected boolean accept(Object next) {
                     return Entry.this.fileNameMightBeForClassFile(((File) next).getName());
                 }
@@ -868,6 +878,7 @@ public class Classpath
         private Iterator classNamesForDirectory() {
             final int start = this.canonicalFile.getAbsolutePath().length() + 1;
             return new TransformationIterator(this.classFilesForDirectory()) {
+                @Override
                 protected Object transform(Object next) {
                     return convertToClassName(((File) next).getAbsolutePath().substring(start));
                 }

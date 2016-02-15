@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -15,10 +15,6 @@ package org.eclipse.persistence.tools.workbench.test.utility.classfile;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-
 import org.eclipse.persistence.tools.workbench.test.utility.ClassToolsTests;
 import org.eclipse.persistence.tools.workbench.utility.Bag;
 import org.eclipse.persistence.tools.workbench.utility.ClassTools;
@@ -30,6 +26,10 @@ import org.eclipse.persistence.tools.workbench.utility.classfile.FieldPool;
 import org.eclipse.persistence.tools.workbench.utility.classfile.InnerClass;
 import org.eclipse.persistence.tools.workbench.utility.classfile.Method;
 import org.eclipse.persistence.tools.workbench.utility.classfile.MethodPool;
+
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
 
 
 public class ClassFileTests extends TestCase {
@@ -403,6 +403,7 @@ public class ClassFileTests extends TestCase {
         java.lang.reflect.Method expectedMethod = javaClass.getDeclaredMethod(actualMethod.name(), actualParmTypes);
         assertNotNull(expectedMethod);
         assertEquals(Modifier.toString(expectedMethod.getModifiers()), Modifier.toString(actualMethod.standardAccessFlags()));
+        assertEquals(expectedMethod.isDefault(), actualMethod.isDefault());
         assertEquals(expectedMethod.getReturnType(), actualMethod.getReturnDescriptor().javaClass());
         assertEquals(expectedMethod.getReturnType().getName(), actualMethod.javaReturnTypeName());
         this.verifyClasses(expectedMethod.getExceptionTypes(), actualMethod.exceptionClassNames());

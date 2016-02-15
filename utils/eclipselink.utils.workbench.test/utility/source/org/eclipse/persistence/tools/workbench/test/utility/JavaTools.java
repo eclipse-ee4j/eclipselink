@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -100,7 +100,6 @@ public class JavaTools {
     public static void compile(Iterator sourceFiles, String classpath) throws IOException, InterruptedException {
         List cmd = new ArrayList();
         cmd.add(javaCompiler());
-        cmd.add("-source 1.4");
         if ((classpath != null) && (classpath.length() != 0)) {
             cmd.add("-classpath");
             cmd.add(classpath);
@@ -114,6 +113,7 @@ public class JavaTools {
      */
     private static Iterator javaFileNames(Iterator files) {
         return new TransformationIterator(javaFiles(files)) {
+            @Override
             protected Object transform(Object next) {
                 return ((File) next).getAbsolutePath();
             }
@@ -125,6 +125,7 @@ public class JavaTools {
      */
     private static Iterator javaFiles(Iterator files) {
         return new FilteringIterator(files) {
+            @Override
             protected boolean accept(Object next) {
                 File file = (File) next;
                 return file.isFile() && file.getPath().endsWith(".java");
@@ -363,6 +364,7 @@ public class JavaTools {
         /**
          * @see Runnable#run()
          */
+        @Override
         public void run() {
             try {
                 for (int b = -1; (b = this.inputStream.read()) != -1; ) {
@@ -377,6 +379,7 @@ public class JavaTools {
         /**
          * @see Object#toString()
          */
+        @Override
         public String toString() {
             return StringTools.buildToStringFor(this);
         }

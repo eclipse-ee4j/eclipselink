@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -14,14 +14,14 @@ package org.eclipse.persistence.tools.workbench.test.mappingsmodel.spi.meta;
 
 import java.lang.reflect.Field;
 
-import junit.framework.TestCase;
-
 import org.eclipse.persistence.tools.workbench.mappingsmodel.spi.meta.ExternalClass;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.spi.meta.ExternalClassDescription;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.spi.meta.ExternalClassRepository;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.spi.meta.ExternalField;
 import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 import org.eclipse.persistence.tools.workbench.utility.ClassTools;
+
+import junit.framework.TestCase;
 
 
 
@@ -40,6 +40,7 @@ public abstract class ExternalFieldTests  extends TestCase {
         super(name);
     }
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         this.repository = this.buildRepository();
@@ -47,6 +48,7 @@ public abstract class ExternalFieldTests  extends TestCase {
 
     protected abstract ExternalClassRepository buildRepository();
 
+    @Override
     protected void tearDown() throws Exception {
         TestTools.clear(this);
         super.tearDown();
@@ -94,17 +96,6 @@ public abstract class ExternalFieldTests  extends TestCase {
         // but now we do the following because the compiler-generated name is different
         // between the jdk compiler and the eclipse compiler  ~bjv
         // as of jdk 1.5 these are not generated as synthetic
-        if (!JDK15 && !JDK16) {
-            ExternalClass exClass = this.exClassFor(java.util.logging.Level.class);
-            ExternalField[] fields = exClass.getDeclaredFields();
-            boolean syntheticFound = false;
-            for (int i = fields.length; i-- > 0; ) {
-                if (fields[i].isSynthetic()) {
-                    syntheticFound = true;
-                }
-            }
-            assertTrue(syntheticFound);
-        }
     }
 
     private void verifySynthetic(Class javaClass, String fieldName, boolean expected) throws Exception {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -48,6 +48,9 @@ public abstract class Constant {
     public static final byte CONSTANT_Double = 6;
     public static final byte CONSTANT_NameAndType = 12;
     public static final byte CONSTANT_Utf8 = 1;
+    public static final byte CONSTANT_MethodHandle = 15;
+    public static final byte CONSTANT_MethodType = 16;
+    public static final byte CONSTANT_InvokeDynamic = 18;
 
     /**
      * Return a null class file constant.
@@ -88,6 +91,12 @@ public abstract class Constant {
                 return new InterfaceMethodRefConstant(pool, tag, stream);
             case CONSTANT_NameAndType:
                 return new NameAndTypeConstant(pool, tag, stream);
+            case CONSTANT_MethodHandle:
+                return new MethodHandleConstant(pool, tag, stream);
+            case CONSTANT_MethodType:
+                return new MethodTypeConstant(pool, tag, stream);
+            case CONSTANT_InvokeDynamic:
+                return new InvokeDynamicConstant(pool, tag, stream);
             default:
                 throw new IOException("Invalid constant tag: " + tag);
         }
@@ -154,6 +163,7 @@ public abstract class Constant {
 
     public abstract void accept(Visitor visitor);
 
+    @Override
     public final String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append(ClassTools.shortClassNameForObject(this));

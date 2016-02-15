@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -63,6 +63,7 @@ import org.eclipse.persistence.internal.helper.ConcurrentFixedCache;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.indirection.IndirectionPolicy;
+import org.eclipse.persistence.internal.oxm.TreeObjectBuilder;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.DatabaseQueryMechanism;
 import org.eclipse.persistence.internal.queries.InterfaceContainerPolicy;
@@ -89,7 +90,6 @@ import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
-import org.eclipse.persistence.oxm.mappings.XMLFragmentCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLObjectReferenceMapping;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
@@ -320,6 +320,7 @@ public class MappingsModelTestTools {
 
         rd = diffEngine.addReflectiveDifferentiator(MWLoginSpec.class);
             rd.addKeyFieldsNamed("name");
+            rd.ignoreFieldNamed("password");
 
         rd = diffEngine.addReflectiveDifferentiator(MWMapping.class);
             rd.addKeyFieldsNamed("name");
@@ -526,6 +527,7 @@ public class MappingsModelTestTools {
         rd = diffEngine.addReflectiveDifferentiator(DatasourceLogin.class);
             rd.ignoreFieldNamed("securableObjectHolder");
             rd.setFieldDifferentiator("properties", new ContainerDifferentiator(MapAdapter.instance(), new MapEntryDifferentiator()) {
+                @Override
                 public Diff diff(Object object1, Object object2) {
                     if (object1 == object2) {
                         return new NullDiff(object1, object2, this);
@@ -563,6 +565,7 @@ public class MappingsModelTestTools {
             rd.addCollectionFieldsNamed("mappings");
             rd.addReferenceCollectionFieldsNamed("primaryKeyFields");
             rd.ignoreFieldNamed("additionalTablePrimaryKeyFields");
+            rd.ignoreFieldNamed("cachePolicy");
 
         rd = diffEngine.addReflectiveDifferentiator(RelationalDescriptor.class);
 
@@ -614,6 +617,7 @@ public class MappingsModelTestTools {
             rd.ignoreFieldNamed("containerPolicy");
         rd = (ReflectiveDifferentiator)diffEngine.setUserDifferentiator(ObjectLevelReadQuery.class,
                 new ReflectiveDifferentiator(ObjectLevelReadQuery.class, diffEngine.getRecordingDifferentiator()) {
+                    @Override
                     public Diff diff(Object object1, Object object2) {
                         if (object1 != null) {
                             ((ObjectLevelReadQuery) object1).getJoinedAttributeManager();
@@ -626,7 +630,7 @@ public class MappingsModelTestTools {
                     }
             });
             rd.ignoreFieldNamed("defaultBuilder");
-        rd = (ReflectiveDifferentiator) diffEngine.addReflectiveDifferentiator(JoinedAttributeManager.class);
+        rd = diffEngine.addReflectiveDifferentiator(JoinedAttributeManager.class);
             rd.addReferenceFieldNamed("descriptor");
             rd.addReferenceFieldNamed("baseQuery");
             rd.addReferenceFieldNamed("baseExpressionBuilder");
@@ -669,6 +673,7 @@ public class MappingsModelTestTools {
 
          rd = diffEngine.addReflectiveDifferentiator(InterfaceContainerPolicy.class);
             rd.setKeyDifferentiator(new ReflectiveDifferentiator.KeyDifferentiator() {
+                @Override
                 public Diff keyDiff(Object object1, Object object2) {
                     return EqualityDifferentiator.instance().diff(((InterfaceContainerPolicy) object1).getContainerClassName(), ((InterfaceContainerPolicy) object2).getContainerClassName());
                 }
@@ -689,6 +694,9 @@ public class MappingsModelTestTools {
 
         rd = diffEngine.addReflectiveDifferentiator(OneToOneMapping.class);
             rd.addReferenceMapFieldsNamed("sourceToTargetKeyFields", "targetToSourceKeyFields");
+
+        rd = diffEngine.addReflectiveDifferentiator(ManyToManyMapping.class);
+        rd.ignoreFieldNamed("mechanism");
 
         rd = diffEngine.addReflectiveDifferentiator(VariableOneToOneMapping.class);
             rd.addReferenceMapFieldsNamed("sourceToTargetQueryKeyNames");
@@ -746,7 +754,10 @@ public class MappingsModelTestTools {
 
         rd = diffEngine.addReflectiveDifferentiator(XMLComparer.class);
         rd = diffEngine.addReflectiveDifferentiator(JAXPTransformer.class);
-            rd.ignoreFieldNamed("transformer");
+        rd.ignoreFieldNamed("transformer");
+
+        rd = diffEngine.addReflectiveDifferentiator(TreeObjectBuilder.class);
+        rd.ignoreFieldNamed("xPathObjectBuilder");
 
         return diffEngine;
     }
@@ -765,6 +776,7 @@ public class MappingsModelTestTools {
             rd.ignoreFieldNamed("securableObjectHolder");
             rd.ignoreFieldsNamed("isEncryptedPasswordSet");
             rd.setFieldDifferentiator("properties", new ContainerDifferentiator(MapAdapter.instance(), new MapEntryDifferentiator()) {
+                @Override
                 public Diff diff(Object object1, Object object2) {
                     if (object1 == object2) {
                         return new NullDiff(object1, object2, this);
@@ -794,6 +806,7 @@ public class MappingsModelTestTools {
 
         diffEngine.setUserDifferentiator(DatasourcePlatform.class,
             new ReflectiveDifferentiator(DatasourcePlatform.class, diffEngine.getRecordingDifferentiator()) {
+                @Override
                 public Diff diff(Object object1, Object object2) {
                     if (object1 instanceof DatabasePlatform) {
                         ((DatabasePlatform) object1).getDefaultSequence();
@@ -805,6 +818,7 @@ public class MappingsModelTestTools {
             rd.ignoreFieldNamed("conversionManager");
             rd.ignoreFieldNamed("platformOperators");
             rd.setFieldDifferentiator("sequences", new ContainerDifferentiator(MapAdapter.instance(), new MapEntryDifferentiator()) {
+                @Override
                 public Diff diff(Object object1, Object object2) {
                     if (object1 == object2) {
                         return new NullDiff(object1, object2, this);
@@ -821,6 +835,7 @@ public class MappingsModelTestTools {
 
         diffEngine.setUserDifferentiator(ClassDescriptor.class,
                 new ReflectiveDifferentiator(ClassDescriptor.class, diffEngine.getRecordingDifferentiator()) {
+                    @Override
                     public Diff diff(Object object1, Object object2) {
                         return new CompositeDiff(object1, object2, new Diff[] {super.diff(object1, object2), bonusDiff(object1, object2)}, this);
                     }
@@ -843,8 +858,10 @@ public class MappingsModelTestTools {
             rd.ignoreFieldNamed("amendmentClass");
             rd.ignoreFieldNamed("amendmentClassName");
             rd.ignoreFieldNamed("properties");
+            rd.ignoreFieldNamed("cachePolicy");
 
             rd.setKeyDifferentiator(new ReflectiveDifferentiator.KeyDifferentiator() {
+                @Override
                 public Diff keyDiff(Object object1, Object object2) {
                     return EqualityDifferentiator.instance().diff(((ClassDescriptor) object1).getJavaClass().getName(), ((ClassDescriptor) object2).getJavaClassName());
                 }
@@ -867,6 +884,7 @@ public class MappingsModelTestTools {
 
         diffEngine.setUserDifferentiator(DescriptorQueryManager.class,
             new ReflectiveDifferentiator(DescriptorQueryManager.class, diffEngine.getRecordingDifferentiator()) {
+                @Override
                 public Diff diff(Object object1, Object object2) {
                     ((DescriptorQueryManager) object1).getDoesExistCall();
                     return super.diff(object1, object2);
@@ -883,6 +901,7 @@ public class MappingsModelTestTools {
 
         diffEngine.setUserDifferentiator(InheritancePolicy.class,
                 new ReflectiveDifferentiator(InheritancePolicy.class, diffEngine.getRecordingDifferentiator()) {
+                    @Override
                     public Diff diff(Object object1, Object object2) {
                         return new CompositeDiff(object1, object2, new Diff[] {super.diff(object1, object2), bonusDiff(object1, object2)}, this);
                     }
@@ -929,6 +948,7 @@ public class MappingsModelTestTools {
 
         diffEngine.setUserDifferentiator(InstantiationPolicy.class,
                 new ReflectiveDifferentiator(InstantiationPolicy.class, diffEngine.getRecordingDifferentiator()) {
+                    @Override
                     public Diff diff(Object object1, Object object2) {
                         return new CompositeDiff(object1, object2, new Diff[] {super.diff(object1, object2), bonusDiff(object1, object2)}, this);
                     }
@@ -962,6 +982,7 @@ public class MappingsModelTestTools {
 
         diffEngine.setUserDifferentiator(InterfacePolicy.class,
                 new ReflectiveDifferentiator(InterfacePolicy.class, diffEngine.getRecordingDifferentiator()) {
+                    @Override
                     public Diff diff(Object object1, Object object2) {
                         return new CompositeDiff(object1, object2, new Diff[] {super.diff(object1, object2), bonusDiff(object1, object2)}, this);
                     }
@@ -970,7 +991,7 @@ public class MappingsModelTestTools {
                         List<Class> parentInterfaces = ((InterfacePolicy) object1).getParentInterfaces();
                         List<String> parentInterfaceNames1 = new ArrayList<String>(2);
                         for (int i = 0; i < parentInterfaces.size(); i++) {
-                            parentInterfaceNames1.add(((Class) parentInterfaces.get(i)).getName());
+                            parentInterfaceNames1.add(parentInterfaces.get(i).getName());
                         }
 
                         List<String> parentInterfaceNames2 = ((InterfacePolicy) object1).getParentInterfaceNames();
@@ -1004,6 +1025,7 @@ public class MappingsModelTestTools {
                 rd.addReferenceFieldNamed("localBase");
                 //TODO this should be removed when the runtime fixed bug #3183462
                 rd.setFieldDifferentiator("value", new ReflectiveDifferentiator(Object.class) {
+                    @Override
                     public Diff diff(Object object1, Object object2) {
                         if (object1 == null && object2 == "") {
                             return new NullDiff(object1, object2, this);
@@ -1027,6 +1049,7 @@ public class MappingsModelTestTools {
 
         diffEngine.setUserDifferentiator(DatabaseQuery.class,
                 new ReflectiveDifferentiator(DatabaseQuery.class, diffEngine.getRecordingDifferentiator()) {
+                    @Override
                     public Diff diff(Object object1, Object object2) {
                         return new CompositeDiff(object1, object2, new Diff[] {super.diff(object1, object2), bonusDiff(object1, object2)}, this);
                     }
@@ -1035,7 +1058,7 @@ public class MappingsModelTestTools {
                         List<Class> argumentTypes = ((DatabaseQuery) object1).getArgumentTypes();
                         Vector argumentTypeNames1 = new Vector();
                         for (int i = 0; i < argumentTypes.size(); i++) {
-                            argumentTypeNames1.add(((Class) argumentTypes.get(i)).getName());
+                            argumentTypeNames1.add(argumentTypes.get(i).getName());
                         }
 
                         List<String> argumentTypeNames2 = ((DatabaseQuery) object1).getArgumentTypeNames();
@@ -1049,6 +1072,7 @@ public class MappingsModelTestTools {
             rd.ignoreFieldNamed("argumentTypeNames");
             rd.ignoreFieldNamed("shouldCloneCall");
             rd.setFieldDifferentiator("arguments", new OrderedContainerDifferentiator(ListAdapter.instance()) {
+                @Override
                 public Diff diff(Object object1, Object object2) {
                     if (object1 == object2) {
                         return new NullDiff(object1, object2, this);
@@ -1061,6 +1085,7 @@ public class MappingsModelTestTools {
                 }
             });
             rd.setFieldDifferentiator("argumentValues", new OrderedContainerDifferentiator(ListAdapter.instance()) {
+                @Override
                 public Diff diff(Object object1, Object object2) {
                     if (object1 == object2) {
                         return new NullDiff(object1, object2, this);
@@ -1076,19 +1101,8 @@ public class MappingsModelTestTools {
 
         rd = diffEngine.addReflectiveDifferentiator(ReadAllQuery.class);
             rd.ignoreFieldNamed("containerPolicy");
-            rd.setFieldDifferentiator("orderByExpressions", new OrderedContainerDifferentiator(ListAdapter.instance(), diffEngine.getRecordingDifferentiator()) {
-                public Diff diff(Object object1, Object object2) {
-                    if (object1 == object2) {
-                        return new NullDiff(object1, object2, this);
-                    }
-
-                    if (object2 == null && ((List) object1).size() == 0) {
-                        return new NullDiff(object1, object2, this);
-                    }
-                    return super.diff(object1, object2);
-                }
-            });
-            rd.setFieldDifferentiator("batchReadAttributeExpressions", new OrderedContainerDifferentiator(ListAdapter.instance(), diffEngine.getUserDifferentiator(Expression.class)) {
+            rd.setFieldDifferentiator("orderSiblingsByExpressions", new OrderedContainerDifferentiator(ListAdapter.instance(), diffEngine.getUserDifferentiator(Expression.class)) {
+                @Override
                 public Diff diff(Object object1, Object object2) {
                     if (object1 == object2) {
                         return new NullDiff(object1, object2, this);
@@ -1103,6 +1117,7 @@ public class MappingsModelTestTools {
 
         rd = (ReflectiveDifferentiator) diffEngine.setUserDifferentiator(ObjectLevelReadQuery.class,
                 new ReflectiveDifferentiator(ObjectLevelReadQuery.class, diffEngine.getRecordingDifferentiator()) {
+                    @Override
                     public Diff diff(Object object1, Object object2) {
                         if (object1 == null && object2 == null) {
                             return new NullDiff(object1, object2, this);
@@ -1128,15 +1143,16 @@ public class MappingsModelTestTools {
                         return super.diff(object1, object2);
                     }
                 });
-        rd = (ReflectiveDifferentiator) diffEngine.addReflectiveDifferentiator(ObjectBuildingQuery.class);
+        rd = diffEngine.addReflectiveDifferentiator(ObjectBuildingQuery.class);
             rd.ignoreFieldNamed("referenceClass");
             rd.ignoreFieldNamed("referenceClassName");
 
-        rd = (ReflectiveDifferentiator) diffEngine.addReflectiveDifferentiator(JoinedAttributeManager.class);
+        rd = diffEngine.addReflectiveDifferentiator(JoinedAttributeManager.class);
             rd.addReferenceFieldNamed("baseQuery");
             rd.addReferenceFieldNamed("descriptor");
             rd.addReferenceFieldNamed("baseExpressionBuilder");
             rd.setFieldDifferentiator("joinedAttributeExpressions", new OrderedContainerDifferentiator(ListAdapter.instance(), diffEngine.getUserDifferentiator(Expression.class)) {
+                @Override
                 public Diff diff(Object object1, Object object2) {
                     if (object1 == object2) {
                         return new NullDiff(object1, object2, this);
@@ -1157,6 +1173,7 @@ public class MappingsModelTestTools {
 
         rd = diffEngine.addReflectiveDifferentiator(EISInteraction.class);
             rd.setFieldDifferentiator("arguments", new OrderedContainerDifferentiator(ListAdapter.instance()) {
+                @Override
                 public Diff diff(Object object1, Object object2) {
                     if (object1 == object2) {
                         return new NullDiff(object1, object2, this);
@@ -1171,6 +1188,7 @@ public class MappingsModelTestTools {
 
         rd = diffEngine.addReflectiveDifferentiator(MappedInteraction.class);
             rd.setFieldDifferentiator("argumentNames", new OrderedContainerDifferentiator(ListAdapter.instance()) {
+                @Override
                 public Diff diff(Object object1, Object object2) {
                     if (object1 == object2) {
                         return new NullDiff(object1, object2, this);
@@ -1185,6 +1203,7 @@ public class MappingsModelTestTools {
 
         rd = diffEngine.addReflectiveDifferentiator(InterfaceContainerPolicy.class);
             rd.setKeyDifferentiator(new ReflectiveDifferentiator.KeyDifferentiator() {
+                @Override
                 public Diff keyDiff(Object object1, Object object2) {
                     return EqualityDifferentiator.instance().diff(((InterfaceContainerPolicy) object1).getContainerClassName(), ((InterfaceContainerPolicy) object2).getContainerClassName());
                 }
@@ -1202,6 +1221,7 @@ public class MappingsModelTestTools {
             rd.ignoreFieldNamed("properties");
         rd = (ReflectiveDifferentiator)diffEngine.setUserDifferentiator(AbstractTransformationMapping.class,
                     new ReflectiveDifferentiator(AbstractTransformationMapping.class, diffEngine.getRecordingDifferentiator()) {
+                        @Override
                         public Diff diff(Object object1, Object object2) {
                             if (((AbstractTransformationMapping) object1).getAttributeTransformerClass() == null
                                     && ((AbstractTransformationMapping) object2).getAttributeTransformerClassName() == null) {
@@ -1220,6 +1240,7 @@ public class MappingsModelTestTools {
 
         diffEngine.setUserDifferentiator(ForeignReferenceMapping.class,
                 new ReflectiveDifferentiator(ForeignReferenceMapping.class, diffEngine.getRecordingDifferentiator()) {
+                    @Override
                     public Diff diff(Object object1, Object object2) {
                         return new CompositeDiff(object1, object2, new Diff[] {super.diff(object1, object2), bonusDiff(object1, object2)}, this);
                     }
@@ -1249,6 +1270,7 @@ public class MappingsModelTestTools {
 
         diffEngine.setUserDifferentiator(ManyToManyMapping.class,
                 new ReflectiveDifferentiator(ManyToManyMapping.class, diffEngine.getRecordingDifferentiator()) {
+                    @Override
                     public Diff diff(Object object1, Object object2) {
                         DataModifyQuery query = ((DataModifyQuery) ClassTools.getFieldValue(object1, "insertQuery"));
                         query.getSelectionCriteria();
@@ -1259,10 +1281,12 @@ public class MappingsModelTestTools {
                         return super.diff(object1, object2);
                     }
         });
-
+        rd = (ReflectiveDifferentiator) diffEngine.getUserDifferentiator(ManyToManyMapping.class);
+        rd.ignoreFieldNamed("mechanism");
 
         diffEngine.setUserDifferentiator(VariableOneToOneMapping.class,
                 new ReflectiveDifferentiator(VariableOneToOneMapping.class, diffEngine.getRecordingDifferentiator()) {
+                    @Override
                     public Diff diff(Object object1, Object object2) {
                         return new CompositeDiff(object1, object2, new Diff[] {super.diff(object1, object2), bonusDiff(object1, object2)}, this);
                     }
@@ -1289,6 +1313,7 @@ public class MappingsModelTestTools {
 
             diffEngine.setUserDifferentiator(AggregateMapping.class,
                     new ReflectiveDifferentiator(AggregateMapping.class, diffEngine.getRecordingDifferentiator()) {
+                        @Override
                         public Diff diff(Object object1, Object object2) {
                             return new CompositeDiff(object1, object2, new Diff[] {super.diff(object1, object2), bonusDiff(object1, object2)}, this);
                         }
@@ -1346,6 +1371,7 @@ public class MappingsModelTestTools {
 
         diffEngine.setUserDifferentiator(TypeConversionConverter.class,
                 new ReflectiveDifferentiator(TypeConversionConverter.class, diffEngine.getRecordingDifferentiator()) {
+                    @Override
                     public Diff diff(Object object1, Object object2) {
                         return new CompositeDiff(object1, object2, new Diff[] {super.diff(object1, object2), bonusDiff(object1, object2)}, this);
                     }
@@ -1392,6 +1418,7 @@ public class MappingsModelTestTools {
 
         rd = (ReflectiveDifferentiator)diffEngine.setUserDifferentiator(TransformerBasedFieldTransformation.class,
                     new ReflectiveDifferentiator(TransformerBasedFieldTransformation.class, diffEngine.getRecordingDifferentiator()) {
+                        @Override
                         public Diff diff(Object object1, Object object2) {
                             if (((TransformerBasedFieldTransformation) object1).getTransformerClass() == null
                                     && ((TransformerBasedFieldTransformation) object2).getTransformerClassName() == null) {
@@ -1458,6 +1485,7 @@ public class MappingsModelTestTools {
         public ClassRepositoryTypesFieldDifferentiator(Differentiator differentiator) {
             super(differentiator);
         }
+        @Override
         public Diff diff(Object object1, Object object2) {
             return new ClassRepositoryTypesFieldDiff(super.diff(object1, object2), this);
         }
@@ -1472,6 +1500,7 @@ public class MappingsModelTestTools {
         public ClassRepositoryTypesFieldDiff(Diff diff, Differentiator differentiator) {
             super(diff, differentiator);
         }
+        @Override
         public boolean identical() {
             return ! this.different();
         }
@@ -1479,6 +1508,7 @@ public class MappingsModelTestTools {
          * ignore the adds and removes; look only at the
          * diffs for types in both maps
          */
+        @Override
         public boolean different() {
             Diff[] diffs = ((ContainerDiff) this.getDiff()).getDiffs();
             for (int i = diffs.length; i-- > 0; ) {
@@ -1499,6 +1529,7 @@ public class MappingsModelTestTools {
         public DatabaseFieldTableFieldDifferentiator(Differentiator differentiator) {
             super(differentiator);
         }
+        @Override
         public Diff diff(Object object1, Object object2) {
             return new DatabaseFieldTableFieldDiff(super.diff(object1, object2), this);
         }
@@ -1508,12 +1539,14 @@ public class MappingsModelTestTools {
         public DatabaseFieldTableFieldDiff(Diff diff, Differentiator differentiator) {
             super(diff, differentiator);
         }
+        @Override
         public boolean identical() {
             return ! this.different();
         }
         /**
          * if either table lacks a name, do not compare them
          */
+        @Override
         public boolean different() {
             DatabaseTable table1 = (DatabaseTable) this.getObject1();
             DatabaseTable table2 = (DatabaseTable) this.getObject2();

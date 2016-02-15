@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -14,13 +14,6 @@ package org.eclipse.persistence.tools.workbench.test.mappingsmodel.meta;
 
 import java.util.Iterator;
 
-import org.eclipse.persistence.tools.workbench.test.mappingsmodel.MappingsModelTestTools;
-import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
-
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-
 import org.eclipse.persistence.tools.workbench.mappingsio.ProjectIOManager;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.MWDescriptor;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.meta.MWClass;
@@ -29,11 +22,17 @@ import org.eclipse.persistence.tools.workbench.mappingsmodel.meta.MWMethod;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.project.relational.MWRelationalProject;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.spi.meta.ExternalClassNotFoundException;
 import org.eclipse.persistence.tools.workbench.platformsmodel.DatabasePlatformRepository;
+import org.eclipse.persistence.tools.workbench.test.mappingsmodel.MappingsModelTestTools;
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
 import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 import org.eclipse.persistence.tools.workbench.utility.Classpath;
 import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
 import org.eclipse.persistence.tools.workbench.utility.NullPreferences;
 import org.eclipse.persistence.tools.workbench.utility.io.FileTools;
+
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
 
 
 public class MWClassTests extends TestCase {
@@ -58,9 +57,8 @@ public class MWClassTests extends TestCase {
     private MWClass vhiType;
 
 
-    private static final boolean JDK14 = jdkIsVersion("1.4");
-    private static final boolean JDK15 = jdkIsVersion("1.5");
-    private static final boolean JDK16 = jdkIsVersion("1.6");
+    private static final boolean JDK7 = jdkIsVersion("1.7");
+    private static final boolean JDK8 = jdkIsVersion("1.8");
 
     private static boolean jdkIsVersion(String version) {
         return System.getProperty("java.version").indexOf(version) != -1;
@@ -74,6 +72,7 @@ public class MWClassTests extends TestCase {
         super(name);
     }
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         this.project = this.buildProject();
@@ -105,6 +104,7 @@ public class MWClassTests extends TestCase {
         );
     }
 
+    @Override
     protected void tearDown() throws Exception {
         TestTools.clear(this);
         super.tearDown();
@@ -127,38 +127,35 @@ public class MWClassTests extends TestCase {
         assertEquals(this.project.typeFor(java.lang.Object.class), this.stringType.getSuperclass());
 
         int stringInterfacesSize = this.stringType.interfacesSize();
-        if (JDK16 || JDK15 || JDK14) {
-            assertEquals(3, stringInterfacesSize);
-        } else {
-            assertEquals(2, stringInterfacesSize);
-        }
+        assertEquals(3, stringInterfacesSize);
         assertTrue(CollectionTools.contains(this.stringType.interfaces(), this.fullyPopulatedTypeFor(java.lang.Comparable.class)));
         assertTrue(CollectionTools.contains(this.stringType.interfaces(), this.fullyPopulatedTypeFor(java.io.Serializable.class)));
 
         int stringAttributesSize = this.stringType.attributesSize();
-        if (JDK16 || JDK15 || JDK14) {
+        if (JDK8) {
+            assertEquals(5, stringAttributesSize);
+        } else if (JDK7) {
             assertEquals(7, stringAttributesSize);
+            assertTrue(this.stringType.attributeNamed("hash32") != null);
+            assertTrue(this.stringType.attributeNamed("HASHING_SEED") != null);
         } else {
-            assertEquals(9, stringAttributesSize);
+            fail("Unknown JDK...");
         }
         assertTrue(this.stringType.attributeNamed("value") != null);
-        assertTrue(this.stringType.attributeNamed("offset") != null);
-        assertTrue(this.stringType.attributeNamed("count") != null);
         assertTrue(this.stringType.attributeNamed("hash") != null);
         assertTrue(this.stringType.attributeNamed("serialVersionUID") != null);
+        assertTrue(this.stringType.attributeNamed("serialPersistentFields") != null);
         assertTrue(this.stringType.attributeNamed("CASE_INSENSITIVE_ORDER") != null);
 
         assertEquals(0, this.stringType.ejb20AttributesSize());
 
         int stringMethodsSize = this.stringType.methodsSize();
-        if (JDK16) {
-            assertEquals(85, stringMethodsSize);
-        } else if (JDK15) {
-            assertEquals(81, stringMethodsSize);
-        } else if (JDK14) {
-            assertEquals(70, stringMethodsSize);
+        if (JDK8) {
+            assertEquals(92, stringMethodsSize);
+        } else if (JDK7) {
+            assertEquals(89, stringMethodsSize);
         } else {
-            assertEquals(64, stringMethodsSize);
+            fail("Unknown JDK...");
         }
 
         assertTrue(this.stringType.methodWithSignature("String()") != null);
@@ -289,16 +286,10 @@ public class MWClassTests extends TestCase {
 
     public void testInterfaces() throws Exception {
         int size = CollectionTools.size(this.treeSetType.allInterfacesWithoutDuplicates());
-        if (JDK16) {
-            assertEquals(7, size);
-            assertTrue(this.treeSetType.allInterfacesContains(this.project.typeNamed("java.lang.Iterable")));
-            assertTrue(this.treeSetType.allInterfacesContains(this.project.typeNamed("java.util.NavigableSet")));
-        } else if (JDK15) {
-            assertEquals(6, size);
-            assertTrue(this.treeSetType.allInterfacesContains(this.project.typeNamed("java.lang.Iterable")));
-        } else {
-            assertEquals(5, size);
-        }
+        assertEquals(7, size);
+
+        assertTrue(this.treeSetType.allInterfacesContains(this.project.typeNamed("java.lang.Iterable")));
+        assertTrue(this.treeSetType.allInterfacesContains(this.project.typeNamed("java.util.NavigableSet")));
         assertTrue(this.treeSetType.allInterfacesContains(this.project.typeFor(java.util.SortedSet.class)));
         assertTrue(this.treeSetType.allInterfacesContains(this.project.typeFor(java.io.Serializable.class)));
         assertTrue(this.treeSetType.allInterfacesContains(this.project.typeFor(java.lang.Cloneable.class)));
@@ -307,56 +298,43 @@ public class MWClassTests extends TestCase {
     }
 
     public void testAttributes() throws Exception {
-        assertEquals(6, CollectionTools.size(this.stackType.allAttributes()));
+        assertEquals(8, CollectionTools.size(this.stackType.allAttributes()));
         assertEquals(1, CollectionTools.size(this.stackType.attributes()));
         assertTrue(CollectionTools.contains(this.stackType.allAttributes(), this.stackType.attributeNamedFromAll("elementData")));
         assertTrue( ! CollectionTools.contains(this.stackType.attributes(), this.stackType.attributeNamed("elementData")));
 
         int stringAllAttributesSize = CollectionTools.size(this.stringType.allAttributes());
-        if (JDK16 || JDK15 || JDK14) {
+        if (JDK8) {
+            assertEquals(5, stringAllAttributesSize);
+            assertEquals(2, CollectionTools.size(this.stringType.instanceVariables()));
+        } else if (JDK7) {
             assertEquals(7, stringAllAttributesSize);
+            assertEquals(3, CollectionTools.size(this.stringType.instanceVariables()));
         } else {
-            assertEquals(9, stringAllAttributesSize);
+            fail("Unknown JDK...");
         }
-        assertEquals(4, CollectionTools.size(this.stringType.instanceVariables()));
     }
 
     public void testMethods() throws Exception {
         int abstractCollectionAllMethodsSize = CollectionTools.size(this.abstractCollectionType.allMethods());
-        if (JDK16) {
-            assertEquals(29, abstractCollectionAllMethodsSize);
-        } else {
-            assertEquals(28, abstractCollectionAllMethodsSize);
-        }
-
+        assertEquals(30, abstractCollectionAllMethodsSize);
         assertEquals(1, CollectionTools.size(this.abstractCollectionType.constructors()));
 
         int abstractCollectionAllNonConstructorsSize = CollectionTools.size(this.abstractCollectionType.allNonConstructors());
-        if (JDK16) {
-            assertEquals(27, abstractCollectionAllNonConstructorsSize);
-        } else {
-            assertEquals(26, abstractCollectionAllNonConstructorsSize);
-        }
+        assertEquals(28, abstractCollectionAllNonConstructorsSize);
 
         int stringInstanceMethodsSize = CollectionTools.size(this.stringType.instanceMethods());
         int stringStaticMethodsSize = CollectionTools.size(this.stringType.staticMethods());
         int stringAllStaticMethodsSize = CollectionTools.size(this.stringType.allStaticMethods());
-        if (JDK16) {
-            assertEquals(53, stringInstanceMethodsSize);
+        assertEquals(56, stringInstanceMethodsSize);
+        if (JDK8) {
+            assertEquals(20, stringStaticMethodsSize);
+            assertEquals(21, stringAllStaticMethodsSize);
+        } else if (JDK7) {
             assertEquals(16, stringStaticMethodsSize);
             assertEquals(17, stringAllStaticMethodsSize);
-        } else if (JDK15) {
-            assertEquals(51, stringInstanceMethodsSize);
-            assertEquals(16, stringStaticMethodsSize);
-            assertEquals(17, stringAllStaticMethodsSize);
-        } else if (JDK14) {
-            assertEquals(44, stringInstanceMethodsSize);
-            assertEquals(14, stringStaticMethodsSize);
-            assertEquals(15, stringAllStaticMethodsSize);
         } else {
-            assertEquals(38, stringInstanceMethodsSize);
-            assertEquals(13, stringStaticMethodsSize);
-            assertEquals(14, stringAllStaticMethodsSize);
+            fail("Unknown JDK...");
         }
 
         MWClass classType = this.fullyPopulatedTypeFor(java.lang.Class.class);
@@ -477,13 +455,7 @@ public class MWClassTests extends TestCase {
         assertEquals(4, CollectionTools.size(this.treeSetType.lineage()));
 
         int treeSetLineageIncludingInterfacesSize = CollectionTools.set(this.treeSetType.lineageIncludingInterfaces()).size();
-        if (JDK16) {
-            assertEquals(11, treeSetLineageIncludingInterfacesSize);
-        } else if (JDK15) {
-            assertEquals(10, treeSetLineageIncludingInterfacesSize);
-        } else {
-            assertEquals(9, treeSetLineageIncludingInterfacesSize);
-        }
+        assertEquals(11, treeSetLineageIncludingInterfacesSize);
 
         assertEquals(2, CollectionTools.size(this.treeSetType.lineageTo(this.abstractSetType)));
         assertEquals(3, CollectionTools.size(this.treeSetType.lineageTo(this.abstractCollectionType)));

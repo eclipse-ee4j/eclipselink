@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -44,8 +44,10 @@ public class ClassFileTestClass implements Serializable, Cloneable {
     int[][] packageIntArray2D;
 
     /** @deprecated */
+    @Deprecated
     public int deprecatedInt;
     /** @deprecated */
+    @Deprecated
     public Object deprecatedObject;
 
     public static final byte byteStatic_55 = 55;
@@ -160,12 +162,14 @@ public class ClassFileTestClass implements Serializable, Cloneable {
     /**
      * @deprecated
      */
+    @Deprecated
     private void deprecatedMethod() {
         this.toString();
     }
 
     private PropertyChangeListener anonymousInnerClassMethod1() {
         return new PropertyChangeListener() {
+            @Override
             public void propertyChange(PropertyChangeEvent evt) {
                 // do nothing
             }
@@ -175,11 +179,13 @@ public class ClassFileTestClass implements Serializable, Cloneable {
     private PropertyChangeListener anonymousInnerClassMethod2() {
         this.deprecatedMethod();
         return new PropertyChangeListener() {
+            @Override
             public void propertyChange(PropertyChangeEvent evt) {
                 // do nothing
             }
             public PropertyChangeListener doubleAnonymousInnerClassMethod() {
                 return new PropertyChangeListener() {
+                    @Override
                     public void propertyChange(PropertyChangeEvent evt) {
                         // do nothing
                     }
@@ -197,6 +203,7 @@ public class ClassFileTestClass implements Serializable, Cloneable {
 
     public void localClassMethod() {
         class LocalClass1 implements InnerInterface1 {
+            @Override
             public void foo() {
                 System.out.println(this.getClass().getName() + "#foo()");
             }
@@ -207,6 +214,7 @@ public class ClassFileTestClass implements Serializable, Cloneable {
 
     public void localClassMethodDuplicate() {
         class LocalClass1 implements InnerInterface1 {
+            @Override
             public void foo() {
                 System.out.println(this.getClass().getName() + "#foo()");
             }
@@ -217,6 +225,7 @@ public class ClassFileTestClass implements Serializable, Cloneable {
 
     public void localClassMethod2() {
         class LocalClass2 implements InnerInterface1 {
+            @Override
             public void foo() {
                 System.out.println(this.getClass().getName() + "#foo()");
             }
@@ -229,9 +238,11 @@ public class ClassFileTestClass implements Serializable, Cloneable {
 
     private interface InnerInterface1 {
         void foo();
+        default int baz() { return 42;}
     }
 
     private class InnerClass1 implements InnerInterface1 {
+        @Override
         public void foo() {
             NestedInnerClass x = new NestedInnerClass();
             x.foofoo();
@@ -249,6 +260,7 @@ public class ClassFileTestClass implements Serializable, Cloneable {
     }
 
     public static class StaticInnerClass implements StaticInnerInterface {
+        @Override
         public void bar() {
             // do nothing
         }
@@ -257,6 +269,7 @@ public class ClassFileTestClass implements Serializable, Cloneable {
     /**
      * @deprecated
      */
+    @Deprecated
     public static interface DeprecatedStaticInnerInterface {
         void deprecateMe();
     }
@@ -274,6 +287,7 @@ public class ClassFileTestClass implements Serializable, Cloneable {
         }
         private PropertyChangeListener anotherAnonymousInnerClassMethod() {
             return new PropertyChangeListener() {
+                @Override
                 public void propertyChange(PropertyChangeEvent evt) {
                     // do nothing
                 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.MWModel;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.MWNominative;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.ProjectSubFileComponentContainer;
@@ -30,8 +31,6 @@ import org.eclipse.persistence.tools.workbench.mappingsmodel.project.MWProject;
 import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
 import org.eclipse.persistence.tools.workbench.utility.io.FileTools;
 import org.eclipse.persistence.tools.workbench.utility.string.StringTools;
-
-import org.eclipse.persistence.oxm.XMLMarshaller;
 
 /**
  * A new instance of this class is created for each project write:
@@ -84,6 +83,7 @@ class ProjectWriter {
         this.resetProject();
     }
 
+    @Override
     public String toString() {
         return StringTools.buildToStringFor(this, this.project.getName());
     }
@@ -207,7 +207,7 @@ class ProjectWriter {
 
             // build the writes...
             Set currentNames = new HashSet();    // ...while simultaneously gathering up the current names
-            Set currentFiles = new HashSet();        // and files
+            Set<File> currentFiles = new HashSet<>();        // and files
             for (Iterator stream = this.container.projectSubFileComponents(); stream.hasNext(); ) {
                 MWModel subComponent = (MWModel) stream.next();
                 String subComponentName = ((MWNominative) subComponent).getName();
@@ -226,7 +226,14 @@ class ProjectWriter {
             for (Iterator stream = deletedNames.iterator(); stream.hasNext(); ) {
                 String deleteFileName = FileTools.FILE_NAME_ENCODER.encode((String) stream.next());
                 File deleteFile = new File(subDirectory, deleteFileName + ext);
-                if (currentFiles.contains(deleteFile)) {
+                boolean found = false;
+                for (File cur : currentFiles) {
+                    if (cur.getName().equalsIgnoreCase(deleteFile.getName())) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (found) {
                     // do nothing
                     // 'currentFiles' will only "contain" the 'deleteFile' on Windows, where two files can be
                     // "equal" when their names differ only by case; this will happen if the user renames
@@ -305,6 +312,7 @@ class ProjectWriter {
          */
         abstract void commit();
 
+        @Override
         public String toString() {
             return StringTools.buildToStringFor(this, this.file);
         }
@@ -326,6 +334,7 @@ class ProjectWriter {
         /**
          * Simply delete the file.
          */
+        @Override
         void commit() {
             if (this.file.exists()) {
                 this.file.delete();
@@ -351,6 +360,7 @@ class ProjectWriter {
         /**
          * Use TopLink to write the object to the file.
          */
+        @Override
         void commit() {
             try {
                 this.commit2();

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -18,20 +18,28 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Vector;
 import java.util.Map.Entry;
-
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import java.util.Vector;
 
 import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
 import org.eclipse.persistence.tools.workbench.utility.iterators.TransformationIterator;
 
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+
 public class ClassToolsTests extends TestCase {
 
     private static String testStaticField;
+
+    private static final boolean JDK7 = jdkIsVersion("1.7");
+    private static final boolean JDK8 = jdkIsVersion("1.8");
+    private static final boolean JDK9 = jdkIsVersion("9");
+
+    private static boolean jdkIsVersion(String version) {
+        return System.getProperty("java.version").indexOf(version) != -1;
+    }
 
     public static Test suite() {
         return new TestSuite(ClassToolsTests.class);
@@ -283,7 +291,12 @@ public class ClassToolsTests extends TestCase {
         Map map = new HashMap();
         map.put("foo", "bar");
         Entry entry = (Entry) map.entrySet().iterator().next();
-        assertEquals("Entry", ClassTools.nestedClassNameForObject(entry));
+        if (JDK8 || JDK9) {
+            // Node instead of Entry since JDK 7
+            assertEquals("Node", ClassTools.nestedClassNameForObject(entry));
+        } else {
+            assertEquals("Entry", ClassTools.nestedClassNameForObject(entry));
+        }
         assertEquals("Entry", ClassTools.nestedNameFor(java.util.Map.Entry.class));
     }
 
@@ -540,6 +553,7 @@ public class ClassToolsTests extends TestCase {
 
     private Iterator names(Field[] fields) {
         return new TransformationIterator(CollectionTools.iterator(fields)) {
+            @Override
             protected Object transform(Object next) {
                 return ((Field) next).getName();
             }
@@ -548,6 +562,7 @@ public class ClassToolsTests extends TestCase {
 
     private Iterator names(Method[] methods) {
         return new TransformationIterator(CollectionTools.iterator(methods)) {
+            @Override
             protected Object transform(Object next) {
                 return ((Method) next).getName();
             }

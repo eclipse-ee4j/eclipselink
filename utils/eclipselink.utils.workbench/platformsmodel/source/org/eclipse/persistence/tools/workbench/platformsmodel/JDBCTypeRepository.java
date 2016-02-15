@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -105,6 +105,7 @@ public final class JDBCTypeRepository extends AbstractNodeModel {
     /**
      * @see org.eclipse.persistence.tools.workbench.utility.AbstractNodeModel#initialize()
      */
+    @Override
     protected void initialize() {
         super.initialize();
         this.jdbcTypes = new Vector();
@@ -160,7 +161,6 @@ public final class JDBCTypeRepository extends AbstractNodeModel {
      *     or
      *     http://java.sun.com/j2se/1.4.2/docs/guide/jdbc/getstart/GettingStartedTOC.fm.html
      */
-    // TODO uncomment 6 new Types when we start compiling with jdk1.6
     private void initializeDefaultJDBCToJavaMappings() {
         this.addJDBCToJavaMapping(Types.ARRAY,          java.sql.Array.class);
         this.addJDBCToJavaMapping(Types.BIGINT,         long.class);
@@ -185,17 +185,20 @@ public final class JDBCTypeRepository extends AbstractNodeModel {
         this.addJDBCToJavaMapping(Types.NCLOB,          java.sql.NClob.class);
         this.addJDBCToJavaMapping(Types.NVARCHAR,       java.lang.String.class);
         // not sure why this is defined in java.sql.Types
-        this.addJDBCToJavaMapping(Types.NULL,           java.lang.Object.class);
+//        this.addJDBCToJavaMapping(Types.NULL,           java.lang.Object.class);
         this.addJDBCToJavaMapping(Types.NUMERIC,        java.math.BigDecimal.class);
         this.addJDBCToJavaMapping(Types.OTHER,          java.lang.Object.class);
         this.addJDBCToJavaMapping(Types.REAL,           float.class);
         this.addJDBCToJavaMapping(Types.REF,            java.sql.Ref.class);
+        this.addJDBCToJavaMapping(Types.REF_CURSOR,     java.sql.Ref.class); // JDK 8
         this.addJDBCToJavaMapping(Types.ROWID,          java.sql.RowId.class);
         this.addJDBCToJavaMapping(Types.SMALLINT,       short.class);
         this.addJDBCToJavaMapping(Types.SQLXML,         java.sql.SQLXML.class);
         this.addJDBCToJavaMapping(Types.STRUCT,         java.sql.Struct.class);
         this.addJDBCToJavaMapping(Types.TIME,           java.sql.Time.class);
+        this.addJDBCToJavaMapping(Types.TIME_WITH_TIMEZONE, java.sql.Time.class); // JDK 8
         this.addJDBCToJavaMapping(Types.TIMESTAMP,      java.sql.Timestamp.class);
+        this.addJDBCToJavaMapping(Types.TIMESTAMP_WITH_TIMEZONE, java.sql.Timestamp.class); // JDK 8
         this.addJDBCToJavaMapping(Types.TINYINT,        byte.class);
         this.addJDBCToJavaMapping(Types.VARBINARY,      byte.class, 1);    // byte[]
         this.addJDBCToJavaMapping(Types.VARCHAR,        java.lang.String.class);
@@ -290,6 +293,7 @@ public final class JDBCTypeRepository extends AbstractNodeModel {
     // JDBC types
     public Iterator jdbcTypes() {
         return new CloneIterator(this.jdbcTypes) {
+            @Override
             protected void remove(Object current) {
                 JDBCTypeRepository.this.removeJDBCType((JDBCType) current);
             }
@@ -385,6 +389,7 @@ public final class JDBCTypeRepository extends AbstractNodeModel {
     // JDBC => Java mappings
     public Iterator jdbcTypeToJavaTypeDeclarationMappings() {
         return new CloneIterator(this.jdbcTypeToJavaTypeDeclarationMappings) {
+            @Override
             protected void remove(Object current) {
                 JDBCTypeRepository.this.removeJDBCTypeToJavaTypeDeclarationMapping((JDBCTypeToJavaTypeDeclarationMapping) current);
             }
@@ -421,6 +426,7 @@ public final class JDBCTypeRepository extends AbstractNodeModel {
     // Java => JDBC mappings
     public Iterator javaTypeDeclarationToJDBCTypeMappings() {
         return new CloneIterator(this.javaTypeDeclarationToJDBCTypeMappings) {
+            @Override
             protected void remove(Object current) {
                 JDBCTypeRepository.this.removeJavaTypeDeclarationToJDBCTypeMapping((JavaTypeDeclarationToJDBCTypeMapping) current);
             }
@@ -562,6 +568,7 @@ public final class JDBCTypeRepository extends AbstractNodeModel {
 
     private Iterator jdbcTypeNames() {
         return new TransformationIterator(this.jdbcTypes()) {
+            @Override
             protected Object transform(Object next) {
                 return ((JDBCType) next).getName();
             }
@@ -574,6 +581,7 @@ public final class JDBCTypeRepository extends AbstractNodeModel {
     /**
      * @see org.eclipse.persistence.tools.workbench.utility.AbstractNodeModel#addChildrenTo(java.util.List)
      */
+    @Override
     protected void addChildrenTo(List children) {
         super.addChildrenTo(children);
         synchronized (this.jdbcTypes) { children.addAll(this.jdbcTypes); }
@@ -769,10 +777,12 @@ public final class JDBCTypeRepository extends AbstractNodeModel {
         return sb.toString();
     }
 
+    @Override
     public String displayString() {
         return "";
     }
 
+    @Override
     public void toString(StringBuffer sb) {
         sb.append(this.jdbcTypes.size() + " JDBC types");
     }

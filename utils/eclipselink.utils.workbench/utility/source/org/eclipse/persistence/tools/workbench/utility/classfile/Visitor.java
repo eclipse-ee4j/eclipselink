@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -70,6 +70,8 @@ public interface Visitor {
 
     void visit(InterfaceMethodRefConstant interfaceMethodRefConstant);
 
+    void visit(InvokeDynamicConstant invokeDynamicConstant);
+
     void visit(LineNumber lineNumber);
 
     void visit(LineNumberTableAttribute lineNumberTableAttribute);
@@ -86,9 +88,13 @@ public interface Visitor {
 
     void visit(Method method);
 
+    void visit(MethodHandleConstant methodHandleConstant);
+
     void visit(MethodPool methodPool);
 
     void visit(MethodRefConstant methodRefConstant);
+
+    void visit(MethodTypeConstant methodTypeConstant);
 
     void visit(NameAndTypeConstant nameAndTypeConstant);
 
