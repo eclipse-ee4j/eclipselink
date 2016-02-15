@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -22,100 +22,106 @@ import org.eclipse.persistence.tools.workbench.utility.classfile.descriptor.Obje
  */
 public interface Visitor {
 
-	void visit(ClassFile classFile);
+    void visit(ClassFile classFile);
 
-	void visit(AnnotationDefaultAttribute annotationDefaultAttribute);
+    void visit(AnnotationDefaultAttribute annotationDefaultAttribute);
 
-	void visit(ArrayType arrayType);
+    void visit(ArrayType arrayType);
 
-	void visit(AttributePool attributePool);
+    void visit(AttributePool attributePool);
 
-	void visit(BaseType baseType);
+    void visit(BaseType baseType);
 
-	void visit(ClassConstant classConstant);
+    void visit(ClassConstant classConstant);
 
-	void visit(ClassDeclaration classDeclaration);
+    void visit(ClassDeclaration classDeclaration);
 
-	void visit(CodeAttribute codeAttribute);
+    void visit(CodeAttribute codeAttribute);
 
-	void visit(ConstantPool constantPool);
+    void visit(ConstantPool constantPool);
 
-	void visit(ConstantValueAttribute constantValueAttribute);
+    void visit(ConstantValueAttribute constantValueAttribute);
 
-	void visit(DeprecatedAttribute deprecatedAttribute);
+    void visit(DeprecatedAttribute deprecatedAttribute);
 
-	void visit(DoubleConstant doubleConstant);
+    void visit(DoubleConstant doubleConstant);
 
-	void visit(EnclosingMethodAttribute enclosingMethodAttribute);
+    void visit(EnclosingMethodAttribute enclosingMethodAttribute);
 
-	void visit(ExceptionHandler exceptionHandler);
+    void visit(ExceptionHandler exceptionHandler);
 
-	void visit(ExceptionsAttribute exceptionsAttribute);
+    void visit(ExceptionsAttribute exceptionsAttribute);
 
-	void visit(Field field);
+    void visit(Field field);
 
-	void visit(FieldPool fieldPool);
+    void visit(FieldPool fieldPool);
 
-	void visit(FieldRefConstant fieldRefConstant);
+    void visit(FieldRefConstant fieldRefConstant);
 
-	void visit(FloatConstant floatConstant);
+    void visit(FloatConstant floatConstant);
 
-	void visit(ClassFile.Header header);
+    void visit(ClassFile.Header header);
 
-	void visit(InnerClass innerClass);
+    void visit(InnerClass innerClass);
 
-	void visit(InnerClassesAttribute innerClassesAttribute);
+    void visit(InnerClassesAttribute innerClassesAttribute);
 
-	void visit(IntegerConstant integerConstant);
+    void visit(IntegerConstant integerConstant);
 
-	void visit(InterfaceMethodRefConstant interfaceMethodRefConstant);
+    void visit(InterfaceMethodRefConstant interfaceMethodRefConstant);
 
-	void visit(LineNumber lineNumber);
+    void visit(InvokeDynamicConstant invokeDynamicConstant);
 
-	void visit(LineNumberTableAttribute lineNumberTableAttribute);
+    void visit(LineNumber lineNumber);
 
-	void visit(LocalVariable localVariable);
+    void visit(LineNumberTableAttribute lineNumberTableAttribute);
 
-	void visit(LocalVariableTableAttribute localVariableTableAttribute);
+    void visit(LocalVariable localVariable);
 
-	void visit(LocalVariableType localVariableType);
+    void visit(LocalVariableTableAttribute localVariableTableAttribute);
 
-	void visit(LocalVariableTypeTableAttribute localVariableTypeTableAttribute);
+    void visit(LocalVariableType localVariableType);
 
-	void visit(LongConstant longConstant);
+    void visit(LocalVariableTypeTableAttribute localVariableTypeTableAttribute);
 
-	void visit(Method method);
+    void visit(LongConstant longConstant);
 
-	void visit(MethodPool methodPool);
+    void visit(Method method);
 
-	void visit(MethodRefConstant methodRefConstant);
+    void visit(MethodHandleConstant methodHandleConstant);
 
-	void visit(NameAndTypeConstant nameAndTypeConstant);
+    void visit(MethodPool methodPool);
 
-	void visit(NullConstant nullConstant);
+    void visit(MethodRefConstant methodRefConstant);
 
-	void visit(ObjectType objectType);
+    void visit(MethodTypeConstant methodTypeConstant);
 
-	void visit(RuntimeInvisibleAnnotationsAttribute runtimeInvisibleAnnotationsAttribute);
+    void visit(NameAndTypeConstant nameAndTypeConstant);
 
-	void visit(RuntimeInvisibleParameterAnnotationsAttribute runtimeInvisibleParameterAnnotationsAttribute);
+    void visit(NullConstant nullConstant);
 
-	void visit(RuntimeVisibleAnnotationsAttribute runtimeVisibleAnnotationsAttribute);
+    void visit(ObjectType objectType);
 
-	void visit(RuntimeVisibleParameterAnnotationsAttribute runtimeVisibleParameterAnnotationsAttribute);
+    void visit(RuntimeInvisibleAnnotationsAttribute runtimeInvisibleAnnotationsAttribute);
 
-	void visit(SignatureAttribute signatureAttribute);
+    void visit(RuntimeInvisibleParameterAnnotationsAttribute runtimeInvisibleParameterAnnotationsAttribute);
 
-	void visit(SourceDebugExtensionAttribute sourceDebugExtensionAttribute);
+    void visit(RuntimeVisibleAnnotationsAttribute runtimeVisibleAnnotationsAttribute);
 
-	void visit(SourceFileAttribute sourceFileAttribute);
+    void visit(RuntimeVisibleParameterAnnotationsAttribute runtimeVisibleParameterAnnotationsAttribute);
 
-	void visit(StringConstant stringConstant);
+    void visit(SignatureAttribute signatureAttribute);
 
-	void visit(SyntheticAttribute syntheticAttribute);
+    void visit(SourceDebugExtensionAttribute sourceDebugExtensionAttribute);
 
-	void visit(UnknownAttribute unknownAttribute);
+    void visit(SourceFileAttribute sourceFileAttribute);
 
-	void visit(UTF8Constant utf8Constant);
+    void visit(StringConstant stringConstant);
+
+    void visit(SyntheticAttribute syntheticAttribute);
+
+    void visit(UnknownAttribute unknownAttribute);
+
+    void visit(UTF8Constant utf8Constant);
 
 }
