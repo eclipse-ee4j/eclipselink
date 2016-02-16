@@ -25,7 +25,7 @@ import java.util.List;
  *
  * @author Roman Grigoriadi
  */
-public class ArrayItem extends AbstractItem<Object[]> implements EmbeddedItem {
+public class ArrayItem extends AbstractItem<Object[]> implements UnmarshallerItem<Object[]>, EmbeddedItem {
 
     /**
      * Runtime type class of an array.
@@ -46,7 +46,7 @@ public class ArrayItem extends AbstractItem<Object[]> implements EmbeddedItem {
     }
 
     @Override
-    public void appendItem(CurrentItem<?> valueItem) {
+    public void appendItem(UnmarshallerItem<?> valueItem) {
         appendCaptor(valueItem.getInstance());
     }
 
@@ -66,7 +66,7 @@ public class ArrayItem extends AbstractItem<Object[]> implements EmbeddedItem {
     }
 
     @Override
-    public CurrentItem<?> newItem(String fieldName, JsonValueType jsonValueType) {
+    public UnmarshallerItem<?> newItem(String fieldName, JsonValueType jsonValueType) {
         Type actualValueType = componentClass;
         return new CurrentItemBuilder().withWrapper(this).withType(actualValueType).withJsonValueType(jsonValueType).build();
     }

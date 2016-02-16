@@ -20,7 +20,7 @@ public class OffsetDateTimeTypeConverter extends AbstractTypeConverter<OffsetDat
 
     @Override
     public String toJson(OffsetDateTime object) {
-        return quoteString(object.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
+        return object.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
     }
 
 }

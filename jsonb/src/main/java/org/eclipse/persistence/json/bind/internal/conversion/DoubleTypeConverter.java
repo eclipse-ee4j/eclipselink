@@ -32,12 +32,12 @@ public class DoubleTypeConverter extends AbstractTypeConverter<Double> {
     public String toJson(Double object) {
         if (object.isInfinite()
                 && object > 0) {
-            return quoteString(POSITIVE_INFINITY);
+            return POSITIVE_INFINITY;
         } else if (object.isInfinite()
                 && object < 0) {
-            return quoteString(NEGATIVE_INFINITY);
+            return NEGATIVE_INFINITY;
         } else if (object.isNaN()) {
-            return quoteString(NAN);
+            return NAN;
         }
         return String.valueOf(object);
     }

@@ -16,9 +16,9 @@ package org.eclipse.persistence.json.bind.internal;
 import org.eclipse.persistence.json.bind.internal.naming.PropertyNamingStrategy;
 import org.eclipse.persistence.json.bind.internal.properties.MessageKeys;
 import org.eclipse.persistence.json.bind.internal.properties.Messages;
-import org.eclipse.persistence.json.bind.internal.unmarshaller.CurrentItem;
 import org.eclipse.persistence.json.bind.internal.unmarshaller.CurrentItemBuilder;
 import org.eclipse.persistence.json.bind.internal.unmarshaller.JsonValueType;
+import org.eclipse.persistence.json.bind.internal.unmarshaller.UnmarshallerItem;
 
 import javax.json.Json;
 import javax.json.bind.JsonbConfig;
@@ -44,7 +44,7 @@ public class Unmarshaller extends JsonTextProcessor {
      * Stack of processed objects.
      * As events are discovered by {@link JsonParser} objects are created and pushed to this stack.
      */
-    private CurrentItem<?> currentItem;
+    private UnmarshallerItem<?> currentItem;
 
     /**
      * Currently processed JSON item key name.
@@ -96,9 +96,9 @@ public class Unmarshaller extends JsonTextProcessor {
     @SuppressWarnings("unchecked")
     public <T> T parse() {
         final JsonbContext context = new JsonbContext(jsonbConfig, mappingContext);
-        return new JsonbContextCommand<T>() {
+        new JsonbContextCommand() {
             @Override
-            protected T doInJsonbContext() {
+            protected void doInJsonbContext() {
                 while (parser.hasNext()) {
                     JsonParser.Event event = parser.next();
                     switch (event) {
@@ -126,9 +126,9 @@ public class Unmarshaller extends JsonTextProcessor {
                             throw new JsonbException(Messages.getMessage(MessageKeys.NOT_VALUE_TYPE, event));
                     }
                 }
-                return (T) currentItem.getInstance();
             }
         }.execute(context);
+        return (T) currentItem.getInstance();
     }
 
     /**
@@ -141,7 +141,7 @@ public class Unmarshaller extends JsonTextProcessor {
             currentItem = new CurrentItemBuilder().withType(rootType != Object.class ? rootType : jsonValueType.getConversionType()).withJsonValueType(jsonValueType).build();
             return;
         }
-        CurrentItem<?> wrapper = currentItem;
+        UnmarshallerItem<?> wrapper = currentItem;
         currentItem = wrapper.newItem(getClassPropertyName(currentFieldName), jsonValueType);
     }
 
@@ -150,9 +150,9 @@ public class Unmarshaller extends JsonTextProcessor {
         if (currentItem.getWrapper() == null) {
             return;
         }
-        CurrentItem<?> finished = currentItem;
-        finished.getWrapper().appendItem(finished);
-        currentItem = finished.getWrapper();
+        UnmarshallerItem<?> finished = currentItem;
+        ((UnmarshallerItem<?>) finished.getWrapper()).appendItem(finished);
+        currentItem = (UnmarshallerItem<?>) finished.getWrapper();
     }
 
     /**

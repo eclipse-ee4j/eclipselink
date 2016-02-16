@@ -13,6 +13,7 @@
 package org.eclipse.persistence.json.bind.defaultmapping.specific;
 
 import org.eclipse.persistence.json.bind.JsonBindingBuilder;
+import org.eclipse.persistence.json.bind.defaultmapping.generics.model.ScalarValueWrapper;
 import org.junit.Test;
 
 import javax.json.bind.Jsonb;
@@ -34,25 +35,25 @@ public class SpecificTest {
     @Test
     public void testMarshallBigDecimal() {
         final Jsonb jsonb = (new JsonBindingBuilder()).build();
-        assertEquals("100", jsonb.toJson(BigDecimal.valueOf(100L)));
-        assertEquals("100.1", jsonb.toJson(BigDecimal.valueOf(100.1D)));
+        assertEquals("{\"value\":100}", jsonb.toJson(new ScalarValueWrapper<>(BigDecimal.valueOf(100L))));
+        assertEquals("{\"value\":100.1}", jsonb.toJson(new ScalarValueWrapper<>(BigDecimal.valueOf(100.1D))));
     }
 
     @Test
     public void testMarshallBigInteger() {
         final Jsonb jsonb = (new JsonBindingBuilder()).build();
-        assertEquals("100", jsonb.toJson(BigInteger.valueOf(100)));
+        assertEquals("{\"value\":100}", jsonb.toJson(new ScalarValueWrapper<>(BigInteger.valueOf(100))));
     }
 
     @Test
     public void testMarshallUri() throws URISyntaxException {
         final Jsonb jsonb = (new JsonBindingBuilder()).build();
-        assertEquals("\"http://www.oracle.com\"", jsonb.toJson(new URI("http://www.oracle.com")));
+        assertEquals("{\"value\":\"http://www.oracle.com\"}", jsonb.toJson(new ScalarValueWrapper<>(new URI("http://www.oracle.com"))));
     }
 
     @Test
     public void testMarshallUrl() throws MalformedURLException {
         final Jsonb jsonb = (new JsonBindingBuilder()).build();
-        assertEquals("\"http://www.oracle.com\"", jsonb.toJson(new URL("http://www.oracle.com")));
+        assertEquals("{\"value\":\"http://www.oracle.com\"}", jsonb.toJson(new ScalarValueWrapper<>(new URL("http://www.oracle.com"))));
     }
 }

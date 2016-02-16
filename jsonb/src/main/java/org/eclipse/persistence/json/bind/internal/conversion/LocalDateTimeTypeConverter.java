@@ -20,7 +20,7 @@ public class LocalDateTimeTypeConverter extends AbstractTypeConverter<LocalDateT
 
     @Override
     public String toJson(LocalDateTime object) {
-        return quoteString(object.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+        return object.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
     }
 
 }

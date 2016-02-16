@@ -20,7 +20,7 @@ public class ZonedDateTimeTypeConverter extends AbstractTypeConverter<ZonedDateT
 
     @Override
     public String toJson(ZonedDateTime object) {
-        return quoteString(object.format(DateTimeFormatter.ISO_ZONED_DATE_TIME));
+        return object.format(DateTimeFormatter.ISO_ZONED_DATE_TIME);
     }
 
 }

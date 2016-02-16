@@ -29,7 +29,7 @@ import java.util.Optional;
  *
  * @author Roman Grigoriadi
  */
-class ObjectItem<T> extends AbstractItem<T> {
+class ObjectItem<T> extends AbstractItem<T> implements UnmarshallerItem<T> {
 
 
     /**
@@ -46,7 +46,7 @@ class ObjectItem<T> extends AbstractItem<T> {
      * @param abstractItem
      */
     @Override
-    public void appendItem(CurrentItem<?> abstractItem) {
+    public void appendItem(UnmarshallerItem<?> abstractItem) {
         abstractItem.getWrapperPropertyModel().setValue(getInstance(), abstractItem.getInstance());
     }
 
@@ -78,7 +78,7 @@ class ObjectItem<T> extends AbstractItem<T> {
             final Class<?> rawAdaptTo = ReflectionUtils.getRawType(adapterInfo.getToType());
             Object toAdapt = getTypeConverter().supportsFromJson(rawAdaptTo) ?
                     getTypeConverter().fromJson(value, rawAdaptTo) : value;
-            Object adapted = null;
+            Object adapted;
             try {
                 adapted = ((JsonbAdapter<?, Object>)adapterInfo.getAdapter()).adaptTo(toAdapt);
             } catch (Exception e) {
@@ -96,7 +96,7 @@ class ObjectItem<T> extends AbstractItem<T> {
     }
 
     @Override
-    public CurrentItem<?> newItem(String fieldName, JsonValueType jsonValueType) {
+    public UnmarshallerItem<?> newItem(String fieldName, JsonValueType jsonValueType) {
         //identify field model of currently processed class model
         PropertyModel newPropertyModel = getClassModel().findPropertyModelByJsonReadName(fieldName);
 

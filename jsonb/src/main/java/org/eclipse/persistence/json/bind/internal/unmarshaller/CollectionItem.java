@@ -23,7 +23,7 @@ import java.util.Collection;
  *
  * @author Roman Grigoriadi
  */
-class CollectionItem<T extends Collection<?>> extends AbstractItem<T> implements EmbeddedItem {
+class CollectionItem<T extends Collection<?>> extends AbstractItem<T> implements UnmarshallerItem<T>, EmbeddedItem {
 
     /**
      * Generic bound parameter of List.
@@ -41,7 +41,7 @@ class CollectionItem<T extends Collection<?>> extends AbstractItem<T> implements
     }
 
     @Override
-    public void appendItem(CurrentItem<?> abstractItem) {
+    public void appendItem(UnmarshallerItem<?> abstractItem) {
         appendCaptor(abstractItem.getInstance());
     }
 
@@ -61,7 +61,7 @@ class CollectionItem<T extends Collection<?>> extends AbstractItem<T> implements
     }
 
     @Override
-    public CurrentItem<?> newItem(String fieldName, JsonValueType jsonValueType) {
+    public UnmarshallerItem<?> newItem(String fieldName, JsonValueType jsonValueType) {
         return newCollectionOrMapItem(fieldName, collectionValueType, jsonValueType);
     }
 

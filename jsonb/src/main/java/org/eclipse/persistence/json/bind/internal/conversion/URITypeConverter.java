@@ -20,7 +20,7 @@ public class URITypeConverter extends AbstractTypeConverter<URI> {
 
     @Override
     public String toJson(URI object) {
-        return quoteString(object.toString());
+        return object.toString();
     }
 
 }

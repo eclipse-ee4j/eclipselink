@@ -17,10 +17,6 @@ public abstract class AbstractTypeConverter<T> implements SupportedTypeConverter
         this.clazzType = clazzType;
     }
 
-    protected String quoteString(String string) {
-        return String.join("", "\"", string, "\"");
-    }
-
     @Override
     public boolean supportsFromJson(Class<?> type) {
         return clazzType == type;

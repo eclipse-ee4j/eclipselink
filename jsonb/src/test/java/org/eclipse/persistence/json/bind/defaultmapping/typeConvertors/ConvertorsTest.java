@@ -42,7 +42,7 @@ public class ConvertorsTest {
     @Test
     public void testCharacterConvetor() throws NoSuchFieldException {
         CharacterTypeConverter characterTypeConverter = new CharacterTypeConverter();
-        assertEquals("\"\uFFFF\"", characterTypeConverter.toJson('\uFFFF'));
+        assertEquals("\uFFFF", characterTypeConverter.toJson('\uFFFF'));
         assertEquals('\uFFFF', characterTypeConverter.fromJson("\uFFFF", Character.class), 0);
     }
 
@@ -61,13 +61,13 @@ public class ConvertorsTest {
         dateCalendar.set(2015, Calendar.APRIL, 3);
 
         // marshal to ISO_DATE
-        assertEquals("\"2015-04-03\"", calendarTypeConverter.toJson(dateCalendar));
+        assertEquals("2015-04-03", calendarTypeConverter.toJson(dateCalendar));
         assertEquals(dateCalendar, calendarTypeConverter.fromJson("2015-04-03", Calendar.class));
 
         // marshal to ISO_DATE_TIME
         Calendar dateTimeCalendar = new Calendar.Builder().setDate(2015, 3, 3).build();
 
-        assertEquals("\"2015-04-03T00:00:00\"", calendarTypeConverter.toJson(dateTimeCalendar));
+        assertEquals("2015-04-03T00:00:00", calendarTypeConverter.toJson(dateTimeCalendar));
         assertEquals(dateTimeCalendar, calendarTypeConverter.fromJson("2015-04-03T00:00:00", Calendar.class));
     }
 
@@ -77,13 +77,13 @@ public class ConvertorsTest {
         SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
         Date parsedDate = sdf.parse("04.03.2015 12:10:20");
 
-        assertEquals("\"2015-03-04T12:10:20\"", dateTypeConverter.toJson(parsedDate));
+        assertEquals("2015-03-04T12:10:20", dateTypeConverter.toJson(parsedDate));
         assertEquals(parsedDate, dateTypeConverter.fromJson("2015-03-04T12:10:20", null));
 
         sdf = new SimpleDateFormat("dd.MM.yyyy");
         parsedDate = sdf.parse("04.03.2015");
 
-        assertEquals("\"2015-03-04T00:00:00\"", dateTypeConverter.toJson(parsedDate));
+        assertEquals("2015-03-04T00:00:00", dateTypeConverter.toJson(parsedDate));
         assertEquals(parsedDate, dateTypeConverter.fromJson("2015-03-04T00:00:00", null));
     }
 
@@ -94,15 +94,15 @@ public class ConvertorsTest {
         assertEquals(1.2, doubleTypeConverter.fromJson("1.2", Double.class), 0);
 
         // Double.NEGATIVE_INFINITY
-        assertEquals("\"NEGATIVE_INFINITY\"", doubleTypeConverter.toJson(Double.NEGATIVE_INFINITY));
+        assertEquals("NEGATIVE_INFINITY", doubleTypeConverter.toJson(Double.NEGATIVE_INFINITY));
         assertEquals(Double.NEGATIVE_INFINITY, doubleTypeConverter.fromJson("NEGATIVE_INFINITY", Double.class), 0);
 
         // Double.POSITIVE_INFINITY
-        assertEquals("\"POSITIVE_INFINITY\"", doubleTypeConverter.toJson(Double.POSITIVE_INFINITY));
+        assertEquals("POSITIVE_INFINITY", doubleTypeConverter.toJson(Double.POSITIVE_INFINITY));
         assertEquals(Double.POSITIVE_INFINITY, doubleTypeConverter.fromJson("POSITIVE_INFINITY", Double.class), 0);
 
         // Double.NaN
-        assertEquals("\"NaN\"", doubleTypeConverter.toJson(Double.NaN));
+        assertEquals("NaN", doubleTypeConverter.toJson(Double.NaN));
         assertEquals(Double.NaN, doubleTypeConverter.fromJson("NaN", Double.class), 0);
     }
 
@@ -116,7 +116,7 @@ public class ConvertorsTest {
     @Test
     public void testInstantConvetor() {
         InstantTypeConverter instantTypeConverter = new InstantTypeConverter();
-        assertEquals("\"2015-03-03T23:00:00Z\"", instantTypeConverter.toJson(Instant.parse("2015-03-03T23:00:00Z")));
+        assertEquals("2015-03-03T23:00:00Z", instantTypeConverter.toJson(Instant.parse("2015-03-03T23:00:00Z")));
         assertEquals(Instant.parse("2015-03-03T23:00:00Z"), instantTypeConverter.fromJson("2015-03-03T23:00:00Z", Instant.class));
     }
 
@@ -148,7 +148,7 @@ public class ConvertorsTest {
     public void testLocalDateTimeConvetor() {
         LocalDateTimeTypeConverter localDateTimeTypeConverter = new LocalDateTimeTypeConverter();
 
-        assertEquals("\"2015-02-16T13:21:00\"", localDateTimeTypeConverter.toJson(LocalDateTime.of(2015, 2, 16, 13, 21)));
+        assertEquals("2015-02-16T13:21:00", localDateTimeTypeConverter.toJson(LocalDateTime.of(2015, 2, 16, 13, 21)));
         assertEquals(LocalDateTime.of(2015, 2, 16, 13, 21), localDateTimeTypeConverter.fromJson("2015-02-16T13:21:00", LocalDateTime.class));
     }
 
@@ -156,7 +156,7 @@ public class ConvertorsTest {
     public void testLocalDateConvetor() {
         LocalDateTypeConverter localDateTypeConverter = new LocalDateTypeConverter();
 
-        assertEquals("\"2013-08-10\"", localDateTypeConverter.toJson(LocalDate.of(2013, Month.AUGUST, 10)));
+        assertEquals("2013-08-10", localDateTypeConverter.toJson(LocalDate.of(2013, Month.AUGUST, 10)));
         assertEquals(LocalDate.of(2013, Month.AUGUST, 10), localDateTypeConverter.fromJson("2013-08-10", LocalDate.class));
     }
 
@@ -164,7 +164,7 @@ public class ConvertorsTest {
     public void testLocalTimeConvetor() {
         LocalTimeTypeConverter localTimeTypeConverter = new LocalTimeTypeConverter();
 
-        assertEquals("\"22:33:00\"", localTimeTypeConverter.toJson(LocalTime.of(22, 33)));
+        assertEquals("22:33:00", localTimeTypeConverter.toJson(LocalTime.of(22, 33)));
         assertEquals(LocalTime.of(22, 33), localTimeTypeConverter.fromJson("22:33:00", LocalTime.class));
     }
 
@@ -189,7 +189,7 @@ public class ConvertorsTest {
     public void testOffsetDateTimeConvetor() {
         OffsetDateTimeTypeConverter offsetDateTimeTypeConverter = new OffsetDateTimeTypeConverter();
 
-        assertEquals("\"2015-02-16T13:21:00+02:00\"",
+        assertEquals("2015-02-16T13:21:00+02:00",
                 offsetDateTimeTypeConverter.toJson(OffsetDateTime.of(2015, 2, 16, 13, 21, 0, 0, ZoneOffset.of("+02:00"))));
         assertEquals(OffsetDateTime.of(2015, 2, 16, 13, 21, 0, 0, ZoneOffset.of("+02:00")), offsetDateTimeTypeConverter.fromJson("2015-02-16T13:21:00+02:00", null));
     }
@@ -198,7 +198,7 @@ public class ConvertorsTest {
     public void testOffsetTimeConvetor() {
         OffsetTimeTypeConverter offsetTimeTypeConverter = new OffsetTimeTypeConverter();
 
-        assertEquals("\"13:21:15.000000016+02:00\"", offsetTimeTypeConverter.toJson(OffsetTime.of(13, 21, 15, 16, ZoneOffset.of("+02:00"))));
+        assertEquals("13:21:15.000000016+02:00", offsetTimeTypeConverter.toJson(OffsetTime.of(13, 21, 15, 16, ZoneOffset.of("+02:00"))));
         assertEquals(OffsetTime.of(13, 21, 15, 16, ZoneOffset.of("+02:00")), offsetTimeTypeConverter.fromJson("13:21:15.000000016+02:00", null));
     }
 
@@ -219,9 +219,9 @@ public class ConvertorsTest {
         assertEquals("null", optionalDoubleTypeConverter.toJson(OptionalDouble.empty()));
         assertEquals("10.0", optionalDoubleTypeConverter.toJson(OptionalDouble.of(10)));
         assertEquals("10.1", optionalDoubleTypeConverter.toJson(OptionalDouble.of(10.1)));
-        assertEquals("\"POSITIVE_INFINITY\"", optionalDoubleTypeConverter.toJson(OptionalDouble.of(Double.POSITIVE_INFINITY)));
-        assertEquals("\"NEGATIVE_INFINITY\"", optionalDoubleTypeConverter.toJson(OptionalDouble.of(Double.NEGATIVE_INFINITY)));
-        assertEquals("\"NaN\"", optionalDoubleTypeConverter.toJson(OptionalDouble.of(Double.NaN)));
+        assertEquals("POSITIVE_INFINITY", optionalDoubleTypeConverter.toJson(OptionalDouble.of(Double.POSITIVE_INFINITY)));
+        assertEquals("NEGATIVE_INFINITY", optionalDoubleTypeConverter.toJson(OptionalDouble.of(Double.NEGATIVE_INFINITY)));
+        assertEquals("NaN", optionalDoubleTypeConverter.toJson(OptionalDouble.of(Double.NaN)));
         assertEquals(OptionalDouble.empty(), optionalDoubleTypeConverter.fromJson("null", null));
         assertEquals(OptionalDouble.of(10), optionalDoubleTypeConverter.fromJson("10", null));
         assertEquals(OptionalDouble.of(10.1), optionalDoubleTypeConverter.fromJson("10.1", null));
@@ -252,7 +252,7 @@ public class ConvertorsTest {
     public void testStringConvetor() {
         StringTypeConverter stringTypeConverter = new StringTypeConverter();
 
-        assertEquals("\"test\"", stringTypeConverter.toJson("test"));
+        assertEquals("test", stringTypeConverter.toJson("test"));
         assertEquals("test2", stringTypeConverter.fromJson("test2", null));
     }
 
@@ -260,7 +260,7 @@ public class ConvertorsTest {
     public void testTimeZoneConvetor() {
         TimeZoneTypeConverter timeZoneTypeConverter = new TimeZoneTypeConverter();
 
-        assertEquals("\"Europe/Prague\"", timeZoneTypeConverter.toJson(TimeZone.getTimeZone("Europe/Prague")));
+        assertEquals("Europe/Prague", timeZoneTypeConverter.toJson(TimeZone.getTimeZone("Europe/Prague")));
         assertEquals(TimeZone.getTimeZone("Europe/Prague"), timeZoneTypeConverter.fromJson("Europe/Prague", null));
     }
 
@@ -268,7 +268,7 @@ public class ConvertorsTest {
     public void testUriConvertor() throws URISyntaxException {
         URITypeConverter uriTypeConverter = new URITypeConverter();
 
-        assertEquals("\"http://www.oracle.com\"", uriTypeConverter.toJson(new URI("http://www.oracle.com")));
+        assertEquals("http://www.oracle.com", uriTypeConverter.toJson(new URI("http://www.oracle.com")));
         assertEquals(new URI("http://www.oracle.com"), uriTypeConverter.fromJson("http://www.oracle.com", null));
     }
 
@@ -276,7 +276,7 @@ public class ConvertorsTest {
     public void testUrlConvertor() throws MalformedURLException {
         URLTypeConverter urlTypeConverter = new URLTypeConverter();
 
-        assertEquals("\"http://www.oracle.com\"", urlTypeConverter.toJson(new URL("http://www.oracle.com")));
+        assertEquals("http://www.oracle.com", urlTypeConverter.toJson(new URL("http://www.oracle.com")));
         assertEquals(new URL("http://www.oracle.com"), urlTypeConverter.fromJson("http://www.oracle.com", null));
     }
 
@@ -284,7 +284,7 @@ public class ConvertorsTest {
     public void testZonedDateTimeConvertor() {
         ZonedDateTimeTypeConverter zonedDateTimeTypeConverter = new ZonedDateTimeTypeConverter();
 
-        assertEquals("\"2015-02-16T13:21:00+01:00[Europe/Prague]\"",
+        assertEquals("2015-02-16T13:21:00+01:00[Europe/Prague]",
                 zonedDateTimeTypeConverter.toJson(ZonedDateTime.of(2015, 2, 16, 13, 21, 0, 0, ZoneId.of("Europe/Prague"))));
         assertEquals(ZonedDateTime.of(2015, 2, 16, 13, 21, 0, 0, ZoneId.of("Europe/Prague")),
                 zonedDateTimeTypeConverter.fromJson("2015-02-16T13:21:00+01:00[Europe/Prague]", null));
@@ -294,7 +294,7 @@ public class ConvertorsTest {
     public void testEnum() {
         EnumTypeConverter enumTypeConverter = new EnumTypeConverter();
 
-        assertEquals("\"HIGH\"", enumTypeConverter.toJson(Level.HIGH));
+        assertEquals("HIGH", enumTypeConverter.toJson(Level.HIGH));
         assertEquals(Level.HIGH, enumTypeConverter.fromJson("HIGH", Level.class));
     }
 

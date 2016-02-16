@@ -27,7 +27,7 @@ public class URLTypeConverter extends AbstractTypeConverter<URL> {
 
     @Override
     public String toJson(URL object) {
-        return quoteString(object.toString());
+        return object.toString();
     }
 
 }

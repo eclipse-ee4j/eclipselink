@@ -26,7 +26,7 @@ public class TimeZoneTypeConverter extends AbstractTypeConverter<TimeZone> {
 
     @Override
     public String toJson(TimeZone object) {
-        return quoteString((object).getID());
+        return (object).getID();
     }
 
 }

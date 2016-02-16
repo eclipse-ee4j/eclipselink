@@ -15,13 +15,14 @@ package org.eclipse.persistence.json.bind;
 import org.eclipse.persistence.json.bind.internal.MappingContext;
 import org.eclipse.persistence.json.bind.internal.Marshaller;
 import org.eclipse.persistence.json.bind.internal.Unmarshaller;
-import org.eclipse.persistence.json.bind.internal.properties.MessageKeys;
-import org.eclipse.persistence.json.bind.internal.properties.Messages;
 
 import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbConfig;
 import javax.json.bind.JsonbException;
-import java.io.*;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Reader;
+import java.io.Writer;
 import java.lang.reflect.Type;
 
 /**
@@ -78,52 +79,36 @@ public class JsonBinding implements Jsonb {
     @Override
     public String toJson(Object object) throws JsonbException {
         final Marshaller marshaller = new Marshaller(mappingContext, jsonbConfig);
-        return marshaller.marshall(object);
+        return marshaller.marshallToString(object);
     }
 
     @Override
     public String toJson(Object object, Type runtimeType) throws JsonbException {
         final Marshaller marshaller = new Marshaller(mappingContext, jsonbConfig, runtimeType);
-        return marshaller.marshall(object);
+        return marshaller.marshallToString(object);
     }
 
     @Override
     public void toJson(Object object, Writer writer) throws JsonbException {
-        final Marshaller marshaller = new Marshaller(mappingContext, jsonbConfig);
-        try {
-            marshaller.marshall(object, writer);
-        } catch (IOException e) {
-            throw new JsonbException(Messages.getMessage(MessageKeys.CANNOT_MARSHAL_OBJECT), e);
-        }
+        final Marshaller marshaller = new Marshaller(mappingContext, jsonbConfig, writer);
+        marshaller.marshall(object);
     }
 
     @Override
     public void toJson(Object object, Type runtimeType, Writer writer) throws JsonbException {
-        final Marshaller marshaller = new Marshaller(mappingContext, jsonbConfig, runtimeType);
-        try {
-            marshaller.marshall(object, writer);
-        } catch (IOException e) {
-            throw new JsonbException(Messages.getMessage(MessageKeys.CANNOT_MARSHAL_OBJECT), e);
-        }
+        final Marshaller marshaller = new Marshaller(mappingContext, jsonbConfig, runtimeType, writer);
+        marshaller.marshall(object);
     }
 
     @Override
     public void toJson(Object object, OutputStream stream) throws JsonbException {
-        final Marshaller marshaller = new Marshaller(mappingContext, jsonbConfig);
-        try {
-            marshaller.marshall(object, stream);
-        } catch (IOException e) {
-            throw new JsonbException(Messages.getMessage(MessageKeys.CANNOT_MARSHAL_OBJECT), e);
-        }
+        final Marshaller marshaller = new Marshaller(mappingContext, jsonbConfig, stream);
+        marshaller.marshall(object);
     }
 
     @Override
     public void toJson(Object object, Type runtimeType, OutputStream stream) throws JsonbException {
         final Marshaller marshaller = new Marshaller(mappingContext, jsonbConfig, runtimeType);
-        try {
-            marshaller.marshall(object, stream);
-        } catch (IOException e) {
-            throw new JsonbException(Messages.getMessage(MessageKeys.CANNOT_MARSHAL_OBJECT), e);
-        }
+        marshaller.marshall(object);
     }
 }

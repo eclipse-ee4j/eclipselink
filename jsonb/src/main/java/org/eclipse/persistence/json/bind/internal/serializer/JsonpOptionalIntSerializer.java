@@ -11,34 +11,32 @@
  * Roman Grigoriadi
  ******************************************************************************/
 
-package org.eclipse.persistence.json.bind.internal;
+package org.eclipse.persistence.json.bind.internal.serializer;
 
+import javax.json.stream.JsonGenerator;
 import java.util.Objects;
+import java.util.OptionalInt;
 
 /**
- * Manages setting and removing of jsonb context to/from thread local.
+ * Serializes OptionalInt.
  *
  * @author Roman Grigoriadi
  */
-abstract class JsonbContextCommand {
+class JsonpOptionalIntSerializer extends AbstractJsonpSerializer<OptionalInt> {
 
-    /**
-     * Set JsonbContext to thread local, call business and unset thereafter.
-     *
-     * @param context jsonb context not null
-     */
-    public final void execute(JsonbContext context) {
-        Objects.nonNull(context);
-        try {
-            JsonbContext.setInstance(context);
-            doInJsonbContext();
-        } finally {
-            JsonbContext.removeInstance();
-        }
+    @Override
+    void writeValue(OptionalInt value, JsonGenerator jsonGenerator) {
+        jsonGenerator.write(value.getAsInt());
     }
 
-    /**
-     * Implement you business work, which will have JsonbContext available in thread local here.
-     */
-    protected abstract void doInJsonbContext();
+    @Override
+    void writeValue(String keyName, OptionalInt value, JsonGenerator jsonGenerator) {
+        jsonGenerator.write(keyName, value.getAsInt());
+    }
+
+    @Override
+    <X> boolean supports(X value) {
+        Objects.requireNonNull(value);
+        return value instanceof OptionalInt;
+    }
 }

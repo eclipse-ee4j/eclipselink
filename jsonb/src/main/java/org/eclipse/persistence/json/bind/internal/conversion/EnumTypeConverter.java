@@ -24,7 +24,7 @@ public class EnumTypeConverter extends AbstractTypeConverter<Enum> {
 
     @Override
     public String toJson(Enum object) {
-        return quoteString(object.toString());
+        return object.toString();
     }
 
     @Override

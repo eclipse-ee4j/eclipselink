@@ -20,7 +20,7 @@ public class ZoneIdTypeConverter extends AbstractTypeConverter<ZoneId> {
 
     @Override
     public String toJson(ZoneId object) {
-        return quoteString(object.getId());
+        return object.getId();
     }
 
 }

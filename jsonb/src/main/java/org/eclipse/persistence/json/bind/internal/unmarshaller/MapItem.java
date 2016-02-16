@@ -25,7 +25,7 @@ import java.util.Map;
  *
  * @author Roman Grigoriadi
  */
-public class MapItem extends AbstractItem<Map<?, ?>> implements EmbeddedItem {
+public class MapItem extends AbstractItem<Map<?, ?>> implements UnmarshallerItem<Map<?, ?>>, EmbeddedItem {
 
     /**
      * Type of value in the map.
@@ -45,7 +45,7 @@ public class MapItem extends AbstractItem<Map<?, ?>> implements EmbeddedItem {
 
 
     @Override
-    public void appendItem(CurrentItem<?> valueItem) {
+    public void appendItem(UnmarshallerItem<?> valueItem) {
         appendCaptor(valueItem.getJsonKeyName(), valueItem.getInstance());
     }
 
@@ -65,7 +65,7 @@ public class MapItem extends AbstractItem<Map<?, ?>> implements EmbeddedItem {
     }
 
     @Override
-    public CurrentItem<?> newItem(String fieldName, JsonValueType jsonValueType) {
+    public UnmarshallerItem<?> newItem(String fieldName, JsonValueType jsonValueType) {
         return newCollectionOrMapItem(fieldName, mapValueRuntimeType, jsonValueType);
     }
 

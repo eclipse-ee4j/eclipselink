@@ -15,16 +15,10 @@ package org.eclipse.persistence.json.bind.defaultmapping.jsonp;
 import org.eclipse.persistence.json.bind.JsonBindingBuilder;
 import org.junit.Test;
 
-import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonBuilderFactory;
-import javax.json.JsonObject;
-import javax.json.JsonString;
-import javax.json.JsonValue;
+import javax.json.*;
 import javax.json.bind.Jsonb;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Default mapping JSONP integration tests.
@@ -32,6 +26,15 @@ import static org.junit.Assert.assertTrue;
  * @author Dmitry Kornilov
  */
 public class JsonpTest {
+
+    public static class JsonValueWrapper {
+        public JsonValue jsonValue;
+
+        public JsonValueWrapper(JsonValue jsonValue) {
+            this.jsonValue = jsonValue;
+        }
+    }
+
     @Test
     public void testMarshallJsonObject() {
         final Jsonb jsonb = (new JsonBindingBuilder()).build();
@@ -55,25 +58,25 @@ public class JsonpTest {
                 .add(2)
                 .build();
 
-        assertEquals("[1,2]", jsonb.toJson(jsonArray));
+        assertEquals("{\"jsonValue\":[1,2]}", jsonb.toJson(new JsonValueWrapper(jsonArray)));
     }
 
     @Test
     public void testMarshallJsonValue() {
         final Jsonb jsonb = (new JsonBindingBuilder()).build();
-        assertEquals("true", jsonb.toJson(JsonValue.TRUE));
+        assertEquals("{\"jsonValue\":true}", jsonb.toJson(new JsonValueWrapper(JsonValue.TRUE)));
     }
 
     @Test
     public void testMarshallJsonNumber() {
         final Jsonb jsonb = (new JsonBindingBuilder()).build();
-        assertEquals("10", jsonb.toJson(new JsonpLong(10)));
+        assertEquals("{\"jsonValue\":10}", jsonb.toJson(new JsonValueWrapper(new JsonpLong(10))));
     }
 
     @Test
     public void testMarshallJsonString() {
         final Jsonb jsonb = (new JsonBindingBuilder()).build();
-        assertEquals("\"hello\"", jsonb.toJson(new JsonpString("hello")));
+        assertEquals("{\"jsonValue\":\"hello\"}", jsonb.toJson(new JsonValueWrapper(new JsonpString("hello"))));
     }
 
     // TODO more tests, more sophisticated array and structure tests

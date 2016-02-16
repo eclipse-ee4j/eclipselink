@@ -44,9 +44,9 @@ public class ClassParserTest {
 
     @Test
     public void testDefaultMappingFieldModifiers() {
-        new JsonbContextCommand<Void>() {
+        new JsonbContextCommand() {
             @Override
-            protected Void doInJsonbContext() {
+            protected void doInJsonbContext() {
                 ClassModel model = classParser.parse(FieldModifiersClass.class);
                 assertTrue(model.getPropertyModel("finalString").isReadable());
                 assertFalse(model.getPropertyModel("finalString").isWritable());
@@ -54,7 +54,6 @@ public class ClassParserTest {
                 assertFalse(model.getPropertyModel("staticString").isWritable());
                 assertFalse(model.getPropertyModel("transientString").isReadable());
                 assertFalse(model.getPropertyModel("transientString").isWritable());
-                return null;
             }
         }.execute(jsonbContext);
 
@@ -62,9 +61,9 @@ public class ClassParserTest {
 
     @Test
     public void testDefaultMappingMethodModifiers() {
-        new JsonbContextCommand<Void>() {
+        new JsonbContextCommand() {
             @Override
-            protected Void doInJsonbContext() {
+            protected void doInJsonbContext() {
                 ClassModel model = classParser.parse(MethodModifiersClass.class);
                 assertFalse(model.getPropertyModel("publicFieldWithPrivateMethods").isReadable());
                 assertFalse(model.getPropertyModel("publicFieldWithPrivateMethods").isWritable());
@@ -80,7 +79,6 @@ public class ClassParserTest {
                 object.setSetterWithoutFieldConsumer(withoutFieldConsumer);
                 model.getPropertyModel("getterWithoutFieldValue").setValue(object, "ACCEPTED_VALUE");
                 assertEquals("ACCEPTED_VALUE", accepted.get());
-                return null;
             }
         }.execute(jsonbContext);
     }

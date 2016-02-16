@@ -19,7 +19,7 @@ public class CharacterTypeConverter extends AbstractTypeConverter<Character> {
 
     @Override
     public String toJson(Character object) {
-        return quoteString(object.toString());
+        return object.toString();
     }
 
     @Override

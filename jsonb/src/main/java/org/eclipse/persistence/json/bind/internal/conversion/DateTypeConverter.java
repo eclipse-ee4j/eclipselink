@@ -27,7 +27,7 @@ public class DateTypeConverter extends AbstractTypeConverter<Date> {
     public String toJson(Date object) {
         Calendar calendar = new Calendar.Builder().setInstant(object).build();
         final LocalDateTime localDate = LocalDateTime.ofInstant(calendar.toInstant(), ZoneOffset.systemDefault());
-        return quoteString(localDate.format(DateTimeFormatter.ISO_DATE_TIME));
+        return localDate.format(DateTimeFormatter.ISO_DATE_TIME);
     }
 
 }

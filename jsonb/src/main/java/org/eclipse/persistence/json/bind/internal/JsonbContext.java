@@ -14,13 +14,13 @@
 package org.eclipse.persistence.json.bind.internal;
 
 import org.eclipse.persistence.json.bind.internal.adapter.AdapterMatcher;
-import javax.json.bind.adapter.JsonbAdapter;
 import org.eclipse.persistence.json.bind.internal.adapter.JsonbAdapterInfo;
 import org.eclipse.persistence.json.bind.internal.naming.DefaultNamingStrategies;
 import org.eclipse.persistence.json.bind.internal.naming.PropertyNamingStrategy;
 
 import javax.json.bind.JsonbConfig;
 import javax.json.bind.JsonbException;
+import javax.json.bind.adapter.JsonbAdapter;
 import javax.json.bind.config.PropertyVisibilityStrategy;
 import java.util.List;
 import java.util.Objects;
@@ -46,7 +46,7 @@ public class JsonbContext {
     private final List<JsonbAdapterInfo> adapters;
 
     /**
-     * Creates fully pupolated context.
+     * Creates and initialize context.
      *
      * @param jsonbConfig jsonb jsonbConfig not null
      * @param mappingContext mapping context not null

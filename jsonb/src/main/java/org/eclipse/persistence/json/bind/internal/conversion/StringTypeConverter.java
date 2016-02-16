@@ -18,7 +18,7 @@ public class StringTypeConverter extends AbstractTypeConverter<String> {
 
     @Override
     public String toJson(String object) {
-        return quoteString(object.toString());
+        return object.toString();
     }
 
     @Override

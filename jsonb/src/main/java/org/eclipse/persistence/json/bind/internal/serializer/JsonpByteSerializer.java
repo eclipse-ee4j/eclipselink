@@ -11,34 +11,29 @@
  * Roman Grigoriadi
  ******************************************************************************/
 
-package org.eclipse.persistence.json.bind.internal;
+package org.eclipse.persistence.json.bind.internal.serializer;
 
+import javax.json.stream.JsonGenerator;
 import java.util.Objects;
 
 /**
- * Manages setting and removing of jsonb context to/from thread local.
- *
  * @author Roman Grigoriadi
  */
-abstract class JsonbContextCommand {
+public class JsonpByteSerializer extends AbstractJsonpSerializer<Byte> {
 
-    /**
-     * Set JsonbContext to thread local, call business and unset thereafter.
-     *
-     * @param context jsonb context not null
-     */
-    public final void execute(JsonbContext context) {
-        Objects.nonNull(context);
-        try {
-            JsonbContext.setInstance(context);
-            doInJsonbContext();
-        } finally {
-            JsonbContext.removeInstance();
-        }
+    @Override
+    void writeValue(Byte value, JsonGenerator jsonGenerator) {
+        jsonGenerator.write(value.intValue());
     }
 
-    /**
-     * Implement you business work, which will have JsonbContext available in thread local here.
-     */
-    protected abstract void doInJsonbContext();
+    @Override
+    void writeValue(String keyName, Byte value, JsonGenerator jsonGenerator) {
+        jsonGenerator.write(keyName, value.intValue());
+    }
+
+    @Override
+    <X> boolean supports(X value) {
+        Objects.requireNonNull(value);
+        return value instanceof Byte;
+    }
 }

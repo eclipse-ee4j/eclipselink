@@ -20,7 +20,7 @@ public class PeriodTypeConverter extends AbstractTypeConverter<Period> {
 
     @Override
     public String toJson(Period object) {
-        return quoteString(object.toString());
+        return object.toString();
     }
 
 }

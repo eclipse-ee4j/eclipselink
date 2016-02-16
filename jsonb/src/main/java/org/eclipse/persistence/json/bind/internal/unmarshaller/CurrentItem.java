@@ -21,32 +21,6 @@ import org.eclipse.persistence.json.bind.model.PropertyModel;
  * @author Roman Grigoriadi
  */
 public interface CurrentItem<T> extends RuntimeTypeInfo {
-    /**
-     * After object is transitively deserialized from JSON, "append" it to its wrapper.
-     * In case of a field set value to field, in case of collections
-     * or other embedded objects use methods provided.
-     *
-     * @param valueItem Item containing finished, deserialized object.
-     */
-    void appendItem(CurrentItem<?> valueItem);
-
-    /**
-     * Convert and append a JSON value to current item.
-     * Value is supposed to be string representation of basic supported types.
-     *
-     * @param key       key value
-     * @param value     value
-     * @param jsonValueType Type of json value. Used when field to bind value is of type object and value type cannot be determined.
-     */
-    void appendValue(String key, String value, JsonValueType jsonValueType);
-
-    /**
-     * Create new item from this item by a field name.
-     *
-     * @param fieldName name of a field
-     * @return new populated item.
-     */
-    CurrentItem<?> newItem(String fieldName, JsonValueType jsonValueType);
 
     /**
      * Class model containing property for this item.

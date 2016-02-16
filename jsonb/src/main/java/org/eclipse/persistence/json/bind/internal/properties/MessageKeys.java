@@ -42,7 +42,9 @@ public enum MessageKeys {
     ADAPTER_EXCEPTION("adapterException"),
     ADAPTER_FOUND("adapterFound"),
     ADAPTER_INCOMPATIBLE("adapterIncompatible"),
-    PROPERTY_ORDER("propertyOrder");
+    PROPERTY_ORDER("propertyOrder"),
+    UNSUPPORTED_JSONP_SERIALIZER_VALUE("unsupportedJsonpSerializerValue"),
+    ;
 
     /** Message bundle key. */
     final String key;

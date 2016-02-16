@@ -21,7 +21,7 @@ public class InstantTypeConverter extends AbstractTypeConverter<Instant> {
 
     @Override
     public String toJson(Instant object) {
-        return quoteString(DateTimeFormatter.ISO_INSTANT.withZone(ZoneOffset.UTC).format(object));
+        return DateTimeFormatter.ISO_INSTANT.withZone(ZoneOffset.UTC).format(object);
     }
 
 }

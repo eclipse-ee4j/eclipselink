@@ -24,7 +24,7 @@ public class DurationTypeConverter extends AbstractTypeConverter<Duration> {
 
     @Override
     public String toJson(Duration object) {
-        return quoteString(object.toString());
+        return object.toString();
     }
 
 }

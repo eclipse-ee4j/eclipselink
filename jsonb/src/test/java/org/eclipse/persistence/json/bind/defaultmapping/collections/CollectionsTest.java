@@ -13,6 +13,7 @@
 package org.eclipse.persistence.json.bind.defaultmapping.collections;
 
 import org.eclipse.persistence.json.bind.defaultmapping.generics.model.Circle;
+import org.eclipse.persistence.json.bind.defaultmapping.generics.model.ScalarValueWrapper;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -182,7 +183,7 @@ public class CollectionsTest {
     public void testMarshallEnum() {
 
         final Language language = Language.Russian;
-        assertEquals("\"Russian\"", jsonb.toJson(language));
+        assertEquals("{\"value\":\"Russian\"}", jsonb.toJson(new ScalarValueWrapper<Language>(language)));
     }
 
     @Test

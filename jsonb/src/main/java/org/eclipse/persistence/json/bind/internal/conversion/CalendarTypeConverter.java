@@ -45,7 +45,7 @@ public class CalendarTypeConverter extends AbstractTypeConverter<Calendar> {
             formatter = DateTimeFormatter.ISO_DATE;
         }
 
-        return quoteString(localDate.format(formatter));
+        return localDate.format(formatter);
     }
 
 }

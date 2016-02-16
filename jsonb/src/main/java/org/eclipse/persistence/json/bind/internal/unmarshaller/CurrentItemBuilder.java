@@ -71,11 +71,6 @@ public class CurrentItemBuilder {
      */
     private Object instance;
 
-    /**
-     * Adapter meta data if type is adapted.
-     */
-    private JsonbAdapterInfo adapterInfo;
-
     private final TypeConverter converter = ConvertersMapTypeConverter.getInstance();
 
     /**
@@ -142,7 +137,7 @@ public class CurrentItemBuilder {
      * @return built item
      */
     @SuppressWarnings("unchecked")
-    public CurrentItem<?> build() {
+    public UnmarshallerItem<?> build() {
         runtimeType = resolveRuntimeType();
         Class rawType = ReflectionUtils.getRawType(runtimeType);
 
@@ -155,7 +150,7 @@ public class CurrentItemBuilder {
         rawType = rawTypeOptional.orElse(rawType);
         switch (jsonValueType) {
             case ARRAY:
-                final CurrentItem<?> item;
+                final UnmarshallerItem<?> item;
 
                 if (rawType.isArray() || runtimeType instanceof GenericArrayType) {
                     item = createArrayItem();
@@ -190,8 +185,8 @@ public class CurrentItemBuilder {
         }
     }
 
-    private CurrentItem<?> wrapAdapted(Optional<JsonbAdapterInfo> adapterInfoOptional, CurrentItem<?> item) {
-        final Optional<CurrentItem<?>> adaptedItemOptional = adapterInfoOptional.map(adapterInfo -> new AdaptedObjectItemDecorator<>(item, adapterInfo));
+    private UnmarshallerItem<?> wrapAdapted(Optional<JsonbAdapterInfo> adapterInfoOptional, UnmarshallerItem<?> item) {
+        final Optional<UnmarshallerItem<?>> adaptedItemOptional = adapterInfoOptional.map(adapterInfo -> new AdaptedObjectItemDecorator<>(item, adapterInfo));
         return adaptedItemOptional.orElse(item);
     }
 
@@ -209,11 +204,11 @@ public class CurrentItemBuilder {
      * Instance is not created in case of array items, because, we don't know how long it should be
      * till parser ends parsing.
      */
-    private AbstractItem<?> createArrayItem() {
+    private UnmarshallerItem<?> createArrayItem() {
         return new ArrayItem(this);
     }
 
-    private AbstractItem<?> createCollectionItem() {
+    private UnmarshallerItem<?> createCollectionItem() {
         Class<?> rawType = ReflectionUtils.getRawType(runtimeType);
         assert Collection.class.isAssignableFrom(rawType);
 
@@ -233,7 +228,7 @@ public class CurrentItemBuilder {
         return new CollectionItem<>(this);
     }
 
-    private AbstractItem<?> createMapItem() {
+    private UnmarshallerItem<?> createMapItem() {
         Class<?> rawType = ReflectionUtils.getRawType(runtimeType);
         this.instance = rawType.isInterface() ? new HashMap<>() : ReflectionUtils.createNoArgConstructorInstance(rawType);
         return new MapItem(this);
@@ -296,14 +291,4 @@ public class CurrentItemBuilder {
         return classModel;
     }
 
-    /**
-     * If item type is adapted for unmarshalling, provide adapter to adapt unmarshalled instance later.
-     * After adapted type is populated from JSON and is ready to set into wrapper object, use matching adapter to convert into
-     * field type before appending.
-     *
-     * @return true if item result should be adapterInfo before appending to wrapper object
-     */
-    public JsonbAdapterInfo getAdapterInfo() {
-        return adapterInfo;
-    }
 }

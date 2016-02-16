@@ -30,9 +30,9 @@ import java.lang.reflect.Type;
  * @param <A> adapted type, type to unmarshall JSOn into
  * @param <T> required type, typically type of the field, which is adapted to another type
  */
-public class AdaptedObjectItemDecorator<A, T> implements CurrentItem<T> {
+public class AdaptedObjectItemDecorator<A, T> implements UnmarshallerItem<T> {
 
-    private final CurrentItem<A> adaptedItem;
+    private final UnmarshallerItem<A> adaptedItem;
 
     private final JsonbAdapterInfo adapterInfo;
 
@@ -41,13 +41,13 @@ public class AdaptedObjectItemDecorator<A, T> implements CurrentItem<T> {
      * @param adaptedItem decorated item holding adapted type instance
      * @param adapterInfo adapter type info
      */
-    public AdaptedObjectItemDecorator(CurrentItem<A> adaptedItem, JsonbAdapterInfo adapterInfo) {
+    public AdaptedObjectItemDecorator(UnmarshallerItem<A> adaptedItem, JsonbAdapterInfo adapterInfo) {
         this.adaptedItem = adaptedItem;
         this.adapterInfo = adapterInfo;
     }
 
     @Override
-    public void appendItem(CurrentItem<?> valueItem) {
+    public void appendItem(UnmarshallerItem<?> valueItem) {
         adaptedItem.appendItem(valueItem);
     }
 
@@ -57,7 +57,7 @@ public class AdaptedObjectItemDecorator<A, T> implements CurrentItem<T> {
     }
 
     @Override
-    public CurrentItem<?> newItem(String fieldName, JsonValueType jsonValueType) {
+    public UnmarshallerItem<?> newItem(String fieldName, JsonValueType jsonValueType) {
         //identify field model of currently processed class model
         PropertyModel newPropertyModel = adaptedItem.getClassModel().findPropertyModelByJsonReadName(fieldName);
 

@@ -13,6 +13,7 @@
 package org.eclipse.persistence.json.bind.defaultmapping.specific;
 
 import org.eclipse.persistence.json.bind.JsonBindingBuilder;
+import org.eclipse.persistence.json.bind.defaultmapping.generics.model.ScalarValueWrapper;
 import org.junit.Test;
 
 import javax.json.bind.Jsonb;
@@ -32,18 +33,18 @@ public class OptionalTest {
     @Test
     public void testMarshallOptional() {
         final Jsonb jsonb = (new JsonBindingBuilder()).build();
-        assertEquals("null", jsonb.toJson(OptionalInt.empty()));
-        assertEquals("null", jsonb.toJson(OptionalLong.empty()));
-        assertEquals("null", jsonb.toJson(OptionalDouble.empty()));
-        assertEquals("10", jsonb.toJson(OptionalInt.of(10)));
-        assertEquals("100", jsonb.toJson(OptionalLong.of(100L)));
-        assertEquals("10.0", jsonb.toJson(OptionalDouble.of(10.0D)));
+        assertEquals("{}", jsonb.toJson(new ScalarValueWrapper<>(OptionalInt.empty())));
+        assertEquals("{}", jsonb.toJson(new ScalarValueWrapper<>(OptionalLong.empty())));
+        assertEquals("{}", jsonb.toJson(new ScalarValueWrapper<>(OptionalDouble.empty())));
+        assertEquals("{\"value\":10}", jsonb.toJson(new ScalarValueWrapper<>(OptionalInt.of(10))));
+        assertEquals("{\"value\":100}", jsonb.toJson(new ScalarValueWrapper<>(OptionalLong.of(100L))));
+        assertEquals("{\"value\":10.0}", jsonb.toJson(new ScalarValueWrapper<>(OptionalDouble.of(10.0D))));
     }
 
     @Test
     public void testMarshallOptionalObject() {
         final Jsonb jsonb = (new JsonBindingBuilder()).build();
-        assertEquals("null", jsonb.toJson(Optional.empty()));
+        assertEquals("{}", jsonb.toJson(new ScalarValueWrapper<>(Optional.empty())));
         assertEquals("{\"id\":1,\"name\":\"Cust1\"}", jsonb.toJson(Optional.of(new Customer(1, "Cust1"))));
     }
 
