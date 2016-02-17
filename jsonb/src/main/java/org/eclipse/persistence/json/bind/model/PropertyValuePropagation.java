@@ -6,19 +6,22 @@
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
- *
+ * <p>
  * Contributors:
  * Roman Grigoriadi
  ******************************************************************************/
 
 package org.eclipse.persistence.json.bind.model;
 
+import org.eclipse.persistence.json.bind.internal.AnnotationIntrospector;
 import org.eclipse.persistence.json.bind.internal.JsonbContext;
 
 import javax.json.bind.config.PropertyVisibilityStrategy;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Optional;
+import java.util.function.Function;
 
 /**
  * Abstract class for getting / setting value into the property.
@@ -59,7 +62,6 @@ public abstract class PropertyValuePropagation {
      * @return propagation instance
      */
     public static PropertyValuePropagation createInstance(Property property) {
-//        return new ReflectionPropagation(property);
         return new MethodHandleValuePropagation(property);
     }
 
@@ -74,15 +76,13 @@ public abstract class PropertyValuePropagation {
             if (!isVisible(getter)) {
                 return; //don't check field if getter is not visible
             }
-            //support anonymous classes serialization
-            if (getter.getDeclaringClass().isAnonymousClass()) {
+            if (!Modifier.isPublic(getter.getModifiers()) || getter.getDeclaringClass().isAnonymousClass()) {
                 getter.setAccessible(true);
             }
             acceptMethod(getter, OperationMode.GET);
             readable = true;
         } else if (isVisible(field)) {
-            //support anonymous classes serialization
-            if (field.getDeclaringClass().isAnonymousClass()) {
+            if (!Modifier.isPublic(field.getModifiers()) || field.getDeclaringClass().isAnonymousClass()) {
                 field.setAccessible(true);
             }
             acceptField(field, OperationMode.GET);
@@ -101,9 +101,15 @@ public abstract class PropertyValuePropagation {
             if (!isVisible(setter) || setter.getDeclaringClass().isAnonymousClass()) {
                 return;
             }
+            if (!Modifier.isPublic(setter.getModifiers())) {
+                setter.setAccessible(true);
+            }
             acceptMethod(setter, OperationMode.SET);
             writable = true;
         } else if (isVisible(field) && !field.getDeclaringClass().isAnonymousClass()) {
+            if (!Modifier.isPublic(field.getModifiers())) {
+                field.setAccessible(true);
+            }
             acceptField(field, OperationMode.SET);
             writable = true;
         }
@@ -113,16 +119,33 @@ public abstract class PropertyValuePropagation {
         if (field == null) {
             return false;
         }
-        final PropertyVisibilityStrategy visibilityStrategy = JsonbContext.getPropertyVisibilityStrategy();
-        return visibilityStrategy != null ? visibilityStrategy.isVisible(field) : Modifier.isPublic(field.getModifiers());
+        return isVisible(strategy -> strategy.isVisible(field), field.getDeclaringClass())
+                .orElse(Modifier.isPublic(field.getModifiers()));
     }
 
     private boolean isVisible(Method method) {
         if (method == null) {
             return false;
         }
-        final PropertyVisibilityStrategy visibilityStrategy = JsonbContext.getPropertyVisibilityStrategy();
-        return visibilityStrategy != null ? visibilityStrategy.isVisible(method) : Modifier.isPublic(method.getModifiers());
+        return isVisible(strategy -> strategy.isVisible(method), method.getDeclaringClass())
+                .orElse(Modifier.isPublic(method.getModifiers()));
+    }
+
+    /**
+     * Look up class and package level @JsonbVisibility, or global config PropertyVisibilityStrategy.
+     * If any is found it is used for resolving visibility by calling provided visibilityCheckFunction.
+     *
+     * @param visibilityCheckFunction function declaring visibility check
+     * @param declaringClass class to lookup annotation onto
+     * @return Optional with result of visibility check, or empty optional if no strategy is found
+     */
+    private Optional<Boolean> isVisible(Function<PropertyVisibilityStrategy, Boolean> visibilityCheckFunction, Class<?> declaringClass) {
+        final Optional<PropertyVisibilityStrategy> classLevelStrategy =
+                AnnotationIntrospector.getInstance().getPropertyVisibilityStrategy(declaringClass);
+        Optional<PropertyVisibilityStrategy> strategy =
+                Optional.ofNullable(classLevelStrategy.orElse(JsonbContext.getPropertyVisibilityStrategy()));
+
+        return strategy.map(visibilityCheckFunction);
     }
 
     /**

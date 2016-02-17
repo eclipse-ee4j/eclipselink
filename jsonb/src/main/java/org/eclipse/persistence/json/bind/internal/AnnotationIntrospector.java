@@ -22,7 +22,7 @@ import org.eclipse.persistence.json.bind.model.Property;
 import javax.json.bind.JsonbException;
 import javax.json.bind.adapter.JsonbAdapter;
 import javax.json.bind.annotation.*;
-import javax.lang.model.type.NullType;
+import javax.json.bind.config.PropertyVisibilityStrategy;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -165,6 +165,20 @@ public class AnnotationIntrospector {
     }
 
     /**
+     * Get a @JsonbVisibility annotation from a class or its package.
+     * @param clazz Class to lookup annotation
+     * @return Instantiated PropertyVisibilityStrategy if annotation is present
+     */
+    public Optional<PropertyVisibilityStrategy> getPropertyVisibilityStrategy(Class<?> clazz) {
+        JsonbVisibility visibilityAnnotation = clazz.getAnnotation(JsonbVisibility.class);
+        if (visibilityAnnotation == null) {
+            visibilityAnnotation = clazz.getPackage().getAnnotation(JsonbVisibility.class);
+        }
+        final Optional<JsonbVisibility> visibilityOptional = Optional.ofNullable(visibilityAnnotation);
+        return visibilityOptional.map(jsonbVisibility -> ReflectionUtils.createNoArgConstructorInstance(jsonbVisibility.value()));
+    }
+
+    /**
      * Gets an annotation from first resolved annotation in a property in this order:
      * <p>1. Field, 2. Getter, 3 Setter.</p>
      * First found overrides other.
@@ -257,10 +271,6 @@ public class AnnotationIntrospector {
      * @return
      */
     public Optional<JsonbPropertyOrder> getJsonbPropertyOrderAnnotation(Class<?> clazz) {
-        JsonbPropertyOrder jsonbPropertyOrder = clazz.getAnnotation(JsonbPropertyOrder.class);
-        if (jsonbPropertyOrder == null){
-            return Optional.empty();
-        }
-        return Optional.of(jsonbPropertyOrder);
+        return Optional.ofNullable(clazz.getAnnotation(JsonbPropertyOrder.class));
     }
 }

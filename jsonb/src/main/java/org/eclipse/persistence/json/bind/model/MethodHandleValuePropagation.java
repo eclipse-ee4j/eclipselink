@@ -60,9 +60,6 @@ class MethodHandleValuePropagation extends PropertyValuePropagation {
         }
     }
 
-
-
-
     @Override
     protected void acceptField(Field field, OperationMode mode) {
         try {
