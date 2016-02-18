@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings version="2.1"
+	xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/orm"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+	<package>org.eclipse.persistence.testing.models.jpa.beanvalidation</package>
+
+	<entity class="DynamicEmployee" access="VIRTUAL">
+		<attributes>
+			<id name="id" attribute-type="Integer">
+				<generated-value strategy="SEQUENCE" generator="employee-generator" />
+				<sequence-generator name="employee-generator" sequence-name="DYN_EMP_SEQ" />
+			</id>
+			<basic name="name" attribute-type="String"/>
+			<basic name="surname" attribute-type="String"/>
+			<version name="version" attribute-type="Long"/>
+		</attributes>
+	</entity>
+
+</entity-mappings>
