@@ -550,6 +550,7 @@
             <fileset file="${jpatest.basedir}/${eclipselink.delimited.model}.jar"/>
             <fileset file="${jpatest.basedir}/${eclipselink.extensibility.model}.jar"/>
             <fileset file="${jpatest.basedir}/${eclipselink.beanvalidation.model}.jar"/>
+            <fileset file="${jpatest.basedir}/${eclipselink.beanvalidation.dynamic.model}.jar"/>
             <fileset file="${jpatest.basedir}/${eclipselink.composite.advanced.model}.jar"/>
             <fileset file="${jpatest.basedir}/${eclipselink.composite.advanced.model.member_1}.jar"/>
             <fileset file="${jpatest.basedir}/${eclipselink.composite.advanced.model.member_2}.jar"/>
@@ -592,6 +593,7 @@
         <mkdir dir="${jpatest.basedir}/${build.dir}/${eclipselink.delimited.model}"/>
         <mkdir dir="${jpatest.basedir}/${build.dir}/${eclipselink.extensibility.model}"/>
         <mkdir dir="${jpatest.basedir}/${build.dir}/${eclipselink.beanvalidation.model}"/>
+        <mkdir dir="${jpatest.basedir}/${build.dir}/${eclipselink.beanvalidation.dynamic.model}"/>
         <mkdir dir="${jpatest.basedir}/${build.dir}/${eclipselink.composite.advanced.model}"/>
         <mkdir dir="${jpatest.basedir}/${build.dir}/${eclipselink.composite.advanced.model.member_1}"/>
         <mkdir dir="${jpatest.basedir}/${build.dir}/${eclipselink.composite.advanced.model.member_2}"/>
@@ -781,7 +783,7 @@
     </target>
 
     <!-- Packages JPA persistent unit test jars. -->
-    <target name="package" depends="config-classpath, package-annotation, package-ddl, package-xml-only, package-xml-merge, package-jpa21-model, package-xml-extended, package-validation-failed, package-jpa-advanced-field-access, package-jpa-advanced-properties, package-jpa-pu_with_spaces, package-partitioned, package-plsql, package-jpa-performance, package-jpa-performance2, package-cascade-deletes, package-jpa-metamodel, package-delimited, package-beanvalidation,
+    <target name="package" depends="config-classpath, package-annotation, package-ddl, package-xml-only, package-xml-merge, package-jpa21-model, package-xml-extended, package-validation-failed, package-jpa-advanced-field-access, package-jpa-advanced-properties, package-jpa-pu_with_spaces, package-partitioned, package-plsql, package-jpa-performance, package-jpa-performance2, package-cascade-deletes, package-jpa-metamodel, package-delimited, package-beanvalidation, package-beanvalidation-dynamic,
     package-composite-advanced, package-composite-advanced-member_1, package-composite-advanced-member_2, package-composite-advanced-member_3,
     package-xml-composite-advanced, package-xml-composite-advanced-member_1, package-xml-composite-advanced-member_2, package-xml-composite-advanced-member_3,
     package-xml-extended-composite-advanced, package-xml-extended-composite-advanced-member_1, package-xml-extended-composite-advanced-member_2, package-xml-extended-composite-advanced-member_3, package-extensibility, package-jpa-remote, package-xml-mapping-metadata-complete" description="build EclipseLink jar">
@@ -1204,10 +1206,24 @@
         </copy>
         <copy todir="${jpatest.basedir}/${build.dir}/${eclipselink.beanvalidation.model}">
             <fileset dir="${jpatest.basedir}/${classes.dir}"
-                     includes="org/eclipse/persistence/testing/models/jpa/beanvalidation/**"/>
+                     includes="org/eclipse/persistence/testing/models/jpa/beanvalidation/BeanValidationJunitTest*"/>
         </copy>
         <jar jarfile="${jpatest.basedir}/${eclipselink.beanvalidation.model}.jar">
             <fileset dir="${jpatest.basedir}/${build.dir}/${eclipselink.beanvalidation.model}">
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="package-beanvalidation-dynamic" depends="">
+        <copy todir="${jpatest.basedir}/${build.dir}/${eclipselink.beanvalidation.dynamic.model}/META-INF">
+            <fileset dir="${jpatest.basedir}/resource/${eclipselink.beanvalidation.dynamic.model}" includes="*.xml"/>
+        </copy>
+        <copy todir="${jpatest.basedir}/${build.dir}/${eclipselink.beanvalidation.dynamic.model}">
+            <fileset dir="${jpatest.basedir}/${classes.dir}"
+                     includes="org/eclipse/persistence/testing/models/jpa/beanvalidation/dynamic/BeanValidationDynamicEntityJunitTest*"/>
+        </copy>
+        <jar jarfile="${jpatest.basedir}/${eclipselink.beanvalidation.dynamic.model}.jar">
+            <fileset dir="${jpatest.basedir}/${build.dir}/${eclipselink.beanvalidation.dynamic.model}">
             </fileset>
         </jar>
     </target>
@@ -1466,6 +1482,10 @@
             <pathelement path="${extensions.depend.dir}/${classmate.jar}"/>
             <pathelement path="${extensions.depend.dir}/${javax.validation.jar}"/>
         </path>
+        <path id="run.bean.validation.dynamic.classpath">
+            <path refid="run.bean.validation.classpath"/>            
+            <pathelement path="${jpatest.basedir}/${eclipselink.beanvalidation.dynamic.model}.jar"/>
+        </path>
         <path id="run.jpa21.classpath">
             <pathelement path="${jpatest.basedir}/${classes21.dir}"/>
             <path refid="jpa21.compile.path"/>
@@ -1658,6 +1678,15 @@
             <param name="RUN_PATH" value="run.bean.validation.classpath"/>
             <param name="DB_URL" value="${db.url}"/>
         </antcall>
+        <antcall target="run-test" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.beanvalidation.dynamic.BeanValidationDynamicEntityJunitTest"/>
+            <param name="TEST_AGENT" value="${test.agent}"/>
+            <param name="TEST_WEAVING" value="${test.weaving}"/>
+            <param name="TEST_WEAVING_OPTION" value="${test.weaving.option}"/>
+            <param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
+            <param name="RUN_PATH" value="run.bean.validation.dynamic.classpath"/>
+            <param name="DB_URL" value="${db.url}"/>
+        </antcall>
     </target>
 
     <target name="oracle-test" if="is.oracle" depends="config-classpath">
@@ -1809,6 +1838,7 @@
             <pathelement path="${jpatest.basedir}/woven-${eclipselink.delimited.model}.jar"/>
             <pathelement path="${jpatest.basedir}/woven-${eclipselink.extensibility.model}.jar"/>
             <pathelement path="${jpatest.basedir}/woven-${eclipselink.beanvalidation.model}.jar"/>
+            <pathelement path="${jpatest.basedir}/woven-${eclipselink.beanvalidation.dynamic.model}.jar"/>
             <pathelement path="${jpatest.basedir}/${eclipselink.composite.advanced.model}.jar"/>
             <pathelement path="${jpatest.basedir}/woven-${eclipselink.composite.advanced.model.member_1}.jar"/>
             <pathelement path="${jpatest.basedir}/woven-${eclipselink.composite.advanced.model.member_2}.jar"/>
@@ -2389,6 +2419,20 @@
         </weave>
         <weave source= "${jpatest.basedir}/${eclipselink.beanvalidation.model}.jar"
                target = "${jpatest.basedir}/woven-${eclipselink.beanvalidation.model}.jar"
+               loglevel="${logging.level}">
+               <classpath>
+                    <path refid="run.classpath"/>
+               </classpath>
+        </weave>
+        <weave source= "${jpatest.basedir}/${eclipselink.beanvalidation.dynamic.model}.jar"
+               target = "${jpatest.basedir}/woven-${eclipselink.beanvalidation.dynamic.model}.jar"
+               loglevel="${logging.level}">
+               <classpath>
+                    <path refid="run.classpath"/>
+               </classpath>
+        </weave>
+        <weave source= "${jpatest.basedir}/${eclipselink.beanvalidation.dynamic.model}.jar"
+               target = "${jpatest.basedir}/woven-${eclipselink.beanvalidation.dynamic.model}.jar"
                loglevel="${logging.level}">
                <classpath>
                     <path refid="run.classpath"/>
@@ -3738,12 +3782,23 @@
             <param name="PERSISTENCE_UNIT_NAME" value="beanvalidation"/>
             <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/beanvalidation"/>
             <param name="MODEL_NAME" value="eclipselink-beanvalidation-model"/>
+            <!-- This also includes dynamic entity test class - tests pass but maybe should separate -->
             <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/beanvalidation"/>
             <param name="TEST_NAME" value="eclipselink-beanvalidation-model"/>
             <param name="EAR_NAME" value="eclipselink-beanvalidation-model"/>
             <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.beanvalidation.BeanValidationJunitTest"/>
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
+        <!--<antcall target="server-run-all" inheritRefs="true">-->
+            <!--<param name="PERSISTENCE_UNIT_NAME" value="beanvalidation-dynamic"/>-->
+            <!--<param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/beanvalidation-dynamic"/>-->
+            <!--<param name="MODEL_NAME" value="eclipselink-beanvalidation-dynamic-model"/>-->
+            <!--<param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/beanvalidation/dynamic"/>-->
+            <!--<param name="TEST_NAME" value="eclipselink-beanvalidation-dynamic-model"/>-->
+            <!--<param name="EAR_NAME" value="eclipselink-beanvalidation-dynamic-model"/>-->
+            <!--<param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.beanvalidation.dynamic.BeanValidationDynamicEntityJunitTest"/>-->
+            <!--<param name="eclipselink.jpa.test.dir" value="."/>-->
+        <!--</antcall>-->
     </target>
 
     <target name="prepare-project-cache-persistence-xml">
