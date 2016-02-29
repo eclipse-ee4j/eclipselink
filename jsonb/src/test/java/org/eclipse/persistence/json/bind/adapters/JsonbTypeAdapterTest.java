@@ -39,13 +39,13 @@ public class JsonbTypeAdapterTest {
     public static class BoxToStringAdapter implements JsonbAdapter<Box, String> {
 
         @Override
-        public Box adaptTo(String obj) throws Exception {
+        public Box adaptFromJson(String obj) throws Exception {
             String[] strs = obj.split(":");
             return new Box(strs[0], Integer.parseInt(strs[1]));
         }
 
         @Override
-        public String adaptFrom(Box obj) throws Exception {
+        public String adaptToJson(Box obj) throws Exception {
             return obj.getBoxStrField()+":"+obj.getBoxIntegerField();
         }
     }

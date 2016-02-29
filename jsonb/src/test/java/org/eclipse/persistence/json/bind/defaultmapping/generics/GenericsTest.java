@@ -168,7 +168,7 @@ public class GenericsTest {
         assertEquals(expected, jsonb.toJson(multipleBoundsClass));
 
 
-        WildcardMultipleBoundsClass<BigDecimal> result = jsonb.fromJson(expected, new WildcardMultipleBoundsClass<BigDecimal>(){}.getClass().getGenericSuperclass());
+        WildcardMultipleBoundsClass<BigDecimal> result = jsonb.fromJson(expected, new WildcardMultipleBoundsClass<BigDecimal>(){}.getClass());
         assertEquals(BigDecimal.ONE, result.wildcardField);
         assertEquals("genericTestClassField1", result.genericTestClassPropagatedWildCard.field1);
         assertEquals(BigDecimal.TEN, result.genericTestClassPropagatedWildCard.field2);

@@ -21,7 +21,7 @@ import java.util.List;
  */
 public class BoxToCratePropagatedIntegerStringAdapter extends BoxToCratePropagatedTypeArgsAdapter<Integer, String> {
     @Override
-    public GenericCrate<GenericBox<List<String>>> adaptFrom(GenericBox<Integer> integerGenericBox) {
+    public GenericCrate<GenericBox<List<String>>> adaptToJson(GenericBox<Integer> integerGenericBox) {
         if (integerGenericBox == null) {
             return null;
         }
@@ -34,7 +34,7 @@ public class BoxToCratePropagatedIntegerStringAdapter extends BoxToCratePropagat
     }
 
     @Override
-    public GenericBox<Integer> adaptTo(GenericCrate<GenericBox<List<String>>> boxGenericCrate) {
+    public GenericBox<Integer> adaptFromJson(GenericCrate<GenericBox<List<String>>> boxGenericCrate) {
         if (boxGenericCrate == null) {
             return null;
         }

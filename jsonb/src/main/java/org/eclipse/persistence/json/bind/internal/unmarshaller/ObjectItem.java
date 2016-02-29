@@ -80,7 +80,7 @@ class ObjectItem<T> extends AbstractItem<T> implements UnmarshallerItem<T> {
                     getTypeConverter().fromJson(value, rawAdaptTo) : value;
             Object adapted;
             try {
-                adapted = ((JsonbAdapter<?, Object>)adapterInfo.getAdapter()).adaptTo(toAdapt);
+                adapted = ((JsonbAdapter<?, Object>)adapterInfo.getAdapter()).adaptFromJson(toAdapt);
             } catch (Exception e) {
                 throw new JsonbException(Messages.getMessage(MessageKeys.ADAPTER_EXCEPTION, e));
             }

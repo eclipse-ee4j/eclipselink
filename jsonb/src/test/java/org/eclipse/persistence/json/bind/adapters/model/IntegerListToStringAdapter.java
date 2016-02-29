@@ -24,7 +24,7 @@ import java.util.List;
 public class IntegerListToStringAdapter implements JsonbAdapter<List<Integer>, String> {
 
     @Override
-    public String adaptFrom(List<Integer> integers) {
+    public String adaptToJson(List<Integer> integers) {
         StringBuilder sb = new StringBuilder();
         for (Integer integer : integers) {
             if (!sb.toString().isEmpty()) {
@@ -36,7 +36,7 @@ public class IntegerListToStringAdapter implements JsonbAdapter<List<Integer>, S
     }
 
     @Override
-    public List<Integer> adaptTo(String s) {
+    public List<Integer> adaptFromJson(String s) {
         String[] items = s.split("#");
         List<Integer> integerList = new ArrayList<>();
         for (String item : items) {

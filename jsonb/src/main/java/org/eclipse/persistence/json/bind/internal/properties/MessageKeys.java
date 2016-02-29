@@ -44,6 +44,7 @@ public enum MessageKeys {
     ADAPTER_INCOMPATIBLE("adapterIncompatible"),
     PROPERTY_ORDER("propertyOrder"),
     UNSUPPORTED_JSONP_SERIALIZER_VALUE("unsupportedJsonpSerializerValue"),
+    JSONB_CONFIG_FORMATTING_ILLEGAL_VALUE("Only Boolean type values are supported for JsonbConfig.FORMATTING property."),
     ;
 
     /** Message bundle key. */

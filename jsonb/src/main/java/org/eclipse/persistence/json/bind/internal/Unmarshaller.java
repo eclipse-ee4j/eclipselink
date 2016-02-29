@@ -25,8 +25,10 @@ import javax.json.bind.JsonbConfig;
 import javax.json.bind.JsonbException;
 import javax.json.stream.JsonParser;
 import java.io.InputStream;
+import java.io.Reader;
 import java.io.StringReader;
 import java.lang.reflect.Type;
+import java.nio.charset.Charset;
 
 /**
  * JSONB unmarshaller.
@@ -72,19 +74,21 @@ public class Unmarshaller extends JsonTextProcessor {
     public Unmarshaller(MappingContext mappingContext, JsonbConfig jsonbConfig, Type rootType, InputStream jsonStream) {
         super(mappingContext, jsonbConfig);
         this.rootType = rootType;
-        this.parser = Json.createParser(jsonStream);
+        this.parser = Json.createParserFactory(createJsonpProperties(jsonbConfig))
+                .createParser(jsonStream,
+                        Charset.forName((String) jsonbConfig.getProperty(JsonbConfig.ENCODING).orElse("UTF-8")));
     }
 
     /**
      * Create unmarshaller instance with readable.
      * @param mappingContext Context of class mappings.
      * @param rootType Class of a root object to be created.
-     * @param readable readable JSON.
+     * @param reader reader to read from.
      */
-    public Unmarshaller(MappingContext mappingContext, JsonbConfig jsonbConfig, Type rootType, Readable readable) {
+    public Unmarshaller(MappingContext mappingContext, JsonbConfig jsonbConfig, Type rootType, Reader reader) {
         super(mappingContext, jsonbConfig);
         this.rootType = rootType;
-        this.parser = Json.createParser(new ReadableReader(readable));
+        this.parser = Json.createParser(reader);
     }
 
 
@@ -128,6 +132,7 @@ public class Unmarshaller extends JsonTextProcessor {
                 }
             }
         }.execute(context);
+        parser.close();
         return (T) currentItem.getInstance();
     }
 

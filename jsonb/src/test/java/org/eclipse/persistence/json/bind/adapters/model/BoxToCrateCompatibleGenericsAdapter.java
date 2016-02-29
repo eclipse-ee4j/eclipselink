@@ -21,7 +21,7 @@ import javax.json.bind.adapter.JsonbAdapter;
 public abstract class BoxToCrateCompatibleGenericsAdapter<T> implements JsonbAdapter<GenericBox<T>,GenericCrate<T>> {
 
     @Override
-    public GenericCrate<T> adaptFrom(GenericBox<T> tGenericBox) {
+    public GenericCrate<T> adaptToJson(GenericBox<T> tGenericBox) {
         GenericCrate<T> genericCrate = new GenericCrate<>();
         genericCrate.setCrateStrField(tGenericBox.getStrField());
         genericCrate.setT(tGenericBox.getX());
@@ -29,7 +29,7 @@ public abstract class BoxToCrateCompatibleGenericsAdapter<T> implements JsonbAda
     }
 
     @Override
-    public GenericBox<T> adaptTo(GenericCrate<T> tGenericCrate) {
+    public GenericBox<T> adaptFromJson(GenericCrate<T> tGenericCrate) {
         GenericBox<T> genericBox = new GenericBox<>();
         genericBox.setStrField(tGenericCrate.getCrateStrField());
         genericBox.setX(tGenericCrate.getT());

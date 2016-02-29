@@ -35,6 +35,7 @@ import java.io.Writer;
 import java.lang.reflect.Array;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.nio.charset.Charset;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -80,7 +81,7 @@ public class Marshaller extends JsonTextProcessor {
     public Marshaller(MappingContext mappingContext, JsonbConfig jsonbConfig) {
         super(mappingContext, jsonbConfig);
         this.stringWriter = new StringWriter();
-        this.jsonGenerator = Json.createGenerator(stringWriter);
+        this.jsonGenerator = createGenerator(jsonbConfig, stringWriter);
         this.runtimeTypeInfo = Optional.empty();
     }
 
@@ -104,7 +105,21 @@ public class Marshaller extends JsonTextProcessor {
      * @param outputStream stream to marshall into
      */
     public Marshaller(MappingContext mappingContext, JsonbConfig jsonbConfig, OutputStream outputStream) {
-        this(mappingContext, jsonbConfig, Json.createGenerator(outputStream));
+        super(mappingContext, jsonbConfig);
+        this.jsonGenerator = createGenerator(jsonbConfig, outputStream);
+        stringWriter = null;
+        this.runtimeTypeInfo = Optional.empty();
+    }
+
+    private JsonGenerator createGenerator(JsonbConfig jsonbConfig, Writer writer) {
+        Map<String, ?> factoryProperties = createJsonpProperties(jsonbConfig);
+        return Json.createGeneratorFactory(factoryProperties).createGenerator(writer);
+    }
+
+    private JsonGenerator createGenerator(JsonbConfig jsonbConfig, OutputStream outputStream) {
+        Map<String, ?> factoryProperties = createJsonpProperties(jsonbConfig);
+        final String encoding = (String) jsonbConfig.getProperty(JsonbConfig.ENCODING).orElse("UTF-8");
+        return Json.createGeneratorFactory(factoryProperties).createGenerator(outputStream, Charset.forName(encoding));
     }
 
     /**
@@ -204,7 +219,7 @@ public class Marshaller extends JsonTextProcessor {
             logger.fine(Messages.getMessage(MessageKeys.ADAPTER_FOUND, info.getFromType().getTypeName(), info.getToType().getTypeName()));
             pushRuntimeType(info.getToType());
             try {
-                return ((JsonbAdapter<Object, Object>) info.getAdapter()).adaptFrom(object);
+                return ((JsonbAdapter<Object, Object>) info.getAdapter()).adaptToJson(object);
             } catch (Exception e) {
                 throw new JsonbException(Messages.getMessage(MessageKeys.ADAPTER_EXCEPTION, objectRuntimeType, info.getToType(), info.getAdapter().getClass()), e);
             }

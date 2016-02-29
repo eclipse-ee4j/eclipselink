@@ -45,7 +45,7 @@ public class AdaptersTest {
         JsonbAdapter<?, ?>[] adapters = {
                 new JsonbAdapter<Box, Crate>() {
                     @Override
-                    public Crate adaptFrom(Box box) {
+                    public Crate adaptToJson(Box box) {
                         final Crate crate = new Crate();
                         crate.setCrateStrField("crateAdapted" + box.getBoxStrField());
                         crate.setCrateIntField(box.getBoxIntegerField() + 1);
@@ -53,7 +53,7 @@ public class AdaptersTest {
                     }
 
                     @Override
-                    public Box adaptTo(Crate crate) {
+                    public Box adaptFromJson(Crate crate) {
                         Box box = new Box();
                         box.setBoxStrField("boxAdapted" + crate.getCrateStrField());
                         box.setBoxIntegerField(crate.getCrateIntField() + 1);
@@ -81,12 +81,12 @@ public class AdaptersTest {
         JsonbAdapter<?, ?>[] adapters = {
                 new JsonbAdapter<Integer, String>() {
                     @Override
-                    public String adaptFrom(Integer integer) {
+                    public String adaptToJson(Integer integer) {
                         return String.valueOf(integer);
                     }
 
                     @Override
-                    public Integer adaptTo(String s) {
+                    public Integer adaptFromJson(String s) {
                         return Integer.parseInt(s);
                     }
                 }
@@ -228,12 +228,12 @@ public class AdaptersTest {
 
         JsonbAdapter<?, ?>[] adapters = {new JsonbAdapter<String, List<String>>() {
             @Override
-            public List<String> adaptFrom(String s) {
+            public List<String> adaptToJson(String s) {
                 return Arrays.asList(s.split(","));
             }
 
             @Override
-            public String adaptTo(List<String> strings) {
+            public String adaptFromJson(List<String> strings) {
                 StringBuilder sb = new StringBuilder();
                 for (String s : strings) {
                     if (!sb.toString().isEmpty()) {
@@ -274,12 +274,12 @@ public class AdaptersTest {
     public void testTypeVariable() throws Exception {
         JsonbAdapter<?, ?>[] adapters = {new JsonbAdapter<List<GenericBox<Double>>, BigDecimal>() {
             @Override
-            public BigDecimal adaptFrom(List<GenericBox<Double>> genericBoxes) {
+            public BigDecimal adaptToJson(List<GenericBox<Double>> genericBoxes) {
                 return BigDecimal.valueOf(genericBoxes.get(0).getX());
             }
 
             @Override
-            public List<GenericBox<Double>> adaptTo(BigDecimal bigDecimal) {
+            public List<GenericBox<Double>> adaptFromJson(BigDecimal bigDecimal) {
                 List<GenericBox<Double>> list = new ArrayList<>();
                 list.add(new GenericBox<>("", bigDecimal.doubleValue()));
                 return list;
@@ -306,12 +306,12 @@ public class AdaptersTest {
 
         JsonbAdapter<?, ?>[] adapters = {new JsonbAdapter<Box, Crate>() {
             @Override
-            public Crate adaptFrom(Box box) {
+            public Crate adaptToJson(Box box) {
                 return new Crate(box.getBoxStrField(), box.getBoxIntegerField());
             }
 
             @Override
-            public Box adaptTo(Crate crate) {
+            public Box adaptFromJson(Crate crate) {
                 return new Box(crate.getCrateStrField(), crate.getCrateIntField());
             }
         }};
@@ -331,14 +331,14 @@ public class AdaptersTest {
 
         JsonbAdapter<?, ?>[] adapters = {new JsonbAdapter<Map<String, Integer>, String>() {
             @Override
-            public Map<String, Integer> adaptTo(String obj) throws Exception {
+            public Map<String, Integer> adaptFromJson(String obj) throws Exception {
                 final HashMap<String, Integer> result = new HashMap<>();
                 result.put("fake", 101);
                 return result;
             }
 
             @Override
-            public String adaptFrom(Map<String, Integer> obj) throws Exception {
+            public String adaptToJson(Map<String, Integer> obj) throws Exception {
                 StringBuilder sb = new StringBuilder();
                 for (Map.Entry<String, Integer> entry : obj.entrySet()) {
                     if (sb.length() > 0) {
@@ -368,14 +368,14 @@ public class AdaptersTest {
     public void testAdaptMapToObject() throws Exception {
         JsonbAdapter<?, ?>[] adapters = {new JsonbAdapter<Map<String, String>, Crate>() {
             @Override
-            public Map<String, String> adaptTo(Crate obj) throws Exception {
+            public Map<String, String> adaptFromJson(Crate obj) throws Exception {
                 final HashMap<String, String> fake = new HashMap<>();
                 fake.put("fake", "11");
                 return fake;
             }
 
             @Override
-            public Crate adaptFrom(Map<String, String> obj) throws Exception {
+            public Crate adaptToJson(Map<String, String> obj) throws Exception {
                 final Map.Entry<String, String> next = obj.entrySet().iterator().next();
                 return new Crate(next.getKey(), Integer.parseInt(next.getValue()));
             }
