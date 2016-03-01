@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Logger;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.SchemaOutputResolver;
@@ -36,6 +35,8 @@ import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaModelInput;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelInputImpl;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLMarshaller;
@@ -63,8 +64,6 @@ import org.eclipse.persistence.sessions.Project;
  *  @see SchemaGenerator
  */
 public class Generator {
-
-    private static final Logger LOGGER = Logger.getLogger(Generator.class.getName());
 
     private AnnotationsProcessor annotationsProcessor;
     private SchemaGenerator schemaGenerator;
@@ -318,9 +317,9 @@ public class Generator {
         if (jModelInput instanceof JavaModelInputImpl) {
             helper.setFacets(((JavaModelInputImpl) jModelInput).isFacets());
         } else {
-            String msg = "MOXy BV: Facets generation could not be configured. EclipseLink's JavaModelInputImpl was " +
-                    "not detected, instead JavaModelInput is of class:" + jModelInput.getClass();
-            LOGGER.warning(msg);
+            String msg = "MOXy BV: Facets generation could not be configured. EclipseLink''s JavaModelInputImpl was " +
+                    "not detected, instead JavaModelInput is of class: {0}";
+            AbstractSessionLog.getLog().log(SessionLog.WARNING, SessionLog.MOXY, msg, new Object[] {jModelInput.getClass()}, false);
         }
     }
 

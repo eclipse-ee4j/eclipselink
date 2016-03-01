@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -13,8 +13,21 @@
  ******************************************************************************/
 package org.eclipse.persistence.jaxb;
 
-import org.eclipse.persistence.internal.cache.AdvancedProcessor;
-import org.eclipse.persistence.internal.cache.ComputableTask;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Executable;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -31,23 +44,11 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AccessibleObject;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Executable;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.eclipse.persistence.internal.cache.AdvancedProcessor;
+import org.eclipse.persistence.internal.cache.ComputableTask;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
 
 /**
  * INTERNAL:
@@ -57,7 +58,6 @@ import java.util.logging.Logger;
  * @since 2.6
  */
 final public class BeanValidationHelper {
-    private static final Logger LOGGER = Logger.getLogger(BeanValidationHelper.class.getName());
 
     private Future<Map<Class<?>, Boolean>> future;
 
@@ -246,7 +246,8 @@ final public class BeanValidationHelper {
                     constraintsOnClasses = future.get();
                 } catch (InterruptedException | ExecutionException e) {
                     // For some reason the async parsing attempt failed. Call it synchronously.
-                    LOGGER.log(Level.WARNING, "Error parsing validation.xml the async way", e);
+                    AbstractSessionLog.getLog().log(SessionLog.WARNING, SessionLog.MOXY, "Error parsing validation.xml the async way", new Object[0], false);
+                    AbstractSessionLog.getLog().logThrowable(SessionLog.WARNING, SessionLog.MOXY, e);
                     constraintsOnClasses = parseValidationXml();
                 }
             }
@@ -265,7 +266,8 @@ final public class BeanValidationHelper {
         } catch (Throwable e) {
             // In the rare cases submitting a task throws OutOfMemoryError. In this case we call validation.xml
             // parsing lazily when requested
-            LOGGER.log(Level.WARNING, "Error creating/submitting async validation.xml parsing task.", e);
+            AbstractSessionLog.getLog().log(SessionLog.WARNING, SessionLog.MOXY, "Error creating/submitting async validation.xml parsing task.", new Object[0], false);
+            AbstractSessionLog.getLog().logThrowable(SessionLog.WARNING, SessionLog.MOXY, e);
             future = null;
         } finally {
             // Shutdown is needed only for JDK executor
@@ -284,7 +286,8 @@ final public class BeanValidationHelper {
         try {
             result = reader.call();
         } catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Error parsing validation.xml synchronously", e);
+            AbstractSessionLog.getLog().log(SessionLog.WARNING, SessionLog.MOXY, "Error parsing validation.xml synchronously", new Object[0], false);
+            AbstractSessionLog.getLog().logThrowable(SessionLog.WARNING, SessionLog.MOXY, e);
             result = new HashMap<>();
         }
         return result;

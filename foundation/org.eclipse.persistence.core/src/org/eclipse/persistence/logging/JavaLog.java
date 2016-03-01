@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -13,11 +13,15 @@
 package org.eclipse.persistence.logging;
 
 
+import java.io.OutputStream;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.*;
-import java.io.*;
-import java.util.logging.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.logging.StreamHandler;
+
 import org.eclipse.persistence.sessions.Session;
 
 /**
@@ -76,7 +80,7 @@ public class JavaLog extends AbstractSessionLog {
 
     /**
      * INTERNAL:
-     * Add Logger to the catagoryloggers.
+     * Add Logger to the categoryloggers.
      */
     protected void addLogger(String loggerCategory, String loggerNameSpace) {
         categoryloggers.put(loggerCategory, Logger.getLogger(loggerNameSpace));
@@ -101,6 +105,7 @@ public class JavaLog extends AbstractSessionLog {
      * @return the effective log level.
      * </p>
      */
+    @Override
     public int getLevel(String category) {
         Logger logger = getLogger(category);
         while ((logger != null) && (logger.getLevel() == null)) {
@@ -127,6 +132,7 @@ public class JavaLog extends AbstractSessionLog {
      * Set the log level to a logger with name space extracted from the given category.
      * </p>
      */
+    @Override
     public void setLevel(final int level, String category) {
         final Logger logger = getLogger(category);
         if (logger == null) {
@@ -134,6 +140,7 @@ public class JavaLog extends AbstractSessionLog {
         }
 
         AccessController.doPrivileged(new PrivilegedAction() {
+            @Override
             public Object run() {
                 logger.setLevel(getJavaLevel(level));
                 return null; // nothing to return
@@ -150,6 +157,7 @@ public class JavaLog extends AbstractSessionLog {
      * @param fileOutputStream the file output stream will receive the formatted log entries.
      * </p>
      */
+    @Override
     public void setWriter(OutputStream fileOutputStream){
         StreamHandler sh = new StreamHandler(fileOutputStream,new LogFormatter());
         ((Logger)categoryloggers.get(DEFAULT_TOPLINK_NAMESPACE)).addHandler(sh);
@@ -197,6 +205,7 @@ public class JavaLog extends AbstractSessionLog {
      *
      * @param session  a Session
      */
+    @Override
     public void setSession(Session session) {
         super.setSession(session);
         if (session != null) {
@@ -236,6 +245,7 @@ public class JavaLog extends AbstractSessionLog {
      * @return true if the given message level will be logged
      * </p>
      */
+    @Override
     public boolean shouldLog(int level, String category) {
         Logger logger = getLogger(category);
         return logger.isLoggable(getJavaLevel(level));
@@ -249,6 +259,7 @@ public class JavaLog extends AbstractSessionLog {
      * @param entry SessionLogEntry that holds all the information for a TopLink logging event
      * </p>
      */
+    @Override
     public void log(SessionLogEntry entry) {
         if (!shouldLog(entry.getLevel(), entry.getNameSpace())) {
             return;
@@ -273,8 +284,8 @@ public class JavaLog extends AbstractSessionLog {
         // Format message so that we do not depend on the bundle
         EclipseLinkLogRecord lr = new EclipseLinkLogRecord(javaLevel, formatMessage(entry));
 
-        lr.setSourceClassName(null);
-        lr.setSourceMethodName(null);
+        lr.setSourceClassName(entry.getSourceClassName());
+        lr.setSourceMethodName(entry.getSourceMethodName());
         lr.setLoggerName(getNameSpaceString(entry.getNameSpace()));
         if (shouldPrintSession()) {
             lr.setSessionString(getSessionString(entry.getSession()));
@@ -297,6 +308,7 @@ public class JavaLog extends AbstractSessionLog {
      * @param throwable a throwable
      * </p>
      */
+    @Override
     public void throwing(Throwable throwable) {
         getLogger(null).throwing(null, null, throwable);
     }
@@ -305,6 +317,7 @@ public class JavaLog extends AbstractSessionLog {
      * INTERNAL:
      * Each session owns its own session log because session is stored in the session log
      */
+    @Override
     public Object clone() {
         // There is no special treatment required for cloning here
         // The state of this object is described  by member variables sessionLogger and categoryLoggers.

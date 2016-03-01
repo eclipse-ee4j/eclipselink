@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -104,6 +104,7 @@ import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultListItem;
 import org.eclipse.persistence.jpa.rs.util.list.SingleResultQueryList;
 import org.eclipse.persistence.jpa.rs.util.xmladapters.LinkAdapter;
 import org.eclipse.persistence.jpa.rs.util.xmladapters.RelationshipLinkAdapter;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.ObjectReferenceMapping;
@@ -149,6 +150,8 @@ public class PersistenceContext {
 
     /** The URI of the Persistence context. This is used to build Links in JSON and XML **/
     protected URI baseURI = null;
+
+    private SessionLog sessionLog = null;
 
     protected TransactionWrapper transaction = null;
 
@@ -198,6 +201,7 @@ public class PersistenceContext {
         this.emf = emf;
         this.name = emfName;
         this.baseURI = defaultURI;
+        this.sessionLog = emf.getServerSession().getSessionLog();
 
         if (version != null) {
             this.version = version;
@@ -214,10 +218,10 @@ public class PersistenceContext {
         try {
             this.jaxbContext = createDynamicJAXBContext(emf.getDatabaseSession());
         } catch (JAXBException jaxbe) {
-            JPARSLogger.exception("exception_creating_jaxb_context", new Object[] { emfName, jaxbe.toString() }, jaxbe);
+            JPARSLogger.exception(getSessionLog(), "exception_creating_jaxb_context", new Object[] { emfName, jaxbe.toString() }, jaxbe);
             emf.close();
         } catch (IOException e) {
-            JPARSLogger.exception("exception_creating_jaxb_context", new Object[] { emfName, e.toString() }, e);
+            JPARSLogger.exception(getSessionLog(), "exception_creating_jaxb_context", new Object[] { emfName, e.toString() }, e);
             emf.close();
         }
     }
@@ -520,10 +524,10 @@ public class PersistenceContext {
                     setMappingValueInObject(object, attributeValue, mapping, partnerMapping);
                     transaction.commitTransaction(em);
                 } catch (RollbackException e) {
-                    JPARSLogger.exception("exception_while_updating_attribute", new Object[] { entityName, getName() }, e);
+                    JPARSLogger.exception(getSessionLog(), "exception_while_updating_attribute", new Object[] { entityName, getName() }, e);
                     return null;
                 } catch (Exception e) {
-                    JPARSLogger.exception("exception_while_updating_attribute", new Object[] { entityName, getName() }, e);
+                    JPARSLogger.exception(getSessionLog(), "exception_while_updating_attribute", new Object[] { entityName, getName() }, e);
                     transaction.rollbackTransaction(em);
                     return null;
                 }
@@ -611,7 +615,7 @@ public class PersistenceContext {
             }
             return null;
         } catch (Exception e) {
-            JPARSLogger.exception("exception_while_removing_attribute", new Object[] { fieldName, entityName, getName() }, e);
+            JPARSLogger.exception(getSessionLog(), "exception_while_removing_attribute", new Object[] { fieldName, entityName, getName() }, e);
             transaction.rollbackTransaction(em);
             return null;
         } finally {
@@ -788,6 +792,10 @@ public class PersistenceContext {
         return name;
     }
 
+    public SessionLog getSessionLog() {
+        return sessionLog;
+    }
+
     /**
      * A part of the facade over the JPA API
      * Call jpa merge on the given object and commit
@@ -852,7 +860,7 @@ public class PersistenceContext {
                     return jaxbType.newDynamicEntity();
                 }
             }
-            JPARSLogger.exception("exception_thrown_while_creating_dynamic_entity", new Object[] { type }, e);
+            JPARSLogger.exception(getSessionLog(), "exception_thrown_while_creating_dynamic_entity", new Object[] { type }, e);
             throw e;
         }
         return entity;
@@ -1019,16 +1027,16 @@ public class PersistenceContext {
      * @throws JAXBException the JAXB exception
      */
     public Object unmarshalEntity(String type, MediaType acceptedMediaType, InputStream in) throws JAXBException {
-        if (JPARSLogger.isLoggableFinest()) {
+        if (JPARSLogger.isLoggableFinest(getSessionLog())) {
             in = in.markSupported() ? in : new BufferedInputStream(in);
             // TODO: Make readlimit configurable. Some http servers allow http post size to be unlimited.
             // If this is the case and if an application is sending huge post requests while jpars log
             // level configured to finest, this readlimit might not be sufficient.
             in.mark(52428800); // (~50MB)
-            JPARSLogger.entering(CLASS_NAME, "unmarshalEntity", in);
+            JPARSLogger.entering(getSessionLog(), CLASS_NAME, "unmarshalEntity", in);
         }
         Object unmarshalled = unmarshal(getClass(type), acceptedMediaType, in);
-        JPARSLogger.exiting(CLASS_NAME, "unmarshalEntity", new Object[] { unmarshalled.getClass().getName(), unmarshalled });
+        JPARSLogger.exiting(getSessionLog(), CLASS_NAME, "unmarshalEntity", new Object[] { unmarshalled.getClass().getName(), unmarshalled });
         return unmarshalled;
     }
 
@@ -1128,7 +1136,7 @@ public class PersistenceContext {
                 for (DatabaseMapping mapping : descriptor.getMappings()) {
                     if (mapping instanceof XMLInverseReferenceMapping) {
                         // we require Fetch groups to handle relationships
-                        JPARSLogger.error("weaving_required_for_relationships", new Object[] {});
+                        JPARSLogger.error(getSessionLog(), "weaving_required_for_relationships", new Object[] {});
                         throw JPARSException.invalidConfiguration();
                     }
                 }
@@ -1147,9 +1155,9 @@ public class PersistenceContext {
      * @throws JAXBException
      */
     public void marshallEntity(Object object, MediaType mediaType, OutputStream output) throws JAXBException {
-        JPARSLogger.entering(CLASS_NAME, "marshallEntity", new Object[] { object, mediaType });
+        JPARSLogger.entering(getSessionLog(), CLASS_NAME, "marshallEntity", new Object[] { object, mediaType });
         marshall(object, mediaType, output, true);
-        JPARSLogger.exiting(CLASS_NAME, "marshallEntity", this, object, mediaType);
+        JPARSLogger.exiting(getSessionLog(), CLASS_NAME, "marshallEntity", this, object, mediaType);
     }
 
     /**
@@ -1162,9 +1170,9 @@ public class PersistenceContext {
      * @throws JAXBException
      */
     public void marshallEntity(Object object, FieldsFilter filter, MediaType mediaType, OutputStream output) throws JAXBException {
-        JPARSLogger.entering(CLASS_NAME, "marshallEntity", new Object[] { object, filter, mediaType });
+        JPARSLogger.entering(getSessionLog(), CLASS_NAME, "marshallEntity", new Object[] { object, filter, mediaType });
         marshall(object, mediaType, output, true, filter);
-        JPARSLogger.exiting(CLASS_NAME, "marshallEntity", this, object, mediaType);
+        JPARSLogger.exiting(getSessionLog(), CLASS_NAME, "marshallEntity", this, object, mediaType);
     }
 
     /**

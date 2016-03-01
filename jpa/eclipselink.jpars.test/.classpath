@@ -11,7 +11,6 @@
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.ws.rs_2.0.1.v201504171603.jar"/>
-	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/com.sun.jersey_1.8.0.201204181614.jar"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.ejb_3.1.0.v201205171433.jar" sourcepath="/ECLIPSELINK_HOME/plugins/javax.ejb/src"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm_5.0.1.v201405080102.jar" sourcepath="/ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm.source_5.0.1.v201405080102.jar"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.eclipse.persistence.antlr_3.2.0.v201302191141.jar" sourcepath="/ECLIPSELINK_HOME/plugins/org.eclipse.persistence.antlr.source_3.2.0.v201302191141.jar"/>
@@ -20,5 +19,11 @@
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.glassfish.jersey.bundles.repackaged.jersey-guava_2.14.0.v201504151636.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.glassfish.jersey.core.jersey-client_2.14.0.v201504211925.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.glassfish.jersey.core.jersey-common_2.14.0.v201504171603.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.glassfish.hk2.api_2.3.0.b10_201505192201.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.glassfish.hk2.locator_2.3.0.b10_201505192201.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.glassfish.hk2.utils_2.3.0.b10_201505192201.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2015  Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2016  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -165,7 +165,7 @@ public class MetadataResource extends AbstractResource {
             final PersistenceContext context = getPersistenceContext(persistenceUnit, null, uriInfo.getBaseUri(), version, null);
             final ClassDescriptor descriptor = context.getServerSession().getDescriptorForAlias(entityName);
             if (descriptor == null) {
-                JPARSLogger.error("jpars_could_not_find_entity_type", new Object[] { entityName, persistenceUnit });
+                JPARSLogger.error(context.getSessionLog(), "jpars_could_not_find_entity_type", new Object[] { entityName, persistenceUnit });
                 throw JPARSException.classOrClassDescriptorCouldNotBeFoundForEntity(entityName, persistenceUnit);
             } else {
                 final String mediaType = StreamingOutputMarshaller.mediaType(httpHeaders.getAcceptableMediaTypes()).toString();
@@ -188,7 +188,7 @@ public class MetadataResource extends AbstractResource {
             // We need to make sure that query with given name exists
             final DatabaseQuery query = context.getServerSession().getQuery(queryName);
             if (query == null) {
-                JPARSLogger.error("jpars_could_not_find_query", new Object[] {queryName, persistenceUnit});
+                JPARSLogger.error(context.getSessionLog(), "jpars_could_not_find_query", new Object[] {queryName, persistenceUnit});
                 throw JPARSException.responseCouldNotBeBuiltForNamedQueryRequest(queryName, context.getName());
             }
 
@@ -209,7 +209,7 @@ public class MetadataResource extends AbstractResource {
             final PersistenceContext context = getPersistenceContext(persistenceUnit, null, uriInfo.getBaseUri(), version, null);
             final ClassDescriptor descriptor = context.getServerSession().getDescriptorForAlias(entityName);
             if (descriptor == null) {
-                JPARSLogger.error("jpars_could_not_find_entity_type", new Object[] { entityName, persistenceUnit });
+                JPARSLogger.error(context.getSessionLog(), "jpars_could_not_find_entity_type", new Object[] { entityName, persistenceUnit });
                 throw JPARSException.classOrClassDescriptorCouldNotBeFoundForEntity(entityName, persistenceUnit);
             } else {
                 final ResourceSchema schema = new ResourceSchema();
@@ -250,7 +250,7 @@ public class MetadataResource extends AbstractResource {
             // We need to make sure that query with given name exists
             final DatabaseQuery query = context.getServerSession().getQuery(queryName);
             if (query == null) {
-                JPARSLogger.error("jpars_could_not_find_query", new Object[] {queryName, persistenceUnit});
+                JPARSLogger.error(context.getSessionLog(), "jpars_could_not_find_query", new Object[] {queryName, persistenceUnit});
                 throw JPARSException.responseCouldNotBeBuiltForNamedQueryRequest(queryName, context.getName());
             }
 

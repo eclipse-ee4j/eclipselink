@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -67,7 +67,7 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
             PersistenceContext context = getPersistenceContext(persistenceUnit, null, baseURI, version, null);
             ClassDescriptor descriptor = context.getServerSession().getDescriptorForAlias(descriptorAlias);
             if (descriptor == null) {
-                JPARSLogger.error("jpars_could_not_find_entity_type", new Object[] { descriptorAlias, persistenceUnit });
+                JPARSLogger.error(context.getSessionLog(), "jpars_could_not_find_entity_type", new Object[] { descriptorAlias, persistenceUnit });
                 throw JPARSException.classOrClassDescriptorCouldNotBeFoundForEntity(descriptorAlias, persistenceUnit);
             } else {
                 String mediaType = StreamingOutputMarshaller.mediaType(headers.getAcceptableMediaTypes()).toString();
