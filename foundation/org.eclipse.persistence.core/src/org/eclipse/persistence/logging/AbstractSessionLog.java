@@ -1,28 +1,36 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.logging;
 
-import java.util.Date;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.security.AccessController;
 import java.text.DateFormat;
-import java.io.*;
+import java.util.Date;
 
-import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.localization.LoggingLocalization;
 import org.eclipse.persistence.internal.localization.TraceLocalization;
-import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedGetSystemProperty;
+import org.eclipse.persistence.sessions.Session;
 
 /**
  * Represents the abstract log that implements all the generic logging functions.
@@ -113,28 +121,28 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * Format use to print the current date/time.
      */
     protected DateFormat dateFormat;
-    
+
     /**
      * Allows the printing of the stack to be explicitly disabled/enabled.
      * CR #3870467.
      * null value is default behavior of determining from log level.
      */
     protected Boolean shouldLogExceptionStackTrace;
-    
+
     /**
      * Allows the printing of the date to be explicitly disabled/enabled.
      * CR #3870467.
      * null value is default behavior of determining from log level.
      */
     protected Boolean shouldPrintDate;
-    
+
     /**
      * Allows the printing of the thread to be explicitly disabled/enabled.
      * CR #3870467.
      * null value is default behavior of determining from log level.
      */
     protected Boolean shouldPrintThread;
-        
+
     /**
      * Allows the printing of the session to be explicitly disabled/enabled.
      * CR #3870467.
@@ -148,20 +156,29 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * null value is default behavior of determining from log level.
      */
     protected Boolean shouldPrintConnection;
-    
+
     /** Used to determine if bingdparameters should be logged or hidden. */
     protected Boolean shouldDisplayData;
 
+    /**
+     * Return the system default log level property value.
+     * @return The system default log level property value or {@code null} if no such property is set.
+     */
+    private static String getDefaultLoggingLevelProperty() {
+        return PrivilegedAccessHelper.shouldUsePrivilegedAccess()
+                ? AccessController.doPrivileged(
+                        new PrivilegedGetSystemProperty(PersistenceUnitProperties.LOGGING_LEVEL))
+                : System.getProperty(PersistenceUnitProperties.LOGGING_LEVEL);
+    }
 
     /**
      * Return the system default log level.
      * This is based on the System property "eclipselink.logging.level", or INFO if not set.
      */
     public static int getDefaultLoggingLevel() {
-        String logLevel = System.getProperty(PersistenceUnitProperties.LOGGING_LEVEL);
-        return translateStringToLoggingLevel(logLevel);
+        return translateStringToLoggingLevel(getDefaultLoggingLevelProperty());
     }
-    
+
     /**
      * PUBLIC:
      * Create a new AbstractSessionLog
@@ -178,6 +195,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      *
      * @return the log level
      */
+    @Override
     public int getLevel() {
         return getLevel(null);
     }
@@ -187,8 +205,9 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * <p>
      * Return the log level as a string value.
      */
+    @Override
     public String getLevelString() {
-        int level = getLevel();        
+        int level = getLevel();
         switch (level) {
             case OFF:
                 return "OFF";
@@ -210,9 +229,9 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
                 return "ALL";
             default:
                 return "INFO";
-            }
     }
-    
+    }
+
     /**
      * PUBLIC:
      * <p>
@@ -221,6 +240,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * @return the log level
      * @param category  the string representation of a EclipseLink category, e.g. "sql", "transaction" ...
      */
+    @Override
     public int getLevel(String category) {
         return level;
     }
@@ -232,6 +252,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      *
      * @param level     the new log level
      */
+    @Override
     public void setLevel(int level) {
         setLevel(level, null);
     }
@@ -244,16 +265,18 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * @param level     the new log level
      * @param category  the string representation of an EclipseLink category, e.g. "sql", "transaction" ...
      */
+    @Override
     public void setLevel(int level, String category) {
         this.level = level;
     }
 
     /**
      * PUBLIC:
-     * Return true if SQL logging should log visible bind parameters. If the 
-     * shouldDisplayData is not set, check the session log level and return 
+     * Return true if SQL logging should log visible bind parameters. If the
+     * shouldDisplayData is not set, check the session log level and return
      * true for a level greater than CONFIG.
      */
+    @Override
     public boolean shouldDisplayData() {
         if (this.shouldDisplayData != null) {
             return shouldDisplayData.booleanValue();
@@ -261,7 +284,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
             return this.level < SessionLog.CONFIG;
         }
     }
-    
+
     /**
      * PUBLIC:
      * <p>
@@ -271,6 +294,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * @return true if the given message level will be logged
      * @param level  the log request level
      */
+    @Override
     public boolean shouldLog(int level) {
         return shouldLog(level, null);
     }
@@ -286,6 +310,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * @param level  the log request level
      * @param category  the string representation of an EclipseLink category, e.g. "sql", "transaction" ...*
      */
+    @Override
     public boolean shouldLog(int level, String category) {
         return (this.level <= level) && !isOff();
     }
@@ -326,6 +351,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      *
      * @return  session
      */
+    @Override
     public Session getSession() {
         return this.session;
     }
@@ -338,6 +364,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      *
      * @param session  a Session
      */
+    @Override
     public void setSession(Session session) {
         this.session = session;
     }
@@ -345,14 +372,15 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     /**
      * PUBLIC:
      * <p>
-     * Log a message that does not need to be translated.  This method is intended for 
+     * Log a message that does not need to be translated.  This method is intended for
      * external use when logging messages are required within the EclipseLink output.
      *
      * @param level the log request level value
      * @param message the string message - this should not be a bundle key
      */
+    @Override
     public void log(int level, String message) {
-    	// Warning: do not use this function to pass in bundle keys as they will not get transformed into string messages
+        // Warning: do not use this function to pass in bundle keys as they will not get transformed into string messages
         if (!shouldLog(level)) {
             return;
         }
@@ -369,6 +397,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * @param message  the string message
      * @param param  a parameter of the message
      */
+    @Override
     public void log(int level, String message, Object param) {
         if (!shouldLog(level)) {
             return;
@@ -385,6 +414,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * @param message  the string message
      * @param param  a parameter of the message
      */
+    @Override
     public void log(int level, String category, String message, Object param) {
         if (!shouldLog(level, category)) {
             return;
@@ -402,6 +432,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * @param param1  a parameter of the message
      * @param param2  second parameter of the message
      */
+    @Override
     public void log(int level, String message, Object param1, Object param2) {
         if (!shouldLog(level)) {
             return;
@@ -419,6 +450,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * @param param1  a parameter of the message
      * @param param2  second parameter of the message
      */
+    @Override
     public void log(int level, String category, String message, Object param1, Object param2) {
         if (!shouldLog(level)) {
             return;
@@ -437,6 +469,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * @param param2  second parameter of the message
      * @param param3  third parameter of the message
      */
+    @Override
     public void log(int level, String message, Object param1, Object param2, Object param3) {
         if (!shouldLog(level)) {
             return;
@@ -455,6 +488,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * @param param2  second parameter of the message
      * @param param3  third parameter of the message
      */
+    @Override
     public void log(int level, String category, String message, Object param1, Object param2, Object param3) {
         if (!shouldLog(level)) {
             return;
@@ -474,6 +508,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * @param param3  third parameter of the message
      * @param param4  third parameter of the message
      */
+    @Override
     public void log(int level, String message, Object param1, Object param2, Object param3, Object param4) {
         if (!shouldLog(level)) {
             return;
@@ -493,13 +528,14 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * @param param3  third parameter of the message
      * @param param4  third parameter of the message
      */
+    @Override
     public void log(int level, String category, String message, Object param1, Object param2, Object param3, Object param4) {
         if (!shouldLog(level)) {
             return;
         }
         log(level, category, message, new Object[] { param1, param2, param3, param4 }, true);
     }
-    
+
     /**
      * PUBLIC:
      * <p>
@@ -509,10 +545,11 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * @param message the string message
      * @param params array of parameters to the message
      */
+    @Override
     public void log(int level, String message, Object[] params) {
         log(level, message, params, true);
     }
-    
+
     /**
      * PUBLIC:
      * <p>
@@ -522,6 +559,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * @param message the string message
      * @param params array of parameters to the message
      */
+    @Override
     public void log(int level, String category, String message, Object[] params) {
         log(level, category, message, params, true);
     }
@@ -536,13 +574,14 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * @param params array of parameters to the message
      * @param shouldTranslate true if the message needs to be translated
      */
+    @Override
     public void log(int level, String message, Object[] params, boolean shouldTranslate) {
         if (!shouldLog(level)) {
             return;
         }
         log(new SessionLogEntry(level, null, message, params, null, shouldTranslate));
     }
-    
+
     /**
      * PUBLIC:
      * <p>
@@ -554,6 +593,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * @param params array of parameters to the message
      * @param shouldTranslate true if the message needs to be translated
      */
+    @Override
     public void log(int level, String category, String message, Object[] params, boolean shouldTranslate) {
         if (!shouldLog(level, category)) {
             return;
@@ -568,12 +608,14 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      *
      * @param sessionLogEntry SessionLogEntry that holds all the information for an EclipseLink logging event
      */
+    @Override
     public abstract void log(SessionLogEntry sessionLogEntry);
-    
+
     /**
      * By default the session (and its connection is available) are printed,
      * this can be turned off.
      */
+    @Override
     public boolean shouldPrintSession() {
         return (shouldPrintSession == null) || shouldPrintSession.booleanValue();
     }
@@ -582,17 +624,19 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * By default the session (and its connection is available) are printed,
      * this can be turned off.
      */
+    @Override
     public void setShouldPrintSession(boolean shouldPrintSession) {
         if (shouldPrintSession) {
             this.shouldPrintSession = Boolean.TRUE;
         } else {
-            this.shouldPrintSession = Boolean.FALSE;            
+            this.shouldPrintSession = Boolean.FALSE;
         }
     }
 
     /**
      * By default the connection is printed, this can be turned off.
      */
+    @Override
     public boolean shouldPrintConnection() {
         return (shouldPrintConnection == null) || shouldPrintConnection.booleanValue();
     }
@@ -600,11 +644,12 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     /**
      * By default the connection is printed, this can be turned off.
      */
+    @Override
     public void setShouldPrintConnection(boolean shouldPrintConnection) {
         if (shouldPrintConnection) {
             this.shouldPrintConnection = Boolean.TRUE;
         } else {
-            this.shouldPrintConnection = Boolean.FALSE;            
+            this.shouldPrintConnection = Boolean.FALSE;
         }
     }
 
@@ -612,6 +657,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * By default the stack is logged for FINER or less (finest).
      * The logging of the stack can also be explicitly turned on or off.
      */
+    @Override
     public boolean shouldLogExceptionStackTrace() {
         if (shouldLogExceptionStackTrace == null) {
             return getLevel() <= FINER;
@@ -624,25 +670,28 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * PUBLIC:
      * Set whether bind parameters should be displayed when logging SQL.
      */
+    @Override
     public void setShouldDisplayData(Boolean shouldDisplayData) {
         this.shouldDisplayData = shouldDisplayData;
     }
-    
+
     /**
      * By default the stack is logged for FINER or less (finest).
      * The logging of the stack can also be explicitly turned on or off.
      */
+    @Override
     public void setShouldLogExceptionStackTrace(boolean shouldLogExceptionStackTrace) {
         if (shouldLogExceptionStackTrace) {
             this.shouldLogExceptionStackTrace = Boolean.TRUE;
         } else {
-            this.shouldLogExceptionStackTrace = Boolean.FALSE;            
+            this.shouldLogExceptionStackTrace = Boolean.FALSE;
         }
     }
 
     /**
      * By default the date is always printed, but can be turned off.
      */
+    @Override
     public boolean shouldPrintDate() {
         return (shouldPrintDate == null) || (shouldPrintDate.booleanValue());
     }
@@ -650,11 +699,12 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     /**
      * By default the date is always printed, but can be turned off.
      */
+    @Override
     public void setShouldPrintDate(boolean shouldPrintDate) {
         if (shouldPrintDate) {
             this.shouldPrintDate = Boolean.TRUE;
         } else {
-            this.shouldPrintDate = Boolean.FALSE;            
+            this.shouldPrintDate = Boolean.FALSE;
         }
     }
 
@@ -662,6 +712,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * By default the thread is logged for FINE or less (finer,etc.).
      * The logging of the thread can also be explicitly turned on or off.
      */
+    @Override
     public boolean shouldPrintThread() {
         if (shouldPrintThread == null) {
             return getLevel() <= FINE;
@@ -674,11 +725,12 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * By default the thread is logged for FINE or less (finer,etc.).
      * The logging of the thread can also be explicitly turned on or off.
      */
+    @Override
     public void setShouldPrintThread(boolean shouldPrintThread) {
         if (shouldPrintThread) {
             this.shouldPrintThread = Boolean.TRUE;
         } else {
-            this.shouldPrintThread = Boolean.FALSE;            
+            this.shouldPrintThread = Boolean.FALSE;
         }
     }
 
@@ -689,6 +741,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      *
      * @return the log writer
      */
+    @Override
     public Writer getWriter() {
         return writer;
     }
@@ -700,11 +753,12 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      *
      * @param writer  the log writer
      */
+    @Override
     public void setWriter(Writer writer) {
         this.writer = writer;
     }
 
-    
+
     /**
      * PUBLIC:
      * <p>
@@ -715,7 +769,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     public void setWriter(OutputStream outputstream) {
         this.writer = new OutputStreamWriter(outputstream);
     }
-    
+
     /**
      * PUBLIC:
      * Return the date format to be used when printing a log entry date.
@@ -734,18 +788,19 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
             return getDateFormat().format(date);
 
         }
-        
+
         if (date == null) {
             return null;
         }
-        
+
         // Since we currently do not have a thread-safe way to format dates,
         // we will use ConversionManager to build the string.
         return ConversionManager.getDefaultManager().convertObject(date, String.class).toString();
     }
-    
+
     /**
-     * Return the supplement detail information including date, session, thread and connection.
+     * Return the supplement detail information including date, session, thread, connection,
+     * source class name and source method name.
      */
     protected String getSupplementDetailString(SessionLogEntry entry) {
         StringWriter writer = new StringWriter();
@@ -764,6 +819,14 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
         }
         if (shouldPrintThread()) {
             writer.write(this.getThreadString(entry.getThread()));
+            writer.write("--");
+        }
+        if (entry.getSourceClassName() != null) {
+            writer.write(entry.getSourceClassName());
+            writer.write("--");
+        }
+        if (entry.getSourceMethodName() != null) {
+            writer.write(entry.getSourceMethodName());
             writer.write("--");
         }
         return writer.toString();
@@ -791,7 +854,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
         if (connection.getDatasourceConnection() == null){
             return CONNECTION_STRING + "(" + String.valueOf(System.identityHashCode(connection)) + ")";
         } else {
-             return CONNECTION_STRING + "(" + String.valueOf(System.identityHashCode(connection.getDatasourceConnection())) + ")";   
+             return CONNECTION_STRING + "(" + String.valueOf(System.identityHashCode(connection.getDatasourceConnection())) + ")";
         }
     }
 
@@ -912,7 +975,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     public static int translateStringToLoggingLevel(String loggingLevel) {
         if (loggingLevel == null){
             return INFO;
-        }
+    }
         String level = loggingLevel.toUpperCase();
         if (level.equals("OFF")){
             return OFF;
@@ -943,6 +1006,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      *
      * @param throwable a Throwable
      */
+    @Override
     public void throwing(Throwable throwable) {
         if (shouldLog(FINER)) {
             SessionLogEntry entry = new SessionLogEntry(null, throwable);
@@ -959,6 +1023,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      *
      * @param message  the message key
      */
+    @Override
     public void severe(String message) {
         log(SEVERE, message, (Object[])null);
     }
@@ -971,6 +1036,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      *
      * @param message  the message key
      */
+    @Override
     public void warning(String message) {
         log(WARNING, message, (Object[])null);
     }
@@ -983,6 +1049,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      *
      * @param message  the message key
      */
+    @Override
     public void info(String message) {
         log(INFO, message, (Object[])null);
     }
@@ -995,6 +1062,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      *
      * @param message  the message key
      */
+    @Override
     public void config(String message) {
         log(CONFIG, message, (Object[])null);
     }
@@ -1007,6 +1075,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      *
      * @param message  the message key
      */
+    @Override
     public void fine(String message) {
         log(FINE, message, (Object[])null);
     }
@@ -1019,6 +1088,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      *
      * @param message  the message key
      */
+    @Override
     public void finer(String message) {
         log(FINER, message, (Object[])null);
     }
@@ -1031,6 +1101,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      *
      * @param message  the message key
      */
+    @Override
     public void finest(String message) {
         log(FINEST, message, (Object[])null);
     }
@@ -1043,6 +1114,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * @param level  the log request level value
      * @param throwable  a Throwable
      */
+    @Override
     public void logThrowable(int level, Throwable throwable) {
         // Must not create the log if not logging as is a performance issue.
         if (shouldLog(level)) {
@@ -1058,6 +1130,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * @param level  the log request level value
      * @param throwable  a Throwable
      */
+    @Override
     public void logThrowable(int level, String category, Throwable throwable) {
         // Must not create the log if not logging as is a performance issue.
         if (shouldLog(level, category)) {
@@ -1077,11 +1150,12 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * INTERNAL:
      * Each session owns its own session log because session is stored in the session log
      */
+    @Override
     public Object clone() {
         try {
             return super.clone();
         } catch (Exception exception) {
-            return null;
+            throw new AssertionError(exception);
         }
     }
     /**
@@ -1108,7 +1182,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
             return "FINEST";
         } else if (loggingLevel == ALL){
             return "ALL";
-        }
+    }
         return "INFO";
     }
 

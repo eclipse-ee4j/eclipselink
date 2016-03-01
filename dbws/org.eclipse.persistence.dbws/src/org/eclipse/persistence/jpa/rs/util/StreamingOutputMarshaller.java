@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -14,6 +14,23 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.util;
 
+import java.beans.PropertyChangeListener;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.StreamingOutput;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
@@ -23,21 +40,6 @@ import org.eclipse.persistence.jpa.rs.features.fieldsfiltering.FieldsFilter;
 import org.eclipse.persistence.jpa.rs.resources.common.AbstractResource;
 import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultList;
 import org.eclipse.persistence.jpa.rs.util.xmladapters.LinkAdapter;
-
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.StreamingOutput;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import java.beans.PropertyChangeListener;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.util.List;
 
 /**
  * Simple {@link StreamingOutput} implementation that uses the provided
@@ -114,7 +116,7 @@ public class StreamingOutputMarshaller implements StreamingOutput {
                     }
                     return;
                 } catch (Exception ex) {
-                    JPARSLogger.exception("jpars_caught_exception", new Object[] {}, ex);
+                    JPARSLogger.exception(context.getSessionLog(), "jpars_caught_exception", new Object[] {}, ex);
                     throw JPARSException.exceptionOccurred(ex);
                 }
             }
@@ -128,7 +130,11 @@ public class StreamingOutputMarshaller implements StreamingOutput {
                 oos.close();
                 output.write(baos.toByteArray());
             } else {
-                JPARSLogger.error("jpars_could_not_marshal_requested_result_to_requested_type", new Object[] { result });
+                if (context != null) {
+                    JPARSLogger.error(context.getSessionLog(), "jpars_could_not_marshal_requested_result_to_requested_type", new Object[] { result });
+                } else {
+                    JPARSLogger.error("jpars_could_not_marshal_requested_result_to_requested_type", new Object[] { result });
+                }
                 throw new WebApplicationException();
             }
         }

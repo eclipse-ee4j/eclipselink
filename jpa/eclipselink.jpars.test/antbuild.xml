@@ -77,6 +77,7 @@
         <available file="${jparstest.2.base.dir}/jpa/plugins" type="dir"/>
     </condition>
     <property name="jparstest.2.buildsys.dir" value="${jparstest.2.base.dir}/buildsystem"/>
+    <property name="jparstest.basedir" value="${jparstest.build.location}"/>
 
     <condition property="custom.properties.message"
         value="Loading ${user.home}/build.properties"
@@ -86,6 +87,9 @@
             <available file="${user.home}/build.properties"/>
         </and>
     </condition>
+    <echo message="${custom.properties.message}"/>
+    <property file="${user.home}/build.properties"/>
+
     <condition property="custom.cmd.properties.message"
         value="Loading ${test.properties}"
         else="Skipping ${test.properties}, file does not exist">
@@ -94,16 +98,13 @@
             <available file="${test.properties}"/>
         </and>
     </condition>
-    <echo message="${custom.properties.message}"/>
     <echo message="${custom.cmd.properties.message}"/>
-    <property file="${user.home}/build.properties"/>
-    <property file="${jparstest.build.location}/antbuild.properties"/>
-    <property file="${user.home}/test.properties"/>
     <property file="${test.properties}"/>
+    <property file="${user.home}/test.properties"/>
     <property file="${jparstest.build.location}/${test.properties}"/>
     <property file="${jparstest.build.location}/test.properties"/>
 
-    <property name="jparstest.basedir" value="${jparstest.build.location}"/>
+    <property file="${jparstest.build.location}/antbuild.properties"/>
 
     <!-- Clean all build generated content. -->
     <target name="clean" description="Clean the build">

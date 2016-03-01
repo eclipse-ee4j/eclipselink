@@ -10,7 +10,8 @@
         <exclude-unlisted-classes/>
         <properties>
             <property name="javax.persistence.nonJtaDataSource" value="jdbc/ELNonJTADS"/>
-            <property name="eclipselink.logging.level" value="SEVERE"/>
+            <property name="eclipselink.logging.level" value="INFO"/>
+            <property name="eclipselink.logging.level.jpars" value="FINEST"/>
             <property name="eclipselink.logging.parameters" value="true"/>
             <property name="eclipselink.target-server" value="Glassfish"/>
         </properties>
@@ -25,7 +26,8 @@
         <class>org.eclipse.persistence.jpars.test.model.multitenant.Account</class>
         <exclude-unlisted-classes/>
         <properties>
-            <property name="eclipselink.logging.level" value="SEVERE"/>
+            <property name="eclipselink.logging.level" value="INFO"/>
+            <property name="eclipselink.logging.level.jpars" value="FINEST"/>
             <property name="eclipselink.logging.parameters" value="true"/>
             <property name="javax.persistence.jdbc.url" value="@DB_URL@"/>
             <property name="javax.persistence.jdbc.password" value="@DB_PWD@"/>
@@ -81,7 +83,8 @@
         <exclude-unlisted-classes/>
         <properties>
             <property name="javax.persistence.nonJtaDataSource" value="jdbc/ELNonJTADS"/>
-            <property name="eclipselink.logging.level" value="SEVERE"/>
+            <property name="eclipselink.logging.level" value="INFO"/>
+            <property name="eclipselink.logging.level.jpars" value="FINEST"/>
             <property name="eclipselink.logging.parameters" value="true"/>
             <property name="eclipselink.target-server" value="Glassfish"/>
         </properties>
@@ -94,7 +97,8 @@
         <exclude-unlisted-classes/>
         <properties>
             <property name="javax.persistence.nonJtaDataSource" value="jdbc/ELNonJTADS"/>
-            <property name="eclipselink.logging.level" value="SEVERE"/>
+            <property name="eclipselink.logging.level" value="INFO"/>
+            <property name="eclipselink.logging.level.jpars" value="FINEST"/>
             <property name="eclipselink.logging.parameters" value="true"/>
         </properties>
     </persistence-unit>
@@ -106,7 +110,8 @@
         <exclude-unlisted-classes/>
         <properties>
             <property name="javax.persistence.nonJtaDataSource" value="jdbc/ELNonJTADS"/>
-            <property name="eclipselink.logging.level" value="SEVERE"/>
+            <property name="eclipselink.logging.level" value="INFO"/>
+            <property name="eclipselink.logging.level.jpars" value="FINEST"/>
             <property name="eclipselink.logging.parameters" value="true"/>
             <property name="eclipselink.target-server" value="Glassfish"/>
         </properties>
@@ -150,7 +155,7 @@
             <property name="javax.persistence.jdbc.password" value="test"/>
         </properties>
     </persistence-unit>
-    
+
     <persistence-unit name="jpars_person" transaction-type="RESOURCE_LOCAL">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <class>org.eclipse.persistence.jpars.test.model.dynamic.Person</class>
