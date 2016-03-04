@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -14,12 +14,13 @@
 package org.eclipse.persistence.platform.database.oracle;
 
 import java.sql.Array;
+import java.sql.Connection;
 import java.sql.Ref;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Struct;
 import java.util.Hashtable;
-import java.sql.Connection;
+
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
@@ -35,7 +36,7 @@ import org.eclipse.persistence.queries.Call;
 /**
  * <p><b>Purpose:</b>
  * Supports certain new Oracle 8 data types, and usage of certain Oracle JDBC specific APIs.
- * <p> Supports Oracle thin JDBC driver LOB >4k binding workaround.
+ * <p> Supports Oracle thin JDBC driver LOB &gt;4k binding workaround.
  * <p> Creates BLOB and CLOB type for byte[] and char[] for table creation.
  * <p> Supports object-relational data-type creation.
  */
@@ -50,6 +51,7 @@ public class Oracle8Platform extends OraclePlatform {
     /**
      * INTERNAL:
      */
+    @Override
     protected Hashtable buildFieldTypes() {
         Hashtable fieldTypeMapping = super.buildFieldTypes();
 
@@ -63,6 +65,7 @@ public class Oracle8Platform extends OraclePlatform {
      * INTERNAL:
      * Allow for conversion from the Oralce type to the Java type.
      */
+    @Override
     public void copyInto(Platform platform) {
         super.copyInto(platform);
         if (!(platform instanceof Oracle8Platform)) {
@@ -98,6 +101,7 @@ public class Oracle8Platform extends OraclePlatform {
      * Oracle Specific support. (ie TIMESTAMPTZ, LOB)
      * This is added as a workaround for bug 4565190
      */
+    @Override
     public Connection getConnection(AbstractSession session, Connection connection) {
         if (session.getServerPlatform() != null && (session.getLogin()).shouldUseExternalConnectionPooling()){
         // This is added as a workaround for bug 4460996
@@ -115,6 +119,7 @@ public class Oracle8Platform extends OraclePlatform {
      * In these special cases the method returns a wrapper object
      * which knows whether it should be bound or appended and knows how to do that.
      */
+    @Override
     public Object getCustomModifyValueForCall(Call call, Object value, DatabaseField field, boolean shouldBind) {
         Class type = field.getType();
         if (ClassConstants.BLOB.equals(type) || ClassConstants.CLOB.equals(type)) {
@@ -154,6 +159,7 @@ public class Oracle8Platform extends OraclePlatform {
      * kept in sync: shouldCustomModifyInDatabaseCall should return true if and only if the field
      * is handled by customModifyInDatabaseCall.
      */
+    @Override
     public boolean shouldUseCustomModifyForCall(DatabaseField field) {
         if (shouldUseLocatorForLOBWrite()) {
             Class type = field.getType();
@@ -168,6 +174,7 @@ public class Oracle8Platform extends OraclePlatform {
      * INTERNAL:
      * Write LOB value - only on Oracle8 and up
      */
+    @Override
     @SuppressWarnings("deprecation")
     public void writeLOB(DatabaseField field, Object value, ResultSet resultSet, AbstractSession session) throws SQLException {
         if (isBlob(field.getType())) {
@@ -214,6 +221,7 @@ public class Oracle8Platform extends OraclePlatform {
      * Indicates whether app. server should unwrap connection
      * to use lob locator.
      */
+    @Override
     public boolean isNativeConnectionRequiredForLobLocator() {
         return true;
     }
@@ -222,7 +230,7 @@ public class Oracle8Platform extends OraclePlatform {
      * PUBLIC:
      * Set if the locator is required for the LOB write. The default is true.
      * For Oracle thin driver, the locator is recommended for large size
-     * ( >4k for Oracle8, >5.9K for Oracle9) BLOB/CLOB value write.
+     * ( &gt;4k for Oracle8, &gt;5.9K for Oracle9) BLOB/CLOB value write.
      */
     public void setShouldUseLocatorForLOBWrite(boolean usesLocatorForLOBWrite) {
         this.usesLocatorForLOBWrite = usesLocatorForLOBWrite;
@@ -232,7 +240,7 @@ public class Oracle8Platform extends OraclePlatform {
      * PUBLIC:
      * Return if the locator is required for the LOB write. The default is true.
      * For Oracle thin driver, the locator is recommended for large size
-     * ( >4k for Oracle8, >5.9K for Oracle9) BLOB/CLOB value write.
+     * ( &gt;4k for Oracle8, &gt;5.9K for Oracle9) BLOB/CLOB value write.
      */
     public boolean shouldUseLocatorForLOBWrite() {
         return usesLocatorForLOBWrite;
@@ -263,6 +271,7 @@ public class Oracle8Platform extends OraclePlatform {
      * Platforms that support java.sql.Array may override this method.
      * @return Array
      */
+    @Override
     public Array createArray(String elementDataTypeName, Object[] elements, Connection connection) throws SQLException {
         return new oracle.sql.ARRAY(new oracle.sql.ArrayDescriptor(elementDataTypeName, connection), connection, elements);
     }
@@ -272,6 +281,7 @@ public class Oracle8Platform extends OraclePlatform {
      * Platforms that support java.sql.Struct may override this method.
      * @return Struct
      */
+    @Override
     public Struct createStruct(String structTypeName, Object[] attributes, Connection connection) throws SQLException {
         return new oracle.sql.STRUCT(new oracle.sql.StructDescriptor(structTypeName, connection), connection, attributes);
     }
@@ -281,6 +291,7 @@ public class Oracle8Platform extends OraclePlatform {
      * Overrides DatabasePlatform method.
      * @return String
      */
+    @Override
     public Object getRefValue(Ref ref,Connection connection) throws SQLException {
         ((oracle.sql.REF)ref).setPhysicalConnectionOf(connection);
         return ((oracle.sql.REF)ref).getValue();
@@ -290,6 +301,7 @@ public class Oracle8Platform extends OraclePlatform {
      * INTERNAL:
      * Used by Oracle platforms during reading of ResultSet to free temporary LOBs.
      */
+    @Override
     public void freeTemporaryObject(Object value) throws SQLException {
         if (value instanceof oracle.sql.CLOB && ((oracle.sql.CLOB)value).isTemporary()) {
             ((oracle.sql.CLOB)value).freeTemporary();

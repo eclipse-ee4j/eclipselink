@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -18,14 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
-import oracle.jdbc.OracleStatement;
-import oracle.jdbc.dcn.DatabaseChangeEvent;
-import oracle.jdbc.dcn.DatabaseChangeListener;
-import oracle.jdbc.dcn.DatabaseChangeRegistration;
-import oracle.jdbc.dcn.RowChangeDescription;
-import oracle.jdbc.dcn.TableChangeDescription;
-import oracle.jdbc.driver.OracleConnection;
 
 import org.eclipse.persistence.annotations.DatabaseChangeNotificationType;
 import org.eclipse.persistence.descriptors.CacheIndex;
@@ -47,12 +39,19 @@ import org.eclipse.persistence.platform.database.events.DatabaseEventListener;
 import org.eclipse.persistence.queries.ValueReadQuery;
 import org.eclipse.persistence.sessions.Session;
 
+import oracle.jdbc.OracleConnection;
+import oracle.jdbc.OracleStatement;
+import oracle.jdbc.dcn.DatabaseChangeEvent;
+import oracle.jdbc.dcn.DatabaseChangeListener;
+import oracle.jdbc.dcn.DatabaseChangeRegistration;
+import oracle.jdbc.dcn.RowChangeDescription;
+import oracle.jdbc.dcn.TableChangeDescription;
+
 /**
  * PUBLIC:
  * Listener for Oracle Database Change event Notification (DCN).
  * This allows the EclipseLink cache to be invalidated by database events.
  *
- * @see org.eclipse.persistence.descriptors.invalidation.DatabaseEventNotificationPolicy
  * @author James Sutherland
  * @since EclipseLink 2.4
  */
@@ -78,6 +77,7 @@ public class OracleChangeNotificationListener implements DatabaseEventListener {
      * INTERNAL:
      * Register the event listener with the database.
      */
+    @Override
     public void register(Session session) {
         final AbstractSession databaseSession = (AbstractSession)session;
         // Determine which tables should be tracked for change events.
@@ -105,6 +105,7 @@ public class OracleChangeNotificationListener implements DatabaseEventListener {
                 final List<DatabaseField> fields = new ArrayList<DatabaseField>();
                 fields.add(new DatabaseField(ROWID));
                 this.register.addListener(new DatabaseChangeListener() {
+                    @Override
                     public void onDatabaseChangeNotification(DatabaseChangeEvent changeEvent) {
                         databaseSession.log(SessionLog.FINEST, SessionLog.CONNECTION, "dcn_change_event", changeEvent);
                         if (changeEvent.getTableChangeDescription() != null) {
@@ -155,6 +156,7 @@ public class OracleChangeNotificationListener implements DatabaseEventListener {
      * Initialize the descriptor to receive database change events.
      * This is called when the descriptor is initialized.
      */
+    @Override
     public void initialize(final ClassDescriptor descriptor, AbstractSession session) {
         if (descriptor.getOptimisticLockingPolicy() == null) {
             boolean requiresLocking = descriptor.hasMultipleTables();
@@ -233,6 +235,7 @@ public class OracleChangeNotificationListener implements DatabaseEventListener {
      * INTERNAL:
      * Remove the event listener from the database.
      */
+    @Override
     public void remove(Session session) {
         if (this.register == null) {
             return;
