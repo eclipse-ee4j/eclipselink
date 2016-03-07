@@ -13,7 +13,7 @@ Created-By: 1.6.0_26 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.nosql
 Bundle-Vendor: Eclipse.org - EclipseLink Project
-Fragment-Host: org.eclipse.persistence.core;bundle-version="2.4.0"
+Fragment-Host: org.eclipse.persistence.core;bundle-version="2.7.0"
 Bundle-Version: 2.7.0.qualifier
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.eclipse.persistence.nosql

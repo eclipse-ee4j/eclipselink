@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -24,10 +24,6 @@ import javax.resource.cci.InteractionSpec;
 import javax.resource.cci.MappedRecord;
 import javax.resource.cci.Record;
 
-import oracle.kv.Consistency;
-import oracle.kv.Durability;
-import oracle.kv.Version;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.descriptors.SelectedFieldsLockingPolicy;
@@ -40,17 +36,21 @@ import org.eclipse.persistence.eis.EISPlatform;
 import org.eclipse.persistence.eis.interactions.EISInteraction;
 import org.eclipse.persistence.eis.interactions.MappedInteraction;
 import org.eclipse.persistence.eis.interactions.XMLInteraction;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.nosql.adapters.nosql.OracleNoSQLInteractionSpec;
 import org.eclipse.persistence.internal.nosql.adapters.nosql.OracleNoSQLOperation;
 import org.eclipse.persistence.internal.nosql.adapters.nosql.OracleNoSQLRecord;
-import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sequencing.UUIDSequence;
 import org.w3c.dom.Element;
+
+import oracle.kv.Consistency;
+import oracle.kv.Durability;
+import oracle.kv.Version;
 
 /**
  * Platform for Oracle NoSQL database.
@@ -160,7 +160,7 @@ public class OracleNoSQLPlatform extends EISPlatform {
                 if (interaction.getQuery().getDescriptor() != null) {
                     ClassDescriptor descriptor = interaction.getQuery().getDescriptor();
                     if (descriptor.usesOptimisticLocking() && descriptor.getOptimisticLockingPolicy() instanceof SelectedFieldsLockingPolicy) {
-                        DatabaseField field = (DatabaseField)((SelectedFieldsLockingPolicy)descriptor.getOptimisticLockingPolicy()).getLockFields().get(0);
+                        DatabaseField field = ((SelectedFieldsLockingPolicy)descriptor.getOptimisticLockingPolicy()).getLockFields().get(0);
                         if (interaction.getInputRow() != null) {
                             version = interaction.getInputRow().get(field);
                         }
@@ -296,7 +296,7 @@ public class OracleNoSQLPlatform extends EISPlatform {
 
     /**
      * Stores the XML DOM value into the record.
-     * XML is stored in Oracle NoSQL but storing the XML text, keyed on the object's {@literal "<dataTypeName>/<id>"}.
+     * XML is stored in Oracle NoSQL but storing the XML text, keyed on the object's {@literal "&lt;dataTypeName&gt;/&lt;id&gt;"}.
      */
     @Override
     public void setDOMInRecord(Element dom, Record record, EISInteraction interaction, EISAccessor accessor) {

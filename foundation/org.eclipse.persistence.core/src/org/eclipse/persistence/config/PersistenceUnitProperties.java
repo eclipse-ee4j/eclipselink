@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -3231,7 +3231,7 @@ public class PersistenceUnitProperties {
      * If not set the default JGroups config will be used.
      *
      * @see #COORDINATION_PROTOCOL
-     * @see org.eclipse.persistence.sessions.coordination.jgroups.JGroupsTransportManager#setConfigFile(String)
+     * @see "org.eclipse.persistence.sessions.coordination.jgroups.JGroupsTransportManager#setConfigFile(String)"
      */
     public static final String COORDINATION_JGROUPS_CONFIG = "eclipselink.cache.coordination.jgroups.config";
 
