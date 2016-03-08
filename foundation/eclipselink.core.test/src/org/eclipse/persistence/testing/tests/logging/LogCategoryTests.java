@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015  Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2016  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -147,8 +147,7 @@ public class LogCategoryTests extends TestCase {
          * @throws IllegalAccessException If there is a problem in {@code ReflectionHelper} call.
          */
         @Override
-        public void test()
-                throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+        public void test() throws ReflectiveOperationException {
             LogCategoryHelper.testGetNameSpace();
         }
 

@@ -37,7 +37,6 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
@@ -76,6 +75,7 @@ import org.eclipse.persistence.internal.xr.ValueObject;
 import org.eclipse.persistence.internal.xr.XRServiceAdapter;
 import org.eclipse.persistence.internal.xr.XRServiceFactory;
 import org.eclipse.persistence.internal.xr.XRServiceModel;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.AttributeAccessor;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLContext;
@@ -268,6 +268,8 @@ public class ProviderHelper extends XRServiceFactory {
             dbwsAdapter.setExtendedSchema(extendedSchema);
         } catch (IOException | TransformerException e) {
             // that's Ok, WSDL may not contain inline schema
+            xmlContext.getSession().getSessionLog().log(
+                    SessionLog.FINE, SessionLog.DBWS, "dbws_no_wsdl_inline_schema", e.getLocalizedMessage());
         }
 
         // an Invocation needs a mapping for its parameters - use XMLAnyCollectionMapping +
@@ -293,8 +295,8 @@ public class ProviderHelper extends XRServiceFactory {
             @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 Invocation invocation = (Invocation)object;
-                Vector values = (Vector)value;
-                for (Iterator i = values.iterator(); i.hasNext();) {
+                Vector<Object> values = (Vector<Object>)value;
+                for (Iterator<Object> i = values.iterator(); i.hasNext();) {
                   /* scan through values:
                    *  if XML conforms to something mapped, it an object; else it is a DOM Element
                    *  (probably a scalar). Walk through operations for the types, converting
@@ -327,10 +329,10 @@ public class ProviderHelper extends XRServiceFactory {
                     }
                     else {
                         ClassDescriptor desc = null;
-                        for (XMLDescriptor xdesc : (List<XMLDescriptor>)(List)oxProject.getOrderedDescriptors()) {
-                            XMLSchemaReference schemaReference = xdesc.getSchemaReference();
-                            if (schemaReference != null &&
-                                schemaReference.getSchemaContext().equalsIgnoreCase(key)) {
+                        for (ClassDescriptor xdesc : oxProject.getOrderedDescriptors()) {
+                            XMLSchemaReference schemaReference = xdesc instanceof XMLDescriptor
+                                    ? ((XMLDescriptor)xdesc).getSchemaReference() : null;
+                            if (schemaReference != null && schemaReference.getSchemaContext().equalsIgnoreCase(key)) {
                                 desc = xdesc;
                                 break;
                             }
@@ -573,9 +575,10 @@ public class ProviderHelper extends XRServiceFactory {
         if (complexType.getSequence() != null) {
             // for each operation, there is a corresponding top-level Request type
             // which has the arguments to the operation
-            for (Iterator i = complexType.getSequence().getOrderedElements().iterator(); i .hasNext();) {
-                org.eclipse.persistence.internal.oxm.schema.model.Element e =
-                (org.eclipse.persistence.internal.oxm.schema.model.Element)i.next();
+            for (Iterator<org.eclipse.persistence.internal.oxm.schema.model.Element> i
+                    = complexType.getSequence().getOrderedElements().iterator();
+                    i .hasNext();) {
+              org.eclipse.persistence.internal.oxm.schema.model.Element e = i.next();
               String argName = e.getName();
               Object argValue = invocation.getParameter(argName);
               String argType = e.getType();

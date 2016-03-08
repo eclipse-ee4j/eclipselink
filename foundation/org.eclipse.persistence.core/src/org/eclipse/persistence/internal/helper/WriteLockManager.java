@@ -27,7 +27,7 @@ import org.eclipse.persistence.descriptors.FetchGroupManager;
 import org.eclipse.persistence.exceptions.ConcurrencyException;
 import org.eclipse.persistence.internal.helper.linkedlist.ExposedNodeLinkedList;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
-import org.eclipse.persistence.internal.localization.TraceLocalization;
+import org.eclipse.persistence.internal.localization.LoggingLocalization;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.MergeManager;
@@ -328,7 +328,7 @@ public class WriteLockManager {
                                                     activeCacheKey.wait(MAX_WAIT);
                                                     if (System.currentTimeMillis() - time >= MAX_WAIT){
                                                         Object[] params = new Object[]{MAX_WAIT /1000, descriptor.getJavaClassName(), activeCacheKey.getKey(), thread.getName()};
-                                                        StringBuilder buffer = new StringBuilder(TraceLocalization.buildMessage("max_time_exceeded_for_acquirerequiredlocks_wait", params));
+                                                        StringBuilder buffer = new StringBuilder(LoggingLocalization.buildMessage("max_time_exceeded_for_acquirerequiredlocks_wait", params));
                                                         StackTraceElement[] trace = thread.getStackTrace();
                                                         for (StackTraceElement element : trace){
                                                             buffer.append("\t\tat");

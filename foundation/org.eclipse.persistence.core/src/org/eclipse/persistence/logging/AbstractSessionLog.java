@@ -27,7 +27,6 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.localization.LoggingLocalization;
-import org.eclipse.persistence.internal.localization.TraceLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetSystemProperty;
 import org.eclipse.persistence.sessions.Session;
@@ -930,11 +929,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     protected String formatMessage(SessionLogEntry entry) {
         String message = entry.getMessage();
         if (entry.shouldTranslate()) {
-            if (entry.getLevel() > FINE) {
-                message = LoggingLocalization.buildMessage(message, entry.getParameters());
-            } else {
-                message = TraceLocalization.buildMessage(message, entry.getParameters(), true);
-            }
+            message = LoggingLocalization.buildMessage(message, entry.getParameters());
         } else {
             //Bug5976657, if there are entry parameters and the string "{0" contained in the message
             //body, we assume it needs to be formatted.
