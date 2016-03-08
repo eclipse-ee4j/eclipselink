@@ -152,6 +152,7 @@
                 <fileset dir="${server.lib}" includes="${server.depend}"/>
                 <pathelement location="${env.JAVA_HOME}/lib/tools.jar"/>
             </classpath>
+            <sysproperty key="debugMode" value="${debugMode}"/>
             <sysproperty key="eclipselink.logging.level" value="${logging.level}"/>
             <sysproperty key="ejb.lookup" value="${ejb.lookup}"/>
             <sysproperty key="is.JTA" value="${is.JTA}"/>
