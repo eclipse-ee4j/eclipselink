@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright (c) 2009, 2016  Oracle, Inc. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -9,24 +9,25 @@
  *
  * Contributors:
  *     08/01/2012-2.5 Chris Delahunt
- *       - 371950: Metadata caching 
+ *       - 371950: Metadata caching
  ******************************************************************************/
 
 package org.eclipse.persistence.internal.jpa.deployment;
 
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.util.Map;
+
+import javax.validation.Validation;
+import javax.validation.ValidatorFactory;
+
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.exceptions.PersistenceUnitLoadingException;
 import org.eclipse.persistence.internal.jpa.metadata.listeners.BeanValidationListener;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.exceptions.PersistenceUnitLoadingException;
-
-import javax.validation.ValidatorFactory;
-import javax.validation.Validation;
-import java.util.Map;
-import java.security.PrivilegedActionException;
-import java.security.AccessController;
 
 /**
  * Responsible for intialializing Bean Validation. The only expected instance of this interface is the inner class.
@@ -36,6 +37,7 @@ public interface BeanValidationInitializationHelper {
     public void bootstrapBeanValidation(Map puProperties, AbstractSession session, ClassLoader appClassLoader);
 
     static class BeanValidationInitializationHelperImpl implements BeanValidationInitializationHelper {
+        @Override
         public void bootstrapBeanValidation(Map puProperties, AbstractSession session, ClassLoader appClassLoader) {
 
             ValidatorFactory validatorFactory = getValidatorFactory(puProperties);
@@ -118,7 +120,7 @@ public interface BeanValidationInitializationHelper {
         private Class loadClass(String className, ClassLoader classLoader) throws PrivilegedActionException, ClassNotFoundException {
             Class loadedClass = null;
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                loadedClass = (Class) AccessController.doPrivileged(
+                loadedClass = AccessController.doPrivileged(
                         new PrivilegedClassForName(className, true, classLoader));
             } else {
                 loadedClass = PrivilegedAccessHelper.getClassForName(className, true, classLoader);

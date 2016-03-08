@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -3515,14 +3515,13 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             // environment where these classes are not available.
             // To guard against some vms that eagerly resolve, reflectively load class to prevent any static reference to it
             String helperClassName = "org.eclipse.persistence.internal.jpa.deployment.BeanValidationInitializationHelper$BeanValidationInitializationHelperImpl";
-            ClassLoader eclipseLinkClassLoader = EntityManagerSetupImpl.class.getClassLoader();
             Class helperClass;
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                    helperClass = (Class) AccessController.doPrivileged(
-                            new PrivilegedClassForName(helperClassName, true, eclipseLinkClassLoader));
+                    helperClass = AccessController.doPrivileged(
+                            new PrivilegedClassForName(helperClassName, true, appClassLoader));
                 } else {
-                    helperClass = PrivilegedAccessHelper.getClassForName(helperClassName, true, eclipseLinkClassLoader);
+                    helperClass = PrivilegedAccessHelper.getClassForName(helperClassName, true, appClassLoader);
                 }
                 BeanValidationInitializationHelper beanValidationInitializationHelper = (BeanValidationInitializationHelper)helperClass.newInstance();
                 beanValidationInitializationHelper.bootstrapBeanValidation(puProperties, session, appClassLoader);
