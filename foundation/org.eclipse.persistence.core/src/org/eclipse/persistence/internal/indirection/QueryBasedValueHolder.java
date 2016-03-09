@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,14 +12,18 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.indirection;
 
-import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.mappings.ForeignReferenceMapping;
-import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.mappings.AttributeAccessor;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+import org.eclipse.persistence.queries.ObjectBuildingQuery;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReadQuery;
 
 /**
  * QueryBasedValueHolder wraps a database-stored object and implements behavior
@@ -153,15 +157,23 @@ public class QueryBasedValueHolder extends DatabaseValueHolder {
         DatabaseMapping mapping = query.getSourceMapping();
         if (mapping != null && mapping.isForeignReferenceMapping()){
             // Fix for Bug#474232
+            ClassDescriptor descriptor = mapping.getDescriptor();
             final IndirectionPolicy indirectionPolicy = ((ForeignReferenceMapping) mapping).getIndirectionPolicy();
             if (indirectionPolicy != null && indirectionPolicy.isWeavedObjectBasicIndirectionPolicy()) {
                 if (!isCoordinatedWithProperty && mapping.isObjectReferenceMapping() && sourceObject != null && value != null) {
-                    mapping.setAttributeValueInObject(sourceObject, this);
+                    // Bug#487930
+                    Object object = sourceObject;
+                    if (descriptor != null && descriptor.isAggregateDescriptor()) {
+                        // navigate to the leaf element in the accessor tree
+                        for(AttributeAccessor accessor : descriptor.getAccessorTree()) {
+                            object = accessor.getAttributeValueFromObject(object);
+                        }
+                    }
+                    mapping.setAttributeValueInObject(object, this);
                     isCoordinatedWithProperty = true;
                 }
             }
-            
-            ClassDescriptor descriptor = mapping.getDescriptor();
+
             if (descriptor == null || descriptor.isAggregateDescriptor()){
                 descriptor = session.getDescriptor(sourceObject);
             }

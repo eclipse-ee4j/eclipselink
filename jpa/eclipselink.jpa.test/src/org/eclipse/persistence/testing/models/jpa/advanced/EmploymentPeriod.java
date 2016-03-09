@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,11 +12,17 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.advanced;
 
-import java.sql.Date;
-import java.io.*;
-import javax.persistence.*;
-
 import org.eclipse.persistence.annotations.Property;
+
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import javax.persistence.ManyToOne;
+import java.io.Serializable;
+import java.sql.Date;
+
+import static javax.persistence.CascadeType.MERGE;
+import static javax.persistence.CascadeType.PERSIST;
+import static javax.persistence.FetchType.LAZY;
 
 /**
  * <p><b>Purpose</b>: Defines the period an Employee worked for the organization
@@ -30,6 +36,8 @@ import org.eclipse.persistence.annotations.Property;
 public class EmploymentPeriod implements Serializable, Cloneable {
     private Date startDate;
     private Date endDate;
+    // Conceptually makes no sense but needed for testing purposes.
+    private Address companyAddress;
 
     public EmploymentPeriod() {}
 
@@ -64,6 +72,15 @@ public class EmploymentPeriod implements Serializable, Cloneable {
         this.endDate = date;
     }
 
+    @ManyToOne(cascade={PERSIST, MERGE}, fetch=LAZY)
+    public Address getCompanyAddress() {
+        return companyAddress;
+    }
+
+    public void setCompanyAddress(Address companyAddress) {
+        this.companyAddress = companyAddress;
+    }
+
     public Object clone() throws CloneNotSupportedException{
         return super.clone();
     }
@@ -83,6 +100,12 @@ public class EmploymentPeriod implements Serializable, Cloneable {
 
         if (this.getEndDate() != null) {
             writer.write(this.getEndDate().toString());
+        }
+
+        writer.write("-");
+
+        if (this.getCompanyAddress() != null) {
+            writer.write(this.getCompanyAddress().toString());
         }
 
         return writer.toString();
@@ -106,6 +129,14 @@ public class EmploymentPeriod implements Serializable, Cloneable {
                 return false;
             }
         } else if (empPeriod.getEndDate()!=null){
+            return false;
+        }
+
+        if (companyAddress!=null){
+            if (!companyAddress.equals(empPeriod.getCompanyAddress())){
+                return false;
+            }
+        } else if (empPeriod.getCompanyAddress()!=null){
             return false;
         }
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -57,7 +57,6 @@ import static org.eclipse.persistence.annotations.CacheType.SOFT_WEAK;
 import static org.eclipse.persistence.annotations.ChangeTrackingType.AUTO;
 import static org.eclipse.persistence.annotations.Direction.IN_OUT;
 import static org.eclipse.persistence.annotations.Direction.OUT;
-import static org.eclipse.persistence.annotations.Direction.OUT_CURSOR;
 import static org.eclipse.persistence.annotations.ExistenceType.CHECK_DATABASE;
 import static org.eclipse.persistence.annotations.OptimisticLockingType.VERSION_COLUMN;
 
@@ -751,6 +750,7 @@ public class Employee implements Serializable, Cloneable {
         @AttributeOverride(name="startDate", column=@Column(name="FORMER_START_DATE", nullable=false)),
         @AttributeOverride(name="endDate", column=@Column(name="FORMER_END_DATE", nullable=true))
     })
+    @AssociationOverride(name="companyAddress", joinColumns=@JoinColumn(name="FORMER_COMPANY_ADDRESS_ID", nullable=true))
     @Property(name="attributeName", value="formerEmployment")
     public FormerEmployment getFormerEmployment() {
             return formerEmployment;

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -327,6 +327,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         tests.add("testOPTIMISTIC_FORCE_INCREMENTLock");
         tests.add("testReadOnlyTransactionalData");
         tests.add("testReadOnlyCachedLazyAssociation");
+        tests.add("testReadOnlyCachedLazyAssociationInNestedEmbeddable");
         tests.add("testReadTransactionIsolation_OriginalInCache_UpdateAll_Refresh_Flush");
         tests.add("testReadTransactionIsolation_OriginalInCache_UpdateAll_Refresh");
         tests.add("testReadTransactionIsolation_OriginalInCache_UpdateAll_Flush");
@@ -4412,42 +4413,43 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     
     public void testReadOnlyCachedLazyAssociation() {
         EntityManager em = createEntityManager();
-        Integer empId;
-        
-        // setup
+        Integer empId = null;
+        Employee emp = null;
+
         try {
-            beginTransaction(em);
-            final Employee emp = new Employee();
-            emp.setFirstName("Mark");
-            emp.setLastName("Dowder");
-            final PhoneNumber phone = new PhoneNumber("work", "613", "5555555");
-            emp.addPhoneNumber(phone);
-            final PhoneNumber newPhone = new PhoneNumber("home", "613", "4444444");
-            emp.addPhoneNumber(newPhone);
-            final Address address = new Address("SomeStreet", "somecity", "province", "country", "postalcode");
-            emp.setAddress(address);
-            em.persist(emp);
-            em.flush();
-            commitTransaction(em);
+            // setup
+            try {
+                beginTransaction(em);
+                emp = new Employee();
+                emp.setFirstName("Mark");
+                emp.setLastName("Dowder");
+                final PhoneNumber phone = new PhoneNumber("work", "613", "5555555");
+                emp.addPhoneNumber(phone);
+                final PhoneNumber newPhone = new PhoneNumber("home", "613", "4444444");
+                emp.addPhoneNumber(newPhone);
+                final Address address = new Address("SomeStreet", "somecity", "province", "country", "postalcode");
+                emp.setAddress(address);
+                em.persist(emp);
+                em.flush();
+                commitTransaction(em);
 
-            empId = emp.getId();
+                empId = emp.getId();
 
-            // clear cache
-            em.getEntityManagerFactory().getCache().evictAll();
-            getServerSession().getIdentityMapAccessor().initializeIdentityMaps();
-        } catch (RuntimeException ex) {
-            if (isTransactionActive(em)) {
-                rollbackTransaction(em);
+                // clear cache
+                em.getEntityManagerFactory().getCache().evictAll();
+                getServerSession().getIdentityMapAccessor().initializeIdentityMaps();
+            } catch (RuntimeException ex) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+                closeEntityManager(em);
+                throw ex;
             }
-            closeEntityManager(em);
-            throw ex;
-        }
-          
-        try {
-            final Employee emp = em.find(Employee.class, empId);
-            Assert.assertNotNull("No Employee retrieved", emp);
-            // Bug#474232
-            emp.getAddress();
+
+            final Employee employee = em.find(Employee.class, empId);
+            Assert.assertNotNull("No Employee retrieved", employee);
+            // Trigger Bug#474232
+            employee.getAddress();
 
             final Employee cachedEmployee = em.createNamedQuery("findEmployeeByPK", Employee.class).
                     setParameter("id", empId).
@@ -4457,6 +4459,72 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             final Address address = cachedEmployee.getAddress();
             Assert.assertNotNull("Address of employee not retrieved", address);
         } finally {
+            // Clean up
+            if (empId != null) {
+                beginTransaction(em);
+                em.remove(em.merge(emp));
+                commitTransaction(em);
+            }
+            closeEntityManager(em);
+        }
+    }
+
+    public void testReadOnlyCachedLazyAssociationInNestedEmbeddable() {
+        EntityManager em = createEntityManager();
+        Integer empId = null;
+        Employee emp = null;
+
+        try {
+            // setup
+            try {
+                beginTransaction(em);
+                emp = new Employee();
+                emp.setFirstName("Mike");
+                emp.setLastName("Dowder");
+                final Address address = new Address("Street", "City", "Province", "Country", "PostalCode");
+                final EmploymentPeriod employmentPeriod = new EmploymentPeriod(new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()));
+                final FormerEmployment formerEmployment = new FormerEmployment("Former company", employmentPeriod);
+                employmentPeriod.setCompanyAddress(address);
+                emp.setFormerEmployment(formerEmployment);
+                em.persist(emp);
+                em.flush();
+                commitTransaction(em);
+
+                empId = emp.getId();
+
+                // clear cache
+                em.getEntityManagerFactory().getCache().evictAll();
+                getServerSession().getIdentityMapAccessor().initializeIdentityMaps();
+            } catch (RuntimeException ex) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+                throw ex;
+            }
+
+            final Employee employee = em.find(Employee.class, empId);
+            Assert.assertNotNull("No Employee retrieved", employee);
+            // Trigger Bug#474232
+            employee.getFormerEmployment().getPeriod().getCompanyAddress();
+
+            final Employee cachedEmployee = em.createNamedQuery("findEmployeeByPK", Employee.class).
+                    setParameter("id", empId).
+                    setHint(QueryHints.READ_ONLY, HintValues.TRUE).
+                    getSingleResult();
+            Assert.assertNotNull("Employee not found", cachedEmployee);
+            final FormerEmployment formerEmployment = employee.getFormerEmployment();
+            Assert.assertNotNull("Former employment details not retrieved", formerEmployment);
+            final EmploymentPeriod employmentPeriod = formerEmployment.getPeriod();
+            Assert.assertNotNull("Former employment period not retrieved", employmentPeriod);
+            final Address address = employmentPeriod.getCompanyAddress();
+            Assert.assertNotNull("Former employment address not retrieved", address);
+        } finally {
+            // Clean up
+            if (empId != null) {
+                beginTransaction(em);
+                em.remove(em.merge(emp));
+                commitTransaction(em);
+            }
             closeEntityManager(em);
         }
     }

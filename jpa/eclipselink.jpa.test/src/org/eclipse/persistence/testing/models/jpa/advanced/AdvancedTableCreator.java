@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -907,6 +907,28 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldFormerEndDate.setUnique(false );
         fieldFormerEndDate.setIsIdentity(false );
         table.addField(fieldFormerEndDate);
+
+        // SECTION: FIELD
+        FieldDefinition fieldFormerCompanyAddress = new FieldDefinition();
+        fieldFormerCompanyAddress.setName("FORMER_COMPANY_ADDRESS_ID");
+        fieldFormerCompanyAddress.setTypeName("NUMERIC");
+        fieldFormerCompanyAddress.setSize(15);
+        fieldFormerCompanyAddress.setShouldAllowNull(true);
+        fieldFormerCompanyAddress.setIsPrimaryKey(false);
+        fieldFormerCompanyAddress.setUnique(false);
+        fieldFormerCompanyAddress.setIsIdentity(false);
+        table.addField(fieldFormerCompanyAddress);
+
+        // SECTION: FIELD
+        FieldDefinition fieldCompanyAddress = new FieldDefinition();
+        fieldCompanyAddress.setName("COMPANYADDRESS_ADDRESS_ID");
+        fieldCompanyAddress.setTypeName("NUMERIC");
+        fieldCompanyAddress.setSize(15);
+        fieldCompanyAddress.setShouldAllowNull(true);
+        fieldCompanyAddress.setIsPrimaryKey(false);
+        fieldCompanyAddress.setUnique(false);
+        fieldCompanyAddress.setIsIdentity(false);
+        table.addField(fieldCompanyAddress);
 
         FieldDefinition fieldHugeProj = new FieldDefinition();
         fieldHugeProj.setName("HUGE_PROJ_ID");
