@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -13,6 +13,7 @@
 package org.eclipse.persistence.testing.perf;
 
 import org.eclipse.persistence.testing.perf.jpa.tests.basic.JPAMetadataProcessingTests;
+import org.eclipse.persistence.testing.perf.jpa.tests.basic.MethodHandleComparisonTests;
 import org.openjdk.jmh.results.format.ResultFormatType;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
@@ -37,6 +38,7 @@ public class JPABenchmarks {
 
         Options opt = new OptionsBuilder()
                 .include(getInclude(JPAMetadataProcessingTests.class))
+                .include(getInclude(MethodHandleComparisonTests.class))
                 .jvmArgsPrepend("-javaagent:" + System.getProperty("eclipselink.agent"))
                 .result(resultFile)
                 .resultFormat(ResultFormatType.valueOf(resultFormat.toUpperCase()))
