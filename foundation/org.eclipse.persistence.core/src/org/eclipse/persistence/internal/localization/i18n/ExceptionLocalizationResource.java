@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -29,6 +29,8 @@
  *       - 443762 : Misc message cleanup.
  *     12/18/2014-2.6 Rick Curtis
  *       - 454189 : Misc message cleanup.#2
+ *     03/09/2016-2.6 Dalia Abo Sheasha
+ *       - 489298: Wrap EclipseLink's Bean Validation calls in doPrivileged blocks when security is enabled
  ******************************************************************************/  
 package org.eclipse.persistence.internal.localization.i18n;
 
@@ -248,7 +250,8 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "named_entity_graph_exists", "NamedEntityGraph with name {0} found on {1} already exists in this persistence unit."},
                                            { "cannot_get_from_non_correlated_query", "getCorrelationParent() called on a from-clause that was not obtained through correlation." },
                                            { "wrap_convert_exception", "An exception occurred while calling {0} on converter class {1} with value {2}"},
-                                           { "ora_pessimistic_locking_with_rownum", "Pessimistic locking with query row limits is not supported."}
+                                           { "ora_pessimistic_locking_with_rownum", "Pessimistic locking with query row limits is not supported."},
+                                           { "bean_validation_constraint_violated", "One or more Bean Validation constraints were violated while executing Automatic Bean Validation on callback event: {0} for class: {1}. Please refer to the embedded constraint violations for details."}
                                            
 										};
     /**
