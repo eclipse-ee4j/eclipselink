@@ -257,7 +257,7 @@
         <property name="xml.stream.prefix" value="javax.xml.stream"/>
         <property name="xml.stream.criteria" value="[1.0.1,1.1.0)"/>
         <property name="mongodb.prefix" value="org.eclipse.orbit.mongodb"/>
-        <property name="mongodb.criteria" value="[2.7.2,2.8.0)"/>
+        <property name="mongodb.criteria" value="[2.7.2,9.0.0)"/>
         <property name="json.prefix" value="org.glassfish.javax.json"/>
         <property name="json.criteria" value="[1.0.4,5.0.0)"/>
 
