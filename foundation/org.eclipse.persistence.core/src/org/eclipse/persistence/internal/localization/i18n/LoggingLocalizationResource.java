@@ -66,8 +66,7 @@ import java.util.ListResourceBundle;
  */
 public class LoggingLocalizationResource extends ListResourceBundle {
 
-    // MSGID and TOP-NNNNN pairs were removed in
-    //     TODO: Replace this line with change set reference after commit/push.
+    // MSGID and TOP-NNNNN pairs were removed in bug 259260, commit bc38112
     /**
      * Key and message pairs.
      */

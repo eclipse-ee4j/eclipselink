@@ -128,7 +128,7 @@ public interface SessionLog extends Cloneable {
     public static final String PROPERTIES = "properties";
     public static final String SERVER = "server";
     public static final String DDL = "ddl";
-    public static final String DBWS = "jpars";
+    public static final String DBWS = "dbws";
     public static final String JPARS = "jpars";
 
     public final String[] loggerCatagories = new String[] {
