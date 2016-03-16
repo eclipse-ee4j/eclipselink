@@ -1,33 +1,34 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.sessions.coordination;
 
+import java.net.InetAddress;
+
 import org.eclipse.persistence.exceptions.RemoteCommandManagerException;
-import org.eclipse.persistence.internal.sessions.coordination.RemoteConnection;
-import org.eclipse.persistence.internal.sessions.coordination.RCMCommand;
-import org.eclipse.persistence.internal.sessions.coordination.CommandPropagator;
-import org.eclipse.persistence.sessions.coordination.rmi.RMITransportManager;
-import org.eclipse.persistence.sessions.serializers.JavaSerializer;
-import org.eclipse.persistence.sessions.serializers.Serializer;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.localization.LoggingLocalization;
-import org.eclipse.persistence.internal.localization.TraceLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
-import org.eclipse.persistence.sessions.*;
+import org.eclipse.persistence.internal.sessions.coordination.CommandPropagator;
+import org.eclipse.persistence.internal.sessions.coordination.RCMCommand;
+import org.eclipse.persistence.internal.sessions.coordination.RemoteConnection;
 import org.eclipse.persistence.platform.server.ServerPlatform;
-import java.net.InetAddress;
+import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.SessionProfiler;
+import org.eclipse.persistence.sessions.coordination.rmi.RMITransportManager;
+import org.eclipse.persistence.sessions.serializers.JavaSerializer;
+import org.eclipse.persistence.sessions.serializers.Serializer;
 
 /**
  * <p>
@@ -399,11 +400,7 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
      */
     public void logMessageWithoutLevelCheck(int logLevel, String message, Object[] args) {
         String i18nmsg = message;
-        if ((logLevel == CommandProcessor.LOG_ERROR) || (logLevel == CommandProcessor.LOG_WARNING)) {
-            i18nmsg = LoggingLocalization.buildMessage(message, args);
-        } else if ((logLevel == CommandProcessor.LOG_INFO) || (logLevel == CommandProcessor.LOG_DEBUG)) {
-            i18nmsg = TraceLocalization.buildMessage(message, args);
-        }
+        i18nmsg = LoggingLocalization.buildMessage(message, args);
         commandProcessor.logMessage(logLevel, i18nmsg);
     }
 

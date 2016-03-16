@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -42,8 +42,6 @@ import org.eclipse.persistence.sessions.Session;
  * original attribute's type for ValueHolderInterface.
  */
 public class PersistenceWeaver implements ClassTransformer {
-
-    public static final String EXCEPTION_WHILE_WEAVING = "exception_while_weaving";
 
     protected Session session; // for logging
     /** Class name in JVM '/' format to {@link ClassDetails} map. */
@@ -203,7 +201,7 @@ public class PersistenceWeaver implements ClassTransformer {
             }
         } catch (Throwable exception) {
             if (WeaverLogger.shouldLog(SessionLog.FINE)) {
-                WeaverLogger.log(SessionLog.FINE, EXCEPTION_WHILE_WEAVING, new Object[] {exception, className});
+                WeaverLogger.log(SessionLog.FINE, "exception_while_weaving", new Object[] {className, exception.getLocalizedMessage()});
                 if (shouldLogFinest) {
                     WeaverLogger.logThrowable(SessionLog.FINEST, exception);
                 }

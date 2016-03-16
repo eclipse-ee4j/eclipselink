@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,6 +12,22 @@
  ******************************************************************************/
 
 package org.eclipse.persistence.internal.xr;
+
+import static org.eclipse.persistence.internal.helper.ClassConstants.APBYTE;
+import static org.eclipse.persistence.internal.oxm.Constants.ANY;
+import static org.eclipse.persistence.internal.oxm.Constants.ANY_QNAME;
+import static org.eclipse.persistence.internal.xr.Util.ALL_QUERYNAME;
+import static org.eclipse.persistence.internal.xr.Util.COLON_CHAR;
+import static org.eclipse.persistence.internal.xr.Util.DASH_STR;
+import static org.eclipse.persistence.internal.xr.Util.DBWS_OR_SESSION_NAME_SUFFIX;
+import static org.eclipse.persistence.internal.xr.Util.DBWS_OX_SESSION_NAME_SUFFIX;
+import static org.eclipse.persistence.internal.xr.Util.DBWS_SESSIONS_XML;
+import static org.eclipse.persistence.internal.xr.Util.META_INF_PATHS;
+import static org.eclipse.persistence.internal.xr.Util.PK_QUERYNAME;
+import static org.eclipse.persistence.internal.xr.Util.SLASH_CHAR;
+import static org.eclipse.persistence.internal.xr.Util.TARGET_NAMESPACE_PREFIX;
+import static org.eclipse.persistence.internal.xr.Util.TYPE_STR;
+import static org.eclipse.persistence.internal.xr.Util.UNDERSCORE_STR;
 
 //javase imports
 import java.io.InputStream;
@@ -49,6 +65,7 @@ import javax.xml.transform.stream.StreamSource;
 //EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DBWSException;
+import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProcessor;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
@@ -57,10 +74,10 @@ import org.eclipse.persistence.internal.oxm.schema.SchemaModelProject;
 import org.eclipse.persistence.internal.oxm.schema.model.Schema;
 import org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormatProject;
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
-import org.eclipse.persistence.jaxb.metadata.MetadataSource;
-import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
+import org.eclipse.persistence.jaxb.metadata.MetadataSource;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.NamespaceResolver;
@@ -76,22 +93,6 @@ import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.factories.SessionManager;
 import org.eclipse.persistence.sessions.server.ServerSession;
-
-import static org.eclipse.persistence.internal.helper.ClassConstants.APBYTE;
-import static org.eclipse.persistence.internal.xr.Util.ALL_QUERYNAME;
-import static org.eclipse.persistence.internal.xr.Util.DBWS_OR_SESSION_NAME_SUFFIX;
-import static org.eclipse.persistence.internal.xr.Util.DBWS_OX_SESSION_NAME_SUFFIX;
-import static org.eclipse.persistence.internal.xr.Util.DBWS_SESSIONS_XML;
-import static org.eclipse.persistence.internal.xr.Util.COLON_CHAR;
-import static org.eclipse.persistence.internal.xr.Util.DASH_STR;
-import static org.eclipse.persistence.internal.xr.Util.META_INF_PATHS;
-import static org.eclipse.persistence.internal.xr.Util.PK_QUERYNAME;
-import static org.eclipse.persistence.internal.xr.Util.SLASH_CHAR;
-import static org.eclipse.persistence.internal.xr.Util.TARGET_NAMESPACE_PREFIX;
-import static org.eclipse.persistence.internal.xr.Util.TYPE_STR;
-import static org.eclipse.persistence.internal.xr.Util.UNDERSCORE_STR;
-import static org.eclipse.persistence.oxm.XMLConstants.ANY;
-import static org.eclipse.persistence.oxm.XMLConstants.ANY_QNAME;
 
 /**
  * <p><b>INTERNAL</b>: helper class that knows how to build a {@link XRServiceAdapter} (a.k.a DBWS). An
@@ -185,6 +186,7 @@ public class XRServiceFactory  {
     static final String DOM_PLATFORM_CLASSNAME = "org.eclipse.persistence.oxm.platform.DOMPlatform";
     static final String OXM_PROCESSING_EX = "An exception occurred processing OXM metadata";
     static final String ORM_PROCESSING_EX = "An exception occurred processing ORM metadata";
+    static final String OXM_PROCESSING_SCH = "An exception occurred processing schema definitions";
     static final String OX_PRJ_SUFFIX = "-dbws-ox";
     static final String OR_PRJ_SUFFIX = "-dbws-or";
     static final String DEFAULT_PROJECT_NAME = "org.eclipse.persistence.sessions.Project";
@@ -234,13 +236,21 @@ public class XRServiceFactory  {
 
     /**
      * <p>INTERNAL:
-     *
+     * Read and unmarshal <code>XRService</code>'s <tt>.xsd</tt> file.
+     * @param xrSchemaStream Stream resource for the <code>XRService</code>'s <tt>.xsd</tt> file.
      */
     public void loadXMLSchema(InputStream xrSchemaStream) {
         SchemaModelProject schemaProject = new SchemaModelProject();
         XMLContext xmlContext = new XMLContext(schemaProject);
         XMLUnmarshaller unmarshaller = xmlContext.createUnmarshaller();
-        Schema schema = (Schema)unmarshaller.unmarshal(xrSchemaStream);
+        Schema schema;
+        try {
+            schema = (Schema)unmarshaller.unmarshal(xrSchemaStream);
+        } catch (XMLMarshalException e) {
+            xmlContext.getSession().getSessionLog().log(
+                    SessionLog.WARNING, SessionLog.DBWS, "dbws_xml_schema_read_error", e.getLocalizedMessage());
+            throw new DBWSException(OXM_PROCESSING_SCH, e);
+        }
         NamespaceResolver nr = schema.getNamespaceResolver();
         String targetNamespace = schema.getTargetNamespace();
         nr.put(TARGET_NAMESPACE_PREFIX, targetNamespace);
@@ -252,8 +262,10 @@ public class XRServiceFactory  {
      * <p>INTERNAL:
      * Create a Project using ORM metadata.  The given classloader is expected 
      * to successfully load 'META-INF/eclipselink-dbws-or.xml'.
+     * @param xrdecl  {@link ClassLoader} used to search for {@code eclipselink-dbws-or.xml}.
+     * @param session ORM session.
      */
-    protected Project loadORMetadata(XRDynamicClassLoader xrdecl, ServerSession session) {        
+    protected Project loadORMetadata(final XRDynamicClassLoader xrdecl, final ServerSession session) {
         Project orProject = null;
         String searchPath = null;
         InputStream inStream = null;
@@ -278,7 +290,8 @@ public class XRServiceFactory  {
                 orProject.setName(xrService.getName().concat(OR_PRJ_SUFFIX));
             }
         } catch (Exception pupex) {
-            /* could be legacy project, or none set, so ignore */
+            /* could be legacy project, or none set, so just log */
+            session.log(SessionLog.FINE, SessionLog.DBWS, "dbws_orm_metadata_read_error", pupex.getLocalizedMessage());
         }
         return orProject;
     }
@@ -287,8 +300,10 @@ public class XRServiceFactory  {
      * <p>INTERNAL:
      * Create a Project using OXM metadata.  The given classloader is expected 
      * to successfully load 'META-INF/eclipselink-dbws-ox.xml'.
+     * @param xrdecl  {@link ClassLoader} used to search for {@code eclipselink-dbws-ox.xml}.
+     * @param session OXM session (only for logging).
      */
-    protected Project loadOXMetadata(ClassLoader xrdecl) {
+    protected Project loadOXMetadata(final ClassLoader xrdecl, final Session session) {
         Project oxProject = null;
         InputStream inStream = null;
         String searchPath = null;
@@ -317,7 +332,9 @@ public class XRServiceFactory  {
                     }
                 }
             } catch (JAXBException jaxbex) {
-                /* could be legacy project, or none set, so ignore */
+                /* could be legacy project, or none set, so just log */
+                session.getSessionLog().log(
+                        SessionLog.FINE, SessionLog.DBWS, "dbws_oxm_metadata_read_error", jaxbex.getLocalizedMessage());
                 return null;
             }
             
@@ -439,7 +456,7 @@ public class XRServiceFactory  {
         
         // load OX project via xml-bindings
         Project oxProject = null;
-        if ((oxProject = loadOXMetadata(projectLoader)) == null) {
+        if ((oxProject = loadOXMetadata(projectLoader, xrService.oxSession)) == null) {
             // at this point we may have a legacy deployment XML project, or none set
             oxProject = xrService.oxSession.getProject();
             // check to see if it's a default Project

@@ -11,24 +11,31 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     02/11/2009-1.1 Michael O'Brien 
  *        - 259993: As part 2) During mergeClonesAfterCompletion() 
- *           If the the acquire and release threads are different 
+ *           If the the acquire and release threads are different
  *           switch back to the stored acquire thread stored on the mergeManager.
  *      tware, David Mulligan - fix performance issue with releasing locks
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.helper;
 
-import java.util.*;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
 import org.eclipse.persistence.exceptions.ConcurrencyException;
+import org.eclipse.persistence.internal.helper.linkedlist.ExposedNodeLinkedList;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.localization.LoggingLocalization;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
-import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.internal.sessions.*;
-import org.eclipse.persistence.internal.identitymaps.*;
-import org.eclipse.persistence.internal.localization.TraceLocalization;
-import org.eclipse.persistence.internal.helper.linkedlist.*;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.MergeManager;
+import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 
 /**
  * INTERNAL:
@@ -321,7 +328,7 @@ public class WriteLockManager {
                                                     activeCacheKey.wait(MAX_WAIT);
                                                     if (System.currentTimeMillis() - time >= MAX_WAIT){
                                                         Object[] params = new Object[]{MAX_WAIT /1000, descriptor.getJavaClassName(), activeCacheKey.getKey(), thread.getName()};
-                                                        StringBuilder buffer = new StringBuilder(TraceLocalization.buildMessage("max_time_exceeded_for_acquirerequiredlocks_wait", params));
+                                                        StringBuilder buffer = new StringBuilder(LoggingLocalization.buildMessage("max_time_exceeded_for_acquirerequiredlocks_wait", params));
                                                         StackTraceElement[] trace = thread.getStackTrace();
                                                         for (StackTraceElement element : trace){
                                                             buffer.append("\t\tat");

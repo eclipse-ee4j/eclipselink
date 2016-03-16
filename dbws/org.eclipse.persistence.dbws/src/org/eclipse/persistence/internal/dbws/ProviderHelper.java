@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,6 +12,49 @@
  ******************************************************************************/
 
 package org.eclipse.persistence.internal.dbws;
+
+import static javax.xml.soap.SOAPConstants.SOAP_1_2_PROTOCOL;
+import static javax.xml.soap.SOAPConstants.URI_NS_SOAP_1_1_ENVELOPE;
+import static javax.xml.soap.SOAPConstants.URI_NS_SOAP_1_2_ENVELOPE;
+import static javax.xml.ws.handler.MessageContext.INBOUND_MESSAGE_ATTACHMENTS;
+import static org.eclipse.persistence.internal.dbws.SOAPResponseWriter.RECEIVER_QNAME;
+import static org.eclipse.persistence.internal.dbws.SOAPResponseWriter.SERVER_QNAME;
+import static org.eclipse.persistence.internal.xr.Util.DBWS_SCHEMA_XML;
+import static org.eclipse.persistence.internal.xr.Util.DBWS_SERVICE_XML;
+import static org.eclipse.persistence.internal.xr.Util.DBWS_WSDL;
+import static org.eclipse.persistence.internal.xr.Util.META_INF_PATHS;
+import static org.eclipse.persistence.internal.xr.Util.SCHEMA_2_CLASS;
+import static org.eclipse.persistence.internal.xr.Util.SERVICE_NAMESPACE_PREFIX;
+import static org.eclipse.persistence.internal.xr.Util.WEB_INF_DIR;
+import static org.eclipse.persistence.internal.xr.Util.WSDL_DIR;
+import static org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Vector;
+
+import javax.activation.DataHandler;
+import javax.servlet.ServletContext;
+import javax.xml.namespace.QName;
+import javax.xml.soap.SOAPBodyElement;
+import javax.xml.soap.SOAPElement;
+import javax.xml.soap.SOAPEnvelope;
+import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPFactory;
+import javax.xml.soap.SOAPFault;
+import javax.xml.soap.SOAPMessage;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.ws.WebServiceException;
+import javax.xml.ws.handler.MessageContext;
+import javax.xml.ws.soap.SOAPFaultException;
 
 //javase imports
 
@@ -31,6 +74,7 @@ import org.eclipse.persistence.internal.xr.ValueObject;
 import org.eclipse.persistence.internal.xr.XRServiceAdapter;
 import org.eclipse.persistence.internal.xr.XRServiceFactory;
 import org.eclipse.persistence.internal.xr.XRServiceModel;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.AttributeAccessor;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLContext;
@@ -45,55 +89,12 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import javax.activation.DataHandler;
-import javax.servlet.ServletContext;
-import javax.xml.namespace.QName;
-import javax.xml.soap.SOAPBodyElement;
-import javax.xml.soap.SOAPElement;
-import javax.xml.soap.SOAPEnvelope;
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPFactory;
-import javax.xml.soap.SOAPFault;
-import javax.xml.soap.SOAPMessage;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.ws.WebServiceException;
-import javax.xml.ws.handler.MessageContext;
-import javax.xml.ws.soap.SOAPFaultException;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-
-import static javax.xml.soap.SOAPConstants.SOAP_1_2_PROTOCOL;
-import static javax.xml.soap.SOAPConstants.URI_NS_SOAP_1_1_ENVELOPE;
-import static javax.xml.soap.SOAPConstants.URI_NS_SOAP_1_2_ENVELOPE;
-import static javax.xml.ws.handler.MessageContext.INBOUND_MESSAGE_ATTACHMENTS;
-import static org.eclipse.persistence.internal.dbws.SOAPResponseWriter.RECEIVER_QNAME;
-import static org.eclipse.persistence.internal.dbws.SOAPResponseWriter.SERVER_QNAME;
-import static org.eclipse.persistence.internal.xr.Util.DBWS_SCHEMA_XML;
-import static org.eclipse.persistence.internal.xr.Util.DBWS_SERVICE_XML;
-import static org.eclipse.persistence.internal.xr.Util.DBWS_WSDL;
-import static org.eclipse.persistence.internal.xr.Util.META_INF_PATHS;
-import static org.eclipse.persistence.internal.xr.Util.SCHEMA_2_CLASS;
-import static org.eclipse.persistence.internal.xr.Util.SERVICE_NAMESPACE_PREFIX;
-import static org.eclipse.persistence.internal.xr.Util.WEB_INF_DIR;
-import static org.eclipse.persistence.internal.xr.Util.WSDL_DIR;
-import static org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT;
-
 // Java extension imports
 // EclipseLink imports
 
 /**
  * <p>
- * <b>INTERNAL:</b> ProviderHelper bridges between {@link DBWSAdapter}'s and JAX-WS {@link Provider}'s
+ * <b>INTERNAL:</b> ProviderHelper bridges between {@link DBWSAdapter}'s and JAX-WS {@code Provider}'s
  * <p>
  *
  * @author Mike Norman - michael.norman@oracle.com
@@ -270,6 +271,8 @@ public class ProviderHelper extends XRServiceFactory {
         }
         catch (Exception e) {
             // that's Ok, WSDL may not contain inline schema
+            xmlContext.getSession().getSessionLog().log(
+                    SessionLog.FINE, SessionLog.DBWS, "dbws_no_wsdl_inline_schema", e.getLocalizedMessage());
         }
         finally {
             try {
@@ -303,8 +306,8 @@ public class ProviderHelper extends XRServiceFactory {
             @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 Invocation invocation = (Invocation)object;
-                Vector values = (Vector)value;
-                for (Iterator i = values.iterator(); i.hasNext();) {
+                Vector<Object> values = (Vector<Object>)value;
+                for (Iterator<Object> i = values.iterator(); i.hasNext();) {
                   /* scan through values:
                    *  if XML conforms to something mapped, it an object; else it is a DOM Element
                    *  (probably a scalar). Walk through operations for the types, converting
@@ -337,10 +340,10 @@ public class ProviderHelper extends XRServiceFactory {
                     }
                     else {
                         ClassDescriptor desc = null;
-                        for (XMLDescriptor xdesc : (List<XMLDescriptor>)(List)oxProject.getOrderedDescriptors()) {
-                            XMLSchemaReference schemaReference = xdesc.getSchemaReference();
-                            if (schemaReference != null &&
-                                schemaReference.getSchemaContext().equalsIgnoreCase(key)) {
+                        for (ClassDescriptor xdesc : oxProject.getOrderedDescriptors()) {
+                            XMLSchemaReference schemaReference = xdesc instanceof XMLDescriptor
+                                    ? ((XMLDescriptor)xdesc).getSchemaReference() : null;
+                            if (schemaReference != null && schemaReference.getSchemaContext().equalsIgnoreCase(key)) {
                                 desc = xdesc;
                                 break;
                             }
@@ -580,9 +583,10 @@ public class ProviderHelper extends XRServiceFactory {
         if (complexType.getSequence() != null) {
             // for each operation, there is a corresponding top-level Request type
             // which has the arguments to the operation
-            for (Iterator i = complexType.getSequence().getOrderedElements().iterator(); i .hasNext();) {
-                org.eclipse.persistence.internal.oxm.schema.model.Element e =
-                (org.eclipse.persistence.internal.oxm.schema.model.Element)i.next();
+            for (Iterator<org.eclipse.persistence.internal.oxm.schema.model.Element> i
+                    = complexType.getSequence().getOrderedElements().iterator();
+                    i .hasNext();) {
+              org.eclipse.persistence.internal.oxm.schema.model.Element e = i.next();
               String argName = e.getName();
               Object argValue = invocation.getParameter(argName);
               String argType = e.getType();

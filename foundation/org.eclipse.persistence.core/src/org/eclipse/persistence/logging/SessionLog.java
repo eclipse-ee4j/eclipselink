@@ -46,6 +46,7 @@ import org.eclipse.persistence.sessions.Session;
  * <tr><td>&nbsp;</td><td>{@link #DMS}</td>           <td>&nbsp;</td><td>= {@value #DMS}</td></tr>
  * <tr><td>&nbsp;</td><td>{@link #EJB}</td>           <td>&nbsp;</td><td>= {@value #EJB}</td></tr>
  * <tr><td>&nbsp;</td><td>{@link #EVENT}</td>         <td>&nbsp;</td><td>= {@value #EVENT}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@link #DBWS}</td>          <td>&nbsp;</td><td>= {@value #DBWS}</td></tr>
  * <tr><td>&nbsp;</td><td>{@link #JPARS}</td>         <td>&nbsp;</td><td>= {@value #JPARS}</td></tr>
  * <tr><td>&nbsp;</td><td>{@link #METADATA}</td>      <td>&nbsp;</td><td>= {@value #METADATA} </td></tr>
  * <tr><td>&nbsp;</td><td>{@link #METAMODEL}</td>     <td>&nbsp;</td><td>= {@value #METAMODEL}</td></tr>
@@ -128,6 +129,7 @@ public interface SessionLog extends Cloneable {
     public static final String PROPERTIES = "properties";
     public static final String SERVER = "server";
     public static final String DDL = "ddl";
+    public static final String DBWS = "dbws";
     public static final String JPARS = "jpars";
 
     public final String[] loggerCatagories = new String[] {
@@ -140,6 +142,7 @@ public interface SessionLog extends Cloneable {
         PROPAGATION,
         SEQUENCING,
         JPA,
+        DBWS,
         JPARS,
         EJB,
         DMS,
@@ -150,8 +153,7 @@ public interface SessionLog extends Cloneable {
         WEAVER,
         PROPERTIES,
         SERVER,
-        DDL,
-        JPARS
+        DDL
     };
 
     /**
@@ -295,6 +297,7 @@ public interface SessionLog extends Cloneable {
      * <tr><td>&nbsp;</td><td>{@link #EJB}</td>             <td>&nbsp;</td><td>= {@value #EJB}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #EJB_OR_METADATA}</td> <td>&nbsp;</td><td>= {@value #EJB_OR_METADATA}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #EVENT}</td>           <td>&nbsp;</td><td>= {@value #EVENT}</td></tr>
+     * <tr><td>&nbsp;</td><td>{@link #DBWS}</td>            <td>&nbsp;</td><td>= {@value #DBWS}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #JPARS}</td>           <td>&nbsp;</td><td>= {@value #JPARS}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #METAMODEL}</td>       <td>&nbsp;</td><td>= {@value #METAMODEL}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #MOXY}</td>            <td>&nbsp;</td><td>= {@value #MOXY}</td></tr>
@@ -355,6 +358,7 @@ public interface SessionLog extends Cloneable {
      * <tr><td>&nbsp;</td><td>{@link #EJB}</td>             <td>&nbsp;</td><td>= {@value #EJB}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #EJB_OR_METADATA}</td> <td>&nbsp;</td><td>= {@value #EJB_OR_METADATA}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #EVENT}</td>           <td>&nbsp;</td><td>= {@value #EVENT}</td></tr>
+     * <tr><td>&nbsp;</td><td>{@link #DBWS}</td>            <td>&nbsp;</td><td>= {@value #DBWS}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #JPARS}</td>           <td>&nbsp;</td><td>= {@value #JPARS}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #METAMODEL}</td>       <td>&nbsp;</td><td>= {@value #METAMODEL}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #MOXY}</td>            <td>&nbsp;</td><td>= {@value #MOXY}</td></tr>
@@ -416,6 +420,7 @@ public interface SessionLog extends Cloneable {
      * <tr><td>&nbsp;</td><td>{@link #EJB}</td>             <td>&nbsp;</td><td>= {@value #EJB}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #EJB_OR_METADATA}</td> <td>&nbsp;</td><td>= {@value #EJB_OR_METADATA}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #EVENT}</td>           <td>&nbsp;</td><td>= {@value #EVENT}</td></tr>
+     * <tr><td>&nbsp;</td><td>{@link #DBWS}</td>            <td>&nbsp;</td><td>= {@value #DBWS}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #JPARS}</td>           <td>&nbsp;</td><td>= {@value #JPARS}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #METAMODEL}</td>       <td>&nbsp;</td><td>= {@value #METAMODEL}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #MOXY}</td>            <td>&nbsp;</td><td>= {@value #MOXY}</td></tr>
