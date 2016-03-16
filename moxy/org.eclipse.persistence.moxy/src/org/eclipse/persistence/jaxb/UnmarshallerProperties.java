@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -13,6 +13,8 @@
  *                            - added bean validation properties
  ******************************************************************************/
 package org.eclipse.persistence.jaxb;
+
+import org.eclipse.persistence.internal.oxm.OXMSystemProperties;
 
 /**
  * These are properties that may be set on an instance of Unmarshaller.  Below
@@ -267,5 +269,7 @@ public class UnmarshallerProperties {
      * @see org.eclipse.persistence.jaxb.MarshallerProperties#BEAN_VALIDATION_NO_OPTIMISATION
      */
     public static final String BEAN_VALIDATION_NO_OPTIMISATION = JAXBContextProperties.BEAN_VALIDATION_NO_OPTIMISATION;
+
+    public static final String DISABLE_SECURE_PROCESSING = OXMSystemProperties.DISABLE_SECURE_PROCESSING;
 
 }

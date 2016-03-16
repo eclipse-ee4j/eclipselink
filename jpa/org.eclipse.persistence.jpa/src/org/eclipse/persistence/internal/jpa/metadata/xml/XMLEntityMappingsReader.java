@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -30,8 +30,8 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
-import java.util.Properties;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -42,8 +42,8 @@ import javax.xml.validation.SchemaFactory;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.helper.XMLHelper;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider;
-
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
@@ -92,8 +92,7 @@ public class XMLEntityMappingsReader {
                 context[1] = getEclipseLinkOrmSchema();
             }
         } else {
-            SAXParserFactory factory = SAXParserFactory.newInstance();
-            factory.setNamespaceAware(true);
+            SAXParserFactory factory = XMLHelper.createParserFactory(false);
 
             // create a SAX parser
             SAXParser parser = factory.newSAXParser();
@@ -270,7 +269,7 @@ public class XMLEntityMappingsReader {
 
         try {
             StreamSource source = new StreamSource(url.openStream());
-            SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
+            SchemaFactory schemaFactory = XMLHelper.createSchemaFactory(XMLConstants.SCHEMA_URL, false);
             Schema schema = schemaFactory.newSchema(source);
             return schema;
         } finally {

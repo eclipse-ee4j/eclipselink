@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -29,6 +30,7 @@ import javax.xml.xpath.XPathException;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 
+import org.eclipse.persistence.internal.helper.XMLHelper;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.platform.xml.XMLNamespaceResolver;
 import org.eclipse.persistence.platform.xml.XMLParser;
@@ -57,6 +59,7 @@ public class JAXPPlatform implements XMLPlatform {
     private XPathFactory xPathFactory;
     private SchemaFactory schemaFactory;
     private DocumentBuilderFactory documentBuilderFactory;
+    private boolean disableSecureProcessing = false;
 
     public JAXPPlatform() {
         super();
@@ -64,22 +67,21 @@ public class JAXPPlatform implements XMLPlatform {
 
     private DocumentBuilderFactory getDocumentBuilderFactory() {
         if(null == documentBuilderFactory) {
-            documentBuilderFactory = DocumentBuilderFactory.newInstance();
-            documentBuilderFactory.setNamespaceAware(true);
+            documentBuilderFactory = XMLHelper.createDocumentBuilderFactory(isSecureProcessingDisabled());
         }
         return documentBuilderFactory;
     }
 
     public XPathFactory getXPathFactory() {
         if(null == xPathFactory) {
-            xPathFactory = XPathFactory.newInstance();
+            xPathFactory = XMLHelper.createXPathFactory(isSecureProcessingDisabled());
         }
         return xPathFactory;
     }
 
     public SchemaFactory getSchemaFactory() {
         if(null == schemaFactory) {
-            schemaFactory = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            schemaFactory = XMLHelper.createSchemaFactory(XMLConstants.W3C_XML_SCHEMA_NS_URI, isSecureProcessingDisabled());
         }
         return schemaFactory;
     }
@@ -94,6 +96,7 @@ public class JAXPPlatform implements XMLPlatform {
      * @return the XPath result
      * @throws XMLPlatformException
      */
+    @Override
     public NodeList selectNodesAdvanced(Node contextNode, String xPathString, XMLNamespaceResolver xmlNamespaceResolver) throws XMLPlatformException {
         try {
             XPath xPath = getXPathFactory().newXPath();
@@ -116,6 +119,7 @@ public class JAXPPlatform implements XMLPlatform {
      * @return
      * @throws XMLPlatformException
      */
+    @Override
     public Node selectSingleNodeAdvanced(Node contextNode, String xPathString, XMLNamespaceResolver xmlNamespaceResolver) throws XMLPlatformException {
         try {
             XPath xPath = getXPathFactory().newXPath();
@@ -130,6 +134,7 @@ public class JAXPPlatform implements XMLPlatform {
         }
     }
 
+    @Override
     public boolean isWhitespaceNode(Text text) {
         String value = text.getNodeValue();
         if (null == value) {
@@ -139,18 +144,22 @@ public class JAXPPlatform implements XMLPlatform {
         }
     }
 
+    @Override
     public XMLParser newXMLParser() {
         return new JAXPParser();
     }
 
+    @Override
     public XMLParser newXMLParser(Map<String, Boolean> parserFeatures) {
         return new JAXPParser(parserFeatures);
     }
 
+    @Override
     public XMLTransformer newXMLTransformer() {
         return new JAXPTransformer();
     }
 
+    @Override
     public Document createDocument() throws XMLPlatformException {
         try {
             DocumentBuilder documentBuilder = getDocumentBuilderFactory().newDocumentBuilder();
@@ -160,6 +169,7 @@ public class JAXPPlatform implements XMLPlatform {
         }
     }
 
+    @Override
     public Document createDocumentWithPublicIdentifier(String name, String publicIdentifier, String systemIdentifier) throws XMLPlatformException {
         try {
             if (null == publicIdentifier) {
@@ -176,6 +186,7 @@ public class JAXPPlatform implements XMLPlatform {
         }
     }
 
+    @Override
     public Document createDocumentWithSystemIdentifier(String name, String systemIdentifier) throws XMLPlatformException {
         try {
             Document document = null;
@@ -197,6 +208,7 @@ public class JAXPPlatform implements XMLPlatform {
         }
     }
 
+    @Override
     public String resolveNamespacePrefix(Node contextNode, String namespacePrefix) throws XMLPlatformException {
         if (null == namespacePrefix) {
             if (null == contextNode.getPrefix()) {
@@ -228,6 +240,7 @@ public class JAXPPlatform implements XMLPlatform {
         return null;
     }
 
+    @Override
     public boolean validateDocument(Document document, URL xmlSchemaURL, ErrorHandler errorHandler) throws XMLPlatformException {
         Schema xmlSchema;
         try {
@@ -245,10 +258,12 @@ public class JAXPPlatform implements XMLPlatform {
         return true;
     }
 
+    @Override
     public boolean validate(Element elem, org.eclipse.persistence.oxm.XMLDescriptor xmlDescriptor, ErrorHandler handler) throws XMLPlatformException {
         return true;
     }
-      public void namespaceQualifyFragment(Element next) {
+      @Override
+    public void namespaceQualifyFragment(Element next) {
         namespaceQualifyFragment(next, new ArrayList<String>());
     }
 
@@ -310,6 +325,22 @@ public class JAXPPlatform implements XMLPlatform {
                 namespaceQualifyFragment(child, declaredPrefixes);
             }
         }
+    }
+
+    @Override
+    public void setDisableSecureProcessing(boolean disableSecureProcessing) {
+        boolean shouldReset = this.disableSecureProcessing ^ disableSecureProcessing;
+        this.disableSecureProcessing = disableSecureProcessing;
+        if (shouldReset) {
+            documentBuilderFactory = null;
+            schemaFactory = null;
+            xPathFactory = null;
+        }
+    }
+
+    @Override
+    public boolean isSecureProcessingDisabled() {
+        return disableSecureProcessing;
     }
 
 }

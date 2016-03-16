@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -16,72 +16,78 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.Reader;
 import java.net.URL;
+
 import javax.xml.transform.Source;
+import javax.xml.validation.Schema;
+
 import org.w3c.dom.Node;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
-import javax.xml.validation.Schema;
 
 public interface PlatformUnmarshaller {
 
-    public abstract EntityResolver getEntityResolver();
+    EntityResolver getEntityResolver();
 
-    public abstract void setEntityResolver(EntityResolver entityResolver);
+    void setEntityResolver(EntityResolver entityResolver);
 
-    public abstract ErrorHandler getErrorHandler();
+    ErrorHandler getErrorHandler();
 
-    public abstract void setErrorHandler(ErrorHandler errorHandler);
+    void setErrorHandler(ErrorHandler errorHandler);
 
-    public abstract int getValidationMode();
+    int getValidationMode();
 
-    public abstract void setValidationMode(int validationMode);
+    void setValidationMode(int validationMode);
 
-    public abstract void setWhitespacePreserving(boolean isWhitespacePreserving);
+    void setWhitespacePreserving(boolean isWhitespacePreserving);
 
-    public abstract void setSchemas(Object[] schemas);
+    void setSchemas(Object[] schemas);
 
-    public abstract void setSchema(Schema schema);
+    void setSchema(Schema schema);
 
-    public abstract Schema getSchema();
+    Schema getSchema();
 
-    public abstract Object unmarshal(File file);
+    Object unmarshal(File file);
 
-    public abstract Object unmarshal(File file, Class clazz);
+    Object unmarshal(File file, Class clazz);
 
-    public abstract Object unmarshal(InputStream inputStream);
+    Object unmarshal(InputStream inputStream);
 
-    public abstract Object unmarshal(InputStream inputStream, Class clazz);
+    Object unmarshal(InputStream inputStream, Class clazz);
 
-    public abstract Object unmarshal(InputSource inputSource);
+    Object unmarshal(InputSource inputSource);
 
-    public abstract Object unmarshal(InputSource inputSource, Class clazz);
+    Object unmarshal(InputSource inputSource, Class clazz);
 
-    public abstract Object unmarshal(Node node);
+    Object unmarshal(Node node);
 
-    public abstract Object unmarshal(Node node, Class clazz);
+    Object unmarshal(Node node, Class clazz);
 
-    public abstract Object unmarshal(Reader reader);
+    Object unmarshal(Reader reader);
 
-    public abstract Object unmarshal(Reader reader, Class clazz);
+    Object unmarshal(Reader reader, Class clazz);
 
-    public abstract Object unmarshal(Source source);
+    Object unmarshal(Source source);
 
-    public abstract Object unmarshal(Source source, Class clazz);
+    Object unmarshal(Source source, Class clazz);
 
-    public abstract Object unmarshal(URL url);
+    Object unmarshal(URL url);
 
-    public abstract Object unmarshal(URL url, Class clazz);
+    Object unmarshal(URL url, Class clazz);
 
-    public abstract Object unmarshal(XMLReader xmlReader, InputSource inputSource);
+    Object unmarshal(XMLReader xmlReader, InputSource inputSource);
 
-    public abstract Object unmarshal(XMLReader xmlReader, InputSource inputSource, Class clazz);
+    Object unmarshal(XMLReader xmlReader, InputSource inputSource, Class clazz);
 
-    public abstract void setResultAlwaysXMLRoot(boolean alwaysReturnRoot);
+    void setResultAlwaysXMLRoot(boolean alwaysReturnRoot);
 
-    public abstract boolean isResultAlwaysXMLRoot();
+    boolean isResultAlwaysXMLRoot();
 
-    public abstract void mediaTypeChanged();
+    void mediaTypeChanged();
+
+    boolean isSecureProcessingDisabled();
+
+    void setDisableSecureProcessing(boolean disableSecureProcessing);
 
 }

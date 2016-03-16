@@ -491,4 +491,14 @@ public class XDKPlatform implements XMLPlatform {
             }
         }
     }
+
+    @Override
+    public void setDisableSecureProcessing(boolean disableSecureProcessing) {
+        //no-op
+    }
+
+    @Override
+    public boolean isSecureProcessingDisabled() {
+        return false;
+    }
 }

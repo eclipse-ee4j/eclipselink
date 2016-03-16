@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -29,6 +29,8 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+
+import org.eclipse.persistence.internal.helper.XMLHelper;
 import org.eclipse.persistence.platform.xml.XMLPlatformException;
 import org.eclipse.persistence.platform.xml.XMLTransformer;
 import org.w3c.dom.Document;
@@ -48,10 +50,12 @@ public class JAXPTransformer implements XMLTransformer {
     private boolean formatted;
     private String version;
 
+    @Override
     public String getEncoding() {
         return encoding;
     }
 
+    @Override
     public void setEncoding(String encoding) {
         this.encoding = encoding;
         if(transformer != null){
@@ -59,10 +63,12 @@ public class JAXPTransformer implements XMLTransformer {
         }
     }
 
+    @Override
     public boolean isFormattedOutput() {
         return formatted;
     }
 
+    @Override
     public void setFormattedOutput(boolean shouldFormat) {
         this.formatted = shouldFormat;
         if(transformer != null){
@@ -74,10 +80,12 @@ public class JAXPTransformer implements XMLTransformer {
         }
     }
 
+    @Override
     public String getVersion() {
         return version;
     }
 
+    @Override
     public void setVersion(String version) {
         this.version = version;
         if(transformer != null){
@@ -85,6 +93,7 @@ public class JAXPTransformer implements XMLTransformer {
         }
     }
 
+    @Override
     public void transform(Node sourceNode, OutputStream resultOutputStream) throws XMLPlatformException {
         DOMSource source = new DOMSource(sourceNode);
         StreamResult result = new StreamResult(resultOutputStream);
@@ -94,6 +103,7 @@ public class JAXPTransformer implements XMLTransformer {
         transform(source, result);
     }
 
+    @Override
     public void transform(Node sourceNode, ContentHandler resultContentHandler) throws XMLPlatformException {
         DOMSource source = new DOMSource(sourceNode);
         SAXResult result = new SAXResult(resultContentHandler);
@@ -101,6 +111,7 @@ public class JAXPTransformer implements XMLTransformer {
         transform(source, result);
     }
 
+    @Override
     public void transform(Node sourceNode, Result result) throws XMLPlatformException {
         DOMSource source = null;
         if ((isFragment()) && (result instanceof SAXResult)) {
@@ -113,6 +124,7 @@ public class JAXPTransformer implements XMLTransformer {
         transform(source, result);
     }
 
+    @Override
     public void transform(Node sourceNode, Writer resultWriter) throws XMLPlatformException {
         DOMSource source = new DOMSource(sourceNode);
         StreamResult result = new StreamResult(resultWriter);
@@ -123,6 +135,7 @@ public class JAXPTransformer implements XMLTransformer {
         transform(source, result);
     }
 
+    @Override
     public void transform(Source source, Result result) throws XMLPlatformException {
         try {
             if ((result instanceof StreamResult) && (isFragment())) {
@@ -135,9 +148,10 @@ public class JAXPTransformer implements XMLTransformer {
     }
 
     //NB - this does NOT use the TransformerFactory singleton
+    @Override
     public void transform(Document sourceDocument, Node resultParentNode, URL stylesheet) throws XMLPlatformException {
         try {
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            TransformerFactory transformerFactory = XMLHelper.createTransformerFactory(false);
             transformerFactory.setErrorListener(new TransformErrorListener());
             StreamSource stylesheetSource = new StreamSource(stylesheet.openStream());
             Transformer transformer = transformerFactory.newTransformer(stylesheetSource);
@@ -149,10 +163,12 @@ public class JAXPTransformer implements XMLTransformer {
         }
     }
 
+    @Override
     public void setFragment(boolean fragment) {
         this.fragment = fragment;
     }
 
+    @Override
     public boolean isFragment() {
         return fragment;
     }
@@ -182,20 +198,23 @@ public class JAXPTransformer implements XMLTransformer {
 
     private static class TransformerFactoryHelper {
         static TransformerFactory getTransformerFactory() {
-            return TransformerFactory.newInstance();
+            return XMLHelper.createTransformerFactory(false);
         }
     }
 
     private static class TransformErrorListener implements ErrorListener {
 
+        @Override
         public void error(TransformerException exception) throws TransformerException {
             throw XMLPlatformException.xmlPlatformTransformException(exception);
         }
 
+        @Override
         public void fatalError(TransformerException exception) throws TransformerException {
             throw XMLPlatformException.xmlPlatformTransformException(exception);
         }
 
+        @Override
         public void warning(TransformerException exception) throws TransformerException {
             throw XMLPlatformException.xmlPlatformTransformException(exception);
         }

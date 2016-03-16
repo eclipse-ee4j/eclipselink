@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -18,6 +18,7 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
@@ -41,6 +42,7 @@ import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.platform.xml.SAXDocumentBuilder;
 import org.eclipse.persistence.platform.xml.XMLParser;
+import org.eclipse.persistence.platform.xml.XMLPlatform;
 import org.eclipse.persistence.platform.xml.XMLPlatformException;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.queries.ReadObjectQuery;
@@ -70,91 +72,136 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
     private XMLParser parser;
     private XMLUnmarshaller xmlUnmarshaller;
     private boolean isResultAlwaysXMLRoot;
+    private boolean disableSecureProcessing = false;
+    private EntityResolver entityResolver;
+    private ErrorHandler errorHandler;
+    private Map<String, Boolean> parserFeatures;
+    private boolean isWhitespacePreserving;
+    private int validationMode = XMLParser.NONVALIDATING;
+    private Schema schema;
+    private Object[] schemas;
+    private boolean shouldReset = true;
 
     public DOMUnmarshaller(XMLUnmarshaller xmlUnmarshaller, Map<String, Boolean> parserFeatures) {
         super();
-        if(null == parserFeatures) {
-            parser = XMLPlatformFactory.getInstance().getXMLPlatform().newXMLParser();
-        } else {
-            parser = XMLPlatformFactory.getInstance().getXMLPlatform().newXMLParser(parserFeatures);
-        }
-        parser.setNamespaceAware(true);
-        parser.setValidationMode(XMLParser.NONVALIDATING);
+        this.parserFeatures = parserFeatures == null ? new HashMap<>() : parserFeatures;
         this.xmlUnmarshaller = xmlUnmarshaller;
     }
 
+    private XMLParser getParser() {
+        if (parser == null || shouldReset) {
+            XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
+            xmlPlatform.setDisableSecureProcessing(isSecureProcessingDisabled());
+            parser = xmlPlatform.newXMLParser(parserFeatures);
+            parser.setNamespaceAware(true);
+            if (errorHandler != null) {
+                parser.setErrorHandler(errorHandler);
+            }
+            if (entityResolver != null) {
+                parser.setEntityResolver(entityResolver);
+            }
+            if (schemas != null) {
+                try {
+                    parser.setXMLSchemas(schemas);
+                } catch (XMLPlatformException e) {
+                    throw XMLMarshalException.errorSettingSchemas(e, schemas);
+                }
+            }
+            if (schema != null) {
+                parser.setXMLSchema(schema);
+            }
+            parser.setValidationMode(validationMode);
+            parser.setWhitespacePreserving(isWhitespacePreserving);
+            shouldReset = false;
+        }
+        return parser;
+    }
+
+    @Override
     public EntityResolver getEntityResolver() {
-        return parser.getEntityResolver();
+        return entityResolver;
     }
 
+    @Override
     public void setEntityResolver(EntityResolver entityResolver) {
-        parser.setEntityResolver(entityResolver);
+        this.entityResolver = entityResolver;
+        if (parser != null) {
+            parser.setEntityResolver(entityResolver);
+        }
     }
 
+    @Override
     public ErrorHandler getErrorHandler() {
-        return parser.getErrorHandler();
+        return errorHandler;
     }
 
+    @Override
     public void setErrorHandler(ErrorHandler errorHandler) {
-        parser.setErrorHandler(errorHandler);
+        this.errorHandler = errorHandler;
+        if (parser != null) {
+            parser.setErrorHandler(errorHandler);
+        }
     }
 
+    @Override
     public int getValidationMode() {
-        return parser.getValidationMode();
+        return validationMode;
     }
 
+    @Override
     public void setValidationMode(int validationMode) {
-        parser.setValidationMode(validationMode);
+        this.validationMode = validationMode;
+        if (parser != null) {
+            parser.setValidationMode(validationMode);
+        }
     }
 
+    @Override
     public void setWhitespacePreserving(boolean isWhitespacePreserving) {
-        parser.setWhitespacePreserving(isWhitespacePreserving);
+        this.isWhitespacePreserving = isWhitespacePreserving;
+        if (parser != null) {
+            parser.setWhitespacePreserving(isWhitespacePreserving);
+        }
     }
 
+    @Override
     public void setSchemas(Object[] schemas) {
-        try {
-            parser.setXMLSchemas(schemas);
-        } catch (XMLPlatformException e) {
-            throw XMLMarshalException.errorSettingSchemas(e, schemas);
+        this.schemas = schemas;
+        if (parser != null) {
+            try {
+                parser.setXMLSchemas(schemas);
+            } catch (XMLPlatformException e) {
+                throw XMLMarshalException.errorSettingSchemas(e, schemas);
+            }
         }
     }
 
+    @Override
     public void setSchema(Schema schema) {
-        parser.setXMLSchema(schema);
+        this.schema = schema;
+        if (parser != null) {
+            parser.setXMLSchema(schema);
+        }
     }
 
+    @Override
     public Schema getSchema() {
-        Schema schema = null;
-        try {
-            schema = parser.getXMLSchema();
-        } catch(UnsupportedOperationException ex) {
-            //if this parser doesn't support this API, just return null for the schema
-        }
         return schema;
     }
 
+    @Override
     public Object unmarshal(File file) {
-        if(!xmlUnmarshaller.isApplicationXML()){
-            throw XMLMarshalException.unsupportedMediaTypeForPlatform();
-        }
-        try {
-            Document document = null;
-            document = parser.parse(file);
-            return xmlToObject(new DOMRecord(document));
-        } catch (XMLPlatformException e) {
-            throw XMLMarshalException.unmarshalException(e);
-        } finally {
-            xmlUnmarshaller.getStringBuffer().reset();
-        }
+        return unmarshal(file, null);
     }
 
+    @Override
     public Object unmarshal(File file, Class clazz) {
         if(!xmlUnmarshaller.isApplicationXML()){
             throw XMLMarshalException.unsupportedMediaTypeForPlatform();
         }
         try {
             Document document = null;
-            document = parser.parse(file);
+            document = getParser().parse(file);
             return xmlToObject(new DOMRecord(document), clazz);
         } catch (XMLPlatformException e) {
             throw XMLMarshalException.unmarshalException(e);
@@ -163,58 +210,29 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
         }
     }
 
+    @Override
     public Object unmarshal(InputStream inputStream) {
-        if(!xmlUnmarshaller.isApplicationXML()){
-            throw XMLMarshalException.unsupportedMediaTypeForPlatform();
-        }
-        try {
-            Document document = null;
-            document = parser.parse(inputStream);
-            return xmlToObject(new DOMRecord(document));
-        } catch (XMLPlatformException e) {
-            throw XMLMarshalException.unmarshalException(e);
-        } finally {
-            xmlUnmarshaller.getStringBuffer().reset();
-        }
+        return unmarshal(inputStream, null);
     }
 
+    @Override
     public Object unmarshal(InputStream inputStream, Class clazz) {
-        if(!xmlUnmarshaller.isApplicationXML()){
-            throw XMLMarshalException.unsupportedMediaTypeForPlatform();
-        }
-        try {
-            Document document = null;
-            document = parser.parse(inputStream);
-            return xmlToObject(new DOMRecord(document), clazz);
-        } catch (XMLPlatformException e) {
-            throw XMLMarshalException.unmarshalException(e);
-        } finally {
-            xmlUnmarshaller.getStringBuffer().reset();
-        }
+        return unmarshal(new InputSource(inputStream), clazz);
     }
 
+    @Override
     public Object unmarshal(InputSource inputSource) {
-        if(!xmlUnmarshaller.isApplicationXML()){
-            throw XMLMarshalException.unsupportedMediaTypeForPlatform();
-        }
-        try {
-            Document document = null;
-            document = parser.parse(inputSource);
-            return xmlToObject(new DOMRecord(document));
-        } catch (XMLPlatformException e) {
-            throw XMLMarshalException.unmarshalException(e);
-        } finally {
-            xmlUnmarshaller.getStringBuffer().reset();
-        }
+        return unmarshal(inputSource, null);
     }
 
+    @Override
     public Object unmarshal(InputSource inputSource, Class clazz) {
         if(!xmlUnmarshaller.isApplicationXML()){
             throw XMLMarshalException.unsupportedMediaTypeForPlatform();
         }
         try {
             Document document = null;
-            document = parser.parse(inputSource);
+            document = getParser().parse(inputSource);
             return xmlToObject(new DOMRecord(document), clazz);
         } catch (XMLPlatformException e) {
             throw XMLMarshalException.unmarshalException(e);
@@ -223,26 +241,12 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
         }
     }
 
+    @Override
     public Object unmarshal(Node node) {
-        if(!xmlUnmarshaller.isApplicationXML()){
-            throw XMLMarshalException.unsupportedMediaTypeForPlatform();
-        }
-        Element element = null;
-        switch (node.getNodeType()) {
-        case Node.DOCUMENT_NODE: {
-            element = ((Document) node).getDocumentElement();
-            break;
-        }
-        case Node.ELEMENT_NODE: {
-            element = (Element) node;
-            break;
-        }
-        default:
-            throw XMLMarshalException.unmarshalException();
-        }
-        return xmlToObject(new DOMRecord(element));
+        return unmarshal(node, null);
     }
 
+    @Override
     public Object unmarshal(Node node, Class clazz) {
         if(!xmlUnmarshaller.isApplicationXML()){
             throw XMLMarshalException.unsupportedMediaTypeForPlatform();
@@ -263,58 +267,29 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
         return xmlToObject(new DOMRecord(element), clazz);
     }
 
+    @Override
     public Object unmarshal(Reader reader) {
-        if(!xmlUnmarshaller.isApplicationXML()){
-            throw XMLMarshalException.unsupportedMediaTypeForPlatform();
-        }
-        try {
-            Document document = null;
-            document = parser.parse(reader);
-            return xmlToObject(new DOMRecord(document));
-        } catch (XMLPlatformException e) {
-            throw XMLMarshalException.unmarshalException(e);
-        } finally {
-            xmlUnmarshaller.getStringBuffer().reset();
-        }
+        return unmarshal(reader, null);
     }
 
+    @Override
     public Object unmarshal(Reader reader, Class clazz) {
-        if(!xmlUnmarshaller.isApplicationXML()){
-            throw XMLMarshalException.unsupportedMediaTypeForPlatform();
-        }
-        try {
-            Document document = null;
-            document = parser.parse(reader);
-            return xmlToObject(new DOMRecord(document), clazz);
-        } catch (XMLPlatformException e) {
-            throw XMLMarshalException.unmarshalException(e);
-        } finally {
-            xmlUnmarshaller.getStringBuffer().reset();
-        }
+        return unmarshal(new InputSource(reader), clazz);
     }
 
+    @Override
     public Object unmarshal(Source source) {
-        if(!xmlUnmarshaller.isApplicationXML()){
-            throw XMLMarshalException.unsupportedMediaTypeForPlatform();
-        }
-        try {
-            Document document = null;
-            document = parser.parse(source);
-            return xmlToObject(new DOMRecord(document));
-        } catch (XMLPlatformException e) {
-            throw XMLMarshalException.unmarshalException(e);
-        } finally {
-            xmlUnmarshaller.getStringBuffer().reset();
-        }
+        return unmarshal(source, null);
     }
 
+    @Override
     public Object unmarshal(Source source, Class clazz) {
         if(!xmlUnmarshaller.isApplicationXML()){
             throw XMLMarshalException.unsupportedMediaTypeForPlatform();
         }
         try {
             Document document = null;
-            document = parser.parse(source);
+            document = getParser().parse(source);
             return xmlToObject(new DOMRecord(document), clazz);
         } catch (XMLPlatformException e) {
             throw XMLMarshalException.unmarshalException(e);
@@ -323,28 +298,19 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
         }
     }
 
+    @Override
     public Object unmarshal(URL url) {
-        if(!xmlUnmarshaller.isApplicationXML()){
-            throw XMLMarshalException.unsupportedMediaTypeForPlatform();
-        }
-        try {
-            Document document = null;
-            document = parser.parse(url);
-            return xmlToObject(new DOMRecord(document));
-        } catch (XMLPlatformException e) {
-            throw XMLMarshalException.unmarshalException(e);
-        } finally {
-            xmlUnmarshaller.getStringBuffer().reset();
-        }
+        return unmarshal(url, null);
     }
 
+    @Override
     public Object unmarshal(URL url, Class clazz) {
         if(!xmlUnmarshaller.isApplicationXML()){
             throw XMLMarshalException.unsupportedMediaTypeForPlatform();
         }
         try {
             Document document = null;
-            document = parser.parse(url);
+            document = getParser().parse(url);
             return xmlToObject(new DOMRecord(document), clazz);
         } catch (XMLPlatformException e) {
             throw XMLMarshalException.unmarshalException(e);
@@ -353,24 +319,12 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
         }
     }
 
+    @Override
     public Object unmarshal(XMLReader xmlReader, InputSource inputSource) {
-        if(!xmlUnmarshaller.isApplicationXML()){
-            throw XMLMarshalException.unsupportedMediaTypeForPlatform();
-        }
-        try {
-            SAXDocumentBuilder saxDocumentBuilder = new SAXDocumentBuilder();
-            xmlReader.setContentHandler(saxDocumentBuilder);
-            xmlReader.parse(inputSource);
-            return xmlToObject(new DOMRecord(saxDocumentBuilder.getDocument()));
-        } catch(IOException e) {
-            throw XMLMarshalException.unmarshalException(e);
-        } catch(SAXException e) {
-            throw XMLMarshalException.unmarshalException(e);
-        } finally {
-            xmlUnmarshaller.getStringBuffer().reset();
-        }
+       return unmarshal(xmlReader, inputSource, null);
     }
 
+    @Override
     public Object unmarshal(XMLReader xmlReader, InputSource inputSource, Class clazz) {
         if(!xmlUnmarshaller.isApplicationXML()){
             throw XMLMarshalException.unsupportedMediaTypeForPlatform();
@@ -534,10 +488,12 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
         }
     }
 
+    @Override
     public boolean isResultAlwaysXMLRoot() {
         return this.isResultAlwaysXMLRoot;
     }
 
+    @Override
     public void setResultAlwaysXMLRoot(boolean alwaysReturnRoot) {
         this.isResultAlwaysXMLRoot = alwaysReturnRoot;
     }
@@ -545,5 +501,16 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
     @Override
     public void mediaTypeChanged() {
        //do nothing
+    }
+
+    @Override
+    public final boolean isSecureProcessingDisabled() {
+        return disableSecureProcessing;
+    }
+
+    @Override
+    public final void setDisableSecureProcessing(boolean disableSecureProcessing) {
+        shouldReset = this.disableSecureProcessing ^ disableSecureProcessing;
+        this.disableSecureProcessing = disableSecureProcessing;
     }
 }

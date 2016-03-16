@@ -154,6 +154,7 @@ public class PrivilegedAccessHelper {
      * Gets the class loader for a given class.  Wraps the call in a privileged block if necessary
      * @deprecated Will be removed in next version.
      */
+    @Deprecated
     public static ClassLoader privilegedGetClassLoaderForClass(final Class clazz) {
         try{
             return AccessController.doPrivileged(new PrivilegedGetClassLoaderForClass(clazz));
@@ -360,7 +361,8 @@ public class PrivilegedAccessHelper {
      */
     private static boolean isIllegalProperty(final String key) {
         return key == null || !(key.startsWith("eclipselink.") || "line.separator".equals(key)
-                || key.startsWith("javax.persistence.") || key.startsWith("persistence.")
+                || key.startsWith("javax.persistence.") || key.startsWith("org.eclipse.persistence.")
+                || key.startsWith("persistence.") || key.startsWith("javax.xml.")
                 || PersistenceUnitProperties.JAVASE_DB_INTERACTION.equals(key));
     }
 
