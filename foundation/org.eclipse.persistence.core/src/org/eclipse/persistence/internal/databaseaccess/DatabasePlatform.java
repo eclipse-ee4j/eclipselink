@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -79,7 +79,9 @@ import org.eclipse.persistence.platform.database.AccessPlatform;
 import org.eclipse.persistence.platform.database.DB2Platform;
 import org.eclipse.persistence.platform.database.DBasePlatform;
 import org.eclipse.persistence.platform.database.OraclePlatform;
+import org.eclipse.persistence.platform.database.PostgreSQLPlatform;
 import org.eclipse.persistence.platform.database.SybasePlatform;
+import org.eclipse.persistence.platform.database.SymfowarePlatform;
 import org.eclipse.persistence.platform.database.converters.StructConverter;
 import org.eclipse.persistence.platform.database.partitioning.DataPartitioningCallback;
 import org.eclipse.persistence.queries.Call;
@@ -3470,5 +3472,24 @@ public class DatabasePlatform extends DatasourcePlatform {
         writer.write("ADD ");
         field.appendDBString(writer, session, table);
     }
+
+     /**
+      * INTERNAL:
+      * Override this method if the platform supports storing JDBC connection user name during
+      * {@link #initializeConnectionData(Connection)}.
+      * @return Always returns {@code false}
+      */
+     public boolean supportsConnectionUserName() {
+         return false;
+     }
+
+     /**
+      * INTERNAL:
+      * Returns user name retrieved from JDBC connection.
+      * @throws UnsupportedOperationException on every single call until overridden.
+      */
+     public String getConnectionUserName() {
+         throw new UnsupportedOperationException("Connection user name is not supported.");
+     }
 
 }

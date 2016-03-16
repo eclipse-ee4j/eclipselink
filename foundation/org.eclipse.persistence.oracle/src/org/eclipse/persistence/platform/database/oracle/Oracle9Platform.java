@@ -119,6 +119,9 @@ public class Oracle9Platform extends Oracle8Platform {
 
     private XMLTypeFactory xmlTypeFactory;
 
+    /** User name retrieved from JDBC connection in {@link #initializeConnectionData(Connection)}. */
+    private transient String connectionUserName;
+
     /**
      * Please ensure that following declarations stay as it is. Having them ensures that oracle jdbc driver available
      * in classpath when this class loaded.
@@ -132,6 +135,7 @@ public class Oracle9Platform extends Oracle8Platform {
 
     public Oracle9Platform(){
         super();
+        connectionUserName = null;
     }
 
     /**
@@ -477,11 +481,14 @@ public class Oracle9Platform extends Oracle8Platform {
         this.driverVersion = connection.getMetaData().getDriverVersion();
         // printCalendar for versions greater or equal 9 and less than 10.2.0.4
         this.shouldPrintCalendar = Helper.compareVersions("9", this.driverVersion) <= 0 && Helper.compareVersions(this.driverVersion, "10.2.0.4") < 0;
-        if( Helper.compareVersions(this.driverVersion, "11.1.0.7") >= 0) {
-            if(connection instanceof OracleConnection) {
-                String timestampTzInGmtPropStr = ((OracleConnection)connection).getProperties().getProperty("oracle.jdbc.timestampTzInGmt", "true");
+        if (Helper.compareVersions(this.driverVersion, "11.1.0.7") >= 0) {
+            if( connection instanceof OracleConnection ) {
+                final OracleConnection oraConn = (OracleConnection)connection;
+                String timestampTzInGmtPropStr = oraConn.getProperties().getProperty("oracle.jdbc.timestampTzInGmt", "true");
+                this.connectionUserName = oraConn.getUserName();
                 this.isTimestampInGmt = timestampTzInGmtPropStr.equalsIgnoreCase("true");
             } else {
+                this.connectionUserName = connection.getMetaData().getUserName();
                 this.isTimestampInGmt = true;
             }
             if (Helper.compareVersions(this.driverVersion, "11.2.0.2") >= 0) {
@@ -955,4 +962,25 @@ public class Oracle9Platform extends Oracle8Platform {
     public void setShouldTruncateDate(boolean shouldTruncateDate) {
         this.shouldTruncateDate = shouldTruncateDate;
     }
+
+    /**
+     * INTERNAL:
+     * User name from JDBC connection is stored in {@link #initializeConnectionData(Connection)}.
+     * @return Always returns {@code true}
+     */
+    @Override
+    public boolean supportsConnectionUserName() {
+        return true;
+    }
+
+    /**
+     * INTERNAL:
+     * Returns user name retrieved from JDBC connection. {@link #initializeConnectionData(Connection)} shall be called
+     * before this method.
+     * @return User name retrieved from JDBC connection.
+     */
+    public String getConnectionUserName() {
+        return this.connectionUserName;
+    }
+
 }
