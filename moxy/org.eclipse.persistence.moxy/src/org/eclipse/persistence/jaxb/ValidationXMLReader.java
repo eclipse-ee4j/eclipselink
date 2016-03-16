@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -31,6 +31,7 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.eclipse.persistence.exceptions.BeanValidationException;
+import org.eclipse.persistence.internal.helper.XMLHelper;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetContextClassLoader;
 import org.xml.sax.Attributes;
@@ -152,7 +153,7 @@ public class ValidationXMLReader implements Callable<Map<Class<?>, Boolean>> {
     private SAXParser getSaxParser() {
         if (saxParser == null) {
             try {
-                SAXParserFactory factory = SAXParserFactory.newInstance();
+                SAXParserFactory factory = XMLHelper.createParserFactory(false);
                 saxParser = factory.newSAXParser();
             } catch (ParserConfigurationException | SAXException e) {
                 String msg = "ValidationXMLReader initialization failed. Exception: " + e.getMessage();

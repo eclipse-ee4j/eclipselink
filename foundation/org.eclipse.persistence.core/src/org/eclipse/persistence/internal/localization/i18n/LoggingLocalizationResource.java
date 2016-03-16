@@ -816,6 +816,16 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "dcn_unregister", "Removing registering for database change event notification." },
 
         { "exception_caught_closing_statement", "Exception caught when trying to close the query statement [{0}]." },
+        //MOXy fine/finer/finest
+        { "schema_factory", "SchemaFactory instance: {0}" },
+        { "saxparser_factory", "SAXParserFactory instance: {0}" },
+        { "xpath_factory", "XPathFactory instance: {0}" },
+        { "transformer_factory", "TransformerFactory instance: {0}" },
+        { "documentbuilder_factory", "DocumentBuilderFactory instance: {0}" },
+        { "jaxp_sec_disabled", "Xml Security disabled, no JAXP {0} external access configuration necessary." },
+        { "jaxp_sec_explicit", "Detected explicitly JAXP configuration, no JAXP {0} external access configuration necessary." },
+        { "jaxp_sec_prop_supported", "Property {0} is supported and has been successfully set by used JAXP implementation." },
+        { "jaxp_sec_prop_not_supported", "Property {0} is not supported by used JAXP implementation." }
     };
 
     /**

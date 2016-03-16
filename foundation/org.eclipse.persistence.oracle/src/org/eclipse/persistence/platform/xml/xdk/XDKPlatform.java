@@ -1,23 +1,24 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.platform.xml.xdk;
 
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.ArrayList;
 import java.util.StringTokenizer;
+
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
@@ -29,6 +30,17 @@ import org.eclipse.persistence.platform.xml.XMLPlatformException;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.platform.xml.XMLSchemaReference;
 import org.eclipse.persistence.platform.xml.XMLTransformer;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Text;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+
 import oracle.xml.parser.schema.XMLSchema;
 import oracle.xml.parser.schema.XSDBuilder;
 import oracle.xml.parser.schema.XSDComplexType;
@@ -42,16 +54,6 @@ import oracle.xml.parser.v2.XMLError;
 import oracle.xml.parser.v2.XMLNode;
 import oracle.xml.parser.v2.XMLParseException;
 import oracle.xml.parser.v2.XSLException;
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
-import org.xml.sax.ErrorHandler;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 
 /**
  * <p><b>Purpose</b>:  An implementation of XMLPlatform using Oracle XDK APIs.</p>
@@ -77,6 +79,7 @@ public class XDKPlatform implements XMLPlatform {
      * @return
      * @throws XMLPlatformException
      */
+    @Override
     public Node selectSingleNodeAdvanced(Node contextNode, String xPath, XMLNamespaceResolver xmlNamespaceResolver) throws XMLPlatformException {
         try {
             XMLNode xmlNode = (XMLNode)contextNode;
@@ -97,6 +100,7 @@ public class XDKPlatform implements XMLPlatform {
      * @return the XPath result
      * @throws XMLPlatformException
      */
+    @Override
     public NodeList selectNodesAdvanced(Node contextNode, String xPath, XMLNamespaceResolver xmlNamespaceResolver) throws XMLPlatformException {
         try {
             XMLNode xmlNode = (XMLNode)contextNode;
@@ -107,10 +111,12 @@ public class XDKPlatform implements XMLPlatform {
         }
     }
 
+    @Override
     public Document createDocument() throws XMLPlatformException {
         return new XMLDocument();
     }
 
+    @Override
     public Document createDocumentWithPublicIdentifier(String name, String publicIdentifier, String systemIdentifier) throws XMLPlatformException {
         try {
             XMLDocument xmlDocument = (XMLDocument)createDocument();
@@ -123,6 +129,7 @@ public class XDKPlatform implements XMLPlatform {
         }
     }
 
+    @Override
     public Document createDocumentWithSystemIdentifier(String name, String systemIdentifier) throws XMLPlatformException {
         try {
             if (null == systemIdentifier) {
@@ -142,6 +149,7 @@ public class XDKPlatform implements XMLPlatform {
         }
     }
 
+    @Override
     public boolean isWhitespaceNode(Text text) {
         try {
             String value = text.getNodeValue();
@@ -156,6 +164,7 @@ public class XDKPlatform implements XMLPlatform {
         }
     }
 
+    @Override
     public String resolveNamespacePrefix(Node contextNode, String namespacePrefix) throws XMLPlatformException {
         if (null == namespacePrefix) {
             if (null == contextNode.getPrefix()) {
@@ -180,21 +189,24 @@ public class XDKPlatform implements XMLPlatform {
         }
 
         Node parentNode = contextNode.getParentNode();
-        if (parentNode != null && parentNode.getNodeType() == Node.ELEMENT_NODE) {        
+        if (parentNode != null && parentNode.getNodeType() == Node.ELEMENT_NODE) {
             return resolveNamespacePrefix(parentNode, namespacePrefix);
         }
 
         return null;
     }
 
+    @Override
     public XMLParser newXMLParser() {
         return new XDKParser();
     }
 
+    @Override
     public XMLParser newXMLParser(Map<String, Boolean> parserFeatures) {
         return new XDKParser();
     }
 
+    @Override
     public XMLTransformer newXMLTransformer() {
         return new XDKTransformer();
     }
@@ -207,6 +219,7 @@ public class XDKPlatform implements XMLPlatform {
      * @param errorHandler - the error handler
      * @return true if the document fragment is valid, false otherwise
      */
+    @Override
     public boolean validateDocument(Document document, URL xmlSchemaURL, ErrorHandler errorHandler) throws XMLPlatformException {
         XMLSchema xmlSchema = null;
         XSDValidator validator = null;
@@ -232,7 +245,7 @@ public class XDKPlatform implements XMLPlatform {
             ((XMLDocument)document).validateContent(validator, true);
         } catch (XMLParseException e) {
             // Ignore this exception, the XMLError will be used to determine if theree
-            // were any errors.			
+            // were any errors.
         }
         handleErrors(xmlErr, errorHandler);
 
@@ -242,11 +255,12 @@ public class XDKPlatform implements XMLPlatform {
     /**
      * Validates a document fragment against a complex type or element in the XML schema
      *
-     * @param document - the document which contains the document fragment to be validated
-     * @param schemaReference - the path to the complex type or element to be validated against in the schema
-     * @param handler - the error handler
+     * @param elem - the document which contains the document fragment to be validated
+     * @param xmlDescriptor - the path to the complex type or element to be validated against in the schema
+     * @param errorHandler - the error handler
      * @return true if the document fragment is valid, false otherwise
      */
+    @Override
     public boolean validate(Element elem, XMLDescriptor xmlDescriptor, ErrorHandler errorHandler) throws XMLPlatformException {
         XMLSchemaReference schemaReference = xmlDescriptor.getSchemaReference();
         NamespaceResolver nsResolver = xmlDescriptor.getNamespaceResolver();
@@ -294,7 +308,7 @@ public class XDKPlatform implements XMLPlatform {
             ((XMLElement)elem).validateContent(validator, true);
         } catch (XMLParseException e) {
             // Ignore this exception, the XMLError will be used to determine if theree
-            // were any errors.			
+            // were any errors.
         }
         handleErrors(xmlErr, errorHandler);
 
@@ -412,8 +426,9 @@ public class XDKPlatform implements XMLPlatform {
         }
         return null;
     }
-    
-     public void namespaceQualifyFragment(Element next) {
+
+    @Override
+    public void namespaceQualifyFragment(Element next) {
         namespaceQualifyFragment(next, new ArrayList<String>());
     }
 
@@ -430,14 +445,14 @@ public class XDKPlatform implements XMLPlatform {
             }
         }
 
-        //check all attributes prefixes and if any of them arent declared add them also.            
+        //check all attributes prefixes and if any of them arent declared add them also.
         NamedNodeMap attributes = next.getAttributes();
         int attributesSize = attributes.getLength();
         for (int i = 0; i < attributesSize; i++) {
             Attr nextAttribute = (Attr)attributes.item(i);
             String attributePrefix = nextAttribute.getPrefix();
             if (attributePrefix != null) {
-                //if attribute is a namespace declaration add to declared list 
+                //if attribute is a namespace declaration add to declared list
                 if (XMLConstants.XMLNS_URL.equals(nextAttribute.getNamespaceURI())) {
                     declaredPrefixes.add(nextAttribute.getLocalName());
                 } else {
@@ -449,13 +464,13 @@ public class XDKPlatform implements XMLPlatform {
                     }
 
                     //if xsi:type declaration deal with that value
-                    if (XMLConstants.SCHEMA_INSTANCE_URL.equals(nextAttribute.getNamespaceURI()) && XMLConstants.SCHEMA_TYPE_ATTRIBUTE.equals(nextAttribute.getLocalName())) {                        
+                    if (XMLConstants.SCHEMA_INSTANCE_URL.equals(nextAttribute.getNamespaceURI()) && XMLConstants.SCHEMA_TYPE_ATTRIBUTE.equals(nextAttribute.getLocalName())) {
                         String value = nextAttribute.getValue();
                         int colonIndex = value.indexOf(':');
                         if (colonIndex > -1) {
                             String prefix = value.substring(0, colonIndex);
                             namespaceDeclaration = next.getAttributeNode(XMLConstants.XMLNS +":" + prefix);
-                            if ((null == namespaceDeclaration) && !declaredPrefixes.contains(prefix)) {                                
+                            if ((null == namespaceDeclaration) && !declaredPrefixes.contains(prefix)) {
                                 String uri = XMLPlatformFactory.getInstance().getXMLPlatform().resolveNamespacePrefix(next, prefix);
                                 (next).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + prefix, uri);
                                 declaredPrefixes.add(prefix);
@@ -475,5 +490,15 @@ public class XDKPlatform implements XMLPlatform {
                 namespaceQualifyFragment(child, declaredPrefixes);
             }
         }
+    }
+
+    @Override
+    public void setDisableSecureProcessing(boolean disableSecureProcessing) {
+        //no-op
+    }
+
+    @Override
+    public boolean isSecureProcessingDisabled() {
+        return false;
     }
 }

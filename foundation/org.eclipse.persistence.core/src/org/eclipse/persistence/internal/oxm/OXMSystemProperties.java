@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -11,10 +11,6 @@
  *     Martin Vojtek - 2.6 - initial implementation
  ******************************************************************************/
 package org.eclipse.persistence.internal.oxm;
-
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
 
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 
@@ -43,29 +39,10 @@ public final class OXMSystemProperties {
      */
     public static final String JSON_USE_XSD_TYPES_PREFIX = "org.eclipse.persistence.json.use-xsd-types-prefix";
 
-    public static final Boolean jsonTypeCompatiblity = getBoolean(JSON_TYPE_COMPATIBILITY);
+    public static final String DISABLE_SECURE_PROCESSING = "eclipselink.disableXmlSecurity";
 
-    public static final Boolean jsonUseXsdTypesPrefix = getBoolean(JSON_USE_XSD_TYPES_PREFIX);
+    public static final Boolean jsonTypeCompatiblity = PrivilegedAccessHelper.getSystemPropertyBoolean(JSON_TYPE_COMPATIBILITY, false);
 
-    /**
-     * Returns value of system property.
-     *
-     * @param propertyName system property
-     * @return value of the system property
-     */
-    private static Boolean getBoolean(final String propertyName) {
-        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-            try {
-                return AccessController.doPrivileged(new PrivilegedExceptionAction<Boolean>() {
-                    @Override
-                    public Boolean run() throws Exception {
-                        return Boolean.getBoolean(propertyName);
-                    }});
-            } catch (PrivilegedActionException e) {
-                throw (RuntimeException) e.getCause();
-            }
-        } else {
-            return Boolean.getBoolean(propertyName);
-        }
-    }
+    public static final Boolean jsonUseXsdTypesPrefix = PrivilegedAccessHelper.getSystemPropertyBoolean(JSON_USE_XSD_TYPES_PREFIX, false);
+
 }

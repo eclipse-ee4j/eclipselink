@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates, IBM Corporation.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates, IBM Corporation.
  * All rights reserved. This program and the accompanying materials are made available
  * under the terms of the Eclipse Public License v1.0 and Eclipse Distribution License
  * v. 1.0 which accompanies this distribution.
@@ -16,55 +16,58 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.deployment;
 
-import java.net.URL;
-import java.net.URISyntaxException;
-import java.net.JarURLConnection;
-import java.net.MalformedURLException;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.util.Enumeration;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_CONVERTER;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_EMBEDDABLE;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ENTITY;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_MAPPED_SUPERCLASS;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_STATIC_METAMODEL;
+
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.JarURLConnection;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.HashSet;
 import java.util.StringTokenizer;
 
+import javax.persistence.spi.PersistenceUnitInfo;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import javax.persistence.spi.PersistenceUnitInfo;
-import java.net.URLDecoder;
-import java.io.UnsupportedEncodingException;
-
-import org.xml.sax.XMLReader;
-import org.xml.sax.InputSource;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.exceptions.PersistenceUnitLoadingException;
 import org.eclipse.persistence.exceptions.XMLParseException;
+import org.eclipse.persistence.internal.helper.XMLHelper;
 import org.eclipse.persistence.internal.jpa.deployment.xml.parser.PersistenceContentHandler;
 import org.eclipse.persistence.internal.jpa.deployment.xml.parser.XMLException;
 import org.eclipse.persistence.internal.jpa.deployment.xml.parser.XMLExceptionHandler;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProcessor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
-import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.jpa.Archive;
 import org.eclipse.persistence.jpa.ArchiveFactory;
-
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_CONVERTER;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_EMBEDDABLE;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ENTITY;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_MAPPED_SUPERCLASS;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_STATIC_METAMODEL;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
 
 /**
  * INTERNAL:
@@ -622,9 +625,8 @@ public class PersistenceUnitProcessor {
      * May eventually change this to use OX mapping as well.
      */
     private static List<SEPersistenceUnitInfo> processPersistenceXML(URL baseURL, InputStream input, ClassLoader loader){
-        SAXParserFactory spf = SAXParserFactory.newInstance();
-        spf.setNamespaceAware(true);
-        
+        SAXParserFactory spf = XMLHelper.createParserFactory(false);
+
         XMLReader xmlReader = null;
         SAXParser sp = null;
         XMLExceptionHandler xmlErrorHandler = new XMLExceptionHandler();
@@ -633,9 +635,7 @@ public class PersistenceUnitProcessor {
         // create a SAX parser
         try {
             sp = spf.newSAXParser();
-        } catch (javax.xml.parsers.ParserConfigurationException exc){
-            throw XMLParseException.exceptionCreatingSAXParser(baseURL, exc);
-        } catch (org.xml.sax.SAXException exc){
+        } catch (ParserConfigurationException | SAXException exc){
             throw XMLParseException.exceptionCreatingSAXParser(baseURL, exc);
         }
             

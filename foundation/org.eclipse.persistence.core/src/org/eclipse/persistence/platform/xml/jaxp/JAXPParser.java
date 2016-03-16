@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -30,11 +30,11 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.validation.Schema;
 
+import org.eclipse.persistence.internal.helper.XMLHelper;
+import org.eclipse.persistence.platform.xml.DefaultErrorHandler;
 import org.eclipse.persistence.platform.xml.SAXDocumentBuilder;
 import org.eclipse.persistence.platform.xml.XMLParser;
 import org.eclipse.persistence.platform.xml.XMLPlatformException;
-import org.eclipse.persistence.platform.xml.DefaultErrorHandler;
-
 import org.w3c.dom.Document;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
@@ -89,6 +89,7 @@ public class JAXPParser implements XMLParser {
      */
     public JAXPParser(Map<String, Boolean> parserFeatures) {
         this();
+        loadDocumentBuilderFactory();
         try {
             if(null != parserFeatures) {
                 for(Entry<String, Boolean> entry : parserFeatures.entrySet()) {
@@ -101,7 +102,7 @@ public class JAXPParser implements XMLParser {
     }
 
     private void loadDocumentBuilderFactory() {
-        documentBuilderFactory = DocumentBuilderFactory.newInstance();
+        documentBuilderFactory = XMLHelper.createDocumentBuilderFactory(false);
         setNamespaceAware(true);
         setWhitespacePreserving(false);
     }
@@ -111,6 +112,7 @@ public class JAXPParser implements XMLParser {
      *
      * @param isNamespaceAware if the parser should be namespace aware
      */
+    @Override
     public void setNamespaceAware(boolean isNamespaceAware) {
         if (null == documentBuilderFactory) {
             loadDocumentBuilderFactory();
@@ -123,6 +125,7 @@ public class JAXPParser implements XMLParser {
      *
      * @param isWhitespacePreserving if the parser should preserve white spaces
      */
+    @Override
     public void setWhitespacePreserving(boolean isWhitespacePreserving) {
         if (null == documentBuilderFactory) {
             loadDocumentBuilderFactory();
@@ -135,6 +138,7 @@ public class JAXPParser implements XMLParser {
      *
      * @return validation mode of the parser
      */
+    @Override
     public int getValidationMode() {
         if (null == documentBuilderFactory) {
             loadDocumentBuilderFactory();
@@ -159,6 +163,7 @@ public class JAXPParser implements XMLParser {
      *
      * @param validationMode validation mode to set
      */
+    @Override
     public void setValidationMode(int validationMode) {
         if (null == documentBuilderFactory) {
             loadDocumentBuilderFactory();
@@ -171,6 +176,7 @@ public class JAXPParser implements XMLParser {
         }
         case XMLParser.DTD_VALIDATION: {
             documentBuilderFactory.setValidating(true);
+            XMLHelper.allowExternalDTDAccess(documentBuilderFactory, "all", false);
             // documentBuilderFactory.setAttribute(SCHEMA_LANGUAGE, null);
             return;
         }
@@ -178,6 +184,7 @@ public class JAXPParser implements XMLParser {
             try {
                 documentBuilderFactory.setAttribute(SCHEMA_LANGUAGE, XML_SCHEMA);
                 documentBuilderFactory.setValidating(true);
+                XMLHelper.allowExternalAccess(documentBuilderFactory, "all", false);
             } catch (IllegalArgumentException e) {
                 // This parser does not support XML Schema validation so leave it as
                 // a non-validating parser.
@@ -192,6 +199,7 @@ public class JAXPParser implements XMLParser {
      *
      * @return entity resolver of the parser
      */
+    @Override
     public EntityResolver getEntityResolver() {
         return entityResolver;
     }
@@ -201,6 +209,7 @@ public class JAXPParser implements XMLParser {
      *
      * @param entityResolver entity resolver to set
      */
+    @Override
     public void setEntityResolver(EntityResolver entityResolver) {
         this.entityResolver = entityResolver;
     }
@@ -210,6 +219,7 @@ public class JAXPParser implements XMLParser {
      *
      * @return error handler of the parser
      */
+    @Override
     public ErrorHandler getErrorHandler() {
         return errorHandler;
     }
@@ -219,6 +229,7 @@ public class JAXPParser implements XMLParser {
      *
      * @param errorHandler error handler for the parser
      */
+    @Override
     public void setErrorHandler(ErrorHandler errorHandler) {
         this.errorHandler = errorHandler;
     }
@@ -229,6 +240,7 @@ public class JAXPParser implements XMLParser {
      * @param url url of the XMLSchema
      * @throws XMLPlatformException exception occurred while setting XMLSchema
      */
+    @Override
     public void setXMLSchema(URL url) throws XMLPlatformException {
         if (null == url) {
             return;
@@ -252,6 +264,7 @@ public class JAXPParser implements XMLParser {
      * @param schema schema for the parser
      * @throws XMLPlatformException exception occurred while setting XMLSchema
      */
+    @Override
     public void setXMLSchema(Schema schema) throws XMLPlatformException {
         documentBuilderFactory.setSchema(schema);
     }
@@ -262,6 +275,7 @@ public class JAXPParser implements XMLParser {
      * @return schema of the parser
      * @throws XMLPlatformException exception occurred while getting XMLSchema
      */
+    @Override
     public Schema getXMLSchema() throws XMLPlatformException {
         return documentBuilderFactory.getSchema();
     }
@@ -272,6 +286,7 @@ public class JAXPParser implements XMLParser {
      * @param schemas XML schemas to set
      * @throws XMLPlatformException exception occurred while setting XMLSchema(s)
      */
+    @Override
     public void setXMLSchemas(Object[] schemas) throws XMLPlatformException {
         if ((null == schemas) || (schemas.length == 0)) {
             return;
@@ -296,6 +311,7 @@ public class JAXPParser implements XMLParser {
      * @return parsed document
      * @throws XMLPlatformException exception occurred while parsing input source
      */
+    @Override
     public Document parse(InputSource inputSource) throws XMLPlatformException {
         try {
             return getDocumentBuilder().parse(inputSource);
@@ -313,6 +329,7 @@ public class JAXPParser implements XMLParser {
      * @return parsed document
      * @throws XMLPlatformException exception occurred while parsing given file
      */
+    @Override
     public Document parse(File file) throws XMLPlatformException {
         try {
             return getDocumentBuilder().parse(file);
@@ -332,6 +349,7 @@ public class JAXPParser implements XMLParser {
      * @return parsed document
      * @throws XMLPlatformException exception occurred while parsing input stream
      */
+    @Override
     public Document parse(InputStream inputStream) throws XMLPlatformException {
         try {
             return getDocumentBuilder().parse(inputStream);
@@ -351,6 +369,7 @@ public class JAXPParser implements XMLParser {
      * @return parsed document
      * @throws XMLPlatformException exception occurred while parsing given reader
      */
+    @Override
     public Document parse(Reader reader) throws XMLPlatformException {
         InputSource inputSource = new InputSource(reader);
         return parse(inputSource);
@@ -363,10 +382,11 @@ public class JAXPParser implements XMLParser {
      * @return parsed document
      * @throws XMLPlatformException exception occurred while parsing given source
      */
+    @Override
     public Document parse(Source source) throws XMLPlatformException {
         try {
             if (null == transformerFactory) {
-                transformerFactory = TransformerFactory.newInstance();
+                transformerFactory = XMLHelper.createTransformerFactory(false);
             }
             Transformer transformer = transformerFactory.newTransformer();
             SAXResult saxResult = new SAXResult();
@@ -386,11 +406,12 @@ public class JAXPParser implements XMLParser {
      * @return parsed document
      * @throws XMLPlatformException exception occurred while parsing stream with given url
      */
+    @Override
     public Document parse(URL url) throws XMLPlatformException {
         InputStream inputStream = null;
         try {
             inputStream = url.openStream();
-        } catch (IOException e) {
+        } catch (IllegalArgumentException | IOException e) {
             throw XMLPlatformException.xmlPlatformParseException(e);
         }
 

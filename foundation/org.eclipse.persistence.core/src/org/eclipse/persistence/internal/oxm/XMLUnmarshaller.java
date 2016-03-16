@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -30,8 +30,6 @@ import org.eclipse.persistence.core.sessions.CoreSession;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
-import org.eclipse.persistence.internal.oxm.StrBuffer;
-import org.eclipse.persistence.internal.oxm.Unmarshaller;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.record.PlatformUnmarshaller;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
@@ -113,6 +111,7 @@ public class XMLUnmarshaller<
      */
     private static final ErrorHandler DEFAULT_ERROR_HANDLER = new ErrorHandler() {
 
+        @Override
         public void warning(SAXParseException exception)
                 throws SAXException {
             if(exception.getException() instanceof EclipseLinkException) {
@@ -120,16 +119,18 @@ public class XMLUnmarshaller<
             }
         }
 
+        @Override
         public void error(SAXParseException exception) throws SAXException {
             if(exception.getException() instanceof EclipseLinkException) {
                 throw exception;
             }
         }
 
+        @Override
         public void fatalError(SAXParseException exception)
                 throws SAXException {
             throw exception;
-            
+
         }
 
     };
@@ -181,7 +182,7 @@ public class XMLUnmarshaller<
 
                 Class xmlStreamReaderReaderClass = PrivilegedAccessHelper.getClassForName(XML_STREAM_READER_READER_CLASS_NAME);
                 xmlStreamReaderReaderConstructor = PrivilegedAccessHelper.getConstructorFor(xmlStreamReaderReaderClass, new Class[0], true);
-                
+
                 Class xmlEventReaderReaderClass = PrivilegedAccessHelper.getClassForName(XML_EVENT_READER_READER_CLASS_NAME);
                 xmlEventReaderReaderConstructor = PrivilegedAccessHelper.getConstructorFor(xmlEventReaderReaderClass, new Class[0], true);
             }
@@ -219,13 +220,13 @@ public class XMLUnmarshaller<
         } catch(UnsupportedOperationException e) {}
         setUnmappedContentHandlerClass(xmlUnmarshaller.unmappedContentHandlerClass);
     }
-    
+
     protected void initialize(Map<String, Boolean> parserFeatures) {
-	    CoreSession session = context.getSession();
-	    XMLPlatform xmlPlatform = (XMLPlatform)session.getDatasourceLogin().getDatasourcePlatform();
-	    platformUnmarshaller = xmlPlatform.newPlatformUnmarshaller(this, parserFeatures);
-	    platformUnmarshaller.setWhitespacePreserving(false);
-	}
+        CoreSession session = context.getSession();
+        XMLPlatform xmlPlatform = (XMLPlatform)session.getDatasourceLogin().getDatasourcePlatform();
+        platformUnmarshaller = xmlPlatform.newPlatformUnmarshaller(this, parserFeatures);
+        platformUnmarshaller.setWhitespacePreserving(false);
+    }
 
     /**
      * Set the MediaType for this xmlUnmarshaller.
@@ -234,12 +235,12 @@ public class XMLUnmarshaller<
      * @param mediaType
      */
     public void setMediaType(MEDIA_TYPE mediaType) {
-    	if(this.mediaType != mediaType){
-    		this.mediaType = mediaType;
+        if(this.mediaType != mediaType){
+            this.mediaType = mediaType;
             if(platformUnmarshaller != null){
-            	platformUnmarshaller.mediaTypeChanged();
-            }	
-    	}    	
+                platformUnmarshaller.mediaTypeChanged();
+            }
+        }
     }
 
     /**
@@ -249,10 +250,11 @@ public class XMLUnmarshaller<
      * @since 2.4
      * @return MediaType
      */
+    @Override
     public MEDIA_TYPE getMediaType(){
-    	return mediaType;
+        return mediaType;
     }
-    
+
     /**
      * Return the instance of XMLContext that was used to create this instance
      * of XMLUnmarshaller.
@@ -261,13 +263,13 @@ public class XMLUnmarshaller<
         return getContext();
     }
 
-    /** 
+    /**
      * Set the XMLContext used by this instance of XMLUnmarshaller.
      */
     public void setXMLContext(CONTEXT value) {
         context =  value;
     }
-    
+
     /**
     * Get the validation mode set on this XMLUnmarshaller
     * By default, the unmarshaller is set to be NONVALIDATING
@@ -297,6 +299,7 @@ public class XMLUnmarshaller<
      * Get the ErrorHandler set on this XMLUnmarshaller
      * @return the ErrorHandler set on this XMLUnmarshaller
      */
+    @Override
     public ErrorHandler getErrorHandler() {
         return platformUnmarshaller.getErrorHandler();
     }
@@ -317,6 +320,7 @@ public class XMLUnmarshaller<
       * Get the class that will be instantiated to handled unmapped content
       * Class must implement the org.eclipse.persistence.oxm.unmapped.UnmappedContentHandler interface
       */
+    @Override
     public Class getUnmappedContentHandlerClass() {
         return this.unmappedContentHandlerClass;
     }
@@ -334,6 +338,7 @@ public class XMLUnmarshaller<
      * INTERNAL:
      * This is the text handler during unmarshal operations.
      */
+    @Override
     public StrBuffer getStringBuffer() {
         return stringBuffer;
     }
@@ -600,6 +605,7 @@ public class XMLUnmarshaller<
      * @parm key
      * @return
      */
+    @Override
     public Object getProperty(Object key) {
         if(null == unmarshalProperties) {
             return null;
@@ -621,7 +627,7 @@ public class XMLUnmarshaller<
         if ((null == source) || (null == clazz)) {
             throw XMLMarshalException.nullArgumentException();
         }
-        if (source.getClass() == this.staxSourceClass) {        	
+        if (source.getClass() == this.staxSourceClass) {
             try {
                 Object xmlStreamReader = PrivilegedAccessHelper.invokeMethod(this.staxSourceGetStreamReaderMethod, source);
                 if(xmlStreamReader != null) {
@@ -651,10 +657,12 @@ public class XMLUnmarshaller<
         return this.platformUnmarshaller.unmarshal(xmlReader, inputSource, clazz);
     }
 
+    @Override
     public UNMARSHALLER_HANDLER getUnmarshallerHandler() {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public XMLAttachmentUnmarshaller getAttachmentUnmarshaller() {
         return attachmentUnmarshaller;
     }
@@ -667,88 +675,94 @@ public class XMLUnmarshaller<
         platformUnmarshaller.setResultAlwaysXMLRoot(alwaysReturnRoot);
     }
 
+    @Override
     public boolean isResultAlwaysXMLRoot() {
         return platformUnmarshaller.isResultAlwaysXMLRoot();
     }
-    
+
     public void setSchema(Schema schema) {
         this.platformUnmarshaller.setSchema(schema);
     }
-    
+
+    @Override
     public Schema getSchema() {
         return this.platformUnmarshaller.getSchema();
     }
-    
+
     /**
-     * Value that will be used to prefix attributes.  
-     * Ignored unmarshalling XML.   
+     * Value that will be used to prefix attributes.
+     * Ignored unmarshalling XML.
      * @return
      * @since 2.4
      */
+    @Override
     public String getAttributePrefix() {
         return attributePrefix;
     }
-    
+
     /**
-     * Value that will be used to prefix attributes.  
+     * Value that will be used to prefix attributes.
      * Ignored unmarshalling XML.
-     * @since 2.4	 
+     * @since 2.4
      */
     public void setAttributePrefix(String attributePrefix) {
         this.attributePrefix = attributePrefix;
     }
-    
+
     /**
-     * Name of the property to marshal/unmarshal as a wrapper on the text() mappings   
-     * Ignored unmarshalling XML.  
-     * @since 2.4	 
-     */	
+     * Name of the property to marshal/unmarshal as a wrapper on the text() mappings
+     * Ignored unmarshalling XML.
+     * @since 2.4
+     */
+    @Override
     public String getValueWrapper() {
         return valueWrapper;
     }
 
     /**
-     * Name of the property to marshal/unmarshal as a wrapper on the text() mappings   
-     * Ignored unmarshalling XML.  
-     * @since 2.4	 
+     * Name of the property to marshal/unmarshal as a wrapper on the text() mappings
+     * Ignored unmarshalling XML.
+     * @since 2.4
      */
     public void setValueWrapper(String valueWrapper) {
         this.valueWrapper = valueWrapper;
     }
-        
+
     /**
      * Get the namespace separator used during unmarshal operations.
      * If mediaType is application/json '.' is the default
-     * Ignored unmarshalling XML.   
+     * Ignored unmarshalling XML.
      * @since 2.4
      */
-    public char getNamespaceSeparator() {    	
+    @Override
+    public char getNamespaceSeparator() {
         return namespaceSeparator;
     }
 
     /**
      * Set the namespace separator used during unmarshal operations.
      * If mediaType is application/json '.' is the default
-     * Ignored unmarshalling XML.   
+     * Ignored unmarshalling XML.
      * @since 2.4
      */
-	public void setNamespaceSeparator(char namespaceSeparator) {
-		this.namespaceSeparator = namespaceSeparator;
-	}
-    
+    public void setNamespaceSeparator(char namespaceSeparator) {
+        this.namespaceSeparator = namespaceSeparator;
+    }
+
     /**
-     * Determine if the @XMLRootElement should be marshalled when present.  
-     * Ignored unmarshalling XML.   
+     * Determine if the @XMLRootElement should be marshalled when present.
+     * Ignored unmarshalling XML.
      * @return
      * @since 2.4
      */
+    @Override
     public boolean isIncludeRoot() {
             return includeRoot;
     }
 
     /**
-     * Determine if the @XMLRootElement should be marshalled when present.  
-     * Ignored unmarshalling XML.   
+     * Determine if the @XMLRootElement should be marshalled when present.
+     * Ignored unmarshalling XML.
      * @return
      * @since 2.4
      */
@@ -781,22 +795,24 @@ public class XMLUnmarshaller<
      * the MediaType of the document (instead of using the MediaType set
      * by setMediaType)
      */
+    @Override
     public boolean isAutoDetectMediaType() {
-		return autoDetectMediaType;
-	}
+        return autoDetectMediaType;
+    }
 
     /**
      * Set if this XMLUnmarshaller should try to automatically determine
      * the MediaType of the document (instead of using the MediaType set
      * by setMediaType)
      */
-	public void setAutoDetectMediaType(boolean autoDetectMediaType) {
-		this.autoDetectMediaType = autoDetectMediaType;
-	}
+    public void setAutoDetectMediaType(boolean autoDetectMediaType) {
+        this.autoDetectMediaType = autoDetectMediaType;
+    }
 
     /**
      * Return if this Unmarshaller should perform case insensitive unmarshalling.
      */
+    @Override
     public boolean isCaseInsensitive(){
         return caseInsensitive;
     }
@@ -810,22 +826,23 @@ public class XMLUnmarshaller<
 
     /**
      * Name of the NamespaceResolver to be used during unmarshal
-     * Ignored unmarshalling XML.  
-     * @since 2.4	 
-     */	
+     * Ignored unmarshalling XML.
+     * @since 2.4
+     */
+    @Override
     public NamespaceResolver getNamespaceResolver() {
         return namespaceResolver;
     }
 
     /**
      * Get the NamespaceResolver to be used during unmarshal
-     * Ignored unmarshalling XML.  
-     * @since 2.4	 
+     * Ignored unmarshalling XML.
+     * @since 2.4
      */
     public void setNamespaceResolver(NamespaceResolver namespaceResolver) {
         this.namespaceResolver = namespaceResolver;
     }
-    
+
     /**
      * @since 2.4.2
      */
@@ -852,6 +869,7 @@ public class XMLUnmarshaller<
      * @since 2.3.3
      * @return the custom IDResolver, or null if one has not been specified.
      */
+    @Override
     public ID_RESOLVER getIDResolver() {
         return idResolver;
     }
@@ -861,6 +879,7 @@ public class XMLUnmarshaller<
      * @see IDResolver
      * @since 2.3.3
      */
+    @Override
     public void setIDResolver(ID_RESOLVER idResolver) {
         this.idResolver = idResolver;
     }
@@ -869,6 +888,7 @@ public class XMLUnmarshaller<
      * INTERNAL
      * @since 2.5.0
      */
+    @Override
     public ROOT createRoot() {
         throw new UnsupportedOperationException();
     }
@@ -893,13 +913,14 @@ public class XMLUnmarshaller<
 
     /**
      * INTERNAL:
-     * Returns the AttributeGroup or the name of the AttributeGroup to be used to 
-     * unmarshal. 
+     * Returns the AttributeGroup or the name of the AttributeGroup to be used to
+     * unmarshal.
      */
+    @Override
     public Object getUnmarshalAttributeGroup() {
         return this.unmarshalAttributeGroup;
     }
-    
+
     public void setUnmarshalAttributeGroup(Object attributeGroup) {
         this.unmarshalAttributeGroup = attributeGroup;
     }
@@ -909,10 +930,11 @@ public class XMLUnmarshaller<
      * Returns true if a warning exception should be generated when an unmapped element is encountered.
      * @since 2.6.0
      */
+    @Override
     public boolean shouldWarnOnUnmappedElement() {
         return this.warnOnUnmappedElement;
     }
-    
+
     /**
      * INTERNAL:
      * Set to true if a warning exception should be generated when an unmapped element is encountered, false otherwise.
@@ -928,12 +950,21 @@ public class XMLUnmarshaller<
      * @return json type configuration
      * @since 2.6.0
      */
+    @Override
     public JsonTypeConfiguration getJsonTypeConfiguration() {
         if (null == jsonTypeConfiguration) {
             jsonTypeConfiguration = new JsonTypeConfiguration();
         }
 
         return jsonTypeConfiguration;
+    }
+
+    public final boolean isSecureProcessingDisabled() {
+        return platformUnmarshaller.isSecureProcessingDisabled();
+    }
+
+    public final void setDisableSecureProcessing(boolean disableSecureProcessing) {
+        platformUnmarshaller.setDisableSecureProcessing(disableSecureProcessing);
     }
 
 }

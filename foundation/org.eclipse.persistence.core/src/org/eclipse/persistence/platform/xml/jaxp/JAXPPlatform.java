@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.platform.xml.jaxp;
 
 import java.net.URL;
@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -29,6 +30,7 @@ import javax.xml.xpath.XPathException;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 
+import org.eclipse.persistence.internal.helper.XMLHelper;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.platform.xml.XMLNamespaceResolver;
 import org.eclipse.persistence.platform.xml.XMLParser;
@@ -53,35 +55,35 @@ import org.xml.sax.SAXException;
  */
 
 public class JAXPPlatform implements XMLPlatform {
-	
-	private XPathFactory xPathFactory;
-	private SchemaFactory schemaFactory;
-	private DocumentBuilderFactory documentBuilderFactory;
-    
+
+    private XPathFactory xPathFactory;
+    private SchemaFactory schemaFactory;
+    private DocumentBuilderFactory documentBuilderFactory;
+    private boolean disableSecureProcessing = false;
+
     public JAXPPlatform() {
         super();
     }
 
     private DocumentBuilderFactory getDocumentBuilderFactory() {
         if(null == documentBuilderFactory) {
-            documentBuilderFactory = DocumentBuilderFactory.newInstance();
-            documentBuilderFactory.setNamespaceAware(true);
+            documentBuilderFactory = XMLHelper.createDocumentBuilderFactory(isSecureProcessingDisabled());
         }
         return documentBuilderFactory;
     }
 
     public XPathFactory getXPathFactory() {
-    	if(null == xPathFactory) {
-    		xPathFactory = XPathFactory.newInstance();
-    	}
-    	return xPathFactory;
+        if(null == xPathFactory) {
+            xPathFactory = XMLHelper.createXPathFactory(isSecureProcessingDisabled());
+        }
+        return xPathFactory;
     }
 
     public SchemaFactory getSchemaFactory() {
-    	if(null == schemaFactory) {
-    		schemaFactory = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
-    	}
-    	return schemaFactory;
+        if(null == schemaFactory) {
+            schemaFactory = XMLHelper.createSchemaFactory(XMLConstants.W3C_XML_SCHEMA_NS_URI, isSecureProcessingDisabled());
+        }
+        return schemaFactory;
     }
 
     /**
@@ -94,18 +96,19 @@ public class JAXPPlatform implements XMLPlatform {
      * @return the XPath result
      * @throws XMLPlatformException
      */
+    @Override
     public NodeList selectNodesAdvanced(Node contextNode, String xPathString, XMLNamespaceResolver xmlNamespaceResolver) throws XMLPlatformException {
-    	try {
-	        XPath xPath = getXPathFactory().newXPath();
-	        if(null != xmlNamespaceResolver) {
-	        	JAXPNamespaceContext namespaceContext = new JAXPNamespaceContext(xmlNamespaceResolver);
-	        	xPath.setNamespaceContext(namespaceContext);
-	        }
-	        XPathExpression xPathExpression = xPath.compile(xPathString);
-	        return (NodeList) xPathExpression.evaluate(contextNode, XPathConstants.NODESET);
-    	} catch(XPathException e) {
-            throw XMLPlatformException.xmlPlatformInvalidXPath(e);    		
-    	}
+        try {
+            XPath xPath = getXPathFactory().newXPath();
+            if(null != xmlNamespaceResolver) {
+                JAXPNamespaceContext namespaceContext = new JAXPNamespaceContext(xmlNamespaceResolver);
+                xPath.setNamespaceContext(namespaceContext);
+            }
+            XPathExpression xPathExpression = xPath.compile(xPathString);
+            return (NodeList) xPathExpression.evaluate(contextNode, XPathConstants.NODESET);
+        } catch(XPathException e) {
+            throw XMLPlatformException.xmlPlatformInvalidXPath(e);
+        }
     }
 
     /**
@@ -116,20 +119,22 @@ public class JAXPPlatform implements XMLPlatform {
      * @return
      * @throws XMLPlatformException
      */
+    @Override
     public Node selectSingleNodeAdvanced(Node contextNode, String xPathString, XMLNamespaceResolver xmlNamespaceResolver) throws XMLPlatformException {
-    	try {
-	        XPath xPath = getXPathFactory().newXPath();
-	        if(null != xmlNamespaceResolver) {
-	        	JAXPNamespaceContext namespaceContext = new JAXPNamespaceContext(xmlNamespaceResolver);
-	        	xPath.setNamespaceContext(namespaceContext);
-	        }
-	        XPathExpression xPathExpression = xPath.compile(xPathString);
-	        return (Node) xPathExpression.evaluate(contextNode, XPathConstants.NODE);
-    	} catch(XPathException e) {
-            throw XMLPlatformException.xmlPlatformInvalidXPath(e);    		
-    	}
+        try {
+            XPath xPath = getXPathFactory().newXPath();
+            if(null != xmlNamespaceResolver) {
+                JAXPNamespaceContext namespaceContext = new JAXPNamespaceContext(xmlNamespaceResolver);
+                xPath.setNamespaceContext(namespaceContext);
+            }
+            XPathExpression xPathExpression = xPath.compile(xPathString);
+            return (Node) xPathExpression.evaluate(contextNode, XPathConstants.NODE);
+        } catch(XPathException e) {
+            throw XMLPlatformException.xmlPlatformInvalidXPath(e);
+        }
     }
 
+    @Override
     public boolean isWhitespaceNode(Text text) {
         String value = text.getNodeValue();
         if (null == value) {
@@ -139,18 +144,22 @@ public class JAXPPlatform implements XMLPlatform {
         }
     }
 
+    @Override
     public XMLParser newXMLParser() {
         return new JAXPParser();
     }
 
+    @Override
     public XMLParser newXMLParser(Map<String, Boolean> parserFeatures) {
         return new JAXPParser(parserFeatures);
     }
 
+    @Override
     public XMLTransformer newXMLTransformer() {
         return new JAXPTransformer();
     }
 
+    @Override
     public Document createDocument() throws XMLPlatformException {
         try {
             DocumentBuilder documentBuilder = getDocumentBuilderFactory().newDocumentBuilder();
@@ -160,6 +169,7 @@ public class JAXPPlatform implements XMLPlatform {
         }
     }
 
+    @Override
     public Document createDocumentWithPublicIdentifier(String name, String publicIdentifier, String systemIdentifier) throws XMLPlatformException {
         try {
             if (null == publicIdentifier) {
@@ -176,6 +186,7 @@ public class JAXPPlatform implements XMLPlatform {
         }
     }
 
+    @Override
     public Document createDocumentWithSystemIdentifier(String name, String systemIdentifier) throws XMLPlatformException {
         try {
             Document document = null;
@@ -197,6 +208,7 @@ public class JAXPPlatform implements XMLPlatform {
         }
     }
 
+    @Override
     public String resolveNamespacePrefix(Node contextNode, String namespacePrefix) throws XMLPlatformException {
         if (null == namespacePrefix) {
             if (null == contextNode.getPrefix()) {
@@ -228,27 +240,30 @@ public class JAXPPlatform implements XMLPlatform {
         return null;
     }
 
+    @Override
     public boolean validateDocument(Document document, URL xmlSchemaURL, ErrorHandler errorHandler) throws XMLPlatformException {
-    	Schema xmlSchema;
-    	try {
-    		xmlSchema = getSchemaFactory().newSchema(xmlSchemaURL);
-    	} catch(SAXException e) {
-            throw XMLPlatformException.xmlPlatformErrorResolvingXMLSchema(xmlSchemaURL, e);    		
-    	}
-    	try {
-    		Validator validator = xmlSchema.newValidator();
-    		validator.setErrorHandler(errorHandler);
-    		validator.validate(new DOMSource(document));
-    	} catch(Exception e) {
+        Schema xmlSchema;
+        try {
+            xmlSchema = getSchemaFactory().newSchema(xmlSchemaURL);
+        } catch(SAXException e) {
+            throw XMLPlatformException.xmlPlatformErrorResolvingXMLSchema(xmlSchemaURL, e);
+        }
+        try {
+            Validator validator = xmlSchema.newValidator();
+            validator.setErrorHandler(errorHandler);
+            validator.validate(new DOMSource(document));
+        } catch(Exception e) {
             throw XMLPlatformException.xmlPlatformValidationException(e);
-    	}
-		return true;
+        }
+        return true;
     }
 
+    @Override
     public boolean validate(Element elem, org.eclipse.persistence.oxm.XMLDescriptor xmlDescriptor, ErrorHandler handler) throws XMLPlatformException {
         return true;
     }
-      public void namespaceQualifyFragment(Element next) {
+      @Override
+    public void namespaceQualifyFragment(Element next) {
         namespaceQualifyFragment(next, new ArrayList<String>());
     }
 
@@ -265,14 +280,14 @@ public class JAXPPlatform implements XMLPlatform {
             }
         }
 
-        //check all attributes prefixes and if any of them arent declared add them also.            
+        //check all attributes prefixes and if any of them arent declared add them also.
         NamedNodeMap attributes = next.getAttributes();
         int attributesSize = attributes.getLength();
         for (int i = 0; i < attributesSize; i++) {
             Attr nextAttribute = (Attr)attributes.item(i);
             String attributePrefix = nextAttribute.getPrefix();
             if (attributePrefix != null) {
-                //if attribute is a namespace declaration add to declared list 
+                //if attribute is a namespace declaration add to declared list
                 if (javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI.equals(nextAttribute.getNamespaceURI())) {
                     declaredPrefixes.add(nextAttribute.getLocalName());
                 } else {
@@ -284,13 +299,13 @@ public class JAXPPlatform implements XMLPlatform {
                     }
 
                     //if xsi:type declaration deal with that value
-                    if (javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI.equals(nextAttribute.getNamespaceURI()) && Constants.SCHEMA_TYPE_ATTRIBUTE.equals(nextAttribute.getLocalName())) {                        
+                    if (javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI.equals(nextAttribute.getNamespaceURI()) && Constants.SCHEMA_TYPE_ATTRIBUTE.equals(nextAttribute.getLocalName())) {
                         String value = nextAttribute.getValue();
                         int colonIndex = value.indexOf(':');
                         if (colonIndex > -1) {
                             String prefix = value.substring(0, colonIndex);
                             namespaceDeclaration = next.getAttributeNode(javax.xml.XMLConstants.XMLNS_ATTRIBUTE +":" + prefix);
-                            if ((null == namespaceDeclaration) && !declaredPrefixes.contains(prefix)) {                                
+                            if ((null == namespaceDeclaration) && !declaredPrefixes.contains(prefix)) {
                                 String uri = XMLPlatformFactory.getInstance().getXMLPlatform().resolveNamespacePrefix(next, prefix);
                                 (next).setAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE + ":" + prefix, uri);
                                 declaredPrefixes.add(prefix);
@@ -311,5 +326,21 @@ public class JAXPPlatform implements XMLPlatform {
             }
         }
     }
-    
+
+    @Override
+    public void setDisableSecureProcessing(boolean disableSecureProcessing) {
+        boolean shouldReset = this.disableSecureProcessing ^ disableSecureProcessing;
+        this.disableSecureProcessing = disableSecureProcessing;
+        if (shouldReset) {
+            documentBuilderFactory = null;
+            schemaFactory = null;
+            xPathFactory = null;
+        }
+    }
+
+    @Override
+    public boolean isSecureProcessingDisabled() {
+        return disableSecureProcessing;
+    }
+
 }

@@ -64,7 +64,7 @@ public class PrivilegedAccessHelper {
         primitiveClasses.put("void", void.class);
         primitiveClasses.put("short", short.class);
     }
-    
+
     /**
      * INTERNAL
      * It will be used to set default value of property "eclipselink.security.usedoprivileged"
@@ -74,7 +74,7 @@ public class PrivilegedAccessHelper {
         defaultUseDoPrivilegedValue = def;
         shouldCheckPrivilegedAccess = true;
     }
-    
+
     /**
      * Finding a field within a class potentially has to navigate through it's superclasses to eventually
      * find the field.  This method is called by the public getDeclaredField() method and does a recursive
@@ -116,7 +116,7 @@ public class PrivilegedAccessHelper {
             }
         }
     }
-    
+
     /**
      * Execute a java Class.forName().  Wrap the call in a doPrivileged block if necessary.
      * @param className
@@ -143,7 +143,7 @@ public class PrivilegedAccessHelper {
     }
 
     /**
-     * Gets the class loader for a given class.  Wraps the call in a privileged block if necessary
+     * Gets the class loader for a given class. Wraps the call in a privileged block if necessary
      */
     public static ClassLoader getClassLoaderForClass(final Class clazz) {
         return clazz.getClassLoader();
@@ -358,7 +358,8 @@ public class PrivilegedAccessHelper {
      */
     private static boolean isIllegalProperty(final String key) {
         return key == null || !(key.startsWith("eclipselink.") || "line.separator".equals(key)
-                || key.startsWith("javax.persistence.") || key.startsWith("persistence.")
+                || key.startsWith("javax.persistence.") || key.startsWith("org.eclipse.persistence.")
+                || key.startsWith("persistence.") || key.startsWith("javax.xml.")
                 || PersistenceUnitProperties.JAVASE_DB_INTERACTION.equals(key));
     }
 

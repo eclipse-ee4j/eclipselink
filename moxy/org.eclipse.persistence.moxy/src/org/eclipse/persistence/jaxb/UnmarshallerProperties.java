@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -14,9 +14,11 @@
  ******************************************************************************/
 package org.eclipse.persistence.jaxb;
 
+import org.eclipse.persistence.internal.oxm.OXMSystemProperties;
+
 /**
- * These are properties that may be set on an instance of Unmarshaller.  Below 
- * is an example of using the property mechanism to enable MOXy's JSON binding 
+ * These are properties that may be set on an instance of Unmarshaller.  Below
+ * is an example of using the property mechanism to enable MOXy's JSON binding
  * for an instance of Unmarshaller.
  * <pre>
  * Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
@@ -26,7 +28,7 @@ package org.eclipse.persistence.jaxb;
 public class UnmarshallerProperties {
 
     /**
-     * The name of the property used to specify a custom IDResolver class, to 
+     * The name of the property used to specify a custom IDResolver class, to
      * allow customization of ID/IDREF processing.
      * @since 2.3.3
      * @see org.eclipse.persistence.jaxb.IDResolver
@@ -34,11 +36,11 @@ public class UnmarshallerProperties {
     public static final String ID_RESOLVER = "eclipselink.id-resolver";
 
     /**
-     * The name of the property used to specify a value that will be prepended 
-     * to all keys that are mapped to an XML attribute. By default there is no 
-     * attribute prefix.  There is no effect when media type is 
+     * The name of the property used to specify a value that will be prepended
+     * to all keys that are mapped to an XML attribute. By default there is no
+     * attribute prefix.  There is no effect when media type is
      * "application/xml".  When this property is specified at the
-     * <i>JAXBContext</i> level all instances of <i>Marshaller</i> and 
+     * <i>JAXBContext</i> level all instances of <i>Marshaller</i> and
      * <i>Unmarshaller</i> will default to this attribute prefix.
      * @since 2.4
      * @see org.eclipse.persistence.jaxb.JAXBContextProperties#JSON_ATTRIBUTE_PREFIX
@@ -50,7 +52,7 @@ public class UnmarshallerProperties {
      * The name of the property used to specify in the root node should be
      * included in the message (default is true). There is no effect when media
      * type is "application/xml".  When this property is specified at the
-     * <i>JAXBContext</i> level all instances of <i>Marshaller</i> and 
+     * <i>JAXBContext</i> level all instances of <i>Marshaller</i> and
      * <i>Unmarshaller</i> will default to this setting.
      * @since 2.4
      * @see org.eclipse.persistence.jaxb.JAXBContextProperties#JSON_INCLUDE_ROOT
@@ -70,9 +72,9 @@ public class UnmarshallerProperties {
     /**
      * The name of the property used to specify the character (default is '.')
      * that separates the prefix from the key name. It is only used if namespace
-     * qualification has been enabled be setting a namespace prefix mapper.  
-     * When this property is specified at the <i>JAXBContext</i> level all 
-     * instances of <i>Marshaller</i> and <i>Unmarshaller</i> will default to 
+     * qualification has been enabled be setting a namespace prefix mapper.
+     * When this property is specified at the <i>JAXBContext</i> level all
+     * instances of <i>Marshaller</i> and <i>Unmarshaller</i> will default to
      * this setting.
      * @since 2.4
      * @see org.eclipse.persistence.jaxb.JAXBContextProperties#JSON_NAMESPACE_SEPARATOR
@@ -83,8 +85,8 @@ public class UnmarshallerProperties {
     /**
      * The name of the property used to specify the key that will correspond to
      * the property mapped with <i>@XmlValue</i>.  This key will only be used if
-     * there are other mapped properties.  When this property is specified at 
-     * the <i>JAXBContext</i> level all instances of <i>Marshaller</i> and 
+     * there are other mapped properties.  When this property is specified at
+     * the <i>JAXBContext</i> level all instances of <i>Marshaller</i> and
      * <i>Unmarshaller</i> will default to this setting.
      * @since 2.4
      * @see org.eclipse.persistence.jaxb.JAXBContextProperties#JSON_VALUE_WRAPPER
@@ -128,36 +130,36 @@ public class UnmarshallerProperties {
     public static final String MEDIA_TYPE = JAXBContextProperties.MEDIA_TYPE;
 
     /**
-     * The name of the property used to specify if the media type should be  
+     * The name of the property used to specify if the media type should be
      * auto detected (default is false).  Only set to true when the media type
      * is unknown.  Otherwise set the MEDIA_TYPE property.   If the type can not
-     * be auto-detected an unmarshal with the MEDIA_TYPE value will be performed. 
+     * be auto-detected an unmarshal with the MEDIA_TYPE value will be performed.
      * @since 2.4
      * @see org.eclipse.persistence.jaxb.UnmarshallerProperties#MEDIA_TYPE
      * @see org.eclipse.persistence.oxm.MediaType
      */
     public static final String AUTO_DETECT_MEDIA_TYPE = "eclipselink.auto-detect-media-type";
 
-    
+
     public static final String OBJECT_GRAPH = JAXBContextProperties.OBJECT_GRAPH;
 
     /**
-     * The Constant JSON_WRAPPER_AS_ARRAY_NAME. If true the grouping 
-     * element will be used as the JSON key. There is no effect when media type 
+     * The Constant JSON_WRAPPER_AS_ARRAY_NAME. If true the grouping
+     * element will be used as the JSON key. There is no effect when media type
      * is "application/xml".  When this property is specified at the
-     * <i>JAXBContext</i> level all instances of <i>Marshaller</i> and 
+     * <i>JAXBContext</i> level all instances of <i>Marshaller</i> and
      * <i>Unmarshaller</i> will default to this.
-     * 
+     *
      * <p><b>Example</b></p>
      * <p>Given the following class:</p>
      * <pre>
      * &#64;XmlAccessorType(XmlAccessType.FIELD)
      * public class Customer {
-     * 
+     *
      *     &#64;XmlElementWrapper(name="phone-numbers")
      *     &#64;XmlElement(name="phone-number")
      *     private {@literal List<PhoneNumber>} phoneNumbers;
-     * 
+     *
      * }
      * </pre>
      * <p>If the property is set to false (the default) the JSON output will be:</p>
@@ -267,5 +269,7 @@ public class UnmarshallerProperties {
      * @see org.eclipse.persistence.jaxb.MarshallerProperties#BEAN_VALIDATION_NO_OPTIMISATION
      */
     public static final String BEAN_VALIDATION_NO_OPTIMISATION = JAXBContextProperties.BEAN_VALIDATION_NO_OPTIMISATION;
+
+    public static final String DISABLE_SECURE_PROCESSING = OXMSystemProperties.DISABLE_SECURE_PROCESSING;
 
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -39,6 +39,7 @@ import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.helper.XMLHelper;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.Context;
 import org.eclipse.persistence.internal.oxm.ConversionManager;
@@ -52,6 +53,7 @@ import org.eclipse.persistence.internal.oxm.record.json.JsonStructureReader;
 import org.eclipse.persistence.platform.xml.DefaultErrorHandler;
 import org.eclipse.persistence.platform.xml.SAXDocumentBuilder;
 import org.eclipse.persistence.platform.xml.XMLParser;
+import org.eclipse.persistence.platform.xml.XMLPlatform;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.platform.xml.XMLTransformer;
 import org.w3c.dom.Node;
@@ -111,6 +113,9 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     private SAXParserFactory saxParserFactory;
     private String systemId = null;
     private Map<String, Boolean> parserFeatures;
+    private boolean disableSecureProcessing = false;
+    private boolean shouldReset = true;
+    private XMLPlatform xmlPLatform;
 
     public SAXUnmarshaller(Unmarshaller xmlUnmarshaller, Map<String, Boolean> parserFeatures) throws XMLMarshalException {
         super();
@@ -124,25 +129,24 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     }
 
     private SAXParserFactory getSAXParserFactory() throws XMLMarshalException {
-        if(null == saxParserFactory) {
+        if (null == saxParserFactory || shouldReset) {
             try {
-                saxParserFactory = SAXParserFactory.newInstance();
-                saxParserFactory.setNamespaceAware(true);
+                saxParserFactory = XMLHelper.createParserFactory(isSecureProcessingDisabled());;
                 saxParserFactory.setFeature(XMLReader.NAMESPACE_PREFIXES_FEATURE, true);
                 try {
                     saxParserFactory.setFeature(XMLReader.REPORT_IGNORED_ELEMENT_CONTENT_WHITESPACE_FEATURE, true);
-                } catch(org.xml.sax.SAXNotRecognizedException ex) {
-                    //ignore if the parser doesn't recognize or support this feature
-                } catch(org.xml.sax.SAXNotSupportedException ex) {
+                } catch (org.xml.sax.SAXNotRecognizedException ex) {
+                    // ignore if the parser doesn't recognize or support this feature
+                } catch (org.xml.sax.SAXNotSupportedException ex) {
                 }
 
-                if(null != parserFeatures) {
-                    for(Map.Entry<String, Boolean> parserFeature : parserFeatures.entrySet()) {
+                if (null != parserFeatures) {
+                    for (Map.Entry<String, Boolean> parserFeature : parserFeatures.entrySet()) {
                         try {
                             saxParserFactory.setFeature(parserFeature.getKey(), parserFeature.getValue());
-                        } catch(org.xml.sax.SAXNotRecognizedException ex) {
-                            //ignore if the parser doesn't recognize or support this feature
-                        } catch(org.xml.sax.SAXNotSupportedException ex) {
+                        } catch (org.xml.sax.SAXNotRecognizedException ex) {
+                            // ignore if the parser doesn't recognize or support this feature
+                        } catch (org.xml.sax.SAXNotSupportedException ex) {
                         }
                     }
                 }
@@ -155,7 +159,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     }
 
     private SAXParser getSAXParser() {
-        if(null == saxParser) {
+        if (null == saxParser) {
             try {
                 saxParser = getSAXParserFactory().newSAXParser();
             } catch (Exception e) {
@@ -166,100 +170,111 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     }
 
     private XMLParser getXMLParser() {
-        xmlParser = XMLPlatformFactory.getInstance().getXMLPlatform().newXMLParser();
-        xmlParser.setNamespaceAware(true);
-        if(null != errorHandler) {
-            xmlParser.setErrorHandler(errorHandler);
+        if (xmlParser == null || shouldReset) {
+            XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
+            xmlPlatform.setDisableSecureProcessing(isSecureProcessingDisabled());
+            xmlParser = xmlPlatform.newXMLParser();
+            xmlParser.setNamespaceAware(true);
+            if (null != errorHandler) {
+                xmlParser.setErrorHandler(errorHandler);
+            }
+            if (null != entityResolver) {
+                xmlParser.setEntityResolver(entityResolver);
+            }
+            xmlParser.setValidationMode(validationMode);
+            xmlParser.setWhitespacePreserving(isWhitespacePreserving);
+            shouldReset = false;
         }
-        if(null != entityResolver) {
-            xmlParser.setEntityResolver(entityResolver);
-        }
-        xmlParser.setValidationMode(validationMode);
-        xmlParser.setWhitespacePreserving(isWhitespacePreserving);
         return xmlParser;
     }
 
     private XMLReader getXMLReader() {
-    	return getXMLReader(null);
+        return getXMLReader(null);
     }
-    
+
     private XMLReader getXMLReader(Class clazz) {
-        if(null == xmlReader) {        	
-        	 xmlReader = getNewXMLReader(clazz, xmlUnmarshaller.getMediaType() );
+        if (null == xmlReader) {
+            xmlReader = getNewXMLReader(clazz, xmlUnmarshaller.getMediaType());
         }
         return xmlReader;
     }
-    
+
     private XMLReader getNewXMLReader(MediaType mediaType) {
-	return getNewXMLReader(null, mediaType);
+        return getNewXMLReader(null, mediaType);
     }
 
     private XMLReader getNewXMLReader(Class clazz, MediaType mediaType) {
 
-		if(null != mediaType && mediaType.isApplicationJSON()){
+        if (null != mediaType && mediaType.isApplicationJSON()) {
             return new JsonStructureReader(xmlUnmarshaller, clazz);
-		}
-            try {
-		XMLReader xmlReader = new XMLReader(getSAXParser().getXMLReader());
-                if(null != errorHandler) {
-                    xmlReader.setErrorHandler(errorHandler);
-                }
-                if(null != entityResolver) {
-                    xmlReader.setEntityResolver(entityResolver);
-                }
-                setValidationMode(xmlReader, getValidationMode());
-                if(null != getSchema()) {
-                    xmlReader.setFeature(VALIDATING, xmlReader.getFeature(VALIDATING));
-                }
-                return xmlReader;
-            } catch (Exception e) {
-                throw XMLMarshalException.errorInstantiatingSchemaPlatform(e);
+        }
+        try {
+            XMLReader xmlReader = new XMLReader(getSAXParser().getXMLReader());
+            if (null != errorHandler) {
+                xmlReader.setErrorHandler(errorHandler);
             }
+            if (null != entityResolver) {
+                xmlReader.setEntityResolver(entityResolver);
+            }
+            setValidationMode(xmlReader, getValidationMode());
+            if (null != getSchema()) {
+                xmlReader.setFeature(VALIDATING, xmlReader.getFeature(VALIDATING));
+            }
+            return xmlReader;
+        } catch (Exception e) {
+            throw XMLMarshalException.errorInstantiatingSchemaPlatform(e);
+        }
     }
 
+    @Override
     public EntityResolver getEntityResolver() {
         return entityResolver;
     }
 
+    @Override
     public void setEntityResolver(EntityResolver entityResolver) {
-        if(null != xmlReader) {
+        if (null != xmlReader) {
             xmlReader.setEntityResolver(entityResolver);
         }
-        if(null != xmlParser) {
+        if (null != xmlParser) {
             xmlParser.setEntityResolver(entityResolver);
         }
         this.entityResolver = entityResolver;
     }
 
+    @Override
     public ErrorHandler getErrorHandler() {
         return errorHandler;
     }
 
+    @Override
     public void setErrorHandler(ErrorHandler errorHandler) {
-        if(null != xmlReader) {
+        if (null != xmlReader) {
             xmlReader.setErrorHandler(errorHandler);
         }
-        if(null != xmlParser) {
+        if (null != xmlParser) {
             xmlParser.setErrorHandler(errorHandler);
         }
         this.errorHandler = errorHandler;
     }
 
+    @Override
     public int getValidationMode() {
         return validationMode;
     }
 
+    @Override
     public void setValidationMode(int validationMode) {
-    	setValidationMode(xmlReader, validationMode);
+        setValidationMode(xmlReader, validationMode);
     }
 
     public void setValidationMode(XMLReader xmlReader, int validationMode) {
         try {
             this.validationMode = validationMode;
-            if(null != xmlParser) {
+            if (null != xmlParser) {
                 xmlParser.setValidationMode(validationMode);
             }
-            if(null == xmlReader) {
+            if (null == xmlReader) {
                 return;
             }
             switch (validationMode) {
@@ -269,11 +284,13 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             }
             case XMLParser.DTD_VALIDATION: {
                 xmlReader.setFeature(VALIDATING, true);
+                XMLHelper.allowExternalDTDAccess(xmlReader, "all", false);
                 break;
             }
             case XMLParser.SCHEMA_VALIDATION: {
                 try {
                     xmlReader.setFeature(VALIDATING, true);
+                    XMLHelper.allowExternalAccess(xmlReader, "all", false);
                     saxParser.setProperty(SCHEMA_LANGUAGE, XML_SCHEMA);
                     saxParser.setProperty(SCHEMA_SOURCE, schemas);
                 } catch (Exception e) {
@@ -286,29 +303,34 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             // Don't change the validation mode.
         }
     }
-    
+
+    @Override
     public void setWhitespacePreserving(boolean isWhitespacePreserving) {
-        this.isWhitespacePreserving =  isWhitespacePreserving;
-        if(null != xmlParser) {
+        this.isWhitespacePreserving = isWhitespacePreserving;
+        if (null != xmlParser) {
             xmlParser.setWhitespacePreserving(isWhitespacePreserving);
         }
     }
 
+    @Override
     public void setSchemas(Object[] schemas) {
         this.schemas = schemas;
     }
 
+    @Override
     public void setSchema(Schema schema) {
         this.schema = schema;
-        if(null != xmlParser) {
+        if (null != xmlParser) {
             xmlParser.setXMLSchema(schema);
         }
     }
-    
+
+    @Override
     public Schema getSchema() {
         return schema;
     }
 
+    @Override
     public Object unmarshal(File file) {
         try {
             if (xmlUnmarshaller.getContext().hasDocumentPreservation()) {
@@ -329,10 +351,11 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         } catch (IOException e) {
             throw XMLMarshalException.unmarshalException(e);
         } finally {
-        	xmlUnmarshaller.getStringBuffer().reset();
+            xmlUnmarshaller.getStringBuffer().reset();
         }
     }
 
+    @Override
     public Object unmarshal(File file, Class clazz) {
         try {
             if (xmlUnmarshaller.getContext().hasDocumentPreservation()) {
@@ -353,10 +376,11 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         } catch (IOException e) {
             throw XMLMarshalException.unmarshalException(e);
         } finally {
-        	xmlUnmarshaller.getStringBuffer().reset();
+            xmlUnmarshaller.getStringBuffer().reset();
         }
     }
 
+    @Override
     public Object unmarshal(InputStream inputStream) {
         if (xmlUnmarshaller.getContext().hasDocumentPreservation()) {
             Node domElement = getXMLParser().parse(inputStream).getDocumentElement();
@@ -366,6 +390,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         return unmarshal(inputSource);
     }
 
+    @Override
     public Object unmarshal(InputStream inputStream, Class clazz) {
         if (xmlUnmarshaller.getContext().hasDocumentPreservation()) {
             Node domElement = getXMLParser().parse(inputStream).getDocumentElement();
@@ -375,15 +400,16 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         return unmarshal(inputSource, clazz);
     }
 
+    @Override
     public Object unmarshal(InputSource inputSource) {
         if (inputSource != null && null == inputSource.getSystemId()) {
             inputSource.setSystemId(this.systemId);
         }
-        
-        if(xmlUnmarshaller.isAutoDetectMediaType()){
-        	BufferedReader bufferedReader = getBufferedReaderForInputSource(inputSource);        	
-        	MediaType mediaType = getMediaType(bufferedReader);				
-            return unmarshal(getNewXMLReader(mediaType), new InputSource(bufferedReader));			
+
+        if (xmlUnmarshaller.isAutoDetectMediaType()) {
+            BufferedReader bufferedReader = getBufferedReaderForInputSource(inputSource);
+            MediaType mediaType = getMediaType(bufferedReader);
+            return unmarshal(getNewXMLReader(mediaType), new InputSource(bufferedReader));
         }
         return unmarshal(getXMLReader(), inputSource);
     }
@@ -408,19 +434,20 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         } catch (SAXException e) {
             throw convertSAXException(e);
         } finally {
-        	xmlUnmarshaller.getStringBuffer().reset();
+            xmlUnmarshaller.getStringBuffer().reset();
         }
     }
 
+    @Override
     public Object unmarshal(InputSource inputSource, Class clazz) {
         if (inputSource != null && null == inputSource.getSystemId()) {
             inputSource.setSystemId(this.systemId);
         }
 
-        if(xmlUnmarshaller.isAutoDetectMediaType()){
-        	BufferedReader bufferedReader = getBufferedReaderForInputSource(inputSource);        	
-        	MediaType mediaType = getMediaType(bufferedReader);				
-            return unmarshal(getNewXMLReader(clazz, mediaType), new InputSource(bufferedReader), clazz);        	 
+        if (xmlUnmarshaller.isAutoDetectMediaType()) {
+            BufferedReader bufferedReader = getBufferedReaderForInputSource(inputSource);
+            MediaType mediaType = getMediaType(bufferedReader);
+            return unmarshal(getNewXMLReader(clazz, mediaType), new InputSource(bufferedReader), clazz);
         }
         return unmarshal(getXMLReader(clazz), inputSource, clazz);
     }
@@ -429,28 +456,28 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         if (inputSource != null && null == inputSource.getSystemId()) {
             inputSource.setSystemId(this.systemId);
         }
-        
-        UnmarshalRecord unmarshalRecord =null;
+
+        UnmarshalRecord unmarshalRecord = null;
         Descriptor xmlDescriptor = null;
 
         // for XMLObjectReferenceMappings we need a non-shared cache, so
         // try and get a Unit Of Work from the XMLContext
         CoreAbstractSession session = null;
 
-        // check for case where the reference class is a primitive wrapper - in this case, we 
-        // need to use the conversion manager to convert the node's value to the primitive 
-        // wrapper class, then create, populate and return an XMLRoot.  This will be done
+        // check for case where the reference class is a primitive wrapper - in this case, we
+        // need to use the conversion manager to convert the node's value to the primitive
+        // wrapper class, then create, populate and return an XMLRoot. This will be done
         // via XMLRootRecord.
         boolean isPrimitiveWrapper = false;
-        if(clazz == CoreClassConstants.OBJECT) {
-    	    try{
+        if (clazz == CoreClassConstants.OBJECT) {
+            try {
                 SAXUnmarshallerHandler saxUnmarshallerHandler = new SAXUnmarshallerHandler(xmlUnmarshaller.getContext());
                 saxUnmarshallerHandler.setXMLReader(xmlReader);
                 saxUnmarshallerHandler.setUnmarshaller(xmlUnmarshaller);
                 saxUnmarshallerHandler.setKeepAsElementPolicy(KEEP_UNKNOWN_AS_ELEMENT);
                 setContentHandler(xmlReader, saxUnmarshallerHandler);
                 xmlReader.parse(inputSource);
-            
+
                 // resolve any mapping references
                 saxUnmarshallerHandler.resolveReferences();
                 return saxUnmarshallerHandler.getObject();
@@ -462,26 +489,25 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         } else {
             // for XMLObjectReferenceMappings we need a non-shared cache, so
             // try and get a Unit Of Work from the XMLContext
-        	try{
-            session = xmlUnmarshaller.getContext().getSession(clazz);
-            xmlDescriptor = (Descriptor)session.getDescriptor(clazz);
-            unmarshalRecord = xmlUnmarshaller.createUnmarshalRecord(xmlDescriptor, session);
+            try {
+                session = xmlUnmarshaller.getContext().getSession(clazz);
+                xmlDescriptor = (Descriptor) session.getDescriptor(clazz);
+                unmarshalRecord = xmlUnmarshaller.createUnmarshalRecord(xmlDescriptor, session);
 
-            
-        	}catch(XMLMarshalException xme){
-        		if(xme.getErrorCode() == XMLMarshalException.DESCRIPTOR_NOT_FOUND_IN_PROJECT){            			 
- 	                isPrimitiveWrapper = isPrimitiveWrapper(clazz);
- 	                if (isPrimitiveWrapper) {
- 	                       unmarshalRecord = xmlUnmarshaller.createRootUnmarshalRecord(clazz);
- 	                }else{
- 	                	throw xme;
- 	                }
- 	                
-        		}else{
-        		   throw xme;
-        		}
-               
-        	}           
+            } catch (XMLMarshalException xme) {
+                if (xme.getErrorCode() == XMLMarshalException.DESCRIPTOR_NOT_FOUND_IN_PROJECT) {
+                    isPrimitiveWrapper = isPrimitiveWrapper(clazz);
+                    if (isPrimitiveWrapper) {
+                        unmarshalRecord = xmlUnmarshaller.createRootUnmarshalRecord(clazz);
+                    } else {
+                        throw xme;
+                    }
+
+                } else {
+                    throw xme;
+                }
+
+            }
         }
 
         try {
@@ -495,7 +521,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         } catch (SAXException e) {
             throw convertSAXException(e);
         } finally {
-        	xmlUnmarshaller.getStringBuffer().reset();
+            xmlUnmarshaller.getStringBuffer().reset();
         }
 
         // resolve mapping references
@@ -507,6 +533,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         return xmlDescriptor.wrapObjectInXMLRoot(unmarshalRecord, this.isResultAlwaysXMLRoot);
     }
 
+    @Override
     public Object unmarshal(Node node) {
         DOMReader reader = new DOMReader(xmlUnmarshaller);
         return unmarshal(reader, node);
@@ -520,17 +547,17 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             handler.setUnmarshaller(xmlUnmarshaller);
             reader.parse(node);
 
-
             handler.resolveReferences();
             return handler.getObject();
         } catch (SAXException e) {
             throw convertSAXException(e);
         } finally {
-        	xmlUnmarshaller.getStringBuffer().reset();
+            xmlUnmarshaller.getStringBuffer().reset();
         }
 
     }
 
+    @Override
     public Object unmarshal(Node node, Class clazz) {
         DOMReader reader = new DOMReader(xmlUnmarshaller);
         return unmarshal(reader, node, clazz);
@@ -542,18 +569,18 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
 
         CoreAbstractSession session = null;
 
-        // check for case where the reference class is a primitive wrapper - in this case, we 
-        // need to use the conversion manager to convert the node's value to the primitive 
+        // check for case where the reference class is a primitive wrapper - in this case, we
+        // need to use the conversion manager to convert the node's value to the primitive
         // wrapper class, then create, populate and return an XMLRoot.  This will be done
         // via XMLRootRecord.
         boolean isPrimitiveWrapper = false;
-if(clazz == CoreClassConstants.OBJECT) {
+        if (clazz == CoreClassConstants.OBJECT) {
             SAXUnmarshallerHandler saxUnmarshallerHandler = new SAXUnmarshallerHandler(xmlUnmarshaller.getContext());
             saxUnmarshallerHandler.setXMLReader(domReader);
             saxUnmarshallerHandler.setUnmarshaller(xmlUnmarshaller);
             saxUnmarshallerHandler.setKeepAsElementPolicy(KEEP_UNKNOWN_AS_ELEMENT);
             setContentHandler(domReader, saxUnmarshallerHandler);
-            try{
+            try {
                 domReader.parse(node);
             } catch (SAXException e) {
                 throw convertSAXException(e);
@@ -565,25 +592,25 @@ if(clazz == CoreClassConstants.OBJECT) {
         } else {
             // for XMLObjectReferenceMappings we need a non-shared cache, so
             // try and get a Unit Of Work from the XMLContext
-            try{
+            try {
                 session = xmlUnmarshaller.getContext().getSession(clazz);
                 xmlDescriptor = (Descriptor) session.getDescriptor(clazz);
                 unmarshalRecord = xmlUnmarshaller.createUnmarshalRecord(xmlDescriptor, session);
-            }catch(XMLMarshalException xme){
-                if(xme.getErrorCode() == XMLMarshalException.DESCRIPTOR_NOT_FOUND_IN_PROJECT){            			 
+            } catch (XMLMarshalException xme) {
+                if (xme.getErrorCode() == XMLMarshalException.DESCRIPTOR_NOT_FOUND_IN_PROJECT) {
                     isPrimitiveWrapper = isPrimitiveWrapper(clazz);
                     if (isPrimitiveWrapper) {
                         unmarshalRecord = xmlUnmarshaller.createRootUnmarshalRecord(clazz);
-                    }else if (Node.class.isAssignableFrom(clazz)) {
-                          return createXMLRootForNode(node);
-                    }else{
+                    } else if (Node.class.isAssignableFrom(clazz)) {
+                        return createXMLRootForNode(node);
+                    } else {
                         throw xme;
                     }
-                    
-                }else{
+
+                } else {
                     throw xme;
                 }
-               
+
             }
         }
         try {
@@ -595,7 +622,7 @@ if(clazz == CoreClassConstants.OBJECT) {
         } catch (SAXException e) {
             throw convertSAXException(e);
         } finally {
-        	xmlUnmarshaller.getStringBuffer().reset();
+            xmlUnmarshaller.getStringBuffer().reset();
         }
 
         // resolve mapping references
@@ -606,17 +633,18 @@ if(clazz == CoreClassConstants.OBJECT) {
         }
         return xmlDescriptor.wrapObjectInXMLRoot(unmarshalRecord, this.isResultAlwaysXMLRoot);
     }
-    
+
     private Object createXMLRootForNode(Node node) {
         Root xmlRoot = xmlUnmarshaller.createRoot();
-    	xmlRoot.setObject(node);
-    	if (node != null) {
-    	    xmlRoot.setLocalName(node.getLocalName());
-    	    xmlRoot.setNamespaceURI(node.getNamespaceURI());
-    	}
-    	return xmlRoot;
+        xmlRoot.setObject(node);
+        if (node != null) {
+            xmlRoot.setLocalName(node.getLocalName());
+            xmlRoot.setNamespaceURI(node.getNamespaceURI());
+        }
+        return xmlRoot;
     }
 
+    @Override
     public Object unmarshal(Reader reader) {
         if (xmlUnmarshaller.getContext().hasDocumentPreservation()) {
             Node domElement = getXMLParser().parse(reader).getDocumentElement();
@@ -626,6 +654,7 @@ if(clazz == CoreClassConstants.OBJECT) {
         return unmarshal(inputSource);
     }
 
+    @Override
     public Object unmarshal(Reader reader, Class clazz) {
         if (xmlUnmarshaller.getContext().hasDocumentPreservation()) {
             Node domElement = getXMLParser().parse(reader).getDocumentElement();
@@ -635,57 +664,61 @@ if(clazz == CoreClassConstants.OBJECT) {
         return unmarshal(inputSource, clazz);
     }
 
-    public Object unmarshal(Source source) {    	
-    	try{
-	        if (source instanceof SAXSource) {
-	            SAXSource saxSource = (SAXSource) source;
-	            XMLReader xmlReader = null;
-	            if (saxSource.getXMLReader() != null) {
-	                if(saxSource.getXMLReader() instanceof XMLReader) {
-	                    xmlReader = (XMLReader) saxSource.getXMLReader();
-	                } else {
-	                    xmlReader = new XMLReader(saxSource.getXMLReader());
-	                }
-	                setValidatorHandler(xmlReader);
-	            }
-	            if (null == xmlReader) {
-	                return unmarshal(saxSource.getInputSource());
-	            } else {
-	                return unmarshal(saxSource.getInputSource(), xmlReader);
-	            }
-	        } else if (source instanceof DOMSource) {
-	            DOMSource domSource = (DOMSource) source;
-	            return unmarshal(domSource.getNode());
-	        } else if (source instanceof StreamSource) {
-	            StreamSource streamSource = (StreamSource) source;
-	            if (null != streamSource.getReader()) {
-	                return unmarshal(streamSource.getReader());
-	            } else if (null != streamSource.getInputStream()) {
-	                return unmarshal(streamSource.getInputStream());
-	            } else {
-	                return unmarshal(streamSource.getSystemId());
-	            }
-	        } else if (source instanceof ExtendedSource){
-	        	ExtendedSource extendedSource = (ExtendedSource)source;
-	        	return unmarshal(null, extendedSource.createReader(xmlUnmarshaller));
-	        } else {
-	        	UnmarshallerHandler handler = this.xmlUnmarshaller.getUnmarshallerHandler();
-	        	XMLTransformer transformer = XMLPlatformFactory.getInstance().getXMLPlatform().newXMLTransformer();
-	        	SAXResult result = new SAXResult(handler);
-	        	transformer.transform(source, result);
-	        	return handler.getResult();        	
-	        }
-    	}finally {
-        	xmlUnmarshaller.getStringBuffer().reset();
+    @Override
+    public Object unmarshal(Source source) {
+        try {
+            if (source instanceof SAXSource) {
+                SAXSource saxSource = (SAXSource) source;
+                XMLReader xmlReader = null;
+                if (saxSource.getXMLReader() != null) {
+                    if (saxSource.getXMLReader() instanceof XMLReader) {
+                        xmlReader = (XMLReader) saxSource.getXMLReader();
+                    } else {
+                        xmlReader = new XMLReader(saxSource.getXMLReader());
+                    }
+                    setValidatorHandler(xmlReader);
+                }
+                if (null == xmlReader) {
+                    return unmarshal(saxSource.getInputSource());
+                } else {
+                    return unmarshal(saxSource.getInputSource(), xmlReader);
+                }
+            } else if (source instanceof DOMSource) {
+                DOMSource domSource = (DOMSource) source;
+                return unmarshal(domSource.getNode());
+            } else if (source instanceof StreamSource) {
+                StreamSource streamSource = (StreamSource) source;
+                if (null != streamSource.getReader()) {
+                    return unmarshal(streamSource.getReader());
+                } else if (null != streamSource.getInputStream()) {
+                    return unmarshal(streamSource.getInputStream());
+                } else {
+                    return unmarshal(streamSource.getSystemId());
+                }
+            } else if (source instanceof ExtendedSource) {
+                ExtendedSource extendedSource = (ExtendedSource) source;
+                return unmarshal(null, extendedSource.createReader(xmlUnmarshaller));
+            } else {
+                UnmarshallerHandler handler = this.xmlUnmarshaller.getUnmarshallerHandler();
+                XMLPlatform xmlPlat = XMLPlatformFactory.getInstance().getXMLPlatform();
+                xmlPlat.setDisableSecureProcessing(isSecureProcessingDisabled());
+                XMLTransformer transformer = xmlPLatform.newXMLTransformer();
+                SAXResult result = new SAXResult(handler);
+                transformer.transform(source, result);
+                return handler.getResult();
+            }
+        } finally {
+            xmlUnmarshaller.getStringBuffer().reset();
         }
     }
 
+    @Override
     public Object unmarshal(Source source, Class clazz) {
         if (source instanceof SAXSource) {
             SAXSource saxSource = (SAXSource) source;
             XMLReader xmlReader = null;
             if (saxSource.getXMLReader() != null) {
-                if(saxSource.getXMLReader() instanceof XMLReader) {
+                if (saxSource.getXMLReader() instanceof XMLReader) {
                     xmlReader = (XMLReader) saxSource.getXMLReader();
                 } else {
                     xmlReader = new XMLReader(saxSource.getXMLReader());
@@ -698,29 +731,32 @@ if(clazz == CoreClassConstants.OBJECT) {
                 return unmarshal(saxSource.getInputSource(), clazz, xmlReader);
             }
         } else if (source instanceof DOMSource) {
-            DOMSource domSource = (DOMSource) source;           
+            DOMSource domSource = (DOMSource) source;
             return unmarshal(domSource.getNode(), clazz);
         } else if (source instanceof StreamSource) {
             StreamSource streamSource = (StreamSource) source;
             if (null != streamSource.getReader()) {
-          	return unmarshal(streamSource.getReader(), clazz);	
+                return unmarshal(streamSource.getReader(), clazz);
             } else if (null != streamSource.getInputStream()) {
-            	return unmarshal(streamSource.getInputStream(), clazz);
+                return unmarshal(streamSource.getInputStream(), clazz);
             } else {
-            	return unmarshal(streamSource.getSystemId(), clazz);
+                return unmarshal(streamSource.getSystemId(), clazz);
             }
-        } else if(source instanceof ExtendedSource){
-            ExtendedSource extendedSource = (ExtendedSource)source;
-            return unmarshal(null, clazz, extendedSource.createReader(xmlUnmarshaller, clazz));     
+        } else if (source instanceof ExtendedSource) {
+            ExtendedSource extendedSource = (ExtendedSource) source;
+            return unmarshal(null, clazz, extendedSource.createReader(xmlUnmarshaller, clazz));
         } else {
-        	DOMResult result = new DOMResult();
-        	XMLTransformer transformer = XMLPlatformFactory.getInstance().getXMLPlatform().newXMLTransformer();
-        	transformer.transform(source, result);
-        	return unmarshal(result.getNode(), clazz);
-        	
+            DOMResult result = new DOMResult();
+            XMLPlatform xmlPlat = XMLPlatformFactory.getInstance().getXMLPlatform();
+            xmlPlat.setDisableSecureProcessing(isSecureProcessingDisabled());
+            XMLTransformer transformer = xmlPLatform.newXMLTransformer();
+            transformer.transform(source, result);
+            return unmarshal(result.getNode(), clazz);
+
         }
     }
 
+    @Override
     public Object unmarshal(URL url) {
         InputStream inputStream = null;
         try {
@@ -738,9 +774,9 @@ if(clazz == CoreClassConstants.OBJECT) {
             hasThrownException = true;
             throw runtimeException;
         } finally {
-        	xmlUnmarshaller.getStringBuffer().reset();
+            xmlUnmarshaller.getStringBuffer().reset();
             try {
-                inputStream.close();                              
+                inputStream.close();
             } catch (IOException e) {
                 if (!hasThrownException) {
                     throw XMLMarshalException.unmarshalException(e);
@@ -749,33 +785,34 @@ if(clazz == CoreClassConstants.OBJECT) {
         }
     }
 
+    @Override
     public Object unmarshal(URL url, Class clazz) {
-    	InputStream inputStream = null;
+        InputStream inputStream = null;
         try {
             inputStream = url.openStream();
-        }catch (IOException e) {
+        } catch (IOException e) {
             throw XMLMarshalException.unmarshalException(e);
-        }            
+        }
         this.systemId = url.toExternalForm();
         try {
-            return unmarshal(inputStream, clazz);                        
-        }  finally {
-        	xmlUnmarshaller.getStringBuffer().reset();
-        	try{
-        	    inputStream.close();
-        	}catch (IOException e) {
+            return unmarshal(inputStream, clazz);
+        } finally {
+            xmlUnmarshaller.getStringBuffer().reset();
+            try {
+                inputStream.close();
+            } catch (IOException e) {
                 throw XMLMarshalException.unmarshalException(e);
             }
         }
     }
 
     public Object unmarshal(String systemId) {
-        try {        	
-            if(xmlUnmarshaller.isAutoDetectMediaType()){
-            	InputSource inputSource = new InputSource(systemId);                
-                return unmarshal(inputSource);        	     	
+        try {
+            if (xmlUnmarshaller.isAutoDetectMediaType()) {
+                InputSource inputSource = new InputSource(systemId);
+                return unmarshal(inputSource);
             }
-        	
+
             XMLReader xmlReader = getXMLReader();
             SAXUnmarshallerHandler saxUnmarshallerHandler = new SAXUnmarshallerHandler(xmlUnmarshaller.getContext());
             saxUnmarshallerHandler.setXMLReader(xmlReader);
@@ -791,27 +828,27 @@ if(clazz == CoreClassConstants.OBJECT) {
         } catch (SAXException e) {
             throw convertSAXException(e);
         } finally {
-        	xmlUnmarshaller.getStringBuffer().reset();
+            xmlUnmarshaller.getStringBuffer().reset();
         }
     }
 
     public Object unmarshal(String systemId, Class clazz) {
-    	if(xmlUnmarshaller.isAutoDetectMediaType()){   
-            return unmarshal(new InputSource(systemId), clazz);        	     	
+        if (xmlUnmarshaller.isAutoDetectMediaType()) {
+            return unmarshal(new InputSource(systemId), clazz);
         }
-    
+
         UnmarshalRecord unmarshalRecord = null;
         boolean isPrimitiveWrapper = false;
         Descriptor xmlDescriptor = null;
 
         CoreAbstractSession session = null;
 
-        // check for case where the reference class is a primitive wrapper - in this case, we 
-        // need to use the conversion manager to convert the node's value to the primitive 
-        // wrapper class, then create, populate and return an XMLRoot.  This will be done
+        // check for case where the reference class is a primitive wrapper - in this case, we
+        // need to use the conversion manager to convert the node's value to the primitive
+        // wrapper class, then create, populate and return an XMLRoot. This will be done
         // via XMLRootRecord.
-if(clazz == CoreClassConstants.OBJECT) {
-           
+        if (clazz == CoreClassConstants.OBJECT) {
+
             SAXUnmarshallerHandler saxUnmarshallerHandler = new SAXUnmarshallerHandler(xmlUnmarshaller.getContext());
             try {
                 XMLReader xmlReader = getXMLReader(clazz);
@@ -825,7 +862,7 @@ if(clazz == CoreClassConstants.OBJECT) {
             } catch (SAXException e) {
                 throw convertSAXException(e);
             } finally {
-            	xmlUnmarshaller.getStringBuffer().reset();
+                xmlUnmarshaller.getStringBuffer().reset();
             }
             // resolve any mapping references
             saxUnmarshallerHandler.resolveReferences();
@@ -833,25 +870,25 @@ if(clazz == CoreClassConstants.OBJECT) {
         } else {
             // for XMLObjectReferenceMappings we need a non-shared cache, so
             // try and get a Unit Of Work from the XMLContext
-        	try{
-            session = xmlUnmarshaller.getContext().getSession(clazz);
-            xmlDescriptor = (Descriptor) session.getDescriptor(clazz);
-            unmarshalRecord = xmlUnmarshaller.createUnmarshalRecord(xmlDescriptor, session);
-        	}catch(XMLMarshalException xme){
-        		if(xme.getErrorCode() == XMLMarshalException.DESCRIPTOR_NOT_FOUND_IN_PROJECT){            			 
- 	                isPrimitiveWrapper = isPrimitiveWrapper(clazz);
- 	                if (isPrimitiveWrapper) {
- 	                       unmarshalRecord = xmlUnmarshaller.createRootUnmarshalRecord(clazz);
- 	                }else{
- 	                	throw xme;
- 	                }
- 	                
-        		}else{
-        		   throw xme;
-        		}
-        		
-        	}
-            
+            try {
+                session = xmlUnmarshaller.getContext().getSession(clazz);
+                xmlDescriptor = (Descriptor) session.getDescriptor(clazz);
+                unmarshalRecord = xmlUnmarshaller.createUnmarshalRecord(xmlDescriptor, session);
+            } catch (XMLMarshalException xme) {
+                if (xme.getErrorCode() == XMLMarshalException.DESCRIPTOR_NOT_FOUND_IN_PROJECT) {
+                    isPrimitiveWrapper = isPrimitiveWrapper(clazz);
+                    if (isPrimitiveWrapper) {
+                        unmarshalRecord = xmlUnmarshaller.createRootUnmarshalRecord(clazz);
+                    } else {
+                        throw xme;
+                    }
+
+                } else {
+                    throw xme;
+                }
+
+            }
+
         }
 
         try {
@@ -866,12 +903,11 @@ if(clazz == CoreClassConstants.OBJECT) {
         } catch (SAXException e) {
             throw convertSAXException(e);
         } finally {
-        	xmlUnmarshaller.getStringBuffer().reset();
+            xmlUnmarshaller.getStringBuffer().reset();
         }
 
         // resolve mapping references
         unmarshalRecord.resolveReferences(session, xmlUnmarshaller.getIDResolver());
-        
 
         if (isPrimitiveWrapper) {
             return unmarshalRecord.getCurrentObject();
@@ -879,17 +915,18 @@ if(clazz == CoreClassConstants.OBJECT) {
         return xmlDescriptor.wrapObjectInXMLRoot(unmarshalRecord, this.isResultAlwaysXMLRoot);
     }
 
+    @Override
     public Object unmarshal(org.xml.sax.XMLReader xmlReader, InputSource inputSource) {
         try {
             Context xmlContext = xmlUnmarshaller.getContext();
             if (xmlContext.hasDocumentPreservation()) {
                 SAXDocumentBuilder saxDocumentBuilder = new SAXDocumentBuilder();
                 xmlReader.setContentHandler(saxDocumentBuilder);
-                xmlReader.parse(inputSource);                
+                xmlReader.parse(inputSource);
                 return unmarshal(saxDocumentBuilder.getDocument().getDocumentElement());
             }
             XMLReader extendedXMLReader;
-            if(xmlReader instanceof XMLReader) {
+            if (xmlReader instanceof XMLReader) {
                 extendedXMLReader = (XMLReader) xmlReader;
             } else {
                 extendedXMLReader = new XMLReader(xmlReader);
@@ -908,10 +945,11 @@ if(clazz == CoreClassConstants.OBJECT) {
         } catch (SAXException e) {
             throw convertSAXException(e);
         } finally {
-        	xmlUnmarshaller.getStringBuffer().reset();
+            xmlUnmarshaller.getStringBuffer().reset();
         }
     }
 
+    @Override
     public Object unmarshal(org.xml.sax.XMLReader xmlReader, InputSource inputSource, Class clazz) {
         try {
             Context xmlContext = xmlUnmarshaller.getContext();
@@ -922,19 +960,19 @@ if(clazz == CoreClassConstants.OBJECT) {
                 xmlReader.parse(inputSource);
                 return unmarshal(saxDocumentBuilder.getDocument().getDocumentElement(), clazz);
             }
-            
+
             UnmarshalRecord unmarshalRecord = null;
             Descriptor xmlDescriptor = null;
 
             CoreAbstractSession session = null;
             boolean isPrimitiveWrapper = false;
-            // check for case where the reference class is a primitive wrapper - in this case, we 
-            // need to use the conversion manager to convert the node's value to the primitive 
+            // check for case where the reference class is a primitive wrapper - in this case, we
+            // need to use the conversion manager to convert the node's value to the primitive
             // wrapper class, then create, populate and return an XMLRoot.  This will be done
             // via XMLRootRecord.
-if(clazz == CoreClassConstants.OBJECT) {
+            if (clazz == CoreClassConstants.OBJECT) {
                 SAXUnmarshallerHandler saxUnmarshallerHandler = new SAXUnmarshallerHandler(xmlUnmarshaller.getContext());
-                saxUnmarshallerHandler.setXMLReader((XMLReader)xmlReader);
+                saxUnmarshallerHandler.setXMLReader((XMLReader) xmlReader);
                 saxUnmarshallerHandler.setUnmarshaller(xmlUnmarshaller);
                 saxUnmarshallerHandler.setKeepAsElementPolicy(KEEP_UNKNOWN_AS_ELEMENT);
                 xmlReader.setContentHandler(saxUnmarshallerHandler);
@@ -946,27 +984,27 @@ if(clazz == CoreClassConstants.OBJECT) {
             } else {
                 // for XMLObjectReferenceMappings we need a non-shared cache, so
                 // try and get a Unit Of Work from the XMLContext
-            	try{
-                session = xmlContext.getSession(clazz);
-                xmlDescriptor = (Descriptor) session.getDescriptor(clazz);
-                unmarshalRecord = xmlUnmarshaller.createUnmarshalRecord(xmlDescriptor, session); 
-            	}catch(XMLMarshalException xme){            		
-            		if(xme.getErrorCode() == XMLMarshalException.DESCRIPTOR_NOT_FOUND_IN_PROJECT){            			 
-     	                isPrimitiveWrapper = isPrimitiveWrapper(clazz);
-     	                if (isPrimitiveWrapper) {
-     	                       unmarshalRecord = xmlUnmarshaller.createRootUnmarshalRecord(clazz);
-     	                }else{
-     	                	throw xme;
-     	                }
-     	                
-            		}else{
-            		   throw xme;
-            		}
-	               
-            	}
+                try {
+                    session = xmlContext.getSession(clazz);
+                    xmlDescriptor = (Descriptor) session.getDescriptor(clazz);
+                    unmarshalRecord = xmlUnmarshaller.createUnmarshalRecord(xmlDescriptor, session);
+                } catch (XMLMarshalException xme) {
+                    if (xme.getErrorCode() == XMLMarshalException.DESCRIPTOR_NOT_FOUND_IN_PROJECT) {
+                        isPrimitiveWrapper = isPrimitiveWrapper(clazz);
+                        if (isPrimitiveWrapper) {
+                            unmarshalRecord = xmlUnmarshaller.createRootUnmarshalRecord(clazz);
+                        } else {
+                            throw xme;
+                        }
+
+                    } else {
+                        throw xme;
+                    }
+
+                }
             }
             XMLReader extendedXMLReader;
-            if(xmlReader instanceof XMLReader) {
+            if (xmlReader instanceof XMLReader) {
                 extendedXMLReader = (XMLReader) xmlReader;
             } else {
                 extendedXMLReader = new XMLReader(xmlReader);
@@ -989,7 +1027,7 @@ if(clazz == CoreClassConstants.OBJECT) {
         } catch (SAXException e) {
             throw convertSAXException(e);
         } finally {
-        	xmlUnmarshaller.getStringBuffer().reset();
+            xmlUnmarshaller.getStringBuffer().reset();
         }
     }
 
@@ -1005,18 +1043,20 @@ if(clazz == CoreClassConstants.OBJECT) {
         return XMLMarshalException.unmarshalException(saxException);
     }
 
+    @Override
     public boolean isResultAlwaysXMLRoot() {
         return this.isResultAlwaysXMLRoot;
     }
 
+    @Override
     public void setResultAlwaysXMLRoot(boolean alwaysReturnRoot) {
         this.isResultAlwaysXMLRoot = alwaysReturnRoot;
     }
-    
-    private boolean isPrimitiveWrapper(Class clazz){
-	    return ((ConversionManager) xmlUnmarshaller.getContext().getSession().getDatasourcePlatform().getConversionManager()).schemaType(clazz) != null    
-	    ||CoreClassConstants.XML_GREGORIAN_CALENDAR.isAssignableFrom(clazz)
-	    ||CoreClassConstants.DURATION.isAssignableFrom(clazz);
+
+    private boolean isPrimitiveWrapper(Class clazz) {
+        return ((ConversionManager) xmlUnmarshaller.getContext().getSession().getDatasourcePlatform().getConversionManager()).schemaType(clazz) != null
+                || CoreClassConstants.XML_GREGORIAN_CALENDAR.isAssignableFrom(clazz)
+                || CoreClassConstants.DURATION.isAssignableFrom(clazz);
     }
 
     /**
@@ -1027,7 +1067,7 @@ if(clazz == CoreClassConstants.OBJECT) {
         setValidatorHandler(xmlReader);
         xmlReader.setContentHandler(contentHandler);
     }
-    
+
     private void setValidatorHandler(XMLReader xmlReader) {
         Schema schema = getSchema();
         if (null != schema) {
@@ -1037,70 +1077,80 @@ if(clazz == CoreClassConstants.OBJECT) {
         }
     }
 
-	@Override
-	public void mediaTypeChanged() {
-         xmlReader = null;		
-	}
+    @Override
+    public void mediaTypeChanged() {
+        xmlReader = null;
+    }
 
-    private InputStream getInputStreamFromString(String stringValue){
-   	    if(stringValue.length() == 0) {
-   	    	throw org.eclipse.persistence.exceptions.XMLMarshalException.unmarshalFromStringException(stringValue, null);
+    private InputStream getInputStreamFromString(String stringValue) {
+        if (stringValue.length() == 0) {
+            throw org.eclipse.persistence.exceptions.XMLMarshalException.unmarshalFromStringException(stringValue, null);
         }
         URL url = null;
         try {
             url = new URL(stringValue);
-            if(url != null){
+            if (url != null) {
                 try {
-                   return url.openStream();
+                    return url.openStream();
                 } catch (IOException e) {
-              	  	throw org.eclipse.persistence.exceptions.XMLMarshalException.unmarshalFromStringException(stringValue, e);
+                    throw org.eclipse.persistence.exceptions.XMLMarshalException.unmarshalFromStringException(stringValue, e);
                 }
-            }   
-        } catch(MalformedURLException ex) {     
+            }
+        } catch (MalformedURLException ex) {
             try {
-                  return new FileInputStream(stringValue);
-            } catch (FileNotFoundException e) {            
-            	throw org.eclipse.persistence.exceptions.XMLMarshalException.unmarshalFromStringException(stringValue, e);
-            }          
-        }		
-	    throw org.eclipse.persistence.exceptions.XMLMarshalException.unmarshalFromStringException(stringValue, null);
-   }
+                return new FileInputStream(stringValue);
+            } catch (FileNotFoundException e) {
+                throw org.eclipse.persistence.exceptions.XMLMarshalException.unmarshalFromStringException(stringValue, e);
+            }
+        }
+        throw org.eclipse.persistence.exceptions.XMLMarshalException.unmarshalFromStringException(stringValue, null);
+    }
 
-	
-	private BufferedReader getBufferedReaderForInputSource(InputSource inputSource){
-   	    if(inputSource.getByteStream() != null){                	
-         	return new BufferedReader(new InputStreamReader(inputSource.getByteStream()));
-        }else if(inputSource.getCharacterStream() != null){
-        	return new BufferedReader(inputSource.getCharacterStream());
-        }else if (inputSource.getSystemId() != null){        	
-        	InputStream is = getInputStreamFromString(inputSource.getSystemId());        	
-			return new BufferedReader(new InputStreamReader(is));			
-        }   
-   	    throw XMLMarshalException.unmarshalException();
-	}
-	
-	private MediaType getMediaType(BufferedReader br) {
-	    	int READ_AHEAD_LIMIT = 25;
-	    	try{
-	    	    br.mark(READ_AHEAD_LIMIT);
-		    	try {
-		            char c = 0;
-		            for (int i = 0; c != -1 && i < READ_AHEAD_LIMIT; i++) {
-		                c = (char) br.read();
-		                if (c == '[' || c == '{') {
-		                    return Constants.APPLICATION_JSON;
-		                }else if (c == '<'){
-					return Constants.APPLICATION_XML;
-		                }
+    private BufferedReader getBufferedReaderForInputSource(InputSource inputSource) {
+        if (inputSource.getByteStream() != null) {
+            return new BufferedReader(new InputStreamReader(inputSource.getByteStream()));
+        } else if (inputSource.getCharacterStream() != null) {
+            return new BufferedReader(inputSource.getCharacterStream());
+        } else if (inputSource.getSystemId() != null) {
+            InputStream is = getInputStreamFromString(inputSource.getSystemId());
+            return new BufferedReader(new InputStreamReader(is));
+        }
+        throw XMLMarshalException.unmarshalException();
+    }
 
-		            }
+    private MediaType getMediaType(BufferedReader br) {
+        int READ_AHEAD_LIMIT = 25;
+        try {
+            br.mark(READ_AHEAD_LIMIT);
+            try {
+                char c = 0;
+                for (int i = 0; c != -1 && i < READ_AHEAD_LIMIT; i++) {
+                    c = (char) br.read();
+                    if (c == '[' || c == '{') {
+                        return Constants.APPLICATION_JSON;
+                    } else if (c == '<') {
+                        return Constants.APPLICATION_XML;
+                    }
 
-		        } finally {
-						br.reset();
-		        }
-		}catch(IOException ioException){
-			throw XMLMarshalException.unmarshalException(ioException);
-		}
-		return xmlUnmarshaller.getMediaType();
-	    }
+                }
+
+            } finally {
+                br.reset();
+            }
+        } catch (IOException ioException) {
+            throw XMLMarshalException.unmarshalException(ioException);
+        }
+        return xmlUnmarshaller.getMediaType();
+    }
+
+    @Override
+    public final boolean isSecureProcessingDisabled() {
+        return disableSecureProcessing;
+    }
+
+    @Override
+    public final void setDisableSecureProcessing(boolean disableSecureProcessing) {
+        shouldReset = this.disableSecureProcessing ^ disableSecureProcessing;
+        this.disableSecureProcessing = disableSecureProcessing;
+    }
 }
