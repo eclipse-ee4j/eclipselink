@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 IBM Corporation. All rights reserved.
+ * Copyright (c) 2015, 2016 IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -10,6 +10,8 @@
  * Contributors:
  *     01/06/2015 Rick Curtis
  *       - 55690: Move JNDIConnector lookup type to ServerPlatform.
+ *     03/15/2016 Jody Grassel
+ *       - 489794: Add WebSphere EJBEmbeddable platform test
  ******************************************************************************/
 package org.eclipse.persistence.jpa.test.server;
 
@@ -49,6 +51,10 @@ public class TestJNDIConnector {
     @Emf(name = "wasEmf", createTables = DDLGen.NONE, classes = { Employee.class }, properties = { @Property(
             name = "eclipselink.target-server", value = "WebSphere_7") })
     private EntityManagerFactory wasEmf;
+    
+    @Emf(name = "wasEJBEmbedEmf", createTables = DDLGen.NONE, classes = { Employee.class }, properties = { @Property(
+            name = "eclipselink.target-server", value = "WebSphere_EJBEmbeddable") })
+    private EntityManagerFactory wasEJBEmbeddableEmf;
 
     @Emf(name = "defaultEmf", createTables = DDLGen.NONE, classes = { Employee.class }, properties = {})
     private EntityManagerFactory defaultEmf;
@@ -69,6 +75,14 @@ public class TestJNDIConnector {
     @Test
     public void testWasTargetServerLookupType() {
         ServerSession session = ((EntityManagerFactoryImpl) wasEmf).getServerSession();
+        _connector.connect(new Properties(), session);
+
+        Assert.assertEquals(String.class, _handler.getParamType());
+    }
+
+    @Test
+    public void testWasEJBEmbeddableTargetServerLookupType() {
+        ServerSession session = ((EntityManagerFactoryImpl) wasEJBEmbeddableEmf).getServerSession();
         _connector.connect(new Properties(), session);
 
         Assert.assertEquals(String.class, _handler.getParamType());
