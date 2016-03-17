@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -18,6 +18,8 @@
  *       - 456067 : Added support for defining query timeout units
  *     09/28/2015 - Will Dazey
  *       - 478331 : Added support for defining local or server as the default locale for obtaining timestamps
+ *     03/11/2016 - Jody Grassel
+ *       - 489794 : Add support for WebSphere EJBEmbeddable platform.
  ******************************************************************************/
 package org.eclipse.persistence.internal.sessions;
 
@@ -583,6 +585,7 @@ public class PropertiesHandler {
                 {TargetServer.WebSphere, pcg + "was.WebSpherePlatform"},
                 {TargetServer.WebSphere_6_1, pcg + "was.WebSphere_6_1_Platform"},
                 {TargetServer.WebSphere_7, pcg + "was.WebSphere_7_Platform"},
+                {TargetServer.WebSphere_EJBEmbeddable, pcg + "was.WebSphere_EJBEmbeddable_Platform"},
                 {TargetServer.WebSphere_Liberty, pcg + "was.WebSphere_Liberty_Platform"},
                 {TargetServer.WebLogic, pcg + "wls.WebLogicPlatform"},
                 {TargetServer.WebLogic_9, pcg + "wls.WebLogic_9_Platform"},
