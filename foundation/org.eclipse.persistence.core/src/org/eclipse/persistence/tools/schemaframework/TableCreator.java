@@ -11,15 +11,21 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     02/04/2013-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.tools.schemaframework;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sequencing.TableSequence;
 import org.eclipse.persistence.sessions.DatabaseRecord;
@@ -475,6 +481,13 @@ public class TableCreator {
                             qualifier = session.getDatasourcePlatform().getTableQualifier();
                             if ((qualifier == null) || (qualifier.length() == 0)) {
                                 qualifier = session.getLogin().getUserName();
+                                // Oracle DB DS defined in WLS does not contain user name so it's stored in platform.
+                                if ((qualifier == null) || (qualifier.length() == 0)) {
+                                    final DatabasePlatform platform = session.getPlatform();
+                                    if (platform.supportsConnectionUserName()) {
+                                        qualifier = platform.getConnectionUserName();
+                                    }
+                                }
                             }
                         }
                         boolean checkSchema = (qualifier != null) && (qualifier.length() > 0);

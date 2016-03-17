@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -20,7 +20,7 @@
  *       - 389090: JPA 2.1 DDL Generation Support
  *     04/30/2014-2.6 Lukas Jungmann
  *       - 380101: Invalid MySQL SQL syntax in query with LIMIT and FOR UPDATE
- *     02/19/2015 - Rick Curtis  
+ *     02/19/2015 - Rick Curtis
  *       - 458877 : Add national character support
  *     02/23/2015-2.6 Dalia Abo Sheasha
  *       - 460607: Change DatabasePlatform StoredProcedureTerminationToken to be configurable
@@ -79,7 +79,9 @@ import org.eclipse.persistence.platform.database.AccessPlatform;
 import org.eclipse.persistence.platform.database.DB2Platform;
 import org.eclipse.persistence.platform.database.DBasePlatform;
 import org.eclipse.persistence.platform.database.OraclePlatform;
+import org.eclipse.persistence.platform.database.PostgreSQLPlatform;
 import org.eclipse.persistence.platform.database.SybasePlatform;
+import org.eclipse.persistence.platform.database.SymfowarePlatform;
 import org.eclipse.persistence.platform.database.converters.StructConverter;
 import org.eclipse.persistence.platform.database.partitioning.DataPartitioningCallback;
 import org.eclipse.persistence.queries.Call;
@@ -243,14 +245,13 @@ public class DatabasePlatform extends DatasourcePlatform {
      * stored within the DatabaseTable creationSuffix.  
      */
     protected String tableCreationSuffix;
-    
+
     /**
      * The delimiter between stored procedures in multiple stored procedure
      * calls.
      */
     protected String storedProcedureTerminationToken;
 
-    
     /**
      * Used to integrate with data partitioning in an external DataSource such as UCP.
      */
@@ -286,7 +287,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         this.useJDBCStoredProcedureSyntax = null;
         this.storedProcedureTerminationToken = ";";
     }
-    
+
     /**
      * Initialize operators to avoid concurrency issues.
      */
@@ -3461,6 +3462,25 @@ public class DatabasePlatform extends DatasourcePlatform {
      public void writeAddColumnClause(Writer writer, AbstractSession session, TableDefinition table, FieldDefinition field) throws IOException {
         writer.write("ADD ");
         field.appendDBString(writer, session, table);
-    }          
-    
+    }
+
+     /**
+      * INTERNAL:
+      * Override this method if the platform supports storing JDBC connection user name during
+      * {@link #initializeConnectionData(Connection)}.
+      * @return Always returns {@code false}
+      */
+     public boolean supportsConnectionUserName() {
+         return false;
+     }
+
+     /**
+      * INTERNAL:
+      * Returns user name retrieved from JDBC connection.
+      * @throws UnsupportedOperationException on every single call until overridden.
+      */
+     public String getConnectionUserName() {
+         throw new UnsupportedOperationException("Connection user name is not supported.");
+     }
+
 }
