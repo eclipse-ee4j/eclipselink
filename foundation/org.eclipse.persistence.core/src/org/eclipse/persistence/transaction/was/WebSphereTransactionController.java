@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -10,6 +10,8 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     Rick Curtis -- Refactor to facilitate adding WebSphereLibertyTransactionController.
+ *     03/15/2016 Jody Grassel
+ *       - 489794: Add support for WebSphere EJBEmbeddable platform.
  ******************************************************************************/  
 package org.eclipse.persistence.transaction.was;
 
@@ -37,8 +39,8 @@ import org.eclipse.persistence.transaction.JTATransactionController;
  */
 public class WebSphereTransactionController extends JTATransactionController {
     // Class and method to execute to obtain the TransactionManager
-    protected final static String TX_MANAGER_FACTORY_CLASS = "com.ibm.ws.Transaction.TransactionManagerFactory";
-    protected final static String TX_MANAGER_FACTORY_METHOD = "getTransactionManager";
+    private final static String TX_MANAGER_FACTORY_CLASS = "com.ibm.ws.Transaction.TransactionManagerFactory";
+    private final static String TX_MANAGER_FACTORY_METHOD = "getTransactionManager";
 
     public WebSphereTransactionController() {
         super();
