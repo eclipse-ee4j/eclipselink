@@ -17,11 +17,11 @@ package org.eclipse.persistence.transaction.was;
 public class WebSphereEJBEmbeddableTransactionController extends WebSphereTransactionController {
 
     // Class and method to execute to obtain the TransactionManager
-    protected final static String TX_MANAGER_FACTORY_CLASS = "com.ibm.tx.jta.embeddable.EmbeddableTransactionManagerFactory";
-    protected final static String TX_MANAGER_FACTORY_METHOD = "getTransactionManager";
+    private final static String TX_MANAGER_FACTORY_CLASS = "com.ibm.tx.jta.embeddable.EmbeddableTransactionManagerFactory";
+    private final static String TX_MANAGER_FACTORY_METHOD = "getTransactionManager";
 
     protected String getTxManagerFactoryClass() {
-        return this.TX_MANAGER_FACTORY_CLASS;
+        return TX_MANAGER_FACTORY_CLASS;
     }
 
     protected String getTxManagerFactoryMethod() {
