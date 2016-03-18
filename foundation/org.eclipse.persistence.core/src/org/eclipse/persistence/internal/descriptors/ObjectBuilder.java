@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -3027,12 +3027,15 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             }
         } else {
             AbstractRecord databaseRow = createRecordForPKExtraction(size, session);
-            // PERF: use index not enumeration			
+            Set<DatabaseMapping> writtenMappings = new HashSet<DatabaseMapping>(size);
+            // PERF: use index not enumeration
             for (int index = 0; index < size; index++) {
                 DatabaseMapping mapping = mappings.get(index);
+                // Bug 489783 - PERF: only write a PK mapping once when iterating
                 // Primary key mapping may be null for aggregate collection.
-                if (mapping != null) {
+                if (mapping != null && !writtenMappings.contains(mapping)) {
                     mapping.writeFromObjectIntoRow(domainObject, databaseRow, session, WriteType.UNDEFINED);
+                    writtenMappings.add(mapping);
                 }
             }
             List<Class> primaryKeyClassifications = getPrimaryKeyClassifications();
