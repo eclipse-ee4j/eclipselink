@@ -3034,12 +3034,15 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             }
         } else {
             AbstractRecord databaseRow = createRecordForPKExtraction(size, session);
+            Set<DatabaseMapping> writtenMappings = new HashSet<DatabaseMapping>(size);
             // PERF: use index not enumeration
             for (int index = 0; index < size; index++) {
                 DatabaseMapping mapping = mappings.get(index);
+                // Bug 489783 - PERF: only write a PK mapping once when iterating
                 // Primary key mapping may be null for aggregate collection.
-                if (mapping != null) {
+                if (mapping != null && !writtenMappings.contains(mapping)) {
                     mapping.writeFromObjectIntoRow(domainObject, databaseRow, session, WriteType.UNDEFINED);
+                    writtenMappings.add(mapping);
                 }
             }
             List<Class> primaryKeyClassifications = getPrimaryKeyClassifications();
