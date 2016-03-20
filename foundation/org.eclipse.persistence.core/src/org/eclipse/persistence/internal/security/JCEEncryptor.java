@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,18 +12,11 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.security;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-
 import javax.crypto.Cipher;
-import javax.crypto.CipherInputStream;
-import javax.crypto.CipherOutputStream;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.eclipse.persistence.exceptions.ConversionException;
@@ -40,10 +33,14 @@ public class JCEEncryptor implements Securable {
     private static final String DES = "DES/ECB/PKCS5Padding";
     private final Cipher decryptCipherDES;
 
-    // All encryption is done through the AES cipher.
+    // Legacy AES cipher used for backwards compatibility only.
     private static final String AES = "AES/ECB/PKCS5Padding";
-    private final Cipher encryptCipherAES;
     private final Cipher decryptCipherAES;
+
+    // All encryption is done through the AES cipher.
+    private static final String AES_CBC = "AES/CBC/PKCS5Padding";
+    private final Cipher encryptCipherAES_CBC;
+    private final Cipher decryptCipherAES_CBC;
 
     public JCEEncryptor() throws Exception {
         /**
@@ -60,79 +57,62 @@ public class JCEEncryptor implements Securable {
         decryptCipherDES = Cipher.getInstance(DES);
         decryptCipherDES.init(Cipher.DECRYPT_MODE, Synergizer.getDESMultitasker());
 
-        encryptCipherAES = Cipher.getInstance(AES);
-        encryptCipherAES.init(Cipher.ENCRYPT_MODE, Synergizer.getAESMultitasker());
-
         decryptCipherAES = Cipher.getInstance(AES);
         decryptCipherAES.init(Cipher.DECRYPT_MODE, Synergizer.getAESMultitasker());
+
+        SecretKey sk = Synergizer.getAESCBCMultitasker();
+        IvParameterSpec iv = Synergizer.getIvSpec();
+        encryptCipherAES_CBC = Cipher.getInstance(AES_CBC);
+        encryptCipherAES_CBC.init(Cipher.ENCRYPT_MODE, sk, iv);
+
+        decryptCipherAES_CBC = Cipher.getInstance(AES_CBC);
+        decryptCipherAES_CBC.init(Cipher.DECRYPT_MODE, sk, iv);
     }
 
     /**
      * Encrypts a string. Will throw a validation exception.
      */
+    @Override
     public synchronized String encryptPassword(String password) {
         try {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            CipherOutputStream cos = new CipherOutputStream(baos, encryptCipherAES);
-            ObjectOutputStream oos = new ObjectOutputStream(cos);
-            oos.writeObject(password);
-            oos.flush();
-            oos.close();
-            return Helper.buildHexStringFromBytes(baos.toByteArray());
+            return Helper.buildHexStringFromBytes(encryptCipherAES_CBC.doFinal(password.getBytes("UTF-8")));
         } catch (Exception e) {
             throw ValidationException.errorEncryptingPassword(e);
         }
+
     }
 
     /**
      * Decrypts a string. Will throw a validation exception.
      * Handles backwards compatibility for older encrypted strings.
      */
+    @Override
     public synchronized String decryptPassword(String encryptedPswd) {
         String password = null;
 
         if (encryptedPswd != null) {
-            ObjectInputStream ois = null;
-
+            byte[] bytePassword = new byte[0];
             try {
-                byte[] bytePassword = Helper.buildBytesFromHexString(encryptedPswd);
-
-                ByteArrayInputStream bais = new ByteArrayInputStream(bytePassword);
-                CipherInputStream cis = new CipherInputStream(bais, decryptCipherAES);
-                ois = new ObjectInputStream(cis);
-
-                password = (String)ois.readObject();
-            } catch (Exception ex) {
-                // Catch all exceptions when trying to decrypt using AES and try the
-                // old DES decryptor before deciding what to do.
+                bytePassword = Helper.buildBytesFromHexString(encryptedPswd);
+                password = new String(decryptCipherAES_CBC.doFinal(bytePassword), "UTF-8");
+            } catch (ConversionException ce) {
+                // Never prepared (buildBytesFromHexString failed), assume clear text
+                password = encryptedPswd;
+            } catch (Exception f) {
                 try {
-                    byte[] bytePassword = Helper.buildBytesFromHexString(encryptedPswd);
-
-                    ByteArrayInputStream bais = new ByteArrayInputStream(bytePassword);
-                    CipherInputStream cis = new CipherInputStream(bais, decryptCipherDES);
-                    ois = new ObjectInputStream(cis);
-
-                    password = (String)ois.readObject();
-                    ois.close();
-                } catch (IOException e) {
-                    // JCE 1.2.2 couldn't decrypt it, assume clear text
-                    password = encryptedPswd;
-                } catch (ArrayIndexOutOfBoundsException e) {
-                    // JCE 1.2.1 couldn't decrypt it, assume clear text
-                    password = encryptedPswd;
-                } catch (ConversionException e) {
-                    // Never prepared (buildBytesFromHexString failed), assume clear text
-                    password = encryptedPswd;
-                } catch (Exception e) {
-                    throw ValidationException.errorDecryptingPassword(e);
-                }
-            } finally {
-                try {
-                    if (ois != null) {
-                        ois.close();
+                    // try AES/ECB
+                    password = new String(decryptCipherAES.doFinal(bytePassword));
+                } catch (Exception exc) {
+                    // Catch all exceptions when trying to decrypt using AES and try the
+                    // old DES decryptor before deciding what to do.
+                    try {
+                        password = new String(decryptCipherDES.doFinal(bytePassword));
+                    } catch (ArrayIndexOutOfBoundsException e) {
+                        // JCE 1.2.1 couldn't decrypt it, assume clear text
+                        password = encryptedPswd;
+                    } catch (Exception e) {
+                        throw ValidationException.errorDecryptingPassword(e);
                     }
-                } catch (IOException ioexception) {
-                    // swallow it
                 }
             }
         }
@@ -151,6 +131,19 @@ public class JCEEncryptor implements Securable {
 
         private static SecretKey getAESMultitasker() throws Exception {
             return new SecretKeySpec(Helper.buildBytesFromHexString("3E7CFEF156E712906E1F603B59463C67"), "AES");
+        }
+
+        private static SecretKey getAESCBCMultitasker() throws Exception {
+            return new SecretKeySpec(Helper.buildBytesFromHexString("2DB7354A48F1CA7B48ACA247540FC923"), "AES");
+        }
+
+        private static IvParameterSpec getIvSpec() {
+            byte[] b = new byte[] {
+                    (byte) -26, (byte) 124, (byte) -99, (byte) 32,
+                    (byte) -37, (byte) -58, (byte) -93, (byte) 100,
+                    (byte) 126, (byte) -55, (byte) -21, (byte) 48,
+                    (byte) -86, (byte) 97, (byte) 12, (byte) 113};
+            return new IvParameterSpec(b);
         }
     }
 }
