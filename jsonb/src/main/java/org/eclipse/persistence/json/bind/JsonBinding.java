@@ -16,23 +16,16 @@ import org.eclipse.persistence.json.bind.internal.JsonbContext;
 import org.eclipse.persistence.json.bind.internal.MappingContext;
 import org.eclipse.persistence.json.bind.internal.Marshaller;
 import org.eclipse.persistence.json.bind.internal.Unmarshaller;
-import org.eclipse.persistence.json.bind.internal.cdi.BeanManagerInstanceCreator;
-import org.eclipse.persistence.json.bind.internal.cdi.BeanManagerNotFoundException;
-import org.eclipse.persistence.json.bind.internal.cdi.DefaultConstructorCreator;
-import org.eclipse.persistence.json.bind.internal.cdi.JsonbComponentInstanceCreator;
-import org.eclipse.persistence.json.bind.internal.properties.MessageKeys;
-import org.eclipse.persistence.json.bind.internal.properties.Messages;
+import org.eclipse.persistence.json.bind.internal.cdi.JsonbComponentInstanceCreatorFactory;
 
 import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbException;
 import javax.json.spi.JsonProvider;
-import javax.naming.NamingException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
 import java.lang.reflect.Type;
-import java.util.logging.Logger;
 
 /**
  * Implementation of Jsonb interface.
@@ -43,23 +36,9 @@ public class JsonBinding implements Jsonb {
 
     private final JsonbContext jsonbContext;
 
-    private static final Logger log = Logger.getLogger(JsonBinding.class.getName());
-
     JsonBinding(JsonBindingBuilder builder) {
-        this.jsonbContext = new JsonbContext(new MappingContext(), builder.getConfig(), createComponentInstanceCreator(),
+        this.jsonbContext = new JsonbContext(new MappingContext(), builder.getConfig(), JsonbComponentInstanceCreatorFactory.getComponentInstanceCreator(),
                 builder.getProvider().orElse(JsonProvider.provider()));
-    }
-
-    /**
-     * Check if CDI is available, fallback to default constructor otherwise.
-     */
-    private JsonbComponentInstanceCreator createComponentInstanceCreator() {
-        try {
-            return new BeanManagerInstanceCreator();
-        } catch (NamingException | BeanManagerNotFoundException e) {
-            log.finest(Messages.getMessage(MessageKeys.BEAN_MANAGER_NOT_FOUND));
-            return new DefaultConstructorCreator();
-        }
     }
 
     @Override

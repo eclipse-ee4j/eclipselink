@@ -35,12 +35,12 @@ public class WeldManager {
         weld = new Weld().beanClasses(scannedClasses).disableDiscovery();
         WeldContainer container = weld.initialize();
         initialContext = new InitialContext();
-        initialContext.bind(BeanManagerInstanceCreator.BEAN_MANAGER_NAME, container.getBeanManager());
+        initialContext.bind(JsonbComponentInstanceCreatorFactory.BEAN_MANAGER_NAME, container.getBeanManager());
     }
 
     public void shutdownWeld() throws NamingException {
         weld.shutdown();
-        initialContext.unbind(BeanManagerInstanceCreator.BEAN_MANAGER_NAME);
+        initialContext.unbind(JsonbComponentInstanceCreatorFactory.BEAN_MANAGER_NAME);
     }
 
 }

@@ -16,10 +16,7 @@ package org.eclipse.persistence.json.bind.internal.cdi;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.CDI;
 import javax.enterprise.inject.spi.InjectionTarget;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -33,29 +30,15 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class BeanManagerInstanceCreator implements JsonbComponentInstanceCreator {
 
-    public static final String BEAN_MANAGER_NAME = "java:comp/BeanManager";
-    private BeanManager beanManager;
+    private final BeanManager beanManager;
 
     private final ConcurrentMap<Class<?>, CDIManagedBean<?>> injectionTargets = new ConcurrentHashMap<>();
 
     /**
      * Create instance.
-     * @throws NamingException In case BeanManager must be looked up and is not found
      */
-    public BeanManagerInstanceCreator() throws NamingException {
-        beanManager = lookupBeanManager();
-        if (beanManager == null) {
-            throw new BeanManagerNotFoundException();
-        }
-    }
-
-    private BeanManager lookupBeanManager() throws NamingException {
-        BeanManager cdiBeanManager = CDI.current().getBeanManager();
-        if (cdiBeanManager != null) {
-            return cdiBeanManager;
-        }
-        InitialContext context = new InitialContext();
-        return (BeanManager) context.lookup(BEAN_MANAGER_NAME);
+    public BeanManagerInstanceCreator(BeanManager beanManager) {
+        this.beanManager = beanManager;
     }
 
     /**

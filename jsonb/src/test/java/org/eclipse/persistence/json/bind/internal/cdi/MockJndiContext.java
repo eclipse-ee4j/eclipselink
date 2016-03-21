@@ -30,7 +30,11 @@ public class MockJndiContext implements Context {
 
     @Override
     public Object lookup(String name) throws NamingException {
-        return objects.get(name);
+        final Object o = objects.get(name);
+        if (o == null) {
+            throw new NamingException("No object found under: "+name);
+        }
+        return o;
     }
 
     @Override
