@@ -57,7 +57,16 @@ public class MapElementWrapperExternalTestCases extends JAXBWithJSONTestCases{
 		root.integerComplexValueMap = new HashMap<Integer, ComplexValue>();
 		root.integerComplexValueMap.put(10, new ComplexValue("aaa","bbb"));
 		
-		return root;
+                root.stringArrayMap = new HashMap<String, String[]>();
+                root.stringArrayMap.put("abc", new String[] {"aaa","bbb"});
+
+                root.stringListMap = new HashMap<String, List<String>>();
+                List<String> list = new ArrayList<String>();
+                list.add("aaaa");
+                list.add("bbbb");
+                root.stringListMap.put("abcd", list);
+
+                return root;
 	}
 	
 	public void testSchemaGen() throws Exception{

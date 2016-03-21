@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.map;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -23,12 +25,24 @@ public class RootNoAnnotations {
 
 	public Map<String, String> stringStringMap;
 	public Map<Integer,ComplexValue > integerComplexValueMap;
+        public Map<String,String[] > stringArrayMap;
+        public Map<String,List<String>> stringListMap;
 	
 	 public boolean equals(Object obj){
 	    	if(!(obj instanceof RootNoAnnotations)) {
 	    		return false;
 	    	}
-	    	RootNoAnnotations compare = (RootNoAnnotations)obj;
-	    	return stringStringMap.equals(compare.stringStringMap) && integerComplexValueMap.equals(compare.integerComplexValueMap);
-	  }
+                RootNoAnnotations root = (RootNoAnnotations)obj;
+                return mapEquals(stringArrayMap, root.stringArrayMap)
+                        && mapEquals(stringListMap, root.stringListMap)
+                        && mapEquals(integerComplexValueMap, root.integerComplexValueMap)
+                        && mapEquals(stringStringMap, root.stringStringMap);
+            }
+
+
+    private boolean mapEquals(Map my, Map other) {
+        return my == null ? other == null : other != null
+                && Arrays.deepEquals(my.keySet().toArray(), other.keySet().toArray())
+                && Arrays.deepEquals(my.values().toArray(), other.values().toArray());
+    }
 }

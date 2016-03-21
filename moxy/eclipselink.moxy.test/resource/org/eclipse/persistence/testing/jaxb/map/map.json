@@ -11,5 +11,17 @@
 	   "key":10,
 	  "value":{"thing1":"aaa","thing2":"bbb"} 
 	  }
-        ]}
+        ]},
+    "map3":{
+       "entry":[{
+       "key":"abc",
+       "value":["aaa", "bbb"]
+      }]
+    },
+    "map4":{
+       "entry":[{
+       "key":"abcd",
+       "value":["aaaa", "bbbb"]
+      }]
+    }
 }}

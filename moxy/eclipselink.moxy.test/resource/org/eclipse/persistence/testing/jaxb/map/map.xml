@@ -13,6 +13,19 @@
              <thing2>bbb</thing2>
          </value>
       </entry>
-     
    </map2>
+   <map3>
+      <entry>
+         <key>abc</key>
+         <value>aaa</value>
+         <value>bbb</value>
+      </entry>
+   </map3>
+   <map4>
+      <entry>
+         <key>abcd</key>
+         <value>aaaa</value>
+         <value>bbbb</value>
+      </entry>
+   </map4>
 </root>

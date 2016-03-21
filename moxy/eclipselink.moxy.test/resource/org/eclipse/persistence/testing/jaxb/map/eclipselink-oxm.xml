@@ -10,6 +10,12 @@
                 <xml-element java-attribute="integerComplexValueMap">
                     <xml-element-wrapper name="map2"/>
                 </xml-element>
+                <xml-element java-attribute="stringArrayMap">
+                    <xml-element-wrapper name="map3"/>
+                </xml-element>
+                <xml-element java-attribute="stringListMap">
+                    <xml-element-wrapper name="map4"/>
+                </xml-element>
             </java-attributes>
 		</java-type>
 	</java-types>

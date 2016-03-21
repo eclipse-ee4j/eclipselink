@@ -12,8 +12,11 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.map;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
@@ -27,12 +30,26 @@ public class RootWrapper {
 	public Map<String, String> stringStringMap;
 	@XmlElementWrapper(name="map2")
 	public Map<Integer,ComplexValue > integerComplexValueMap;
+        @XmlElement(name="map3")
+        public Map<String,String[] > stringArrayMap;
+        @XmlElement(name="map4")
+        public Map<String,List<String>> stringListMap;
 	
 	 public boolean equals(Object obj){
 	    	if(!(obj instanceof RootWrapper)) {
 	    		return false;
 	    	}
-	    	RootWrapper compare = (RootWrapper)obj;
-	    	return stringStringMap.equals(compare.stringStringMap) && integerComplexValueMap.equals(compare.integerComplexValueMap);
-	  }
+		RootWrapper root = (RootWrapper)obj;
+                return mapEquals(stringArrayMap, root.stringArrayMap)
+                        && mapEquals(stringListMap, root.stringListMap)
+                        && mapEquals(integerComplexValueMap, root.integerComplexValueMap)
+                        && mapEquals(stringStringMap, root.stringStringMap);
+            }
+
+
+    private boolean mapEquals(Map my, Map other) {
+        return my == null ? other == null : other != null
+                && Arrays.deepEquals(my.keySet().toArray(), other.keySet().toArray())
+                && Arrays.deepEquals(my.values().toArray(), other.values().toArray());
+    }
 }

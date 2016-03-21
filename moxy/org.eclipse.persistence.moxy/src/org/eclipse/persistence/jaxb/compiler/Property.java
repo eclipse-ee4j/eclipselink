@@ -127,12 +127,13 @@ public class Property implements Cloneable {
 
 	// XmlMap specific attributes
     private JavaClass keyType;
-	private JavaClass valueType;
-	public static final String DEFAULT_KEY_NAME =  "key";
-	public static final String DEFAULT_VALUE_NAME =  "value";
-	private boolean isMap = false;
+    private JavaClass valueType;
+    private JavaClass valueGenericType;
+    public static final String DEFAULT_KEY_NAME = "key";
+    public static final String DEFAULT_VALUE_NAME = "value";
+    private boolean isMap = false;
     private String xmlPath;
-	
+
 	// XmlElements specific attributes
     private Collection<Property> choiceProperties;
     private XmlElements xmlElements;
@@ -340,12 +341,19 @@ public class Property implements Cloneable {
             if(type.getPackageName().startsWith("java.")) {
             	Object[] types = type.getActualTypeArguments().toArray();
             	
-         	    if(types.length >=2){        	        	
-         	        keyType = (JavaClass)types[0];     	        
-         	        valueType = (JavaClass)types[1];
-         	    }else{
-         	    	keyType = helper.getJavaClass(Object.class);     	        
-         	        valueType = helper.getJavaClass(Object.class);	    
+		    if(types.length >=2){
+		        keyType = (JavaClass)types[0];
+		        valueType = (JavaClass)types[1];
+                        if (helper.isCollectionType(valueType)) {
+                            valueGenericType = getGenericType(valueType, 0, helper);
+                        } else if (valueType.isArray() && !"byte[]".equals(valueType.getRawName())) {
+                            valueGenericType = valueType.getComponentType();
+                        } else {
+                            valueGenericType = null;
+                        }
+		    }else{
+			keyType = helper.getJavaClass(Object.class);
+		        valueType = helper.getJavaClass(Object.class);
                  }
             } else {
                 keyType = getGenericType(type, 0, helper);
@@ -1000,17 +1008,38 @@ public class Property implements Cloneable {
 		return keyType;
 	}
 
-	public void setKeyType(JavaClass keyType) {
-		this.keyType = keyType;
-	}
+    public void setKeyType(JavaClass keyType) {
+        this.keyType = keyType;
+    }
 
-	public JavaClass getValueType() {
-		return valueType;
-	}
+    public JavaClass getValueType() {
+        return valueType;
+    }
 
-	public void setValueType(JavaClass valueType) {
-		this.valueType = valueType;
-	}
+    /**
+     * Return the generic type if it was set (collection or array item type) otherwise return the
+     * type of this property
+     *
+     * @return
+     */
+    public JavaClass getActualValueType() {
+        if (valueGenericType != null) {
+            return valueGenericType;
+        }
+        return valueType;
+    }
+
+    public void setValueType(JavaClass valueType) {
+        this.valueType = valueType;
+    }
+
+    public JavaClass getValueGenericType() {
+        return valueGenericType;
+    }
+
+    public void setValueGenericType(JavaClass valueGenericType) {
+        this.valueGenericType = valueGenericType;
+    }
 
     public boolean isMap() {
         return isMap;
