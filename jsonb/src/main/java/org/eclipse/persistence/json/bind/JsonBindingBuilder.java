@@ -16,6 +16,7 @@ import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;
 import javax.json.bind.JsonbConfig;
 import javax.json.spi.JsonProvider;
+import java.util.Optional;
 
 /**
  * JsonbBuilder implementation.
@@ -23,34 +24,31 @@ import javax.json.spi.JsonProvider;
  * @author Dmitry Kornilov
  */
 public class JsonBindingBuilder implements JsonbBuilder {
-    private JsonbConfig config;
-    private JsonProvider provider;
+    private Optional<JsonbConfig> config = Optional.of(new JsonbConfig());
+    private Optional<JsonProvider> provider = Optional.empty();
 
     @Override
     public JsonbBuilder withConfig(JsonbConfig config) {
-        this.config = config;
+        this.config = Optional.of(config);
         return this;
     }
 
     @Override
     public JsonbBuilder withProvider(JsonProvider jsonpProvider) {
-        this.provider = jsonpProvider;
+        this.provider = Optional.of(jsonpProvider);
         return this;
     }
 
     public JsonbConfig getConfig() {
-        return config;
+        return config.get();
     }
 
-    public JsonProvider getProvider() {
+    public Optional<JsonProvider> getProvider() {
         return provider;
     }
 
     @Override
     public Jsonb build() {
-        if (config == null) {
-            config = new JsonbConfig();
-        }
         return new JsonBinding(this);
     }
 }

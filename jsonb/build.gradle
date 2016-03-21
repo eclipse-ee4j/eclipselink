@@ -1,8 +1,12 @@
 apply plugin: 'java'
 apply plugin: 'idea'
+apply plugin: "maven"
+
+group = "org.eclipse.persistence.json.bind"
+version = "0.1.0"
 
 jar {
-    baseName = 'org.eclipse.persistence.json.bind'
+    baseName = 'jsonb-ri'
     version =  '0.1.0'
 }
 
@@ -31,11 +35,14 @@ repositories {
 dependencies {
     compile 'javax.json.bind:javax.json.bind-api:0.1-SNAPSHOT'
     compile 'javax.json:javax.json-api:1.0'
+    compile 'javax.enterprise:cdi-api:1.2'
 
     testCompile 'org.openjdk.jmh:jmh-core:0.9.3'
     testCompile 'org.openjdk.jmh:jmh-generator-annprocess:0.9.3'
     testCompile 'junit:junit:4.12'
     testCompile 'org.openjdk.jmh:jmh-core:0.9.3';
+    testCompile 'org.jboss.weld:weld-core:2.3.3.Final';
+    testCompile 'org.jboss.weld.se:weld-se:2.3.3.Final';
     testRuntime 'org.glassfish:javax.json:1.0.4'
 }
 
@@ -43,3 +50,9 @@ task wrapper(type: Wrapper) {
     gradleVersion = '2.3'
 }
 
+idea {
+    module {
+        downloadJavadoc = true
+        downloadSources = true
+    }
+}

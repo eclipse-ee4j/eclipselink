@@ -143,7 +143,7 @@ public abstract class PropertyValuePropagation {
         final Optional<PropertyVisibilityStrategy> classLevelStrategy =
                 AnnotationIntrospector.getInstance().getPropertyVisibilityStrategy(declaringClass);
         Optional<PropertyVisibilityStrategy> strategy =
-                Optional.ofNullable(classLevelStrategy.orElse(JsonbContext.getPropertyVisibilityStrategy()));
+                Optional.ofNullable(classLevelStrategy.orElse(JsonbContext.getInstance().getPropertyVisibilityStrategy()));
 
         return strategy.map(visibilityCheckFunction);
     }

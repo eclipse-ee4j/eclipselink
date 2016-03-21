@@ -36,22 +36,17 @@ public abstract class JsonTextProcessor {
     protected static final String DOUBLE_NAN = "NaN";
     protected static final String NULL = "null";
 
-    protected final MappingContext mappingContext;
-
     protected final TypeConverter converter;
 
-    protected final JsonbConfig jsonbConfig;
-
+    protected final JsonbContext jsonbContext;
     /**
      * Parent instance for marshaller and unmarshaller.
      *
-     * @param mappingContext class mapping
-     * @param jsonbConfig    jsonb config
+     * @param jsonbContext context of Jsonb
      */
-    public JsonTextProcessor(MappingContext mappingContext, JsonbConfig jsonbConfig) {
-        this.mappingContext = mappingContext;
+    public JsonTextProcessor(JsonbContext jsonbContext) {
+        this.jsonbContext = jsonbContext;
         this.converter = ConvertersMapTypeConverter.getInstance();
-        this.jsonbConfig = jsonbConfig;
     }
 
     /**

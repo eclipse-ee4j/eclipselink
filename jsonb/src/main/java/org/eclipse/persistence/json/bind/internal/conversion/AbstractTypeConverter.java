@@ -1,6 +1,7 @@
 package org.eclipse.persistence.json.bind.internal.conversion;
 
-import javax.json.Json;
+import org.eclipse.persistence.json.bind.internal.JsonbContext;
+
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 import java.io.StringReader;
@@ -29,7 +30,7 @@ public abstract class AbstractTypeConverter<T> implements SupportedTypeConverter
 
     protected JsonObject getJsonObject(String jsonValue) {
         StringReader stringReader = new StringReader(jsonValue);
-        JsonReader jsonReader = Json.createReader(stringReader);
+        JsonReader jsonReader = JsonbContext.getInstance().getJsonProvider().createReader(stringReader);
         JsonObject jsonObject = jsonReader.readObject();
         jsonReader.close();
         return jsonObject;

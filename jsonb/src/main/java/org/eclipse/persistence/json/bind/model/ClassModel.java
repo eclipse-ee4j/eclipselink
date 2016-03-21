@@ -83,7 +83,7 @@ public class ClassModel {
     }
 
     private PropertyModel searchParent(String jsonReadName) {
-        final ClassModel classModel = JsonbContext.getMappingContext().getClassModel(clazz.getSuperclass());
+        final ClassModel classModel = JsonbContext.getInstance().getMappingContext().getClassModel(clazz.getSuperclass());
         if (classModel == null) {
             return null;
         }

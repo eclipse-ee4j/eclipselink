@@ -12,12 +12,18 @@
  ******************************************************************************/
 package org.eclipse.persistence.json.bind.defaultmapping.typeConvertors;
 
+import org.eclipse.persistence.json.bind.internal.JsonbContext;
+import org.eclipse.persistence.json.bind.internal.MappingContext;
+import org.eclipse.persistence.json.bind.internal.TestJsonbContextCommand;
+import org.eclipse.persistence.json.bind.internal.cdi.DefaultConstructorCreator;
 import org.eclipse.persistence.json.bind.internal.conversion.*;
 import org.junit.Test;
 
 import javax.json.Json;
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObject;
+import javax.json.bind.JsonbConfig;
+import javax.json.spi.JsonProvider;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -140,8 +146,14 @@ public class ConvertorsTest {
                 .add("city", "Prague")
                 .build();
 
-        assertEquals("{\"name\":\"home\",\"city\":\"Prague\"}", jsonObjectTypeConverter.toJson(jsonObject));
-        assertEquals(jsonObject, jsonObjectTypeConverter.fromJson("{\"name\":\"home\",\"city\":\"Prague\"}", JsonObject.class));
+        JsonbContext context = new JsonbContext(new MappingContext(), new JsonbConfig(), new DefaultConstructorCreator(), JsonProvider.provider());
+        new TestJsonbContextCommand() {
+            @Override
+            protected void doInJsonbContext() {
+                assertEquals("{\"name\":\"home\",\"city\":\"Prague\"}", jsonObjectTypeConverter.toJson(jsonObject));
+                assertEquals(jsonObject, jsonObjectTypeConverter.fromJson("{\"name\":\"home\",\"city\":\"Prague\"}", JsonObject.class));
+            }
+        }.execute(context);
     }
 
     @Test

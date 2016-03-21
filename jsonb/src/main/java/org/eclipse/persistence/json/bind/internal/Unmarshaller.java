@@ -20,7 +20,6 @@ import org.eclipse.persistence.json.bind.internal.unmarshaller.CurrentItemBuilde
 import org.eclipse.persistence.json.bind.internal.unmarshaller.JsonValueType;
 import org.eclipse.persistence.json.bind.internal.unmarshaller.UnmarshallerItem;
 
-import javax.json.Json;
 import javax.json.bind.JsonbConfig;
 import javax.json.bind.JsonbException;
 import javax.json.stream.JsonParser;
@@ -55,40 +54,40 @@ public class Unmarshaller extends JsonTextProcessor {
 
     /**
      * Create unmarshaller instance with string JSON.
-     * @param mappingContext Context of class mappings.
+     * @param jsonbContext Context of Jsonb
      * @param rootType Class of a root object to be created.
      * @param json JSON to parse.
      */
-    public Unmarshaller(MappingContext mappingContext, JsonbConfig jsonbConfig, Type rootType, String json) {
-        super(mappingContext, jsonbConfig);
+    public Unmarshaller(JsonbContext jsonbContext, Type rootType, String json) {
+        super(jsonbContext);
         this.rootType = rootType;
-        this.parser = Json.createParser(new StringReader(json));
+        this.parser = jsonbContext.getJsonProvider().createParser(new StringReader(json));
     }
 
     /**
      * Create unmarshaller instance with input stream.
-     * @param mappingContext Context of class mappings.
+     * @param jsonbContext Context of Jsonb
      * @param rootType Class of a root object to be created.
      * @param jsonStream input stream with JSON.
      */
-    public Unmarshaller(MappingContext mappingContext, JsonbConfig jsonbConfig, Type rootType, InputStream jsonStream) {
-        super(mappingContext, jsonbConfig);
+    public Unmarshaller(JsonbContext jsonbContext, Type rootType, InputStream jsonStream) {
+        super(jsonbContext);
         this.rootType = rootType;
-        this.parser = Json.createParserFactory(createJsonpProperties(jsonbConfig))
+        this.parser = jsonbContext.getJsonProvider().createParserFactory(createJsonpProperties(jsonbContext.getConfig()))
                 .createParser(jsonStream,
-                        Charset.forName((String) jsonbConfig.getProperty(JsonbConfig.ENCODING).orElse("UTF-8")));
+                        Charset.forName((String) jsonbContext.getConfig().getProperty(JsonbConfig.ENCODING).orElse("UTF-8")));
     }
 
     /**
      * Create unmarshaller instance with readable.
-     * @param mappingContext Context of class mappings.
+     * @param jsonbContext Context of Jsonb
      * @param rootType Class of a root object to be created.
      * @param reader reader to read from.
      */
-    public Unmarshaller(MappingContext mappingContext, JsonbConfig jsonbConfig, Type rootType, Reader reader) {
-        super(mappingContext, jsonbConfig);
+    public Unmarshaller(JsonbContext jsonbContext, Type rootType, Reader reader) {
+        super(jsonbContext);
         this.rootType = rootType;
-        this.parser = Json.createParser(reader);
+        this.parser = jsonbContext.getJsonProvider().createParser(reader);
     }
 
 
@@ -99,7 +98,6 @@ public class Unmarshaller extends JsonTextProcessor {
      */
     @SuppressWarnings("unchecked")
     public <T> T parse() {
-        final JsonbContext context = new JsonbContext(jsonbConfig, mappingContext);
         new JsonbContextCommand() {
             @Override
             protected void doInJsonbContext() {
@@ -131,7 +129,7 @@ public class Unmarshaller extends JsonTextProcessor {
                     }
                 }
             }
-        }.execute(context);
+        }.execute(jsonbContext);
         parser.close();
         return (T) currentItem.getInstance();
     }
@@ -169,7 +167,7 @@ public class Unmarshaller extends JsonTextProcessor {
     }
 
     private String getClassPropertyName(String jsonKeyName) {
-        final PropertyNamingStrategy namingStrategy = JsonbContext.getPropertyNamingStrategy();
+        final PropertyNamingStrategy namingStrategy = JsonbContext.getInstance().getPropertyNamingStrategy();
         return namingStrategy != null ? namingStrategy.toModelPropertyName(jsonKeyName) : jsonKeyName;
     }
 }

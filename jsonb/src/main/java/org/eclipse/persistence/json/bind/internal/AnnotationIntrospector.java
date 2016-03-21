@@ -95,7 +95,7 @@ public class AnnotationIntrospector {
         Objects.requireNonNull(property);
         Optional<JsonbTypeAdapter> annotation = getAnnotationFromProperty(JsonbTypeAdapter.class, property);
         final Optional<JsonbAdapterInfo> adapterInfoOptional = annotation.map(annot -> {
-            final JsonbAdapter adapterInstance = ReflectionUtils.createNoArgConstructorInstance(annot.value());
+            final JsonbAdapter adapterInstance = JsonbContext.getInstance().getComponentInstanceCreator().getOrCreateComponent(annot.value());
             final JsonbAdapterInfo adapterInfo = AdapterMatcher.getInstance().introspectAdapterInfo(adapterInstance);
             if ((property.getPropertyType() instanceof Class<?>) &&
                     ReflectionUtils.getRawType(property.getPropertyType()) != ReflectionUtils.getRawType(adapterInfo.getFromType())) {

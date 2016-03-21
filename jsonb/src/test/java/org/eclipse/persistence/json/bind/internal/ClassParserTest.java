@@ -15,11 +15,13 @@ package org.eclipse.persistence.json.bind.internal;
 
 import org.eclipse.persistence.json.bind.defaultmapping.modifiers.model.FieldModifiersClass;
 import org.eclipse.persistence.json.bind.defaultmapping.modifiers.model.MethodModifiersClass;
+import org.eclipse.persistence.json.bind.internal.cdi.DefaultConstructorCreator;
 import org.eclipse.persistence.json.bind.model.ClassModel;
 import org.junit.Before;
 import org.junit.Test;
 
 import javax.json.bind.JsonbConfig;
+import javax.json.spi.JsonProvider;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
@@ -39,7 +41,8 @@ public class ClassParserTest {
     @Before
     public void before() {
         classParser = new ClassParser();
-        jsonbContext = new JsonbContext(new JsonbConfig(), new MappingContext());
+        jsonbContext = new JsonbContext(new MappingContext(), new JsonbConfig(),
+                new DefaultConstructorCreator(), JsonProvider.provider());
     }
 
     @Test

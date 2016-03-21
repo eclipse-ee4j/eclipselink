@@ -22,7 +22,6 @@ import org.eclipse.persistence.json.bind.internal.serializer.JsonpSerializers;
 import org.eclipse.persistence.json.bind.model.ClassModel;
 import org.eclipse.persistence.json.bind.model.PropertyModel;
 
-import javax.json.Json;
 import javax.json.bind.JsonbConfig;
 import javax.json.bind.JsonbException;
 import javax.json.bind.adapter.JsonbAdapter;
@@ -75,24 +74,22 @@ public class Marshaller extends JsonTextProcessor {
     /**
      * Creates Marshaller for generation to String.
      *
-     * @param mappingContext class mapping context
-     * @param jsonbConfig config
+     * @param jsonbContext
      */
-    public Marshaller(MappingContext mappingContext, JsonbConfig jsonbConfig) {
-        super(mappingContext, jsonbConfig);
+    public Marshaller(JsonbContext jsonbContext) {
+        super(jsonbContext);
         this.stringWriter = new StringWriter();
-        this.jsonGenerator = createGenerator(jsonbConfig, stringWriter);
+        this.jsonGenerator = createGenerator(stringWriter);
         this.runtimeTypeInfo = Optional.empty();
     }
 
     /**
      * Helper constructor
-     * @param mappingContext class mapping context
-     * @param jsonbConfig config
+     * @param jsonbContext Context of Jsonb
      * @param jsonGenerator created generator instance
      */
-    public Marshaller(MappingContext mappingContext, JsonbConfig jsonbConfig, JsonGenerator jsonGenerator) {
-        super(mappingContext, jsonbConfig);
+    public Marshaller(JsonbContext jsonbContext, JsonGenerator jsonGenerator) {
+        super(jsonbContext);
         this.jsonGenerator = jsonGenerator;
         stringWriter = null;
         this.runtimeTypeInfo = Optional.empty();
@@ -100,64 +97,60 @@ public class Marshaller extends JsonTextProcessor {
 
     /**
      * Creates Marshaller for generation to OutputStream
-     * @param mappingContext class mapping context
-     * @param jsonbConfig config
+     * @param jsonbContext Context of Jsonb
      * @param outputStream stream to marshall into
      */
-    public Marshaller(MappingContext mappingContext, JsonbConfig jsonbConfig, OutputStream outputStream) {
-        super(mappingContext, jsonbConfig);
-        this.jsonGenerator = createGenerator(jsonbConfig, outputStream);
+    public Marshaller(JsonbContext jsonbContext, OutputStream outputStream) {
+        super(jsonbContext);
+        this.jsonGenerator = createGenerator(outputStream);
         stringWriter = null;
         this.runtimeTypeInfo = Optional.empty();
     }
 
-    private JsonGenerator createGenerator(JsonbConfig jsonbConfig, Writer writer) {
-        Map<String, ?> factoryProperties = createJsonpProperties(jsonbConfig);
-        return Json.createGeneratorFactory(factoryProperties).createGenerator(writer);
+    private JsonGenerator createGenerator(Writer writer) {
+        Map<String, ?> factoryProperties = createJsonpProperties(jsonbContext.getConfig());
+        return jsonbContext.getJsonProvider().createGeneratorFactory(factoryProperties).createGenerator(writer);
     }
 
-    private JsonGenerator createGenerator(JsonbConfig jsonbConfig, OutputStream outputStream) {
-        Map<String, ?> factoryProperties = createJsonpProperties(jsonbConfig);
-        final String encoding = (String) jsonbConfig.getProperty(JsonbConfig.ENCODING).orElse("UTF-8");
-        return Json.createGeneratorFactory(factoryProperties).createGenerator(outputStream, Charset.forName(encoding));
+    private JsonGenerator createGenerator(OutputStream outputStream) {
+        Map<String, ?> factoryProperties = createJsonpProperties(jsonbContext.getConfig());
+        final String encoding = (String) jsonbContext.getConfig().getProperty(JsonbConfig.ENCODING).orElse("UTF-8");
+        return jsonbContext.getJsonProvider().createGeneratorFactory(factoryProperties).createGenerator(outputStream, Charset.forName(encoding));
     }
 
     /**
      * Creates Marshaller for generation to Writer
      *
-     * @param mappingContext class mapping context
-     * @param jsonbConfig config
+     * @param jsonbContext Context of Jsonb
      * @param writer writer to marshall into
      */
-    public Marshaller(MappingContext mappingContext, JsonbConfig jsonbConfig, Writer writer) {
-        this(mappingContext, jsonbConfig, Json.createGenerator(writer));
+    public Marshaller(JsonbContext jsonbContext, Writer writer) {
+        this(jsonbContext, jsonbContext.getJsonProvider().createGenerator(writer));
     }
 
     /**
      * Creates Marshaller for generation to String with runtime type information.
      *
-     * @param mappingContext class mapping context
-     * @param jsonbConfig config
+     * @param jsonbContext Context of Jsonb
      * @param rootRuntimeType runtime type for generic information
      */
-    public Marshaller(MappingContext mappingContext, JsonbConfig jsonbConfig, Type rootRuntimeType) {
-        super(mappingContext, jsonbConfig);
+    public Marshaller(JsonbContext jsonbContext, Type rootRuntimeType) {
+        super(jsonbContext);
         Objects.requireNonNull(rootRuntimeType);
         this.runtimeTypeInfo = Optional.of(new RuntimeTypeHolder(null, rootRuntimeType));
         this.stringWriter = new StringWriter();
-        this.jsonGenerator = Json.createGenerator(stringWriter);
+        this.jsonGenerator = jsonbContext.getJsonProvider().createGenerator(stringWriter);
     }
 
     /**
      * Helper constructor
      *
-     * @param mappingContext class mapping context
-     * @param jsonbConfig config
+     * @param jsonbContext Context of Jsonb
      * @param rootRuntimeType runtime type for generic information
      * @param jsonGenerator created generator instance
      */
-    public Marshaller(MappingContext mappingContext, JsonbConfig jsonbConfig, Type rootRuntimeType, JsonGenerator jsonGenerator) {
-        super(mappingContext, jsonbConfig);
+    public Marshaller(JsonbContext jsonbContext, Type rootRuntimeType, JsonGenerator jsonGenerator) {
+        super(jsonbContext);
         Objects.requireNonNull(rootRuntimeType);
         this.runtimeTypeInfo = Optional.of(new RuntimeTypeHolder(null, rootRuntimeType));
         this.jsonGenerator = jsonGenerator;
@@ -167,8 +160,8 @@ public class Marshaller extends JsonTextProcessor {
     /**
      * Helper constructor.
      */
-    public Marshaller(MappingContext mappingContext, JsonbConfig jsonbConfig, Type rootRuntimeType, Writer writer) {
-        this(mappingContext, jsonbConfig, rootRuntimeType, Json.createGenerator(writer));
+    public Marshaller(JsonbContext jsonbContext, Type rootRuntimeType, Writer writer) {
+        this(jsonbContext, rootRuntimeType, jsonbContext.getJsonProvider().createGenerator(writer));
     }
 
     /**
@@ -184,7 +177,7 @@ public class Marshaller extends JsonTextProcessor {
                 marshallObject(Optional.empty(), object);
                 jsonGenerator.close();
             }
-        }.execute(new JsonbContext(jsonbConfig, mappingContext));
+        }.execute(jsonbContext);
         return stringWriter.toString();
     }
 
@@ -200,7 +193,7 @@ public class Marshaller extends JsonTextProcessor {
                 marshallObject(Optional.empty(), object);
                 jsonGenerator.close();
             }
-        }.execute(new JsonbContext(jsonbConfig, mappingContext));
+        }.execute(jsonbContext);
     }
 
 
@@ -260,14 +253,14 @@ public class Marshaller extends JsonTextProcessor {
         // Deal with inheritance
         final List<PropertyModel> allProperties = new LinkedList<>();
         for (Class clazz = object.getClass(); clazz.getSuperclass() != null; clazz = clazz.getSuperclass()) {
-            ClassModel classModel = JsonbContext.getMappingContext().getOrCreateClassModel(clazz);
+            ClassModel classModel = JsonbContext.getInstance().getMappingContext().getOrCreateClassModel(clazz);
             final List<PropertyModel> properties = new ArrayList<>(classModel.getProperties().values());
             Optional<JsonbPropertyOrder> jsonbPropertyOrder = AnnotationIntrospector.getInstance().getJsonbPropertyOrderAnnotation(clazz);
             List<PropertyModel> filteredAndSorted;
             //Check if the class has JsonbPropertyOrder annotation defined
             if (!jsonbPropertyOrder.isPresent()) {
                 //Sorting fields according to selected or default order
-                String propertyOrderStrategy = JsonbContext.getConfig().getProperty(JsonbConfig.PROPERTY_ORDER_STRATEGY).isPresent() ? (String) JsonbContext.getConfig().getProperty(JsonbConfig.PROPERTY_ORDER_STRATEGY).get() : PropertyOrderStrategy.LEXICOGRAPHICAL;
+                String propertyOrderStrategy = JsonbContext.getInstance().getConfig().getProperty(JsonbConfig.PROPERTY_ORDER_STRATEGY).isPresent() ? (String) JsonbContext.getInstance().getConfig().getProperty(JsonbConfig.PROPERTY_ORDER_STRATEGY).get() : PropertyOrderStrategy.LEXICOGRAPHICAL;
                 if (!orderStrategies.containsKey(propertyOrderStrategy)) {
                     throw new JsonbException(Messages.getMessage(MessageKeys.PROPERTY_ORDER, propertyOrderStrategy));
                 }
@@ -355,7 +348,7 @@ public class Marshaller extends JsonTextProcessor {
     }
 
     private String getJsonPropertyName(String classPropertyName) {
-        final PropertyNamingStrategy namingStrategy = JsonbContext.getPropertyNamingStrategy();
+        final PropertyNamingStrategy namingStrategy = JsonbContext.getInstance().getPropertyNamingStrategy();
         return namingStrategy != null ? namingStrategy.toJsonPropertyName(classPropertyName) : classPropertyName;
     }
 

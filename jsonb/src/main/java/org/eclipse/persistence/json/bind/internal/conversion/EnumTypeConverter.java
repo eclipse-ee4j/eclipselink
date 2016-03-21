@@ -23,6 +23,11 @@ public class EnumTypeConverter extends AbstractTypeConverter<Enum> {
     }
 
     @Override
+    public boolean supportsFromJson(Class<?> type) {
+        return type.isEnum();
+    }
+
+    @Override
     public String toJson(Enum object) {
         return object.toString();
     }

@@ -51,7 +51,7 @@ public class AdapterMatcher {
      * @return adapter info with adapter
      */
     public Optional<JsonbAdapterInfo> getAdapterInfo(Type runtimeType) {
-        for (JsonbAdapterInfo info : JsonbContext.getAdapters()) {
+        for (JsonbAdapterInfo info : JsonbContext.getInstance().getAdapters()) {
             if (matches(runtimeType, info)) {
                 return Optional.of(info);
             }

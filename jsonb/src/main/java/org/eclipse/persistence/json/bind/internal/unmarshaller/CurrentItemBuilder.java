@@ -176,7 +176,7 @@ public class CurrentItemBuilder {
                     rawType = ReflectionUtils.getRawType(runtimeType );
                 }
 
-                classModel = JsonbContext.getMappingContext().getOrCreateClassModel(rawType);
+                classModel = JsonbContext.getInstance().getMappingContext().getOrCreateClassModel(rawType);
                 instance = ReflectionUtils.createNoArgConstructorInstance(classModel.getRawType());
                 final ObjectItem<Object> objectItem = new ObjectItem<>(this);
                 return wrapAdapted(adapterInfoOptional, objectItem);

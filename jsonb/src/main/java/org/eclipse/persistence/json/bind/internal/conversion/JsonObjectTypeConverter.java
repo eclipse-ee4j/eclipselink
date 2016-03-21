@@ -1,6 +1,7 @@
 package org.eclipse.persistence.json.bind.internal.conversion;
 
-import javax.json.Json;
+import org.eclipse.persistence.json.bind.internal.JsonbContext;
+
 import javax.json.JsonObject;
 import javax.json.JsonWriter;
 import java.io.StringWriter;
@@ -23,7 +24,7 @@ public class JsonObjectTypeConverter extends AbstractTypeConverter<JsonObject> {
     @Override
     public String toJson(JsonObject object) {
         final StringWriter stringWriter = new StringWriter();
-        final JsonWriter jsonWriter = Json.createWriter(stringWriter);
+        final JsonWriter jsonWriter = JsonbContext.getInstance().getJsonProvider().createWriter(stringWriter);
         jsonWriter.writeObject(object);
         jsonWriter.close();
 

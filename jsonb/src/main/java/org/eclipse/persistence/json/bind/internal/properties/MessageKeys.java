@@ -45,6 +45,7 @@ public enum MessageKeys {
     PROPERTY_ORDER("propertyOrder"),
     UNSUPPORTED_JSONP_SERIALIZER_VALUE("unsupportedJsonpSerializerValue"),
     JSONB_CONFIG_FORMATTING_ILLEGAL_VALUE("Only Boolean type values are supported for JsonbConfig.FORMATTING property."),
+    BEAN_MANAGER_NOT_FOUND("beanManagerNotFound"),
     ;
 
     /** Message bundle key. */
