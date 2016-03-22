@@ -436,19 +436,30 @@ public class JAXPParser implements XMLParser {
     private DocumentBuilder getDocumentBuilder() {
         try {
             if (null == documentBuilder) {
-                if (null == documentBuilderFactory) {
-                    loadDocumentBuilderFactory();
-                }
-                documentBuilder = documentBuilderFactory.newDocumentBuilder();
-                documentBuilder.setEntityResolver(entityResolver);
-                documentBuilder.setErrorHandler(errorHandler);
+                documentBuilder = getNewDocumentBuilder();
             } else {
-                documentBuilder.reset();
+                try {
+                    documentBuilder.reset();
+                } catch (UnsupportedOperationException uoe) {
+                    // https://bugs.eclipse.org/bugs/show_bug.cgi?id=490229
+                    // if reset is not supported by the parser, just return new one
+                    documentBuilder = getNewDocumentBuilder();
+                }
             }
 
             return documentBuilder;
         } catch (ParserConfigurationException e) {
             throw XMLPlatformException.xmlPlatformParseException(e);
         }
+    }
+
+    private DocumentBuilder getNewDocumentBuilder() throws ParserConfigurationException {
+        if (null == documentBuilderFactory) {
+            loadDocumentBuilderFactory();
+        }
+        DocumentBuilder newDb = documentBuilderFactory.newDocumentBuilder();
+        newDb.setEntityResolver(entityResolver);
+        newDb.setErrorHandler(errorHandler);
+        return newDb;
     }
 }
