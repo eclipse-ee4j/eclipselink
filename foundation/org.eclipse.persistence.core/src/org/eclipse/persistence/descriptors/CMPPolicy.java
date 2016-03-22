@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -15,6 +15,8 @@
  *       - 357474: Address primaryKey option from tenant discriminator column
  *     14/05/2012-2.4 Guy Pelletier  
  *       - 376603: Provide for table per tenant support for multitenant applications
+ *     03/23/2016-2.6_WAS Will Dazey  
+ *       - 490114: Add support for PersistenceUnitUtil.getIdentifier with nested embeddables in EmbeddedId class
  ******************************************************************************/  
 package org.eclipse.persistence.descriptors;
 
@@ -445,19 +447,30 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
             KeyElementAccessor accessor = pkElementArray[index];
             DatabaseField field = accessor.getDatabaseField();
             DatabaseMapping mapping = builder.getMappingForField(field);
+            Object nestedKeyInstance = keyInstance;
             // With session validation, the mapping shouldn't be null at this 
             // point, don't bother checking.
             if (!mapping.isObjectReferenceMapping() || !usedObjectReferenceMappings.contains(mapping)){
                 while (mapping.isAggregateObjectMapping()) {
                     keyObj = mapping.getRealAttributeValueFromObject(keyObj, session);
                     mapping = mapping.getReferenceDescriptor().getObjectBuilder().getMappingForField(field);
+
+                    //Check for embedded Id values
+                    if (mapping.isAggregateMapping()) {
+                        Object nestedObject = mapping.getRealAttributeValueFromObject(nestedKeyInstance, session);
+                        if (nestedObject == null) {
+                            nestedObject = getClassInstance(mapping.getReferenceDescriptor().getJavaClass());
+                        }
+                        mapping.setRealAttributeValueInObject(nestedKeyInstance, nestedObject);
+                        nestedKeyInstance = nestedObject;
+                    }
                 }
                 Object fieldValue = mapping.getRealAttributeValueFromObject(keyObj, session);
                 if (mapping.isObjectReferenceMapping()){
                     fieldValue = mapping.getReferenceDescriptor().getCMPPolicy().createPrimaryKeyInstance(fieldValue, session);
                     usedObjectReferenceMappings.add((ObjectReferenceMapping)mapping);
                 }
-                accessor.setValue(keyInstance, fieldValue);
+                accessor.setValue(nestedKeyInstance, fieldValue);
             }
         }
         

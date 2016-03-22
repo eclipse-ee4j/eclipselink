@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -19,6 +19,8 @@
  *       - 314941: multiple joinColumns without referenced column names defined, no error
  *     01/25/2011-2.3 Guy Pelletier 
  *       - 333913: @OrderBy and <order-by/> without arguments should order by primary
+ *     03/23/2016-2.6_WAS Will Dazey 
+ *       - 490114: Add test for PersistenceUnitUtil.getIdentifier with nested embeddables in EmbeddedId class
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.advanced.compositepk;
 
@@ -85,6 +87,9 @@ import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.nested.Golf
 import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.nested.GolfClubHead;
 import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.nested.GolfClubOrder;
 import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.nested.GolfClubShaft;
+import org.eclipse.persistence.testing.models.jpa.complexaggregate.Body;
+import org.eclipse.persistence.testing.models.jpa.complexaggregate.Heart;
+import org.eclipse.persistence.testing.models.jpa.complexaggregate.Torso;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 
@@ -139,6 +144,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
             suite.addTest(new AdvancedCompositePKJunitTest("testGetIdentifier"));
             suite.addTest(new AdvancedCompositePKJunitTest("testFailedGetIdenitifier"));
             suite.addTest(new AdvancedCompositePKJunitTest("testGetIdenitifierOnNonEntity"));
+            suite.addTest(new AdvancedCompositePKJunitTest("testGetIdentifierNestedEmbeddables"));
         }
         return suite;
     }
@@ -762,6 +768,30 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
             
             PersistenceUnitUtil util = emf.getPersistenceUnitUtil();
             assertTrue("Got an incorrect id from persistenceUtil.getIdentifier()", pk.equals(util.getIdentifier(department)));
+        } finally {
+            rollbackTransaction(em);
+        }
+    }
+    
+    public void testGetIdentifierNestedEmbeddables(){
+        EntityManagerFactory emf = getEntityManagerFactory();
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try{
+            Body body = new Body();
+            Torso torso = new Torso();
+            Heart heart = new Heart();
+            heart.setSize(8);
+            torso.setHeart(heart);
+            body.setTorso(torso);
+            
+            em.persist(body);
+            em.flush();
+            
+            clearCache();
+            
+            PersistenceUnitUtil util = emf.getPersistenceUnitUtil();
+            assertTrue("Got an incorrect id from persistenceUtil.getIdentifier()", torso.equals(util.getIdentifier(body)));
         } finally {
             rollbackTransaction(em);
         }
