@@ -12,8 +12,11 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.map;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
@@ -27,12 +30,22 @@ public class RootWrapper {
     public Map<String, String> stringStringMap;
     @XmlElementWrapper(name="map2")
     public Map<Integer,ComplexValue > integerComplexValueMap;
+    @XmlElement(name="map3")
+    public Map<String,String[] > stringArrayMap;
+    @XmlElement(name="map4")
+    public Map<String,List<String>> stringListMap;
 
      public boolean equals(Object obj){
             if(!(obj instanceof RootWrapper)) {
                 return false;
             }
             RootWrapper compare = (RootWrapper)obj;
+            if (stringArrayMap != null ? compare.stringArrayMap == null || !Arrays.deepEquals(stringArrayMap.keySet().toArray(), compare.stringArrayMap.keySet().toArray()) || !Arrays.deepEquals(stringArrayMap.values().toArray(), compare.stringArrayMap.values().toArray()) : compare.stringArrayMap != null)
+                return false;
+            if (stringListMap != null ? compare.stringListMap == null || !Arrays.deepEquals(stringListMap.keySet().toArray(), compare.stringListMap.keySet().toArray()) || !Arrays.deepEquals(stringListMap.values().toArray(), compare.stringListMap.values().toArray()) : compare.stringListMap != null)
+                return false;
+            if (integerComplexValueMap != null ? !integerComplexValueMap.equals(compare.integerComplexValueMap) : compare.integerComplexValueMap != null)
+                return false;
             return stringStringMap.equals(compare.stringStringMap) && integerComplexValueMap.equals(compare.integerComplexValueMap);
       }
 }

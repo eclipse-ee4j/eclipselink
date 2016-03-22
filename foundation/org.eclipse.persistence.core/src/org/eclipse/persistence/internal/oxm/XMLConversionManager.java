@@ -239,8 +239,6 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
             return convertStringToList(sourceObject);
         } else if ((javaClass == CoreClassConstants.STRING) && (sourceObject instanceof List)) {
             return convertListToString(sourceObject, schemaTypeQName);
-        } else if ((javaClass == CoreClassConstants.STRING) && (sourceObject instanceof Object[])) {
-            return convertArrayToString((Object[]) sourceObject, schemaTypeQName);
         } else if (sourceObject instanceof byte[]) {
             if (schemaTypeQName.getLocalPart().equalsIgnoreCase(Constants.BASE_64_BINARY)) {
                 return buildBase64StringFromBytes((byte[]) sourceObject);
@@ -251,6 +249,8 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
                 return buildBase64StringFromObjectBytes((Byte[]) sourceObject);
             }
             return buildHexStringFromObjectBytes((Byte[]) sourceObject);
+        } else if ((javaClass == CoreClassConstants.STRING) && (sourceObject instanceof Object[])) {
+            return convertArrayToString((Object[]) sourceObject, schemaTypeQName);
         } else if ((javaClass == CoreClassConstants.UTILDATE)) {
             return convertObjectToUtilDate(sourceObject, schemaTypeQName);
         } else if (javaClass == CoreClassConstants.SQLDATE) {
