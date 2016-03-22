@@ -218,7 +218,7 @@
         <!-- Set Run Condition -->
         <condition property="is.oracle.platform">
             <matches
-              pattern="org.eclipse.persistence.platform.database.oracle.Oracle[0-11]{1,2}Platform"
+              pattern="org.eclipse.persistence.platform.database.oracle.Oracle[0-12]{1,2}Platform"
               string="${db.platform}"
             />
         </condition>
