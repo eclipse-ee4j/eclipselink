@@ -200,12 +200,12 @@ public class XMLHelper {
         try {
             sf.setProperty(ACCESS_EXTERNAL_SCHEMA, value);
             if (logger.shouldLog(SessionLog.FINE, SessionLog.MOXY)) {
-                logger.log(SessionLog.FINE, SessionLog.MOXY, "jaxp_sec_prop_supported", new Object[] {ACCESS_EXTERNAL_SCHEMA}, false);
+                logger.log(SessionLog.FINE, SessionLog.MOXY, "jaxp_sec_prop_supported", new Object[] {ACCESS_EXTERNAL_SCHEMA});
             }
         } catch (SAXException ignored) {
             // nothing to do; support depends on version JDK or SAX implementation
             if (logger.shouldLog(SessionLog.CONFIG, SessionLog.MOXY)) {
-                logger.log(SessionLog.CONFIG, SessionLog.MOXY, "jaxp_sec_prop_not_supported", new Object[] {ACCESS_EXTERNAL_SCHEMA}, false);
+                logger.log(SessionLog.CONFIG, SessionLog.MOXY, "jaxp_sec_prop_not_supported", new Object[] {ACCESS_EXTERNAL_SCHEMA});
                 logger.logThrowable(SessionLog.CONFIG, SessionLog.MOXY, ignored);
             }
         }
@@ -232,12 +232,12 @@ public class XMLHelper {
         try {
             tf.setAttribute(ACCESS_EXTERNAL_SCHEMA, value);
             if (logger.shouldLog(SessionLog.FINE, SessionLog.MOXY)) {
-                logger.log(SessionLog.FINE, SessionLog.MOXY, "jaxp_sec_prop_supported", new Object[] {ACCESS_EXTERNAL_SCHEMA}, false);
+                logger.log(SessionLog.FINE, SessionLog.MOXY, "jaxp_sec_prop_supported", new Object[] {ACCESS_EXTERNAL_SCHEMA});
             }
         } catch (IllegalArgumentException ignored) {
             // nothing to do; support depends on version JDK or SAX implementation
             if (logger.shouldLog(SessionLog.CONFIG, SessionLog.MOXY)) {
-                logger.log(SessionLog.CONFIG, SessionLog.MOXY, "jaxp_sec_prop_not_supported", new Object[] {ACCESS_EXTERNAL_SCHEMA}, false);
+                logger.log(SessionLog.CONFIG, SessionLog.MOXY, "jaxp_sec_prop_not_supported", new Object[] {ACCESS_EXTERNAL_SCHEMA});
                 logger.logThrowable(SessionLog.CONFIG, SessionLog.MOXY, ignored);
             }
         }
@@ -264,12 +264,12 @@ public class XMLHelper {
         try {
             dbf.setAttribute(ACCESS_EXTERNAL_SCHEMA, value);
             if (logger.shouldLog(SessionLog.FINE, SessionLog.MOXY)) {
-                logger.log(SessionLog.FINE, SessionLog.MOXY, "jaxp_sec_prop_supported", new Object[] {ACCESS_EXTERNAL_SCHEMA}, false);
+                logger.log(SessionLog.FINE, SessionLog.MOXY, "jaxp_sec_prop_supported", new Object[] {ACCESS_EXTERNAL_SCHEMA});
             }
         } catch (IllegalArgumentException ignored) {
             // nothing to do; support depends on version JDK or SAX implementation
             if (logger.shouldLog(SessionLog.CONFIG, SessionLog.MOXY)) {
-                logger.log(SessionLog.CONFIG, SessionLog.MOXY, "jaxp_sec_prop_not_supported", new Object[] {ACCESS_EXTERNAL_SCHEMA}, false);
+                logger.log(SessionLog.CONFIG, SessionLog.MOXY, "jaxp_sec_prop_not_supported", new Object[] {ACCESS_EXTERNAL_SCHEMA});
                 logger.logThrowable(SessionLog.CONFIG, SessionLog.MOXY, ignored);
             }
         }
@@ -296,12 +296,12 @@ public class XMLHelper {
         try {
             xmlReader.setProperty(ACCESS_EXTERNAL_SCHEMA, value);
             if (logger.shouldLog(SessionLog.FINE, SessionLog.MOXY)) {
-                logger.log(SessionLog.FINE, SessionLog.MOXY, "jaxp_sec_prop_supported", new Object[] {ACCESS_EXTERNAL_SCHEMA}, false);
+                logger.log(SessionLog.FINE, SessionLog.MOXY, "jaxp_sec_prop_supported", new Object[] {ACCESS_EXTERNAL_SCHEMA});
             }
         } catch (SAXException ignored) {
             // nothing to do; support depends on version JDK or SAX implementation
             if (logger.shouldLog(SessionLog.CONFIG, SessionLog.MOXY)) {
-                logger.log(SessionLog.CONFIG, SessionLog.MOXY, "jaxp_sec_prop_not_supported", new Object[] {ACCESS_EXTERNAL_SCHEMA}, false);
+                logger.log(SessionLog.CONFIG, SessionLog.MOXY, "jaxp_sec_prop_not_supported", new Object[] {ACCESS_EXTERNAL_SCHEMA});
                 logger.logThrowable(SessionLog.CONFIG, SessionLog.MOXY, ignored);
             }
         }
@@ -328,12 +328,12 @@ public class XMLHelper {
         try {
             sf.setProperty(ACCESS_EXTERNAL_DTD, value);
             if (logger.shouldLog(SessionLog.FINE, SessionLog.MOXY)) {
-                logger.log(SessionLog.FINE, SessionLog.MOXY, "jaxp_sec_prop_supported", new Object[] {ACCESS_EXTERNAL_DTD}, false);
+                logger.log(SessionLog.FINE, SessionLog.MOXY, "jaxp_sec_prop_supported", new Object[] {ACCESS_EXTERNAL_DTD});
             }
         } catch (SAXException ignored) {
             // nothing to do; support depends on version JDK or SAX implementation
             if (logger.shouldLog(SessionLog.CONFIG, SessionLog.MOXY)) {
-                logger.log(SessionLog.CONFIG, SessionLog.MOXY, "jaxp_sec_prop_not_supported", new Object[] {ACCESS_EXTERNAL_DTD}, false);
+                logger.log(SessionLog.CONFIG, SessionLog.MOXY, "jaxp_sec_prop_not_supported", new Object[] {ACCESS_EXTERNAL_DTD});
                 logger.logThrowable(SessionLog.CONFIG, SessionLog.MOXY, ignored);
             }
         }
@@ -360,12 +360,12 @@ public class XMLHelper {
         try {
             dbf.setAttribute(ACCESS_EXTERNAL_DTD, value);
             if (logger.shouldLog(SessionLog.FINE, SessionLog.MOXY)) {
-                logger.log(SessionLog.FINE, SessionLog.MOXY, "jaxp_sec_prop_supported", new Object[] {ACCESS_EXTERNAL_DTD}, false);
+                logger.log(SessionLog.FINE, SessionLog.MOXY, "jaxp_sec_prop_supported", new Object[] {ACCESS_EXTERNAL_DTD});
             }
         } catch (IllegalArgumentException ignored) {
             // nothing to do; support depends on version JDK or SAX implementation
             if (logger.shouldLog(SessionLog.CONFIG, SessionLog.MOXY)) {
-                logger.log(SessionLog.CONFIG, SessionLog.MOXY, "jaxp_sec_prop_not_supported", new Object[] {ACCESS_EXTERNAL_DTD}, false);
+                logger.log(SessionLog.CONFIG, SessionLog.MOXY, "jaxp_sec_prop_not_supported", new Object[] {ACCESS_EXTERNAL_DTD});
                 logger.logThrowable(SessionLog.CONFIG, SessionLog.MOXY, ignored);
             }
         }
@@ -392,12 +392,12 @@ public class XMLHelper {
         try {
             xmlReader.setProperty(ACCESS_EXTERNAL_DTD, value);
             if (logger.shouldLog(SessionLog.FINE, SessionLog.MOXY)) {
-                logger.log(SessionLog.FINE, SessionLog.MOXY, "jaxp_sec_prop_supported", new Object[] {ACCESS_EXTERNAL_DTD}, false);
+                logger.log(SessionLog.FINE, SessionLog.MOXY, "jaxp_sec_prop_supported", new Object[] {ACCESS_EXTERNAL_DTD});
             }
         } catch (SAXException ignored) {
             // nothing to do; support depends on version JDK or SAX implementation
             if (logger.shouldLog(SessionLog.CONFIG, SessionLog.MOXY)) {
-                logger.log(SessionLog.CONFIG, SessionLog.MOXY, "jaxp_sec_prop_not_supported", new Object[] {ACCESS_EXTERNAL_DTD}, false);
+                logger.log(SessionLog.CONFIG, SessionLog.MOXY, "jaxp_sec_prop_not_supported", new Object[] {ACCESS_EXTERNAL_DTD});
                 logger.logThrowable(SessionLog.CONFIG, SessionLog.MOXY, ignored);
             }
         }
