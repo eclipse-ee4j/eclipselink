@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -21,6 +21,8 @@
  *                       that do not request the Metamodel
  *     11/17/2010-2.2 Guy Pelletier 
  *       - 329008: Support dynamic context creation without persistence.xml
+ *     03/22/2016-2.6_WAS Nathan Rauh
+ *       - 489787: Fixed NullPointerException when specifying non-entity object to PersistenceUnitUtil.isLoaded
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa;
 
@@ -683,7 +685,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
      *         state has not been loaded, otherwise true
      */
     public boolean isLoaded(Object entity, String attributeName) {
-        if (EntityManagerFactoryImpl.isLoaded(entity, attributeName, session).equals(Boolean.TRUE)) {
+        if (Boolean.TRUE.equals(EntityManagerFactoryImpl.isLoaded(entity, attributeName, session))) {
             return true;
         }
         return false;
@@ -703,7 +705,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
      * @return false if the entity has not been loaded, else true.
      */
     public boolean isLoaded(Object entity) {
-        if (EntityManagerFactoryImpl.isLoaded(entity, session).equals(Boolean.TRUE)) {
+        if (Boolean.TRUE.equals(EntityManagerFactoryImpl.isLoaded(entity, session))) {
             return true;
         }
         return false;
