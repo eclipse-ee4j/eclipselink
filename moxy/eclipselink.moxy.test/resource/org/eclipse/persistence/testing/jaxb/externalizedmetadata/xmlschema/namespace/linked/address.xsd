@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:ns0="http://www.example.org/linked/address" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.example.org/linked/address" elementFormDefault="qualified">
+   <xsd:complexType name="address">
+      <xsd:sequence>
+         <xsd:element name="country" type="xsd:string" minOccurs="0"/>
+      </xsd:sequence>
+   </xsd:complexType>
+</xsd:schema>

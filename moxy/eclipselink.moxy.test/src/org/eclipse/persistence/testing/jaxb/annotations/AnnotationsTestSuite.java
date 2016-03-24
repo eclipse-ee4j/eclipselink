@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.annotations;
 
+import junit.framework.JUnit4TestAdapter;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -126,6 +127,7 @@ public class AnnotationsTestSuite extends TestSuite {
         suite.addTestSuite(InverseReferenceWithRefTestCases.class);
         suite.addTestSuite(InverseReferenceAdapterTestCases.class);
         suite.addTestSuite(InverseRefChoiceAdapterTestCases.class);
+        suite.addTest(new JUnit4TestAdapter(org.eclipse.persistence.testing.jaxb.annotations.xmlschema.XmlSchemaTestCases.class));
 
         return suite;
     }

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:ns0="http://www.example.org/linked/book" xmlns:ns1="http://www.example.org/linked/author" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.example.org/linked/book" elementFormDefault="qualified">
+   <xsd:import schemaLocation="author.xsd" namespace="http://www.example.org/linked/author"/>
+   <xsd:complexType name="book">
+      <xsd:sequence>
+         <xsd:element name="name" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="author" type="ns1:author" minOccurs="0"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="book" type="ns0:book"/>
+</xsd:schema>

@@ -13,6 +13,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata;
 
+import junit.framework.JUnit4TestAdapter;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -114,6 +115,7 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlregistry.Xml
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlrootelement.XmlRootElementTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlschema.XmlSchemaTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlschema.namespace.NamespaceTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlschema.namespace.linked.LinkedNamespacesTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlschematype.XmlSchemaTypeTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlschematypes.XmlSchemaTypesTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlseealso.XmlSeeAlsoTestCases;
@@ -261,6 +263,7 @@ public class ExternalizedMetadataTestSuite extends TestSuite {
         suite.addTestSuite(XmlNullPolicyTypeLevelOverrideTestCases.class);
         suite.addTestSuite(XmlNullPolicyTypeLevelTestCases.class);
         suite.addTestSuite(XmlIdExtensionOverrideTestCases.class);
+        suite.addTest(new JUnit4TestAdapter(LinkedNamespacesTestCases.class));
         return suite;
     }
 

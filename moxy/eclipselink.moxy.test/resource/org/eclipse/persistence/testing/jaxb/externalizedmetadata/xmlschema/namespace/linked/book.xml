@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<book:book xmlns:book="http://www.example.org/linked/book" xmlns:author="http://www.example.org/linked/author" xmlns:address="http://www.example.org/linked/address">
+   <book:name>Nineteen Eighty-Four</book:name>
+   <book:author>
+      <author:firstName>George</author:firstName>
+      <author:lastName>Orwell</author:lastName>
+      <author:address>
+         <address:country>United Kingdom of Great Britain and Northern Ireland</address:country>
+      </author:address>
+   </book:author>
+</book:book>

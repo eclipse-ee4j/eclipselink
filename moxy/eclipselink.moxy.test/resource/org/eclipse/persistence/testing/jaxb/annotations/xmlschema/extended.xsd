@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:ns0="http://www.example.org/extended" xmlns:ns1="http://www.example.org/base" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.example.org/extended" elementFormDefault="qualified">
+   <xsd:import schemaLocation="base.xsd" namespace="http://www.example.org/base"/>
+   <xsd:complexType name="extensionWrapper">
+      <xsd:sequence>
+         <xsd:element name="wrapperStringField" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="wrapperObjectField" type="ns0:extendedObject" minOccurs="0"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="extendedObject">
+      <xsd:complexContent>
+         <xsd:extension base="ns1:baseObject">
+            <xsd:sequence/>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   <xsd:element name="extensionWrapper" type="ns0:extensionWrapper"/>
+</xsd:schema>

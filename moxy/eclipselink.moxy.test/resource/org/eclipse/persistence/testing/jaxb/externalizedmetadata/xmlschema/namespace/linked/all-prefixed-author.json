@@ -1,0 +1,23 @@
+{
+   "package-name" : "org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlschema.namespace.linked.author",
+   "xml-schema" : {
+      "element-form-default" : "QUALIFIED",
+      "namespace" : "http://www.example.org/linked/author",
+      "xml-ns" : [ {
+        "prefix" : "author",
+        "namespace-uri" : "http://www.example.org/linked/author"
+      } ]
+   },
+   "java-types" : {
+      "java-type" : [ {
+         "name" : "Author",
+         "java-attributes" : {
+            "xml-element" : [
+                {"java-attribute" : "firstName"},
+                {"java-attribute" : "lastName"},
+                {"java-attribute" : "address"}
+            ]
+         }
+      } ]
+   }
+}
