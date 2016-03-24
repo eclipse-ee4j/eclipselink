@@ -16,9 +16,7 @@ package org.eclipse.persistence.json.bind.internal;
 import org.eclipse.persistence.json.bind.internal.naming.PropertyNamingStrategy;
 import org.eclipse.persistence.json.bind.internal.properties.MessageKeys;
 import org.eclipse.persistence.json.bind.internal.properties.Messages;
-import org.eclipse.persistence.json.bind.internal.unmarshaller.CurrentItemBuilder;
-import org.eclipse.persistence.json.bind.internal.unmarshaller.JsonValueType;
-import org.eclipse.persistence.json.bind.internal.unmarshaller.UnmarshallerItem;
+import org.eclipse.persistence.json.bind.internal.unmarshaller.*;
 
 import javax.json.bind.JsonbConfig;
 import javax.json.bind.JsonbException;
@@ -141,7 +139,7 @@ public class Unmarshaller extends JsonTextProcessor {
     private void onObjectStarted(JsonValueType jsonValueType) {
         //Create root item object when parser encounters first parenthesis.
         if (currentItem == null) {
-            currentItem = new CurrentItemBuilder().withType(rootType != Object.class ? rootType : jsonValueType.getConversionType()).withJsonValueType(jsonValueType).build();
+            currentItem = new UnmarshallerItemBuilder().withType(rootType != Object.class ? rootType : jsonValueType.getConversionType()).withJsonValueType(jsonValueType).build();
             return;
         }
         UnmarshallerItem<?> wrapper = currentItem;
@@ -156,6 +154,9 @@ public class Unmarshaller extends JsonTextProcessor {
         UnmarshallerItem<?> finished = currentItem;
         ((UnmarshallerItem<?>) finished.getWrapper()).appendItem(finished);
         currentItem = (UnmarshallerItem<?>) finished.getWrapper();
+        while (currentItem instanceof DecoratorItem) {
+            currentItem = ((DecoratorItem<?>)currentItem).getWrapperItem();
+        }
     }
 
     /**

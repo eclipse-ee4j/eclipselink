@@ -36,7 +36,7 @@ public class MapItem extends AbstractItem<Map<?, ?>> implements UnmarshallerItem
     /**
      * @param builder
      */
-    protected MapItem(CurrentItemBuilder builder) {
+    protected MapItem(UnmarshallerItemBuilder builder) {
         super(builder);
         mapValueRuntimeType = getRuntimeType() instanceof ParameterizedType ?
                 ReflectionUtils.resolveType(this, ((ParameterizedType) getRuntimeType()).getActualTypeArguments()[1])

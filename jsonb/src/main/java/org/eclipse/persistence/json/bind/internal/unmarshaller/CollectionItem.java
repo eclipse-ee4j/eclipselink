@@ -33,7 +33,7 @@ class CollectionItem<T extends Collection<?>> extends AbstractItem<T> implements
     /**
      * @param builder
      */
-    protected CollectionItem(CurrentItemBuilder builder) {
+    protected CollectionItem(UnmarshallerItemBuilder builder) {
         super(builder);
         collectionValueType = getRuntimeType() instanceof ParameterizedType ?
                 ReflectionUtils.resolveType(this, ((ParameterizedType) getRuntimeType()).getActualTypeArguments()[0])

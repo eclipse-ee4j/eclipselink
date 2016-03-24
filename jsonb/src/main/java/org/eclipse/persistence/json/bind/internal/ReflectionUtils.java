@@ -19,8 +19,6 @@ import org.eclipse.persistence.json.bind.internal.unmarshaller.EmbeddedItem;
 import org.eclipse.persistence.json.bind.internal.unmarshaller.ResolvedParameterizedType;
 
 import javax.json.bind.JsonbException;
-import javax.json.bind.annotation.JsonbPropertyOrder;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.util.Arrays;
 import java.util.Objects;
@@ -51,7 +49,7 @@ public class ReflectionUtils {
         } else if (type instanceof GenericArrayType) {
             return ((GenericArrayType) type).getClass();
         }
-        throw new JsonbException(Messages.getMessage(MessageKeys.UNSUPPORTED_TYPE, type));
+        throw new JsonbException(Messages.getMessage(MessageKeys.TYPE_RESOLUTION_ERROR, type));
     }
 
     /**

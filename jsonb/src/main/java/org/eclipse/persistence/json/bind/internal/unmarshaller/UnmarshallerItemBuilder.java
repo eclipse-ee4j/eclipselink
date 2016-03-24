@@ -21,7 +21,9 @@ import org.eclipse.persistence.json.bind.internal.conversion.TypeConverter;
 import org.eclipse.persistence.json.bind.internal.properties.MessageKeys;
 import org.eclipse.persistence.json.bind.internal.properties.Messages;
 import org.eclipse.persistence.json.bind.model.ClassModel;
+import org.eclipse.persistence.json.bind.model.PolymorphismAdapter;
 import org.eclipse.persistence.json.bind.model.PropertyModel;
+import org.eclipse.persistence.json.bind.model.TypeWrapper;
 
 import javax.json.bind.JsonbException;
 import java.lang.reflect.GenericArrayType;
@@ -33,12 +35,12 @@ import java.util.*;
  *
  * @author Roman Grigoriadi
  */
-public class CurrentItemBuilder {
+public class UnmarshallerItemBuilder {
 
     /**
      * Not null with an exception of a root item.
      */
-    private CurrentItem<?> wrapper;
+    private UnmarshallerItem<?> wrapper;
 
     /**
      * Type is used when field model is not present.
@@ -84,7 +86,7 @@ public class CurrentItemBuilder {
      * @param wrapper not null
      * @return builder instance for call chaining
      */
-    public CurrentItemBuilder withWrapper(CurrentItem<?> wrapper) {
+    public UnmarshallerItemBuilder withWrapper(UnmarshallerItem<?> wrapper) {
         this.wrapper = wrapper;
         return this;
     }
@@ -95,7 +97,7 @@ public class CurrentItemBuilder {
      * @param type type of instance not null
      * @return builder instance for call chaining
      */
-    public CurrentItemBuilder withType(Type type) {
+    public UnmarshallerItemBuilder withType(Type type) {
         this.genericType = unwrapAnonymous(type);
         return this;
     }
@@ -105,7 +107,7 @@ public class CurrentItemBuilder {
      * @param propertyModel model of a field, not null
      * @return builder instance for call chaining
      */
-    public CurrentItemBuilder withFieldModel(PropertyModel propertyModel) {
+    public UnmarshallerItemBuilder withFieldModel(PropertyModel propertyModel) {
         this.propertyModel = propertyModel;
         return this;
     }
@@ -115,7 +117,7 @@ public class CurrentItemBuilder {
      * @param jsonKeyName
      * @return builder instance for call chaining
      */
-    public CurrentItemBuilder withJsonKeyName(String jsonKeyName) {
+    public UnmarshallerItemBuilder withJsonKeyName(String jsonKeyName) {
         this.jsonKeyName = jsonKeyName;
         return this;
     }
@@ -126,7 +128,7 @@ public class CurrentItemBuilder {
      * @param jsonValueType type of JSON value returned by {@link javax.json.stream.JsonParser} not null
      * @return builder instance for call chaining
      */
-    public CurrentItemBuilder withJsonValueType(JsonValueType jsonValueType) {
+    public UnmarshallerItemBuilder withJsonValueType(JsonValueType jsonValueType) {
         this.jsonValueType = jsonValueType;
         return this;
     }
@@ -145,6 +147,7 @@ public class CurrentItemBuilder {
         final Optional<JsonbAdapterInfo> adapterInfoOptional = matcher.getAdapterInfo(runtimeType, propertyModel);
         Optional<Class> rawTypeOptional = adapterInfoOptional.map(adapterInfo->{
             runtimeType = adapterInfo.getToType();
+            wrapper = new AdaptedObjectItemDecorator<>(adapterInfoOptional.get(), wrapper);
             return ReflectionUtils.getRawType(runtimeType );
         });
         rawType = rawTypeOptional.orElse(rawType);
@@ -176,8 +179,13 @@ public class CurrentItemBuilder {
                     rawType = ReflectionUtils.getRawType(runtimeType );
                 }
 
-                classModel = JsonbContext.getInstance().getMappingContext().getOrCreateClassModel(rawType);
+                classModel = getClassModel(rawType);
                 instance = ReflectionUtils.createNoArgConstructorInstance(classModel.getRawType());
+                //Special handling for TypeWrapperItem
+                if (TypeWrapper.class.isAssignableFrom(rawType)) {
+                    return wrapAdapted(adapterInfoOptional,  new TypeWrapperItem<>(this,
+                            ((PolymorphismAdapter<?>) adapterInfoOptional.get().getAdapter()).getAllowedClasses()));
+                }
                 final ObjectItem<Object> objectItem = new ObjectItem<>(this);
                 return wrapAdapted(adapterInfoOptional, objectItem);
             default:
@@ -185,13 +193,38 @@ public class CurrentItemBuilder {
         }
     }
 
+    /***
+     * Gets or load class model for a class an its superclasses.
+     *
+     * @param rawType Class to get model for
+     * @return Class model
+     */
+    private ClassModel getClassModel(Class<?> rawType) {
+        ClassModel classModel = JsonbContext.getInstance().getMappingContext().getClassModel(rawType);
+        if (classModel == null) {
+            for (Class clazz = rawType; clazz.getSuperclass() != null; clazz = clazz.getSuperclass()) {
+                JsonbContext.getInstance().getMappingContext().getOrCreateClassModel(clazz);
+            }
+            classModel = JsonbContext.getInstance().getMappingContext().getClassModel(rawType);
+            Objects.requireNonNull(classModel);
+        }
+        return classModel;
+    }
+
     private UnmarshallerItem<?> wrapAdapted(Optional<JsonbAdapterInfo> adapterInfoOptional, UnmarshallerItem<?> item) {
-        final Optional<UnmarshallerItem<?>> adaptedItemOptional = adapterInfoOptional.map(adapterInfo -> new AdaptedObjectItemDecorator<>(item, adapterInfo));
+        final Optional<UnmarshallerItem<?>> adaptedItemOptional = adapterInfoOptional.map(adapterInfo -> {
+            setAdaptedItemCaptor((AdaptedObjectItemDecorator)wrapper, item);
+            return wrapper;
+        });
         return adaptedItemOptional.orElse(item);
     }
 
+    private <T,A> void setAdaptedItemCaptor(AdaptedObjectItemDecorator<T,A> decoratorItem, UnmarshallerItem<T> adaptedItem) {
+        decoratorItem.setAdaptedItem(adaptedItem);
+    }
+
     private Type resolveRuntimeType() {
-        Type toResolve = propertyModel != null ? propertyModel.getPropertyType() : genericType;
+        Type toResolve = genericType != null ? genericType : propertyModel.getPropertyType();
         Type resolved = ReflectionUtils.resolveType(wrapper, toResolve);
         //If genericType cannot be resolved or is object, unmarshall to Map.
         if (resolved == Object.class) {

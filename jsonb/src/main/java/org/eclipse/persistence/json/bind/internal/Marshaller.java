@@ -21,6 +21,7 @@ import org.eclipse.persistence.json.bind.internal.properties.Messages;
 import org.eclipse.persistence.json.bind.internal.serializer.JsonpSerializers;
 import org.eclipse.persistence.json.bind.model.ClassModel;
 import org.eclipse.persistence.json.bind.model.PropertyModel;
+import org.eclipse.persistence.json.bind.model.TypeWrapper;
 
 import javax.json.bind.JsonbConfig;
 import javax.json.bind.JsonbException;
@@ -42,6 +43,8 @@ import static java.util.stream.Collectors.toList;
 
 /**
  * JSONB marshaller. Created each time marshalling operation called.
+ *
+ * TODO current marshaller implementation will throw StackOverflowError with very large object trees.
  *
  * @author Dmitry Kornilov
  * @author Roman Grigoriadi
@@ -244,9 +247,22 @@ public class Marshaller extends JsonTextProcessor {
     }
 
     private Optional<JsonbAdapterInfo> getMarshallerAdapterInfo(Type runtimeType) {
+        if (preventTypeWrapperAdaptingRecursion()) {
+            return Optional.empty();
+        }
         final AdapterMatcher matcher = AdapterMatcher.getInstance();
         return propertyModelStack.empty() ?
                 matcher.getAdapterInfo(runtimeType) : matcher.getAdapterInfo(runtimeType, propertyModelStack.peek());
+    }
+
+    /**
+     * Class of T instance in type wrapper is adapted to TypeWrapper, which would cause a StackOverflow
+     * due to cycling adapting recursion.
+     *
+     * TODO consider more generic approach for detecting adapter recursion
+     */
+    private boolean preventTypeWrapperAdaptingRecursion() {
+        return !propertyModelStack.empty() && propertyModelStack.peek().getClassModel().getRawType() == TypeWrapper.class;
     }
 
     private void marshallObjectProperties(Object object) {

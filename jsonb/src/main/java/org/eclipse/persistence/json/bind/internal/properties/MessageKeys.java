@@ -22,7 +22,7 @@ public enum MessageKeys {
     PROCESS_FROM_JSON("processFromJson"),
     PROCESS_TO_JSON("processToJson"),
     CANNOT_MARSHAL_OBJECT("cannotMarshallObject"),
-    UNSUPPORTED_TYPE("unsupportedType"),
+    TYPE_RESOLUTION_ERROR("typeResolutionError"),
     GENERIC_BOUND_NOT_FOUND("genericBoundNotFound"),
     CANT_CONVERT_JSON_VALUE("cantConvertJsonValue"),
     CANT_CREATE_ROOT_INSTANCE("cantCreateRootInstance"),
@@ -48,6 +48,9 @@ public enum MessageKeys {
     BEAN_MANAGER_NOT_FOUND_JNDI("beanManagerNotFoundJndi"),
     BEAN_MANAGER_NOT_FOUND_NO_PROVIDER("beanManagerNotFoundNoProvider"),
     BEAN_MANAGER_NOT_FOUND_USING_DEFAULT("usingDefaultConstructorInstantiator"),
+    PROPERTY_NOT_FOUND_DESERIALIZER("propertyNotFoundDeserializer"),
+    SETTING_PROPERTY_DESERIALIZER("settingPropertyDeserializer"),
+    CLASS_LOAD_NOT_ALLOWED("classLoadNotAllowed"),
     ;
 
     /** Message bundle key. */

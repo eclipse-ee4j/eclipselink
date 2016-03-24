@@ -22,7 +22,9 @@ import org.eclipse.persistence.json.bind.model.PropertyModel;
 import javax.json.bind.JsonbException;
 import javax.json.bind.adapter.JsonbAdapter;
 import java.lang.reflect.Type;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 /**
  * Item for handling all types of unknown objects by reflection, parsing their fields, according to json key name.
@@ -31,12 +33,13 @@ import java.util.Optional;
  */
 class ObjectItem<T> extends AbstractItem<T> implements UnmarshallerItem<T> {
 
+    private static final Logger log = Logger.getLogger(ObjectItem.class.getName());
 
     /**
      * Creates instance of an item.
      * @param builder builder to build from
      */
-    protected ObjectItem(CurrentItemBuilder builder) {
+    protected ObjectItem(UnmarshallerItemBuilder builder) {
         super(builder);
     }
 
@@ -64,6 +67,7 @@ class ObjectItem<T> extends AbstractItem<T> implements UnmarshallerItem<T> {
         PropertyModel valuePropertyModel = getClassModel().findPropertyModelByJsonReadName(key);
         //skip the field if it is not found in class
         if (valuePropertyModel == null) {
+            log.warning(Messages.getMessage(MessageKeys.PROPERTY_NOT_FOUND_DESERIALIZER, key, getClassModel().getRawType().getName(), value));
             return;
         }
         if (jsonValueType == JsonValueType.NULL) {
@@ -93,17 +97,18 @@ class ObjectItem<T> extends AbstractItem<T> implements UnmarshallerItem<T> {
         }
         Object converted = getTypeConverter().fromJson(value, valueClass);
         valuePropertyModel.setValue(getInstance(), converted);
+        log.finest(Messages.getMessage(MessageKeys.SETTING_PROPERTY_DESERIALIZER, key, getClassModel().getRawType().getName(), value));
     }
 
     @Override
     public UnmarshallerItem<?> newItem(String fieldName, JsonValueType jsonValueType) {
         //identify field model of currently processed class model
         PropertyModel newPropertyModel = getClassModel().findPropertyModelByJsonReadName(fieldName);
-
+        Objects.requireNonNull(newPropertyModel);
         //TODO missing json object skip (implement empty stub item for such cases).
 
         //create current item instance of identified object field
-        return new CurrentItemBuilder().withWrapper(this).withFieldModel(newPropertyModel).withJsonKeyName(fieldName).withJsonValueType(jsonValueType).build();
+        return new UnmarshallerItemBuilder().withWrapper(this).withFieldModel(newPropertyModel).withJsonKeyName(fieldName).withJsonValueType(jsonValueType).build();
     }
 
 }

@@ -30,25 +30,27 @@ import java.lang.reflect.Type;
  * @param <A> adapted type, type to unmarshall JSOn into
  * @param <T> required type, typically type of the field, which is adapted to another type
  */
-public class AdaptedObjectItemDecorator<A, T> implements UnmarshallerItem<T> {
+public class AdaptedObjectItemDecorator<A, T> implements UnmarshallerItem<T>, DecoratorItem<A> {
 
-    private final UnmarshallerItem<A> adaptedItem;
+    private UnmarshallerItem<A> adaptedItem;
 
     private final JsonbAdapterInfo adapterInfo;
 
+    private final UnmarshallerItem<?> wrapperItem;
+
     /**
      * Creates decoration instance wrapping real adapted object item.
-     * @param adaptedItem decorated item holding adapted type instance
      * @param adapterInfo adapter type info
+     * @param wrapperItem wrapper item to get instance from
      */
-    public AdaptedObjectItemDecorator(UnmarshallerItem<A> adaptedItem, JsonbAdapterInfo adapterInfo) {
-        this.adaptedItem = adaptedItem;
+    public AdaptedObjectItemDecorator(JsonbAdapterInfo adapterInfo, UnmarshallerItem<?> wrapperItem) {
         this.adapterInfo = adapterInfo;
+        this.wrapperItem = wrapperItem;
     }
 
     @Override
     public void appendItem(UnmarshallerItem<?> valueItem) {
-        adaptedItem.appendItem(valueItem);
+        wrapperItem.appendItem(this);
     }
 
     @Override
@@ -58,13 +60,7 @@ public class AdaptedObjectItemDecorator<A, T> implements UnmarshallerItem<T> {
 
     @Override
     public UnmarshallerItem<?> newItem(String fieldName, JsonValueType jsonValueType) {
-        //identify field model of currently processed class model
-        PropertyModel newPropertyModel = adaptedItem.getClassModel().findPropertyModelByJsonReadName(fieldName);
-
-        //TODO missing json object skip (implement empty stub item for such cases).
-
-        //create current item instance of identified object field
-        return new CurrentItemBuilder().withWrapper(this).withFieldModel(newPropertyModel).withJsonKeyName(fieldName).withJsonValueType(jsonValueType).build();
+        return adaptedItem.newItem(fieldName, jsonValueType);
     }
 
     @Override
@@ -95,7 +91,7 @@ public class AdaptedObjectItemDecorator<A, T> implements UnmarshallerItem<T> {
 
     @Override
     public CurrentItem<?> getWrapper() {
-        return adaptedItem.getWrapper();
+        return wrapperItem;
     }
 
     @Override
@@ -103,4 +99,17 @@ public class AdaptedObjectItemDecorator<A, T> implements UnmarshallerItem<T> {
         return adaptedItem.getRuntimeType();
     }
 
+    public void setAdaptedItem(UnmarshallerItem<A> adaptedItem) {
+        this.adaptedItem = adaptedItem;
+    }
+
+    @Override
+    public UnmarshallerItem<A> getDecoratedItem() {
+        return adaptedItem;
+    }
+
+    @Override
+    public UnmarshallerItem<?> getWrapperItem() {
+        return wrapperItem;
+    }
 }

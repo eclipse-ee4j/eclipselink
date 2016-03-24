@@ -64,7 +64,7 @@ public abstract class AbstractItem<T> implements CurrentItem<T> {
      * Create instance of current item with its builder.
      */
     @SuppressWarnings("unchecked")
-    protected AbstractItem(CurrentItemBuilder builder) {
+    protected AbstractItem(UnmarshallerItemBuilder builder) {
         this.wrapper = builder.getWrapper();
         this.wrapperPropertyModel = builder.getPropertyModel();
         this.classModel = builder.getClassModel();
@@ -112,7 +112,7 @@ public abstract class AbstractItem<T> implements CurrentItem<T> {
     protected UnmarshallerItem<?> newCollectionOrMapItem(String fieldName, Type valueType, JsonValueType jsonValueType) {
         Type actualValueType = ReflectionUtils.resolveType(this, valueType);
         actualValueType = actualValueType != Object.class ? actualValueType : jsonValueType.getConversionType();
-        return new CurrentItemBuilder().withWrapper(this).withType(actualValueType).withJsonKeyName(fieldName).withJsonValueType(jsonValueType).build();
+        return new UnmarshallerItemBuilder().withWrapper((UnmarshallerItem<?>) this).withType(actualValueType).withJsonKeyName(fieldName).withJsonValueType(jsonValueType).build();
     }
 
     protected Type resolveValueType(Type runtimeType, JsonValueType jsonValueType) {

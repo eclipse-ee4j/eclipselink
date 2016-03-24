@@ -15,8 +15,10 @@ package org.eclipse.persistence.json.bind.internal.adapter;
 
 import org.eclipse.persistence.json.bind.internal.JsonbContext;
 import org.eclipse.persistence.json.bind.internal.ReflectionUtils;
+import org.eclipse.persistence.json.bind.internal.RuntimeTypeHolder;
 import org.eclipse.persistence.json.bind.internal.VariableTypeInheritanceSearch;
 import org.eclipse.persistence.json.bind.model.PropertyModel;
+import org.eclipse.persistence.json.bind.model.TypeWrapper;
 
 import javax.json.bind.JsonbException;
 import javax.json.bind.adapter.JsonbAdapter;
@@ -69,6 +71,9 @@ public class AdapterMatcher {
      * @return adapter info if present
      */
     public Optional<JsonbAdapterInfo> getAdapterInfo(Type propertyRuntimeType, PropertyModel propertyModel) {
+        if (propertyModel != null && propertyModel.getClassModel().getRawType() == TypeWrapper.class) {
+            return Optional.empty();
+        }
         Optional<JsonbAdapterInfo> propertyAdapterInfo = propertyModel != null ?
                 propertyModel.getCustomization().getAdapterInfo() : Optional.empty();
         if (propertyAdapterInfo.filter(info -> matches(propertyRuntimeType, info)).isPresent()) {
@@ -80,6 +85,10 @@ public class AdapterMatcher {
     private boolean matches(Type runtimeType, JsonbAdapterInfo info) {
         if (info.getFromType().equals(runtimeType)) {
             return true;
+        }
+        if (info.getFromType() instanceof Class && runtimeType instanceof Class) {
+            //for polymorphic adapters
+            return ((Class<?>) info.getFromType()).isAssignableFrom((Class) runtimeType);
         }
         return ReflectionUtils.getRawType(runtimeType) == ReflectionUtils.getRawType(info.getFromType()) &&
                 runtimeType instanceof ParameterizedType && info.getFromType() instanceof ParameterizedType &&
@@ -171,8 +180,12 @@ public class AdapterMatcher {
     }
 
     private Type resolveAdapterTypeArg(Type adapterTypeArg, Type adapterType) {
-        return adapterTypeArg instanceof ParameterizedType ?
-                ReflectionUtils.resolveTypeArguments((ParameterizedType) adapterTypeArg, adapterType) :
-                adapterTypeArg;
+        if(adapterTypeArg instanceof ParameterizedType) {
+            return ReflectionUtils.resolveTypeArguments((ParameterizedType) adapterTypeArg, adapterType);
+        } else if (adapterTypeArg instanceof TypeVariable) {
+            return ReflectionUtils.resolveItemVariableType(new RuntimeTypeHolder(null, adapterType), (TypeVariable<?>) adapterTypeArg);
+        } else {
+            return adapterTypeArg;
+        }
     }
 }

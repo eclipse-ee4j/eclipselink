@@ -36,7 +36,7 @@ public class ArrayItem extends AbstractItem<Object[]> implements UnmarshallerIte
 
     private Object[] arrayInstance;
 
-    protected ArrayItem(CurrentItemBuilder builder) {
+    protected ArrayItem(UnmarshallerItemBuilder builder) {
         super(builder);
         if (getRuntimeType() instanceof GenericArrayType) {
             componentClass = ReflectionUtils.resolveRawType(this, ((GenericArrayType) getRuntimeType()).getGenericComponentType());
@@ -68,7 +68,7 @@ public class ArrayItem extends AbstractItem<Object[]> implements UnmarshallerIte
     @Override
     public UnmarshallerItem<?> newItem(String fieldName, JsonValueType jsonValueType) {
         Type actualValueType = componentClass;
-        return new CurrentItemBuilder().withWrapper(this).withType(actualValueType).withJsonValueType(jsonValueType).build();
+        return new UnmarshallerItemBuilder().withWrapper(this).withType(actualValueType).withJsonValueType(jsonValueType).build();
     }
 
     @Override
