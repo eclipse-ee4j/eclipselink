@@ -2,7 +2,6 @@ package org.eclipse.persistence.json.bind.internal.conversion;
 
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 
 /**
  * @author David Král
@@ -20,7 +19,7 @@ public class BigDecimalTypeConverter extends AbstractTypeConverter<BigDecimal> {
 
     @Override
     public String toJson(BigDecimal object) {
-        return String.valueOf(object);
+        return object.toString();
     }
 
 }

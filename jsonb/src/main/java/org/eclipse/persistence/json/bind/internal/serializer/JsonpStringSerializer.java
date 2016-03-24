@@ -13,7 +13,14 @@
 
 package org.eclipse.persistence.json.bind.internal.serializer;
 
+import org.eclipse.persistence.json.bind.internal.JsonbContext;
+import org.eclipse.persistence.json.bind.internal.properties.MessageKeys;
+import org.eclipse.persistence.json.bind.internal.properties.Messages;
+
+import javax.json.bind.JsonbConfig;
+import javax.json.bind.JsonbException;
 import javax.json.stream.JsonGenerator;
+import java.io.UnsupportedEncodingException;
 import java.util.Objects;
 
 /**
@@ -25,12 +32,26 @@ public class JsonpStringSerializer extends AbstractJsonpSerializer<String> {
 
     @Override
     protected void writeValue(String value, JsonGenerator jsonGenerator) {
-        jsonGenerator.write(value);
+        jsonGenerator.write(getValue(value));
     }
 
     @Override
     protected void writeValue(String keyName, String value, JsonGenerator jsonGenerator) {
-        jsonGenerator.write(keyName, value);
+        jsonGenerator.write(keyName, getValue(value));
+    }
+
+    public String getValue(String value){
+        if ((boolean) JsonbContext.getInstance().getConfig().getProperty(JsonbConfig.STRICT_IJSON).orElse(false)) {
+            try {
+                String newString = new String(value.getBytes("UTF-8"), "UTF-8");
+                if (!newString.equals(value)) {
+                    throw new JsonbException(Messages.getMessage(MessageKeys.UNPAIRED_SURROGATE));
+                }
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+        }
+        return value;
     }
 
     @Override

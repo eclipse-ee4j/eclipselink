@@ -79,6 +79,7 @@ public class ConvertersMapTypeConverter implements TypeConverter {
         converters.put(BigDecimal.class, new BigDecimalTypeConverter());
         converters.put(ZoneOffset.class, new ZoneOffsetTypeConverter());
         converters.put(Enum.class, new EnumTypeConverter());
+        converters.put(byte[].class, new ByteArrayTypeConverter());
     }
 
     @Override

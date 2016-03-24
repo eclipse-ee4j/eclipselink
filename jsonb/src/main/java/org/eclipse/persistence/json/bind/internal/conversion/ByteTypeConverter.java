@@ -24,12 +24,12 @@ public class ByteTypeConverter extends AbstractTypeConverter<Byte> {
     @Override
     public boolean supportsToJson(Class<?> type) {
         return  super.supportsToJson(type)
-                || type == short.class;
+                || type == byte.class;
     }
 
     @Override
     public boolean supportsFromJson(Class<?> type) {
         return super.supportsFromJson(type)
-                || type == short.class;
+                || type == byte.class;
     }
 }

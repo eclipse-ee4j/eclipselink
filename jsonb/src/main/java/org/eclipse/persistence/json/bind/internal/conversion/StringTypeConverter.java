@@ -1,5 +1,12 @@
 package org.eclipse.persistence.json.bind.internal.conversion;
 
+import org.eclipse.persistence.json.bind.internal.JsonbContext;
+import org.eclipse.persistence.json.bind.internal.properties.MessageKeys;
+import org.eclipse.persistence.json.bind.internal.properties.Messages;
+
+import javax.json.bind.JsonbConfig;
+import javax.json.bind.JsonbException;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 
 /**
@@ -18,7 +25,17 @@ public class StringTypeConverter extends AbstractTypeConverter<String> {
 
     @Override
     public String toJson(String object) {
-        return object.toString();
+        if ((boolean)JsonbContext.getInstance().getConfig().getProperty(JsonbConfig.STRICT_IJSON).orElse(false)) {
+            try {
+                String newString = new String(object.getBytes("UTF-8"), "UTF-8");
+                if (!newString.equals(object)) {
+                    throw new JsonbException(Messages.getMessage(MessageKeys.UNPAIRED_SURROGATE));
+                }
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+        }
+        return object;
     }
 
     @Override

@@ -24,9 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @author Roman Grigoriadi
@@ -149,6 +147,48 @@ public class ArrayTest {
         assertTrue(result.length == 2);
         assertNull(result[0]);
         assertNull(result[1]);
+    }
+
+    @Test
+    public void testByteArray() {
+        byte[] byteArr = {-128, 127};
+        assertEquals("[-128,127]", jsonb.toJson(byteArr));
+        assertArrayEquals(byteArr, jsonb.fromJson("[-128, 127]", byte[].class));
+    }
+
+    @Test
+    public void testShortArray() {
+        short[] shortArr = {-128, 127};
+        assertEquals("[-128,127]", jsonb.toJson(shortArr));
+        assertArrayEquals(shortArr, jsonb.fromJson("[-128, 127]", short[].class));
+    }
+
+    @Test
+    public void testIntArray() {
+        int[] intArr = {-128, 127};
+        assertEquals("[-128,127]", jsonb.toJson(intArr));
+        assertArrayEquals(intArr, jsonb.fromJson("[-128, 127]", int[].class));
+    }
+
+    @Test
+    public void testLongArray() {
+        long[] longArr = {-128, 127};
+        assertEquals("[-128,127]", jsonb.toJson(longArr));
+        assertArrayEquals(longArr, jsonb.fromJson("[-128, 127]", long[].class));
+    }
+
+    @Test
+    public void testFloatArray() {
+        float[] floatArr = {-128, 127};
+        assertEquals("[-128.0,127.0]", jsonb.toJson(floatArr));
+        assertArrayEquals(floatArr, jsonb.fromJson("[-128.0, 127.0]", float[].class), 0f);
+    }
+
+    @Test
+    public void testDoubleArray() {
+        double[] doubleArr = {-128, 127};
+        assertEquals("[-128.0,127.0]", jsonb.toJson(doubleArr));
+        assertArrayEquals(doubleArr, jsonb.fromJson("[-128.0, 127.0]", double[].class), 0d);
     }
 
     public static class KeyValue {

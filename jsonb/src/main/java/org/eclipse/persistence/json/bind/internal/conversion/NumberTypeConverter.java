@@ -19,7 +19,7 @@ public class NumberTypeConverter extends AbstractTypeConverter<Number> {
 
     @Override
     public String toJson(Number object) {
-        return String.valueOf(object);
+        return ((Double)object.doubleValue()).toString();
     }
 
 }

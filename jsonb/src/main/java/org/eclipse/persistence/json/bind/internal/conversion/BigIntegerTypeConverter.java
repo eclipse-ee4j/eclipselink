@@ -19,7 +19,7 @@ public class BigIntegerTypeConverter extends AbstractTypeConverter<BigInteger> {
 
     @Override
     public String toJson(BigInteger object) {
-        return String.valueOf(object);
+        return object.toString();
     }
 
 }

@@ -6,7 +6,7 @@
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
- *
+ * <p>
  * Contributors:
  * Dmitry Kornilov - initial implementation
  ******************************************************************************/
@@ -16,15 +16,24 @@ import org.eclipse.persistence.json.bind.internal.JsonbContext;
 import org.eclipse.persistence.json.bind.internal.MappingContext;
 import org.eclipse.persistence.json.bind.internal.TestJsonbContextCommand;
 import org.eclipse.persistence.json.bind.internal.cdi.DefaultConstructorCreator;
+import org.eclipse.persistence.json.bind.JsonBindingBuilder;
+import org.eclipse.persistence.json.bind.defaultmapping.typeConvertors.model.*;
 import org.eclipse.persistence.json.bind.internal.conversion.*;
+import org.eclipse.persistence.json.bind.internal.properties.MessageKeys;
+import org.eclipse.persistence.json.bind.internal.properties.Messages;
+import org.junit.Assert;
 import org.junit.Test;
 
 import javax.json.Json;
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObject;
+import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbConfig;
+import javax.json.bind.JsonbException;
+import javax.json.bind.config.BinaryDataStrategy;
 import javax.json.spi.JsonProvider;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -34,7 +43,9 @@ import java.text.SimpleDateFormat;
 import java.time.*;
 import java.util.*;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * This class contains Convertor tests
@@ -61,20 +72,28 @@ public class ConvertorsTest {
 
     @Test
     public void testCalendarConvetor() throws NoSuchFieldException {
-        CalendarTypeConverter calendarTypeConverter = new CalendarTypeConverter();
+        Jsonb jsonb = (new JsonBindingBuilder()).build();
         final Calendar dateCalendar = Calendar.getInstance();
         dateCalendar.clear();
         dateCalendar.set(2015, Calendar.APRIL, 3);
+        CalendarWrapper calendarWrapper = new CalendarWrapper();
+        calendarWrapper.calendar = dateCalendar;
 
         // marshal to ISO_DATE
-        assertEquals("2015-04-03", calendarTypeConverter.toJson(dateCalendar));
-        assertEquals(dateCalendar, calendarTypeConverter.fromJson("2015-04-03", Calendar.class));
+        assertEquals("{\"calendar\":\"2015-04-03\"}", jsonb.toJson(calendarWrapper));
+        assertEquals(dateCalendar, jsonb.fromJson("{\"calendar\":\"2015-04-03\"}", CalendarWrapper.class).calendar);
 
         // marshal to ISO_DATE_TIME
         Calendar dateTimeCalendar = new Calendar.Builder().setDate(2015, 3, 3).build();
+        calendarWrapper.calendar = dateTimeCalendar;
 
-        assertEquals("2015-04-03T00:00:00", calendarTypeConverter.toJson(dateTimeCalendar));
-        assertEquals(dateTimeCalendar, calendarTypeConverter.fromJson("2015-04-03T00:00:00", Calendar.class));
+        assertEquals("{\"calendar\":\"2015-04-03T00:00:00\"}", jsonb.toJson(calendarWrapper));
+        assertEquals(dateTimeCalendar, jsonb.fromJson("{\"calendar\":\"2015-04-03T00:00:00\"}", CalendarWrapper.class).calendar);
+
+        jsonb = (new JsonBindingBuilder()).withConfig(new JsonbConfig().withStrictIJSON(true)).build();
+        calendarWrapper.calendar = dateCalendar;
+        assertEquals("{\"calendar\":\"2015-04-03T00:00:00\"}", jsonb.toJson(calendarWrapper));
+        assertEquals(dateTimeCalendar, jsonb.fromJson("{\"calendar\":\"2015-04-03T00:00:00\"}", CalendarWrapper.class).calendar);
     }
 
     @Test
@@ -130,11 +149,11 @@ public class ConvertorsTest {
     public void testIntegerConvetor() {
 
         IntegerTypeConverter integerTypeConverter = new IntegerTypeConverter();
-        assertEquals("1" , integerTypeConverter.toJson(1));
+        assertEquals("1", integerTypeConverter.toJson(1));
         assertEquals(1, integerTypeConverter.fromJson("1", Integer.class), 0);
         assertEquals(1, integerTypeConverter.fromJson("1", int.class), 0);
         Integer actual = converter.fromJson("1", int.class);
-        assertEquals(Integer.valueOf(1), actual, 0);
+        assertEquals(1, actual, 0);
     }
 
     @Test
@@ -192,7 +211,7 @@ public class ConvertorsTest {
     public void testNumberConvetor() {
         NumberTypeConverter numberTypeConverter = new NumberTypeConverter();
 
-        assertEquals("10", numberTypeConverter.toJson(10L));
+        assertEquals("10.0", numberTypeConverter.toJson(10L));
         assertEquals("10.1", numberTypeConverter.toJson(10.1));
         assertEquals(new BigDecimal("10.2"), numberTypeConverter.fromJson("10.2", null));
     }
@@ -256,16 +275,31 @@ public class ConvertorsTest {
     public void testShortConvetor() {
         ShortTypeConverter shortTypeConverter = new ShortTypeConverter();
 
-        assertEquals("10", shortTypeConverter.toJson((short)10));
-        assertEquals((short)10, shortTypeConverter.fromJson("10", null), 0);
+        assertEquals("10", shortTypeConverter.toJson((short) 10));
+        assertEquals((short) 10, shortTypeConverter.fromJson("10", null), 0);
     }
 
     @Test
     public void testStringConvetor() {
-        StringTypeConverter stringTypeConverter = new StringTypeConverter();
+        Jsonb jsonb = (new JsonBindingBuilder()).withConfig(new JsonbConfig().withStrictIJSON(true)).build();
+        StringWrapper stringWrapper = new StringWrapper();
+        stringWrapper.string = "test";
 
-        assertEquals("test", stringTypeConverter.toJson("test"));
-        assertEquals("test2", stringTypeConverter.fromJson("test2", null));
+        assertEquals("{\"string\":\"test\"}", jsonb.toJson(stringWrapper));
+        try {
+            stringWrapper.string = "\uDEAD";
+            assertEquals("{\"string\":\"?\"}", jsonb.toJson(stringWrapper));
+            Assert.fail();
+        } catch (JsonbException exception) {
+            assertEquals(Messages.getMessage(MessageKeys.UNPAIRED_SURROGATE), exception.getMessage());
+        }
+        try {
+            stringWrapper.string = "\uD800\uDEAD";
+            jsonb.toJson(stringWrapper);
+        } catch (JsonbException exception) {
+            exception.printStackTrace();
+            Assert.fail();
+        }
     }
 
     @Test
@@ -274,6 +308,13 @@ public class ConvertorsTest {
 
         assertEquals("Europe/Prague", timeZoneTypeConverter.toJson(TimeZone.getTimeZone("Europe/Prague")));
         assertEquals(TimeZone.getTimeZone("Europe/Prague"), timeZoneTypeConverter.fromJson("Europe/Prague", null));
+
+        try {
+            timeZoneTypeConverter.fromJson("PST", null);
+            Assert.fail();
+        } catch (JsonbException ex) {
+            assertEquals("Unsupported TimeZone: PST", ex.getMessage());
+        }
     }
 
     @Test
@@ -314,6 +355,103 @@ public class ConvertorsTest {
         HIGH,
         MEDIUM,
         LOW
+    }
+
+    @Test
+    public void testBigDecimal() {
+        final Jsonb jsonb = (new JsonBindingBuilder().withConfig(new JsonbConfig().withStrictIJSON(true))).build();
+
+        BigDecimalWrapper bigDecimalWrapper = new BigDecimalWrapper();
+        bigDecimalWrapper.bigDecimal = new BigDecimal("-9007199254740991.0123");
+
+        assertEquals("{\"bigDecimal\":\"-9007199254740991.0123\"}", jsonb.toJson(bigDecimalWrapper));
+        assertEquals(bigDecimalWrapper.bigDecimal, jsonb.fromJson("{\"bigDecimal\":\"-9007199254740991.0123\"}", BigDecimalWrapper.class).bigDecimal);
+
+        bigDecimalWrapper.bigDecimal = new BigDecimal("3.141592653589793238462643383279");
+        assertEquals("{\"bigDecimal\":\"3.141592653589793238462643383279\"}", jsonb.toJson(bigDecimalWrapper));
+        assertEquals(bigDecimalWrapper.bigDecimal, jsonb.fromJson("{\"bigDecimal\":\"3.141592653589793238462643383279\"}", BigDecimalWrapper.class).bigDecimal);
+
+        bigDecimalWrapper.bigDecimal = new BigDecimal(new BigInteger("1"), -400);
+        assertEquals("{\"bigDecimal\":\"1E+400\"}", jsonb.toJson(bigDecimalWrapper));
+        assertEquals(bigDecimalWrapper.bigDecimal, jsonb.fromJson("{\"bigDecimal\":\"1E+400\"}", BigDecimalWrapper.class).bigDecimal);
+
+        bigDecimalWrapper.bigDecimal = new BigDecimal("9007199254740991");
+        assertEquals("{\"bigDecimal\":9007199254740991}", jsonb.toJson(bigDecimalWrapper));
+        assertEquals(bigDecimalWrapper.bigDecimal, jsonb.fromJson("{\"bigDecimal\":9007199254740991}", BigDecimalWrapper.class).bigDecimal);
+    }
+
+    @Test
+    public void testBigInteger() {
+        final Jsonb jsonb = (new JsonBindingBuilder().withConfig(new JsonbConfig().withStrictIJSON(true))).build();
+
+        BigIntegerWrapper bigIntegerWrapper = new BigIntegerWrapper();
+
+        bigIntegerWrapper.bigInteger = new BigInteger("9007199254740991");
+        assertEquals("{\"bigInteger\":9007199254740991}", jsonb.toJson(bigIntegerWrapper));
+        assertEquals(bigIntegerWrapper.bigInteger, jsonb.fromJson("{\"bigInteger\":9007199254740991}", BigIntegerWrapper.class).bigInteger);
+
+        bigIntegerWrapper.bigInteger = new BigInteger("9007199254740992");
+        assertEquals("{\"bigInteger\":\"9007199254740992\"}", jsonb.toJson(bigIntegerWrapper));
+        assertEquals(bigIntegerWrapper.bigInteger, jsonb.fromJson("{\"bigInteger\":\"9007199254740992\"}", BigIntegerWrapper.class).bigInteger);
+
+        bigIntegerWrapper.bigInteger = new BigInteger("-9007199254740992");
+        assertEquals("{\"bigInteger\":\"-9007199254740992\"}", jsonb.toJson(bigIntegerWrapper));
+        assertEquals(bigIntegerWrapper.bigInteger, jsonb.fromJson("{\"bigInteger\":\"-9007199254740992\"}", BigIntegerWrapper.class).bigInteger);
+    }
+
+    @Test
+    public void testByteArray() {
+        byte[] array = {1, 2, 3};
+        final Jsonb jsonb = (new JsonBindingBuilder()).build();
+
+        assertEquals("[1,2,3]", jsonb.toJson(array));
+    }
+
+    @Test
+    public void testByteArrayWithBinaryStrategy() {
+        byte[] array = {127, -128, 127};
+        Jsonb jsonb = (new JsonBindingBuilder().withConfig(new JsonbConfig().withBinaryDataStrategy(BinaryDataStrategy.BYTE))).build();
+
+        assertEquals("[127,-128,127]", jsonb.toJson(array));
+        assertArrayEquals(array, jsonb.fromJson("[127,-128,127]", byte[].class));
+    }
+
+    @Test
+    public void testByteArrayWithStrictJson() {
+        byte[] array = {1, 2, 3};
+        ByteArrayWrapper byteArrayWrapper = new ByteArrayWrapper();
+        byteArrayWrapper.array = array;
+        Jsonb jsonb = (new JsonBindingBuilder().withConfig(new JsonbConfig().withStrictIJSON(true))).build();
+
+        assertEquals("{\"array\":\"" + Base64.getUrlEncoder().encodeToString(array) + "\"}", jsonb.toJson(byteArrayWrapper));
+
+        jsonb = (new JsonBindingBuilder().withConfig(new JsonbConfig().withStrictIJSON(false))).build();
+
+        assertEquals("{\"array\":[1,2,3]}", jsonb.toJson(byteArrayWrapper));
+    }
+
+    @Test
+    public void testByteArrayWithStrictJsonAndBinaryStrategy() {
+        byte[] array = {1, 2, 3};
+        ByteArrayWrapper byteArrayWrapper = new ByteArrayWrapper();
+        byteArrayWrapper.array = array;
+        Jsonb jsonb = (new JsonBindingBuilder().withConfig(new JsonbConfig().withStrictIJSON(true).withBinaryDataStrategy(BinaryDataStrategy.BYTE))).build();
+        assertEquals("{\"array\":\"" + Base64.getUrlEncoder().encodeToString(array) + "\"}", jsonb.toJson(byteArrayWrapper));
+
+        jsonb = (new JsonBindingBuilder().withConfig(new JsonbConfig().withStrictIJSON(true).withBinaryDataStrategy(BinaryDataStrategy.BASE_64))).build();
+        assertEquals("{\"array\":\"" + Base64.getUrlEncoder().encodeToString(array) + "\"}", jsonb.toJson(byteArrayWrapper));
+
+        jsonb = (new JsonBindingBuilder().withConfig(new JsonbConfig().withStrictIJSON(true).withBinaryDataStrategy(BinaryDataStrategy.BASE_64_URL))).build();
+        assertEquals("{\"array\":\"" + Base64.getUrlEncoder().encodeToString(array) + "\"}", jsonb.toJson(byteArrayWrapper));
+
+        jsonb = (new JsonBindingBuilder().withConfig(new JsonbConfig().withBinaryDataStrategy(BinaryDataStrategy.BYTE))).build();
+        assertEquals("[1,2,3]", jsonb.toJson(array));
+
+        jsonb = (new JsonBindingBuilder().withConfig(new JsonbConfig().withBinaryDataStrategy(BinaryDataStrategy.BASE_64))).build();
+        assertEquals("{\"array\":\"" + Base64.getEncoder().encodeToString(array) + "\"}", jsonb.toJson(byteArrayWrapper));
+
+        jsonb = (new JsonBindingBuilder().withConfig(new JsonbConfig().withBinaryDataStrategy(BinaryDataStrategy.BASE_64_URL))).build();
+        assertEquals("{\"array\":\"" + Base64.getUrlEncoder().encodeToString(array) + "\"}", jsonb.toJson(byteArrayWrapper));
     }
 
 }

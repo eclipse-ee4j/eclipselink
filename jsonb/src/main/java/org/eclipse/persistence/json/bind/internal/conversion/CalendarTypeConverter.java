@@ -1,5 +1,8 @@
 package org.eclipse.persistence.json.bind.internal.conversion;
 
+import org.eclipse.persistence.json.bind.internal.JsonbContext;
+
+import javax.json.bind.JsonbConfig;
 import java.lang.reflect.Type;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
@@ -39,10 +42,14 @@ public class CalendarTypeConverter extends AbstractTypeConverter<Calendar> {
         final LocalDateTime localDate = LocalDateTime.ofInstant(object.toInstant(), ZoneOffset.systemDefault());
 
         DateTimeFormatter formatter;
-        if (object.isSet(Calendar.HOUR)) {
+        if ((boolean) JsonbContext.getInstance().getConfig().getProperty(JsonbConfig.STRICT_IJSON).orElse(false)) {
             formatter = DateTimeFormatter.ISO_DATE_TIME;
         } else {
-            formatter = DateTimeFormatter.ISO_DATE;
+            if (object.isSet(Calendar.HOUR)) {
+                formatter = DateTimeFormatter.ISO_DATE_TIME;
+            } else {
+                formatter = DateTimeFormatter.ISO_DATE;
+            }
         }
 
         return localDate.format(formatter);

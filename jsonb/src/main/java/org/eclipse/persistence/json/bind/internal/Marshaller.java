@@ -112,13 +112,13 @@ public class Marshaller extends JsonTextProcessor {
 
     private JsonGenerator createGenerator(Writer writer) {
         Map<String, ?> factoryProperties = createJsonpProperties(jsonbContext.getConfig());
-        return jsonbContext.getJsonProvider().createGeneratorFactory(factoryProperties).createGenerator(writer);
+        return new IJsonJsonGeneratorDecorator(jsonbContext.getJsonProvider().createGeneratorFactory(factoryProperties).createGenerator(writer));
     }
 
     private JsonGenerator createGenerator(OutputStream outputStream) {
         Map<String, ?> factoryProperties = createJsonpProperties(jsonbContext.getConfig());
         final String encoding = (String) jsonbContext.getConfig().getProperty(JsonbConfig.ENCODING).orElse("UTF-8");
-        return jsonbContext.getJsonProvider().createGeneratorFactory(factoryProperties).createGenerator(outputStream, Charset.forName(encoding));
+        return new IJsonJsonGeneratorDecorator(jsonbContext.getJsonProvider().createGeneratorFactory(factoryProperties).createGenerator(outputStream, Charset.forName(encoding)));
     }
 
     /**
@@ -128,7 +128,7 @@ public class Marshaller extends JsonTextProcessor {
      * @param writer writer to marshall into
      */
     public Marshaller(JsonbContext jsonbContext, Writer writer) {
-        this(jsonbContext, jsonbContext.getJsonProvider().createGenerator(writer));
+        this(jsonbContext, new IJsonJsonGeneratorDecorator(jsonbContext.getJsonProvider().createGenerator(writer)));
     }
 
     /**
@@ -142,7 +142,7 @@ public class Marshaller extends JsonTextProcessor {
         Objects.requireNonNull(rootRuntimeType);
         this.runtimeTypeInfo = Optional.of(new RuntimeTypeHolder(null, rootRuntimeType));
         this.stringWriter = new StringWriter();
-        this.jsonGenerator = jsonbContext.getJsonProvider().createGenerator(stringWriter);
+        this.jsonGenerator = new IJsonJsonGeneratorDecorator(jsonbContext.getJsonProvider().createGenerator(stringWriter));
     }
 
     /**
@@ -164,7 +164,7 @@ public class Marshaller extends JsonTextProcessor {
      * Helper constructor.
      */
     public Marshaller(JsonbContext jsonbContext, Type rootRuntimeType, Writer writer) {
-        this(jsonbContext, rootRuntimeType, jsonbContext.getJsonProvider().createGenerator(writer));
+        this(jsonbContext, rootRuntimeType, new IJsonJsonGeneratorDecorator(jsonbContext.getJsonProvider().createGenerator(writer)));
     }
 
     /**
@@ -231,7 +231,8 @@ public class Marshaller extends JsonTextProcessor {
         } else if (value instanceof Map) {
             marshallMap(keyName, (Map<?, ?>) value);
 
-        } else if (value.getClass().isArray()) {
+        } else if (value.getClass().isArray()
+                && !(value instanceof byte[])) {
             marshallArray(keyName, value);
 
         } else if (JsonpSerializers.getInstance().supports(value)) {

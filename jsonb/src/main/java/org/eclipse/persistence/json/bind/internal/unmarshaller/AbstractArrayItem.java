@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -10,33 +10,28 @@
  * Contributors:
  * Roman Grigoriadi
  ******************************************************************************/
+
 package org.eclipse.persistence.json.bind.internal.unmarshaller;
 
 import org.eclipse.persistence.json.bind.internal.ReflectionUtils;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Item for handling arrays.
+ * Common array unmarshalling item implementation.
  *
  * @author Roman Grigoriadi
  */
-public class ArrayItem extends AbstractItem<Object[]> implements UnmarshallerItem<Object[]>, EmbeddedItem {
+public abstract class AbstractArrayItem<T> extends AbstractItem<T> implements UnmarshallerItem<T>, EmbeddedItem {
 
     /**
      * Runtime type class of an array.
      */
-    private final Class<?> componentClass;
+    protected final Class<?> componentClass;
 
-    private final List<?> items = new ArrayList<>();
-
-    private Object[] arrayInstance;
-
-    protected ArrayItem(UnmarshallerItemBuilder builder) {
+    protected AbstractArrayItem(UnmarshallerItemBuilder builder) {
         super(builder);
         if (getRuntimeType() instanceof GenericArrayType) {
             componentClass = ReflectionUtils.resolveRawType(this, ((GenericArrayType) getRuntimeType()).getGenericComponentType());
@@ -61,8 +56,8 @@ public class ArrayItem extends AbstractItem<Object[]> implements UnmarshallerIte
     }
 
     @SuppressWarnings("unchecked")
-    private <T> void appendCaptor(T value) {
-        ((List<T>) items).add(value);
+    private <X> void appendCaptor(X value) {
+        ((List<X>) getItems()).add(value);
     }
 
     @Override
@@ -71,11 +66,5 @@ public class ArrayItem extends AbstractItem<Object[]> implements UnmarshallerIte
         return new UnmarshallerItemBuilder().withWrapper(this).withType(actualValueType).withJsonValueType(jsonValueType).build();
     }
 
-    @Override
-    public Object[] getInstance() {
-        if (arrayInstance == null || arrayInstance.length != items.size()) {
-            arrayInstance = (Object[]) Array.newInstance(componentClass, items.size());
-        }
-        return items.toArray(arrayInstance);
-    }
+    protected abstract List<?> getItems();
 }

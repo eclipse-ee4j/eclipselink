@@ -14,44 +14,28 @@
 package org.eclipse.persistence.json.bind.internal.serializer;
 
 import javax.json.stream.JsonGenerator;
-import java.math.BigInteger;
 import java.util.Objects;
 
 /**
- * Serializes BigDecimal.
+ * Serializes Double.
  *
  * @author Roman Grigoriadi
  */
-class JsonpBigIntegerSerializer extends AbstractJsonpSerializer<BigInteger> {
+class JsonpFloatSerializer extends AbstractJsonpSerializer<Float> {
 
     @Override
-    void writeValue(BigInteger value, JsonGenerator jsonGenerator) {
-        if (isIEEE754(value)){
-            jsonGenerator.write(value);
-        }else{
-            jsonGenerator.write(value.toString());
-        }
+    void writeValue(Float value, JsonGenerator jsonGenerator) {
+        jsonGenerator.write(Double.parseDouble(String.valueOf(value)));
     }
 
     @Override
-    void writeValue(String keyName, BigInteger value, JsonGenerator jsonGenerator) {
-        if (isIEEE754(value)){
-            jsonGenerator.write(keyName, value);
-        }else{
-            jsonGenerator.write(keyName, value.toString());
-        }
+    void writeValue(String keyName, Float value, JsonGenerator jsonGenerator) {
+        jsonGenerator.write(keyName, value);
     }
 
     @Override
     <X> boolean supports(X value) {
         Objects.requireNonNull(value);
-        return value instanceof BigInteger;
-    }
-
-    private boolean isIEEE754(BigInteger value) {
-        int valBits = value.abs().bitLength();
-        // Integer whose absolute value is greater than 9007199254740991 is considered as
-        // non IEEE 754-2008 binary64 compliant
-        return valBits <= 53;
+        return value instanceof Float;
     }
 }

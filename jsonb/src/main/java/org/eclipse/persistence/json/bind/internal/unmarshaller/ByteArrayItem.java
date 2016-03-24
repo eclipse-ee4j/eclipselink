@@ -11,31 +11,36 @@
  * Roman Grigoriadi
  ******************************************************************************/
 
-package org.eclipse.persistence.json.bind.internal.serializer;
+package org.eclipse.persistence.json.bind.internal.unmarshaller;
 
-import javax.json.stream.JsonGenerator;
-import java.util.Objects;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Serializes Byte
+ * Array unmarshaller item implementation for small int.
  *
  * @author Roman Grigoriadi
  */
-public class JsonpByteSerializer extends AbstractJsonpSerializer<Byte> {
+public class ByteArrayItem extends AbstractArrayItem<byte[]> {
 
-    @Override
-    void writeValue(Byte value, JsonGenerator jsonGenerator) {
-        jsonGenerator.write(value.intValue());
+    private final List<Byte> items = new ArrayList<>();
+
+    protected ByteArrayItem(UnmarshallerItemBuilder builder) {
+        super(builder);
     }
 
     @Override
-    void writeValue(String keyName, Byte value, JsonGenerator jsonGenerator) {
-        jsonGenerator.write(keyName, value.intValue());
+    protected List<?> getItems() {
+        return items;
     }
 
     @Override
-    <X> boolean supports(X value) {
-        Objects.requireNonNull(value);
-        return value instanceof Byte;
+    public byte[] getInstance() {
+        final int size = items.size();
+        final byte[] byteArray = new byte[size];
+        for(int i=0; i<size; i++) {
+            byteArray[i] = items.get(i);
+        }
+        return byteArray;
     }
 }

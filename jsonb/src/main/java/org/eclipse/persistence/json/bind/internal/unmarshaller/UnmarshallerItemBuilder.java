@@ -156,7 +156,7 @@ public class UnmarshallerItemBuilder {
                 final UnmarshallerItem<?> item;
 
                 if (rawType.isArray() || runtimeType instanceof GenericArrayType) {
-                    item = createArrayItem();
+                    item = createArrayItem(rawType.getComponentType());
                 } else if (Collection.class.isAssignableFrom(rawType)) {
                     item = createCollectionItem();
                 } else {
@@ -237,8 +237,22 @@ public class UnmarshallerItemBuilder {
      * Instance is not created in case of array items, because, we don't know how long it should be
      * till parser ends parsing.
      */
-    private UnmarshallerItem<?> createArrayItem() {
-        return new ArrayItem(this);
+    private UnmarshallerItem<?> createArrayItem(Class<?> componentType) {
+        if (componentType == byte.class) {
+            return new ByteArrayItem(this);
+        } else if (componentType == short.class) {
+            return new ShortArrayItem(this);
+        } else if (componentType == int.class) {
+            return new IntArrayItem(this);
+        } else if (componentType == long.class) {
+            return new LongArrayItem(this);
+        } else if (componentType == float.class) {
+            return new FloatArrayItem(this);
+        } else if (componentType == double.class) {
+            return new DoubleArrayItem(this);
+        } else {
+            return new ObjectArrayItem(this);
+        }
     }
 
     private UnmarshallerItem<?> createCollectionItem() {

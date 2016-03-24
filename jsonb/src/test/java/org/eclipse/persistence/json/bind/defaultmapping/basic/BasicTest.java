@@ -13,16 +13,22 @@
 package org.eclipse.persistence.json.bind.defaultmapping.basic;
 
 import org.eclipse.persistence.json.bind.JsonBindingBuilder;
+import org.eclipse.persistence.json.bind.internal.properties.MessageKeys;
+import org.eclipse.persistence.json.bind.internal.properties.Messages;
+import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.json.bind.Jsonb;
+import javax.json.bind.JsonbConfig;
+import javax.json.bind.JsonbException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.MathContext;
 
 import static org.junit.Assert.assertEquals;
 
@@ -32,55 +38,6 @@ import static org.junit.Assert.assertEquals;
  * @author Dmitry Kornilov
  */
 public class BasicTest {
-
-    @Test
-    @Ignore //TODO ignored till next version of JSONP
-    public void testMarshallPrimitives() {
-        final Jsonb jsonb = (new JsonBindingBuilder()).build();
-
-        // String
-        assertEquals("\"some_string\"", jsonb.toJson("some_string"));
-
-        // Character
-        assertEquals("\"\uFFFF\"", jsonb.toJson('\uFFFF'));
-
-        // Byte
-        assertEquals("1", jsonb.toJson((byte)1));
-
-        // Short
-        assertEquals("1", jsonb.toJson((short)1));
-
-        // Integer
-        assertEquals("1", jsonb.toJson(1));
-
-        // Long
-        assertEquals("5", jsonb.toJson(5L));
-
-        // Float
-        assertEquals("1.2", jsonb.toJson(1.2f));
-
-        // Double
-        assertEquals("1.2", jsonb.toJson(1.2));
-
-        // BigInteger
-        assertEquals("1", jsonb.toJson(new BigInteger("1")));
-
-        // BigDecimal
-        assertEquals("1.2", jsonb.toJson(new BigDecimal("1.2")));
-
-        // Number
-        assertEquals("1.2", jsonb.toJson(1.2));
-
-        // Boolean true
-        assertEquals("true", jsonb.toJson(true));
-
-        // Boolean false
-        assertEquals("false", jsonb.toJson(false));
-
-        // null
-        assertEquals("null", jsonb.toJson(null));
-    }
-
 
     @Test
     public void testMarshallEscapedString() {
@@ -105,4 +62,5 @@ public class BasicTest {
             assertEquals("[5]", baos.toString("UTF-8"));
         }
     }
+
 }

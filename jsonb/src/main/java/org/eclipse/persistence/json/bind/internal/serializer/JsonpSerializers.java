@@ -37,6 +37,7 @@ public class JsonpSerializers {
         serializers.add(new JsonpIntegerSerializer());
         serializers.add(new JsonpLongSerializer());
         serializers.add(new JsonpDoubleSerializer());
+        serializers.add(new JsonpFloatSerializer());
         serializers.add(new JsonpShortSerializer());
         serializers.add(new JsonpByteSerializer());
         serializers.add(new JsonpBigDecimalSerializer());
@@ -46,6 +47,7 @@ public class JsonpSerializers {
         serializers.add(new JsonpOptionalIntSerializer());
         serializers.add(new JsonpOptionalDoubleSerializer());
         serializers.add(new JsonpJsonValueSerializer());
+        serializers.add(new JsonpByteArraySerializer());
     }
 
     private JsonpSerializers() {
@@ -72,6 +74,7 @@ public class JsonpSerializers {
                 value instanceof Long ||
                 value instanceof Integer ||
                 value instanceof Double ||
+                value instanceof Float ||
                 value instanceof BigDecimal ||
                 value instanceof BigInteger ||
                 value instanceof Boolean ||
@@ -79,7 +82,8 @@ public class JsonpSerializers {
                 value instanceof Byte ||
                 value instanceof OptionalInt ||
                 value instanceof OptionalLong ||
-                value instanceof OptionalDouble;
+                value instanceof OptionalDouble ||
+                value instanceof byte[];
     }
 
     /**
