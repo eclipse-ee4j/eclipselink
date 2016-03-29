@@ -19,8 +19,6 @@
  *       - 314941: multiple joinColumns without referenced column names defined, no error
  *     01/25/2011-2.3 Guy Pelletier
  *       - 333913: @OrderBy and <order-by/> without arguments should order by primary
- *     03/23/2016-2.6_WAS Will Dazey  
- *       - 490114: Add testing for PersistenceUnitUtil.getIdentifier with nested embeddables in EmbeddedId class
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.advanced.compositepk;
 
@@ -144,7 +142,6 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
             suite.addTest(new AdvancedCompositePKJunitTest("testGetIdentifier"));
             suite.addTest(new AdvancedCompositePKJunitTest("testFailedGetIdenitifier"));
             suite.addTest(new AdvancedCompositePKJunitTest("testGetIdenitifierOnNonEntity"));
-            suite.addTest(new AdvancedCompositePKJunitTest("testGetIdentifierNestedEmbeddables"));
         }
         return suite;
     }
@@ -768,30 +765,6 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
 
             PersistenceUnitUtil util = emf.getPersistenceUnitUtil();
             assertTrue("Got an incorrect id from persistenceUtil.getIdentifier()", pk.equals(util.getIdentifier(department)));
-        } finally {
-            rollbackTransaction(em);
-        }
-    }
-
-    public void testGetIdentifierNestedEmbeddables(){
-        EntityManagerFactory emf = getEntityManagerFactory();
-        EntityManager em = createEntityManager();
-        beginTransaction(em);
-        try{
-            Body body = new Body();
-            Torso torso = new Torso();
-            Heart heart = new Heart();
-            heart.setSize(8);
-            torso.setHeart(heart);
-            body.setTorso(torso);
-
-            em.persist(body);
-            em.flush();
-
-            clearCache();
-
-            PersistenceUnitUtil util = emf.getPersistenceUnitUtil();
-            assertTrue("Got an incorrect id from persistenceUtil.getIdentifier()", torso.equals(util.getIdentifier(body)));
         } finally {
             rollbackTransaction(em);
         }
