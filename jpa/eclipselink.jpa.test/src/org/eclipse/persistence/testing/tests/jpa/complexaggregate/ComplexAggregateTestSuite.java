@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation
+ *     03/29/2016-2.6_WAS Will Dazey  
+ *       - 490114: Add testing for PersistenceUnitUtil.getIdentifier with nested embeddables in EmbeddedId class
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.complexaggregate;
 
@@ -17,6 +19,8 @@ import java.util.Collection;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceUnitUtil;
 import javax.persistence.Query;
 
 import junit.framework.Test;
@@ -663,6 +667,7 @@ public class ComplexAggregateTestSuite extends JUnitTestCase {
         
         Torso torso;
 
+        EntityManagerFactory emf = getEntityManagerFactory();
         EntityManager em = createEntityManager();
         try {
             Body body = new Body();
@@ -707,6 +712,8 @@ public class ComplexAggregateTestSuite extends JUnitTestCase {
         Torso createdTorso = (Torso) descriptor.getCMPPolicy().createPrimaryKeyInstanceFromId(pks, m_session);        
         assertTrue("PK's do not match.", m_refreshedBody.getTorso().equals(createdTorso));
 
+        PersistenceUnitUtil util = emf.getPersistenceUnitUtil();
+        assertTrue("PersistenceUnitUtil returned incorrect identifier", torso.equals(util.getIdentifier(m_refreshedBody)));
     }
 
     public void testAggregateReadOnlyMapKey() {
