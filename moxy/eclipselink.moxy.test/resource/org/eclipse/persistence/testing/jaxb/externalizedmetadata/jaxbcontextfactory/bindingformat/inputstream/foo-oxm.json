@@ -3,7 +3,7 @@
     "xml-schema":{
         "namespace":"input-stream",
         "xml-ns":{
-	   "prefix":"ns0",
+	   "prefix":"ist",
 	   "namespace-uri":"input-stream"
 	   }
       },

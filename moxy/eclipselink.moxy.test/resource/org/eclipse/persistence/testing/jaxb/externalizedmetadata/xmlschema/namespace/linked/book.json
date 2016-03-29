@@ -1,0 +1,12 @@
+{
+  "book":{
+    "name":"Nineteen Eighty-Four",
+    "author":{
+      "firstName":"George",
+      "lastName":"Orwell",
+      "address":{
+        "country":"United Kingdom of Great Britain and Northern Ireland"
+      }
+    }
+  }
+}

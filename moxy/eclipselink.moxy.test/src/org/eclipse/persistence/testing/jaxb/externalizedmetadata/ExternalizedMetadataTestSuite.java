@@ -13,6 +13,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata;
 
+import junit.framework.JUnit4TestAdapter;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -114,6 +115,7 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlregistry.Xml
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlrootelement.XmlRootElementTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlschema.XmlSchemaTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlschema.namespace.NamespaceTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlschema.namespace.linked.LinkedNamespacesTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlschematype.XmlSchemaTypeTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlschematypes.XmlSchemaTypesTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlseealso.XmlSeeAlsoTestCases;
@@ -161,19 +163,19 @@ public class ExternalizedMetadataTestSuite extends TestSuite {
         suite.addTestSuite(EmployeeFactoryClassTestCases.class);
         suite.addTestSuite(XmlAccessorTypeTestCases.class);
         suite.addTestSuite(XmlAccessorTypeFieldTestCases.class);
-     	suite.addTestSuite(XmlAccessorTypeNoneTestCases.class);
-     	suite.addTestSuite(XmlAccessorTypeNoneWithPropOrderTestCases.class);
-     	suite.addTestSuite(XmlAccessorTypeInheritanceTestCases.class);
-     	suite.addTestSuite(XmlAccessorTypePackageTestCases.class);
-     	suite.addTestSuite(XmlAccessorTypePackageClassOverrideTestCases.class);
-     	suite.addTestSuite(XmlAccessorTypePackageJavaClassOverrideTestCases.class);
-     	suite.addTestSuite(XmlAccessorTypePackageNoOverrideTestCases.class);
-     	suite.addTestSuite(XmlAccessorTypePropertyTestCases.class);
-     	suite.addTestSuite(XmlAccessorTypePublicMemberTestCases.class);
+        suite.addTestSuite(XmlAccessorTypeNoneTestCases.class);
+        suite.addTestSuite(XmlAccessorTypeNoneWithPropOrderTestCases.class);
+        suite.addTestSuite(XmlAccessorTypeInheritanceTestCases.class);
+        suite.addTestSuite(XmlAccessorTypePackageTestCases.class);
+        suite.addTestSuite(XmlAccessorTypePackageClassOverrideTestCases.class);
+        suite.addTestSuite(XmlAccessorTypePackageJavaClassOverrideTestCases.class);
+        suite.addTestSuite(XmlAccessorTypePackageNoOverrideTestCases.class);
+        suite.addTestSuite(XmlAccessorTypePropertyTestCases.class);
+        suite.addTestSuite(XmlAccessorTypePublicMemberTestCases.class);
         suite.addTestSuite(XmlAccessorOrderTestCases.class);
         suite.addTestSuite(XMLAccessorOrderPackageInfoTestCases.class);
         suite.addTestSuite(XMLAccessorOrderClassOverrideTestCases.class);
-        suite.addTestSuite(XMLAccessorOrderJavaClassOverrideTestCases.class);       
+        suite.addTestSuite(XMLAccessorOrderJavaClassOverrideTestCases.class);
         suite.addTestSuite(JAXBContextFactoryTestCases.class);
         suite.addTestSuite(XmlElementTestCases.class);
         suite.addTestSuite(AdapterOnClassTestCases.class);
@@ -219,7 +221,7 @@ public class ExternalizedMetadataTestSuite extends TestSuite {
         suite.addTestSuite(XmlAnyAttributeTestCases.class);
         suite.addTestSuite(XmlMimeTypeCases.class);
         suite.addTestSuite(XmlAttachmentRefCases.class);
-        suite.addTestSuite(XmlElementsTestCases.class);        
+        suite.addTestSuite(XmlElementsTestCases.class);
         suite.addTestSuite(XmlElementRefTestCases.class);
         suite.addTestSuite(XmlElementRefWithWrapperTestCases.class);
         suite.addTestSuite(XmlElementRefsTestCases.class);
@@ -261,6 +263,7 @@ public class ExternalizedMetadataTestSuite extends TestSuite {
         suite.addTestSuite(XmlNullPolicyTypeLevelOverrideTestCases.class);
         suite.addTestSuite(XmlNullPolicyTypeLevelTestCases.class);
         suite.addTestSuite(XmlIdExtensionOverrideTestCases.class);
+        suite.addTest(new JUnit4TestAdapter(LinkedNamespacesTestCases.class));
         return suite;
     }
 

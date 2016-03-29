@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -1358,12 +1358,17 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
 
                 while (currentFragment != null) {
                     String uri = currentFragment.getNamespaceURI();
-                    if (uri != null && nr.resolveNamespaceURI(uri) == null && !uri.equals(nr.getDefaultNamespaceURI())) {
+                    if (uri != null) {
                         String prefix = currentFragment.getPrefix();
-                        if (prefix == null) {
-                            prefix = nr.generatePrefix();
+                        if (prefix == null || prefix.isEmpty()) {
+                            if (null == nr.getDefaultNamespaceURI()) {
+                                nr.setDefaultNamespaceURI(uri);
+                            }
+                        } else {
+                            if (null == nr.resolveNamespacePrefix(prefix)) {
+                                nr.put(prefix, uri);
+                            }
                         }
-                        nr.put(prefix, uri);
                     }
                     currentFragment = currentFragment.getNextFragment();
                 }

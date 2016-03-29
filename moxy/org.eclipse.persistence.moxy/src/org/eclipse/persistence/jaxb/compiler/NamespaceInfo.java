@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
 package org.eclipse.persistence.jaxb.compiler;
+
+import java.util.Map;
 
 import org.eclipse.persistence.oxm.NamespaceResolver;
 
@@ -78,17 +80,73 @@ public class NamespaceInfo {
     public void setLocation(String location) {
         this.location = location;
     }
-    
-    public NamespaceResolver getNamespaceResolverForDescriptor() {
+
+    /** Provides a {@link NamespaceResolver} resolver for Descriptor.
+     * <p>
+     * The returned {@link NamespaceResolver} is consistent with {@code contextResolver}.
+     * Should there be any clashes in prefix or default name-space assignments,
+     * these will be re-mapped to another prefix in the resulting resolver.
+     * Alongside, all new prefix or default name-space assignments are added to the {@code contextResolver}.
+     * <p>
+     * <b>IMPORTANT</b>: The first result is cached and re-used since then,
+     * even if later calls are with different {@code contextResolver}.
+     *
+     * @param contextResolver context resolver
+     * @param canUseDefaultNamespace indicates whether default name-space can be used
+     * @return {@link NamespaceResolver}
+     *
+     * @throws NullPointerException if {@code contextResolver} is {@code null}
+     */
+    public NamespaceResolver getNamespaceResolverForDescriptor(
+            NamespaceResolver contextResolver,
+            boolean canUseDefaultNamespace) {
         if(this.namespaceResolverForDescriptor == null) {
             this.namespaceResolverForDescriptor = new NamespaceResolver();
+            // initialize
+            // prefixed name-spaces
             if(this.namespaceResolver.hasPrefixesToNamespaces()) {
-                for(String next:this.namespaceResolver.getPrefixesToNamespaces().keySet()) {
-                    this.namespaceResolverForDescriptor.put(next, this.namespaceResolver.resolveNamespacePrefix(next));
+                for(Map.Entry<String, String> entry: this.namespaceResolver.getPrefixesToNamespaces().entrySet()) {
+                    final String namespace = entry.getValue();
+                    if (namespace != null) {
+                        addToDescriptorNamespaceResolver(false, entry.getKey(), namespace, contextResolver);
+                    }
                 }
             }
-            this.namespaceResolverForDescriptor.setDefaultNamespaceURI(namespaceResolver.getDefaultNamespaceURI());
+            // default name-space
+            final String defaultNS = this.namespaceResolver.getDefaultNamespaceURI();
+            if (defaultNS != null) {
+                addToDescriptorNamespaceResolver(canUseDefaultNamespace, null, defaultNS, contextResolver);
+            }
         }
         return this.namespaceResolverForDescriptor;
+    }
+
+    private void addToDescriptorNamespaceResolver(
+            boolean asDefault,
+            String prefix,
+            String namespace,
+            NamespaceResolver contextResolver) {
+        String contextDefault = contextResolver.getDefaultNamespaceURI();
+        if (asDefault && (contextDefault == null || contextDefault.equals(namespace))) {
+            this.namespaceResolverForDescriptor.setDefaultNamespaceURI(namespace);
+            contextResolver.setDefaultNamespaceURI(namespace);
+        } else {
+            String newPrefix = prefix == null
+                    || contextResolver.hasPrefix(prefix)
+                    || namespaceResolverForDescriptor.hasPrefix(prefix)
+                ? getNamespacePrefixForDescriptorNamespaceResolver(namespace, contextResolver)
+                : prefix;
+            this.namespaceResolverForDescriptor.put(newPrefix, namespace);
+            contextResolver.put(newPrefix, namespace);
+        }
+    }
+
+    private String getNamespacePrefixForDescriptorNamespaceResolver(String namespace, NamespaceResolver contextResolver) {
+        String prefix = contextResolver.resolveNamespaceURI(namespace);
+        while (prefix == null
+                || namespaceResolverForDescriptor.hasPrefix(prefix)) {
+            prefix = contextResolver.generatePrefix();
+        }
+        return prefix;
     }
 }

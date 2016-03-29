@@ -6,7 +6,7 @@
     "xml-schema":{
         "namespace":"file",
         "xml-ns":{
-	   "prefix":"ns0",
+	   "prefix":"f",
 	   "namespace-uri":"file"
 	   }
       },

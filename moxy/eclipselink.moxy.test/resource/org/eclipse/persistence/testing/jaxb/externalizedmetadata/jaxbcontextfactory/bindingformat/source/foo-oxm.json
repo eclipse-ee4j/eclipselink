@@ -3,7 +3,7 @@
     "xml-schema":{
         "namespace":"source",
         "xml-ns":{
-	   "prefix":"ns0",
+	   "prefix":"s",
 	   "namespace-uri":"source"
 	   }
       },

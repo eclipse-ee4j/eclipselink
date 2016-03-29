@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.annotations;
 
+import junit.framework.JUnit4TestAdapter;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -118,7 +119,7 @@ public class AnnotationsTestSuite extends TestSuite {
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlelementdecl.qname.XmlElementDeclQNameNSTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlelementdecl.emptystringns.EmptyStringNSTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlelementdecl.unqualified.UnqualfiedTestCases.class);
-        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlelementdecl.xsitype.XsiTypeTestCases.class);        
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlelementdecl.xsitype.XsiTypeTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlelementdecl.xsitype2.FooBarXsiTypeTestCases.class);
         suite.addTest(XmlLocationTestSuite.suite());
         suite.addTest(org.eclipse.persistence.testing.jaxb.annotations.xmlvalue.XmlValueTestSuite.suite());
@@ -126,6 +127,7 @@ public class AnnotationsTestSuite extends TestSuite {
         suite.addTestSuite(InverseReferenceWithRefTestCases.class);
         suite.addTestSuite(InverseReferenceAdapterTestCases.class);
         suite.addTestSuite(InverseRefChoiceAdapterTestCases.class);
+        suite.addTest(new JUnit4TestAdapter(org.eclipse.persistence.testing.jaxb.annotations.xmlschema.XmlSchemaTestCases.class));
 
         return suite;
     }

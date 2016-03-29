@@ -1,0 +1,21 @@
+{
+   "package-name" : "org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlschema.namespace.linked.address",
+   "xml-schema" : {
+      "element-form-default" : "QUALIFIED",
+      "namespace" : "http://www.example.org/linked/address",
+      "xml-ns" : [ {
+        "prefix" : "",
+        "namespace-uri" : "http://www.example.org/linked/address"
+      } ]
+   },
+   "java-types" : {
+      "java-type" : [ {
+         "name" : "Address",
+         "java-attributes" : {
+            "xml-element" : [
+                {"java-attribute" : "country"}
+            ]
+         }
+      } ]
+   }
+}
