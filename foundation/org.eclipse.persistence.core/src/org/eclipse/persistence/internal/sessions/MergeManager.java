@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -525,6 +525,13 @@ public class MergeManager {
             if (descriptor.usesOptimisticLocking() && descriptor.getOptimisticLockingPolicy().isStoredInCache()) {
                 cacheKey.setWriteLockValue(changeSet.getWriteLockValue());
             }
+            
+            // Bug 486845 - ensure that any protected foreign keys from the ChangeSet 
+            // for an object with protected isolation are set on the object's CacheKey
+            if (descriptor.isProtectedIsolation() && changeSet.hasProtectedForeignKeys()) {
+                descriptor.getObjectBuilder().cacheForeignKeyValues(changeSet.getProtectedForeignKeys(), cacheKey, session);
+            }
+            
             cacheKey.setObject(original);
             if (descriptor.getCacheInvalidationPolicy().shouldUpdateReadTimeOnUpdate() || changeSet.isNew()) {
                 cacheKey.setReadTime(getSystemTime());

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -16,6 +16,7 @@ import java.util.*;
 import java.io.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 
 /**
  * <p>
@@ -313,6 +314,15 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
             ClassDescriptor descriptor = changeSet.getDescriptor();
             int syncType = descriptor.getCachePolicy().getCacheSynchronizationType();
 
+            // Bug 486845 - ensure that any existing protected foreign keys are set 
+            // in the changeSet for objects with protected cache isolation
+            if (descriptor.isProtectedIsolation()) {
+                CacheKey activeCacheKey = changeSet.getActiveCacheKey();
+                if (activeCacheKey != null && activeCacheKey.hasProtectedForeignKeys()) {
+                    changeSet.setProtectedForeignKeys(activeCacheKey.getProtectedForeignKeys().clone());
+                }
+            }
+            
             // Change sets for new objects will only be sent as part of the UnitOfWorkChangeSet
             // if they are meant to be merged into the distributed cache.
             // Note: New objects could still be sent if the are referred to by a change record.
