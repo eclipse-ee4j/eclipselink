@@ -30,6 +30,8 @@
 * Contributors:
 *     tware - initial API and implementation
 *     egwin - update to adopt calling standards
+*     03/30/2016-2.7 Tomas Kraus
+*       - 490677: Database connection properties made configurable in test.properties
 #******************************************************************************/-->
 <!-- This ant project includes the following tasks:
         - build (default) : cleans, compiles, and packages all tests
@@ -67,13 +69,33 @@
     <property name="ora_nosql_test.plugins.dir"          value="../plugins"/>
 
     <!-- Allows a user to overide certain user specific properties. -->
-    <condition property="custom.properties.message" value="Loading ${user.home}/build.properties..."
-                                                     else="Custom properties file '${user.home}/build.properties' not found to load.">
+    <condition property="custom.bld.properties.message"
+        value="Loading ${user.home}/build.properties"
+        else="Skipping ${user.home}/build.properties, file does not exist">
         <available file="${user.home}/build.properties"/>
     </condition>
-    <echo message="${custom.properties.message}"/>
+    <echo message="${custom.bld.properties.message}"/>
     <property file="${user.home}/build.properties"/>
+
+    <condition property="custom.cmd.properties.message"
+        value="Loading ${test.properties}"
+        else="Skipping ${test.properties}, file does not exist">
+        <and>
+            <isset property="test.properties"/>
+            <available file="${test.properties}"/>
+        </and>
+    </condition>
+    <echo message="${custom.cmd.properties.message}"/>
+    <property file="${test.properties}"/>
+
+    <condition property="custom.tst.properties.message"
+        value="Loading ${user.home}/test.properties"
+        else="Skipping ${user.home}/test.properties, file does not exist">
+        <available file="${user.home}/test.properties"/>
+    </condition>
+    <echo message="${custom.tst.properties.message}"/>
     <property file="${user.home}/test.properties"/>
+
     <property file="${ora_nosql_test.build.location}/antbuild.properties"/>
     <property file="${ora_nosql_test.build.location}/${test.properties}"/>
     <property file="${ora_nosql_test.build.location}/test.properties"/>
@@ -457,20 +479,19 @@
     </target>
 
     <!-- Default test target, runs test.class from test.properties (default is OracleTestModel). -->
-    <target name="test" depends="init_run">
-        <run_test testclass="${test.class}"  dburl="${db.url}"/>
-        <generate.report/>
+    <target name="test" depends="init_run, test-oracle-nosql">
+        <generate_report/>
     </target>
 
     <!-- Runs Core Oracle NoSQL tests. -->
     <target name="test-oracle-nosql" depends="init_run">
-        <run_test testclass="org.eclipse.persistence.testing.tests.eis.nosql.NoSQLTestModel"  dburl="${db.url}"/>
+	<run_nosql_test testclass="org.eclipse.persistence.testing.tests.eis.nosql.NoSQLTestSuite"/>
         <generate_report/>
     </target>
 
     <!-- Runs Core Oracle AQ tests. -->
     <target name="test-oracle-aq" depends="init_run">
-        <run_test testclass="org.eclipse.persistence.testing.tests.eis.aq.AQTestModel"  dburl="${db.url}"/>
+        <run_test testclass="org.eclipse.persistence.testing.tests.eis.aq.AQTestSuite"  dburl="${db.url}"/>
         <generate_report/>
     </target>
 
@@ -507,7 +528,30 @@
         </java>
     </target>
 
-    <!-- Generic target for running tests. -->
+    <!-- Generic target for running NoSQL tests. -->
+    <macrodef name="run_nosql_test">
+        <attribute name="testclass"/>
+        <sequential>
+            <echo>Running test on ${nosql.url}</echo>
+            <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
+            <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
+            <junit printsummary="yes" failureproperty="junit.failed" fork="yes" forkmode="once" showoutput="true" maxmemory="512m" dir="${run.dir}">
+                <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
+                <jvmarg value="-Dnosql.url=${nosql.url}"/>
+                <jvmarg value="-Djava.security.manager"/>
+                <jvmarg value="-Djava.security.policy=./java.policy.allpermissions"/>
+                <jvmarg line="${additional.jvmargs}"/>
+                <classpath>
+                    <path refid="ora_nosql_test.run.path"/>
+                </classpath>
+                <formatter type="xml"/>
+                <test name="@{testclass}" haltonfailure="no" outfile="${report.dir}/@{testclass}-test-results">
+                </test>
+            </junit>
+        </sequential>
+    </macrodef>
+
+	<!-- Generic target for running tests. -->
     <macrodef name="run_test">
         <attribute name="testclass"/>
         <attribute name="dburl"/>
@@ -522,6 +566,11 @@
                 <jvmarg value="-Ddb.user=${db.user}"/>
                 <jvmarg value="-Ddb.pwd=${db.pwd}"/>
                 <jvmarg value="-Ddb.platform=${db.platform}"/>
+                <jvmarg value="-Dnosql.url=${nosql.url}"/>
+                <jvmarg value="-Dnosql.user=${nosql.user}"/>
+                <jvmarg value="-Dnosql.pwd=${nosql.pwd}"/>
+                <jvmarg value="-Dnosql.platform=${nosql.platform}"/>
+                <jvmarg value="-Dnosql.spec=${nosql.spec}"/>
                 <jvmarg value="-Djava.security.manager"/>
                 <jvmarg value="-Djava.security.policy=./java.policy.allpermissions"/>
                 <jvmarg line="${additional.jvmargs}"/>

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -9,50 +9,65 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     04/01/2016-2.7 Tomas Kraus
+ *       - 490677: Database connection properties made configurable in test.properties
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.eis.aq;
 
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.sessions.server.*;
-import org.eclipse.persistence.eis.*;
-import org.eclipse.persistence.eis.adapters.aq.*;
-import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.eis.EISLogin;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.sessions.server.Server;
 import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.tests.nosql.LogTestExecution;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
 
 /**
- * Basic authentication tests. This tests username/password verification when connecting
- * TopLink EIS to the native AQ JCA connector.  Valid/invalid usernames and passwords
+ * Basic authentication tests. This tests user name / password verification when connecting
+ * TopLink EIS to the native AQ JCA connector.  Valid/invalid user names and passwords
  * will be tested using both server and database sessions.
  */
-public class AuthenticationTest extends TestCase {
-    public AuthenticationTest() {
-        setName("AuthenticationTest");
-        setDescription("This tests username/password verification when connecting TopLink EIS to the native AQ JCA connector.");
+public class AuthenticationTest {
+
+    /** Log the test being currently executed. */
+    @Rule public LogTestExecution logExecution = new LogTestExecution();
+
+    /** Logger. */
+    private static final SessionLog LOG = AbstractSessionLog.getLog();
+
+    /** EIS login instance. */
+    private EISLogin login;
+
+    /**
+     * Set up this test suite.
+     * New login instance is required for each test.
+     */
+    @Before
+    public void setUp() {
+        login = AQTestSuite.initLogin();
     }
 
-    public void test() throws Exception {
-        testValidUsernameAndPassword();
-        testValidUsernameAndPasswordDBSession();
-        testInvalidUsername();
-        testInvalidPassword();
-        testInvalidUsernameDBSession();
-        testInvalidPasswordDBSession();
+    /**
+     * Clean up this test suite.
+     */
+    @After
+    public void tearDown() {
+        login = null;
     }
 
+    /**
+     * Test server session login with valid user name and password.
+     */
+    @Test
     public void testValidUsernameAndPassword() throws Exception {
-        EISLogin login = new EISLogin(new AQPlatform());
-        AQEISConnectionSpec spec = new AQEISConnectionSpec();
-        login.setConnectionSpec(spec);
-
-        String url = (String)getSession().getDatasourceLogin().getProperty(AQEISConnectionSpec.URL);
-
-        login.setUserName("aquser");
-        login.setPassword("aquser");
-        login.setProperty(AQEISConnectionSpec.URL, url);
-
         boolean failure = false;
-        Server session = new Project(login).createServerSession();
-        session.setSessionLog(getSession().getSessionLog());
+        final Server session = new Project(login).createServerSession();
+        session.setSessionLog(LOG);
         try {
             session.login();
             session.logout();
@@ -62,26 +77,19 @@ public class AuthenticationTest extends TestCase {
             }
             failure = true;
         }
-
         if (failure) {
             throw new TestErrorException("Authentication failed unexpectedly.");
         }
     }
 
+    /**
+     * Test database session login with valid user name and password.
+     */
+    @Test
     public void testValidUsernameAndPasswordDBSession() throws Exception {
-        EISLogin login = new EISLogin(new AQPlatform());
-        AQEISConnectionSpec spec = new AQEISConnectionSpec();
-        login.setConnectionSpec(spec);
-
-        String url = (String)getSession().getDatasourceLogin().getProperty(AQEISConnectionSpec.URL);
-
-        login.setUserName("aquser");
-        login.setPassword("aquser");
-        login.setProperty(AQEISConnectionSpec.URL, url);
-
         boolean failure = false;
-        DatabaseSession session = new Project(login).createDatabaseSession();
-        session.setSessionLog(getSession().getSessionLog());
+        final DatabaseSession session = new Project(login).createDatabaseSession();
+        session.setSessionLog(LOG);
         try {
             session.login();
             session.logout();
@@ -91,26 +99,21 @@ public class AuthenticationTest extends TestCase {
             }
             failure = true;
         }
-
         if (failure) {
             throw new TestErrorException("Authentication failed unexpectedly.");
         }
     }
 
+    /**
+     * Test server session login with invalid user name and valid password.
+     */
+    @Test
     public void testInvalidUsername() throws Exception {
-        EISLogin login = new EISLogin(new AQPlatform());
-        AQEISConnectionSpec spec = new AQEISConnectionSpec();
-        login.setConnectionSpec(spec);
-
-        String url = (String)getSession().getDatasourceLogin().getProperty(AQEISConnectionSpec.URL);
-
-        login.setUserName("invaliduser");
-        login.setPassword("aquser");
-        login.setProperty(AQEISConnectionSpec.URL, url);
-
+        final String userName = "invaliduser";
+        login.setUserName(userName);
         boolean failure = false;
-        Server session = new Project(login).createServerSession();
-        session.setSessionLog(getSession().getSessionLog());
+        final Server session = new Project(login).createServerSession();
+        session.setSessionLog(LOG);
         try {
             session.login();
             session.logout();
@@ -120,26 +123,21 @@ public class AuthenticationTest extends TestCase {
             }
             failure = true;
         }
-
         if (!failure) {
             throw new TestErrorException("Authentication did not fail as expected.");
         }
     }
 
+    /**
+     * Test server session login with valid user name and invalid password.
+     */
+    @Test
     public void testInvalidPassword() throws Exception {
-        EISLogin login = new EISLogin(new AQPlatform());
-        AQEISConnectionSpec spec = new AQEISConnectionSpec();
-        login.setConnectionSpec(spec);
-
-        String url = (String)getSession().getDatasourceLogin().getProperty(AQEISConnectionSpec.URL);
-
-        login.setUserName("aquser");
-        login.setPassword("invalidpassword");
-        login.setProperty(AQEISConnectionSpec.URL, url);
-
+        final String password = "invalidpassword";
+        login.setPassword(password);
         boolean failure = false;
-        Server session = new Project(login).createServerSession();
-        session.setSessionLog(getSession().getSessionLog());
+        final Server session = new Project(login).createServerSession();
+        session.setSessionLog(LOG);
         try {
             session.login();
             session.logout();
@@ -149,26 +147,21 @@ public class AuthenticationTest extends TestCase {
             }
             failure = true;
         }
-
         if (!failure) {
             throw new TestErrorException("Authentication did not fail as expected.");
         }
     }
 
+    /**
+     * Test database session login with invalid user name and valid password.
+     */
+    @Test
     public void testInvalidUsernameDBSession() throws Exception {
-        EISLogin login = new EISLogin(new AQPlatform());
-        AQEISConnectionSpec spec = new AQEISConnectionSpec();
-        login.setConnectionSpec(spec);
-
-        String url = (String)getSession().getDatasourceLogin().getProperty(AQEISConnectionSpec.URL);
-
-        login.setUserName("invaliduser");
-        login.setPassword("aquser");
-        login.setProperty(AQEISConnectionSpec.URL, url);
-
+        final String userName = "invaliduser";
+        login.setUserName(userName);
         boolean failure = false;
         DatabaseSession session = new Project(login).createDatabaseSession();
-        session.setSessionLog(getSession().getSessionLog());
+        session.setSessionLog(LOG);
         try {
             session.login();
             session.logout();
@@ -178,26 +171,21 @@ public class AuthenticationTest extends TestCase {
             }
             failure = true;
         }
-
         if (!failure) {
             throw new TestErrorException("Authentication did not fail as expected.");
         }
     }
 
+    /**
+     * Test database session login with valid user name and invalid password.
+     */
+    @Test
     public void testInvalidPasswordDBSession() throws Exception {
-        EISLogin login = new EISLogin(new AQPlatform());
-        AQEISConnectionSpec spec = new AQEISConnectionSpec();
-        login.setConnectionSpec(spec);
-
-        String url = (String)getSession().getDatasourceLogin().getProperty(AQEISConnectionSpec.URL);
-
-        login.setUserName("aquser");
-        login.setPassword("invalidpassword");
-        login.setProperty(AQEISConnectionSpec.URL, url);
-
+        final String password = "invalidpassword";
+        login.setPassword(password);
         boolean failure = false;
         DatabaseSession session = new Project(login).createDatabaseSession();
-        session.setSessionLog(getSession().getSessionLog());
+        session.setSessionLog(LOG);
         try {
             session.login();
             session.logout();
@@ -207,9 +195,9 @@ public class AuthenticationTest extends TestCase {
             }
             failure = true;
         }
-
         if (!failure) {
             throw new TestErrorException("Authentication did not fail as expected.");
         }
     }
+
 }

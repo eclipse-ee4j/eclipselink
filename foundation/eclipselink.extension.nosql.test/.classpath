@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+	<classpathentry kind="src" path="src"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/eclipselink.core.test"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/eclipselink.jpa.test"/>
-	<classpathentry kind="src" path="src"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.core"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.jpa"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="var" path="MONGO_LIB"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.nosql"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/jpa/plugins/javax.persistence_2.1.1.v201509150925.jar" sourcepath="/ECLIPSELINK_HOME/jpa/plugins/javax.persistence.source_2.1.1.v201509150925.jar"/>
-        <classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.eclipse.orbit.mongodb_2.10.1.v20130422-1135.jar" sourcepath="/ECLIPSELINK_HOME/plugins/org.eclipse.orbit.mongodb.source_2.10.1.v20130422-1135.jar"/>
+        <classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.mongodb.mongo-java-driver_3.2.0.jar" sourcepath="/ECLIPSELINK_HOME/plugins/org.slf4j.api.source_1.7.2.v20121108-1250.jar"/>
+        <classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.resource_1.6.0.v201204270900.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

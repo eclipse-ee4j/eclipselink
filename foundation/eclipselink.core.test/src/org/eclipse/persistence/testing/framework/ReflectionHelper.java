@@ -88,14 +88,14 @@ public class ReflectionHelper {
      * @throws IllegalArgumentException If an unwrapping conversion fails.
      * @throws IllegalAccessException If the underlying field is either inaccessible or final.
      */
-    public static final Object getPrivateStatic(final Class c, final String name)
+    public static final <T> T getPrivateStatic(final Class c, final String name)
             throws ReflectiveOperationException {
         final Field field = c.getDeclaredField(name);
         final boolean accessible = field.isAccessible();
         field.setAccessible(true);
         final Object value = field.get(null);
         field.setAccessible(accessible);
-        return value;
+        return (T)value;
      }
 
     /**

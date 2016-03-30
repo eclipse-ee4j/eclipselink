@@ -8,7 +8,8 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle - initial API and implementation
+ *     03/30/2016-2.7 Tomas Kraus
+ *       - 490677: Allow Oracle NoSQL connection to be specified in build properties bundle
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.nosql;
 
@@ -47,13 +48,37 @@ import org.eclipse.persistence.testing.models.jpa.nosql.Address;
  */
 public class NoSQLTestSuite extends JUnitTestCase {
 
+    /** The persistence unit name. */
+    private static final String PU_NAME = "nosql";
+
+    /** The NoSQL persistence unit properties {@link Map} from the test properties {@code db.<name>}. */
+    private final Map<String, String> properties;
+
     public static Order existingOrder;
 
-    public NoSQLTestSuite(){
+    /**
+     * Build NoSQL persistence unit properties {@link Map} from test properties {@code db.<name>}.
+     * @return Persistence unit properties {@link Map}.
+     */
+    private static Map<String, String> initProperties() {
+        final Map<String, String> properties = new HashMap<>();
+        return properties;
     }
 
-    public NoSQLTestSuite(String name){
+    /**
+     * Create an instance of NoSQL database test suite.
+     */
+    public NoSQLTestSuite() {
+        properties = initProperties();
+    }
+
+    /**
+     * Create an instance of NoSQL database test suite.
+     * @param name Test suite name.
+     */
+    public NoSQLTestSuite(String name) {
         super(name);
+        properties = initProperties();
     }
 
     public static Test suite() {
@@ -71,14 +96,22 @@ public class NoSQLTestSuite extends JUnitTestCase {
         return suite;
     }
 
+    /**
+     * Get the name of the persistence unit used in the tests.
+     * @return The name of the persistence unit used in the tests.
+     */
     @Override
     public String getPersistenceUnitName() {
-        return "nosql";
+        return PU_NAME;
     }
 
+    /**
+     * Get the NoSQL persistence unit properties {@link Map}.
+     * @return The NoSQL persistence unit properties {@link Map}.
+     */
     @Override
     public Map getPersistenceProperties() {
-        return new HashMap();
+        return properties;
     }
 
     public void testSetup() {

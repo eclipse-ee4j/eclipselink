@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -9,52 +9,103 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     04/01/2016-2.7 Tomas Kraus
+ *       - 490677: Database connection properties made configurable in test.properties
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.eis.aq;
 
-import javax.jms.*;
-import oracle.jms.*;
-import org.eclipse.persistence.testing.framework.TestCase;
+import javax.jms.JMSException;
+import javax.jms.QueueConnection;
+import javax.jms.QueueConnectionFactory;
+import javax.jms.QueueSession;
+import javax.jms.Session;
+import javax.jms.TopicConnection;
+import javax.jms.TopicConnectionFactory;
+import javax.jms.TopicSession;
+
+import org.eclipse.persistence.testing.tests.nosql.LogTestExecution;
+import org.eclipse.persistence.testing.tests.nosql.NoSQLProperties;
+import org.junit.Rule;
+import org.junit.Test;
+
+import oracle.jms.AQjmsFactory;
 
 /**
- * Test conecting directly through the AQ JMS driver. Requires AQ installed on this database and an
- * aquser defined.
+ * Test connecting directly through the AQ JMS driver. Requires AQ installed on this database.
  */
-public class JMSDirectConnectTest extends TestCase {
+public class JMSDirectConnectTest {
+
+    /** Log the test being currently executed. */
+    @Rule public LogTestExecution logExecution = new LogTestExecution();
+
+    /**
+     * Creates an instance of direct connection tests.
+     */
     public JMSDirectConnectTest() {
-        this.setDescription("Test conecting directly through the AQ JMS driver");
     }
 
-    public void test() throws Exception {
-        TopicConnection topicConnection = connectTopic();
-        topicConnection.close();
-        QueueConnection queueConnection = connectQueue();
-        queueConnection.close();
+    /**
+     * Create database connection using {@link TopicConnection}.
+     * @return {@link TopicConnection} instance.
+     */
+    static TopicConnection connectTopic() throws JMSException {
+        final TopicConnectionFactory connectionFactory
+                = AQjmsFactory.getTopicConnectionFactory(NoSQLProperties.getDBURL(), null);
+        return connectionFactory.createTopicConnection(
+                NoSQLProperties.getDBUserName(), NoSQLProperties.getDBPassword());
     }
 
-    public TopicConnection connectTopic() throws Exception {
-        String url = (String)getSession().getDatasourceLogin().getProperty("url");
-        TopicConnectionFactory connectionFactory = AQjmsFactory.getTopicConnectionFactory(url, null);
-
-        TopicConnection connection = connectionFactory.createTopicConnection("aquser", "aquser");
-        TopicSession session = connection.createTopicSession(true, Session.CLIENT_ACKNOWLEDGE);
-        connection.start();
-
-        session.close();
-
-        return connection;
+    /**
+     * Create database connection using {@link QueueConnection}.
+     * @return {@link TopicConnection} instance.
+     */
+    static QueueConnection connectQueue() throws JMSException {
+        final QueueConnectionFactory connectionFactory
+                = AQjmsFactory.getQueueConnectionFactory(NoSQLProperties.getDBURL(), null);
+        return connectionFactory.createQueueConnection(
+                NoSQLProperties.getDBUserName(), NoSQLProperties.getDBPassword());
     }
 
-    public QueueConnection connectQueue() throws Exception {
-        String url = (String)getSession().getDatasourceLogin().getProperty("url");
-        QueueConnectionFactory connectionFactory = AQjmsFactory.getQueueConnectionFactory(url, null);
-
-        QueueConnection connection = connectionFactory.createQueueConnection("aquser", "aquser");
-        QueueSession session = connection.createQueueSession(true, Session.CLIENT_ACKNOWLEDGE);
-        connection.start();
-
-        session.close();
-
-        return connection;
+    /**
+     * Test direct connection using {@link TopicConnection}.
+     */
+    @Test
+    public void testConnectTopic() throws Exception {
+        TopicSession session = null;
+        TopicConnection connection = null;
+        try {
+            connection = connectTopic();
+            session = connection.createTopicSession(true, Session.CLIENT_ACKNOWLEDGE);
+            connection.start();
+        } finally {
+            if (session != null) {
+                session.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
+        }
     }
+
+    /**
+     * Test direct connection using {@link QueueConnection}.
+     */
+    @Test
+    public void testConnectQueue() throws Exception {
+        QueueConnection connection = null;
+        QueueSession session = null;
+        try {
+            connection = connectQueue();
+            session = connection.createQueueSession(true, Session.CLIENT_ACKNOWLEDGE);
+            connection.start();
+        } finally {
+            if (session != null) {
+                session.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
+        }
+    }
+
 }

@@ -72,11 +72,9 @@
         else="Skipping ${user.home}/build.properties, file does not exist">
         <available file="${user.home}/build.properties"/>
     </condition>
-    <condition property="custom.tst.properties.message"
-        value="Loading ${user.home}/test.properties"
-        else="Skipping ${user.home}/test.properties, file does not exist">
-        <available file="${user.home}/test.properties"/>
-    </condition>
+    <echo message="${custom.bld.properties.message}"/>
+    <property file="${user.home}/build.properties"/>
+
     <condition property="custom.cmd.properties.message"
         value="Loading ${test.properties}"
         else="Skipping ${test.properties}, file does not exist">
@@ -85,18 +83,17 @@
             <available file="${test.properties}"/>
         </and>
     </condition>
-    <condition property="custom.local.properties.message"
-        value="Loading ${basedir}/local.build.properties"
-        else="Skipping ${basedir}/local.build.properties, file does not exist">
-        <available file="${basedir}/local.build.properties"/>
+    <echo message="${custom.cmd.properties.message}"/>
+    <property file="${test.properties}"/>
+
+    <condition property="custom.tst.properties.message"
+        value="Loading ${user.home}/test.properties"
+        else="Skipping ${user.home}/test.properties, file does not exist">
+        <available file="${user.home}/test.properties"/>
     </condition>
     <echo message="${custom.tst.properties.message}"/>
-    <echo message="${custom.bld.properties.message}"/>
-    <echo message="${custom.cmd.properties.message}"/>
-    <echo message="${custom.local.properties.message}"/>
-    <property file="${user.home}/build.properties"/>
     <property file="${user.home}/test.properties"/>
-    <property file="${test.properties}"/>
+
     <property file="${basedir}/local.build.properties"/>
     <property file="${nosql_test.build.location}/antbuild.properties"/>
     <property file="${nosql_test.build.location}/test.properties"/>

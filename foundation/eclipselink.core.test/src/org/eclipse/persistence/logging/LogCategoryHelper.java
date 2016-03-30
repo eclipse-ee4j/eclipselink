@@ -55,7 +55,7 @@ public class LogCategoryHelper {
      * @throws IllegalAccessException If there is a problem in {@code ReflectionHelper} call.
      */
     public static void testGetNameSpace() throws ReflectiveOperationException {
-        final String namespacePrefix = (String)ReflectionHelper.getPrivateStatic(LogCategory.class, "NAMESPACE_PREFIX");
+        final String namespacePrefix = ReflectionHelper.<String>getPrivateStatic(LogCategory.class, "NAMESPACE_PREFIX");
         for (LogCategory category : LogCategory.values()) {
             String name = category.getName();
             StringBuilder sb = new StringBuilder(namespacePrefix.length() + name.length());

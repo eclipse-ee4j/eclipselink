@@ -77,8 +77,8 @@ public class NoSQLMappedTestSuite extends JUnitTestCase {
     }
 
     @Override
-    public Map getPersistenceProperties() {
-        return new HashMap();
+    public Map<String, String> getPersistenceProperties() {
+        return new HashMap<>();
     }
 
     public void testSetup() {

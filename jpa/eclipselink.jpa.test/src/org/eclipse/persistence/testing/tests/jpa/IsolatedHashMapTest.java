@@ -343,7 +343,7 @@ public class IsolatedHashMapTest extends JUnitTestCase {
             final ServerPlatform originalPlatform
                     = (ServerPlatform)ReflectionHelper.getPrivateStatic(IsolatedHashMap.class, "serverPlatform");
             final boolean originalsupport
-                    = (boolean)ReflectionHelper.getPrivateStatic(IsolatedHashMap.class, "supportPartitions");
+                    = ReflectionHelper.getPrivateStatic(IsolatedHashMap.class, "supportPartitions");
             log.log(SessionLog.INFO,
                     "Original platform field instance: " + originalPlatform.getClass().getName());
             log.log(SessionLog.INFO, "Original partitions support flag: " + Boolean.toString(originalsupport));
