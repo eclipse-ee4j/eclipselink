@@ -67,7 +67,7 @@ class ObjectItem<T> extends AbstractItem<T> implements UnmarshallerItem<T> {
         PropertyModel valuePropertyModel = getClassModel().findPropertyModelByJsonReadName(key);
         //skip the field if it is not found in class
         if (valuePropertyModel == null) {
-            log.warning(Messages.getMessage(MessageKeys.PROPERTY_NOT_FOUND_DESERIALIZER, key, getClassModel().getRawType().getName(), value));
+            log.finest(Messages.getMessage(MessageKeys.PROPERTY_NOT_FOUND_DESERIALIZER, key, getClassModel().getRawType().getName(), value));
             return;
         }
         if (jsonValueType == JsonValueType.NULL) {

@@ -75,7 +75,7 @@ public class AdaptedObjectItemDecorator<A, T> implements UnmarshallerItem<T>, De
         try {
             return ((JsonbAdapter<T, A>) adapterInfo.getAdapter()).adaptFromJson(a);
         } catch (Exception e) {
-            throw new JsonbException(Messages.getMessage(MessageKeys.ADAPTER_EXCEPTION, e));
+            throw new JsonbException(Messages.getMessage(MessageKeys.ADAPTER_EXCEPTION, adapterInfo.getFromType(), adapterInfo.getToType(), adapterInfo.getAdapter().getClass()), e);
         }
     }
 

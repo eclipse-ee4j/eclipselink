@@ -87,13 +87,14 @@ public class Marshaller extends JsonTextProcessor {
     }
 
     /**
-     * Helper constructor
+     * Creates Marshaller for generation to Writer
+     *
      * @param jsonbContext Context of Jsonb
-     * @param jsonGenerator created generator instance
+     * @param writer writer to marshall into
      */
-    public Marshaller(JsonbContext jsonbContext, JsonGenerator jsonGenerator) {
+    public Marshaller(JsonbContext jsonbContext, Writer writer) {
         super(jsonbContext);
-        this.jsonGenerator = jsonGenerator;
+        this.jsonGenerator = createGenerator(writer);
         stringWriter = null;
         this.runtimeTypeInfo = Optional.empty();
     }
@@ -122,16 +123,6 @@ public class Marshaller extends JsonTextProcessor {
     }
 
     /**
-     * Creates Marshaller for generation to Writer
-     *
-     * @param jsonbContext Context of Jsonb
-     * @param writer writer to marshall into
-     */
-    public Marshaller(JsonbContext jsonbContext, Writer writer) {
-        this(jsonbContext, new IJsonJsonGeneratorDecorator(jsonbContext.getJsonProvider().createGenerator(writer)));
-    }
-
-    /**
      * Creates Marshaller for generation to String with runtime type information.
      *
      * @param jsonbContext Context of Jsonb
@@ -142,29 +133,30 @@ public class Marshaller extends JsonTextProcessor {
         Objects.requireNonNull(rootRuntimeType);
         this.runtimeTypeInfo = Optional.of(new RuntimeTypeHolder(null, rootRuntimeType));
         this.stringWriter = new StringWriter();
-        this.jsonGenerator = new IJsonJsonGeneratorDecorator(jsonbContext.getJsonProvider().createGenerator(stringWriter));
+        this.jsonGenerator = createGenerator(stringWriter);
     }
 
-    /**
-     * Helper constructor
-     *
-     * @param jsonbContext Context of Jsonb
-     * @param rootRuntimeType runtime type for generic information
-     * @param jsonGenerator created generator instance
-     */
-    public Marshaller(JsonbContext jsonbContext, Type rootRuntimeType, JsonGenerator jsonGenerator) {
-        super(jsonbContext);
-        Objects.requireNonNull(rootRuntimeType);
-        this.runtimeTypeInfo = Optional.of(new RuntimeTypeHolder(null, rootRuntimeType));
-        this.jsonGenerator = jsonGenerator;
-        stringWriter = null;
-    }
 
     /**
      * Helper constructor.
      */
     public Marshaller(JsonbContext jsonbContext, Type rootRuntimeType, Writer writer) {
-        this(jsonbContext, rootRuntimeType, new IJsonJsonGeneratorDecorator(jsonbContext.getJsonProvider().createGenerator(writer)));
+        super(jsonbContext);
+        Objects.requireNonNull(rootRuntimeType);
+        this.runtimeTypeInfo = Optional.of(new RuntimeTypeHolder(null, rootRuntimeType));
+        this.stringWriter = null;
+        this.jsonGenerator = createGenerator(writer);
+    }
+
+    /**
+     * Helper constructor.
+     */
+    public Marshaller(JsonbContext jsonbContext, Type rootRuntimeType, OutputStream outputStream) {
+        super(jsonbContext);
+        Objects.requireNonNull(rootRuntimeType);
+        this.runtimeTypeInfo = Optional.of(new RuntimeTypeHolder(null, rootRuntimeType));
+        this.stringWriter = null;
+        this.jsonGenerator = createGenerator(outputStream);
     }
 
     /**

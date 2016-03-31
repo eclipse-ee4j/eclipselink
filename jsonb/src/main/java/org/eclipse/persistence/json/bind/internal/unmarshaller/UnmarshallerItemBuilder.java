@@ -165,7 +165,8 @@ public class UnmarshallerItemBuilder {
                 return wrapAdapted(adapterInfoOptional, item);
             case OBJECT:
                 if (Map.class.isAssignableFrom(rawType)) {
-                    return createMapItem();
+                    final UnmarshallerItem<?> mapItem = createMapItem();
+                    return wrapAdapted(adapterInfoOptional, mapItem);
                 }
                 if (rawType.isInterface()) {
                     throw new JsonbException(Messages.getMessage(MessageKeys.INFER_TYPE_FOR_UNMARSHALL, rawType.getName()));

@@ -393,4 +393,20 @@ public class AdaptersTest {
         AdaptedPojo<String> result = jsonb.fromJson("{\"tMap\":{\"crateIntField\":101,\"crateStrField\":\"first\"}}", pojoClass);
         assertEquals("11", result.tMap.get("fake"));
     }
+
+    @Test
+    public void testAdaptJsonObject() {
+        jsonb = JsonbBuilder.create();
+        JsonObjectPojo pojo = new JsonObjectPojo();
+        pojo.box = new Box("strFieldValue", 110);
+
+        String json = jsonb.toJson(pojo);
+        assertEquals("{\"box\":{\"boxStrField\":\"strFieldValue\",\"boxIntegerField\":110}}", json);
+
+//        TODO JsonObject in unmarshaller
+        /*JsonObjectPojo result = jsonb.fromJson(json, JsonObjectPojo.class);
+        assertEquals("strFieldValue", result.box.getBoxStrField());
+        assertEquals(Integer.valueOf(110), result.box.getBoxIntegerField());*/
+        System.out.println("json = " + json);
+    }
 }

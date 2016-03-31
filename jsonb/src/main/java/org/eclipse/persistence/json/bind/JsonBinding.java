@@ -109,7 +109,7 @@ public class JsonBinding implements Jsonb {
 
     @Override
     public void toJson(Object object, Type runtimeType, OutputStream stream) throws JsonbException {
-        final Marshaller marshaller = new Marshaller(jsonbContext, runtimeType);
+        final Marshaller marshaller = new Marshaller(jsonbContext, runtimeType, stream);
         marshaller.marshall(object);
     }
 
