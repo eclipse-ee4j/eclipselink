@@ -94,7 +94,7 @@ public class SessionHelper {
     }
 
     /**
-     * Creates {@link DatabaseSession} from  project and connect it to database.
+     * Creates {@link DatabaseSession} from project and connect it to database.
      * {@link DatabaseSession#logout()} must be called before session instance is disposed.
      */
     public static Server createServerSession(final Project project) {

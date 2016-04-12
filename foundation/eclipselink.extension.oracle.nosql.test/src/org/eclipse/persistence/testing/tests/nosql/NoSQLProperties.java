@@ -195,15 +195,12 @@ public class NoSQLProperties {
     }
 
     /**
-     * Set EIS login connection information for NoSQL database.
-     * @param login      Target {@link EISLogin} instance.
-     * @param properties Persistence unit properties {@link Map}.
+     * Build NoSQL connection property containing host and port concatenated.
+     * @param host NoSQL connection host property.
+     * @param port NoSQL connection port property.
+     * @return Property containing host and port concatenated.
      */
-    public static void setEISLoginProperties(final EISLogin login) {
-        final String host = properties.get(PROPERTY_NOSQL_HOST_KEY);
-        final String port = properties.get(PROPERTY_NOSQL_PORT_KEY);
-        final String store = properties.get(PROPERTY_NOSQL_STORE_KEY);
-        LOG.log(SessionLog.FINE, String.format("NoSQL connection: NoSQL://%s:%s/%s", host, port, store));
+    private static String buildHostPort(final String host, final String port) {
         if (host != null) {
             final StringBuilder hostPort = new StringBuilder(host.length() + (port != null ? port.length() + 1 : 0));
             hostPort.append(host);
@@ -211,12 +208,86 @@ public class NoSQLProperties {
                 hostPort.append(':');
                 hostPort.append(port);
             }
-            final String hostPortStr =  hostPort.toString();
-            login.setProperty(OracleNoSQLConnectionSpec.HOST, hostPortStr);
+            return hostPort.toString();
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Build NoSQL mapped connection property containing host and port concatenated.
+     * @param host NoSQL connection host property.
+     * @param port NoSQL connection port property.
+     * @return Property containing host and port concatenated.
+     */
+    private static String buildMappedHostPort(final String host, final String port) {
+        if (host != null) {
+            final StringBuilder hostPort = new StringBuilder(
+                    2 * host.length() + (port != null ? 2 * port.length() + 3 : 1));
+            hostPort.append(host);
+            if (port != null) {
+                hostPort.append(':');
+                hostPort.append(port);
+            }
+            hostPort.append(',');
+            hostPort.append(host);
+            if (port != null) {
+                hostPort.append(':');
+                hostPort.append(port);
+            }
+            return hostPort.toString();
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Set EIS login connection information for NoSQL database.
+     * @param login      Target {@link EISLogin} instance.
+     * @param properties Persistence unit properties {@link Map}.
+     */
+    public static void setEISLoginProperties(final EISLogin login) {
+        final String hostPort = buildHostPort(
+                properties.get(PROPERTY_NOSQL_HOST_KEY), properties.get(PROPERTY_NOSQL_PORT_KEY));
+        final String store = properties.get(PROPERTY_NOSQL_STORE_KEY);
+        LOG.log(SessionLog.FINE, String.format("NoSQL connection: NoSQL://%s/%s", hostPort, store));
+        if (hostPort != null) {
+            login.setProperty(OracleNoSQLConnectionSpec.HOST, hostPort);
         }
         if (store != null) {
             login.setProperty(OracleNoSQLConnectionSpec.STORE, store);
         }
+    }
+
+    /**
+     * Build EIS login connection information for {@code EntityManager} NoSQL database connection.
+     * Host and port pair property is normal (not mapped).
+     * @return {@code EntityManager} NoSQL database connection properties.
+     */
+    public static Map<String, String> createEMProperties() {
+        return createEMProperties(false);
+    }
+
+    /**
+     * Build EIS login connection information for {@code EntityManager} NoSQL database connection.
+     * @param mapped Build mapped property for the same host and port pair when {@code true} or normal property
+     *               otherwise.
+     * @return {@code EntityManager} NoSQL database connection properties.
+     */
+    public static Map<String, String> createEMProperties(final boolean mapped) {
+        final String host = properties.get(PROPERTY_NOSQL_HOST_KEY);
+        final String port = properties.get(PROPERTY_NOSQL_PORT_KEY);
+        final String store = properties.get(PROPERTY_NOSQL_STORE_KEY);
+        final String hostPort = mapped ? buildMappedHostPort(host, port) : buildHostPort(host, port);
+        final Map<String, String> emProperties = new HashMap<>(2);
+        LOG.log(SessionLog.FINE, String.format("NoSQL connection: NoSQL://%s/%s", hostPort, store));
+        if (hostPort != null) {
+            emProperties.put(PROPERTY_NOSQL_HOST_KEY, hostPort);
+        }
+        if (store != null) {
+            emProperties.put(PROPERTY_NOSQL_STORE_KEY, store);
+        }
+        return emProperties;
     }
 
 }

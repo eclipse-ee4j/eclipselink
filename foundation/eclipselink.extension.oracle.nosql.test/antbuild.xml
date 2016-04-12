@@ -38,8 +38,9 @@
         - clean   : cleans up all generated files and dirs
         - compile : compiles all tests
         - package : packages test jar
-        - test : runs tests
-        - test-oracle: Runs Core Oracle-specific tests
+        - test : Runs Oracle NoSQL and AQ tests
+        - test-oracle-nosql: Runs Oracle NoSQL tests
+        - test-oracle-aq:    Runs Oracle AQ tests
 
         It requires some configuration of the build.properties and test.properties to run.
 -->
@@ -465,8 +466,7 @@
         <jar jarfile="${oracle.nosql.test.jar}">
             <fileset dir="${ora_nosql_test.classes.dir}"
                      includes="org/eclipse/persistence/**/*.class"
-                     excludes="org/eclipse/persistence/testing/models/jpa/**,
-                               org/eclipse/persistence/testing/tests/jpa/**"/>
+                     excludes="org/eclipse/persistence/testing/models/jpa/**"/>
             <fileset dir="${ora_nosql_test.resource.dir}"
                      includes="org/eclipse/persistence/**"/>
         </jar>
@@ -478,21 +478,31 @@
         <copy file="${ora_nosql_test.2.core.test.dir}/${resource.dir}/java.policy.allpermissions" todir="${ora_nosql_test.run.dir}" overwrite="true"/>
     </target>
 
-    <!-- Default test target, runs test.class from test.properties (default is OracleTestModel). -->
-    <target name="test" depends="init_run, test-oracle-nosql">
+    <!-- Runs both Oracle NoSQL and AQ tests.
+       - Requires Oracle NoSQL and relational with AQ extensions databases. -->
+    <target name="test" depends="init_run, run-nosql-test, run-aq-test">
         <generate_report/>
     </target>
 
-    <!-- Runs Core Oracle NoSQL tests. -->
-    <target name="test-oracle-nosql" depends="init_run">
-	<run_nosql_test testclass="org.eclipse.persistence.testing.tests.eis.nosql.NoSQLTestSuite"/>
+    <!-- Runs Oracle NoSQL tests. Requires Oracle NoSQL database. -->
+    <target name="test-oracle-nosql" depends="init_run, run-nosql-test">
         <generate_report/>
     </target>
 
-    <!-- Runs Core Oracle AQ tests. -->
-    <target name="test-oracle-aq" depends="init_run">
-        <run_test testclass="org.eclipse.persistence.testing.tests.eis.aq.AQTestSuite"  dburl="${db.url}"/>
+    <!-- Runs Oracle AQ tests. Requires Oracle relational database with AQ extensions. -->
+    <target name="test-oracle-aq" depends="init_run, run-aq-test">
         <generate_report/>
+    </target>
+
+    <!-- Execute Oracle NoSQL tests with no initialization and reports generation. -->
+    <target name="run-nosql-test">
+        <run_nosql_test testclass="org.eclipse.persistence.testing.tests.eis.nosql.NoSQLTestSuite"/>
+        <run_nosql_test testclass="org.eclipse.persistence.testing.tests.jpa.nosql.NoSQLJPATestSuite"/>
+    </target>
+
+    <!-- Runs Oracle AQ tests with no initialization and reports generation. -->
+    <target name="run-aq-test">
+        <run_test testclass="org.eclipse.persistence.testing.tests.eis.aq.AQTestSuite" dburl="${db.url}"/>
     </target>
 
     <!-- Prompt runner test target, runs test.class from test.properties (default is OracleTestModel). -->
@@ -566,11 +576,6 @@
                 <jvmarg value="-Ddb.user=${db.user}"/>
                 <jvmarg value="-Ddb.pwd=${db.pwd}"/>
                 <jvmarg value="-Ddb.platform=${db.platform}"/>
-                <jvmarg value="-Dnosql.url=${nosql.url}"/>
-                <jvmarg value="-Dnosql.user=${nosql.user}"/>
-                <jvmarg value="-Dnosql.pwd=${nosql.pwd}"/>
-                <jvmarg value="-Dnosql.platform=${nosql.platform}"/>
-                <jvmarg value="-Dnosql.spec=${nosql.spec}"/>
                 <jvmarg value="-Djava.security.manager"/>
                 <jvmarg value="-Djava.security.policy=./java.policy.allpermissions"/>
                 <jvmarg line="${additional.jvmargs}"/>

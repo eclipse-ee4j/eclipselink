@@ -8,8 +8,6 @@
         <properties>
             <property name="eclipselink.target-database" value="org.eclipse.persistence.nosql.adapters.nosql.OracleNoSQLPlatform"/>
             <property name="eclipselink.nosql.connection-spec" value="org.eclipse.persistence.nosql.adapters.nosql.OracleNoSQLConnectionSpec"/>
-            <property name="eclipselink.nosql.property.nosql.host" value="localhost:5000"/>
-            <property name="eclipselink.nosql.property.nosql.store" value="kvstore"/>
             <!--property name="eclipselink.logging.level" value="FINEST"/-->
         </properties>
     </persistence-unit>
@@ -21,8 +19,6 @@
         <properties>
             <property name="eclipselink.target-database" value="org.eclipse.persistence.nosql.adapters.nosql.OracleNoSQLPlatform"/>
             <property name="eclipselink.nosql.connection-spec" value="org.eclipse.persistence.nosql.adapters.nosql.OracleNoSQLConnectionSpec"/>
-            <property name="eclipselink.nosql.property.nosql.host" value="localhost:5000,localhost:5000"/>
-            <property name="eclipselink.nosql.property.nosql.store" value="kvstore"/>
             <!--property name="eclipselink.logging.level" value="FINEST"/-->
         </properties>
     </persistence-unit>
