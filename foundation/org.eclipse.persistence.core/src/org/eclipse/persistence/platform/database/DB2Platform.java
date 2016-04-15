@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -17,6 +17,8 @@
  *       - 460740: Fix pessimistic locking with setFirst/Max results on DB2
  *     03/13/2015 - Jody Grassel  
  *       - 462103 : SQL for Stored Procedure named parameter with DB2 generated with incorrect marker
+ *     04/15/2016 - Dalia Abo Sheasha
+ *       - 491824: Setting lock timeout to 0 issues a NOWAIT causing an error in DB2
  *****************************************************************************/
 package org.eclipse.persistence.platform.database;
 
@@ -698,6 +700,14 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
     @Override
     protected String getCreateTempTableSqlBodyForTable(DatabaseTable table) {
         return " LIKE " + table.getQualifiedNameDelimited(this);
+    }
+    
+    /**
+     * INTERNAL: DB2 does not support NOWAIT. 
+     */
+    @Override
+    public String getNoWaitString() {
+        return "";
     }
 
     /**
