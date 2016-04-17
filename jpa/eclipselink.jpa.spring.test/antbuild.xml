@@ -55,6 +55,7 @@
     <property name="eclipselink.jpa.spring.test" value="."/>
     <property file="${eclipselink.jpa.spring.test}/antbuild.properties"/>
     <property file="${eclipselink.jpa.spring.test}/local.build.properties"/>
+    <property file="${eclipselink.jpa.spring.test}/build.properties"/>
     <property file="${eclipselink.jpa.spring.test}/${test.properties}"/>
     <property file="${eclipselink.jpa.spring.test}/test.properties"/>
 
@@ -62,26 +63,11 @@
     <available file="${eclipselink.jpa.spring.test}/${eclipselink.core.trunk}" type="dir" property="is.trunk"/>
 
     <!-- Configures paths for trunk checkout. -->
-    <target name="config-trunk" if="is.trunk">
+    <target name="config-trunk" depends="proxy">
         <property name="eclipselink.core.dir" value="${eclipselink.jpa.spring.test}/${eclipselink.core.trunk}"/>
         <property name="eclipselink.core.test.dir" value="${eclipselink.jpa.spring.test}/${eclipselink.core.test.trunk}"/>
         <property name="eclipselink.core.lib.dir" value="${eclipselink.jpa.spring.test}/${eclipselink.plugins.trunk}"/>
         <property name="eclipselink.extension.oracle.test.dir" value="${eclipselink.jpa.spring.test}/${eclipselink.extension.oracle.test.trunk}"/>
-        <antcall target="config-compile-path" inheritRefs="true"/>
-        <antcall target="config-run-path" inheritRefs="true"/>
-    </target>
-
-    <!-- Configures paths for Eclipse project checkout. -->
-    <target name="config-flat" unless="is.trunk">
-        <property name="eclipselink.core.dir" value="${eclipselink.core}"/>
-        <property name="eclipselink.core.test.dir" value="${eclipselink.core.test}"/>
-        <property name="eclipselink.core.lib.dir" value="${eclipselink.plugins}"/>
-        <property name="eclipselink.extension.oracle.test.dir" value="${eclipselink.extension.oracle.test}"/>
-        <antcall target="config-compile-path" inheritRefs="true"/>
-        <antcall target="config-run-path" inheritRefs="true"/>
-    </target>
-
-    <target name="config-compile-path">
         <path id="compile.path">
             <pathelement path="${eclipselink.core.dir}/${classes.dir}"/>
             <pathelement path="${eclipselink.jpa}/${classes.dir}"/>
@@ -96,6 +82,24 @@
             <pathelement path="${eclipselink.plugins}/${antlr}"/>
             <pathelement path="${eclipselink.plugins}/${asm}"/>
             <fileset dir="${spring.jlib.dir}" includes="${spring.jlib}"/>
+        </path>
+        <get dest="${spring.jlib.dir}">
+            <url url="http://central.maven.org/maven2/aopalliance/aopalliance/1.0/aopalliance-1.0.jar"/>
+            <url url="http://central.maven.org/maven2/cglib/cglib-nodep/2.2/cglib-nodep-2.2.jar"/>
+            <url url="http://central.maven.org/maven2/commons-logging/commons-logging/1.1.1/commons-logging-1.1.1.jar"/>
+            <url url="http://central.maven.org/maven2/org/springframework/spring-instrument/3.0.0.RELEASE/spring-instrument-3.0.0.RELEASE.jar"/>
+            <url url="http://central.maven.org/maven2/jotm/jotm/2.0.10/jotm-2.0.10.jar"/>
+            <url url="http://central.maven.org/maven2/org/springframework/spring/2.5.3/spring-2.5.3.jar"/>
+            <url url="http://central.maven.org/maven2/org/springframework/spring-agent/2.5.3/spring-agent-2.5.3.jar"/>
+            <url url="http://central.maven.org/maven2/org/springframework/spring-test/2.5.3/spring-test-2.5.3.jar"/>
+            <url url="http://central.maven.org/maven2/org/springframework/spring-tx/2.5.3/spring-tx-2.5.3.jar"/>
+            <url url="http://central.maven.org/maven2/com/experlog/xapool/1.5.0/xapool-1.5.0.jar"/>
+        </get>
+    <!-- Classpath used for running tests. -->
+        <path id="run.classpath">
+            <pathelement path="${eclipselink.jpa.spring.test}/${jpa.spring}.jar"/>
+            <pathelement path="${jdbc.driver.jar}"/>
+            <path refid="compile.path"/>
         </path>
     </target>
 
@@ -118,7 +122,7 @@
     </target>
 
     <!-- Compiles all tests. -->
-    <target name="compile" depends="init, config-trunk, config-flat" description="compile EclipseLink testing">
+    <target name="compile" depends="init, config-trunk" description="compile EclipseLink testing">
         <javac srcdir="${eclipselink.jpa.spring.test}/${src.dir}"
                destdir="${eclipselink.jpa.spring.test}/${classes.dir}"
                debug="${javac.debug}"
@@ -178,15 +182,6 @@
         </copy>
     </target>
 
-    <!-- Classpath used for running tests. -->
-    <target name="config-run-path">
-        <path id="run.classpath">
-            <pathelement path="${eclipselink.jpa.spring.test}/${jpa.spring}.jar"/>
-            <pathelement path="${jdbc.driver.jar}"/>
-            <path refid="compile.path"/>
-        </path>
-    </target>
-
     <target name="clean-run" description="Clean the run">
         <delete dir="${eclipselink.jpa.spring.test}/${run.dir}"/>
         <delete dir="${eclipselink.jpa.spring.test}/${report.dir}"/>
@@ -196,10 +191,14 @@
 
     <target name="test-jpa-spring" depends="test-jpa-spring-local, test-jpa-spring-container"/>
 
-    <target name="test-jpa-spring-local" depends="clean-run, config-trunk, config-flat">
-        <junit printsummary="yes" haltonfailure="no" failureproperty="junit.failed" fork="yes" forkmode="once" showoutput="true" maxmemory="512m" dir="${eclipselink.jpa.spring.test}/${run.dir}">
+    <target name="test-jpa-spring-local" depends="clean-run, config-trunk">
+        <junit printsummary="yes" haltonfailure="no"  failureproperty="junit.failed" fork="yes" forkmode="once" showoutput="yes" maxmemory="512m" dir="${eclipselink.jpa.spring.test}/${run.dir}">
             <jvmarg value="${test.agent}"/>
             <jvmarg value="${test.weaving}"/>
+            <jvmarg value="-Ddb.driver=${db.driver}"/>
+            <jvmarg value="-Ddb.url=${db.url}"/>
+            <jvmarg value="-Ddb.user=${db.user}"/>
+            <jvmarg value="-Ddb.pwd=${db.pwd}"/>
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
             <jvmarg value="-Dtest.properties=${test.properties.run}"/>
             <classpath>
@@ -208,7 +207,7 @@
             <batchtest todir="${eclipselink.jpa.spring.test}/${report.dir}">
                 <fileset dir="${eclipselink.jpa.spring.test}/${src.dir}">
                     <include name="**/spring/TestLocalEMF.java"/>
-                    <include name="**/spring/TestLocalEMFtransactional.java"/>
+                    <!--<include name="**/spring/TestLocalEMFtransactional.java"/>-->
                     <include name="**/spring/dao/TestLocalEMFwithDao.java"/>
                 </fileset>
                 <formatter type="xml"/>
@@ -222,9 +221,9 @@
         </junitreport>
     </target>
 
-    <target name="test-jpa-spring-container" depends="clean-run, config-trunk, config-flat">
-        <junit printsummary="yes" haltonfailure="no" failureproperty="junit.failed" fork="yes" forkmode="once" showoutput="true" maxmemory="512m" dir="${eclipselink.jpa.spring.test}/${run.dir}">
-            <jvmarg value="-javaagent:../${spring.jlib.dir}/instrument.jar"/>
+    <target name="test-jpa-spring-container" depends="clean-run, config-trunk">
+        <junit printsummary="yes" haltonfailure="no" failureproperty="junit.failed" fork="yes" forkmode="once" showoutput="yes" maxmemory="512m" dir="${eclipselink.jpa.spring.test}/${run.dir}">
+            <jvmarg value="-javaagent:${spring.jlib.dir}/spring-instrument-3.0.0.RELEASE.jar"/>
             <jvmarg value="${test.weaving}"/>
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
             <jvmarg value="-Dtest.properties=${test.properties.run}"/>
@@ -234,8 +233,8 @@
             <batchtest todir="${eclipselink.jpa.spring.test}/${report.dir}">
                 <fileset dir="${eclipselink.jpa.spring.test}/${src.dir}">
                     <include name="**/spring/TestContainerEMF.java"/>
-                    <include name="**/spring/TestContainerEMFtransactional.java"/>
-                    <include name="**/spring/TestJtaContainerEMF.java"/>
+                    <!--<include name="**/spring/TestContainerEMFtransactional.java"/>-->
+                    <!--<include name="**/spring/TestJtaContainerEMF.java"/>-->
                     <include name="**/spring/dao/TestContainerEMFwithDao.java"/>
                 </fileset>
                 <formatter type="xml"/>
@@ -247,5 +246,9 @@
             </fileset>
             <report format="noframes" todir="${eclipselink.jpa.spring.test}/${report.dir}"/>
         </junitreport>
+    </target>
+
+    <target name="proxy" if="http.proxyHost">
+        <setproxy proxyhost="${http.proxyHost}" proxyport="${http.proxyPort}"/>
     </target>
 </project>
