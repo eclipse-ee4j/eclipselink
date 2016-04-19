@@ -1885,8 +1885,9 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
                 }
                 //if this query is a read query outside of a transaction then we may be able to retry the query
                 if (!isInTransaction() && query.isReadQuery()) {
+                    final int count = getLogin().getQueryRetryAttemptCount();
                     //was the failure communication based?  (ie timeout)
-                    if (databaseException.isCommunicationFailure()) {
+                    if (databaseException.isCommunicationFailure() && retryCount < count) {
                         Object[] args = new Object[1];
                         args[0] = databaseException;
                         log(SessionLog.INFO, SessionLog.QUERY, "communication_failure_attempting_query_retry", args, null);

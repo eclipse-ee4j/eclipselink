@@ -1018,18 +1018,18 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
             return super.retryQuery(query, row, databaseException, retryCount, executionSession);
         }
         //attempt to reconnect connection:
-        int count = getLogin().getQueryRetryAttemptCount();
+        final int count = getLogin().getQueryRetryAttemptCount();
         while (retryCount < count) {
             try {
                 // if database session then re-establish connection
                 // else the session will just get a new
                 // connection from the pool
+                ++retryCount;
                 databaseException.getAccessor().reestablishConnection(this);
                 break;
             } catch (DatabaseException ex) {
                 // failed to get connection because of
                 // database error.
-                ++retryCount;
                 try {
                     // Give the failover time to recover.
                     Thread.currentThread().sleep(getLogin().getDelayBetweenConnectionAttempts());
