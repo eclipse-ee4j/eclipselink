@@ -13,7 +13,10 @@
 
 package org.eclipse.persistence.json.bind.internal.unmarshaller;
 
+import org.eclipse.persistence.json.bind.internal.JsonbContext;
 import org.eclipse.persistence.json.bind.internal.ReflectionUtils;
+import org.eclipse.persistence.json.bind.model.ClassModel;
+import org.eclipse.persistence.json.bind.model.Customization;
 
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Type;
@@ -51,7 +54,9 @@ public abstract class AbstractArrayItem<T> extends AbstractItem<T> implements Un
             appendCaptor(null);
             return;
         }
-        Object converted = getTypeConverter().fromJson(value, ReflectionUtils.getRawType(resolveValueType(componentClass, jsonValueType)));
+
+        Object converted = getTypeConverter().fromJson(value,
+                ReflectionUtils.getRawType(resolveValueType(componentClass, jsonValueType)), getCustomization());
         appendCaptor(converted);
     }
 
@@ -67,4 +72,13 @@ public abstract class AbstractArrayItem<T> extends AbstractItem<T> implements Un
     }
 
     protected abstract List<?> getItems();
+
+    private Customization getCustomization() {
+        /* TODO (marshaller refactoring) consider honoring JsonbAnnotation on array after MR.
+        if (getWrapper() != null) {
+            return getWrapperPropertyModel().getCustomization();
+        }*/
+        ClassModel componentClassModel = JsonbContext.getInstance().getMappingContext().getClassModel(componentClass);
+        return componentClassModel != null ? componentClassModel.getClassCustomization() : null;
+    }
 }

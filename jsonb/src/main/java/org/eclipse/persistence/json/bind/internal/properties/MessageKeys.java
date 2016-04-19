@@ -53,6 +53,11 @@ public enum MessageKeys {
     PROPERTY_NOT_FOUND_DESERIALIZER("propertyNotFoundDeserializer"),
     SETTING_PROPERTY_DESERIALIZER("settingPropertyDeserializer"),
     CLASS_LOAD_NOT_ALLOWED("classLoadNotAllowed"),
+    UNSUPPORTED_DATE_TYPE("dateTypeNotSupported"),
+    DATE_PARSE_ERROR("errorParsingDate"),
+    OFFSET_DATE_TIME_FROM_MILLIS("offsetDateTimeFromMillis"),
+    TIME_TO_EPOCH_MILLIS_ERROR("timeToEpochMillisError"),
+    JSONB_CONFIG_PROPERTY_INVALID_TYPE("configPropertyInvalidType"),
     ;
 
     /** Message bundle key. */

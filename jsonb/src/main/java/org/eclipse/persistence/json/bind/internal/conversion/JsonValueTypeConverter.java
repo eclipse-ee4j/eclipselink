@@ -1,5 +1,7 @@
 package org.eclipse.persistence.json.bind.internal.conversion;
 
+import org.eclipse.persistence.json.bind.model.Customization;
+
 import javax.json.JsonValue;
 import java.lang.reflect.Type;
 
@@ -16,7 +18,7 @@ public class JsonValueTypeConverter extends AbstractTypeConverter<JsonValue> {
     }
 
     @Override
-    public JsonValue fromJson(String jsonValue, Type type) {
+    public JsonValue fromJson(String jsonValue, Type type, Customization customization) {
         switch (jsonValue) {
             case TRUE:
                 return JsonValue.TRUE;
@@ -29,7 +31,7 @@ public class JsonValueTypeConverter extends AbstractTypeConverter<JsonValue> {
     }
 
     @Override
-    public String toJson(JsonValue object) {
+    public String toJson(JsonValue object, Customization customization) {
         return object.toString();
     }
 

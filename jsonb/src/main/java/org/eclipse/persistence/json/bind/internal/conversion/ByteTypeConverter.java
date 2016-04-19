@@ -1,5 +1,7 @@
 package org.eclipse.persistence.json.bind.internal.conversion;
 
+import org.eclipse.persistence.json.bind.model.Customization;
+
 import java.lang.reflect.Type;
 
 /**
@@ -12,12 +14,12 @@ public class ByteTypeConverter extends AbstractTypeConverter<Byte> {
     }
 
     @Override
-    public Byte fromJson(String jsonValue, Type type) {
+    public Byte fromJson(String jsonValue, Type type, Customization customization) {
         return Byte.parseByte(jsonValue);
     }
 
     @Override
-    public String toJson(Byte object) {
+    public String toJson(Byte object, Customization customization) {
         return String.valueOf(object);
     }
 

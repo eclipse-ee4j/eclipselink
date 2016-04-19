@@ -1,7 +1,8 @@
 package org.eclipse.persistence.json.bind.internal.conversion;
 
+import org.eclipse.persistence.json.bind.model.Customization;
+
 import java.lang.reflect.Type;
-import java.time.Period;
 import java.time.ZoneId;
 
 /**
@@ -14,12 +15,12 @@ public class ZoneIdTypeConverter extends AbstractTypeConverter<ZoneId> {
     }
 
     @Override
-    public ZoneId fromJson(String jsonValue, Type type) {
+    public ZoneId fromJson(String jsonValue, Type type, Customization customization) {
         return ZoneId.of(jsonValue);
     }
 
     @Override
-    public String toJson(ZoneId object) {
+    public String toJson(ZoneId object, Customization customization) {
         return object.getId();
     }
 

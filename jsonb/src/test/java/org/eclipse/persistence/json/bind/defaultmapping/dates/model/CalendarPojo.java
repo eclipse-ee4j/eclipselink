@@ -11,27 +11,24 @@
  * Roman Grigoriadi
  ******************************************************************************/
 
-package org.eclipse.persistence.json.bind.defaultmapping.generics.model;
+package org.eclipse.persistence.json.bind.defaultmapping.dates.model;
+
+import javax.json.bind.annotation.JsonbDateFormat;
+import java.util.Calendar;
 
 /**
  * @author Roman Grigoriadi
  */
-public class ScalarValueWrapper<T> {
+public class CalendarPojo extends AbstractDateTimePojo<Calendar> {
 
-    private T value;
-
-    public ScalarValueWrapper() {
+    public CalendarPojo() {
     }
 
-    public ScalarValueWrapper(T value) {
-        this.value = value;
+    public CalendarPojo(Calendar dateObj) {
+        super(dateObj);
+        this.customCalendar = dateObj;
     }
 
-    public T getValue() {
-        return value;
-    }
-
-    public void setValue(T value) {
-        this.value = value;
-    }
+    @JsonbDateFormat("HH:mm:ss | dd-MM-yyyy, Z")
+    public Calendar customCalendar;
 }

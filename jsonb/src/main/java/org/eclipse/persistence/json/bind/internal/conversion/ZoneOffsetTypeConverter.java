@@ -1,5 +1,7 @@
 package org.eclipse.persistence.json.bind.internal.conversion;
 
+import org.eclipse.persistence.json.bind.model.Customization;
+
 import java.lang.reflect.Type;
 import java.time.ZoneOffset;
 
@@ -13,12 +15,12 @@ public class ZoneOffsetTypeConverter extends AbstractTypeConverter<ZoneOffset> {
     }
 
     @Override
-    public ZoneOffset fromJson(String jsonValue, Type type) {
+    public ZoneOffset fromJson(String jsonValue, Type type, Customization customization) {
         return ZoneOffset.of(jsonValue);
     }
 
     @Override
-    public String toJson(ZoneOffset object) {
+    public String toJson(ZoneOffset object, Customization customization) {
         return object.getId();
     }
 

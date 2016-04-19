@@ -19,9 +19,7 @@ import org.eclipse.persistence.json.bind.internal.naming.PropertyNamingStrategy;
 import org.eclipse.persistence.json.bind.internal.properties.MessageKeys;
 import org.eclipse.persistence.json.bind.internal.properties.Messages;
 import org.eclipse.persistence.json.bind.internal.serializer.JsonpSerializers;
-import org.eclipse.persistence.json.bind.model.ClassModel;
-import org.eclipse.persistence.json.bind.model.PropertyModel;
-import org.eclipse.persistence.json.bind.model.TypeWrapper;
+import org.eclipse.persistence.json.bind.model.*;
 
 import javax.json.bind.JsonbConfig;
 import javax.json.bind.JsonbException;
@@ -51,6 +49,12 @@ import static java.util.stream.Collectors.toList;
  */
 public class Marshaller extends JsonTextProcessor {
 
+    private enum Context {
+        ROOT,
+        PROPERTY,
+        ARRAY;
+    }
+
     private static final Logger logger = Logger.getLogger(Marshaller.class.getName());
 
     /**
@@ -60,7 +64,11 @@ public class Marshaller extends JsonTextProcessor {
      */
     private Optional<RuntimeTypeInfo> runtimeTypeInfo;
 
-    private Stack<PropertyModel> propertyModelStack = new Stack<>();
+    private final Stack<PropertyModel> propertyModelStack = new Stack<>();
+
+    //TODO this is temporary helper.
+    //TODO Current state of marshaller is getting messy and hard to maintain, splitting to several smaller controllers is needed.
+    private final Stack<Context> contextStack = new Stack<>();
 
     private static final HashMap<String, PropOrderStrategy> orderStrategies = new HashMap<>();
 
@@ -169,7 +177,9 @@ public class Marshaller extends JsonTextProcessor {
         new JsonbContextCommand() {
             @Override
             protected void doInJsonbContext() {
+                contextStack.push(Context.ROOT);
                 marshallObject(Optional.empty(), object);
+                contextStack.pop();
                 jsonGenerator.close();
             }
         }.execute(jsonbContext);
@@ -230,7 +240,9 @@ public class Marshaller extends JsonTextProcessor {
         } else if (JsonpSerializers.getInstance().supports(value)) {
             JsonpSerializers.getInstance().serialize(keyName, value, jsonGenerator);
         } else if (converter.supportsToJson(value.getClass())) {
-            JsonpSerializers.getInstance().serialize(keyName, converter.toJson(value), jsonGenerator);
+            JsonpSerializers.getInstance().serialize(keyName,
+                    converter.toJson(value, getCustomization(value.getClass())),
+                    jsonGenerator);
         } else {
             writeStartObject(keyName);
             marshallObjectProperties(value);
@@ -261,8 +273,10 @@ public class Marshaller extends JsonTextProcessor {
     private void marshallObjectProperties(Object object) {
         // Deal with inheritance
         final List<PropertyModel> allProperties = new LinkedList<>();
+        final MappingContext mappingContext = JsonbContext.getInstance().getMappingContext();
+        mappingContext.parseClassModel(object.getClass());
         for (Class clazz = object.getClass(); clazz.getSuperclass() != null; clazz = clazz.getSuperclass()) {
-            ClassModel classModel = JsonbContext.getInstance().getMappingContext().getOrCreateClassModel(clazz);
+            ClassModel classModel = mappingContext.getClassModel(clazz);
             final List<PropertyModel> properties = new ArrayList<>(classModel.getProperties().values());
             Optional<JsonbPropertyOrder> jsonbPropertyOrder = AnnotationIntrospector.getInstance().getJsonbPropertyOrderAnnotation(clazz);
             List<PropertyModel> filteredAndSorted;
@@ -296,10 +310,12 @@ public class Marshaller extends JsonTextProcessor {
         }
         logger.finest("Serializing property: "+propertyModel.getPropertyName()+" in class "+propertyModel.getClassModel().getRawType().getSimpleName());
         propertyModelStack.push(propertyModel);
+        contextStack.push(Context.PROPERTY);
         pushRuntimeType(propertyModel.getPropertyType());
         marshallObject(Optional.of(getJsonPropertyName(propertyModel.getCustomization().getJsonWriteName())), value);
         popRuntimeType();
         propertyModelStack.pop();
+        contextStack.pop();
     }
 
     private void marshallArray(Optional<String> keyName, Object array) {
@@ -329,6 +345,7 @@ public class Marshaller extends JsonTextProcessor {
         } else {
             jsonGenerator.writeStartArray();
         }
+        contextStack.push(Context.ARRAY);
         collection.stream().forEach((item)->{
             if (item == null || isEmptyOptional(item)) {
                 jsonGenerator.writeNull();
@@ -336,6 +353,7 @@ public class Marshaller extends JsonTextProcessor {
             }
             marshallObject(Optional.empty(), item);
         });
+        contextStack.pop();
         jsonGenerator.writeEnd();
         popRuntimeType();
     }
@@ -389,5 +407,19 @@ public class Marshaller extends JsonTextProcessor {
                 || value instanceof OptionalInt && !((OptionalInt) value).isPresent()
                 || value instanceof OptionalLong && !((OptionalLong) value).isPresent()
                 || value instanceof OptionalDouble && !((OptionalDouble) value).isPresent();
+    }
+
+    private Customization getCustomization(Class<?> marshalledType) {
+        final Context currentContext = contextStack.peek();
+        switch (currentContext) {
+            case ROOT:
+            case ARRAY:
+                ClassModel model = jsonbContext.getMappingContext().getClassModel(marshalledType);
+                return model != null ? model.getClassCustomization() : null;
+            case PROPERTY:
+                return propertyModelStack.peek().getCustomization();
+            default:
+                throw new IllegalStateException("Illegal marshaller context: "+ currentContext);
+        }
     }
 }

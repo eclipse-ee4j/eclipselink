@@ -11,27 +11,24 @@
  * Roman Grigoriadi
  ******************************************************************************/
 
-package org.eclipse.persistence.json.bind.defaultmapping.generics.model;
+package org.eclipse.persistence.json.bind.defaultmapping.dates.model;
+
+import javax.json.bind.annotation.JsonbDateFormat;
+import java.time.Instant;
 
 /**
  * @author Roman Grigoriadi
  */
-public class ScalarValueWrapper<T> {
+public class InstantPojo extends AbstractDateTimePojo<Instant> {
 
-    private T value;
-
-    public ScalarValueWrapper() {
+    public InstantPojo() {
     }
 
-    public ScalarValueWrapper(T value) {
-        this.value = value;
+    public InstantPojo(Instant dateObj) {
+        super(dateObj);
+        this.instant = dateObj;
     }
 
-    public T getValue() {
-        return value;
-    }
-
-    public void setValue(T value) {
-        this.value = value;
-    }
+    @JsonbDateFormat("HH:mm:ss | dd-MM-yyyy")
+    public Instant instant;
 }

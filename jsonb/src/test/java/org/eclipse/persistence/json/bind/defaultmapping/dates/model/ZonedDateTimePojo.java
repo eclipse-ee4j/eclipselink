@@ -11,27 +11,24 @@
  * Roman Grigoriadi
  ******************************************************************************/
 
-package org.eclipse.persistence.json.bind.defaultmapping.generics.model;
+package org.eclipse.persistence.json.bind.defaultmapping.dates.model;
+
+import javax.json.bind.annotation.JsonbDateFormat;
+import java.time.ZonedDateTime;
 
 /**
  * @author Roman Grigoriadi
  */
-public class ScalarValueWrapper<T> {
+public class ZonedDateTimePojo extends AbstractDateTimePojo<ZonedDateTime> {
 
-    private T value;
-
-    public ScalarValueWrapper() {
+    public ZonedDateTimePojo() {
     }
 
-    public ScalarValueWrapper(T value) {
-        this.value = value;
+    public ZonedDateTimePojo(ZonedDateTime date) {
+        super(date);
+        this.customZonedDate = date;
     }
 
-    public T getValue() {
-        return value;
-    }
-
-    public void setValue(T value) {
-        this.value = value;
-    }
+    @JsonbDateFormat("XVV | dd-MM-yyyy--ss:mm:HH")
+    public ZonedDateTime customZonedDate;
 }

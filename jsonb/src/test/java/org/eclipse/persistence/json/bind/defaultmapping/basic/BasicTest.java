@@ -13,22 +13,13 @@
 package org.eclipse.persistence.json.bind.defaultmapping.basic;
 
 import org.eclipse.persistence.json.bind.JsonBindingBuilder;
-import org.eclipse.persistence.json.bind.internal.properties.MessageKeys;
-import org.eclipse.persistence.json.bind.internal.properties.Messages;
-import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.json.bind.Jsonb;
-import javax.json.bind.JsonbConfig;
-import javax.json.bind.JsonbException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.math.MathContext;
 
 import static org.junit.Assert.assertEquals;
 

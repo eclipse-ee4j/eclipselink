@@ -1,6 +1,7 @@
 package org.eclipse.persistence.json.bind.internal.conversion;
 
 import org.eclipse.persistence.json.bind.internal.JsonbContext;
+import org.eclipse.persistence.json.bind.model.Customization;
 
 import javax.json.JsonObject;
 import javax.json.JsonWriter;
@@ -17,12 +18,12 @@ public class JsonObjectTypeConverter extends AbstractTypeConverter<JsonObject> {
     }
 
     @Override
-    public JsonObject fromJson(String jsonValue, Type type) {
+    public JsonObject fromJson(String jsonValue, Type type, Customization customization) {
         return getJsonObject(jsonValue);
     }
 
     @Override
-    public String toJson(JsonObject object) {
+    public String toJson(JsonObject object, Customization customization) {
         final StringWriter stringWriter = new StringWriter();
         final JsonWriter jsonWriter = JsonbContext.getInstance().getJsonProvider().createWriter(stringWriter);
         jsonWriter.writeObject(object);

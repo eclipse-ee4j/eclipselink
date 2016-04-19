@@ -1,10 +1,15 @@
 package org.eclipse.persistence.json.bind.internal.conversion;
 
+import org.eclipse.persistence.json.bind.internal.properties.MessageKeys;
+import org.eclipse.persistence.json.bind.internal.properties.Messages;
+import org.eclipse.persistence.json.bind.model.Customization;
+
+import javax.json.bind.JsonbException;
+import javax.json.bind.annotation.JsonbDateFormat;
 import java.lang.reflect.Type;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -17,17 +22,33 @@ public class DateTypeConverter extends AbstractTypeConverter<Date> {
     }
 
     @Override
-    public Date fromJson(String jsonValue, Type type) {
-        Date date = new Date();
-        date.setTime(LocalDateTime.parse(jsonValue, DateTimeFormatter.ISO_DATE_TIME).atZone(ZoneOffset.systemDefault()).toInstant().toEpochMilli());
-        return date;
+    public Date fromJson(String jsonValue, Type type, Customization customization) {
+        final JsonbDateFormatter dateFormatter = customization.getDateTimeFormatter();
+        if(JsonbDateFormat.TIME_IN_MILLIS.equals(dateFormatter.getFormat())) {
+            return new Date(Long.parseLong(jsonValue));
+        }
+        final DateFormat dateFormat = getDateFormat(dateFormatter);
+        try {
+            return dateFormat.parse(jsonValue);
+        } catch (ParseException e) {
+            throw new JsonbException(Messages.getMessage(MessageKeys.DATE_PARSE_ERROR, jsonValue, dateFormat));
+        }
     }
 
     @Override
-    public String toJson(Date object) {
-        Calendar calendar = new Calendar.Builder().setInstant(object).build();
-        final LocalDateTime localDate = LocalDateTime.ofInstant(calendar.toInstant(), ZoneOffset.systemDefault());
-        return localDate.format(DateTimeFormatter.ISO_DATE_TIME);
+    public String toJson(Date object, Customization customization) {
+        final JsonbDateFormatter formatter = customization.getDateTimeFormatter();
+        if (JsonbDateFormat.TIME_IN_MILLIS.equals(formatter.getFormat())) {
+            return String.valueOf(object.getTime());
+        }
+        return getDateFormat(formatter).format(object);
+    }
+
+    private DateFormat getDateFormat(JsonbDateFormatter formatter) {
+        if (JsonbDateFormat.DEFAULT_FORMAT.equals(formatter.getFormat())) {
+            return new SimpleDateFormat(JsonbDateFormatter.ISO_8601_DATE_TIME_FORMAT, formatter.getLocale());
+        }
+        return new SimpleDateFormat(formatter.getFormat(), formatter.getLocale());
     }
 
 }

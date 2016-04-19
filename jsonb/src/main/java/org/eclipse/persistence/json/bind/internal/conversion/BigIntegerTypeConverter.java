@@ -1,5 +1,7 @@
 package org.eclipse.persistence.json.bind.internal.conversion;
 
+import org.eclipse.persistence.json.bind.model.Customization;
+
 import java.lang.reflect.Type;
 import java.math.BigInteger;
 
@@ -13,12 +15,12 @@ public class BigIntegerTypeConverter extends AbstractTypeConverter<BigInteger> {
     }
 
     @Override
-    public BigInteger fromJson(String jsonValue, Type type) {
+    public BigInteger fromJson(String jsonValue, Type type, Customization customization) {
         return new BigInteger(jsonValue);
     }
 
     @Override
-    public String toJson(BigInteger object) {
+    public String toJson(BigInteger object, Customization customization) {
         return object.toString();
     }
 

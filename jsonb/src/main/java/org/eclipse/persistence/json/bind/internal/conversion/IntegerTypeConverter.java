@@ -1,5 +1,7 @@
 package org.eclipse.persistence.json.bind.internal.conversion;
 
+import org.eclipse.persistence.json.bind.model.Customization;
+
 import java.lang.reflect.Type;
 
 /**
@@ -12,12 +14,12 @@ public class IntegerTypeConverter extends AbstractTypeConverter<Integer> {
     }
 
     @Override
-    public Integer fromJson(String jsonValue, Type type) {
+    public Integer fromJson(String jsonValue, Type type, Customization customization) {
         return Integer.parseInt(jsonValue);
     }
 
     @Override
-    public String toJson(Integer object) {
+    public String toJson(Integer object, Customization customization) {
         return String.valueOf(object);
     }
 

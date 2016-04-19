@@ -1,5 +1,7 @@
 package org.eclipse.persistence.json.bind.internal.conversion;
 
+import org.eclipse.persistence.json.bind.model.Customization;
+
 import java.lang.reflect.Type;
 
 /**
@@ -12,12 +14,12 @@ public class FloatTypeConverter extends AbstractTypeConverter<Float> {
     }
 
     @Override
-    public Float fromJson(String jsonValue, Type type) {
+    public Float fromJson(String jsonValue, Type type, Customization customization) {
         return Float.parseFloat(jsonValue);
     }
 
     @Override
-    public String toJson(Float object) {
+    public String toJson(Float object, Customization customization) {
         return String.valueOf(object);
     }
 

@@ -11,27 +11,24 @@
  * Roman Grigoriadi
  ******************************************************************************/
 
-package org.eclipse.persistence.json.bind.defaultmapping.generics.model;
+package org.eclipse.persistence.json.bind.defaultmapping.dates.model;
+
+import javax.json.bind.annotation.JsonbDateFormat;
+import java.time.LocalDate;
 
 /**
  * @author Roman Grigoriadi
  */
-public class ScalarValueWrapper<T> {
+public class LocalDatePojo extends AbstractDateTimePojo<LocalDate> {
 
-    private T value;
-
-    public ScalarValueWrapper() {
+    public LocalDatePojo() {
     }
 
-    public ScalarValueWrapper(T value) {
-        this.value = value;
+    public LocalDatePojo(LocalDate date) {
+        super(date);
+        this.customLocalDate = date;
     }
 
-    public T getValue() {
-        return value;
-    }
-
-    public void setValue(T value) {
-        this.value = value;
-    }
+    @JsonbDateFormat("dd-MM-yyyy")
+    public LocalDate customLocalDate;
 }

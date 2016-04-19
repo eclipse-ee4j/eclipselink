@@ -1,12 +1,9 @@
 package org.eclipse.persistence.json.bind.internal.conversion;
 
+import org.eclipse.persistence.json.bind.model.Customization;
+
 import java.lang.reflect.Type;
 import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
-import java.util.Date;
 
 /**
  * @author David Král
@@ -18,12 +15,12 @@ public class DurationTypeConverter extends AbstractTypeConverter<Duration> {
     }
 
     @Override
-    public Duration fromJson(String jsonValue, Type type) {
+    public Duration fromJson(String jsonValue, Type type, Customization customization) {
         return Duration.parse(jsonValue);
     }
 
     @Override
-    public String toJson(Duration object) {
+    public String toJson(Duration object, Customization customization) {
         return object.toString();
     }
 

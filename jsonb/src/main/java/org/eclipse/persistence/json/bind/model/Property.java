@@ -26,7 +26,7 @@ public class Property {
 
     private final String name;
 
-    private final Class<?> declaringClass;
+    private final ClassModel declaringClassModel;
 
     private Field field;
 
@@ -37,11 +37,11 @@ public class Property {
     /**
      * Create instance of property.
      * @param name not null
-     * @param declaringClass class declaring property.
+     * @param declaringClassModel Class model for a class declaring property.
      */
-    public Property(String name, Class<?> declaringClass) {
+    public Property(String name, ClassModel declaringClassModel) {
         this.name = name;
-        this.declaringClass = declaringClass;
+        this.declaringClassModel = declaringClassModel;
     }
 
     /**
@@ -101,8 +101,13 @@ public class Property {
         this.setter = setter;
     }
 
-    public Class<?> getDeclaringClass() {
-        return declaringClass;
+    /**
+     * ClassModel under construction for declaring class of this property.
+     * This ClassModel is not fully initialized yet.
+     * @return ClassModel
+     */
+    public ClassModel getDeclaringClassModel() {
+        return declaringClassModel;
     }
 
     /**

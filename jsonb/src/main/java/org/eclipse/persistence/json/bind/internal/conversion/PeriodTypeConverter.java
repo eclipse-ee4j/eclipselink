@@ -1,7 +1,8 @@
 package org.eclipse.persistence.json.bind.internal.conversion;
 
+import org.eclipse.persistence.json.bind.model.Customization;
+
 import java.lang.reflect.Type;
-import java.time.Duration;
 import java.time.Period;
 
 /**
@@ -14,12 +15,12 @@ public class PeriodTypeConverter extends AbstractTypeConverter<Period> {
     }
 
     @Override
-    public Period fromJson(String jsonValue, Type type) {
+    public Period fromJson(String jsonValue, Type type, Customization customization) {
         return Period.parse(jsonValue);
     }
 
     @Override
-    public String toJson(Period object) {
+    public String toJson(Period object, Customization customization) {
         return object.toString();
     }
 

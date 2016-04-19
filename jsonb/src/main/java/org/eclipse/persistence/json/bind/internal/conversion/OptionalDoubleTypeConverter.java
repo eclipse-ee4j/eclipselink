@@ -1,5 +1,7 @@
 package org.eclipse.persistence.json.bind.internal.conversion;
 
+import org.eclipse.persistence.json.bind.model.Customization;
+
 import java.lang.reflect.Type;
 import java.util.OptionalDouble;
 
@@ -15,13 +17,13 @@ public class OptionalDoubleTypeConverter extends AbstractTypeConverter<OptionalD
     }
 
     @Override
-    public OptionalDouble fromJson(String jsonValue, Type type) {
-        return NULL.equals(jsonValue) ? OptionalDouble.empty() : OptionalDouble.of(doubleTypeConverter.fromJson(jsonValue, type));
+    public OptionalDouble fromJson(String jsonValue, Type type, Customization customization) {
+        return NULL.equals(jsonValue) ? OptionalDouble.empty() : OptionalDouble.of(doubleTypeConverter.fromJson(jsonValue, type, null));
     }
 
     @Override
-    public String toJson(OptionalDouble object) {
-        return object.isPresent() ? String.valueOf(doubleTypeConverter.toJson(object.getAsDouble())) : NULL;
+    public String toJson(OptionalDouble object, Customization customization) {
+        return object.isPresent() ? String.valueOf(doubleTypeConverter.toJson(object.getAsDouble(), null)) : NULL;
     }
 
 }

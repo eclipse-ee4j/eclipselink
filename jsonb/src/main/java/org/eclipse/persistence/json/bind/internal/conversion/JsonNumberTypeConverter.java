@@ -1,6 +1,7 @@
 package org.eclipse.persistence.json.bind.internal.conversion;
 
 import org.eclipse.persistence.json.bind.internal.JsonbContext;
+import org.eclipse.persistence.json.bind.model.Customization;
 
 import javax.json.*;
 import java.lang.reflect.Type;
@@ -18,7 +19,7 @@ public class JsonNumberTypeConverter extends AbstractTypeConverter<JsonNumber> {
     }
 
     @Override
-    public JsonNumber fromJson(String jsonValue, Type type) {
+    public JsonNumber fromJson(String jsonValue, Type type, Customization customization) {
         final JsonBuilderFactory factory = JsonbContext.getInstance().getJsonProvider().createBuilderFactory(null);
         JsonObject jsonObject;
         try {
@@ -47,7 +48,7 @@ public class JsonNumberTypeConverter extends AbstractTypeConverter<JsonNumber> {
     }
 
     @Override
-    public String toJson(JsonNumber object) {
+    public String toJson(JsonNumber object, Customization customization) {
         return object.toString();
     }
 

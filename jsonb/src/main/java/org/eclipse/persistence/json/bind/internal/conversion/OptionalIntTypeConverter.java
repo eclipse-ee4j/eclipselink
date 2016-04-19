@@ -1,5 +1,7 @@
 package org.eclipse.persistence.json.bind.internal.conversion;
 
+import org.eclipse.persistence.json.bind.model.Customization;
+
 import java.lang.reflect.Type;
 import java.util.OptionalInt;
 
@@ -13,12 +15,12 @@ public class OptionalIntTypeConverter extends AbstractTypeConverter<OptionalInt>
     }
 
     @Override
-    public OptionalInt fromJson(String jsonValue, Type type) {
+    public OptionalInt fromJson(String jsonValue, Type type, Customization customization) {
         return NULL.equals(jsonValue) ? OptionalInt.empty() : OptionalInt.of(Integer.parseInt(jsonValue));
     }
 
     @Override
-    public String toJson(OptionalInt object) {
+    public String toJson(OptionalInt object, Customization customization) {
         return object.isPresent() ? String.valueOf(object.getAsInt()) : NULL;
     }
 

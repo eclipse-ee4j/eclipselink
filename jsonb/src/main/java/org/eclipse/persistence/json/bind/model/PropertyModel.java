@@ -73,6 +73,7 @@ public class PropertyModel implements Comparable<PropertyModel> {
         builder.setNillable(classModel.getClassCustomization().isNillable()
                 || introspector.isPropertyNillable(property));
         builder.setAdapterInfo(introspector.getAdapter(property));
+        builder.setDateFormatter(introspector.getJsonbDateFormat(property));
         return builder.buildPropertyCustomization();
     }
 

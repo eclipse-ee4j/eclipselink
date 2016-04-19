@@ -14,6 +14,7 @@ package org.eclipse.persistence.json.bind.internal;
 
 import org.eclipse.persistence.json.bind.model.ClassModel;
 
+import java.util.Stack;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -35,10 +36,21 @@ public class MappingContext {
      * Search for class model.
      * Parse class and create one if not found.
      * @param clazz clazz to search by or parse, not null.
-     * @return Model of a class
      */
-    public ClassModel getOrCreateClassModel(Class<?> clazz) {
-        return classes.computeIfAbsent(clazz, aClass -> classParser.parse(clazz));
+    public void parseClassModel(Class<?> clazz) {
+        final Stack<Class> newClassModels = new Stack<>();
+        for (Class classToParse = clazz; classToParse != Object.class; classToParse = classToParse.getSuperclass()) {
+            newClassModels.push(classToParse);
+        }
+
+        while (!newClassModels.empty()) {
+            Class toParse = newClassModels.pop();
+            classes.computeIfAbsent(toParse, aClass -> {
+                final ClassModel classModel = new ClassModel(aClass);
+                classParser.parseProperties(classModel);
+                return  classModel;
+            });
+        }
     }
 
     /**

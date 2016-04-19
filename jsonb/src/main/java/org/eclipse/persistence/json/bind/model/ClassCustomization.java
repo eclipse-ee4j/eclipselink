@@ -18,7 +18,7 @@ package org.eclipse.persistence.json.bind.model;
  *
  * @author Roman Grigoriadi
  */
-class ClassCustomization extends Customization {
+public class ClassCustomization extends Customization {
     /**
      * Copies properties from builder an creates immutable instance.
      *

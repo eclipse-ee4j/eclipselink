@@ -81,7 +81,7 @@ class ObjectItem<T> extends AbstractItem<T> implements UnmarshallerItem<T> {
             JsonbAdapterInfo adapterInfo = adapterInfoOptional.get();
             final Class<?> rawAdaptTo = ReflectionUtils.getRawType(adapterInfo.getToType());
             Object toAdapt = getTypeConverter().supportsFromJson(rawAdaptTo) ?
-                    getTypeConverter().fromJson(value, rawAdaptTo) : value;
+                    getTypeConverter().fromJson(value, rawAdaptTo, valuePropertyModel.getCustomization()) : value;
             Object adapted;
             try {
                 adapted = ((JsonbAdapter<?, Object>)adapterInfo.getAdapter()).adaptFromJson(toAdapt);
@@ -95,7 +95,7 @@ class ObjectItem<T> extends AbstractItem<T> implements UnmarshallerItem<T> {
         if (!getTypeConverter().supportsFromJson(valueClass)) {
             throw new JsonbException("Can't convert JSON value into: " + valuePropertyModel.getPropertyType());
         }
-        Object converted = getTypeConverter().fromJson(value, valueClass);
+        Object converted = getTypeConverter().fromJson(value, valueClass, valuePropertyModel.getCustomization());
         valuePropertyModel.setValue(getInstance(), converted);
         log.finest(Messages.getMessage(MessageKeys.SETTING_PROPERTY_DESERIALIZER, key, getClassModel().getRawType().getName(), value));
     }

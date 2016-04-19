@@ -1,5 +1,7 @@
 package org.eclipse.persistence.json.bind.internal.conversion;
 
+import org.eclipse.persistence.json.bind.model.Customization;
+
 import javax.json.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -84,16 +86,16 @@ public class ConvertersMapTypeConverter implements TypeConverter {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> T fromJson(String value, Class<T> clazz) {
+    public <T> T fromJson(String value, Class<T> clazz, Customization customization) {
         SupportedTypeConverter<?> supportedTypeConverter = findConvertorFromJson(clazz);
-        return (T) supportedTypeConverter.fromJson(value, clazz);
+        return (T) supportedTypeConverter.fromJson(value, clazz, customization);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> String toJson(T object) {
+    public <T> String toJson(T object, Customization customization) {
         SupportedTypeConverter<T> supportedTypeConverter = ((SupportedTypeConverter<T>) findConvertorToJson(object.getClass()));
-        return supportedTypeConverter.toJson(object);
+        return supportedTypeConverter.toJson(object, customization);
     }
 
     private <T> SupportedTypeConverter<?> findConvertorToJson(Class<T> clazz) {

@@ -50,7 +50,8 @@ public class ClassParserTest {
         new JsonbContextCommand() {
             @Override
             protected void doInJsonbContext() {
-                ClassModel model = classParser.parse(FieldModifiersClass.class);
+                ClassModel model = new ClassModel(FieldModifiersClass.class);
+                classParser.parseProperties(model);
                 assertTrue(model.getPropertyModel("finalString").isReadable());
                 assertFalse(model.getPropertyModel("finalString").isWritable());
                 assertFalse(model.getPropertyModel("staticString").isReadable());
@@ -67,7 +68,8 @@ public class ClassParserTest {
         new JsonbContextCommand() {
             @Override
             protected void doInJsonbContext() {
-                ClassModel model = classParser.parse(MethodModifiersClass.class);
+                ClassModel model = new ClassModel(MethodModifiersClass.class);
+                classParser.parseProperties(model);
                 assertFalse(model.getPropertyModel("publicFieldWithPrivateMethods").isReadable());
                 assertFalse(model.getPropertyModel("publicFieldWithPrivateMethods").isWritable());
                 assertTrue(model.getPropertyModel("publicFieldWithoutMethods").isReadable());

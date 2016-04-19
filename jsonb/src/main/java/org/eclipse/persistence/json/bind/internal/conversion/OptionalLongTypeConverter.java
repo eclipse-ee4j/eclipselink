@@ -1,5 +1,7 @@
 package org.eclipse.persistence.json.bind.internal.conversion;
 
+import org.eclipse.persistence.json.bind.model.Customization;
+
 import java.lang.reflect.Type;
 import java.util.OptionalLong;
 
@@ -13,12 +15,12 @@ public class OptionalLongTypeConverter extends AbstractTypeConverter<OptionalLon
     }
 
     @Override
-    public OptionalLong fromJson(String jsonValue, Type type) {
+    public OptionalLong fromJson(String jsonValue, Type type, Customization customization) {
         return NULL.equals(jsonValue) ? OptionalLong.empty() : OptionalLong.of(Long.parseLong(jsonValue));
     }
 
     @Override
-    public String toJson(OptionalLong object) {
+    public String toJson(OptionalLong object, Customization customization) {
         return object.isPresent() ? String.valueOf(object.getAsLong()) : NULL;
     }
 

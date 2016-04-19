@@ -59,6 +59,7 @@ public class ClassModel {
         final AnnotationIntrospector introspector = AnnotationIntrospector.getInstance();
         final CustomizationBuilder builder = new CustomizationBuilder();
         builder.setNillable(introspector.isClassNillable(clazz));
+        builder.setDateFormatter(introspector.getJsonbDateFormat(clazz));
         return builder.buildClassCustomization();
     }
 
@@ -69,8 +70,11 @@ public class ClassModel {
      */
     public PropertyModel findPropertyModelByJsonReadName(String jsonReadName) {
         Objects.requireNonNull(jsonReadName);
-        //in case of non customized read name will match to default name
-        final PropertyModel result = properties.get(jsonReadName);
+        return searchProperty(this, jsonReadName);
+    }
+
+    private PropertyModel searchProperty(ClassModel classModel, String jsonReadName) {
+        final PropertyModel result = classModel.getPropertyModel(jsonReadName);
         if (result != null) {
             return result;
         }
@@ -79,19 +83,9 @@ public class ClassModel {
                 return propertyModel;
             }
         }
-        return searchParent(jsonReadName);
-    }
-
-    private PropertyModel searchParent(String jsonReadName) {
-        final ClassModel classModel = JsonbContext.getInstance().getMappingContext().getClassModel(clazz.getSuperclass());
-        if (classModel == null) {
-            return null;
-        }
-        final PropertyModel propertyModel = classModel.findPropertyModelByJsonReadName(jsonReadName);
-        if (propertyModel != null) {
-            return propertyModel;
-        }
-        return null;
+        final ClassModel parent =
+                JsonbContext.getInstance().getMappingContext().getClassModel(classModel.getRawType().getSuperclass());
+        return parent == null ? null : searchProperty(parent, jsonReadName);
     }
 
     /**
@@ -133,4 +127,6 @@ public class ClassModel {
     public ClassCustomization getClassCustomization() {
         return classCustomization;
     }
+
+
 }

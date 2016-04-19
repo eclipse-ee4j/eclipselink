@@ -12,7 +12,10 @@
  ******************************************************************************/
 package org.eclipse.persistence.json.bind.internal.unmarshaller;
 
+import org.eclipse.persistence.json.bind.internal.JsonbContext;
 import org.eclipse.persistence.json.bind.internal.ReflectionUtils;
+import org.eclipse.persistence.json.bind.model.ClassModel;
+import org.eclipse.persistence.json.bind.model.Customization;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -55,7 +58,7 @@ public class MapItem extends AbstractItem<Map<?, ?>> implements UnmarshallerItem
             appendCaptor(key, null);
             return;
         }
-        Object convertedValue = getTypeConverter().fromJson(value, ReflectionUtils.getRawType(resolveValueType(mapValueRuntimeType, jsonValueType)));
+        Object convertedValue = getTypeConverter().fromJson(value, ReflectionUtils.getRawType(resolveValueType(mapValueRuntimeType, jsonValueType)), getCustomization());
         appendCaptor(key, convertedValue);
     }
 
@@ -67,6 +70,16 @@ public class MapItem extends AbstractItem<Map<?, ?>> implements UnmarshallerItem
     @Override
     public UnmarshallerItem<?> newItem(String fieldName, JsonValueType jsonValueType) {
         return newCollectionOrMapItem(fieldName, mapValueRuntimeType, jsonValueType);
+    }
+
+    private Customization getCustomization() {
+        /* TODO (marshaller refactoring) consider honoring JsonbAnnotation on Map fields after MR.
+        if (getWrapper() != null) {
+            return getWrapperPropertyModel().getCustomization();
+        }*/
+        ClassModel componentClassModel = JsonbContext.getInstance().getMappingContext()
+                .getClassModel(ReflectionUtils.getRawType(mapValueRuntimeType));
+        return componentClassModel != null ? componentClassModel.getClassCustomization() : null;
     }
 
 }

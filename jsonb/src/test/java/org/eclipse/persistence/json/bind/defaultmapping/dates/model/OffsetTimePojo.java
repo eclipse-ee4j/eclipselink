@@ -11,27 +11,24 @@
  * Roman Grigoriadi
  ******************************************************************************/
 
-package org.eclipse.persistence.json.bind.defaultmapping.generics.model;
+package org.eclipse.persistence.json.bind.defaultmapping.dates.model;
+
+import javax.json.bind.annotation.JsonbDateFormat;
+import java.time.OffsetTime;
 
 /**
  * @author Roman Grigoriadi
  */
-public class ScalarValueWrapper<T> {
+public class OffsetTimePojo extends AbstractDateTimePojo<OffsetTime> {
 
-    private T value;
-
-    public ScalarValueWrapper() {
+    public OffsetTimePojo() {
     }
 
-    public ScalarValueWrapper(T value) {
-        this.value = value;
+    public OffsetTimePojo(OffsetTime date) {
+        super(date);
+        this.offsetTime = date;
     }
 
-    public T getValue() {
-        return value;
-    }
-
-    public void setValue(T value) {
-        this.value = value;
-    }
+    @JsonbDateFormat("HH:mm:ssZ")
+    public OffsetTime offsetTime;
 }

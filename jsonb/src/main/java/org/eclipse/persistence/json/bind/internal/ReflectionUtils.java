@@ -165,7 +165,7 @@ public class ReflectionUtils {
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new JsonbException("Can't create instance", e);
         } catch (NoSuchMethodException e) {
-            throw new JsonbException("No default constructor found.", e);
+            throw new JsonbException(Messages.getMessage(MessageKeys.NO_DEFAULT_CONSTRUCTOR, clazz), e);
         }
     }
 

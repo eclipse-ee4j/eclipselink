@@ -11,27 +11,23 @@
  * Roman Grigoriadi
  ******************************************************************************/
 
-package org.eclipse.persistence.json.bind.defaultmapping.generics.model;
+package org.eclipse.persistence.json.bind.defaultmapping.dates.model;
+
+import javax.json.bind.annotation.JsonbDateFormat;
+import java.time.ZonedDateTime;
+import java.util.Calendar;
 
 /**
  * @author Roman Grigoriadi
  */
-public class ScalarValueWrapper<T> {
+@JsonbDateFormat(value = "X z E MMMM dd-MM-yyyy HH:mm:ss", locale = "fr")
+public class ClassLevelDateAnnotation extends ClassLevelDateAnnotationParent {
 
-    private T value;
+    public ZonedDateTime zonedDateTime;
 
-    public ScalarValueWrapper() {
-    }
+    public Calendar calendar;
 
-    public ScalarValueWrapper(T value) {
-        this.value = value;
-    }
+    @JsonbDateFormat(value = JsonbDateFormat.DEFAULT_FORMAT)
+    public ZonedDateTime defaultZoned;
 
-    public T getValue() {
-        return value;
-    }
-
-    public void setValue(T value) {
-        this.value = value;
-    }
 }

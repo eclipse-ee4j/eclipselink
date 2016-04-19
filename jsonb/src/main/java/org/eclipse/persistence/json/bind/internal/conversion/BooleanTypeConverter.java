@@ -1,5 +1,7 @@
 package org.eclipse.persistence.json.bind.internal.conversion;
 
+import org.eclipse.persistence.json.bind.model.Customization;
+
 import java.lang.reflect.Type;
 
 /**
@@ -12,12 +14,12 @@ public class BooleanTypeConverter extends AbstractTypeConverter<Boolean> {
     }
 
     @Override
-    public Boolean fromJson(String jsonValue, Type type) {
+    public Boolean fromJson(String jsonValue, Type type, Customization customization) {
         return Boolean.parseBoolean(jsonValue);
     }
 
     @Override
-    public String toJson(Boolean object) {
+    public String toJson(Boolean object, Customization customization) {
         return String.valueOf(object);
     }
 

@@ -13,17 +13,26 @@
 
 package org.eclipse.persistence.json.bind.model;
 
+import org.eclipse.persistence.json.bind.internal.conversion.JsonbDateFormatter;
+
+import java.text.NumberFormat;
+
 /**
  * Customization configuration for class or field.
  * Configuration parsed from annotation is put here.
  *
  * @author Roman Grigoriadi
  */
-abstract class Customization {
+public abstract class Customization {
 
     private final boolean nillable;
 
     private final boolean jsonbTransient;
+
+    private final JsonbDateFormatter dateTimeFormatter;
+
+    private final NumberFormat numberFormat;
+
 
     /**
      * Copies properties from builder an creates immutable instance.
@@ -32,6 +41,8 @@ abstract class Customization {
     Customization(CustomizationBuilder builder) {
         this.nillable = builder.isNillable();
         this.jsonbTransient = builder.isJsonbTransient();
+        this.dateTimeFormatter = builder.getDateFormatter();
+        this.numberFormat = builder.getNumberFormat();
     }
 
     /**
@@ -52,4 +63,20 @@ abstract class Customization {
         return jsonbTransient;
     }
 
+    /**
+     * Date formatter for formatting dates.
+     * If not set defaulted to javax.json.bind.annotation.JsonbDateFormat.DEFAULT_FORMAT.
+     * @return date format
+     */
+    public JsonbDateFormatter getDateTimeFormatter() {
+        return dateTimeFormatter;
+    }
+
+    /**
+     * Number format for formatting numbers.
+     * @return number format
+     */
+    public NumberFormat getNumberFormat() {
+        return numberFormat;
+    }
 }

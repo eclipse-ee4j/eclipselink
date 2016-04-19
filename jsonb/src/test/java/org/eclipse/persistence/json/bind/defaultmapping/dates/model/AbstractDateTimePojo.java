@@ -11,27 +11,29 @@
  * Roman Grigoriadi
  ******************************************************************************/
 
-package org.eclipse.persistence.json.bind.defaultmapping.generics.model;
+package org.eclipse.persistence.json.bind.defaultmapping.dates.model;
+
+import javax.json.bind.annotation.JsonbDateFormat;
 
 /**
+ * Common parent class for testing date objects.
+ * Contains {@link JsonbDateFormat} DEFAULT_FORMAT and TIME_IN_MILLIS annotated date objects.
  * @author Roman Grigoriadi
  */
-public class ScalarValueWrapper<T> {
+public class AbstractDateTimePojo<T> {
 
-    private T value;
-
-    public ScalarValueWrapper() {
+    public AbstractDateTimePojo() {
     }
 
-    public ScalarValueWrapper(T value) {
-        this.value = value;
+    public AbstractDateTimePojo(T dateObj) {
+        this.defaultFormatted = dateObj;
+        this.millisFormatted = dateObj;
     }
 
-    public T getValue() {
-        return value;
-    }
+    @JsonbDateFormat(JsonbDateFormat.DEFAULT_FORMAT)
+    public T defaultFormatted;
 
-    public void setValue(T value) {
-        this.value = value;
-    }
+    @JsonbDateFormat(JsonbDateFormat.TIME_IN_MILLIS)
+    public T millisFormatted;
+
 }

@@ -1,5 +1,7 @@
 package org.eclipse.persistence.json.bind.internal.conversion;
 
+import org.eclipse.persistence.json.bind.model.Customization;
+
 import java.lang.reflect.Type;
 
 /**
@@ -12,12 +14,12 @@ public class ShortTypeConverter extends AbstractTypeConverter<Short> {
     }
 
     @Override
-    public Short fromJson(String jsonValue, Type type) {
+    public Short fromJson(String jsonValue, Type type, Customization customization) {
         return Short.parseShort(jsonValue);
     }
 
     @Override
-    public String toJson(Short object) {
+    public String toJson(Short object, Customization customization) {
         return String.valueOf(object);
     }
 

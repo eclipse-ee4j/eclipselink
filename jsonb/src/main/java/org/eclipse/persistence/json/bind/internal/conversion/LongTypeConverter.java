@@ -1,5 +1,7 @@
 package org.eclipse.persistence.json.bind.internal.conversion;
 
+import org.eclipse.persistence.json.bind.model.Customization;
+
 import java.lang.reflect.Type;
 
 /**
@@ -12,12 +14,12 @@ public class LongTypeConverter extends AbstractTypeConverter<Long> {
     }
 
     @Override
-    public Long fromJson(String jsonValue, Type type) {
+    public Long fromJson(String jsonValue, Type type, Customization customization) {
         return Long.parseLong(jsonValue);
     }
 
     @Override
-    public String toJson(Long object) {
+    public String toJson(Long object, Customization customization) {
         return String.valueOf(object);
     }
 

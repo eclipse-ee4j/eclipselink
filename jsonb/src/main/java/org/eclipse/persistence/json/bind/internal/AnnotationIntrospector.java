@@ -15,10 +15,12 @@ package org.eclipse.persistence.json.bind.internal;
 
 import org.eclipse.persistence.json.bind.internal.adapter.AdapterMatcher;
 import org.eclipse.persistence.json.bind.internal.adapter.JsonbAdapterInfo;
+import org.eclipse.persistence.json.bind.internal.conversion.JsonbDateFormatter;
 import org.eclipse.persistence.json.bind.internal.properties.MessageKeys;
 import org.eclipse.persistence.json.bind.internal.properties.Messages;
 import org.eclipse.persistence.json.bind.model.Property;
 
+import javax.json.bind.JsonbConfig;
 import javax.json.bind.JsonbException;
 import javax.json.bind.adapter.JsonbAdapter;
 import javax.json.bind.annotation.*;
@@ -26,10 +28,10 @@ import javax.json.bind.config.PropertyVisibilityStrategy;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
+import java.util.*;
+import java.util.function.Supplier;
 
 /**
  * Introspects configuration on classes and their properties by reading annotations.
@@ -128,17 +130,9 @@ public class AnnotationIntrospector {
      * @return true if found
      */
     public boolean isClassNillable(Class<?> clazz) {
-        //TODO potential unnecessary duplicate search for inheritance. Consider a cache.
-        JsonbNillable classLevel = searchAnnotationInClassHierarchy(JsonbNillable.class, clazz);
-        if(classLevel != null) {
-            return classLevel.value();
-        }
-        JsonbNillable interfaceLevel = searchInInterfaceHierarchy(JsonbNillable.class, clazz);
-        if (interfaceLevel != null) {
-            return interfaceLevel.value();
-        }
-        JsonbNillable packageLevel = clazz.getPackage().getAnnotation(JsonbNillable.class);
-        return packageLevel != null && packageLevel.value();
+        final Optional<JsonbNillable> jsonbNillable = searchAnnotationInClassHierarchy(JsonbNillable.class, clazz);
+        final Optional<Boolean> result = jsonbNillable.map(JsonbNillable::value);
+        return result.orElse(false);
     }
 
     /**
@@ -162,6 +156,80 @@ public class AnnotationIntrospector {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Search for {@link JsonbDateFormat} annotation on java property and construct {@link JsonbDateFormatter}.
+     * @param property property to search not null
+     * @return formatter to use
+     */
+    public JsonbDateFormatter getJsonbDateFormat(Property property) {
+        Objects.requireNonNull(property);
+        final Optional<JsonbDateFormatter> propertyFormatter = getAnnotationFromProperty(JsonbDateFormat.class, property)
+                .map(formatAnnot -> createJsonbDateFormatter(formatAnnot.value(), getDateFormatLocale(formatAnnot), property));
+
+        return propertyFormatter.orElse(((Supplier<JsonbDateFormatter>) () -> {
+            final JsonbDateFormatter classModelFormatter = property.getDeclaringClassModel().getClassCustomization().getDateTimeFormatter();
+            return createJsonbDateFormatter(classModelFormatter.getFormat(), classModelFormatter.getLocale(), property);
+        }).get());
+
+    }
+
+    /**
+     * Search for {@link JsonbDateFormat} annotation on java class and construct {@link JsonbDateFormatter}.
+     * @param clazz class to search not null
+     * @return formatter to use
+     */
+    public JsonbDateFormatter getJsonbDateFormat(Class clazz) {
+        Objects.requireNonNull(clazz);
+        final Optional<JsonbDateFormatter> formatter = searchAnnotationInClassHierarchy(JsonbDateFormat.class, clazz)
+                .map(jsonbDateFormat -> new JsonbDateFormatter(jsonbDateFormat.value(), getDateFormatLocale(jsonbDateFormat)));
+        return formatter.orElse(getGlobalConfigJsonbDateFormatter());
+    }
+
+    private Locale getDateFormatLocale(JsonbDateFormat jsonbDateFormat) {
+        return JsonbDateFormat.DEFAULT_LOCALE.equals(jsonbDateFormat.locale()) ? getConfigLocale() : Locale.forLanguageTag(jsonbDateFormat.locale());
+    }
+
+    private JsonbDateFormatter getGlobalConfigJsonbDateFormatter() {
+        final Optional<Object> formatProperty = JsonbContext.getInstance().getConfig().getProperty(JsonbConfig.DATE_FORMAT);
+        String format = formatProperty.map(f -> {
+            if (!(f instanceof String)) {
+                throw new JsonbException(Messages.getMessage(MessageKeys.JSONB_CONFIG_PROPERTY_INVALID_TYPE, JsonbConfig.DATE_FORMAT, String.class.getSimpleName()));
+            }
+            return (String) f;
+        }).orElse(JsonbDateFormat.DEFAULT_FORMAT);
+        return new JsonbDateFormatter(format, getConfigLocale());
+    }
+
+    /**
+     * Creates {@link JsonbDateFormatter} caches formatter instance if possible.
+     * For DEFAULT_FORMAT appropriate singleton instances from java.time.format.DateTimeFormatter
+     * are used in date converters.
+     */
+    private JsonbDateFormatter createJsonbDateFormatter(String format, Locale locale, Property property) {
+        if (JsonbDateFormat.TIME_IN_MILLIS.equals(format) || JsonbDateFormat.DEFAULT_FORMAT.equals(format)) {
+            //for epochMillis formatter is not used, for default format singleton instances of DateTimeFormatter
+            //are used in the converters
+            return new JsonbDateFormatter(format, locale);
+        }
+        final Class<?> propertyRawType = property.getPropertyType() instanceof Class ?
+                (Class<?>) property.getPropertyType() : null;
+
+        //Can't resolve date type if it is declared as generic type var
+        if (propertyRawType == null) {
+            return new JsonbDateFormatter(DateTimeFormatter.ofPattern(format, locale), format, locale);
+        }
+
+        //Calendar and dates
+        if (Date.class.isAssignableFrom(propertyRawType) || Calendar.class.isAssignableFrom(propertyRawType)) {
+            return new JsonbDateFormatter(format, locale);
+        }
+
+        if (!TemporalAccessor.class.isAssignableFrom(propertyRawType)) {
+            throw new IllegalStateException(Messages.getMessage(MessageKeys.UNSUPPORTED_DATE_TYPE, propertyRawType));
+        }
+        return new JsonbDateFormatter(DateTimeFormatter.ofPattern(format, locale), format, locale);
     }
 
     /**
@@ -223,35 +291,43 @@ public class AnnotationIntrospector {
         return method.getAnnotation(annotationClass);
     }
 
-    private <T extends Annotation> T searchAnnotationInClassHierarchy(Class<T> annotationClass, Class<?> declaringClass) {
+    private <T extends Annotation> Optional<T> searchAnnotationInClassHierarchy(Class<T> annotationClass, Class<?> declaringClass) {
         if (declaringClass == null || declaringClass == Object.class) {
-            return null;
+            return Optional.empty();
         }
-        T annotation = declaringClass.getAnnotation(annotationClass);
-        if (annotation != null) {
-            return annotation;
+        Optional<T> candidate = Optional.ofNullable(declaringClass.getAnnotation(annotationClass));
+        if (candidate.isPresent()) {
+            return candidate;
+        }
+        candidate = searchPackage(annotationClass, declaringClass);
+        if (candidate.isPresent()) {
+            return candidate;
+        }
+        candidate = searchInterfaces(annotationClass, declaringClass);
+        if (candidate.isPresent()) {
+            return candidate;
         }
 
         return searchAnnotationInClassHierarchy(annotationClass, declaringClass.getSuperclass());
     }
 
-    private <T extends Annotation> T searchInInterfaceHierarchy(Class<T> annotationClass, Class<?> clazz) {
+    private <T extends Annotation> Optional<T> searchInterfaces(Class<T> annotationClass, Class<?> clazz) {
         if (clazz == Object.class) {
-            return null;
+            return Optional.empty();
         }
         final Map<Class<?>, T> annotationMapping = new HashMap<>();
         collectFromInterfaces(annotationClass, clazz, annotationMapping);
         if (annotationMapping.size() == 1) {
-            return annotationMapping.values().iterator().next();
+            return Optional.of(annotationMapping.values().iterator().next());
         } else if (annotationMapping.size() > 1) {
             StringBuilder message = new StringBuilder("Duplicate mapping found for ").append(annotationClass).append(" on interfaces:");
             for (Map.Entry<Class<?>, T> entry : annotationMapping.entrySet()) {
                 message.append("[").append(entry.getKey()).append("],");
             }
             throw new JsonbException(message.toString());
+        } else {
+            return Optional.empty();
         }
-        //TODO GR (after "ThreadLocal" refactoring) it would be better to scan interfaces only of current class without superclasses here and check superclasses in ClassModel during customization initialization
-        return searchInInterfaceHierarchy(annotationClass, clazz.getSuperclass());
     }
 
     private <T extends Annotation> void collectFromInterfaces(Class<T> annotationClass, Class clazz, Map<Class<?>, T> collectedAnnotations) {
@@ -265,6 +341,10 @@ public class AnnotationIntrospector {
         }
     }
 
+    private <T extends Annotation> Optional<T> searchPackage(Class<T> annotationClass, Class clazz) {
+        return Optional.ofNullable(clazz.getPackage().getAnnotation(annotationClass));
+    }
+
     /**
      * Returns JsonbPropertyOrder annotation if class has one
      * @param clazz Class to be checked
@@ -272,5 +352,15 @@ public class AnnotationIntrospector {
      */
     public Optional<JsonbPropertyOrder> getJsonbPropertyOrderAnnotation(Class<?> clazz) {
         return Optional.ofNullable(clazz.getAnnotation(JsonbPropertyOrder.class));
+    }
+
+    private Locale getConfigLocale() {
+        final Optional<Object> localeProperty = JsonbContext.getInstance().getConfig().getProperty(JsonbConfig.LOCALE);
+        return  localeProperty.map(loc -> {
+            if (!(loc instanceof Locale)) {
+                throw new JsonbException(Messages.getMessage(MessageKeys.JSONB_CONFIG_PROPERTY_INVALID_TYPE, JsonbConfig.LOCALE, Locale.class.getSimpleName()));
+            }
+            return (Locale) loc;
+        }).orElse(Locale.getDefault());
     }
 }

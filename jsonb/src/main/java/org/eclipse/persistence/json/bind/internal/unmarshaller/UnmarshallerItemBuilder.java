@@ -203,9 +203,7 @@ public class UnmarshallerItemBuilder {
     private ClassModel getClassModel(Class<?> rawType) {
         ClassModel classModel = JsonbContext.getInstance().getMappingContext().getClassModel(rawType);
         if (classModel == null) {
-            for (Class clazz = rawType; clazz.getSuperclass() != null; clazz = clazz.getSuperclass()) {
-                JsonbContext.getInstance().getMappingContext().getOrCreateClassModel(clazz);
-            }
+            JsonbContext.getInstance().getMappingContext().parseClassModel(rawType);
             classModel = JsonbContext.getInstance().getMappingContext().getClassModel(rawType);
             Objects.requireNonNull(classModel);
         }

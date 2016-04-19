@@ -1,5 +1,7 @@
 package org.eclipse.persistence.json.bind.internal.conversion;
 
+import org.eclipse.persistence.json.bind.model.Customization;
+
 import java.lang.reflect.Type;
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -15,12 +17,12 @@ public class InstantTypeConverter extends AbstractTypeConverter<Instant> {
     }
 
     @Override
-    public Instant fromJson(String jsonValue, Type type) {
+    public Instant fromJson(String jsonValue, Type type, Customization customization) {
         return Instant.parse(jsonValue);
     }
 
     @Override
-    public String toJson(Instant object) {
+    public String toJson(Instant object, Customization customization) {
         return DateTimeFormatter.ISO_INSTANT.withZone(ZoneOffset.UTC).format(object);
     }
 

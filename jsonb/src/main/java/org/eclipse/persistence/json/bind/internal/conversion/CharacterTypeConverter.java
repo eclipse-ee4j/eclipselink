@@ -1,7 +1,8 @@
 package org.eclipse.persistence.json.bind.internal.conversion;
 
+import org.eclipse.persistence.json.bind.model.Customization;
+
 import java.lang.reflect.Type;
-import java.util.OptionalDouble;
 
 /**
  * @author David Král
@@ -13,12 +14,12 @@ public class CharacterTypeConverter extends AbstractTypeConverter<Character> {
     }
 
     @Override
-    public Character fromJson(String jsonValue, Type type) {
+    public Character fromJson(String jsonValue, Type type, Customization customization) {
         return jsonValue.charAt(0);
     }
 
     @Override
-    public String toJson(Character object) {
+    public String toJson(Character object, Customization customization) {
         return object.toString();
     }
 
