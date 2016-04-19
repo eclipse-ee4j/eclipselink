@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -82,17 +82,16 @@ public class TIMESTAMPHelper {
         return gCal;
     }
 
-
     /**
      * Build a calendar string based on the calendar fields.
      * If the daylight savings time should be printed and the zone is in daylight savings time,
      * print the short representation of daylight savings from the calendar's timezone data.
      */
-    public static String printCalendar(Calendar calendar) {
+    public static String printCalendar(final Calendar calendar) {
         if (calendar == null) {
             return "null";
         }
-        StringWriter writer = new StringWriter();
+        final StringWriter writer = new StringWriter();
         writer.write(Helper.printCalendar(calendar, false));
         writer.write(" ");
         writer.write(calendar.getTimeZone().getID());

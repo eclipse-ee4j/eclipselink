@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -244,25 +244,22 @@ public class CalendarDaylightSavingsTest extends TestCase {
 
     // Calendar pretty printing, not used for DB operations
 
-    protected static String formatCalendarAsString(Calendar cal) {
-        StringBuffer buffer = new StringBuffer();
+    protected static String formatCalendarAsString(final Calendar cal) {
+        final StringBuilder buffer = new StringBuilder();
+        final TimeZone zone = cal.getTimeZone();
+        final SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 
-        TimeZone zone = cal.getTimeZone();
-
-        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
         sdf.setCalendar(cal);
         sdf.setTimeZone(zone);
         buffer.append(sdf.format(cal.getTime()));
 
-        buffer.append(" " );
+        buffer.append(" ");
         buffer.append(zone.getID());
-
         // SimpleDateFormat is not good enough to print exactly what I need to see from the TimeZone
         if (zone.inDaylightTime(cal.getTime())) {
             buffer.append(" ");
             buffer.append(zone.getDisplayName(true, TimeZone.SHORT));
         }
-
         return buffer.toString();
     }
 
