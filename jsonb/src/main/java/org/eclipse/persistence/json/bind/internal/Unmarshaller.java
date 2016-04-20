@@ -111,7 +111,11 @@ public class Unmarshaller extends JsonTextProcessor {
                             onObjectEnded();
                             break;
                         case VALUE_FALSE:
+                            onValue(Boolean.FALSE.toString(), JsonValueType.of(event));
+                            break;
                         case VALUE_TRUE:
+                            onValue(Boolean.TRUE.toString(), JsonValueType.of(event));
+                            break;
                         case VALUE_STRING:
                         case VALUE_NUMBER:
                             onValue(parser.getString(), JsonValueType.of(event));

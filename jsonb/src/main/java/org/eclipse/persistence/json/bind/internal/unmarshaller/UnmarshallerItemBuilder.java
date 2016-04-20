@@ -25,10 +25,21 @@ import org.eclipse.persistence.json.bind.model.PolymorphismAdapter;
 import org.eclipse.persistence.json.bind.model.PropertyModel;
 import org.eclipse.persistence.json.bind.model.TypeWrapper;
 
+import javax.json.JsonValue;
 import javax.json.bind.JsonbException;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Queue;
+import java.util.Set;
 
 /**
  * Builder for currently processed items by unmarshaller.
@@ -155,7 +166,9 @@ public class UnmarshallerItemBuilder {
             case ARRAY:
                 final UnmarshallerItem<?> item;
 
-                if (rawType.isArray() || runtimeType instanceof GenericArrayType) {
+                if (JsonValue.class.isAssignableFrom(rawType)) {
+                    return new JsonArrayItem(this);
+                } else if (rawType.isArray() || runtimeType instanceof GenericArrayType) {
                     item = createArrayItem(rawType.getComponentType());
                 } else if (Collection.class.isAssignableFrom(rawType)) {
                     item = createCollectionItem();
@@ -164,6 +177,9 @@ public class UnmarshallerItemBuilder {
                 }
                 return wrapAdapted(adapterInfoOptional, item);
             case OBJECT:
+                if (JsonValue.class.isAssignableFrom(rawType)) {
+                    return new JsonObjectItem(this);
+                }
                 if (Map.class.isAssignableFrom(rawType)) {
                     final UnmarshallerItem<?> mapItem = createMapItem();
                     return wrapAdapted(adapterInfoOptional, mapItem);
