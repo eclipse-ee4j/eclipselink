@@ -328,6 +328,47 @@
     <target name="compile-and-run-oxm-deploymentxml-tl-tests" depends="compile-tests" description="build and run moxy (oxm) tl deployment xml tests">
         <run_oxm_deploymentxml_tl_tests runpathref="oxm.run.path"/>
     </target>
+
+    <target name="init-osgi">
+        <property environment="env"/>
+        <condition property="m2.home.exists" value="true">
+            <isset property="env.M2_HOME"/>
+        </condition>
+        <condition property="M2_HOME" value="${env.M2_HOME}">
+            <isset property="m2.home.exists"/>
+        </condition>
+    </target>
+    <target name="check-osgi" unless="m2.home.exists">
+        <echo message="Skipping OSGi Tests. M2_HOME is not set."/>
+    </target>
+    <target name="compile-and-run-osgi-tests">
+        <condition property="version.qualifier" value="${version.qualifier}" else="qualifier">
+            <isset property="version.qualifier"/>
+        </condition>
+        <echo message="Launching Maven build with the following parameters:"/>
+        <echo message="    -Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
+        <echo message="    -Dmaven.home=${M2_HOME}"/>
+        <echo message="    -Dbuild.qualifier=${version.qualifier}"/>
+        <java dir="${basedir}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
+            <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
+            <jvmarg value="-Dmaven.home=${M2_HOME}"/>
+            <!--<arg line="-Dmaven.surefire.debug clean install"/>-->
+            <arg line="clean install"/>
+            <arg line="-Dmoxytest.2.common.plugins.dir=${basedir}/../../plugins/"/>
+            <arg line="-Djavax.validation.lib=${basedir}/${javax.validation.lib}"/>
+            <arg line="-Dbuild.qualifier=${version.qualifier}"/>
+            <arg line="-Drelease.version=${release.version}"/>
+            <arg line="-Djaxb-api.jar=${jaxb-api.jar}"/>
+            <arg line="-Djaxrs.jar=${jaxrs.jar}"/>
+            <arg line="-Dasm.jar=${asm.jar}"/>
+            <classpath>
+                <fileset dir="${M2_HOME}/boot">
+                    <include name="plexus-classworlds-*.jar"/>
+                </fileset>
+            </classpath>
+        </java>
+    </target>
+
     <target name="run-installer-tests">
         <tempfile property="unzip.temp.file" destDir="${java.io.tmpdir}" prefix="build"/>
         <mkdir dir="${unzip.temp.file}"/>

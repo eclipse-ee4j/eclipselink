@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,16 +12,11 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.beanvalidation;
 
-import org.eclipse.persistence.exceptions.BeanValidationException;
-import org.eclipse.persistence.jaxb.BeanValidationHelper;
-import org.eclipse.persistence.jaxb.JAXBContext;
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.jaxb.JAXBContextProperties;
-import org.eclipse.persistence.jaxb.JAXBMarshaller;
-import org.eclipse.persistence.testing.jaxb.beanvalidation.special.ConstructorAnnotatedEmployee;
-import org.eclipse.persistence.testing.jaxb.beanvalidation.special.CustomAnnotatedEmployee;
-import org.eclipse.persistence.testing.jaxb.beanvalidation.special.MethodAnnotatedEmployee;
-import org.eclipse.persistence.testing.jaxb.beanvalidation.special.NonConstrainedClass;
+import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 import javax.validation.ConstraintValidatorFactory;
 import javax.validation.ConstraintViolation;
@@ -35,11 +30,18 @@ import javax.validation.ValidatorFactory;
 import javax.validation.executable.ExecutableValidator;
 import javax.validation.metadata.BeanDescriptor;
 import javax.validation.metadata.ConstraintDescriptor;
-import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+
+import org.eclipse.persistence.exceptions.BeanValidationException;
+import org.eclipse.persistence.jaxb.BeanValidationHelper;
+import org.eclipse.persistence.jaxb.ConstraintViolationWrapper;
+import org.eclipse.persistence.jaxb.JAXBContext;
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
+import org.eclipse.persistence.jaxb.JAXBMarshaller;
+import org.eclipse.persistence.testing.jaxb.beanvalidation.special.ConstructorAnnotatedEmployee;
+import org.eclipse.persistence.testing.jaxb.beanvalidation.special.CustomAnnotatedEmployee;
+import org.eclipse.persistence.testing.jaxb.beanvalidation.special.MethodAnnotatedEmployee;
+import org.eclipse.persistence.testing.jaxb.beanvalidation.special.NonConstrainedClass;
 
 /**
  * Test case storing non-standard tests, i.e. those that didn't fit neither in
@@ -67,13 +69,13 @@ public class BeanValidationSpecialtiesTestCase extends junit.framework.TestCase 
         } catch (BeanValidationException ignored) {
         }
 
-        Set<? extends ConstraintViolation<?>> violations = marshaller.getConstraintViolations();
+        Set<ConstraintViolationWrapper<Object>> violations = marshaller.getConstraintViolations();
 
         assertFalse("Some constraints were not validated, even though they should have been.", violations.isEmpty());
 
         // For all, i.e. one constraintViolations.
-        for (ConstraintViolation constraintViolation : violations) {
-            assertEquals(CUSTOM_ANNOTATION_MESSAGE, constraintViolation.getMessage());
+        for (ConstraintViolationWrapper cv : violations) {
+            assertEquals(CUSTOM_ANNOTATION_MESSAGE, cv.getMessage());
         }
     }
 
@@ -88,16 +90,17 @@ public class BeanValidationSpecialtiesTestCase extends junit.framework.TestCase 
 
         try {
             marshaller.marshal(employee, new StringWriter());
+            assertFalse("Constraints-breaking class escaped validation -> fail.", true);
         } catch (BeanValidationException ignored) {
         }
 
-        Set<? extends ConstraintViolation<?>> violations = marshaller.getConstraintViolations();
+        Set<ConstraintViolationWrapper<Object>> violations = marshaller.getConstraintViolations();
 
         assertFalse(violations.isEmpty());
 
         // For all, i.e. one constraintViolations.
-        for (ConstraintViolation constraintViolation : violations) {
-            assertEquals(NOT_NULL_MESSAGE, constraintViolation.getMessageTemplate());
+        for (ConstraintViolationWrapper cv : violations) {
+            assertEquals(NOT_NULL_MESSAGE, cv.getMessageTemplate());
         }
     }
 
@@ -149,7 +152,7 @@ public class BeanValidationSpecialtiesTestCase extends junit.framework.TestCase 
         } catch (BeanValidationException ignored) {
         }
 
-        Set<? extends ConstraintViolation<?>> violations = marshaller.getConstraintViolations();
+        Set<ConstraintViolationWrapper<Object>> violations = marshaller.getConstraintViolations();
 
         assertFalse(violations.isEmpty());
     }

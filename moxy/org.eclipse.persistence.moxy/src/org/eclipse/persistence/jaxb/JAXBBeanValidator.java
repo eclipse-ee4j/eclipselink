@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -29,6 +29,7 @@ import java.security.CodeSource;
 import java.security.PrivilegedAction;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
@@ -185,8 +186,8 @@ class JAXBBeanValidator {
      * @param beanValidationMode Bean validation mode - allowed values AUTO, CALLBACK, NONE.
      * @param value validated object. It is passed because validation on some objects may be skipped, 
      *              e.g. non-constrained objects (like XmlBindings).
-     * @param preferredValidatorFactory May be null. Will use this factory as the preferred provider;
-     *                                  if null, will use javax defaults.
+     * @param preferredValidatorFactory Must be {@link ValidatorFactory} or null. Will use this factory as the
+     *                                  preferred provider; if null, will use javax defaults.
      * @param noOptimisation if true, bean validation optimisations that skip non-constrained objects will not be
      *                       performed
      * @return 
@@ -196,7 +197,7 @@ class JAXBBeanValidator {
      * @since 2.6
      */
     boolean shouldValidate (Object value, BeanValidationMode beanValidationMode,
-                            ValidatorFactory preferredValidatorFactory,
+                            Object preferredValidatorFactory,
                             boolean noOptimisation) throws BeanValidationException {
 
         if (isValidationEffectivelyOff(beanValidationMode)) return false;
@@ -207,9 +208,8 @@ class JAXBBeanValidator {
 
         /* Mode or validator factory was changed externally (or it's the first time this method is called). */
         if (this.beanValidationMode != beanValidationMode || this.validatorFactory != preferredValidatorFactory) {
-
             this.beanValidationMode = beanValidationMode;
-            this.validatorFactory = preferredValidatorFactory;
+            this.validatorFactory = (ValidatorFactory)preferredValidatorFactory;
             changeInternalState();
         }
 
@@ -262,11 +262,15 @@ class JAXBBeanValidator {
      * Stores the result of validation in {@link #constraintViolations}.
      *
      * @param value Object to be validated.
-     * @param groups Target groups as per BV spec. Must not be null, may be empty.
+     * @param groups Target groups as per BV spec. If null {@link #DEFAULT_GROUP_ARRAY} is used.
      * @throws BeanValidationException {@link BeanValidationException#constraintViolation}
      */
     void validate(Object value, Class<?>... groups) throws BeanValidationException {
-        constraintViolations = validator.validate(value, groups);
+        Class<?>[] grp = groups;
+        if (grp == null || grp.length == 0) {
+            grp = DEFAULT_GROUP_ARRAY;
+        }
+        constraintViolations = validator.validate(value, grp);
         if (!constraintViolations.isEmpty())
             throw buildConstraintViolationException();
     }
@@ -274,8 +278,12 @@ class JAXBBeanValidator {
     /**
      * @return constraintViolations from the last {@link #validate} call.
      */
-    Set<ConstraintViolation<Object>> getConstraintViolations() {
-        return constraintViolations;
+    Set<ConstraintViolationWrapper<Object>> getConstraintViolations() {
+        Set<ConstraintViolationWrapper<Object>> result = new HashSet<>(constraintViolations.size());
+        for (ConstraintViolation cv : constraintViolations) {
+            result.add(new ConstraintViolationWrapper<>(cv));
+        }
+        return result;
     }
 
     /**

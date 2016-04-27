@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -13,6 +13,8 @@
 package org.eclipse.persistence.testing.jaxb.beanvalidation;
 
 import org.eclipse.persistence.exceptions.BeanValidationException;
+import org.eclipse.persistence.internal.cache.AdvancedProcessor;
+import org.eclipse.persistence.jaxb.ConstraintViolationWrapper;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBMarshaller;
 import org.eclipse.persistence.testing.jaxb.beanvalidation.special.ExternallyConstrainedEmployee;
@@ -20,7 +22,6 @@ import org.eclipse.persistence.testing.jaxb.beanvalidation.special.ExternallyCon
 import org.junit.After;
 import org.junit.Before;
 
-import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import java.io.File;
 import java.io.IOException;
@@ -85,7 +86,7 @@ public class ValidationXMLTestCase extends junit.framework.TestCase {
         } catch (BeanValidationException ignored) {
         }
 
-        Set<ConstraintViolation<Object>> violations = marshaller.getConstraintViolations();
+        Set<ConstraintViolationWrapper<Object>> violations = marshaller.getConstraintViolations();
 
         try {
             marshaller.marshal(employee2, new StringWriter());
@@ -97,9 +98,9 @@ public class ValidationXMLTestCase extends junit.framework.TestCase {
         assertFalse("Some constraints were not validated, even though they should have been.", violations.isEmpty());
 
         int i = 0;
-        for (ConstraintViolation constraintViolation : violations) {
-            if (NOT_NULL_MESSAGE.equals(constraintViolation.getMessageTemplate())) i += 0b1000;
-            if (MIN_MESSAGE.equals(constraintViolation.getMessageTemplate())) i += 0b0001;
+        for (ConstraintViolationWrapper<Object> cv : violations) {
+            if (NOT_NULL_MESSAGE.equals(cv.getMessageTemplate())) i += 0b1000;
+            if (MIN_MESSAGE.equals(cv.getMessageTemplate())) i += 0b0001;
         }
         assertTrue(i == 0b1001);
     }

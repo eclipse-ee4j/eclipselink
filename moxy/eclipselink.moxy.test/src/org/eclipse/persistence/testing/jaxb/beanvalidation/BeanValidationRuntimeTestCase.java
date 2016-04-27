@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -14,6 +14,7 @@ package org.eclipse.persistence.testing.jaxb.beanvalidation;
 
 import org.eclipse.persistence.exceptions.BeanValidationException;
 import org.eclipse.persistence.jaxb.BeanValidationMode;
+import org.eclipse.persistence.jaxb.ConstraintViolationWrapper;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.JAXBMarshaller;
@@ -27,7 +28,6 @@ import org.eclipse.persistence.testing.jaxb.beanvalidation.rt_dom.Employee;
 import org.junit.After;
 import org.junit.Before;
 
-import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.ValidatorFactory;
 import javax.validation.groups.Default;
@@ -155,7 +155,7 @@ public class BeanValidationRuntimeTestCase extends junit.framework.TestCase {
 
         /* Marshal w/o validation - creates file for the next part of the test. */
         marshallerValidOff.marshal(employeeInvalid, fileInvalid);
-        Set<? extends ConstraintViolation<?>> marshalCV = marshallerValidOff.getConstraintViolations();
+        Set<ConstraintViolationWrapper<Object>> marshalCV = marshallerValidOff.getConstraintViolations();
         assertTrue(marshalCV.isEmpty());
 
         /* Unmarshal w/ validation - doesn't pass (we want to check that). */
@@ -187,11 +187,12 @@ public class BeanValidationRuntimeTestCase extends junit.framework.TestCase {
         assertEquals(employeeInvalid, employeeUnm);
     }
 
-    private void checkValidationMessages(Set<? extends ConstraintViolation<?>> constraintViolations,
+    private void checkValidationMessages(Set<ConstraintViolationWrapper<Object>> constraintViolations,
                                          List<String> expectedMessages) {
         List<String> violationMessages = new ArrayList<>();
-        for (final ConstraintViolation<?> cv : constraintViolations)
+        for (final ConstraintViolationWrapper cv : constraintViolations) {
             violationMessages.add(cv.getMessageTemplate());
+        }
 
         assertSame(expectedMessages.size(), violationMessages.size());
         assertTrue(violationMessages.containsAll(expectedMessages));
