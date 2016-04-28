@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -25,6 +25,7 @@ package org.eclipse.persistence.platform.database;
 
 import java.io.CharArrayWriter;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -33,6 +34,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Calendar;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Vector;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -46,6 +48,7 @@ import org.eclipse.persistence.internal.expressions.RelationExpression;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
@@ -53,6 +56,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.DataModifyQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
+import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.queries.ValueReadQuery;
 
@@ -71,6 +75,11 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     protected static DataModifyQuery vpdClearIdentifierQuery;
 
     /**
+     *  Whether a FOR UPDATE clause should be printed at the end of the query
+     */
+    protected boolean shouldPrintForUpdateClause;
+
+    /**
      * Advanced attribute indicating whether identity is supported,
      * see comment to setSupportsIdentity method.
      */
@@ -80,6 +89,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         super();
         this.pingSQL = "SELECT 1 FROM DUAL";
         this.storedProcedureTerminationToken = "";
+        this.shouldPrintForUpdateClause = true;
     }
 
     @Override
@@ -925,6 +935,15 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     protected String END_FROM = ") a ";
     protected String MAX_ROW = "WHERE ROWNUM <= ";
     protected String MIN_ROW = ") WHERE rnum > ";
+    // Bug #453208
+    protected String LOCK_START_PREFIX = " AND (";
+    protected String LOCK_START_SUFFIX = ") IN (";
+    protected String LOCK_END = ") FOR UPDATE";
+    protected String SELECT_ID_PREFIX = "SELECT ";
+    protected String SELECT_ID_SUFFIX = " FROM (SELECT ";
+    protected String FROM_ID = ", ROWNUM rnum  FROM (";
+    protected String END_FROM_ID = ") ";
+    protected String ORDER_BY_ID = " ORDER BY ";
 
     /**
      * INTERNAL:
@@ -933,50 +952,137 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      * Oracle's ROWNUM to filter values if shouldUseRownumFiltering is true.
      */
     @Override
-    public void printSQLSelectStatement(DatabaseCall call, ExpressionSQLPrinter printer, SQLSelectStatement statement){
+    public void printSQLSelectStatement(DatabaseCall call, ExpressionSQLPrinter printer, SQLSelectStatement statement) {
         int max = 0;
         int firstRow = 0;
 
-        if (statement.getQuery()!=null){
-            max = statement.getQuery().getMaxRows();
-            firstRow = statement.getQuery().getFirstResult();
+        ReadQuery query = statement.getQuery();
+        if (query != null) {
+            max = query.getMaxRows();
+            firstRow = query.getFirstResult();
         }
 
-        if ( !(this.shouldUseRownumFiltering()) || ( !(max>0) && !(firstRow>0) ) ){
-            super.printSQLSelectStatement(call, printer,statement);
+        if (!(this.shouldUseRownumFiltering()) || (!(max > 0) && !(firstRow > 0))) {
+            super.printSQLSelectStatement(call, printer, statement);
             return;
-        } else if ( max > 0 ){
+        } else {
             statement.setUseUniqueFieldAliases(true);
-            printer.printString(SELECT);
-            printer.printString(buildFirstRowsHint(max));
-            printer.printString(FROM);
+            // Bug #453208 - Pessimistic locking with query row limits does not work on Oracle DB.
+            if (query.isObjectBuildingQuery() && (((ObjectBuildingQuery) query).getLockMode() == ObjectBuildingQuery.LOCK
+                    || ((ObjectBuildingQuery) query).getLockMode() == ObjectBuildingQuery.LOCK_NOWAIT)) {
+                if (query.isReadAllQuery() || query.isReadObjectQuery()) {
+                    // Workaround can exist for this specific case
+                    Vector fields = new Vector();
+                    statement.enableFieldAliasesCaching();
+                    String queryString = printOmittingForUpdate(statement, printer, fields);
+                    call.setFields(fields);
 
-            call.setFields(statement.printSQL(printer));
-            printer.printString(END_FROM);
-            printer.printString(MAX_ROW);
-            printer.printParameter(DatabaseCall.MAXROW_FIELD);
-            printer.printString(MIN_ROW);
-            printer.printParameter(DatabaseCall.FIRSTRESULT_FIELD);
-        } else {// firstRow>0
-            statement.setUseUniqueFieldAliases(true);
-            printer.printString(SELECT);
-            printer.printString(FROM);
+                    /* Prints a query similar to the below:
+                     *
+                     * SELECT t1.EMP_ID AS a1, ...
+                     * FROM CMP3_EMPLOYEE t1
+                     * WHERE ...
+                     *   AND (t1.EMP_ID) IN (
+                     *     SELECT a1 FROM (
+                     *       SELECT a1, ROWNUM rnum FROM (
+                     *         SELECT t1.EMP_ID AS a1, ...
+                     *         FROM CMP3_EMPLOYEE t1
+                     *         WHERE ...)
+                     *       WHERE ROWNUM <= ?)
+                     *     WHERE rnum > ?)
+                     * FOR UPDATE; */
+                    printer.printString(queryString);
+                    printLockStartWithPrimaryKeyFields(statement, printer);
+                    String primaryKeyFields = getPrimaryKeyAliases(statement);
+                    printer.printString(SELECT_ID_PREFIX);
+                    printer.printString(primaryKeyFields);
+                    printer.printString(SELECT_ID_SUFFIX);
+                    printer.printString(buildFirstRowsHint(max));
+                    printer.printString(primaryKeyFields);
+                    printer.printString(FROM_ID);
+                    printer.printString(queryString);
+                    printer.printString(ORDER_BY_ID);
+                    printer.printString(primaryKeyFields);
+                    printer.printString(END_FROM_ID);
+                    printer.printString(MAX_ROW);
+                    printer.printParameter(DatabaseCall.MAXROW_FIELD);
+                    printer.printString(MIN_ROW);
+                    printer.printParameter(DatabaseCall.FIRSTRESULT_FIELD);
+                    printer.printString(LOCK_END);
+                } else {
+                    throw new UnsupportedOperationException(ExceptionLocalization.buildMessage("ora_pessimistic_locking_with_rownum"));
+                }
+            } else {
+                if (max > 0) {
+                    printer.printString(SELECT);
+                    printer.printString(buildFirstRowsHint(max));
+                    printer.printString(FROM);
 
-            call.setFields(statement.printSQL(printer));
-            printer.printString(END_FROM);
-            printer.printString(MIN_ROW);
-            printer.printParameter(DatabaseCall.FIRSTRESULT_FIELD);
-        }
-        // Pessimistic locking with query row limits does not work on Oracle DB.
-        if (statement.getQuery().isObjectBuildingQuery()) {
-            int lockMode = ((ObjectBuildingQuery)statement.getQuery()).getLockMode();
-            if (lockMode == ObjectBuildingQuery.LOCK || lockMode == ObjectBuildingQuery.LOCK_NOWAIT) {
-                throw new UnsupportedOperationException(
-                        ExceptionLocalization.buildMessage("ora_pessimistic_locking_with_rownum"));
+                    call.setFields(statement.printSQL(printer));
+                    printer.printString(END_FROM);
+                    printer.printString(MAX_ROW);
+                    printer.printParameter(DatabaseCall.MAXROW_FIELD);
+                    printer.printString(MIN_ROW);
+                    printer.printParameter(DatabaseCall.FIRSTRESULT_FIELD);
+                } else {// firstRow>0
+                    printer.printString(SELECT);
+                    printer.printString(FROM);
+
+                    call.setFields(statement.printSQL(printer));
+                    printer.printString(END_FROM);
+                    printer.printString(MIN_ROW);
+                    printer.printParameter(DatabaseCall.FIRSTRESULT_FIELD);
+                }
             }
         }
         call.setIgnoreFirstRowSetting(true);
         call.setIgnoreMaxResultsSetting(true);
+    }
+
+    @SuppressWarnings("unchecked")
+    private String printOmittingForUpdate(SQLSelectStatement statement, ExpressionSQLPrinter printer, Vector fields) {
+        boolean originalShouldPrintForUpdate = this.shouldPrintForUpdateClause;
+        Writer originalWriter = printer.getWriter();
+
+        this.shouldPrintForUpdateClause = false;
+        printer.setWriter(new StringWriter());
+
+        fields.addAll(statement.printSQL(printer));
+        String query = printer.getWriter().toString();
+
+        this.shouldPrintForUpdateClause = originalShouldPrintForUpdate;
+        printer.setWriter(originalWriter);
+
+        return query;
+    }
+
+    private void printLockStartWithPrimaryKeyFields(SQLSelectStatement statement, ExpressionSQLPrinter printer) {
+        printer.printString(LOCK_START_PREFIX);
+
+        Iterator<DatabaseField> iterator = statement.getQuery().getDescriptor().getPrimaryKeyFields().iterator();
+        while (iterator.hasNext()) {
+            DatabaseField field = iterator.next();
+            DatabaseTable alias = statement.getExpressionBuilder().aliasForTable(field.getTable());
+            printer.printField(field, alias);
+
+            if(iterator.hasNext()) {
+                printer.printString(",");
+            }
+        }
+
+        printer.printString(LOCK_START_SUFFIX);
+    }
+
+    private String getPrimaryKeyAliases(SQLSelectStatement statement) {
+        StringBuilder builder = new StringBuilder();
+        Iterator<DatabaseField> iterator = statement.getQuery().getDescriptor().getPrimaryKeyFields().iterator();
+        while (iterator.hasNext()) {
+            builder.append(statement.getAliasFor(iterator.next()));
+            if(iterator.hasNext()) {
+                builder.append(',');
+            }
+        }
+        return builder.toString();
     }
 
     /**
@@ -1041,6 +1147,11 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
             }
         }
         return super.wasFailureCommunicationBased(exception, connection, sessionForProfile);
+    }
+
+    @Override
+    public boolean shouldPrintForUpdateClause() {
+        return shouldPrintForUpdateClause;
     }
 
 }

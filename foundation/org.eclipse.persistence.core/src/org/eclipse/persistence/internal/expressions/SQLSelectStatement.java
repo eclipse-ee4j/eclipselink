@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -138,6 +138,10 @@ public class SQLSelectStatement extends SQLStatement {
 
     /** It is used by subselect to re-normalize joins */
     protected Map<Expression, Expression> optimizedClonedExpressions;
+
+    /** Used for caching the field alias written to the query */
+    protected Map<DatabaseField, String> fieldAliases;
+    protected boolean shouldCacheFieldAliases;
 
     public SQLSelectStatement() {
         this.fields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
@@ -2092,9 +2096,31 @@ public class SQLSelectStatement extends SQLStatement {
             printer.printString(field.getNameDelimited(printer.getPlatform()));
         }
         if (this.getUseUniqueFieldAliases()){
-            printer.printString(" AS "+ generatedAlias(field.getNameDelimited(printer.getPlatform())));
+            String alias = generatedAlias(field.getNameDelimited(printer.getPlatform()));
+            if (shouldCacheFieldAliases()) {
+                fieldAliases.put(field, alias);
+            }
+            printer.printString(" AS " + alias);
         }
     }
+
+    private boolean shouldCacheFieldAliases() {
+        return shouldCacheFieldAliases;
+    }
+
+    public void enableFieldAliasesCaching() {
+        fieldAliases = new HashMap<>();
+        shouldCacheFieldAliases = true;
+    }
+
+    public String getAliasFor(DatabaseField field) {
+        if (shouldCacheFieldAliases()) {
+            return fieldAliases.get(field);
+        } else {
+            return "";
+        }
+    }
+
     /**
     * Returns a generated alias based on the column name.  If the new alias will be too long
     * The alias is automatically truncated

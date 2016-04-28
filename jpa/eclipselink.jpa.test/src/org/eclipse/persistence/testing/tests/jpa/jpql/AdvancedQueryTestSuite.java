@@ -2710,9 +2710,6 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
     }
 
     public void testQueryPESSIMISTICLockWithLimit() throws InterruptedException {
-        if (getDatabaseSession().getPlatform().isOracle()) {
-            return;
-        }
         clearCache();
         EntityManager em = createEntityManager();
         beginTransaction(em);
@@ -2764,14 +2761,6 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                     rollbackTransaction(em2);
                 }
                 closeEntityManager(em2);
-            }
-        // Oracle platform will throw UnsupportedOperationException when executing query with pessimistic locking
-        // and minimal query row limit.
-        } catch (PersistenceException e) {
-            // Let this test pass with UnsupportedOperationException on Oracle platform.
-            if (!getPlatform().isOracle() || !(e.getCause() instanceof QueryException)
-                    || !(e.getCause().getCause() instanceof UnsupportedOperationException)) {
-                throw e;
             }
         } finally {
             if (isTransactionActive(em)) {

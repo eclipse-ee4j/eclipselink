@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -138,6 +138,25 @@ public class ExpressionSQLPrinter {
             // Print the field using either short or long notation i.e. owner + table name.
             if (shouldPrintQualifiedNames()) {
                 getWriter().write(field.getQualifiedNameDelimited(platform));
+            } else {
+                getWriter().write(field.getNameDelimited(platform));
+            }
+        } catch (IOException exception) {
+            throw ValidationException.fileError(exception);
+        }
+    }
+
+    public void printField(DatabaseField field, DatabaseTable tableAlias) {
+        if (field == null) {
+            return;
+        }
+
+        try {
+            // Print the field using either short or long notation i.e. owner + table name.
+            if (shouldPrintQualifiedNames()) {
+                getWriter().write(tableAlias.getQualifiedNameDelimited(platform));
+                getWriter().write(".");
+                getWriter().write(field.getNameDelimited(platform));
             } else {
                 getWriter().write(field.getNameDelimited(platform));
             }
