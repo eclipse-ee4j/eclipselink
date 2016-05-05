@@ -288,6 +288,9 @@
     </target>
 
     <target name="run-tests" if="support.test" depends="init-tests" description="setup, compile, and run dbws util testsuites">
+        <pathconvert property="dbwsbldrorcltst.run.path.msg" refid="dbwsbldrorcltst.run.path"/>
+        <echo>Running test on ${db.url}</echo>
+        <echo>ClassPath: ${dbwsbldrorcltst.run.path.msg}</echo>
         <mkdir dir="${classes.dir}"/>
         <DeleteDirQuietly dir="./${report.dir}"/>
         <mkdir dir="./${report.dir}"/>

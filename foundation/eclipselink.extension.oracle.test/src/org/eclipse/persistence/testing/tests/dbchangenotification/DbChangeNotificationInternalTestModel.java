@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,8 +12,14 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.dbchangenotification;
 
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.testing.framework.*;
+import org.eclipse.persistence.sessions.DatabaseLogin;
+import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.testing.framework.TestModel;
+import org.eclipse.persistence.testing.framework.TestProblemException;
+import org.eclipse.persistence.testing.framework.TestWarningException;
+import org.eclipse.persistence.testing.framework.oracle.OracleAqHelper;
 import org.eclipse.persistence.testing.models.employee.relational.EmployeeSystem;
 import org.eclipse.persistence.testing.tests.returning.TestSystemAdapted;
 
@@ -21,6 +27,8 @@ import org.eclipse.persistence.testing.tests.returning.TestSystemAdapted;
  * Test Database change notification using JMS on top of Oracle AQ.
  */
 public class DbChangeNotificationInternalTestModel extends TestModel {
+
+
     protected Session oldSession;
 
     protected String queueName;
@@ -34,10 +42,11 @@ public class DbChangeNotificationInternalTestModel extends TestModel {
     }
 
     public DbChangeNotificationInternalTestModel(String queueName, boolean useMultipleConsumers) {
-        this(queueName, queueName + "_table", useMultipleConsumers, "aquser", "aquser");
+        this(queueName, queueName + "_table", useMultipleConsumers, OracleAqHelper.getAqUser(), OracleAqHelper.getAqPassword());
     }
 
-    public DbChangeNotificationInternalTestModel(String queueName, String queueTableName, boolean useMultipleConsumers, String aqUser, String aqPassword) {
+    public DbChangeNotificationInternalTestModel(String queueName, String queueTableName,
+            boolean useMultipleConsumers, String aqUser, String aqPassword) {
         super();
         String type;
         if (useMultipleConsumers) {
@@ -72,21 +81,14 @@ public class DbChangeNotificationInternalTestModel extends TestModel {
 
         oldSession = getSession();
         if (!oldSession.getLogin().getUserName().equalsIgnoreCase(aqUser)) {
-            /** to setup aquser, need to execute,
-                1 - login as sys (default password is password)
-                - login as scott tiger
-                connect sys/password@james as sysdba
-
-                2 - might need to install aq procesures?
-                - in sqlplus - @@<orahome>\ora92\rdbms\admin\catproc.sql
-
-                3 - create a aq user
-                grant connect, resource , aq_administrator_role to aquser identified by aquser
-                grant execute on dbms_aq to aquser
-                grant execute on dbms_aqadm to aquser
-                grant execute on dbms_lock to aquser
-                connect aquser/aquser
-            */
+            // 1 - might need to install aq procesures?
+            //     in sqlplus - @@<orahome>\ora92\rdbms\admin\catproc.sql
+            //                - as SYSDBA
+            // 2 - create a AQ user <aquser> with password <aqpassword>
+            //     grant connect, resource , aq_administrator_role to <aquser> identified by <aqpassword>
+            //     grant execute on dbms_aq to <aquser>
+            //     grant execute on dbms_aqadm to <aquser>
+            //     grant execute on dbms_lock to <aquser>
             DatabaseLogin login = (DatabaseLogin)oldSession.getLogin().clone();
             login.setUserName(aqUser);
             login.setPassword(aqPassword);
@@ -96,7 +98,8 @@ public class DbChangeNotificationInternalTestModel extends TestModel {
             try {
                 session.login();
             } catch (Exception exception) {
-                throw new TestProblemException("Database needs to be setup for AQ, needs AQ user");
+                throw new TestProblemException(
+                        "Database needs to be setup for AQ, needs user " + OracleAqHelper.getAqUser());
             }
             getExecutor().setSession(session);
         }

@@ -176,10 +176,6 @@
 
         <!-- Determine appropriate settings for Oracle lib variables (overrides of .lib variables won't get reset) -->
         <!-- Check first in oracle extensions dir   -->
-        <condition property="oracle.ojdbc.lib" value="${oracle.extensions.depend.dir}/${oracle.ojdbc.jar}"
-                                         else="${extensions.depend.dir}/${oracle.ojdbc.jar}">
-            <available file="${oracle.extensions.depend.dir}/${oracle.ojdbc.jar}"/>
-        </condition>
         <condition property="oracle.aqapi.lib" value="${oracle.extensions.depend.dir}/${oracle.aqapi.jar}"
                                          else="${extensions.depend.dir}/${oracle.aqapi.jar}">
             <available file="${oracle.extensions.depend.dir}/${oracle.aqapi.jar}"/>
@@ -242,7 +238,6 @@
         <available file="${oracle.extensions.depend.dir}" type="dir" property="oracle.depend.dir.exist"/>
         <available file="${extensions.depend.dir}"        type="dir" property="ext.depend.dir.exist"/>
             <!-- Now retest using the regular extensions dir, if already found variables will not be reset   -->
-        <available file="${oracle.ojdbc.lib}"     property="oracle.ojdbc.lib.exist"/>
         <available file="${oracle.aqapi.lib}"     property="oracle.aqapi.lib.exist"/>
         <available file="${oracle.nosql.lib}"     property="oracle.nosql.lib.exist"/>
         <available file="${oracle.orai18n.lib}"   property="oracle.orai18n.lib.exist"/>
@@ -303,7 +298,7 @@
                 <isset property="core.test.exist"/>
                 <isset property="jpatest.framework.exist"/>
                 <isset property="junit.lib.exist"/>
-                <isset property="oracle.ojdbc.lib.exist"/>
+                <isset property="jdbc.jar.exist"/>
                 <isset property="oracle.aqapi.lib.exist"/>
                 <isset property="oracle.nosql.lib.exist"/>
                 <isset property="oracle.orai18n.lib.exist"/>
@@ -430,7 +425,7 @@
     <!-- Compiles all tests. -->
     <target name="compile" depends="init_paths" description="compile EclipseLink Oracle tests">
         <echo message="Using the following oracle dependencies:"/>
-        <echo message="    '${oracle.ojdbc.lib}'"/>
+        <echo message="    '${jdbc.driver.jar}'"/>
         <echo message="    '${oracle.aqapi.lib}'"/>
         <echo message="    '${oracle.orai18n.lib}'"/>
         <echo message="    '${oracle.orai18n-mapping.lib}'"/>
@@ -576,6 +571,7 @@
                 <jvmarg value="-Ddb.user=${db.user}"/>
                 <jvmarg value="-Ddb.pwd=${db.pwd}"/>
                 <jvmarg value="-Ddb.platform=${db.platform}"/>
+                <jvmarg value="-Djava.library.path=${java.library.path}"/>
                 <jvmarg value="-Djava.security.manager"/>
                 <jvmarg value="-Djava.security.policy=./java.policy.allpermissions"/>
                 <jvmarg line="${additional.jvmargs}"/>
@@ -619,6 +615,7 @@
                 <jvmarg value="-Ddb.user=${db.user}"/>
                 <jvmarg value="-Ddb.pwd=${db.pwd}"/>
                 <jvmarg value="-Ddb.platform=${db.platform}"/>
+                <jvmarg value="-Djava.library.path=${java.library.path}"/>
                 <jvmarg value="${test.security-manager}"/>
                 <jvmarg value="${test.security-manager.policy}"/>
                 <jvmarg line="${additional.jvmargs}"/>
