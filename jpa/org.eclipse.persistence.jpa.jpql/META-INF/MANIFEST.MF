@@ -1,25 +1,25 @@
 Manifest-Version: 1.0
-Export-Package: org.eclipse.persistence.jpa.jpql;version="2.6.3",
- org.eclipse.persistence.jpa.jpql.parser;version="2.6.3",
- org.eclipse.persistence.jpa.jpql.tools;version="2.6.3",
- org.eclipse.persistence.jpa.jpql.tools.model;version="2.6.3",
- org.eclipse.persistence.jpa.jpql.tools.model.query;version="2.6.3",
- org.eclipse.persistence.jpa.jpql.tools.resolver;version="2.6.3",
- org.eclipse.persistence.jpa.jpql.tools.spi;version="2.6.3",
- org.eclipse.persistence.jpa.jpql.tools.utility;version="2.6.3",
- org.eclipse.persistence.jpa.jpql.tools.utility.filter;version="2.6.3",
- org.eclipse.persistence.jpa.jpql.tools.utility.iterable;version="2.6.3",
- org.eclipse.persistence.jpa.jpql.tools.utility.iterator;version="2.6.3",
- org.eclipse.persistence.jpa.jpql.utility;version="2.6.3",
- org.eclipse.persistence.jpa.jpql.utility.filter;version="2.6.3",
- org.eclipse.persistence.jpa.jpql.utility.iterable;version="2.6.3",
- org.eclipse.persistence.jpa.jpql.utility.iterator;version="2.6.3"
+Export-Package: org.eclipse.persistence.jpa.jpql;version="2.6.4",
+ org.eclipse.persistence.jpa.jpql.parser;version="2.6.4",
+ org.eclipse.persistence.jpa.jpql.tools;version="2.6.4",
+ org.eclipse.persistence.jpa.jpql.tools.model;version="2.6.4",
+ org.eclipse.persistence.jpa.jpql.tools.model.query;version="2.6.4",
+ org.eclipse.persistence.jpa.jpql.tools.resolver;version="2.6.4",
+ org.eclipse.persistence.jpa.jpql.tools.spi;version="2.6.4",
+ org.eclipse.persistence.jpa.jpql.tools.utility;version="2.6.4",
+ org.eclipse.persistence.jpa.jpql.tools.utility.filter;version="2.6.4",
+ org.eclipse.persistence.jpa.jpql.tools.utility.iterable;version="2.6.4",
+ org.eclipse.persistence.jpa.jpql.tools.utility.iterator;version="2.6.4",
+ org.eclipse.persistence.jpa.jpql.utility;version="2.6.4",
+ org.eclipse.persistence.jpa.jpql.utility.filter;version="2.6.4",
+ org.eclipse.persistence.jpa.jpql.utility.iterable;version="2.6.4",
+ org.eclipse.persistence.jpa.jpql.utility.iterator;version="2.6.4"
 Bundle-Name: EclipseLink Hermes Parser
 Created-By: 1.6.0_21 (Sun Microsystems Inc.)
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.jpa.j
  pql
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-Vendor: Eclipse.org - EclipseLink Project
-Bundle-Version: 2.6.3.qualifier
+Bundle-Version: 2.6.4.qualifier
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.eclipse.persistence.jpa.jpql

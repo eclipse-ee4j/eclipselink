@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: EclipseLink Hermes Parser Test
 Bundle-SymbolicName: org.eclipse.persistence.jpa.jpql.test
-Bundle-Version: 2.6.3.qualifier
+Bundle-Version: 2.6.4.qualifier
 Export-Package: jpql.query,
  org.eclipse.persistence.jpa.tests.jpql,
  org.eclipse.persistence.jpa.tests.jpql.parser,
