@@ -1,5 +1,5 @@
 <!--/*******************************************************************************
-* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -121,7 +121,6 @@
         <contains string="${jpatest.build.location}" substring="jpa/${ant.project.name}"/>
     </condition>
     <property name="jpatest.2.common.plugins.dir"   value="${jpatest.2.base.dir}/plugins"/>
-    <property name="jpatest.2.modelgentest.dir"     value="${jpatest.2.base.dir}/jpa/eclipselink.jpa.modelgen.test"/>
     <property name="jpatest.2.jpa.plugins.dir"      value="${jpatest.2.base.dir}/jpa/plugins"/>
     <property name="jpatest.2.coretest.dir"         value="${jpatest.2.base.dir}/foundation/eclipselink.core.test"/>
     <property name="jpatest.2.oracle.dir"           value="${jpatest.2.base.dir}/foundation/org.eclipse.persistence.oracle"/>
@@ -143,7 +142,6 @@
     <echo message="jpatest.build.location       = '${jpatest.build.location}'"/>
     <echo message="jpatest.2.base.dir           = '${jpatest.2.base.dir}'"/>
     <echo message="jpatest.2.common.plugins.dir = '${jpatest.2.common.plugins.dir}'"/>
-    <echo message="jpatest.2.modelgentest.dir   = '${jpatest.2.modelgentest.dir}'"/>
     <echo message="jpatest.2.jpa.plugins.dir    = '${jpatest.2.jpa.plugins.dir}'"/>
     <echo message="jpatest.2.coretest.dir       = '${jpatest.2.coretest.dir}'"/>
     <echo message="jpatest.2.oracle.dir         = '${jpatest.2.oracle.dir}'"/>
@@ -698,6 +696,20 @@
         <antcall target="model-compile" inheritRefs="true">
             <param name="SRC_PATH" value="${jpatest.basedir}/${src.dir}"/>
             <param name="DEST_PATH" value="${jpatest.basedir}/${classes.dir}"/>
+            <param name="MODEL_PATH" value="org/eclipse/persistence/testing/models/jpa/inheritance"/>
+            <param name="PERSISTENCE_XML_PATH" value="eclipselink-inheritance-model/server/persistence.xml"/>
+            <param name="COMPILE_PATH_REF" value="compile.modelgen.path"/>
+        </antcall>
+        <antcall target="model-compile" inheritRefs="true">
+            <param name="SRC_PATH" value="${jpatest.basedir}/${src.dir}"/>
+            <param name="DEST_PATH" value="${jpatest.basedir}/${classes.dir}"/>
+            <param name="MODEL_PATH" value="org/eclipse/persistence/testing/models/jpa/inherited"/>
+            <param name="PERSISTENCE_XML_PATH" value="eclipselink-inheritance-model/server/persistence.xml"/>
+            <param name="COMPILE_PATH_REF" value="compile.modelgen.path"/>
+        </antcall>
+        <antcall target="model-compile" inheritRefs="true">
+            <param name="SRC_PATH" value="${jpatest.basedir}/${src.dir}"/>
+            <param name="DEST_PATH" value="${jpatest.basedir}/${classes.dir}"/>
             <param name="MODEL_PATH" value="org/eclipse/persistence/testing/models/jpa/metamodel"/>
             <param name="PERSISTENCE_XML_PATH" value="eclipselink-metamodel-model/persistence.xml"/>
             <param name="COMPILE_PATH_REF" value="compile.modelgen.path"/>
@@ -729,6 +741,7 @@
             <exclude name="org/eclipse/persistence/testing/tests/jpa/FullRegressionTestSuite.java"/>
             <exclude name="org/eclipse/persistence/testing/tests/jpa/AllCMP3TestRunModel.java"/>
             <exclude name="org/eclipse/persistence/testing/tests/jpa/criteria/CriteriaServerTestSuite.java"/>
+            <exclude name="org/eclipse/persistence/testing/tests/jpa/criteria/JUnitCriteriaMetamodelTestSuite.java"/>
             <exclude name="org/eclipse/persistence/testing/tests/jpa/deployment/CompositeEnumerationTest.java"/>
             <classpath>
                 <path refid="compile.path"/>
@@ -756,6 +769,7 @@
             <exclude name="org/eclipse/persistence/testing/tests/jpa/FullRegressionTestSuite.java"/>
             <exclude name="org/eclipse/persistence/testing/tests/jpa/AllCMP3TestRunModel.java"/>
             <exclude name="org/eclipse/persistence/testing/tests/jpa/criteria/CriteriaServerTestSuite.java"/>
+            <exclude name="org/eclipse/persistence/testing/tests/jpa/criteria/JUnitCriteriaMetamodelTestSuite.java"/>
             <exclude name="org/eclipse/persistence/testing/tests/jpa/deployment/CompositeEnumerationTest.java"/>
             <classpath>
                 <path refid="jpa21.compile.path"/>
@@ -781,6 +795,7 @@
             <exclude name="org/eclipse/persistence/testing/tests/jpa/FullRegressionTestSuite.java"/>
             <exclude name="org/eclipse/persistence/testing/tests/jpa/AllCMP3TestRunModel.java"/>
             <exclude name="org/eclipse/persistence/testing/tests/jpa/criteria/CriteriaServerTestSuite.java"/>
+            <exclude name="org/eclipse/persistence/testing/tests/jpa/criteria/JUnitCriteriaMetamodelTestSuite.java"/>
             <exclude name="org/eclipse/persistence/testing/tests/jpa/deployment/CompositeEnumerationTest.java"/>
             <classpath>
                 <path refid="jpa22.compile.path"/>
@@ -831,7 +846,7 @@
        <!--  Compile the Modelgen (criteria metamodel) Tests -->
        <!--  *** Depends upon JPA Test Framework having been compiled already -->
        <echo message="Compile the Modelgen (criteria metamodel) Tests"/>
-       <javac srcdir="${jpatest.2.modelgentest.dir}/${src.dir}"
+       <javac srcdir="${jpatest.basedir}/${src.dir}"
                destdir="${jpatest.build.location}/${classes.dir}"
                debug="${javac.debug}"
                debuglevel="${javac.debuglevel}"
@@ -841,7 +856,7 @@
                target="${javac.version}"
                deprecation="${javac.deprecation}"
                failonerror="true">
-            <include name="org/eclipse/persistence/testing/**"/>
+            <include name="org/eclipse/persistence/testing/tests/jpa/criteria/JunitCriteriaMetamodelTestSuite.java"/>
             <classpath>
                 <path refid="compile.path"/>
             </classpath>
@@ -2901,7 +2916,8 @@
             deprecation="${javac.deprecation}"
             failonerror="false"
             includes="${TEST_DIR}/**/*.java"
-            excludes="org/eclipse/persistence/testing/tests/jpa/criteria/CriteriaServerTestSuite.java">
+            excludes="org/eclipse/persistence/testing/tests/jpa/criteria/CriteriaServerTestSuite.java,
+                      org/eclipse/persistence/testing/tests/jpa/criteria/JUnitCriteriaMetamodelTestSuite.java">
             <classpath refid="${COMPILE_PATH}"/>
         </javac>
         <javac
@@ -2962,7 +2978,8 @@
             deprecation="${javac.deprecation}"
             failonerror="false"
             includes="${TEST_DIR}/**/*.java"
-            excludes="org/eclipse/persistence/testing/tests/jpa/criteria/CriteriaServerTestSuite.java">
+            excludes="org/eclipse/persistence/testing/tests/jpa/criteria/CriteriaServerTestSuite.java,
+                      org/eclipse/persistence/testing/tests/jpa/criteria/JUnitCriteriaMetamodelTestSuite.java">
             <classpath refid="${COMPILE_PATH}"/>
         </javac>
         <javac
@@ -3308,9 +3325,11 @@
         <antcall target="compile"/>
         <copy todir="${jpatest.basedir}/stage">
             <fileset dir="${jpatest.basedir}/classes">
-                <include name="org/eclipse/persistence/testing/tests/jpa/criteria/CriteriaServerTestSuite.class"/>
-                <include name="org/eclipse/persistence/testing/tests/jpa/criteria/metamodel/JUnitCriteriaSimpleTestSuite.class"/>
+                <include name="org/eclipse/persistence/testing/tests/jpa/criteria/*.class"/>
                 <include name="org/eclipse/persistence/testing/models/jpa/advanced/*.class"/>
+                <include name="org/eclipse/persistence/testing/models/jpa/inheritance/*.class"/>
+                <include name="org/eclipse/persistence/testing/models/jpa/inheritance/listeners/*.class"/>
+                <include name="org/eclipse/persistence/testing/models/jpa/inherited/*.class"/>
             </fileset>
         </copy>
     </target>
