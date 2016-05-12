@@ -134,7 +134,8 @@ public class JGeometryProject extends org.eclipse.persistence.sessions.Project {
 
         DirectToFieldMapping geometryMapping = new DirectToFieldMapping();
         geometryMapping.setAttributeName("geometry");
-        geometryMapping.setFieldName("WRAPPED_SPATIAL.GEOMETRY");
+        ObjectRelationalDatabaseField f = new ObjectRelationalDatabaseField("WRAPPED_SPATIAL.GEOMETRY");
+        geometryMapping.setField(f);
         geometryMapping.setFieldType(java.sql.Types.STRUCT);
         descriptor.addMapping(geometryMapping);
 
