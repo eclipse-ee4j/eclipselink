@@ -66,6 +66,7 @@
 
     <!-- Allows a user to overide certain user specific properties. -->
     <property file="${user.home}/build.properties"/>
+    <property file="${test.properties}"/>
     <property file="${user.home}/test.properties"/>
     <property file="${oracle_test.build.location}/antbuild.properties"/>
     <property file="${oracle_test.build.location}/${test.properties}"/>
@@ -309,7 +310,7 @@
             <pathelement path="${junit.lib}"/>
         </path>
         <path id="oracle_test.public.dependency.path">
-            <pathelement path="${oracle_test.2.jpa.plugins.dir}/${persistence20.jar}"/>
+            <pathelement path="${oracle_test.2.jpa.plugins.dir}/${persistence21.jar}"/>
             <fileset dir="${oracle_test.2.common.plugins.dir}" includes="${eclipselink.core.depend}"/>
         </path>
     </target>

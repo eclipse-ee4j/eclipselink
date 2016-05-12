@@ -1,40 +1,48 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.insurance;
 
-import java.util.*;
+import java.util.Vector;
 
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.tests.expressions.*;
-import org.eclipse.persistence.testing.models.insurance.*;
-import org.eclipse.persistence.testing.models.insurance.objectrelational.*;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.testing.framework.TestSuite;
+import org.eclipse.persistence.testing.framework.WriteObjectTest;
+import org.eclipse.persistence.testing.models.insurance.Claim;
+import org.eclipse.persistence.testing.models.insurance.HousePolicy;
+import org.eclipse.persistence.testing.models.insurance.InsuranceSystem;
+import org.eclipse.persistence.testing.models.insurance.Policy;
+import org.eclipse.persistence.testing.models.insurance.PolicyHolder;
+import org.eclipse.persistence.testing.models.insurance.objectrelational.InsuranceORSystem;
+import org.eclipse.persistence.testing.tests.expressions.ReadAllExpressionTest;
 
 /**
  * Used to test object-relational features of oracle 8.1 and jdbc 2.0.
  */
 public class InsuranceObjectRelationalTestModel extends org.eclipse.persistence.testing.tests.insurance.InsuranceBasicTestModel {
+    @Override
     public void addRequiredSystems() {
         // Must logout to reset type information.
         getDatabaseSession().logout();
         getDatabaseSession().login();
-        if (getSession().getPlatform().isOracle9()) {
+        if (getSession().getPlatform().isOracle()) {
             addRequiredSystem(new InsuranceORSystem());
         }
     }
 
+    @Override
     public void addTests() {
-        if (getSession().getPlatform().isOracle9()) {
+        if (getSession().getPlatform().isOracle()) {
             super.addTests();
             addTest(getNestedTablesReadObjectTestSuite());
             addTest(getObjectArrayUpdateTestSuite());
@@ -51,7 +59,7 @@ public class InsuranceObjectRelationalTestModel extends org.eclipse.persistence.
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression exp1 = builder.anyOf("policies").get("maxCoverage").greaterThan(30000);
 
-        // Should get 3, DISTINCT is not supported in Oracle8i, duplicate data is read in 
+        // Should get 3, DISTINCT is not supported in Oracle8i, duplicate data is read in
         ReadAllExpressionTest test1 = new ReadAllExpressionTest(PolicyHolder.class, 4);
         test1.setName("nested tables read test (PolicyHoler)");
         test1.setExpression(exp1);
@@ -167,6 +175,7 @@ public class InsuranceObjectRelationalTestModel extends org.eclipse.persistence.
     /**
      * Remove the project as will conflict with normal insurance.
      */
+    @Override
     public void reset() {
         getExecutor().removeConfigureSystem(new InsuranceSystem());
     }

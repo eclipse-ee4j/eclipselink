@@ -1,17 +1,17 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     09/14/2011-2.3.1 Guy Pelletier 
+ *     09/14/2011-2.3.1 Guy Pelletier
  *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.platform.database.oracle;
 
 import java.io.IOException;
@@ -26,39 +26,50 @@ import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
-
-import java.util.*;
-
-import oracle.jdbc.OracleConnection;
-import oracle.jdbc.OraclePreparedStatement;
-import oracle.jdbc.OracleTypes;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Hashtable;
+import java.util.Map;
+import java.util.TimeZone;
+import java.util.Vector;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.expressions.ExpressionOperator;
-import org.eclipse.persistence.internal.expressions.SpatialExpressionOperators;
-import oracle.sql.OPAQUE;
-import oracle.sql.TIMESTAMP;
-import oracle.sql.TIMESTAMPLTZ;
-import oracle.sql.TIMESTAMPTZ;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.QueryException;
-import org.eclipse.persistence.internal.databaseaccess.*;
-import org.eclipse.persistence.platform.database.OraclePlatform;
-import org.eclipse.persistence.queries.Call;
-import org.eclipse.persistence.queries.ValueReadQuery;
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.expressions.ExpressionOperator;
+import org.eclipse.persistence.internal.databaseaccess.Accessor;
+import org.eclipse.persistence.internal.databaseaccess.BindCallCustomParameter;
+import org.eclipse.persistence.internal.databaseaccess.ConnectionCustomizer;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
+import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
+import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
+import org.eclipse.persistence.internal.databaseaccess.Platform;
+import org.eclipse.persistence.internal.expressions.SpatialExpressionOperators;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.platform.database.XMLTypePlaceholder;
 import org.eclipse.persistence.internal.platform.database.oracle.TIMESTAMPHelper;
 import org.eclipse.persistence.internal.platform.database.oracle.TIMESTAMPLTZWrapper;
 import org.eclipse.persistence.internal.platform.database.oracle.TIMESTAMPTZWrapper;
 import org.eclipse.persistence.internal.platform.database.oracle.TIMESTAMPTypes;
-import org.eclipse.persistence.internal.platform.database.XMLTypePlaceholder;
 import org.eclipse.persistence.internal.platform.database.oracle.XMLTypeFactory;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
 import org.eclipse.persistence.internal.security.PrivilegedInvokeConstructor;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.queries.Call;
+import org.eclipse.persistence.queries.ValueReadQuery;
+
+import oracle.jdbc.OracleConnection;
+import oracle.jdbc.OracleOpaque;
+import oracle.jdbc.OraclePreparedStatement;
+import oracle.jdbc.OracleTypes;
+import oracle.sql.TIMESTAMP;
+import oracle.sql.TIMESTAMPLTZ;
+import oracle.sql.TIMESTAMPTZ;
 
 /**
  * <p><b>Purpose:</b>
@@ -81,12 +92,12 @@ public class Oracle9Platform extends Oracle8Platform {
      * */
     protected transient boolean shouldPrintCalendar;
     /* Indicates whether TIMESTAMPTZ.timestampValue returns Timestamp in GMT.
-     * The flag is set to false unless 
+     * The flag is set to false unless
      * Oracle jdbc version is 11.1.0.7 or later and
      * OracleConnection's "oracle.jdbc.timestampTzInGmt" property is set to "true".
      * Though the property is defined per connection it is safe to assume that all connections
      * used with the platform are identical because they all created by the same DatabaseLogin
-     * with the same properties. 
+     * with the same properties.
      * */
     protected transient boolean isTimestampInGmt;
     /* Indicates whether TIMESTAMPLTZ.toTimestamp returns Timestamp in GMT.
@@ -94,12 +105,12 @@ public class Oracle9Platform extends Oracle8Platform {
      */
     protected transient boolean isLtzTimestampInGmt;
     /* Indicates whether driverVersion, shouldPrintCalendar, isTimestampInGmt have been initialized.
-     * To re-initialize connection data call clearConnectionData method. 
+     * To re-initialize connection data call clearConnectionData method.
      */
     protected transient boolean isConnectionDataInitialized;
-    
+
     /** Indicates whether time component of java.sql.Date should be truncated (hours, minutes, seconds all set to zero)
-     * before been passed as a parameter to PreparedStatement. 
+     * before been passed as a parameter to PreparedStatement.
      * Starting with version 12.1 oracle jdbc Statement.setDate no longer zeroes sql.Date's entire time component (only milliseconds).
      * Set this flag to true to make the platform to truncate days/hours/minutes before passing the date to Statement.setDate method.
      */
@@ -135,6 +146,7 @@ public class Oracle9Platform extends Oracle8Platform {
             super(obj);
         }
         //Bug5200836, use unwrapped connection if it is NType parameter.
+        @Override
         public boolean shouldUseUnwrappedConnection() {
             return true;
         }
@@ -155,6 +167,7 @@ public class Oracle9Platform extends Oracle8Platform {
         *
         * Called only by DatabasePlatform.setParameterValueInDatabaseCall method
         */
+        @Override
         public void set(DatabasePlatform platform, PreparedStatement statement, int index, AbstractSession session) throws SQLException {
             // Binding starts with a 1 not 0. Make sure that index > 0
             ((oracle.jdbc.OraclePreparedStatement)statement).setFormOfUse(index, oracle.jdbc.OraclePreparedStatement.FORM_NCHAR);
@@ -166,6 +179,7 @@ public class Oracle9Platform extends Oracle8Platform {
     /**
      * Copy the state into the new platform.
      */
+    @Override
     public void copyInto(Platform platform) {
         super.copyInto(platform);
         if (!(platform instanceof Oracle9Platform)) {
@@ -174,7 +188,7 @@ public class Oracle9Platform extends Oracle8Platform {
         Oracle9Platform oracle9Platform = (Oracle9Platform)platform;
         oracle9Platform.setShouldTruncateDate(shouldTruncateDate());
     }
-    
+
     /**
      * INTERNAL:
      * Get a timestamp value from a result set.
@@ -192,19 +206,15 @@ public class Oracle9Platform extends Oracle8Platform {
             return getTIMESTAMPLTZFromResultSet(resultSet, columnNumber, type, session);
         } else if (type == OracleTypes.ROWID) {
             return resultSet.getString(columnNumber);
-        } else if (type == OracleTypes.OPAQUE || type == Types_SQLXML) {
+        } else if (type == OracleTypes.OPAQUE) {
             try {
                 Object result = resultSet.getObject(columnNumber);
-                if(!(result instanceof OPAQUE)) {
-                    if(JavaPlatform.isSQLXML(result)) {
-                        return JavaPlatform.getStringAndFreeSQLXML(result);
-                    } else {
-                        // Report Queries can cause result to not be an instance of OPAQUE.
-                        return result;
-                    }
+                if (!(result instanceof OracleOpaque)) {
+                    // Report Queries can cause result to not be an instance of OPAQUE.
+                    return result;
+                } else {
+                    return getXMLTypeFactory().getString((OracleOpaque) result);
                 }
-                
-                return getXMLTypeFactory().getString((OPAQUE)result);
             } catch (SQLException ex) {
                 throw DatabaseException.sqlException(ex, null, session, false);
             }
@@ -212,18 +222,18 @@ public class Oracle9Platform extends Oracle8Platform {
             return super.getObjectFromResultSet(resultSet, columnNumber, type, session);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Get a TIMESTAMPTZ value from a result set.
      */
     public Object getTIMESTAMPTZFromResultSet(ResultSet resultSet, int columnNumber, int type, AbstractSession session) throws java.sql.SQLException {
         TIMESTAMPTZ tsTZ = (TIMESTAMPTZ)resultSet.getObject(columnNumber);
-        //Need to call timestampValue once here with the connection to avoid null point 
+        //Need to call timestampValue once here with the connection to avoid null point
         //exception later when timestampValue is called in converObject()
         if ((tsTZ != null) && (tsTZ.getLength() != 0)) {
             Connection connection = getConnection(session, resultSet.getStatement().getConnection());
-            //Bug#4364359  Add a wrapper to overcome TIMESTAMPTZ not serializable as of jdbc 9.2.0.5 and 10.1.0.2.  
+            //Bug#4364359  Add a wrapper to overcome TIMESTAMPTZ not serializable as of jdbc 9.2.0.5 and 10.1.0.2.
             //It has been fixed in the next version for both streams
             Timestamp timestampToWrap = tsTZ.timestampValue(connection);
             TimeZone timezoneToWrap = TIMESTAMPHelper.extractTimeZone(tsTZ.toBytes());
@@ -231,21 +241,21 @@ public class Oracle9Platform extends Oracle8Platform {
         }
         return null;
     }
-    
+
     /**
      * INTERNAL:
      * Get a TIMESTAMPLTZ value from a result set.
      */
     public Object getTIMESTAMPLTZFromResultSet(ResultSet resultSet, int columnNumber, int type, AbstractSession session) throws java.sql.SQLException {
         //TIMESTAMPLTZ needs to be converted to Timestamp here because it requires the connection.
-        //However the java object is not know here.  The solution is to store Timestamp and the 
+        //However the java object is not know here.  The solution is to store Timestamp and the
         //session timezone in a wrapper class, which will be used later in converObject().
         TIMESTAMPLTZ tsLTZ = (TIMESTAMPLTZ)resultSet.getObject(columnNumber);
         if ((tsLTZ != null) && (tsLTZ.getLength() != 0)) {
             Connection connection = getConnection(session, resultSet.getStatement().getConnection());
             Timestamp timestampToWrap = TIMESTAMPLTZ.toTimestamp(connection, tsLTZ.toBytes());
             String sessionTimeZone = ((OracleConnection)connection).getSessionTimeZone();
-            //Bug#4364359  Add a separate wrapper for TIMESTAMPLTZ.  
+            //Bug#4364359  Add a separate wrapper for TIMESTAMPLTZ.
             return new TIMESTAMPLTZWrapper(timestampToWrap, sessionTimeZone, this.isLtzTimestampInGmt);
         }
         return null;
@@ -308,15 +318,16 @@ public class Oracle9Platform extends Oracle8Platform {
 
     /**
      * Build the hint string used for first rows.
-     * 
+     *
      * Allows it to be overridden
      * @param max
      * @return
      */
+    @Override
     protected String buildFirstRowsHint(int max){
         return HINT_START + '(' + max + ')'+ HINT_END;
     }
-    
+
     /**
      * INTERNAL:
      * Add TIMESTAMP, TIMESTAMP WITH TIME ZONE and TIMESTAMP WITH LOCAL TIME ZONE
@@ -356,7 +367,7 @@ public class Oracle9Platform extends Oracle8Platform {
         if ((javaClass == TIMESTAMPTypes.TIMESTAMP_CLASS) || (javaClass == TIMESTAMPTypes.TIMESTAMPLTZ_CLASS)) {
             return sourceObject;
         }
-        
+
         if (javaClass == TIMESTAMPTypes.TIMESTAMPTZ_CLASS) {
             if (sourceObject instanceof java.util.Date) {
                 Calendar cal = Calendar.getInstance();
@@ -368,7 +379,7 @@ public class Oracle9Platform extends Oracle8Platform {
         }
 
         if (javaClass == XMLTYPE) {
-            //Don't convert to XMLTypes. This will be done by the 
+            //Don't convert to XMLTypes. This will be done by the
             //XMLTypeBindCallCustomParameter to ensure the correct
             //Connection is used
             return sourceObject;
@@ -432,9 +443,9 @@ public class Oracle9Platform extends Oracle8Platform {
 
     /**
      * INTERNAL:
-     * Appends an Oracle specific Timestamp with timezone and daylight time 
+     * Appends an Oracle specific Timestamp with timezone and daylight time
      * elements if usesNativeSQL is true, otherwise use the ODBC format.
-     * Native Format: 
+     * Native Format:
      * (DST) to_timestamp_tz ('1997-11-06 10:35:45.345 America/Los_Angeles','yyyy-mm-dd hh:mm:ss.ff TZR TZD')
      * (non-DST) to_timestamp_tz ('1997-11-06 10:35:45.345 America/Los_Angeles','yyyy-mm-dd hh:mm:ss.ff TZR')
      */
@@ -963,6 +974,7 @@ public class Oracle9Platform extends Oracle8Platform {
      * before this method.
      * @return User name retrieved from JDBC connection.
      */
+    @Override
     public String getConnectionUserName() {
         return this.connectionUserName;
     }
