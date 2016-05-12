@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -33,20 +33,20 @@ public class AdvancedServerTestSuite extends TestSuite {
         if (System.getProperty("run.metadata.cache.test.suite").compareTo("true") == 0) {
             suite.addTest(new org.eclipse.persistence.testing.tests.jpa.advanced.MetadataCachingTestSuite("testProjectCacheWithDefaultPU"));
         }
-        suite.addTest(EntityManagerJUnitTestSuite.suite());
+        suite.addTest(EntityManagerJUnitTestSuite.suiteSpring());
         suite.addTest(CallbackEventJUnitTestSuite.suite());
         suite.addTest(SQLResultSetMappingTestSuite.suite());
-        suite.addTest(JoinedAttributeAdvancedJunitTest.suite());
+        suite.addTest(JoinedAttributeAdvancedJunitTest.suiteSpring());
         suite.addTest(ReportQueryMultipleReturnTestSuite.suite());
         suite.addTest(ReportQueryAdvancedJUnitTest.suite());
         suite.addTest(ExtendedPersistenceContextJUnitTestSuite.suite());
         suite.addTest(ReportQueryConstructorExpressionTestSuite.suite());
         suite.addTest(OptimisticConcurrencyJUnitTestSuite.suite());
-        suite.addTest(AdvancedJPAJunitTest.suite());
+        suite.addTest(AdvancedJPAJunitTest.suiteSpring());
         suite.addTest(AdvancedJunitTest.suite());
         suite.addTest(AdvancedCompositePKJunitTest.suite());
         suite.addTest(QueryCastTestSuite.suite());
-        suite.addTest(ComplexAggregateTestSuite.suite());
+        suite.addTest(ComplexAggregateTestSuite.suiteSpring());
         if (! JUnitTestCase.isJPA10()) {
             suite.addTest(AdvancedFetchGroupJunitTest.suite());
         }

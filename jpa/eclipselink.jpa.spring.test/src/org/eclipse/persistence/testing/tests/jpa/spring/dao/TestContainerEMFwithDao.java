@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -13,28 +13,23 @@
 package org.eclipse.persistence.testing.tests.jpa.spring.dao;
 
 
+import org.junit.Ignore;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.EntityManagerFactory;
+
 /**
  * This class applies the basic Spring tests to a configuration that uses:
  * - Spring's LocalContainerEntityManagerFactoryBean
  * - a dao and jpaTemplate
  * - a JPATransactionManager
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {"classpath:appContext_ContainerEMFwithDao.xml"})
+@Transactional
 public class TestContainerEMFwithDao extends SpringAbstractJpaTestsCase {
-
-    @Override
-    protected String[] getConfigLocations() {
-        return new String[]{"classpath:appContext_ContainerEMFwithDao.xml"};
-    }
-
-    @Override
-    public void setDao(SpringDao dao) {
-        TestContainerEMFwithDao.dao = dao;
-    }
-
-    //By default, true
-    //Disable when instrumentation is not required
-    protected boolean shouldUseShadowLoader() {
-        return false;
-    }
 
 }

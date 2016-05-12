@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -28,9 +28,9 @@ public class FAServerTestSuite extends TestSuite {
         suite.addTest(AdvancedJPAJunitTest.suite());
         suite.addTest(AdvancedJunitTest.suite());
         suite.addTest(CallbackEventJUnitTestSuite.suite());
-        suite.addTest(EntityManagerJUnitTestSuite.suite());
+        suite.addTest(EntityManagerJUnitTestSuite.suiteSpring());
         suite.addTest(ExtendedPersistenceContextJUnitTestSuite.suite());
-        suite.addTest(JoinedAttributeAdvancedJunitTest.suite());
+        suite.addTest(JoinedAttributeAdvancedJunitTest.suiteSpring());
         suite.addTest(NamedNativeQueryJUnitTest.suite());
         suite.addTest(OptimisticConcurrencyJUnitTestSuite.suite());
         suite.addTest(ReportQueryAdvancedJUnitTest.suite());

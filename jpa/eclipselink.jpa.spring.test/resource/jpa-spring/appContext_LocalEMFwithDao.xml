@@ -14,9 +14,7 @@
 
     <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource" />
 
-    <bean id="springDao" class="org.eclipse.persistence.testing.tests.jpa.spring.dao.SpringDao">
-        <property name="entityManagerFactory" ref="entityManagerFactory" />
-    </bean>
+    <bean id="dao" class="org.eclipse.persistence.testing.tests.jpa.spring.dao.SpringDao"/>
 
     <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor" />
 

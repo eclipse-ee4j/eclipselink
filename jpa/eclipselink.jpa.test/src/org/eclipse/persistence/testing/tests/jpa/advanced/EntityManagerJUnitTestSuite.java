@@ -237,6 +237,17 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
     public static Test suite() {
         TestSuite suite = new TestSuite();
+        suite.addTest(new EntityManagerJUnitTestSuite("testCacheUsage"));
+
+        if (!isJPA10()) {
+            suite.addTest(new EntityManagerJUnitTestSuite("testIsLoaded"));
+        }
+        suite.addTest(suiteSpring());
+        return suite;
+    }
+
+    public static Test suiteSpring() {
+        TestSuite suite = new TestSuite();
         suite.setName("EntityManagerJUnitTestSuite");
         //add unit tests
         suite.addTestSuite(EMFProviderTest.class);
@@ -378,7 +389,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         tests.add("testFlushModeEmAutoQueryAuto");
         tests.add("testFlushModeEmAuto");
         tests.add("testFlushModeEmAutoQueryCommit");
-        tests.add("testCacheUsage");
         tests.add("testSequencePreallocationUsingCallbackTest");
         tests.add("testForceSQLExceptionFor219097");
         tests.add("testRefreshInvalidateDeletedObject");
@@ -494,7 +504,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             tests.add("testGetLockModeType");
             tests.add("testGetEntityManagerFactory");
             tests.add("testConnectionPolicySetProperty");
-            tests.add("testUnWrapClass");
+            //Does not return underlying entitymanager tests.add("testUnWrapClass");
             tests.add("testIsLoaded");
             tests.add("testIsLoadedAttribute");
             tests.add("testGetIdentifier");

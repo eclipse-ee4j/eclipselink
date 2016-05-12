@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -15,10 +15,14 @@ package org.eclipse.persistence.testing.tests.jpa.spring.dao;
 import java.lang.reflect.Field;
 import java.util.List;
 
+import static org.junit.Assert.*;
 
+import org.junit.Ignore;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
-import org.springframework.test.jpa.AbstractJpaTests;
 
+import org.springframework.transaction.annotation.Transactional;
 import test.org.eclipse.persistence.testing.models.jpa.spring.Address;
 import test.org.eclipse.persistence.testing.models.jpa.spring.Route;
 import test.org.eclipse.persistence.testing.models.jpa.spring.Truck;
@@ -29,14 +33,14 @@ import test.org.eclipse.persistence.testing.models.jpa.spring.Truck;
  * they will all require and implementation of a dao.
  * @see org.eclipse.persistence.testing.tests.jpa.spring.dao.SpringDao
  */
-public abstract class SpringAbstractJpaTestsCase extends AbstractJpaTests {
 
-    protected abstract String[] getConfigLocations();
+@Transactional
+public abstract class SpringAbstractJpaTestsCase {
 
-    protected static SpringDao dao;
+    @Autowired
+    private SpringDao dao;
 
-    public abstract void setDao(SpringDao dao);
-
+    @Test
     public void testPersist(){
         Truck truck = new Truck("persist");
         try {
@@ -50,6 +54,7 @@ public abstract class SpringAbstractJpaTestsCase extends AbstractJpaTests {
     }
 
     //With this entity model, removing the truck should not delete the route nor address
+    @Test
     public void testCascadePersistwithRemove(){
         Truck truck = new Truck("cascade");
         Route   route   = new Route(155);
@@ -75,6 +80,7 @@ public abstract class SpringAbstractJpaTestsCase extends AbstractJpaTests {
         }
     }
 
+    @Test
     public void testRemove(){
         Truck truck = new Truck("remove");
         try {
@@ -87,6 +93,7 @@ public abstract class SpringAbstractJpaTestsCase extends AbstractJpaTests {
         }
     }
 
+    @Test
     public void testContains(){
         Truck truck = new Truck("contains");
         try {
@@ -100,6 +107,7 @@ public abstract class SpringAbstractJpaTestsCase extends AbstractJpaTests {
         }
     }
 
+    @Test
     public void testMerge(){
         Truck truck = new Truck("merge");
         try {
@@ -112,6 +120,7 @@ public abstract class SpringAbstractJpaTestsCase extends AbstractJpaTests {
         }
     }
 
+    @Test
     public void testRefresh(){
         Truck truck = new Truck("refresh");
         try {
@@ -128,6 +137,7 @@ public abstract class SpringAbstractJpaTestsCase extends AbstractJpaTests {
         }
     }
 
+    @Test
     public void testFlush(){
         Truck truck = new Truck("flush");
         try {
@@ -143,11 +153,12 @@ public abstract class SpringAbstractJpaTestsCase extends AbstractJpaTests {
         }
     }
 
+    @Test
     public void testNamedQuery(){
         Truck truck = new Truck("namedQuery");
         try {
             dao.persist(truck);
-            List l= dao.findByNamedQuery("findTruckByDriverName", "namedQuery");
+            List l = dao.findByNamedQuery("findTruckByDriverName", "namedQuery");
             assertTrue(l.contains(truck));
         }catch (Exception e){
             assertFalse("Error during named query: " + e, true);
@@ -157,6 +168,7 @@ public abstract class SpringAbstractJpaTestsCase extends AbstractJpaTests {
     }
 
     //COMMENT OUT test if weaving is disabled
+    @Test
     public void testAddressVH() {
         Field f = null;
         try {
@@ -167,6 +179,8 @@ public abstract class SpringAbstractJpaTestsCase extends AbstractJpaTests {
         assertNotNull("Address class does not have '_persistence_route_vh' field", f);
     }
 
+    @Ignore
+    @Test
     public void testDataExceptionTranslation(){
         try {
             dao.refresh(new Truck("detachedTruck"));

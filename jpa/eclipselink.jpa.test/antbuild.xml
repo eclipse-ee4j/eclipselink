@@ -823,7 +823,24 @@
         </javac>
     </target>
 
-    <target name="compile-springplatform" if="is.spring">
+    <target name="compile-springplatform" depends="proxy" if="is.spring">
+        <get dest="${spring.jlib.dir}">
+            <url url="http://central.maven.org/maven2/aopalliance/aopalliance/1.0/aopalliance-1.0.jar"/>
+            <url url="http://central.maven.org/maven2/cglib/cglib-nodep/3.2.2/cglib-nodep-3.2.2.jar"/>
+            <url url="http://central.maven.org/maven2/commons-logging/commons-logging/1.2/commons-logging-1.2.jar"/>
+            <url url="http://central.maven.org/maven2/jotm/jotm/2.0.10/jotm-2.0.10.jar"/>
+            <url url="http://central.maven.org/maven2/org/springframework/spring-context/4.2.5.RELEASE/spring-context-4.2.5.RELEASE.jar"/>
+            <url url="http://central.maven.org/maven2/org/springframework/spring-test/4.2.5.RELEASE/spring-test-4.2.5.RELEASE.jar"/>
+            <url url="http://central.maven.org/maven2/org/springframework/spring-core/4.2.5.RELEASE/spring-core-4.2.5.RELEASE.jar"/>
+            <url url="http://central.maven.org/maven2/org/springframework/spring-beans/4.2.5.RELEASE/spring-beans-4.2.5.RELEASE.jar"/>
+            <url url="http://central.maven.org/maven2/org/springframework/spring-jdbc/4.2.5.RELEASE/spring-jdbc-4.2.5.RELEASE.jar"/>
+            <url url="http://central.maven.org/maven2/org/springframework/spring-aop/4.2.5.RELEASE/spring-aop-4.2.5.RELEASE.jar"/>
+            <url url="http://central.maven.org/maven2/org/springframework/spring-tx/4.2.5.RELEASE/spring-tx-4.2.5.RELEASE.jar"/>
+            <url url="http://central.maven.org/maven2/org/springframework/spring-orm/4.2.5.RELEASE/spring-orm-4.2.5.RELEASE.jar"/>
+            <url url="http://central.maven.org/maven2/org/springframework/spring-expression/4.2.5.RELEASE/spring-expression-4.2.5.RELEASE.jar"/>
+            <url url="http://central.maven.org/maven2/org/springframework/spring-instrument/4.2.5.RELEASE/spring-instrument-4.2.5.RELEASE.jar"/>
+            <url url="http://central.maven.org/maven2/com/experlog/xapool/1.6-beta/xapool-1.6-beta.jar"/>
+        </get>
         <javac srcdir="${eclipselink.jpa.spring.test}/${src.dir}"
                destdir="${jpatest.basedir}/${classes.dir}"
                debug="${javac.debug}"
@@ -840,6 +857,10 @@
                 <path refid="spring.path"/>
             </classpath>
         </javac>
+    </target>
+
+    <target name="proxy" if="http.proxyHost">
+        <setproxy proxyhost="${http.proxyHost}" proxyport="${http.proxyPort}"/>
     </target>
 
     <target name="compile-criteria" if="modelgen.created.classes.exist">
@@ -901,27 +922,37 @@
         <copy todir="${jpatest.basedir}/${build.dir}/${MODEL_NAME}">
             <fileset dir="${eclipselink.jpa.spring.test}/resource/jpa-spring" includes="appContext.properties"/>
         </copy>
-        <replace dir="${jpatest.basedir}/${build.dir}/${MODEL_NAME}" token='%%dbURL%%' value="${db.url}">
-            <include name="appContext.properties"/>
-        </replace>
-        <replace dir="${jpatest.basedir}/${build.dir}/${MODEL_NAME}" token='%%driverClass%%' value="${db.driver}">
-            <include name="appContext.properties"/>
-        </replace>
-        <replace dir="${jpatest.basedir}/${build.dir}/${MODEL_NAME}" token='%%dbUser%%' value="${db.user}">
-            <include name="appContext.properties"/>
-        </replace>
-        <replace dir="${jpatest.basedir}/${build.dir}/${MODEL_NAME}" token='%%dbPassword%%' value="${db.pwd}">
-            <include name="appContext.properties"/>
-        </replace>
-        <replace dir="${jpatest.basedir}/${build.dir}/${MODEL_NAME}" token='%%dbPlatform%%' value="${db.platform}">
-            <include name="appContext.properties"/>
-        </replace>
         <copy todir="${jpatest.basedir}/${build.dir}/${MODEL_NAME}/META-INF" overwrite="true">
-            <fileset dir="${jpatest.basedir}/${resource.dir}/${MODEL_NAME}/spring" includes="persistence.xml"/>
+            <fileset dir="${jpatest.basedir}/${resource.dir}/${MODEL_NAME}" includes="persistence.xml"/>
         </copy>
         <copy todir="${jpatest.basedir}/${build.dir}/${MODEL_NAME}">
             <fileset dir="${eclipselink.jpa.spring.test}/resource/jpa-spring" includes="**spring.xml"/>
         </copy>
+        <replace dir="${jpatest.basedir}/${build.dir}/${MODEL_NAME}" token='%%dbURL%%' value="${db.url}">
+            <include name="appContext.properties"/>
+            <include name="META-INF/persistence.xml"/>
+            <include name="**spring.xml"/>
+        </replace>
+        <replace dir="${jpatest.basedir}/${build.dir}/${MODEL_NAME}" token='%%driverClass%%' value="${db.driver}">
+            <include name="appContext.properties"/>
+            <include name="META-INF/persistence.xml"/>
+            <include name="**spring.xml"/>
+        </replace>
+        <replace dir="${jpatest.basedir}/${build.dir}/${MODEL_NAME}" token='%%dbUser%%' value="${db.user}">
+            <include name="appContext.properties"/>
+            <include name="META-INF/persistence.xml"/>
+            <include name="**spring.xml"/>
+        </replace>
+        <replace dir="${jpatest.basedir}/${build.dir}/${MODEL_NAME}" token='%%dbPassword%%' value="${db.pwd}">
+            <include name="appContext.properties"/>
+            <include name="**/persistence.xml"/>
+            <include name="**spring.xml"/>
+        </replace>
+        <replace dir="${jpatest.basedir}/${build.dir}/${MODEL_NAME}" token='%%dbPlatform%%' value="${db.platform}">
+            <include name="appContext.properties"/>
+            <include name="**/persistence.xml"/>
+            <include name="**spring.xml"/>
+        </replace>
     </target>
 
     <!-- Copy OSGi specified persistence.xml to default build location-->
@@ -2358,7 +2389,7 @@
         <antcall target="build" inheritRefs="true"/>
         <antcall target="run-spring-test" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.FAServerTestSuite"/>
-            <param name="TEST_AGENT" value="-javaagent:../${spring.jlib.dir}/instrument.jar"/>
+            <param name="TEST_AGENT" value="-javaagent:${spring.jlib.dir}/spring-instrument-4.2.5.RELEASE.jar"/>
             <param name="TEST_WEAVING" value="${test.weaving}"/>
             <param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
             <param name="RUN_PATH" value="run.classpath"/>
@@ -2366,7 +2397,7 @@
         </antcall>
         <antcall target="run-spring-test" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.advanced.AdvancedServerTestSuite"/>
-            <param name="TEST_AGENT" value="-javaagent:../${spring.jlib.dir}/instrument.jar"/>
+            <param name="TEST_AGENT" value="-javaagent:${spring.jlib.dir}/spring-instrument-4.2.5.RELEASE.jar"/>
             <param name="TEST_WEAVING" value="${test.weaving}"/>
             <param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
             <param name="RUN_PATH" value="run.classpath"/>

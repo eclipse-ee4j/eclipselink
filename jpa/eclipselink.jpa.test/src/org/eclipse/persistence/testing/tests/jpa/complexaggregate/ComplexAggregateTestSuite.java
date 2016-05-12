@@ -82,6 +82,13 @@ public class ComplexAggregateTestSuite extends JUnitTestCase {
     }
 
     public static Test suite() {
+        TestSuite suite = (TestSuite) suiteSpring();
+        suite.addTest(new ComplexAggregateTestSuite("testInvalidateAndRefreshEmbeddableParent"));
+
+        return suite;
+    }
+
+    public static Test suiteSpring() {
         TestSuite suite = new TestSuite();
         suite.setName("ComplexAggregateTestSuite");
         suite.addTest(new ComplexAggregateTestSuite("testSetup"));
@@ -94,7 +101,6 @@ public class ComplexAggregateTestSuite extends JUnitTestCase {
         suite.addTest(new ComplexAggregateTestSuite("testComplexAggregateJoin"));
         suite.addTest(new ComplexAggregateTestSuite("testComplexAggregateBatch"));
         suite.addTest(new ComplexAggregateTestSuite("testAggregateFieldAttributeOverrides"));
-        suite.addTest(new ComplexAggregateTestSuite("testInvalidateAndRefreshEmbeddableParent"));
 
         return suite;
     }

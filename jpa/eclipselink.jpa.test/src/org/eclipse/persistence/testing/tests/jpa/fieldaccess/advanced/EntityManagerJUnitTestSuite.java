@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -141,6 +141,12 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
 
     public static Test suite() {
+        TestSuite suite = (TestSuite) suiteSpring();
+        suite.addTest(new EntityManagerJUnitTestSuite("testCacheUsage"));
+        return suite;
+    }
+
+    public static Test suiteSpring() {
         TestSuite suite = new TestSuite();
         suite.setName("EntityManagerJUnitTestSuite (fieldaccess)");
         suite.addTest(new EntityManagerJUnitTestSuite("testSetup"));
@@ -254,7 +260,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         tests.add("testFlushModeEmAutoQueryAuto");
         tests.add("testFlushModeEmAuto");
         tests.add("testFlushModeEmAutoQueryCommit");
-        tests.add("testCacheUsage");
         tests.add("testSuperclassFieldInSubclass");
         tests.add("testCopyingAddress");
         tests.add("testSequencePreallocationUsingCallbackTest");

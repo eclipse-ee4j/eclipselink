@@ -66,14 +66,14 @@
     <target name="config-trunk" depends="proxy">
         <property name="eclipselink.core.dir" value="${eclipselink.jpa.spring.test}/${eclipselink.core.trunk}"/>
         <property name="eclipselink.core.test.dir" value="${eclipselink.jpa.spring.test}/${eclipselink.core.test.trunk}"/>
-        <property name="eclipselink.core.lib.dir" value="${eclipselink.jpa.spring.test}/${eclipselink.plugins.trunk}"/>
+        <property name="eclipselink.core.lib.dir" value="${eclipselink.jpa.spring.test}/${eclipselink.plugins}"/>
         <property name="eclipselink.extension.oracle.test.dir" value="${eclipselink.jpa.spring.test}/${eclipselink.extension.oracle.test.trunk}"/>
         <path id="compile.path">
             <pathelement path="${eclipselink.core.dir}/${classes.dir}"/>
             <pathelement path="${eclipselink.jpa}/${classes.dir}"/>
             <pathelement path="${eclipselink.jpa.test}/${classes.dir}"/>
             <pathelement path="${eclipselink.core.test.dir}/${classes.dir}"/>
-            <pathelement path="${eclipselink.core.lib.dir}/${unsigned.persistence10.jar}"/>
+            <pathelement path="${eclipselink.core.lib.dir}/${persistence.jar}"/>
             <fileset
                 dir="${eclipselink.core.lib.dir}"
                 includes="${eclipselink.core.depend}"/>
@@ -85,15 +85,20 @@
         </path>
         <get dest="${spring.jlib.dir}">
             <url url="http://central.maven.org/maven2/aopalliance/aopalliance/1.0/aopalliance-1.0.jar"/>
-            <url url="http://central.maven.org/maven2/cglib/cglib-nodep/2.2/cglib-nodep-2.2.jar"/>
-            <url url="http://central.maven.org/maven2/commons-logging/commons-logging/1.1.1/commons-logging-1.1.1.jar"/>
-            <url url="http://central.maven.org/maven2/org/springframework/spring-instrument/3.0.0.RELEASE/spring-instrument-3.0.0.RELEASE.jar"/>
+            <url url="http://central.maven.org/maven2/cglib/cglib-nodep/3.2.2/cglib-nodep-3.2.2.jar"/>
+            <url url="http://central.maven.org/maven2/commons-logging/commons-logging/1.2/commons-logging-1.2.jar"/>
             <url url="http://central.maven.org/maven2/jotm/jotm/2.0.10/jotm-2.0.10.jar"/>
-            <url url="http://central.maven.org/maven2/org/springframework/spring/2.5.3/spring-2.5.3.jar"/>
-            <url url="http://central.maven.org/maven2/org/springframework/spring-agent/2.5.3/spring-agent-2.5.3.jar"/>
-            <url url="http://central.maven.org/maven2/org/springframework/spring-test/2.5.3/spring-test-2.5.3.jar"/>
-            <url url="http://central.maven.org/maven2/org/springframework/spring-tx/2.5.3/spring-tx-2.5.3.jar"/>
-            <url url="http://central.maven.org/maven2/com/experlog/xapool/1.5.0/xapool-1.5.0.jar"/>
+            <url url="http://central.maven.org/maven2/org/springframework/spring-context/4.2.5.RELEASE/spring-context-4.2.5.RELEASE.jar"/>
+            <url url="http://central.maven.org/maven2/org/springframework/spring-test/4.2.5.RELEASE/spring-test-4.2.5.RELEASE.jar"/>
+            <url url="http://central.maven.org/maven2/org/springframework/spring-core/4.2.5.RELEASE/spring-core-4.2.5.RELEASE.jar"/>
+            <url url="http://central.maven.org/maven2/org/springframework/spring-beans/4.2.5.RELEASE/spring-beans-4.2.5.RELEASE.jar"/>
+            <url url="http://central.maven.org/maven2/org/springframework/spring-jdbc/4.2.5.RELEASE/spring-jdbc-4.2.5.RELEASE.jar"/>
+            <url url="http://central.maven.org/maven2/org/springframework/spring-aop/4.2.5.RELEASE/spring-aop-4.2.5.RELEASE.jar"/>
+            <url url="http://central.maven.org/maven2/org/springframework/spring-tx/4.2.5.RELEASE/spring-tx-4.2.5.RELEASE.jar"/>
+            <url url="http://central.maven.org/maven2/org/springframework/spring-orm/4.2.5.RELEASE/spring-orm-4.2.5.RELEASE.jar"/>
+            <url url="http://central.maven.org/maven2/org/springframework/spring-expression/4.2.5.RELEASE/spring-expression-4.2.5.RELEASE.jar"/>
+            <url url="http://central.maven.org/maven2/org/springframework/spring-instrument/4.2.5.RELEASE/spring-instrument-4.2.5.RELEASE.jar"/>
+            <url url="http://central.maven.org/maven2/com/experlog/xapool/1.6-beta/xapool-1.6-beta.jar"/>
         </get>
     <!-- Classpath used for running tests. -->
         <path id="run.classpath">
@@ -207,7 +212,7 @@
             <batchtest todir="${eclipselink.jpa.spring.test}/${report.dir}">
                 <fileset dir="${eclipselink.jpa.spring.test}/${src.dir}">
                     <include name="**/spring/TestLocalEMF.java"/>
-                    <!--<include name="**/spring/TestLocalEMFtransactional.java"/>-->
+                    <include name="**/spring/TestLocalEMFtransactional.java"/>
                     <include name="**/spring/dao/TestLocalEMFwithDao.java"/>
                 </fileset>
                 <formatter type="xml"/>
@@ -223,7 +228,7 @@
 
     <target name="test-jpa-spring-container" depends="clean-run, config-trunk">
         <junit printsummary="yes" haltonfailure="no" failureproperty="junit.failed" fork="yes" forkmode="once" showoutput="yes" maxmemory="512m" dir="${eclipselink.jpa.spring.test}/${run.dir}">
-            <jvmarg value="-javaagent:${spring.jlib.dir}/spring-instrument-3.0.0.RELEASE.jar"/>
+            <jvmarg value="-javaagent:${spring.jlib.dir}/spring-instrument-4.2.5.RELEASE.jar"/>
             <jvmarg value="${test.weaving}"/>
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
             <jvmarg value="-Dtest.properties=${test.properties.run}"/>
@@ -233,8 +238,7 @@
             <batchtest todir="${eclipselink.jpa.spring.test}/${report.dir}">
                 <fileset dir="${eclipselink.jpa.spring.test}/${src.dir}">
                     <include name="**/spring/TestContainerEMF.java"/>
-                    <!--<include name="**/spring/TestContainerEMFtransactional.java"/>-->
-                    <!--<include name="**/spring/TestJtaContainerEMF.java"/>-->
+                    <include name="**/spring/TestContainerEMFtransactional.java"/>
                     <include name="**/spring/dao/TestContainerEMFwithDao.java"/>
                 </fileset>
                 <formatter type="xml"/>

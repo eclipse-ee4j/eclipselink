@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -14,62 +14,67 @@ package org.eclipse.persistence.testing.tests.jpa.spring.dao;
 
 import java.util.List;
 
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import test.org.eclipse.persistence.testing.models.jpa.spring.Address;
 import test.org.eclipse.persistence.testing.models.jpa.spring.Route;
 import test.org.eclipse.persistence.testing.models.jpa.spring.Truck;
 
-import org.springframework.orm.jpa.support.JpaDaoSupport;
+import javax.persistence.*;
 
 /**
  * This class is a JPA data access object and implements Spring's jpaTemplate which functions
  * as an alternative to a basic EntityManager.
  */
-public class SpringDao extends JpaDaoSupport {
+@Repository
+@Transactional
+public class SpringDao {
+
+    @PersistenceContext(type = PersistenceContextType.EXTENDED)
+    protected EntityManager entityManager;
 
     public void persist(Object obj) {
-        getJpaTemplate().persist(obj);
+        entityManager.persist(obj);
     }
 
     public void remove(Object obj) {
-        getJpaTemplate().remove(obj);
+        entityManager.remove(obj);
     }
 
     public void flush() {
-        getJpaTemplate().flush();
+        entityManager.flush();
     }
 
     public Object find(Object obj) {
         if (obj instanceof Truck){
             Truck t = (Truck)obj;
-            return (getJpaTemplate().find(Truck.class, t.getId()));
+            return (entityManager.find(Truck.class, t.getId()));
         }else if (obj instanceof Route){
             Route r = (Route)obj;
-            return (getJpaTemplate().find(Route.class, r.getId()));
+            return (entityManager.find(Route.class, r.getId()));
         }else if (obj instanceof Address){
             Address a = (Address)obj;
-            return (getJpaTemplate().find(Address.class, a.getId()));
+            return (entityManager.find(Address.class, a.getId()));
         }
         return null;
     }
 
     public boolean contains(Object obj) {
-        return getJpaTemplate().contains(obj);
+        return entityManager.contains(obj);
     }
 
     public Object merge(Object obj) {
-        return getJpaTemplate().merge(obj);
+        return entityManager.merge(obj);
     }
 
     public void refresh(Object obj) {
-        getJpaTemplate().refresh(obj);
+        entityManager.refresh(obj);
     }
 
     public List findByNamedQuery(String query, String driverName) {
-        return getJpaTemplate().findByNamedQuery(query, driverName);
-    }
-
-    public List findByQuery(String query) {
-        return getJpaTemplate().find(query);
+        Query q = entityManager.createNamedQuery(query);
+        q.setParameter(1, driverName);
+        return q.getResultList();
     }
 
 }
