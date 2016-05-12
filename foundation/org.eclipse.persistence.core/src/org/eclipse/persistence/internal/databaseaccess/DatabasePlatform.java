@@ -42,6 +42,7 @@ import java.sql.PreparedStatement;
 import java.sql.Ref;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLXML;
 import java.sql.Statement;
 import java.sql.Struct;
 import java.sql.Types;
@@ -2506,6 +2507,8 @@ public class DatabasePlatform extends DatasourcePlatform {
             statement.setString(index, (String)convertObject(parameter, ClassConstants.STRING));
         } else if (parameter instanceof Byte[]) {
             statement.setBytes(index, (byte[])convertObject(parameter, ClassConstants.APBYTE));
+        } else if (parameter instanceof SQLXML) {
+            statement.setSQLXML(index, (SQLXML) parameter);
         } else if (parameter instanceof BindCallCustomParameter) {
             ((BindCallCustomParameter)(parameter)).set(this, statement, index, session);
         } else if (typeConverters != null && typeConverters.containsKey(parameter.getClass())){

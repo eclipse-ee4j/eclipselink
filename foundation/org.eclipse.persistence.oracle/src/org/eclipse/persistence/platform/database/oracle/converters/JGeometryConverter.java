@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -16,9 +16,9 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Struct;
 
-import oracle.spatial.geometry.JGeometry;
-import oracle.sql.STRUCT;
 import org.eclipse.persistence.platform.database.converters.StructConverter;
+
+import oracle.spatial.geometry.JGeometry;
 
 /**
  * PUBLIC:
@@ -32,25 +32,29 @@ public class JGeometryConverter implements StructConverter {
     public static final String JGEOMETRY_DB_TYPE = "MDSYS.SDO_GEOMETRY";
     public static final Class JGEOMETRY_CLASS = JGeometry.class;
 
+    @Override
     public String getStructName() {
         return JGEOMETRY_DB_TYPE;
     }
 
+    @Override
     public Class getJavaType() {
         return JGEOMETRY_CLASS;
     }
 
+    @Override
     public Object convertToObject(Struct struct) throws SQLException {
         if (struct == null){
             return null;
         }
-        return JGeometry.load((STRUCT)struct);
+        return JGeometry.loadJS(struct);
     }
 
+    @Override
     public Struct convertToStruct(Object geometry, Connection connection) throws SQLException {
         if (geometry == null){
             return null;
         }
-        return JGeometry.store((JGeometry)geometry, connection);
+        return JGeometry.storeJS((JGeometry) geometry, connection);
     }
 }

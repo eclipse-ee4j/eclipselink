@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,29 +12,37 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.insurance;
 
-import java.util.*;
+import java.util.Vector;
 
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.tests.expressions.*;
-import org.eclipse.persistence.testing.models.insurance.*;
-import org.eclipse.persistence.testing.models.insurance.objectrelational.*;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.testing.framework.TestSuite;
+import org.eclipse.persistence.testing.framework.WriteObjectTest;
+import org.eclipse.persistence.testing.models.insurance.Claim;
+import org.eclipse.persistence.testing.models.insurance.HousePolicy;
+import org.eclipse.persistence.testing.models.insurance.InsuranceSystem;
+import org.eclipse.persistence.testing.models.insurance.Policy;
+import org.eclipse.persistence.testing.models.insurance.PolicyHolder;
+import org.eclipse.persistence.testing.models.insurance.objectrelational.InsuranceORSystem;
+import org.eclipse.persistence.testing.tests.expressions.ReadAllExpressionTest;
 
 /**
  * Used to test object-relational features of oracle 8.1 and jdbc 2.0.
  */
 public class InsuranceObjectRelationalTestModel extends org.eclipse.persistence.testing.tests.insurance.InsuranceBasicTestModel {
+    @Override
     public void addRequiredSystems() {
         // Must logout to reset type information.
         getDatabaseSession().logout();
         getDatabaseSession().login();
-        if (getSession().getPlatform().isOracle9()) {
+        if (getSession().getPlatform().isOracle()) {
             addRequiredSystem(new InsuranceORSystem());
         }
     }
 
+    @Override
     public void addTests() {
-        if (getSession().getPlatform().isOracle9()) {
+        if (getSession().getPlatform().isOracle()) {
             super.addTests();
             addTest(getNestedTablesReadObjectTestSuite());
             addTest(getObjectArrayUpdateTestSuite());
@@ -167,6 +175,7 @@ public class InsuranceObjectRelationalTestModel extends org.eclipse.persistence.
     /**
      * Remove the project as will conflict with normal insurance.
      */
+    @Override
     public void reset() {
         getExecutor().removeConfigureSystem(new InsuranceSystem());
     }

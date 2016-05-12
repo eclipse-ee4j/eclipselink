@@ -49,7 +49,6 @@ import org.eclipse.persistence.internal.expressions.SpatialExpressionOperators;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.helper.JavaPlatform;
 import org.eclipse.persistence.internal.platform.database.XMLTypePlaceholder;
 import org.eclipse.persistence.internal.platform.database.oracle.TIMESTAMPHelper;
 import org.eclipse.persistence.internal.platform.database.oracle.TIMESTAMPLTZWrapper;
@@ -65,9 +64,9 @@ import org.eclipse.persistence.queries.Call;
 import org.eclipse.persistence.queries.ValueReadQuery;
 
 import oracle.jdbc.OracleConnection;
+import oracle.jdbc.OracleOpaque;
 import oracle.jdbc.OraclePreparedStatement;
 import oracle.jdbc.OracleTypes;
-import oracle.sql.OPAQUE;
 import oracle.sql.TIMESTAMP;
 import oracle.sql.TIMESTAMPLTZ;
 import oracle.sql.TIMESTAMPTZ;
@@ -207,19 +206,15 @@ public class Oracle9Platform extends Oracle8Platform {
             return getTIMESTAMPLTZFromResultSet(resultSet, columnNumber, type, session);
         } else if (type == OracleTypes.ROWID) {
             return resultSet.getString(columnNumber);
-        } else if (type == OracleTypes.OPAQUE || type == Types_SQLXML) {
+        } else if (type == OracleTypes.OPAQUE) {
             try {
                 Object result = resultSet.getObject(columnNumber);
-                if(!(result instanceof OPAQUE)) {
-                    if(JavaPlatform.isSQLXML(result)) {
-                        return JavaPlatform.getStringAndFreeSQLXML(result);
-                    } else {
-                        // Report Queries can cause result to not be an instance of OPAQUE.
-                        return result;
-                    }
+                if (!(result instanceof OracleOpaque)) {
+                    // Report Queries can cause result to not be an instance of OPAQUE.
+                    return result;
+                } else {
+                    return getXMLTypeFactory().getString((OracleOpaque) result);
                 }
-
-                return getXMLTypeFactory().getString((OPAQUE)result);
             } catch (SQLException ex) {
                 throw DatabaseException.sqlException(ex, null, session, false);
             }
@@ -979,6 +974,7 @@ public class Oracle9Platform extends Oracle8Platform {
      * before this method.
      * @return User name retrieved from JDBC connection.
      */
+    @Override
     public String getConnectionUserName() {
         return this.connectionUserName;
     }

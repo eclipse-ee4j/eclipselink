@@ -14,6 +14,8 @@
 package org.eclipse.persistence.platform.database.oracle;
 
 import java.sql.Array;
+import java.sql.Blob;
+import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.Ref;
 import java.sql.ResultSet;
@@ -31,6 +33,9 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.platform.database.OraclePlatform;
 import org.eclipse.persistence.queries.Call;
+
+import oracle.jdbc.OracleBlob;
+import oracle.jdbc.OracleClob;
 
 
 /**
@@ -172,28 +177,21 @@ public class Oracle8Platform extends OraclePlatform {
 
     /**
      * INTERNAL:
-     * Write LOB value - only on Oracle8 and up
+     * Write LOB value - works on Oracle 10 and newer
      */
     @Override
-    @SuppressWarnings("deprecation")
     public void writeLOB(DatabaseField field, Object value, ResultSet resultSet, AbstractSession session) throws SQLException {
         if (isBlob(field.getType())) {
             //change for 338585 to use getName instead of getNameDelimited
-            oracle.sql.BLOB blob = (oracle.sql.BLOB)resultSet.getObject(field.getName());
-
-            //we could use the jdk 1.4 java.nio package and use channel/buffer for the writing
-            //for the time being, simply use Oracle api.
-            blob.putBytes(1, (byte[])value);
-            //impose the locallization
+            Blob blob = (Blob) resultSet.getObject(field.getName());
+            blob.setBytes(1, (byte[]) value);
+            //impose the localization
             session.log(SessionLog.FINEST, SessionLog.SQL, "write_BLOB", Long.valueOf(blob.length()), field.getName());
         } else if (isClob(field.getType())) {
             //change for 338585 to use getName instead of getNameDelimited
-            oracle.sql.CLOB clob = (oracle.sql.CLOB)resultSet.getObject(field.getName());
-
-            //we could use the jdk 1.4 java.nio package and use channel/buffer for the writing
-            //for the time being, simply use Oracle api.
-            clob.putString(1, (String)value);
-            //impose the locallization
+            Clob clob = (Clob) resultSet.getObject(field.getName());
+            clob.setString(1, (String) value);
+            //impose the localization
             session.log(SessionLog.FINEST, SessionLog.SQL, "write_CLOB", Long.valueOf(clob.length()), field.getName());
         } else {
             //do nothing for now, open to BFILE or NCLOB types
@@ -303,10 +301,10 @@ public class Oracle8Platform extends OraclePlatform {
      */
     @Override
     public void freeTemporaryObject(Object value) throws SQLException {
-        if (value instanceof oracle.sql.CLOB && ((oracle.sql.CLOB)value).isTemporary()) {
-            ((oracle.sql.CLOB)value).freeTemporary();
-        } else if (value instanceof oracle.sql.BLOB && ((oracle.sql.BLOB)value).isTemporary()) {
-            ((oracle.sql.BLOB)value).freeTemporary();
+        if (value instanceof OracleClob && ((OracleClob) value).isTemporary()) {
+            ((OracleClob) value).free();
+        } else if (value instanceof OracleBlob && ((OracleBlob) value).isTemporary()) {
+            ((OracleBlob) value).free();
         }
     }
 }
