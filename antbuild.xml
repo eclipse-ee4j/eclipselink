@@ -494,6 +494,7 @@
         <java dir="${eclipselink.mvn.parent}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
              <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
              <jvmarg value="-Dmaven.home=${M2_HOME}"/>
+             <jvmarg value="-Dmaven.multiModuleProjectDirectory=${eclipselink.mvn.parent}"/>
              <jvmarg value="-Dlocal.compdeps=${local.compdeps}"/>
              <jvmarg value="-Declipselink.full=true"/>
              <arg value="clean"/>
@@ -551,6 +552,7 @@
         <echo message="Launching Maven build with the following parameters:"/>
         <echo message="    -Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
         <echo message="    -Dmaven.home=${M2_HOME}"/>
+        <echo message="    -Dmaven.multiModuleProjectDirectory=${eclipselink.mvn.parent}"/>
         <echo message="    -Dbuild.qualifier=${version.qualifier}"/>
         <echo message="    -DforceContextQualifier=${version.qualifier}"/>
         <echo message="    -Dlocal.compdeps=${local.compdeps}"/>
@@ -559,6 +561,7 @@
         <java dir="${eclipselink.mvn.parent}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
              <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
              <jvmarg value="-Dmaven.home=${M2_HOME}"/>
+             <jvmarg value="-Dmaven.multiModuleProjectDirectory=${eclipselink.mvn.parent}"/>
              <jvmarg value="-Dbuild.qualifier=${version.qualifier}"/>
              <jvmarg value="-DforceContextQualifier=${version.qualifier}"/>
              <jvmarg value="-Dlocal.compdeps=${local.compdeps}"/>
@@ -628,6 +631,7 @@
         <java dir="${eclipselink.mvn.parent}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
              <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
              <jvmarg value="-Dmaven.home=${M2_HOME}"/>
+             <jvmarg value="-Dmaven.multiModuleProjectDirectory=${eclipselink.mvn.parent}"/>
              <jvmarg value="-Dlocal.compdeps=${local.compdeps}"/>
              <jvmarg value="-D${oracle.target}=true"/>
              <jvmarg value="-Doracle.p2.url=${oracle.p2.url}"/>
@@ -653,6 +657,7 @@
         <echo message="Launching Maven build with the following parameters:"/>
         <echo message="    -Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
         <echo message="    -Dmaven.home=${M2_HOME}"/>
+        <echo message="    -Dmaven.multiModuleProjectDirectory=${eclipselink.mvn.parent}"/>
         <echo message="    -Dbuild.qualifier=${version.qualifier}"/>
         <echo message="    -DforceContextQualifier=${version.qualifier}"/>
         <echo message="    -Dlocal.compdeps=${local.compdeps}"/>
@@ -662,6 +667,7 @@
         <java dir="${eclipselink.mvn.parent}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
              <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
              <jvmarg value="-Dmaven.home=${M2_HOME}"/>
+             <jvmarg value="-Dmaven.multiModuleProjectDirectory=${eclipselink.mvn.parent}"/>
              <jvmarg value="-Dbuild.qualifier=${version.qualifier}"/>
              <jvmarg value="-DforceContextQualifier=${version.qualifier}"/>
              <jvmarg value="-Dlocal.compdeps=${local.compdeps}"/>
