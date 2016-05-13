@@ -1,6 +1,7 @@
 /*
  * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2015 IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016 Payara Foundation and/or its affiliates.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,6 +17,7 @@
 //     12/11/2014 - Dalia Abo Sheasha
 //       - 454917 : Wrong SQL statement generated for Informix when GenerationType.IDENTITY strategy is used
 //     02/19/2015 - Rick Curtis
+//     05/13/2016 - David Weaver - Wrong SQL syntax generated for Informix when concat is used
 //       - 458877 : Add national character support
 package org.eclipse.persistence.platform.database;
 
@@ -28,6 +30,7 @@ import java.util.Calendar;
 import java.util.Hashtable;
 
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.queries.ValueReadQuery;
@@ -359,4 +362,15 @@ public class InformixPlatform extends org.eclipse.persistence.platform.database.
     public boolean isAlterSequenceObjectSupported() {
         return true;
     }
+
+    /**
+     * INTERNAL: Initialize any platform-specific operators
+     */
+    @Override
+    protected void initializePlatformOperators() {
+        super.initializePlatformOperators();
+        addOperator(ExpressionOperator.simpleLogicalNoParens(ExpressionOperator.Concat, "||"));
+    }
+
 }
+
