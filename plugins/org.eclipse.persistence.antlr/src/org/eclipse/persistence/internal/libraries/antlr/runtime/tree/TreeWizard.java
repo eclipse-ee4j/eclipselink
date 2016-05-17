@@ -1,18 +1,18 @@
 /*
- [The "BSD licence"]
- Copyright (c) 2005, 2015 Terence Parr
+ [The "BSD license"]
+ Copyright (c) 2005-2009 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions
  are met:
  1. Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
+     notice, this list of conditions and the following disclaimer.
  2. Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
+     notice, this list of conditions and the following disclaimer in the
+     documentation and/or other materials provided with the distribution.
  3. The name of the author may not be used to endorse or promote products
-    derived from this software without specific prior written permission.
+     derived from this software without specific prior written permission.
 
  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
@@ -24,12 +24,15 @@
  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ */
 package org.eclipse.persistence.internal.libraries.antlr.runtime.tree;
 
 import org.eclipse.persistence.internal.libraries.antlr.runtime.Token;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /** Build and navigate trees with this object.  Must know about the names
  *  of tokens so you have to pass in a map or array of token names (from which
@@ -38,7 +41,7 @@ import java.util.*;
  *
  *  In order to create nodes and navigate, this class needs a TreeAdaptor.
  *
- *  This class can build a token type -> node index for repeated use or for
+ *  This class can build a token type &rarr; node index for repeated use or for
  *  iterating over the various nodes with a particular type.
  *
  *  This class works in conjunction with the TreeAdaptor rather than moving
@@ -49,15 +52,16 @@ import java.util.*;
  */
 public class TreeWizard {
     protected TreeAdaptor adaptor;
-    protected Map tokenNameToTypeMap;
+    protected Map<String, Integer> tokenNameToTypeMap;
 
     public interface ContextVisitor {
         // TODO: should this be called visit or something else?
-        public void visit(Object t, Object parent, int childIndex, Map labels);
+        public void visit(Object t, Object parent, int childIndex, Map<String, Object> labels);
     }
 
     public static abstract class Visitor implements ContextVisitor {
-        public void visit(Object t, Object parent, int childIndex, Map labels) {
+        @Override
+        public void visit(Object t, Object parent, int childIndex, Map<String, Object> labels) {
             visit(t);
         }
         public abstract void visit(Object t);
@@ -72,6 +76,7 @@ public class TreeWizard {
         public TreePattern(Token payload) {
             super(payload);
         }
+        @Override
         public String toString() {
             if ( label!=null ) {
                 return "%"+label+":"+super.toString();
@@ -90,6 +95,7 @@ public class TreeWizard {
 
     /** This adaptor creates TreePattern objects for use during scan() */
     public static class TreePatternTreeAdaptor extends CommonTreeAdaptor {
+        @Override
         public Object create(Token payload) {
             return new TreePattern(payload);
         }
@@ -120,7 +126,7 @@ public class TreeWizard {
         this.adaptor = adaptor;
     }
 
-    public TreeWizard(TreeAdaptor adaptor, Map tokenNameToTypeMap) {
+    public TreeWizard(TreeAdaptor adaptor, Map<String, Integer> tokenNameToTypeMap) {
         this.adaptor = adaptor;
         this.tokenNameToTypeMap = tokenNameToTypeMap;
     }
@@ -131,20 +137,20 @@ public class TreeWizard {
     }
 
     public TreeWizard(String[] tokenNames) {
-        this(null, tokenNames);
+        this(new CommonTreeAdaptor(), tokenNames);
     }
 
-    /** Compute a Map<String, Integer> that is an inverted index of
+    /** Compute a Map&lt;String, Integer&gt; that is an inverted index of
      *  tokenNames (which maps int token types to names).
      */
-    public Map computeTokenTypes(String[] tokenNames) {
-        Map m = new HashMap();
+    public Map<String, Integer> computeTokenTypes(String[] tokenNames) {
+        Map<String, Integer> m = new HashMap<String, Integer>();
         if ( tokenNames==null ) {
             return m;
         }
         for (int ttype = Token.MIN_TOKEN_TYPE; ttype < tokenNames.length; ttype++) {
             String name = tokenNames[ttype];
-            m.put(name, new Integer(ttype));
+            m.put(name, ttype);
         }
         return m;
     }
@@ -154,36 +160,36 @@ public class TreeWizard {
          if ( tokenNameToTypeMap==null ) {
              return Token.INVALID_TOKEN_TYPE;
          }
-        Integer ttypeI = (Integer)tokenNameToTypeMap.get(tokenName);
+        Integer ttypeI = tokenNameToTypeMap.get(tokenName);
         if ( ttypeI!=null ) {
-            return ttypeI.intValue();
+            return ttypeI;
         }
         return Token.INVALID_TOKEN_TYPE;
     }
 
     /** Walk the entire tree and make a node name to nodes mapping.
      *  For now, use recursion but later nonrecursive version may be
-     *  more efficient.  Returns Map<Integer, List> where the List is
+     *  more efficient.  Returns Map&lt;Integer, List&gt; where the List is
      *  of your AST node type.  The Integer is the token type of the node.
      *
      *  TODO: save this index so that find and visit are faster
      */
-    public Map index(Object t) {
-        Map m = new HashMap();
+    public Map<Integer, List<Object>> index(Object t) {
+        Map<Integer, List<Object>> m = new HashMap<Integer, List<Object>>();
         _index(t, m);
         return m;
     }
 
     /** Do the work for index */
-    protected void _index(Object t, Map m) {
+    protected void _index(Object t, Map<Integer, List<Object>> m) {
         if ( t==null ) {
             return;
         }
         int ttype = adaptor.getType(t);
-        List elements = (List)m.get(new Integer(ttype));
+        List<Object> elements = m.get(ttype);
         if ( elements==null ) {
-            elements = new ArrayList();
-            m.put(new Integer(ttype), elements);
+            elements = new ArrayList<Object>();
+            m.put(ttype, elements);
         }
         elements.add(t);
         int n = adaptor.getChildCount(t);
@@ -194,9 +200,10 @@ public class TreeWizard {
     }
 
     /** Return a List of tree nodes with token type ttype */
-    public List find(Object t, int ttype) {
-        final List nodes = new ArrayList();
+    public List<? extends Object> find(Object t, int ttype) {
+        final List<Object> nodes = new ArrayList<Object>();
         visit(t, ttype, new TreeWizard.Visitor() {
+            @Override
             public void visit(Object t) {
                 nodes.add(t);
             }
@@ -205,8 +212,8 @@ public class TreeWizard {
     }
 
     /** Return a List of subtrees matching pattern. */
-    public List find(Object t, String pattern) {
-        final List subtrees = new ArrayList();
+    public List<? extends Object> find(Object t, String pattern) {
+        final List<Object> subtrees = new ArrayList<Object>();
         // Create a TreePattern from the pattern
         TreePatternLexer tokenizer = new TreePatternLexer(pattern);
         TreePatternParser parser =
@@ -221,6 +228,7 @@ public class TreeWizard {
         }
         int rootTokenType = tpattern.getType();
         visit(t, rootTokenType, new TreeWizard.ContextVisitor() {
+            @Override
             public void visit(Object t, Object parent, int childIndex, Map labels) {
                 if ( _parse(t, tpattern, null) ) {
                     subtrees.add(t);
@@ -280,10 +288,11 @@ public class TreeWizard {
         {
             return;
         }
-        final Map labels = new HashMap(); // reused for each _parse
+        final Map<String, Object> labels = new HashMap<String, Object>(); // reused for each _parse
         int rootTokenType = tpattern.getType();
         visit(t, rootTokenType, new TreeWizard.ContextVisitor() {
-            public void visit(Object t, Object parent, int childIndex, Map unusedlabels) {
+            @Override
+            public void visit(Object t, Object parent, int childIndex, Map<String, Object> unusedlabels) {
                 // the unusedlabels arg is null as visit on token type doesn't set.
                 labels.clear();
                 if ( _parse(t, tpattern, labels) ) {
@@ -304,7 +313,7 @@ public class TreeWizard {
      *
      *  TODO: what's a better way to indicate bad pattern? Exceptions are a hassle
      */
-    public boolean parse(Object t, String pattern, Map labels) {
+    public boolean parse(Object t, String pattern, Map<String, Object> labels) {
         TreePatternLexer tokenizer = new TreePatternLexer(pattern);
         TreePatternParser parser =
             new TreePatternParser(tokenizer, this, new TreePatternTreeAdaptor());
@@ -326,7 +335,7 @@ public class TreeWizard {
      *  text arguments on nodes.  Fill labels map with pointers to nodes
      *  in tree matched against nodes in pattern with labels.
      */
-    protected boolean _parse(Object t1, TreePattern tpattern, Map labels) {
+    protected boolean _parse(Object t1, TreePattern tpattern, Map<String, Object> labels) {
         // make sure both are non-null
         if ( t1==null || tpattern==null ) {
             return false;

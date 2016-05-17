@@ -1,18 +1,18 @@
 /*
- [The "BSD licence"]
- Copyright (c) 2005, 2015 Terence Parr
+ [The "BSD license"]
+ Copyright (c) 2005-2009 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions
  are met:
  1. Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
+     notice, this list of conditions and the following disclaimer.
  2. Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
+     notice, this list of conditions and the following disclaimer in the
+     documentation and/or other materials provided with the distribution.
  3. The name of the author may not be used to endorse or promote products
-    derived from this software without specific prior written permission.
+     derived from this software without specific prior written permission.
 
  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
@@ -24,7 +24,7 @@
  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ */
 package org.eclipse.persistence.internal.libraries.antlr.runtime.debug;
 
 import org.eclipse.persistence.internal.libraries.antlr.runtime.tree.TreeAdaptor;
@@ -57,20 +57,24 @@ public class DebugTreeNodeStream implements TreeNodeStream {
         this.dbg = dbg;
     }
 
+    @Override
     public TreeAdaptor getTreeAdaptor() {
         return adaptor;
     }
 
+    @Override
     public void consume() {
         Object node = input.LT(1);
         input.consume();
         dbg.consumeNode(node);
     }
 
+    @Override
     public Object get(int i) {
         return input.get(i);
     }
 
+    @Override
     public Object LT(int i) {
         Object node = input.LT(i);
         int ID = adaptor.getUniqueID(node);
@@ -80,6 +84,7 @@ public class DebugTreeNodeStream implements TreeNodeStream {
         return node;
     }
 
+    @Override
     public int LA(int i) {
         Object node = input.LT(i);
         int ID = adaptor.getUniqueID(node);
@@ -89,49 +94,60 @@ public class DebugTreeNodeStream implements TreeNodeStream {
         return type;
     }
 
+    @Override
     public int mark() {
         lastMarker = input.mark();
         dbg.mark(lastMarker);
         return lastMarker;
     }
 
+    @Override
     public int index() {
         return input.index();
     }
 
+    @Override
     public void rewind(int marker) {
         dbg.rewind(marker);
         input.rewind(marker);
     }
 
+    @Override
     public void rewind() {
         dbg.rewind();
         input.rewind(lastMarker);
     }
 
+    @Override
     public void release(int marker) {
     }
 
+    @Override
     public void seek(int index) {
         // TODO: implement seek in dbg interface
         // db.seek(index);
         input.seek(index);
     }
 
+    @Override
     public int size() {
         return input.size();
     }
 
+    @Override
     public void reset() { ; }
 
+    @Override
     public Object getTreeSource() {
         return input;
     }
 
+    @Override
     public String getSourceName() {
         return getTokenStream().getSourceName();
     }
 
+    @Override
     public TokenStream getTokenStream() {
         return input.getTokenStream();
     }
@@ -141,14 +157,17 @@ public class DebugTreeNodeStream implements TreeNodeStream {
      *  define it.  It might be better to ignore the parameter but
      *  there might be a use for it later, so I'll leave.
      */
+    @Override
     public void setUniqueNavigationNodes(boolean uniqueNavigationNodes) {
         input.setUniqueNavigationNodes(uniqueNavigationNodes);
     }
 
+    @Override
     public void replaceChildren(Object parent, int startChildIndex, int stopChildIndex, Object t) {
         input.replaceChildren(parent, startChildIndex, stopChildIndex, t);
     }
 
+    @Override
     public String toString(Object start, Object stop) {
         return input.toString(start,stop);
     }

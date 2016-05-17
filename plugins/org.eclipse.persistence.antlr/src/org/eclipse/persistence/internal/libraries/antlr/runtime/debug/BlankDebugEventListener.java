@@ -1,18 +1,18 @@
 /*
- [The "BSD licence"]
- Copyright (c) 2005, 2015 Terence Parr
+ [The "BSD license"]
+ Copyright (c) 2005-2009 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions
  are met:
  1. Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
+     notice, this list of conditions and the following disclaimer.
  2. Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
+     notice, this list of conditions and the following disclaimer in the
+     documentation and/or other materials provided with the distribution.
  3. The name of the author may not be used to endorse or promote products
-    derived from this software without specific prior written permission.
+     derived from this software without specific prior written permission.
 
  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
@@ -24,7 +24,7 @@
  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ */
 package org.eclipse.persistence.internal.libraries.antlr.runtime.debug;
 
 import org.eclipse.persistence.internal.libraries.antlr.runtime.RecognitionException;
@@ -35,43 +35,43 @@ import org.eclipse.persistence.internal.libraries.antlr.runtime.Token;
  *  sensitive to updates to debug interface.
  */
 public class BlankDebugEventListener implements DebugEventListener {
-    public void enterRule(String grammarFileName, String ruleName) {}
-    public void exitRule(String grammarFileName, String ruleName) {}
-    public void enterAlt(int alt) {}
-    public void enterSubRule(int decisionNumber) {}
-    public void exitSubRule(int decisionNumber) {}
-    public void enterDecision(int decisionNumber) {}
-    public void exitDecision(int decisionNumber) {}
-    public void location(int line, int pos) {}
-    public void consumeToken(Token token) {}
-    public void consumeHiddenToken(Token token) {}
-    public void LT(int i, Token t) {}
-    public void mark(int i) {}
-    public void rewind(int i) {}
-    public void rewind() {}
-    public void beginBacktrack(int level) {}
-    public void endBacktrack(int level, boolean successful) {}
-    public void recognitionException(RecognitionException e) {}
-    public void beginResync() {}
-    public void endResync() {}
-    public void semanticPredicate(boolean result, String predicate) {}
-    public void commence() {}
-    public void terminate() {}
+    @Override public void enterRule(String grammarFileName, String ruleName) {}
+    @Override public void exitRule(String grammarFileName, String ruleName) {}
+    @Override public void enterAlt(int alt) {}
+    @Override public void enterSubRule(int decisionNumber) {}
+    @Override public void exitSubRule(int decisionNumber) {}
+    @Override public void enterDecision(int decisionNumber, boolean couldBacktrack) {}
+    @Override public void exitDecision(int decisionNumber) {}
+    @Override public void location(int line, int pos) {}
+    @Override public void consumeToken(Token token) {}
+    @Override public void consumeHiddenToken(Token token) {}
+    @Override public void LT(int i, Token t) {}
+    @Override public void mark(int i) {}
+    @Override public void rewind(int i) {}
+    @Override public void rewind() {}
+    @Override public void beginBacktrack(int level) {}
+    @Override public void endBacktrack(int level, boolean successful) {}
+    @Override public void recognitionException(RecognitionException e) {}
+    @Override public void beginResync() {}
+    @Override public void endResync() {}
+    @Override public void semanticPredicate(boolean result, String predicate) {}
+    @Override public void commence() {}
+    @Override public void terminate() {}
 
     // Tree parsing stuff
 
-    public void consumeNode(Object t) {}
-    public void LT(int i, Object t) {}
+    @Override public void consumeNode(Object t) {}
+    @Override public void LT(int i, Object t) {}
 
     // AST Stuff
 
-    public void nilNode(Object t) {}
-    public void errorNode(Object t) {}
-    public void createNode(Object t) {}
-    public void createNode(Object node, Token token) {}
-    public void becomeRoot(Object newRoot, Object oldRoot) {}
-    public void addChild(Object root, Object child) {}
-    public void setTokenBoundaries(Object t, int tokenStartIndex, int tokenStopIndex) {}
+    @Override public void nilNode(Object t) {}
+    @Override public void errorNode(Object t) {}
+    @Override public void createNode(Object t) {}
+    @Override public void createNode(Object node, Token token) {}
+    @Override public void becomeRoot(Object newRoot, Object oldRoot) {}
+    @Override public void addChild(Object root, Object child) {}
+    @Override public void setTokenBoundaries(Object t, int tokenStartIndex, int tokenStopIndex) {}
 }
 
 

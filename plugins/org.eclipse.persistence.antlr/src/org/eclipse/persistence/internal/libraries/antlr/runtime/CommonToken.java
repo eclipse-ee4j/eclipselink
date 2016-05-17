@@ -1,18 +1,18 @@
 /*
- [The "BSD licence"]
- Copyright (c) 2005, 2015 Terence Parr
+ [The "BSD license"]
+ Copyright (c) 2005-2009 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions
  are met:
  1. Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
+     notice, this list of conditions and the following disclaimer.
  2. Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
+     notice, this list of conditions and the following disclaimer in the
+     documentation and/or other materials provided with the distribution.
  3. The name of the author may not be used to endorse or promote products
-    derived from this software without specific prior written permission.
+     derived from this software without specific prior written permission.
 
  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
@@ -24,7 +24,7 @@
  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ */
 package org.eclipse.persistence.internal.libraries.antlr.runtime;
 
 import java.io.Serializable;
@@ -42,7 +42,7 @@ public class CommonToken implements Token, Serializable {
       */
     protected String text;
 
-    /** What token number is this from 0..n-1 tokens; < 0 implies invalid index */
+    /** What token number is this from 0..n-1 tokens; &lt; 0 implies invalid index */
     protected int index = -1;
 
     /** The char position into the input buffer where this token starts */
@@ -76,20 +76,24 @@ public class CommonToken implements Token, Serializable {
         index = oldToken.getTokenIndex();
         charPositionInLine = oldToken.getCharPositionInLine();
         channel = oldToken.getChannel();
+        input = oldToken.getInputStream();
         if ( oldToken instanceof CommonToken ) {
             start = ((CommonToken)oldToken).start;
             stop = ((CommonToken)oldToken).stop;
         }
     }
 
+    @Override
     public int getType() {
         return type;
     }
 
+    @Override
     public void setLine(int line) {
         this.line = line;
     }
 
+    @Override
     public String getText() {
         if ( text!=null ) {
             return text;
@@ -97,8 +101,13 @@ public class CommonToken implements Token, Serializable {
         if ( input==null ) {
             return null;
         }
-        text = input.substring(start,stop);
-        return text;
+        int n = input.size();
+        if ( start<n && stop<n) {
+            return input.substring(start,stop);
+        }
+        else {
+            return "<EOF>";
+        }
     }
 
     /** Override the text for this token.  getText() will return this text
@@ -106,30 +115,37 @@ public class CommonToken implements Token, Serializable {
      *  that start/stop indexes are not valid.  It means that that input
      *  was converted to a new string in the token object.
      */
+    @Override
     public void setText(String text) {
         this.text = text;
     }
 
+    @Override
     public int getLine() {
         return line;
     }
 
+    @Override
     public int getCharPositionInLine() {
         return charPositionInLine;
     }
 
+    @Override
     public void setCharPositionInLine(int charPositionInLine) {
         this.charPositionInLine = charPositionInLine;
     }
 
+    @Override
     public int getChannel() {
         return channel;
     }
 
+    @Override
     public void setChannel(int channel) {
         this.channel = channel;
     }
 
+    @Override
     public void setType(int type) {
         this.type = type;
     }
@@ -150,22 +166,27 @@ public class CommonToken implements Token, Serializable {
         this.stop = stop;
     }
 
+    @Override
     public int getTokenIndex() {
         return index;
     }
 
+    @Override
     public void setTokenIndex(int index) {
         this.index = index;
     }
 
+    @Override
     public CharStream getInputStream() {
         return input;
     }
 
+    @Override
     public void setInputStream(CharStream input) {
         this.input = input;
     }
 
+    @Override
     public String toString() {
         String channelStr = "";
         if ( channel>0 ) {

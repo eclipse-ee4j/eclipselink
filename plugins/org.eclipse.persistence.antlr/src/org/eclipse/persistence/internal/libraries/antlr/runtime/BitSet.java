@@ -1,18 +1,18 @@
 /*
- [The "BSD licence"]
- Copyright (c) 2005, 2015 Terence Parr
+ [The "BSD license"]
+ Copyright (c) 2005-2009 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions
  are met:
  1. Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
+     notice, this list of conditions and the following disclaimer.
  2. Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
+     notice, this list of conditions and the following disclaimer in the
+     documentation and/or other materials provided with the distribution.
  3. The name of the author may not be used to endorse or promote products
-    derived from this software without specific prior written permission.
+     derived from this software without specific prior written permission.
 
  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
@@ -24,12 +24,12 @@
  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ */
 package org.eclipse.persistence.internal.libraries.antlr.runtime;
 
 import java.util.List;
 
-/**A stripped-down version of org.antlr.misc.BitSet that is just
+/**A stripped-down version of org.eclipse.persistence.internal.libraries.antlr.misc.BitSet that is just
  * good enough to handle runtime requirements such as FOLLOW sets
  * for automatic error recovery.
  */
@@ -58,11 +58,11 @@ public class BitSet implements Cloneable {
     }
 
     /** Construction from a list of integers */
-    public BitSet(List items) {
+    public BitSet(List<Integer> items) {
         this();
         for (int i = 0; i < items.size(); i++) {
-            Integer v = (Integer) items.get(i);
-            add(v.intValue());
+            Integer v = items.get(i);
+            add(v);
         }
     }
 
@@ -163,6 +163,7 @@ public class BitSet implements Cloneable {
         return 1L << bitPosition;
     }
 
+    @Override
     public Object clone() {
         BitSet s;
         try {
@@ -191,6 +192,7 @@ public class BitSet implements Cloneable {
         return deg;
     }
 
+    @Override
     public boolean equals(Object other) {
         if ( other == null || !(other instanceof BitSet) ) {
             return false;
@@ -293,12 +295,13 @@ public class BitSet implements Cloneable {
         return bit >> LOG_BITS; // bit / BITS
     }
 
+    @Override
     public String toString() {
         return toString(null);
     }
 
     public String toString(String[] tokenNames) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         String separator = ",";
         boolean havePrintedAnElement = false;
         buf.append('{');

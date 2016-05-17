@@ -1,18 +1,18 @@
 /*
- [The "BSD licence"]
- Copyright (c) 2005, 2015 Terence Parr
+ [The "BSD license"]
+ Copyright (c) 2005-2009 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions
  are met:
  1. Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
+     notice, this list of conditions and the following disclaimer.
  2. Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
+     notice, this list of conditions and the following disclaimer in the
+     documentation and/or other materials provided with the distribution.
  3. The name of the author may not be used to endorse or promote products
-    derived from this software without specific prior written permission.
+     derived from this software without specific prior written permission.
 
  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
@@ -24,7 +24,7 @@
  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ */
 package org.eclipse.persistence.internal.libraries.antlr.runtime.debug;
 
 import org.eclipse.persistence.internal.libraries.antlr.runtime.RecognitionException;
@@ -80,7 +80,7 @@ public interface DebugEventListener {
      *  subrule but multiple enter/exit decision events, one for each
      *  loop iteration.
      */
-    public void enterDecision(int decisionNumber);
+    public void enterDecision(int decisionNumber, boolean couldBacktrack);
 
     public void exitDecision(int decisionNumber);
 
@@ -176,7 +176,7 @@ public interface DebugEventListener {
      *        enterAlt1
      *        location 7 5
      *        LT(1)
-     *        consumeToken [c/<4>,1:0]
+     *        consumeToken [c/&lt;4&gt;,1:0]
      *        location 7 7
      *        enterSubRule 2
      *        enter decision 2
@@ -187,7 +187,7 @@ public interface DebugEventListener {
      *        exitSubRule 2
      *        beginResync
      *        LT(1)
-     *        consumeToken [c/<4>,1:1]
+     *        consumeToken [c/&lt;4&gt;,1:1]
      *        LT(1)
      *        endResync
      *        LT(-1)
@@ -301,7 +301,7 @@ public interface DebugEventListener {
      *  If you are receiving this event over a socket via
      *  RemoteDebugEventSocketListener then only IDs are set.
      *
-     *  @see org.eclipse.persistence.internal.libraries.antlr.runtime.tree.TreeAdaptor.becomeRoot()
+     *  @see org.eclipse.persistence.internal.libraries.antlr.runtime.tree.TreeAdaptor#becomeRoot
      */
     public void becomeRoot(Object newRoot, Object oldRoot);
 
@@ -310,7 +310,7 @@ public interface DebugEventListener {
      *  If you are receiving this event over a socket via
      *  RemoteDebugEventSocketListener then only IDs are set.
      *
-     *  @see org.eclipse.persistence.internal.libraries.antlr.runtime.tree.TreeAdaptor.addChild()
+     *  @see org.eclipse.persistence.internal.libraries.antlr.runtime.tree.TreeAdaptor#addChild
      */
     public void addChild(Object root, Object child);
 

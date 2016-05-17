@@ -1,30 +1,31 @@
 /*
-[The "BSD licence"]
-Copyright (c) 2005, 2015 Terence Parr
-All rights reserved.
+ [The "BSD license"]
+ Copyright (c) 2005-2009 Terence Parr
+ All rights reserved.
 
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions
-are met:
-1. Redistributions of source code must retain the above copyright
-notice, this list of conditions and the following disclaimer.
-2. Redistributions in binary form must reproduce the above copyright
-notice, this list of conditions and the following disclaimer in the
-documentation and/or other materials provided with the distribution.
-3. The name of the author may not be used to endorse or promote products
-derived from this software without specific prior written permission.
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions
+ are met:
+ 1. Redistributions of source code must retain the above copyright
+     notice, this list of conditions and the following disclaimer.
+ 2. Redistributions in binary form must reproduce the above copyright
+     notice, this list of conditions and the following disclaimer in the
+     documentation and/or other materials provided with the distribution.
+ 3. The name of the author may not be used to endorse or promote products
+     derived from this software without specific prior written permission.
 
-THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
-IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
-OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
-INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
-NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
-THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/package org.eclipse.persistence.internal.libraries.antlr.runtime;
+ THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+ IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+ INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+ NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+package org.eclipse.persistence.internal.libraries.antlr.runtime;
 
 import java.util.Map;
 
@@ -66,18 +67,18 @@ public class RecognizerSharedState {
     public int syntaxErrors = 0;
 
     /** If 0, no backtracking is going on.  Safe to exec actions etc...
-     *  If >0 then it's the level of backtracking.
+     *  If &gt;0 then it's the level of backtracking.
      */
     public int backtracking = 0;
 
-    /** An array[size num rules] of Map<Integer,Integer> that tracks
+    /** An array[size num rules] of Map&lt;Integer,Integer&gt; that tracks
      *  the stop token index for each rule.  ruleMemo[ruleIndex] is
      *  the memoization table for ruleIndex.  For key ruleStartIndex, you
      *  get back the stop token for associated rule or MEMO_RULE_FAILED.
      *
      *  This is only used if rule memoization is on (which it is by default).
      */
-    public Map[] ruleMemo;
+    public Map<Integer, Integer>[] ruleMemo;
 
 
     // LEXER FIELDS (must be in same state object to avoid casting
@@ -117,8 +118,9 @@ public class RecognizerSharedState {
       */
     public String text;
 
-    public RecognizerSharedState() {;}
+    public RecognizerSharedState() {}
 
+    @SuppressWarnings("unchecked")
     public RecognizerSharedState(RecognizerSharedState state) {
         if ( this.following.length < state.following.length ) {
             this.following = new BitSet[state.following.length];
@@ -131,7 +133,7 @@ public class RecognizerSharedState {
         this.syntaxErrors = state.syntaxErrors;
         this.backtracking = state.backtracking;
         if ( state.ruleMemo!=null ) {
-            this.ruleMemo = new Map[state.ruleMemo.length];
+            this.ruleMemo = (Map<Integer, Integer>[])new Map<?, ?>[state.ruleMemo.length];
             System.arraycopy(state.ruleMemo, 0, this.ruleMemo, 0, state.ruleMemo.length);
         }
         this.token = state.token;

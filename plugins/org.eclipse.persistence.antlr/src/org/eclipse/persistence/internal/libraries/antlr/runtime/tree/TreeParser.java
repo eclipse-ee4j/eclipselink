@@ -1,18 +1,18 @@
 /*
- [The "BSD licence"]
- Copyright (c) 2005, 2015 Terence Parr
+ [The "BSD license"]
+ Copyright (c) 2005-2009 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions
  are met:
  1. Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
+     notice, this list of conditions and the following disclaimer.
  2. Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
+     notice, this list of conditions and the following disclaimer in the
+     documentation and/or other materials provided with the distribution.
  3. The name of the author may not be used to endorse or promote products
-    derived from this software without specific prior written permission.
+     derived from this software without specific prior written permission.
 
  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
@@ -24,13 +24,13 @@
  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ */
 package org.eclipse.persistence.internal.libraries.antlr.runtime.tree;
 
 import org.eclipse.persistence.internal.libraries.antlr.runtime.*;
 
-import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /** A parser for a stream of tree nodes.  "tree grammars" result in a subclass
  *  of this.  All the error reporting and recovery is shared with Parser via
@@ -58,6 +58,7 @@ public class TreeParser extends BaseRecognizer {
         setTreeNodeStream(input);
     }
 
+    @Override
     public void reset() {
         super.reset(); // reset all recognizer state variables
         if ( input!=null ) {
@@ -74,14 +75,17 @@ public class TreeParser extends BaseRecognizer {
         return input;
     }
 
+    @Override
     public String getSourceName() {
         return input.getSourceName();
     }
 
+    @Override
     protected Object getCurrentInputSymbol(IntStream input) {
         return ((TreeNodeStream)input).LT(1);
     }
 
+    @Override
     protected Object getMissingSymbol(IntStream input,
                                       RecognitionException e,
                                       int expectedTokenType,
@@ -89,13 +93,15 @@ public class TreeParser extends BaseRecognizer {
     {
         String tokenText =
             "<missing "+getTokenNames()[expectedTokenType]+">";
-        return new CommonTree(new CommonToken(expectedTokenType, tokenText));
+        TreeAdaptor adaptor = ((TreeNodeStream)e.input).getTreeAdaptor();
+        return adaptor.create(new CommonToken(expectedTokenType, tokenText));
     }
 
     /** Match '.' in tree parser has special meaning.  Skip node or
      *  entire tree if node has children.  If children, scan until
      *  corresponding UP node.
      */
+    @Override
     public void matchAny(IntStream ignore) { // ignore stream, copy of input
         state.errorRecovery = false;
         state.failed = false;
@@ -126,6 +132,7 @@ public class TreeParser extends BaseRecognizer {
      *  plus we want to alter the exception type.  Don't try to recover
      *  from tree parser errors inline...
      */
+    @Override
     protected Object recoverFromMismatchedToken(IntStream input,
                                                 int ttype,
                                                 BitSet follow)
@@ -138,6 +145,7 @@ public class TreeParser extends BaseRecognizer {
      *  always intended for the programmer because the parser built
      *  the input tree not the user.
      */
+    @Override
     public String getErrorHeader(RecognitionException e) {
         return getGrammarFileName()+": node from "+
                (e.approximateLineInfo?"after ":"")+"line "+e.line+":"+e.charPositionInLine;
@@ -146,6 +154,7 @@ public class TreeParser extends BaseRecognizer {
     /** Tree parsers parse nodes they usually have a token object as
      *  payload. Set the exception token and do the default behavior.
      */
+    @Override
     public String getErrorMessage(RecognitionException e, String[] tokenNames) {
         if ( this instanceof TreeParser ) {
             TreeAdaptor adaptor = ((TreeNodeStream)e.input).getTreeAdaptor();
@@ -156,6 +165,75 @@ public class TreeParser extends BaseRecognizer {
             }
         }
         return super.getErrorMessage(e, tokenNames);
+    }
+
+    /** Check if current node in input has a context.  Context means sequence
+     *  of nodes towards root of tree.  For example, you might say context
+     *  is "MULT" which means my parent must be MULT.  "CLASS VARDEF" says
+     *  current node must be child of a VARDEF and whose parent is a CLASS node.
+     *  You can use "..." to mean zero-or-more nodes.  "METHOD ... VARDEF"
+     *  means my parent is VARDEF and somewhere above that is a METHOD node.
+     *  The first node in the context is not necessarily the root.  The context
+     *  matcher stops matching and returns true when it runs out of context.
+     *  There is no way to force the first node to be the root.
+     */
+    public boolean inContext(String context) {
+        return inContext(input.getTreeAdaptor(), getTokenNames(), input.LT(1), context);
+    }
+
+    /** The worker for inContext.  It's static and full of parameters for
+     *  testing purposes.
+     */
+    public static boolean inContext(TreeAdaptor adaptor,
+                                    String[] tokenNames,
+                                    Object t,
+                                    String context)
+    {
+        Matcher dotdotMatcher = dotdotPattern.matcher(context);
+        Matcher doubleEtcMatcher = doubleEtcPattern.matcher(context);
+        if ( dotdotMatcher.find() ) { // don't allow "..", must be "..."
+            throw new IllegalArgumentException("invalid syntax: ..");
+        }
+        if ( doubleEtcMatcher.find() ) { // don't allow double "..."
+            throw new IllegalArgumentException("invalid syntax: ... ...");
+        }
+        context = context.replaceAll("\\.\\.\\.", " ... "); // ensure spaces around ...
+        context = context.trim();
+        String[] nodes = context.split("\\s+");
+        int ni = nodes.length-1;
+        t = adaptor.getParent(t);
+        while ( ni>=0 && t!=null ) {
+            if ( nodes[ni].equals("...") ) {
+                // walk upwards until we see nodes[ni-1] then continue walking
+                if ( ni==0 ) return true; // ... at start is no-op
+                String goal = nodes[ni-1];
+                Object ancestor = getAncestor(adaptor, tokenNames, t, goal);
+                if ( ancestor==null ) return false;
+                t = ancestor;
+                ni--;
+            }
+            String name = tokenNames[adaptor.getType(t)];
+            if ( !name.equals(nodes[ni]) ) {
+                //System.err.println("not matched: "+nodes[ni]+" at "+t);
+                return false;
+            }
+            // advance to parent and to previous element in context node list
+            ni--;
+            t = adaptor.getParent(t);
+        }
+
+        if ( t==null && ni>=0 ) return false; // at root but more nodes to match
+        return true;
+    }
+
+    /** Helper for static inContext */
+    protected static Object getAncestor(TreeAdaptor adaptor, String[] tokenNames, Object t, String goal) {
+        while ( t!=null ) {
+            String name = tokenNames[adaptor.getType(t)];
+            if ( name.equals(goal) ) return t;
+            t = adaptor.getParent(t);
+        }
+        return null;
     }
 
     public void traceIn(String ruleName, int ruleIndex)  {

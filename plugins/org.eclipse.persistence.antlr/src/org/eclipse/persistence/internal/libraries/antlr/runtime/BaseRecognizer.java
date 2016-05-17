@@ -1,18 +1,18 @@
 /*
- [The "BSD licence"]
- Copyright (c) 2005, 2015 Terence Parr
+ [The "BSD license"]
+ Copyright (c) 2005-2009 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions
  are met:
  1. Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
+     notice, this list of conditions and the following disclaimer.
  2. Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
+     notice, this list of conditions and the following disclaimer in the
+     documentation and/or other materials provided with the distribution.
  3. The name of the author may not be used to endorse or promote products
-    derived from this software without specific prior written permission.
+     derived from this software without specific prior written permission.
 
  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
@@ -24,7 +24,7 @@
  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ */
 package org.eclipse.persistence.internal.libraries.antlr.runtime;
 
 import java.util.ArrayList;
@@ -220,7 +220,7 @@ public abstract class BaseRecognizer {
         String msg = e.getMessage();
         if ( e instanceof UnwantedTokenException ) {
             UnwantedTokenException ute = (UnwantedTokenException)e;
-            String tokenName="<unknown>";
+            String tokenName;
             if ( ute.expecting== Token.EOF ) {
                 tokenName = "EOF";
             }
@@ -232,7 +232,7 @@ public abstract class BaseRecognizer {
         }
         else if ( e instanceof MissingTokenException ) {
             MissingTokenException mte = (MissingTokenException)e;
-            String tokenName="<unknown>";
+            String tokenName;
             if ( mte.expecting== Token.EOF ) {
                 tokenName = "EOF";
             }
@@ -243,7 +243,7 @@ public abstract class BaseRecognizer {
         }
         else if ( e instanceof MismatchedTokenException ) {
             MismatchedTokenException mte = (MismatchedTokenException)e;
-            String tokenName="<unknown>";
+            String tokenName;
             if ( mte.expecting== Token.EOF ) {
                 tokenName = "EOF";
             }
@@ -255,7 +255,7 @@ public abstract class BaseRecognizer {
         }
         else if ( e instanceof MismatchedTreeNodeException ) {
             MismatchedTreeNodeException mtne = (MismatchedTreeNodeException)e;
-            String tokenName="<unknown>";
+            String tokenName;
             if ( mtne.expecting==Token.EOF ) {
                 tokenName = "EOF";
             }
@@ -309,6 +309,9 @@ public abstract class BaseRecognizer {
 
     /** What is the error header, normally line/character position information? */
     public String getErrorHeader(RecognitionException e) {
+        if ( getSourceName()!=null )
+            return getSourceName()+" line "+e.line+":"+e.charPositionInLine;
+
         return "line "+e.line+":"+e.charPositionInLine;
     }
 
@@ -473,7 +476,7 @@ public abstract class BaseRecognizer {
      *  given the current call chain.  Contrast this with the
      *  definition of plain FOLLOW for rule r:
      *
-     *   FOLLOW(r)={x | S=>*alpha r beta in G and x in FIRST(beta)}
+     *   FOLLOW(r)={x | S=&gt;*alpha r beta in G and x in FIRST(beta)}
      *
      *  where x in T* and alpha, beta in V*; T is set of terminals and
      *  V is the set of terminals and nonterminals.  In other words,
@@ -497,16 +500,16 @@ public abstract class BaseRecognizer {
      *  FOLLOW sets are precisely what could follow a rule reference.
      *  For input input "i=(3);", here is the derivation:
      *
-     *  stat => ID '=' expr ';'
-     *       => ID '=' atom ('+' atom)* ';'
-     *       => ID '=' '(' expr ')' ('+' atom)* ';'
-     *       => ID '=' '(' atom ')' ('+' atom)* ';'
-     *       => ID '=' '(' INT ')' ('+' atom)* ';'
-     *       => ID '=' '(' INT ')' ';'
+     *  stat =&gt; ID '=' expr ';'
+     *       =&gt; ID '=' atom ('+' atom)* ';'
+     *       =&gt; ID '=' '(' expr ')' ('+' atom)* ';'
+     *       =&gt; ID '=' '(' atom ')' ('+' atom)* ';'
+     *       =&gt; ID '=' '(' INT ')' ('+' atom)* ';'
+     *       =&gt; ID '=' '(' INT ')' ';'
      *
      *  At the "3" token, you'd have a call chain of
      *
-     *    stat -> expr -> atom -> expr -> atom
+     *    stat &rarr; expr &rarr; atom &rarr; expr &rarr; atom
      *
      *  What can follow that specific nested ref to atom?  Exactly ')'
      *  as you can see by looking at the derivation of this specific
@@ -522,11 +525,15 @@ public abstract class BaseRecognizer {
         return combineFollows(true);
     }
 
+    // what is exact? it seems to only add sets from above on stack
+    // if EOR is in set i.  When it sees a set w/o EOR, it stops adding.
+    // Why would we ever want them all?  Maybe no viable alt instead of
+    // mismatched token?
     protected BitSet combineFollows(boolean exact) {
         int top = state._fsp;
         BitSet followSet = new BitSet();
         for (int i=top; i>=0; i--) {
-            BitSet localFollowSet = (BitSet)state.following[i];
+            BitSet localFollowSet = state.following[i];
             /*
             System.out.println("local follow depth "+i+"="+
                                localFollowSet.toString(getTokenNames())+")");
@@ -566,12 +573,12 @@ public abstract class BaseRecognizer {
      *  ')'.  When the parser returns from the nested call to expr, it
      *  will have call chain:
      *
-     *    stat -> expr -> atom
+     *    stat &rarr; expr &rarr; atom
      *
      *  and it will be trying to match the ')' at this point in the
      *  derivation:
      *
-     *       => ID '=' '(' INT ')' ('+' atom)* ';'
+     *       =&gt; ID '=' '(' INT ')' ('+' atom)* ';'
      *                          ^
      *  match() will see that ';' doesn't match ')' and report a
      *  mismatched token error.  To recover, it sees that LA(1)==';'
@@ -695,7 +702,7 @@ public abstract class BaseRecognizer {
         state.following[++state._fsp] = fset;
     }
 
-    /** Return List<String> of the rules in your parser instance
+    /** Return List&lt;String&gt; of the rules in your parser instance
      *  leading up to a call to this method.  You could override if
      *  you want more details such as the file/line info of where
      *  in the parser java code a rule is invoked.
@@ -703,7 +710,7 @@ public abstract class BaseRecognizer {
      *  This is very useful for error messages and for context-sensitive
      *  error recovery.
      */
-    public List getRuleInvocationStack() {
+    public List<String> getRuleInvocationStack() {
         String parserClassName = getClass().getName();
         return getRuleInvocationStack(new Throwable(), parserClassName);
     }
@@ -715,12 +722,12 @@ public abstract class BaseRecognizer {
      *
      *  TODO: move to a utility class or something; weird having lexer call this
      */
-    public static List getRuleInvocationStack(Throwable e,
+    public static List<String> getRuleInvocationStack(Throwable e,
                                               String recognizerClassName)
     {
-        List rules = new ArrayList();
+        List<String> rules = new ArrayList<String>();
         StackTraceElement[] stack = e.getStackTrace();
-        int i = 0;
+        int i;
         for (i=stack.length-1; i>=0; i--) {
             StackTraceElement t = stack[i];
             if ( t.getClassName().startsWith("org.eclipse.persistence.internal.libraries.antlr.runtime.") ) {
@@ -762,13 +769,13 @@ public abstract class BaseRecognizer {
     public abstract String getSourceName();
 
     /** A convenience method for use most often with template rewrites.
-     *  Convert a List<Token> to List<String>
+     *  Convert a List&lt;Token&gt; to List&lt;String&gt;
      */
-    public List toStrings(List tokens) {
+    public List<String> toStrings(List<? extends Token> tokens) {
         if ( tokens==null ) return null;
-        List strings = new ArrayList(tokens.size());
+        List<String> strings = new ArrayList<String>(tokens.size());
         for (int i=0; i<tokens.size(); i++) {
-            strings.add(((Token)tokens.get(i)).getText());
+            strings.add(tokens.get(i).getText());
         }
         return strings;
     }
@@ -785,14 +792,14 @@ public abstract class BaseRecognizer {
      */
     public int getRuleMemoization(int ruleIndex, int ruleStartIndex) {
         if ( state.ruleMemo[ruleIndex]==null ) {
-            state.ruleMemo[ruleIndex] = new HashMap();
+            state.ruleMemo[ruleIndex] = new HashMap<Integer, Integer>();
         }
         Integer stopIndexI =
-            (Integer)state.ruleMemo[ruleIndex].get(new Integer(ruleStartIndex));
+            state.ruleMemo[ruleIndex].get(ruleStartIndex);
         if ( stopIndexI==null ) {
             return MEMO_RULE_UNKNOWN;
         }
-        return stopIndexI.intValue();
+        return stopIndexI;
     }
 
     /** Has this rule already parsed input at the current index in the
@@ -835,9 +842,7 @@ public abstract class BaseRecognizer {
             System.err.println("!!!!!!!!! memo size is "+state.ruleMemo.length+", but rule index is "+ruleIndex);
         }
         if ( state.ruleMemo[ruleIndex]!=null ) {
-            state.ruleMemo[ruleIndex].put(
-                new Integer(ruleStartIndex), new Integer(stopTokenIndex)
-            );
+            state.ruleMemo[ruleIndex].put(ruleStartIndex, stopTokenIndex);
         }
     }
 
@@ -847,7 +852,7 @@ public abstract class BaseRecognizer {
     public int getRuleMemoizationCacheSize() {
         int n = 0;
         for (int i = 0; state.ruleMemo!=null && i < state.ruleMemo.length; i++) {
-            Map ruleMap = state.ruleMemo[i];
+            Map<Integer, Integer> ruleMap = state.ruleMemo[i];
             if ( ruleMap!=null ) {
                 n += ruleMap.size(); // how many input indexes are recorded?
             }

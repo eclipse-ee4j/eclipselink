@@ -1,18 +1,18 @@
 /*
- [The "BSD licence"]
- Copyright (c) 2005, 2015 Terence Parr
+ [The "BSD license"]
+ Copyright (c) 2005-2009 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions
  are met:
  1. Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
+     notice, this list of conditions and the following disclaimer.
  2. Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
+     notice, this list of conditions and the following disclaimer in the
+     documentation and/or other materials provided with the distribution.
  3. The name of the author may not be used to endorse or promote products
-    derived from this software without specific prior written permission.
+     derived from this software without specific prior written permission.
 
  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
@@ -24,7 +24,7 @@
  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ */
 package org.eclipse.persistence.internal.libraries.antlr.runtime.debug;
 
 import org.eclipse.persistence.internal.libraries.antlr.runtime.RecognitionException;
@@ -74,47 +74,77 @@ public class RemoteDebugEventSocketListener implements Runnable {
             this.charPos = charPos;
             this.text = text;
         }
+
+        @Override
         public String getText() {
             return text;
         }
+
+        @Override
         public void setText(String text) {
             this.text = text;
         }
+
+        @Override
         public int getType() {
             return type;
         }
+
+        @Override
         public void setType(int ttype) {
             this.type = ttype;
         }
+
+        @Override
         public int getLine() {
             return line;
         }
+
+        @Override
         public void setLine(int line) {
             this.line = line;
         }
+
+        @Override
         public int getCharPositionInLine() {
             return charPos;
         }
+
+        @Override
         public void setCharPositionInLine(int pos) {
             this.charPos = pos;
         }
+
+        @Override
         public int getChannel() {
             return channel;
         }
+
+        @Override
         public void setChannel(int channel) {
             this.channel = channel;
         }
+
+        @Override
         public int getTokenIndex() {
             return index;
         }
+
+        @Override
         public void setTokenIndex(int index) {
             this.index = index;
         }
+
+        @Override
         public CharStream getInputStream() {
             return null;
         }
+
+        @Override
         public void setInputStream(CharStream input) {
         }
+
+        @Override
         public String toString() {
             String channelStr = "";
             if ( channel!=Token.DEFAULT_CHANNEL ) {
@@ -143,14 +173,14 @@ public class RemoteDebugEventSocketListener implements Runnable {
 
         public ProxyTree(int ID) { this.ID = ID; }
 
-        public int getTokenStartIndex() { return tokenIndex; }
-        public void setTokenStartIndex(int index) {    }
-        public int getTokenStopIndex() { return 0; }
-        public void setTokenStopIndex(int index) { }
-        public Tree dupNode() {    return null; }
-        public int getType() { return type; }
-        public String getText() { return text; }
-        public String toString() {
+        @Override public int getTokenStartIndex() { return tokenIndex; }
+        @Override public void setTokenStartIndex(int index) {    }
+        @Override public int getTokenStopIndex() { return 0; }
+        @Override public void setTokenStopIndex(int index) { }
+        @Override public Tree dupNode() {    return null; }
+        @Override public int getType() { return type; }
+        @Override public String getText() { return text; }
+        @Override public String toString() {
             return "fix this";
         }
     }
@@ -272,7 +302,7 @@ public class RemoteDebugEventSocketListener implements Runnable {
             listener.exitSubRule(Integer.parseInt(elements[1]));
         }
         else if ( elements[0].equals("enterDecision") ) {
-            listener.enterDecision(Integer.parseInt(elements[1]));
+            listener.enterDecision(Integer.parseInt(elements[1]), elements[2].equals("true"));
         }
         else if ( elements[0].equals("exitDecision") ) {
             listener.exitDecision(Integer.parseInt(elements[1]));
@@ -325,11 +355,10 @@ public class RemoteDebugEventSocketListener implements Runnable {
             String indexS = elements[2];
             String lineS = elements[3];
             String posS = elements[4];
-            Class excClass = null;
+            Class<? extends RecognitionException> excClass;
             try {
-                excClass = Class.forName(excName);
-                RecognitionException e =
-                    (RecognitionException)excClass.newInstance();
+                excClass = Class.forName(excName).asSubclass(RecognitionException.class);
+                RecognitionException e = excClass.newInstance();
                 e.index = Integer.parseInt(indexS);
                 e.line = Integer.parseInt(lineS);
                 e.charPositionInLine = Integer.parseInt(posS);
@@ -361,7 +390,7 @@ public class RemoteDebugEventSocketListener implements Runnable {
             Boolean result = Boolean.valueOf(elements[1]);
             String predicateText = elements[2];
             predicateText = unEscapeNewlines(predicateText);
-            listener.semanticPredicate(result.booleanValue(),
+            listener.semanticPredicate(result,
                                        predicateText);
         }
         else if ( elements[0].equals("consumeNode") ) {
@@ -468,6 +497,7 @@ public class RemoteDebugEventSocketListener implements Runnable {
         t.start();
     }
 
+    @Override
     public void run() {
         eventHandler();
     }

@@ -1,3 +1,31 @@
+/*
+ [The "BSD license"]
+ Copyright (c) 2005-2009 Terence Parr
+ All rights reserved.
+
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions
+ are met:
+ 1. Redistributions of source code must retain the above copyright
+     notice, this list of conditions and the following disclaimer.
+ 2. Redistributions in binary form must reproduce the above copyright
+     notice, this list of conditions and the following disclaimer in the
+     documentation and/or other materials provided with the distribution.
+ 3. The name of the author may not be used to endorse or promote products
+     derived from this software without specific prior written permission.
+
+ THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+ IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+ INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+ NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 package org.eclipse.persistence.internal.libraries.antlr.runtime;
 
 import java.io.IOException;
@@ -10,34 +38,41 @@ import java.util.ArrayList;
 public class SerializedGrammar {
     public static final String COOKIE = "$ANTLR";
     public static final int FORMAT_VERSION = 1;
-    //public static org.antlr.tool.Grammar gr; // TESTING ONLY; remove later
+    //public static org.eclipse.persistence.internal.libraries.antlr.tool.Grammar gr; // TESTING ONLY; remove later
 
     public String name;
     public char type; // in {l, p, t, c}
-    public List rules;
+    public List<? extends Rule> rules;
 
-    class Rule {
+    protected class Rule {
         String name;
         Block block;
         public Rule(String name, Block block) {
             this.name = name;
             this.block = block;
         }
+        @Override
         public String toString() {
             return name+":"+block;
         }
     }
 
-    class Block {
+    protected abstract class Node {
+        @Override
+        public abstract String toString();
+    }
+
+    protected class Block extends Node {
         List[] alts;
         public Block(List[] alts) {
             this.alts = alts;
         }
+        @Override
         public String toString() {
-            StringBuffer buf = new StringBuffer();
+            StringBuilder buf = new StringBuilder();
             buf.append("(");
             for (int i = 0; i < alts.length; i++) {
-                List alt = alts[i];
+                List<?> alt = alts[i];
                 if ( i>0 ) buf.append("|");
                 buf.append(alt.toString());
             }
@@ -46,15 +81,17 @@ public class SerializedGrammar {
         }
     }
 
-    class TokenRef {
+    protected class TokenRef extends Node {
         int ttype;
         public TokenRef(int ttype) { this.ttype = ttype; }
+        @Override
         public String toString() { return String.valueOf(ttype); }
     }
 
-    class RuleRef {
+    protected class RuleRef extends Node {
         int ruleIndex;
         public RuleRef(int ruleIndex) { this.ruleIndex = ruleIndex; }
+        @Override
         public String toString() { return String.valueOf(ruleIndex); }
     }
 
@@ -81,8 +118,8 @@ public class SerializedGrammar {
         rules = readRules(in, numRules);
     }
 
-    protected List readRules(DataInputStream in, int numRules) throws IOException {
-        List rules = new ArrayList();
+    protected List<? extends Rule> readRules(DataInputStream in, int numRules) throws IOException {
+        List<Rule> rules = new ArrayList<Rule>();
         for (int i=0; i<numRules; i++) {
             Rule r = readRule(in);
             rules.add(r);
@@ -104,18 +141,19 @@ public class SerializedGrammar {
 
     protected Block readBlock(DataInputStream in) throws IOException {
         int nalts = in.readShort();
-        List[] alts = new List[nalts];
+        @SuppressWarnings("unchecked")
+        List<Node>[] alts = (List<Node>[])new List<?>[nalts];
         //System.out.println("enter block n="+nalts);
         for (int i=0; i<nalts; i++) {
-            List alt = readAlt(in);
+            List<Node> alt = readAlt(in);
             alts[i] = alt;
         }
         //System.out.println("exit block");
         return new Block(alts);
     }
 
-    protected List readAlt(DataInputStream in) throws IOException {
-        List alt = new ArrayList();
+    protected List<Node> readAlt(DataInputStream in) throws IOException {
+        List<Node> alt = new ArrayList<Node>();
         byte A = in.readByte();
         if ( A!='A' ) throw new IOException("missing A on start of alt");
         byte cmd = in.readByte();
@@ -153,7 +191,7 @@ public class SerializedGrammar {
 
     protected String readString(DataInputStream in) throws IOException {
         byte c = in.readByte();
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         while ( c!=';' ) {
             buf.append((char)c);
             c = in.readByte();
@@ -161,9 +199,10 @@ public class SerializedGrammar {
         return buf.toString();
     }
 
+    @Override
     public String toString() {
-        StringBuffer buf = new StringBuffer();
-        buf.append(type+" grammar "+name);
+        StringBuilder buf = new StringBuilder();
+        buf.append(type).append(" grammar ").append(name);
         buf.append(rules);
         return buf.toString();
     }

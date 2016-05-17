@@ -1,18 +1,18 @@
 /*
- [The "BSD licence"]
- Copyright (c) 2005, 2015 Terence Parr
+ [The "BSD license"]
+ Copyright (c) 2005-2009 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions
  are met:
  1. Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
+     notice, this list of conditions and the following disclaimer.
  2. Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
+     notice, this list of conditions and the following disclaimer in the
+     documentation and/or other materials provided with the distribution.
  3. The name of the author may not be used to endorse or promote products
-    derived from this software without specific prior written permission.
+     derived from this software without specific prior written permission.
 
  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
@@ -24,7 +24,7 @@
  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ */
 package org.eclipse.persistence.internal.libraries.antlr.runtime;
 
 import java.util.*;
@@ -87,12 +87,17 @@ public class TokenRewriteStream extends CommonTokenStream {
 
     // Define the rewrite operation hierarchy
 
-    class RewriteOperation {
+    public class RewriteOperation {
         /** What index into rewrites List are we? */
         protected int instructionIndex;
         /** Token buffer index. */
         protected int index;
         protected Object text;
+
+        protected RewriteOperation(int index) {
+            this.index = index;
+        }
+
         protected RewriteOperation(int index, Object text) {
             this.index = index;
             this.text = text;
@@ -103,11 +108,13 @@ public class TokenRewriteStream extends CommonTokenStream {
         public int execute(StringBuffer buf) {
             return index;
         }
+        @Override
         public String toString() {
             String opName = getClass().getName();
             int $index = opName.indexOf('$');
             opName = opName.substring($index+1, opName.length());
-            return "<"+opName+"@"+index+":\""+text+"\">";
+            return "<"+opName+"@"+tokens.get(index)+
+                   ":\""+text+"\">";
         }
     }
 
@@ -115,9 +122,12 @@ public class TokenRewriteStream extends CommonTokenStream {
         public InsertBeforeOp(int index, Object text) {
             super(index,text);
         }
+        @Override
         public int execute(StringBuffer buf) {
             buf.append(text);
-            buf.append(((Token)tokens.get(index)).getText());
+            if ( tokens.get(index).getType()!=Token.EOF ) {
+                buf.append(tokens.get(index).getText());
+            }
             return index+1;
         }
     }
@@ -131,43 +141,41 @@ public class TokenRewriteStream extends CommonTokenStream {
             super(from,text);
             lastIndex = to;
         }
+        @Override
         public int execute(StringBuffer buf) {
             if ( text!=null ) {
                 buf.append(text);
             }
             return lastIndex+1;
         }
+        @Override
         public String toString() {
-            return "<ReplaceOp@"+index+".."+lastIndex+":\""+text+"\">";
-        }
-    }
-
-    class DeleteOp extends ReplaceOp {
-        public DeleteOp(int from, int to) {
-            super(from, to, null);
-        }
-        public String toString() {
-            return "<DeleteOp@"+index+".."+lastIndex+">";
+            if ( text==null ) {
+                return "<DeleteOp@"+tokens.get(index)+
+                       ".."+tokens.get(lastIndex)+">";
+            }
+            return "<ReplaceOp@"+tokens.get(index)+
+                   ".."+tokens.get(lastIndex)+":\""+text+"\">";
         }
     }
 
     /** You may have multiple, named streams of rewrite operations.
      *  I'm calling these things "programs."
-     *  Maps String (name) -> rewrite (List)
+     *  Maps String (name) &rarr; rewrite (List)
      */
-    protected Map programs = null;
+    protected Map<String, List<RewriteOperation>> programs = null;
 
-    /** Map String (program name) -> Integer index */
-    protected Map lastRewriteTokenIndexes = null;
+    /** Map String (program name) &rarr; Integer index */
+    protected Map<String, Integer> lastRewriteTokenIndexes = null;
 
     public TokenRewriteStream() {
         init();
     }
 
     protected void init() {
-        programs = new HashMap();
-        programs.put(DEFAULT_PROGRAM_NAME, new ArrayList(PROGRAM_INIT_SIZE));
-        lastRewriteTokenIndexes = new HashMap();
+        programs = new HashMap<String, List<RewriteOperation>>();
+        programs.put(DEFAULT_PROGRAM_NAME, new ArrayList<RewriteOperation>(PROGRAM_INIT_SIZE));
+        lastRewriteTokenIndexes = new HashMap<String, Integer>();
     }
 
     public TokenRewriteStream(TokenSource tokenSource) {
@@ -189,7 +197,7 @@ public class TokenRewriteStream extends CommonTokenStream {
      *  longer in the stream.  UNTESTED!
      */
     public void rollback(String programName, int instructionIndex) {
-        List is = (List)programs.get(programName);
+        List<RewriteOperation> is = programs.get(programName);
         if ( is!=null ) {
             programs.put(programName, is.subList(MIN_TOKEN_INDEX,instructionIndex));
         }
@@ -219,7 +227,6 @@ public class TokenRewriteStream extends CommonTokenStream {
     public void insertAfter(String programName, int index, Object text) {
         // to insert after, just insert before next index (even if past end)
         insertBefore(programName,index+1, text);
-        //addToSortedRewriteList(programName, new InsertAfterOp(index,text));
     }
 
     public void insertBefore(Token t, Object text) {
@@ -235,9 +242,8 @@ public class TokenRewriteStream extends CommonTokenStream {
     }
 
     public void insertBefore(String programName, int index, Object text) {
-        //addToSortedRewriteList(programName, new InsertBeforeOp(index,text));
         RewriteOperation op = new InsertBeforeOp(index,text);
-        List rewrites = getProgram(programName);
+        List<? super RewriteOperation> rewrites = getProgram(programName);
         op.instructionIndex = rewrites.size();
         rewrites.add(op);
     }
@@ -263,7 +269,7 @@ public class TokenRewriteStream extends CommonTokenStream {
             throw new IllegalArgumentException("replace: range invalid: "+from+".."+to+"(size="+tokens.size()+")");
         }
         RewriteOperation op = new ReplaceOp(from, to, text);
-        List rewrites = getProgram(programName);
+        List<? super RewriteOperation> rewrites = getProgram(programName);
         op.instructionIndex = rewrites.size();
         rewrites.add(op);
     }
@@ -304,79 +310,84 @@ public class TokenRewriteStream extends CommonTokenStream {
     }
 
     protected int getLastRewriteTokenIndex(String programName) {
-        Integer I = (Integer)lastRewriteTokenIndexes.get(programName);
+        Integer I = lastRewriteTokenIndexes.get(programName);
         if ( I==null ) {
             return -1;
         }
-        return I.intValue();
+        return I;
     }
 
     protected void setLastRewriteTokenIndex(String programName, int i) {
-        lastRewriteTokenIndexes.put(programName, new Integer(i));
+        lastRewriteTokenIndexes.put(programName, i);
     }
 
-    protected List getProgram(String name) {
-        List is = (List)programs.get(name);
+    protected List<RewriteOperation> getProgram(String name) {
+        List<RewriteOperation> is = programs.get(name);
         if ( is==null ) {
             is = initializeProgram(name);
         }
         return is;
     }
 
-    private List initializeProgram(String name) {
-        List is = new ArrayList(PROGRAM_INIT_SIZE);
+    private List<RewriteOperation> initializeProgram(String name) {
+        List<RewriteOperation> is = new ArrayList<RewriteOperation>(PROGRAM_INIT_SIZE);
         programs.put(name, is);
         return is;
     }
 
     public String toOriginalString() {
+        fill();
         return toOriginalString(MIN_TOKEN_INDEX, size()-1);
     }
 
     public String toOriginalString(int start, int end) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         for (int i=start; i>=MIN_TOKEN_INDEX && i<=end && i<tokens.size(); i++) {
-            buf.append(get(i).getText());
+            if ( get(i).getType()!=Token.EOF ) buf.append(get(i).getText());
         }
         return buf.toString();
     }
 
+    @Override
     public String toString() {
+        fill();
         return toString(MIN_TOKEN_INDEX, size()-1);
     }
 
     public String toString(String programName) {
+        fill();
         return toString(programName, MIN_TOKEN_INDEX, size()-1);
     }
 
+    @Override
     public String toString(int start, int end) {
         return toString(DEFAULT_PROGRAM_NAME, start, end);
     }
 
     public String toString(String programName, int start, int end) {
-        List rewrites = (List)programs.get(programName);
+        List<RewriteOperation> rewrites = programs.get(programName);
 
         // ensure start/end are in range
         if ( end>tokens.size()-1 ) end = tokens.size()-1;
         if ( start<0 ) start = 0;
 
-        if ( rewrites==null || rewrites.size()==0 ) {
+        if ( rewrites==null || rewrites.isEmpty() ) {
             return toOriginalString(start,end); // no instructions to execute
         }
         StringBuffer buf = new StringBuffer();
 
         // First, optimize instruction stream
-        Map indexToOp = reduceToSingleOperationPerIndex(rewrites);
+        Map<Integer, ? extends RewriteOperation> indexToOp = reduceToSingleOperationPerIndex(rewrites);
 
         // Walk buffer, executing instructions and emitting tokens
         int i = start;
         while ( i <= end && i < tokens.size() ) {
-            RewriteOperation op = (RewriteOperation)indexToOp.get(new Integer(i));
-            indexToOp.remove(new Integer(i)); // remove so any left have index size-1
-            Token t = (Token) tokens.get(i);
+            RewriteOperation op = indexToOp.get(i);
+            indexToOp.remove(i); // remove so any left have index size-1
+            Token t = tokens.get(i);
             if ( op==null ) {
                 // no operation at that index, just dump token
-                buf.append(t.getText());
+                if ( t.getType()!=Token.EOF ) buf.append(t.getText());
                 i++; // move to next token
             }
             else {
@@ -390,9 +401,7 @@ public class TokenRewriteStream extends CommonTokenStream {
         if ( end==tokens.size()-1 ) {
             // Scan any remaining operations after last token
             // should be included (they will be inserts).
-            Iterator it = indexToOp.values().iterator();
-            while (it.hasNext()) {
-                RewriteOperation op = (RewriteOperation)it.next();
+            for (RewriteOperation op : indexToOp.values()) {
                 if ( op.index >= tokens.size()-1 ) buf.append(op.text);
             }
         }
@@ -411,8 +420,12 @@ public class TokenRewriteStream extends CommonTokenStream {
      *  R.i-j.u R.x-y.v    | x-y in i-j            ERROR
      *  R.i-j.u R.x-y.v    | boundaries overlap    ERROR
      *
-     *  I.i.u R.x-y.v | i in x-y                delete I
-     *  I.i.u R.x-y.v | i not in x-y            leave alone, nonoverlapping
+     *  Delete special case of replace (text==null):
+     *  D.i-j.u D.x-y.v    | boundaries overlap    combine to max(min)..max(right)
+     *
+     *  I.i.u R.x-y.v | i in (x+1)-y            delete I (since insert before
+     *                                            we're not deleting i)
+     *  I.i.u R.x-y.v | i not in (x+1)-y        leave alone, nonoverlapping
      *  R.x-y.v I.i.u | i in x-y                ERROR
      *  R.x-y.v I.x.u                             R.x-y.uv (combine, delete I)
      *  R.x-y.v I.i.u | i not in x-y            leave alone, nonoverlapping
@@ -435,7 +448,7 @@ public class TokenRewriteStream extends CommonTokenStream {
      *         3. throw exception if index in same range as previous replace
      *
      *  Don't actually delete; make op null in list. Easier to walk list.
-     *  Later we can throw as we add to index -> op map.
+     *  Later we can throw as we add to index &rarr; op map.
      *
      *  Note that I.2 R.2-2 will wipe out I.2 even though, technically, the
      *  inserted stuff would be before the replace range.  But, if you
@@ -444,28 +457,34 @@ public class TokenRewriteStream extends CommonTokenStream {
      *
      *  Return a map from token index to operation.
      */
-    protected Map reduceToSingleOperationPerIndex(List rewrites) {
-        //System.out.println("rewrites="+rewrites);
+    protected Map<Integer, ? extends RewriteOperation> reduceToSingleOperationPerIndex(List<? extends RewriteOperation> rewrites) {
+//        System.out.println("rewrites="+rewrites);
 
         // WALK REPLACES
         for (int i = 0; i < rewrites.size(); i++) {
-            RewriteOperation op = (RewriteOperation)rewrites.get(i);
+            RewriteOperation op = rewrites.get(i);
             if ( op==null ) continue;
             if ( !(op instanceof ReplaceOp) ) continue;
             ReplaceOp rop = (ReplaceOp)rewrites.get(i);
             // Wipe prior inserts within range
-            List inserts = getKindOfOps(rewrites, InsertBeforeOp.class, i);
+            List<? extends InsertBeforeOp> inserts = getKindOfOps(rewrites, InsertBeforeOp.class, i);
             for (int j = 0; j < inserts.size(); j++) {
-                InsertBeforeOp iop = (InsertBeforeOp) inserts.get(j);
-                if ( iop.index >= rop.index && iop.index <= rop.lastIndex ) {
+                InsertBeforeOp iop = inserts.get(j);
+                if ( iop.index == rop.index ) {
+                    // E.g., insert before 2, delete 2..2; update replace
+                    // text to include insert before, kill insert
+                    rewrites.set(iop.instructionIndex, null);
+                    rop.text = iop.text.toString() + (rop.text!=null?rop.text.toString():"");
+                }
+                else if ( iop.index > rop.index && iop.index <= rop.lastIndex ) {
                     // delete insert as it's a no-op.
                     rewrites.set(iop.instructionIndex, null);
                 }
             }
             // Drop any prior replaces contained within
-            List prevReplaces = getKindOfOps(rewrites, ReplaceOp.class, i);
+            List<? extends ReplaceOp> prevReplaces = getKindOfOps(rewrites, ReplaceOp.class, i);
             for (int j = 0; j < prevReplaces.size(); j++) {
-                ReplaceOp prevRop = (ReplaceOp) prevReplaces.get(j);
+                ReplaceOp prevRop = prevReplaces.get(j);
                 if ( prevRop.index>=rop.index && prevRop.lastIndex <= rop.lastIndex ) {
                     // delete replace as it's a no-op.
                     rewrites.set(prevRop.instructionIndex, null);
@@ -476,7 +495,16 @@ public class TokenRewriteStream extends CommonTokenStream {
                     prevRop.lastIndex<rop.index || prevRop.index > rop.lastIndex;
                 boolean same =
                     prevRop.index==rop.index && prevRop.lastIndex==rop.lastIndex;
-                if ( !disjoint && !same ) {
+                // Delete special case of replace (text==null):
+                // D.i-j.u D.x-y.v    | boundaries overlap    combine to max(min)..max(right)
+                if ( prevRop.text==null && rop.text==null && !disjoint ) {
+                    //System.out.println("overlapping deletes: "+prevRop+", "+rop);
+                    rewrites.set(prevRop.instructionIndex, null); // kill first delete
+                    rop.index = Math.min(prevRop.index, rop.index);
+                    rop.lastIndex = Math.max(prevRop.lastIndex, rop.lastIndex);
+                    System.out.println("new rop "+rop);
+                }
+                else if ( !disjoint && !same ) {
                     throw new IllegalArgumentException("replace op boundaries of "+rop+
                                                        " overlap with previous "+prevRop);
                 }
@@ -485,14 +513,14 @@ public class TokenRewriteStream extends CommonTokenStream {
 
         // WALK INSERTS
         for (int i = 0; i < rewrites.size(); i++) {
-            RewriteOperation op = (RewriteOperation)rewrites.get(i);
+            RewriteOperation op = rewrites.get(i);
             if ( op==null ) continue;
             if ( !(op instanceof InsertBeforeOp) ) continue;
             InsertBeforeOp iop = (InsertBeforeOp)rewrites.get(i);
             // combine current insert with prior if any at same index
-            List prevInserts = getKindOfOps(rewrites, InsertBeforeOp.class, i);
+            List<? extends InsertBeforeOp> prevInserts = getKindOfOps(rewrites, InsertBeforeOp.class, i);
             for (int j = 0; j < prevInserts.size(); j++) {
-                InsertBeforeOp prevIop = (InsertBeforeOp) prevInserts.get(j);
+                InsertBeforeOp prevIop = prevInserts.get(j);
                 if ( prevIop.index == iop.index ) { // combine objects
                     // convert to strings...we're in process of toString'ing
                     // whole token buffer so no lazy eval issue with any templates
@@ -502,9 +530,9 @@ public class TokenRewriteStream extends CommonTokenStream {
                 }
             }
             // look for replaces where iop.index is in range; error
-            List prevReplaces = getKindOfOps(rewrites, ReplaceOp.class, i);
+            List<? extends ReplaceOp> prevReplaces = getKindOfOps(rewrites, ReplaceOp.class, i);
             for (int j = 0; j < prevReplaces.size(); j++) {
-                ReplaceOp rop = (ReplaceOp) prevReplaces.get(j);
+                ReplaceOp rop = prevReplaces.get(j);
                 if ( iop.index == rop.index ) {
                     rop.text = catOpText(iop.text,rop.text);
                     rewrites.set(i, null);  // delete current insert
@@ -517,14 +545,14 @@ public class TokenRewriteStream extends CommonTokenStream {
             }
         }
         // System.out.println("rewrites after="+rewrites);
-        Map m = new HashMap();
+        Map<Integer, RewriteOperation> m = new HashMap<Integer, RewriteOperation>();
         for (int i = 0; i < rewrites.size(); i++) {
-            RewriteOperation op = (RewriteOperation)rewrites.get(i);
+            RewriteOperation op = rewrites.get(i);
             if ( op==null ) continue; // ignore deleted ops
-            if ( m.get(new Integer(op.index))!=null ) {
+            if ( m.get(op.index)!=null ) {
                 throw new Error("should only be one op per index");
             }
-            m.put(new Integer(op.index), op);
+            m.put(op.index, op);
         }
         //System.out.println("index to op: "+m);
         return m;
@@ -537,17 +565,17 @@ public class TokenRewriteStream extends CommonTokenStream {
         if ( b!=null ) y = b.toString();
         return x+y;
     }
-    protected List getKindOfOps(List rewrites, Class kind) {
+    protected <T extends RewriteOperation> List<? extends T> getKindOfOps(List<? extends RewriteOperation> rewrites, Class<T> kind) {
         return getKindOfOps(rewrites, kind, rewrites.size());
     }
 
     /** Get all operations before an index of a particular kind */
-    protected List getKindOfOps(List rewrites, Class kind, int before) {
-        List ops = new ArrayList();
+    protected <T extends RewriteOperation> List<? extends T> getKindOfOps(List<? extends RewriteOperation> rewrites, Class<T> kind, int before) {
+        List<T> ops = new ArrayList<T>();
         for (int i=0; i<before && i<rewrites.size(); i++) {
-            RewriteOperation op = (RewriteOperation)rewrites.get(i);
+            RewriteOperation op = rewrites.get(i);
             if ( op==null ) continue; // ignore deleted
-            if ( op.getClass() == kind ) ops.add(op);
+            if ( kind.isInstance(op) ) ops.add(kind.cast(op));
         }
         return ops;
     }
@@ -557,7 +585,7 @@ public class TokenRewriteStream extends CommonTokenStream {
     }
 
     public String toDebugString(int start, int end) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         for (int i=start; i>=MIN_TOKEN_INDEX && i<=end && i<tokens.size(); i++) {
             buf.append(get(i));
         }

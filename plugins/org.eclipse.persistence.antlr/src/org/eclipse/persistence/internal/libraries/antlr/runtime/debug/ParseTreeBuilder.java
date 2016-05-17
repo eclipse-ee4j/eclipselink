@@ -1,18 +1,18 @@
 /*
- [The "BSD licence"]
- Copyright (c) 2005, 2015 Terence Parr
+ [The "BSD license"]
+ Copyright (c) 2005-2009 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions
  are met:
  1. Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
+     notice, this list of conditions and the following disclaimer.
  2. Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
+     notice, this list of conditions and the following disclaimer in the
+     documentation and/or other materials provided with the distribution.
  3. The name of the author may not be used to endorse or promote products
-    derived from this software without specific prior written permission.
+     derived from this software without specific prior written permission.
 
  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
@@ -24,7 +24,7 @@
  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ */
 package org.eclipse.persistence.internal.libraries.antlr.runtime.debug;
 
 import org.eclipse.persistence.internal.libraries.antlr.runtime.RecognitionException;
@@ -41,8 +41,8 @@ import java.util.List;
 public class ParseTreeBuilder extends BlankDebugEventListener {
     public static final String EPSILON_PAYLOAD = "<epsilon>";
 
-    Stack callStack = new Stack();
-    List hiddenTokens = new ArrayList();
+    Stack<ParseTree> callStack = new Stack<ParseTree>();
+    List<Token> hiddenTokens = new ArrayList<Token>();
     int backtracking = 0;
 
     public ParseTreeBuilder(String grammarName) {
@@ -51,7 +51,7 @@ public class ParseTreeBuilder extends BlankDebugEventListener {
     }
 
     public ParseTree getTree() {
-        return (ParseTree)callStack.elementAt(0);
+        return callStack.elementAt(0);
     }
 
     /**  What kind of node to create.  You might want to override
@@ -66,43 +66,50 @@ public class ParseTreeBuilder extends BlankDebugEventListener {
     }
 
     /** Backtracking or cyclic DFA, don't want to add nodes to tree */
-    public void enterDecision(int d) { backtracking++; }
+    @Override
+    public void enterDecision(int d, boolean couldBacktrack) { backtracking++; }
+    @Override
     public void exitDecision(int i) { backtracking--; }
 
+    @Override
     public void enterRule(String filename, String ruleName) {
         if ( backtracking>0 ) return;
-        ParseTree parentRuleNode = (ParseTree)callStack.peek();
+        ParseTree parentRuleNode = callStack.peek();
         ParseTree ruleNode = create(ruleName);
         parentRuleNode.addChild(ruleNode);
         callStack.push(ruleNode);
     }
 
+    @Override
     public void exitRule(String filename, String ruleName) {
         if ( backtracking>0 ) return;
-        ParseTree ruleNode = (ParseTree)callStack.peek();
+        ParseTree ruleNode = callStack.peek();
         if ( ruleNode.getChildCount()==0 ) {
             ruleNode.addChild(epsilonNode());
         }
         callStack.pop();
     }
 
+    @Override
     public void consumeToken(Token token) {
         if ( backtracking>0 ) return;
-        ParseTree ruleNode = (ParseTree)callStack.peek();
+        ParseTree ruleNode = callStack.peek();
         ParseTree elementNode = create(token);
         elementNode.hiddenTokens = this.hiddenTokens;
-        this.hiddenTokens = new ArrayList();
+        this.hiddenTokens = new ArrayList<Token>();
         ruleNode.addChild(elementNode);
     }
 
+    @Override
     public void consumeHiddenToken(Token token) {
         if ( backtracking>0 ) return;
         hiddenTokens.add(token);
     }
 
+    @Override
     public void recognitionException(RecognitionException e) {
         if ( backtracking>0 ) return;
-        ParseTree ruleNode = (ParseTree)callStack.peek();
+        ParseTree ruleNode = callStack.peek();
         ParseTree errorNode = create(e);
         ruleNode.addChild(errorNode);
     }

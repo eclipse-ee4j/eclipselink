@@ -1,18 +1,18 @@
 /*
- [The "BSD licence"]
- Copyright (c) 2005, 2015 Terence Parr
+ [The "BSD license"]
+ Copyright (c) 2005-2009 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions
  are met:
  1. Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
+     notice, this list of conditions and the following disclaimer.
  2. Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
+     notice, this list of conditions and the following disclaimer in the
+     documentation and/or other materials provided with the distribution.
  3. The name of the author may not be used to endorse or promote products
-    derived from this software without specific prior written permission.
+     derived from this software without specific prior written permission.
 
  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
@@ -24,7 +24,7 @@
  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ */
 package org.eclipse.persistence.internal.libraries.antlr.runtime.tree;
 
 import org.eclipse.persistence.internal.libraries.antlr.runtime.Token;
@@ -48,7 +48,7 @@ public class RewriteRuleTokenStream extends RewriteRuleElementStream {
     /** Create a stream, but feed off an existing list */
     public RewriteRuleTokenStream(TreeAdaptor adaptor,
                                   String elementDescription,
-                                  List elements)
+                                  List<Object> elements)
     {
         super(adaptor, elementDescription, elements);
     }
@@ -66,10 +66,12 @@ public class RewriteRuleTokenStream extends RewriteRuleElementStream {
     /** Don't convert to a tree unless they explicitly call nextTree.
      *  This way we can do hetero tree nodes in rewrite.
      */
+    @Override
     protected Object toTree(Object el) {
         return el;
     }
 
+    @Override
     protected Object dup(Object el) {
         throw new UnsupportedOperationException("dup can't be called for a token stream.");
     }

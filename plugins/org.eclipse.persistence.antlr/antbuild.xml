@@ -62,7 +62,7 @@
 
         <!-- Properties usually defined in build.properties, set here to avoid easy redefinition. -->
         <!-- Version properties -->
-        <property name="release.version"               value="3.2.0"/>
+        <property name="release.version"               value="3.5.2"/>
         <!-- Project infrastructure properties -->
         <property name="src.dir"                       value="src"/>
         <property name="antlr.classes.dir"             value="${antlr.build.location}"/> <!-- "." -->
@@ -96,7 +96,7 @@
         </tstamp>
         <property name="build.type"            value="SNAPSHOT"/>
         <property name="svn.revision"          value="NA"/>
-        <property name="version.qualifier"     value="v201302191141"/>
+        <property name="version.qualifier"     value="v201605171345"/>
         <property name="version.string"        value="${release.version}.${version.qualifier}"/>
         <property name="release.designation"   value="EclipseLink ${release.version} Build"/>
         <property name="specification.vendor"  value="Eclipse.org - EclipseLink Project"/>

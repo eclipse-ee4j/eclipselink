@@ -1,18 +1,18 @@
 /*
- [The "BSD licence"]
- Copyright (c) 2005, 2015 Terence Parr
+ [The "BSD license"]
+ Copyright (c) 2005-2009 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions
  are met:
  1. Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
+     notice, this list of conditions and the following disclaimer.
  2. Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
+     notice, this list of conditions and the following disclaimer in the
+     documentation and/or other materials provided with the distribution.
  3. The name of the author may not be used to endorse or promote products
-    derived from this software without specific prior written permission.
+     derived from this software without specific prior written permission.
 
  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
@@ -24,7 +24,7 @@
  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ */
 package org.eclipse.persistence.internal.libraries.antlr.runtime.tree;
 
 import java.util.ArrayList;
@@ -37,7 +37,7 @@ import java.util.List;
  *  non-null node is called "nil".
  */
 public abstract class BaseTree implements Tree {
-    protected List children;
+    protected List<Object> children;
 
     public BaseTree() {
     }
@@ -49,6 +49,7 @@ public abstract class BaseTree implements Tree {
     public BaseTree(Tree node) {
     }
 
+    @Override
     public Tree getChild(int i) {
         if ( children==null || i>=children.size() ) {
             return null;
@@ -59,7 +60,7 @@ public abstract class BaseTree implements Tree {
     /** Get the children internal List; note that if you directly mess with
      *  the list, do so at your own risk.
      */
-    public List getChildren() {
+    public List<? extends Object> getChildren() {
         return children;
     }
 
@@ -73,6 +74,7 @@ public abstract class BaseTree implements Tree {
         return null;
     }
 
+    @Override
     public int getChildCount() {
         if ( children==null ) {
             return 0;
@@ -86,6 +88,7 @@ public abstract class BaseTree implements Tree {
      *  and child isNil then this routine moves children to t via
      *  t.children = child.children; i.e., without copying the array.
      */
+    @Override
     public void addChild(Tree t) {
         //System.out.println("add child "+t.toStringTree()+" "+this.toStringTree());
         //System.out.println("existing children: "+children);
@@ -129,13 +132,14 @@ public abstract class BaseTree implements Tree {
     }
 
     /** Add all elements of kids list as children of this node */
-    public void addChildren(List kids) {
+    public void addChildren(List<? extends Tree> kids) {
         for (int i = 0; i < kids.size(); i++) {
-            Tree t = (Tree) kids.get(i);
+            Tree t = kids.get(i);
             addChild(t);
         }
     }
 
+    @Override
     public void setChild(int i, Tree t) {
         if ( t==null ) {
             return;
@@ -151,6 +155,26 @@ public abstract class BaseTree implements Tree {
         t.setChildIndex(i);
     }
 
+    /** Insert child t at child position i (0..n-1) by shifting children
+        i+1..n-1 to the right one position. Set parent / indexes properly
+         but does NOT collapse nil-rooted t's that come in here like addChild.
+     */
+    public void insertChild(int i, Object t) {
+        if (i < 0 || i > getChildCount()) {
+            throw new IndexOutOfBoundsException(i+" out or range");
+        }
+
+        if (children == null) {
+            children = createChildrenList();
+        }
+
+        children.add(i, t);
+        // walk others to increment their child indexes
+        // set index, parent of this one too
+        this.freshenParentAndChildIndexes(i);
+    }
+
+    @Override
     public Object deleteChild(int i) {
         if ( children==null ) {
             return null;
@@ -166,6 +190,7 @@ public abstract class BaseTree implements Tree {
      *  For huge child lists, inserting children can force walking rest of
      *  children to set their childindex; could be slow.
      */
+    @Override
     public void replaceChildren(int startChildIndex, int stopChildIndex, Object t) {
         /*
         System.out.println("replaceChildren "+startChildIndex+", "+stopChildIndex+
@@ -178,13 +203,13 @@ public abstract class BaseTree implements Tree {
         int replacingHowMany = stopChildIndex - startChildIndex + 1;
         int replacingWithHowMany;
         BaseTree newTree = (BaseTree)t;
-        List newChildren = null;
+        List<Object> newChildren;
         // normalize to a list of children to add: newChildren
         if ( newTree.isNil() ) {
             newChildren = newTree.children;
         }
         else {
-            newChildren = new ArrayList(1);
+            newChildren = new ArrayList<Object>(1);
             newChildren.add(newTree);
         }
         replacingWithHowMany = newChildren.size();
@@ -228,15 +253,17 @@ public abstract class BaseTree implements Tree {
     }
 
     /** Override in a subclass to change the impl of children list */
-    protected List createChildrenList() {
-        return new ArrayList();
+    protected List<Object> createChildrenList() {
+        return new ArrayList<Object>();
     }
 
+    @Override
     public boolean isNil() {
         return false;
     }
 
     /** Set the parent and child index values for all child of t */
+    @Override
     public void freshenParentAndChildIndexes() {
         freshenParentAndChildIndexes(0);
     }
@@ -244,9 +271,23 @@ public abstract class BaseTree implements Tree {
     public void freshenParentAndChildIndexes(int offset) {
         int n = getChildCount();
         for (int c = offset; c < n; c++) {
-            Tree child = (Tree)getChild(c);
+            Tree child = getChild(c);
             child.setChildIndex(c);
             child.setParent(this);
+        }
+    }
+
+    public void freshenParentAndChildIndexesDeeply() {
+        freshenParentAndChildIndexesDeeply(0);
+    }
+
+    public void freshenParentAndChildIndexesDeeply(int offset) {
+        int n = getChildCount();
+        for (int c = offset; c < n; c++) {
+            BaseTree child = (BaseTree)getChild(c);
+            child.setChildIndex(c);
+            child.setParent(this);
+            child.freshenParentAndChildIndexesDeeply();
         }
     }
 
@@ -269,24 +310,30 @@ public abstract class BaseTree implements Tree {
     }
 
     /** BaseTree doesn't track child indexes. */
+    @Override
     public int getChildIndex() {
         return 0;
     }
+    @Override
     public void setChildIndex(int index) {
     }
 
     /** BaseTree doesn't track parent pointers. */
+    @Override
     public Tree getParent() {
         return null;
     }
 
+    @Override
     public void setParent(Tree t) {
     }
 
     /** Walk upwards looking for ancestor with this token type. */
+    @Override
     public boolean hasAncestor(int ttype) { return getAncestor(ttype)!=null; }
 
     /** Walk upwards and get first ancestor with this token type. */
+    @Override
     public Tree getAncestor(int ttype) {
         Tree t = this;
         t = t.getParent();
@@ -300,9 +347,10 @@ public abstract class BaseTree implements Tree {
     /** Return a list of all ancestors of this node.  The first node of
      *  list is the root and the last is the parent of this node.
      */
-    public List getAncestors() {
+    @Override
+    public List<? extends Tree> getAncestors() {
         if ( getParent()==null ) return null;
-        List ancestors = new ArrayList();
+        List<Tree> ancestors = new ArrayList<Tree>();
         Tree t = this;
         t = t.getParent();
         while ( t!=null ) {
@@ -313,11 +361,12 @@ public abstract class BaseTree implements Tree {
     }
 
     /** Print out a whole tree not just a node */
+    @Override
     public String toStringTree() {
-        if ( children==null || children.size()==0 ) {
+        if ( children==null || children.isEmpty() ) {
             return this.toString();
         }
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         if ( !isNil() ) {
             buf.append("(");
             buf.append(this.toString());
@@ -336,14 +385,17 @@ public abstract class BaseTree implements Tree {
         return buf.toString();
     }
 
+    @Override
     public int getLine() {
         return 0;
     }
 
+    @Override
     public int getCharPositionInLine() {
         return 0;
     }
 
     /** Override to say how a node (not a tree) should look as text */
+    @Override
     public abstract String toString();
 }
