@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,22 +12,15 @@
  ******************************************************************************/
 package dbws.testing.shadowddlgeneration.oldjpub;
 
-//javase imports
-import java.sql.SQLException;
-import java.util.Iterator;
-
-//EclipseLink imports
-import dbws.testing.shadowddlgeneration.oldjpub.PublisherException;
-import dbws.testing.shadowddlgeneration.oldjpub.Util;
-import dbws.testing.shadowddlgeneration.oldjpub.ElemInfo;
-import dbws.testing.shadowddlgeneration.oldjpub.PlsqlElemHelper;
-import dbws.testing.shadowddlgeneration.oldjpub.PlsqlElemInfo;
-import dbws.testing.shadowddlgeneration.oldjpub.ViewCache;
-import dbws.testing.shadowddlgeneration.oldjpub.ViewRow;
 import static dbws.testing.shadowddlgeneration.oldjpub.Util.ALL_ARGUMENTS;
 import static dbws.testing.shadowddlgeneration.oldjpub.Util.OBJECT_NAME;
 import static dbws.testing.shadowddlgeneration.oldjpub.Util.OVERLOAD;
+import static dbws.testing.shadowddlgeneration.oldjpub.Util.OWNER;
 import static dbws.testing.shadowddlgeneration.oldjpub.Util.PACKAGE_NAME;
+
+//javase imports
+import java.sql.SQLException;
+import java.util.Iterator;
 
 /**
  * Describe PL/SQL table type, including index-by tables
@@ -46,6 +39,7 @@ public class PlsqlTableType extends SqlCollectionType {
         m_elemTypeScale = details[DETAILS_TYPE_SCALE];
     }
 
+    @Override
     protected ElemInfo getElemInfo() {
         return m_elemInfo;
     }
@@ -61,13 +55,13 @@ public class PlsqlTableType extends SqlCollectionType {
 
         Iterator<ViewRow> iter;
         if (packageName != null && packageName.length() > 0) {
-            iter = viewCache.getRows(ALL_ARGUMENTS, new String[0], new String[]{PACKAGE_NAME,
-                OBJECT_NAME, OVERLOAD}, new Object[]{packageName, methodName, methodNo},
+            iter = viewCache.getRows(ALL_ARGUMENTS, new String[0], new String[]{OWNER, PACKAGE_NAME,
+                OBJECT_NAME, OVERLOAD}, new Object[]{schema, packageName, methodName, methodNo},
             // new String[0]);
                 new String[]{"SEQUENCE"});
         }
         else { // For toplevel publishing
-            iter = viewCache.getRows(ALL_ARGUMENTS, new String[0], new String[]{}, new Object[]{},
+            iter = viewCache.getRows(ALL_ARGUMENTS, new String[0], new String[]{OWNER}, new Object[]{schema},
                 new String[0]);
         }
         PlsqlElemHelper[] info = PlsqlElemHelper.getPlsqlElemHelper(iter);
@@ -118,6 +112,7 @@ public class PlsqlTableType extends SqlCollectionType {
         return peti;
     }
 
+    @Override
     public TypeClass getComponentType() {
         return m_elementType;
     }

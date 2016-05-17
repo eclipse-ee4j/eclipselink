@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,24 +12,19 @@
  ******************************************************************************/
 package dbws.testing.simplesf;
 
+import static org.eclipse.persistence.internal.xr.QueryOperation.ORACLEOPAQUE_STR;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 //javase imports
 import java.io.StringReader;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 
-import org.w3c.dom.Document;
-
 //java eXtension imports
 import javax.wsdl.WSDLException;
-
-//JUnit4 imports
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 //EclipseLink imports
 import org.eclipse.persistence.internal.xr.Invocation;
@@ -38,8 +33,11 @@ import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.tools.dbws.DBWSBuilder;
 import org.eclipse.persistence.tools.dbws.oracle.OracleHelper;
-import static org.eclipse.persistence.internal.xr.QueryOperation.ORACLEOPAQUE_STR;
-import static org.eclipse.persistence.internal.xr.QueryOperation.ORACLESQLXML_STR;
+//JUnit4 imports
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.w3c.dom.Document;
 
 //test imports
 import dbws.testing.DBWSTestSuite;
@@ -270,7 +268,7 @@ public class SimpleSFTestSuite extends DBWSTestSuite {
         if (!areDocsEqual) {
             String testDocString = documentToString(doc);
             String msg = "Control document not same as instance document.";
-            if (testDocString.contains(ORACLEOPAQUE_STR) || testDocString.contains(ORACLESQLXML_STR)) {
+            if (testDocString.contains(ORACLEOPAQUE_STR)) {
                 msg = msg + " Please make sure that Oracle's XDB and XMLParser jars are on the test classpath.";
             }
             fail(msg + "\nExpected:\n" + documentToString(controlDoc) + "\nActual:\n" + testDocString);

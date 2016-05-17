@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,28 +12,27 @@
  ******************************************************************************/
 package dbws.testing.plsqlrecord2;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 //javase imports
 import java.io.StringReader;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
-import org.w3c.dom.Document;
-
 //java eXtension imports
 import javax.wsdl.WSDLException;
-
-//JUnit4 imports
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 //EclipseLink imports
 import org.eclipse.persistence.internal.xr.Invocation;
 import org.eclipse.persistence.internal.xr.Operation;
 import org.eclipse.persistence.oxm.XMLMarshaller;
+//JUnit4 imports
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.w3c.dom.Document;
 
 //test imports
 import dbws.testing.DBWSTestSuite;
@@ -43,6 +42,9 @@ import dbws.testing.DBWSTestSuite;
  *
  */
 public class PLSQLRecord2TestSuite extends DBWSTestSuite {
+
+    static final String SCHEMA = System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
+
     static final String CREATE_EMPREC_TYPE =
         "create or replace TYPE pkgrec_wrapper2_empRecType AS OBJECT ("+
           "\np_empno NUMBER (4), p_ename VARCHAR2 (20)"+
@@ -62,7 +64,7 @@ public class PLSQLRecord2TestSuite extends DBWSTestSuite {
         "DROP TABLE EMP";
 
     static final String CREATE_PACKAGE =
-        "CREATE OR REPLACE PACKAGE DMCCANN.pkgRec_wrapper2 IS" +
+        "CREATE OR REPLACE PACKAGE " + SCHEMA + ".pkgRec_wrapper2 IS" +
            "\nTYPE empRecType IS RECORD (p_empno NUMBER (4), p_ename VARCHAR2 (20));" +
            "\nPROCEDURE sp_get_empRecord" +
            "\n(" +
@@ -74,10 +76,10 @@ public class PLSQLRecord2TestSuite extends DBWSTestSuite {
         "\nEND pkgRec_wrapper2;";
 
     static final String DROP_PACKAGE =
-        "DROP PACKAGE DMCCANN.pkgRec_wrapper2";
+        "DROP PACKAGE " + SCHEMA + ".pkgRec_wrapper2";
 
     static final String CREATE_PACKAGE_BODY =
-        "CREATE OR REPLACE PACKAGE BODY DMCCANN.pkgRec_wrapper2 IS" +
+        "CREATE OR REPLACE PACKAGE BODY " + SCHEMA + ".pkgRec_wrapper2 IS" +
            "\nPROCEDURE sp_get_empRecord (" +
                "\np_empno            IN     NUMBER," +
                "\no_return_status    OUT VARCHAR2," +
@@ -96,7 +98,7 @@ public class PLSQLRecord2TestSuite extends DBWSTestSuite {
             "\nEND;" +
         "\n END pkgRec_wrapper2;";
     static final String DROP_PACKAGE_BODY =
-        "DROP PACKAGE BODY DMCCANN.pkgRec_wrapper2";
+        "DROP PACKAGE BODY " + SCHEMA + ".pkgRec_wrapper2";
 
     static boolean ddlCreate = false;
     static boolean ddlDrop = false;
@@ -161,7 +163,7 @@ public class PLSQLRecord2TestSuite extends DBWSTestSuite {
               "</properties>" +
               "<plsql-procedure " +
                   "name=\"GetEmpRecord\" " +
-                  "schemaPattern=\"DMCCANN\" " +
+                  "schemaPattern=\"" + SCHEMA + "\" " +
                   "catalogPattern=\"pkgRec_wrapper2\" " +
                   "procedurePattern=\"sp_get_empRecord\" " +
               "/>" +

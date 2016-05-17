@@ -70,13 +70,14 @@
     </condition>
     <echo message="${custom.test.properties.message}"/>
     <property file="${user.home}/test.properties"/>
-    <property file="${dbwsbldrorcltst.build.location}/test.properties"/>
     <condition property="custom.properties.message" value="Loading ${user.home}/build.properties..."
                                                      else="Custom properties file '${user.home}/build.properties' not found to load.">
         <available file="${user.home}/build.properties"/>
     </condition>
     <echo message="${custom.properties.message}"/>
     <property file="${user.home}/build.properties"/>
+    <property file="${test.properties}"/>
+    <property file="${dbwsbldrorcltst.build.location}/test.properties"/>
     <property file="${dbwsbldrorcltst.build.location}/antbuild.properties"/>
     <!-- Sets default oracle.extensions.depend dir location to default based upon discovered dir heirarchy -->
     <!-- Must be defined after ${user.home}/build.properties and ${user.home}/test.properties are included to allow redefinition -->
@@ -90,9 +91,9 @@
 
     <!-- clean -->
     <target name="clean" description="Clean all generated content">
-        <DeleteDirQuietly dir="${classes.dir}"/>
-        <DeleteDirQuietly dir="${run.dir}"/>
-        <DeleteFileQuietly file="${dbwsbldrorcltst.jar}"/>
+        <delete dir="${classes.dir}" failonerror="false" />
+        <delete dir="${run.dir}" failonerror="false" />
+        <delete file="${dbwsbldrorcltst.jar}" />
     </target>
 
     <!-- initialize varables and paths needed for compile -->
@@ -241,9 +242,6 @@
                 <isset property="db.ddl.drop"/>
             </and>
         </condition>
-        <condition property="bfile_dir" value="${java.io.tmpdir}bfile_dir" else="${java.io.tmpdir}/bfile_dir">
-            <contains string="${os.name}" substring="Win"/>
-        </condition>
         <!-- Report unmet Run conditions -->
         <say message="Conditions not met to execute tests!" unless="support.test"/>
         <say message="     DB platform not set to Oracle!"  unless="is.oracle.platform"/>
@@ -262,11 +260,6 @@
         <say message="     db.ddl not set!"                 unless="db.ddl.create"/>
         <say message="     db.ddl not set!"                 unless="db.ddl.drop"/>
 
-        <!-- Create LOB source file directory required for BlobTypeTestSuite -->
-        <say message="Creating required LOB source file directory at: ${bfile_dir}"/>
-        <copy todir="${bfile_dir}">
-            <fileset dir="resource/dbws/testing/blobtype"/>
-        </copy>
     </target>
 
     <target name="compile" depends="init" description="Compile DBWS Util test Common classes">
@@ -276,13 +269,24 @@
                includes="**/*.java"
                fork="true"
                classpathref="dbwsbldrorcltst.compile.path"
-        />
+               debug="${javac.debug}"
+               debuglevel="${javac.debuglevel}"
+               encoding="UTF-8"
+               optimize="${javac.optimize}"
+               source="${javac.version}"
+               target="${javac.version}"
+               deprecation="${javac.deprecation}"
+               failonerror="true"
+               memoryMaximumSize="512m" />
+        <copy todir="${classes.dir}">
+            <fileset dir="resource" includes="**" />
+        </copy>
     </target>
 
     <target name="package" description="package DBWS Util Oracle Test Common jar">
         <jar jarfile="./${dbwsbldrorcltst.jar}">
             <fileset dir="${classes.dir}">
-                <include name="**/*.class"/>
+                <include name="**/*"/>
             </fileset>
         </jar>
     </target>
@@ -291,231 +295,42 @@
         <pathconvert property="dbwsbldrorcltst.run.path.msg" refid="dbwsbldrorcltst.run.path"/>
         <echo>Running test on ${db.url}</echo>
         <echo>ClassPath: ${dbwsbldrorcltst.run.path.msg}</echo>
-        <mkdir dir="${classes.dir}"/>
-        <DeleteDirQuietly dir="./${report.dir}"/>
+        <delete dir="./${report.dir}" failonerror="false" />
+        <delete dir="./${run.dir}" failonerror="false" />
         <mkdir dir="./${report.dir}"/>
-        <junit
-          printsummary="withOutAndErr"
-          fork="yes"
-          maxmemory="512m"
-          >
-          <formatter
-            type="xml"
-          />
-          <classpath>
-            <path
-              refid="dbwsbldrorcltst.run.path"
-            />
-            <pathelement
-              path="./${dbwsbldrorcltst.jar}"
-            />
-          </classpath>
-          <sysproperty
-            key="eclipselink.logging.level"
-            value="${logging.level}"
-          />
-          <sysproperty
-            key="db.driver"
-            value="${db.driver}"
-          />
-          <sysproperty
-            key="db.url"
-            value="${db.url}"
-          />
-          <sysproperty
-            key="db.user"
-            value="${db.user}"
-          />
-          <sysproperty
-            key="db.pwd"
-            value="${db.pwd}"
-          />
-          <sysproperty
-            key="db.platform"
-            value="${db.platform}"
-          />
-          <sysproperty
-            key="db.ddl.create"
-            value="${db.ddl.create}"
-          />
-          <sysproperty
-            key="db.ddl.drop"
-            value="${db.ddl.drop}"
-          />
-          <sysproperty
-            key="db.ddl.debug"
-            value="${db.ddl.debug}"
-          />
-          <sysproperty
-            key="release.version"
-            value="${release.version}"
-          />
-          <test
-            name="dbws.testing.advancedjdbcpackage.AdvancedJDBCPackageTestSuite"
-          />
-          <test
-            name="dbws.testing.blobtype.BlobTypeTestSuite"
-          />
-          <test
-            name="dbws.testing.complexplsqlsf.ComplexPLSQLSFTestSuite"
-          />
-          <test
-            name="dbws.testing.complexplsqlsp.ComplexPLSQLSPTestSuite"
-          />
-          <test
-            name="dbws.testing.customsql.CustomSQLTestSuite"
-          />
-          <test
-            name="dbws.testing.invalidinput.InvalidInputTestSuite"
-          />
-          <test
-            name="dbws.testing.invalidpackage.InvalidPackageTestSuite"
-          />
-          <test
-            name="dbws.testing.iottype.IOTTypeTestSuite"
-          />
-          <test
-            name="dbws.testing.namingtransformer.NamingTransformerTestSuite"
-          />
-          <test
-            name="dbws.testing.nchartype.NcharTypeTestSuite"
-          />
-          <test
-            name="dbws.testing.nonassociativeplsql.NonAssociativePLSQLCollectionTestSuite"
-          />
-          <test
-            name="dbws.testing.objecttabletype.ObjectTableTypeTestSuite"
-          />
-          <test
-            name="dbws.testing.objecttype.ObjectTypeTestSuite"
-          />
-          <test
-            name="dbws.testing.objecttype.ObjectTypeInLowercaseTestSuite"
-          />
-          <test
-            name="dbws.testing.optionalarguments.OptionalArgumentTestSuite"
-          />
-          <test
-            name="dbws.testing.ordescriptor.ORDescriptorTestSuite"
-          />
-          <test
-            name="dbws.testing.oxdescriptor.OXDescriptorTestSuite"
-          />
-          <test
-            name="dbws.testing.plsqlcollection.PLSQLCollectionTestSuite"
-          />
-          <test
-            name="dbws.testing.plsqlrecord.PLSQLRecordTestSuite"
-          />
-          <test
-            name="dbws.testing.prependedpackage.PrependedPackageTestSuite"
-          />
-          <test
-            name="dbws.testing.prependedschema.PrependedSchemaTestSuite"
-          />
-          <test
-            name="dbws.testing.rowtype.RowTypeTestSuite"
-          />
-          <test
-            name="dbws.testing.secondarysql.SecondarySQLTestSuite"
-          />
-          <test
-            name="dbws.testing.shadowddlgeneration.ShadowDDLGenerationTestSuite"
-          />
-          <test
-            name="dbws.testing.simplenestedtable.SimpleNestedTableTestSuite"
-          />
-          <test
-            name="dbws.testing.simpleplsqlsf.SimplePLSQLSFTestSuite"
-          />
-          <test
-            name="dbws.testing.simpleplsqlsp.SimplePLSQLSPTestSuite"
-          />
-          <test
-            name="dbws.testing.simplesf.SimpleSFTestSuite"
-          />
-          <test
-            name="dbws.testing.simplesp.SimpleSPTestSuite"
-          />
-          <test
-            name="dbws.testing.simpletablewithnestedsql.SimpleTableWithNestedSQLTestSuite"
-          />
-          <test
-            name="dbws.testing.strongrefcursor.StrongRefCursorTestSuite"
-          />
-          <test
-            name="dbws.testing.tabletype.TableTypeTestSuite"
-          />
-          <test
-            name="dbws.testing.toplevelsimpleplsqlsp.TopLevelSimplePLSQLSPTestSuite"
-          />
-          <test
-            name="dbws.testing.types.TypesTestSuite"
-          />
-          <test
-            name="dbws.testing.varray.VArrayTestSuite"
-          />
-          <test
-            name="dbws.testing.verylongidentifier.VeryLongIdentifierTestSuite"
-          />
-          <test
-            name="dbws.testing.weakrefcursor.WeakRefCursorTestSuite"
-          />
+        <mkdir dir="./${run.dir}"/>
+        <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
+        <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
+        <property name="test.class" value="**/*TestSuite*" />
+        <junit printsummary="withOutAndErr" fork="yes" dir="${run.dir}" tempdir="${run.dir}" maxmemory="512m" showoutput="true">
+            <formatter type="xml" />
+            <classpath>
+                <path refid="dbwsbldrorcltst.run.path"/>
+            </classpath>
+            <sysproperty key="eclipselink.logging.level" value="${logging.level}" />
+            <sysproperty key="db.driver" value="${db.driver}" />
+            <sysproperty key="db.url" value="${db.url}" />
+            <sysproperty key="db.user" value="${db.user}" />
+            <sysproperty key="db.pwd" value="${db.pwd}" />
+            <sysproperty key="db.platform" value="${db.platform}" />
+            <sysproperty key="db.ddl.create" value="${db.ddl.create}" />
+            <sysproperty key="db.ddl.drop" value="${db.ddl.drop}" />
+            <sysproperty key="db.ddl.debug" value="${db.ddl.debug}" />
+            <sysproperty key="release.version" value="${release.version}" />
+            <jvmarg line="${additional.jvmargs}"/>
+            <batchtest todir="${report.dir}">
+                <fileset dir="${src.dir}">
+                    <include name="${test.class}" />
+                    <exclude name="**/DBWSTestSuite*" />
+                </fileset>
+            </batchtest>
         </junit>
-        <junitreport
-          todir="./${report.dir}"
-          >
-          <fileset
-            dir="."
-            >
-            <include
-              name="TEST-*.xml"
-            />
-          </fileset>
-          <report
-            format="noframes"
-            todir="./${report.dir}"
-          />
+        <junitreport todir="${report.dir}" >
+            <fileset dir="${report.dir}">
+                <include name="TEST-*.xml" />
+            </fileset>
+            <report format="noframes" todir="./${report.dir}" />
         </junitreport>
-        <delete>
-          <fileset dir="." includes="TEST-*xml"/>
-          <fileset dir="." includes="junit*.properties"/>
-          <fileset dir="." includes="eclipselink-dbws-*"/>
-          <fileset dir="." includes="eclipselink-dbws.*"/>
-          <fileset dir="." includes="DBWSProvider.*"/>
-          <fileset dir="." includes="ProviderListener.*"/>
-          <fileset dir="." includes="web.xml*"/>
-          <fileset dir="." includes="dbws.war"/>
-        </delete>
     </target>
-
-    <!-- MACRO and SCRIPT definitions -->
-    <presetdef name="javac">
-      <javac
-        debug="${javac.debug}"
-        debuglevel="${javac.debuglevel}"
-        encoding="UTF-8"
-        optimize="${javac.optimize}"
-        source="${javac.version}"
-        target="${javac.version}"
-        deprecation="${javac.deprecation}"
-        failonerror="true"
-        memoryMaximumSize="512m"
-      />
-    </presetdef>
-    <presetdef name="DeleteDirQuietly">
-        <delete
-            dir="_tmp_"
-            quiet="true"
-            failonerror="false"
-        />
-    </presetdef>
-    <presetdef name="DeleteFileQuietly">
-        <delete
-            file="_tmp_"
-            quiet="true"
-            failonerror="false"
-        />
-    </presetdef>
-
+    
 </project>

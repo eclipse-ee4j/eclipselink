@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,27 +12,29 @@
  ******************************************************************************/
 package dbws.testing.blobtype;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+
 //javase imports
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 //java eXtension imports
 import javax.activation.DataHandler;
 import javax.wsdl.WSDLException;
 
-//JUnit4 imports
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
-
 //EclipseLink imports
 import org.eclipse.persistence.internal.xr.Invocation;
 import org.eclipse.persistence.internal.xr.Operation;
 import org.eclipse.persistence.tools.dbws.DBWSBuilder;
+//JUnit4 imports
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 //test imports
 import dbws.testing.DBWSTestSuite;
@@ -40,19 +42,8 @@ import dbws.testing.DBWSTestSuite;
 /**
  * Tests PL/SQL procedures and functions returning BLOB data.
  *
- * Assumptions:
- * <ul>
- * <li>User has privileges to create/drop Oracle DIRECTORY objects</li>
- * <li>Files '3343_bytes.jpg', '32179_bytes.jpg', and '924732_bytes.jpg'
- * have been copied to the temp directory '${java.io.tmpdir}bfile_dir'</li>
- * </ul>
- *
  */
 public class BlobTypeTestSuite extends DBWSTestSuite {
-
-    // BFILE DRIECTORY
-    static final String CREATE_BFILE_DIRECTORY =
-        "CREATE OR REPLACE DIRECTORY bfile_dir AS '" + System.getProperty("java.io.tmpdir") + "bfile_dir'";
 
     // BLOB table
     static final String CREATE_BLOBDATA_TABLE =
@@ -62,35 +53,8 @@ public class BlobTypeTestSuite extends DBWSTestSuite {
             "\nB BLOB," +
             "\nPRIMARY KEY (ID)" +
         "\n)";
-    static final String INIT_BLOBDATA_TABLE =
-        "DECLARE" +
-          "\nsrc_lob_sm  BFILE := BFILENAME('BFILE_DIR', '3343_bytes.jpg');" +
-          "\nsrc_lob_md  BFILE := BFILENAME('BFILE_DIR', '32179_bytes.jpg');" +
-          "\nsrc_lob_lg  BFILE := BFILENAME('BFILE_DIR', '924732_bytes.jpg');" +
-          "\ndest_lob_sm BLOB;" +
-          "\ndest_lob_md BLOB;" +
-          "\ndest_lob_lg BLOB;" +
-        "\nBEGIN" +
-          "\nINSERT INTO BLOBDATA VALUES(1, '3343_bytes.jpg', EMPTY_BLOB()) RETURNING B INTO dest_lob_sm;" +
-          "\nDBMS_LOB.OPEN(src_lob_sm, DBMS_LOB.LOB_READONLY);" +
-          "\nDBMS_LOB.LoadFromFile( DEST_LOB => dest_lob_sm," +
-                                   "\nSRC_LOB  => src_lob_sm," +
-                                   "\nAMOUNT   => DBMS_LOB.GETLENGTH(src_lob_sm) );" +
-          "\nDBMS_LOB.CLOSE(src_lob_sm);" +
-          "\nINSERT INTO BLOBDATA VALUES(2, '32179_bytes.jpg', EMPTY_BLOB()) RETURNING B INTO dest_lob_md;" +
-          "\nDBMS_LOB.OPEN(src_lob_md, DBMS_LOB.LOB_READONLY);" +
-          "\nDBMS_LOB.LoadFromFile( DEST_LOB => dest_lob_md," +
-                                   "\nSRC_LOB  => src_lob_md," +
-                                   "\nAMOUNT   => DBMS_LOB.GETLENGTH(src_lob_md) );" +
-          "\nDBMS_LOB.CLOSE(src_lob_md);" +
-          "\nINSERT INTO BLOBDATA VALUES(3, '924732_bytes.jpg', EMPTY_BLOB()) RETURNING B INTO dest_lob_lg;" +
-          "\nDBMS_LOB.OPEN(src_lob_lg, DBMS_LOB.LOB_READONLY);" +
-          "\nDBMS_LOB.LoadFromFile( DEST_LOB => dest_lob_lg," +
-                                   "\nSRC_LOB  => src_lob_lg," +
-                                   "\nAMOUNT   => DBMS_LOB.GETLENGTH(src_lob_lg) );" +
-          "\nDBMS_LOB.CLOSE(src_lob_lg);" +
-          "\nCOMMIT;" +
-        "\nEND;";
+
+    static final String INSERT_INTO_BLOBDATA = "INSERT INTO BLOBDATA VALUES(?, ?, ?)";
 
     static final String DROP_BLOBDATA_TABLE =
         "DROP TABLE BLOBDATA";
@@ -136,8 +100,6 @@ public class BlobTypeTestSuite extends DBWSTestSuite {
         "DROP PACKAGE BODY BLOBDATA_PKG";
     static final String DROP_BLOBDATA_PACKAGE =
         "DROP PACKAGE BLOBDATA_PKG";
-    static final String DROP_BFILE_DIRECTORY =
-        "DROP DIRECTORY bfile_dir";
 
     static boolean ddlCreate = false;
     static boolean ddlDrop = false;
@@ -166,13 +128,12 @@ public class BlobTypeTestSuite extends DBWSTestSuite {
             ddlDebug = true;
         }
         if (ddlCreate) {
-            runDdl(conn, CREATE_BFILE_DIRECTORY, ddlDebug);
             runDdl(conn, CREATE_BLOBDATA_TABLE, ddlDebug);
-            runDdl(conn, INIT_BLOBDATA_TABLE, ddlDebug);
             runDdl(conn, CREATE_PROCEDURE, ddlDebug);
             runDdl(conn, CREATE_FUNCTION, ddlDebug);
             runDdl(conn, CREATE_BLOBDATA_PACKAGE, ddlDebug);
             runDdl(conn, CREATE_BLOBDATA_BODY, ddlDebug);
+            initTestValues(conn);
         }
         username = System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
         DBWS_BUILDER_XML_USERNAME =
@@ -224,6 +185,27 @@ public class BlobTypeTestSuite extends DBWSTestSuite {
           DBWSTestSuite.setUp(".");
     }
 
+    private static void initTestValues(Connection conn) {
+        try {
+            PreparedStatement pStmt = conn.prepareStatement(INSERT_INTO_BLOBDATA);
+            pStmt.setInt(1, 1);
+            pStmt.setString(2, "3343_bytes.jpg");
+            pStmt.setBlob(3, BlobTypeTestSuite.class.getResourceAsStream("/dbws/testing/blobtype/3343_bytes.jpg"));
+            pStmt.execute();
+            pStmt.setInt(1, 2);
+            pStmt.setString(2, "32179_bytes.jpg");
+            pStmt.setBlob(3, BlobTypeTestSuite.class.getResourceAsStream("/dbws/testing/blobtype/32179_bytes.jpg"));
+            pStmt.execute();
+            pStmt.setInt(1, 3);
+            pStmt.setString(2, "924732_bytes.jpg");
+            pStmt.setBlob(3, BlobTypeTestSuite.class.getResourceAsStream("/dbws/testing/blobtype/924732_bytes.jpg"));
+            pStmt.execute();
+        } catch (SQLException e) {
+            e.printStackTrace(System.out);
+        }
+
+    }
+
     @AfterClass
     public static void tearDown() {
         if (ddlDrop) {
@@ -232,7 +214,6 @@ public class BlobTypeTestSuite extends DBWSTestSuite {
             runDdl(conn, DROP_BLOBDATA_BODY, ddlDebug);
             runDdl(conn, DROP_BLOBDATA_PACKAGE, ddlDebug);
             runDdl(conn, DROP_BLOBDATA_TABLE, ddlDebug);
-            runDdl(conn, DROP_BFILE_DIRECTORY, ddlDebug);
         }
     }
 

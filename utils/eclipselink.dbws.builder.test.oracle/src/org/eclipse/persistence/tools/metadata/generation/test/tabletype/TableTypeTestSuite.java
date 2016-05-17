@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -16,9 +16,11 @@ package org.eclipse.persistence.tools.metadata.generation.test.tabletype;
 import static org.eclipse.persistence.tools.metadata.generation.test.AllTests.DATABASE_DDL_CREATE_KEY;
 import static org.eclipse.persistence.tools.metadata.generation.test.AllTests.DATABASE_DDL_DEBUG_KEY;
 import static org.eclipse.persistence.tools.metadata.generation.test.AllTests.DATABASE_DDL_DROP_KEY;
+import static org.eclipse.persistence.tools.metadata.generation.test.AllTests.DATABASE_USERNAME_KEY;
 import static org.eclipse.persistence.tools.metadata.generation.test.AllTests.DEFAULT_DATABASE_DDL_CREATE;
 import static org.eclipse.persistence.tools.metadata.generation.test.AllTests.DEFAULT_DATABASE_DDL_DEBUG;
 import static org.eclipse.persistence.tools.metadata.generation.test.AllTests.DEFAULT_DATABASE_DDL_DROP;
+import static org.eclipse.persistence.tools.metadata.generation.test.AllTests.DEFAULT_DATABASE_USERNAME;
 import static org.eclipse.persistence.tools.metadata.generation.test.AllTests.DEFAULT_PACKAGE_NAME;
 import static org.eclipse.persistence.tools.metadata.generation.test.AllTests.comparer;
 import static org.eclipse.persistence.tools.metadata.generation.test.AllTests.conn;
@@ -89,10 +91,12 @@ public class TableTypeTestSuite {
             runDdl(conn, CREATE_TABLETYPE_TABLE, ddlDebug);
         }
 
+        String schema = System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
+
         // use DatabaseTypeBuilder to generate a list of TableTypes
         dbTypeBuilder = new DatabaseTypeBuilder();
         try {
-            dbTables = dbTypeBuilder.buildTables(conn, "DMCCANN", "TABLETYPE");
+            dbTables = dbTypeBuilder.buildTables(conn, schema, "TABLETYPE");
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -183,14 +187,14 @@ public class TableTypeTestSuite {
         "     xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" +
         "   <orm:entity class=\"metadatagen.Tabletype\" access=\"VIRTUAL\">\n" +
         "      <orm:table name=\"TABLETYPE\"/>\n" +
-        "      <orm:named-native-query name=\"findByPrimaryKey_TabletypeType\">\n" +
+        "      <orm:named-native-query name=\"findByPrimaryKey_TabletypeType\" result-class=\"metadatagen.Tabletype\">\n" +
         "         <orm:query>SELECT * FROM TABLETYPE WHERE (EMPNO = ?1)</orm:query>\n" +
         "      </orm:named-native-query>\n" +
-        "      <orm:named-native-query name=\"findAll_TabletypeType\">\n" +
+        "      <orm:named-native-query name=\"findAll_TabletypeType\" result-class=\"metadatagen.Tabletype\">\n" +
         "         <orm:query>SELECT * FROM TABLETYPE</orm:query>\n" +
         "      </orm:named-native-query>\n" +
         "      <orm:named-native-query name=\"create_TabletypeType\">\n" +
-        "         <orm:query>INSERT INTO TABLETYPE (EMPNO, ENAME, HIREDATE) VALUES (?1, ?2, ?3)</orm:query>\n" +
+        "         <orm:query>INSERT INTO TABLETYPE (EMPNO, ENAME, HIREDATE) VALUES (?, ?, ?)</orm:query>\n" +
         "      </orm:named-native-query>\n" +
         "      <orm:named-native-query name=\"update_TabletypeType\">\n" +
         "         <orm:query>UPDATE TABLETYPE SET ENAME = ?2, HIREDATE = ?3 WHERE (EMPNO = ?1)</orm:query>\n" +

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015  Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2016  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,38 +12,6 @@
  ******************************************************************************/
 package dbws.testing.shadowddlgeneration;
 
-//javase imports
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.List;
-
-//java eXtension imports
-
-//JUnit4 imports
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static junit.framework.Assert.assertEquals;
-
-//EclipseLink imports
-import org.eclipse.persistence.tools.dbws.oracle.ShadowDDLGenerator;
-import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLCollectionType;
-import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLPackageType;
-import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLRecordType;
-import org.eclipse.persistence.tools.oracleddl.parser.ParseException;
-import org.eclipse.persistence.tools.oracleddl.util.DatabaseTypeBuilder;
-import static org.eclipse.persistence.tools.dbws.Util.sqlMatch;
-
-//test imports
-import dbws.testing.shadowddlgeneration.oldjpub.AttributeField;
-import dbws.testing.shadowddlgeneration.oldjpub.MethodFilter;
-import dbws.testing.shadowddlgeneration.oldjpub.PlsqlRecordType;
-import dbws.testing.shadowddlgeneration.oldjpub.PlsqlTableType;
-import dbws.testing.shadowddlgeneration.oldjpub.ProcedureMethod;
-import dbws.testing.shadowddlgeneration.oldjpub.PublisherException;
-import dbws.testing.shadowddlgeneration.oldjpub.SqlReflector;
-import dbws.testing.shadowddlgeneration.oldjpub.SqlTypeWithMethods;
-import dbws.testing.shadowddlgeneration.oldjpub.TypeClass;
 import static dbws.testing.DBWSTestSuite.DATABASE_DDL_CREATE_KEY;
 import static dbws.testing.DBWSTestSuite.DATABASE_DDL_DEBUG_KEY;
 import static dbws.testing.DBWSTestSuite.DATABASE_DDL_DROP_KEY;
@@ -56,6 +24,39 @@ import static dbws.testing.DBWSTestSuite.buildConnection;
 import static dbws.testing.DBWSTestSuite.removeLineTerminators;
 import static dbws.testing.DBWSTestSuite.runDdl;
 import static dbws.testing.shadowddlgeneration.oldjpub.Util.IS_PACKAGE;
+import static org.eclipse.persistence.tools.dbws.Util.sqlMatch;
+import static org.junit.Assert.assertEquals;
+
+//javase imports
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
+
+//EclipseLink imports
+import org.eclipse.persistence.tools.dbws.oracle.ShadowDDLGenerator;
+import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLCollectionType;
+import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLPackageType;
+import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLRecordType;
+import org.eclipse.persistence.tools.oracleddl.parser.ParseException;
+import org.eclipse.persistence.tools.oracleddl.util.DatabaseTypeBuilder;
+
+//java eXtension imports
+
+//JUnit4 imports
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+//test imports
+import dbws.testing.shadowddlgeneration.oldjpub.AttributeField;
+import dbws.testing.shadowddlgeneration.oldjpub.MethodFilter;
+import dbws.testing.shadowddlgeneration.oldjpub.PlsqlRecordType;
+import dbws.testing.shadowddlgeneration.oldjpub.PlsqlTableType;
+import dbws.testing.shadowddlgeneration.oldjpub.ProcedureMethod;
+import dbws.testing.shadowddlgeneration.oldjpub.PublisherException;
+import dbws.testing.shadowddlgeneration.oldjpub.SqlReflector;
+import dbws.testing.shadowddlgeneration.oldjpub.SqlTypeWithMethods;
+import dbws.testing.shadowddlgeneration.oldjpub.TypeClass;
 
 public class ShadowDDLGenerationTestSuite {
 
@@ -128,7 +129,7 @@ public class ShadowDDLGenerationTestSuite {
             "\nEND " + SHADOWDDLTEST_PROCEDURE + ";" +
         "\nEND " + SHADOWDDLTEST_PACKAGE + ";";
     static final String DROP_SHADOWDDLTEST_PACKAGE =
-        "DROP PACKAGE " + SHADOWDDLTEST_PACKAGE + ";";
+        "DROP PACKAGE " + SHADOWDDLTEST_PACKAGE;
 
     //JUnit 'fixture's
     static boolean ddlCreate = false;
@@ -175,6 +176,7 @@ public class ShadowDDLGenerationTestSuite {
         SqlTypeWithMethods methodType = (SqlTypeWithMethods)sqlReflector.addSqlUserType(
             username.toUpperCase(), SHADOWDDLTEST_PACKAGE, IS_PACKAGE, true, 0, 0,
             new MethodFilter() {
+                @Override
                 public boolean acceptMethod(ProcedureMethod method, boolean preApprove) {
                     String methodName = method.getName();
                     if (sqlMatch(SHADOWDDLTEST_PROCEDURE, methodName)) {
@@ -204,24 +206,24 @@ public class ShadowDDLGenerationTestSuite {
                 numRecord2CreateDDL = removeLineTerminators(record2Type.getSqlTypeDecl());
                 numRecord2DropDDL = removeLineTerminators(record2Type.getSqlTypeDrop());
                 List<AttributeField> record2Fields = record2Type.getFields(false);
-                TypeClass fieldA1 = record2Fields.get(0).getType();
+                TypeClass fieldA1 = getFieldFromRecords(record2Fields, "A1").getType();
                 PlsqlTableType numTbl2Type = (PlsqlTableType)fieldA1;
                 numTbl2CreateDDL = removeLineTerminators(numTbl2Type.getSqlTypeDecl());
                 numTbl2DropDDL = removeLineTerminators(numTbl2Type.getSqlTypeDrop());
-                TypeClass fieldA2 = record2Fields.get(1).getType();
+                TypeClass fieldA2 = getFieldFromRecords(record2Fields, "A2").getType();
                 PlsqlRecordType recordType = (PlsqlRecordType)fieldA2;
                 numRecordCreateDDL = removeLineTerminators(recordType.getSqlTypeDecl());
                 numRecordDropDDL = removeLineTerminators(recordType.getSqlTypeDrop());
                 List<AttributeField> recordFields = recordType.getFields(false);
-                TypeClass fieldN33 = recordFields.get(32).getType();
+                TypeClass fieldN33 = getFieldFromRecords(recordFields, "N33").getType();
                 PlsqlTableType numTblType = (PlsqlTableType)fieldN33;
                 numTblCreateDDL = removeLineTerminators(numTblType.getSqlTypeDecl());
                 numTblDropDDL = removeLineTerminators(numTblType.getSqlTypeDrop());
-                TypeClass fieldN34 = recordFields.get(33).getType();
+                TypeClass fieldN34 = getFieldFromRecords(recordFields, "N34").getType();
                 PlsqlTableType numTbl3Type = (PlsqlTableType)fieldN34;
                 numTbl3CreateDDL = removeLineTerminators(numTbl3Type.getSqlTypeDecl());
                 numTbl3DropDDL = removeLineTerminators(numTbl3Type.getSqlTypeDrop());
-                TypeClass fieldN35 = recordFields.get(34).getType();
+                TypeClass fieldN35 = getFieldFromRecords(recordFields, "N35").getType();
                 PlsqlRecordType recordType3 = (PlsqlRecordType)fieldN35;
                 numRecord3CreateDDL = removeLineTerminators(recordType3.getSqlTypeDecl());
                 numRecord3DropDDL = removeLineTerminators(recordType3.getSqlTypeDrop());
@@ -254,6 +256,15 @@ public class ShadowDDLGenerationTestSuite {
             " does not match expected shadow DDL", numRecord3CreateDDL , EXPECTED_NUMRECORD3_CREATE_SHADOWDDL);
         assertEquals("generated drop shadow DDL for " + SHADOWDDLTEST_RECORD_TYPE3 +
             " does not match expected shadow DDL", numRecord3DropDDL, EXPECTED_NUMRECORD3_DROP_SHADOWDDL);
+    }
+
+    private AttributeField getFieldFromRecords(List<AttributeField> record2Fields, String name) {
+        for (AttributeField f: record2Fields) {
+            if (name.equals(f.getName())) {
+                return f;
+            }
+        }
+        return null;
     }
 
     static final String EXPECTED_NUMRECORD2_CREATE_SHADOWDDL =

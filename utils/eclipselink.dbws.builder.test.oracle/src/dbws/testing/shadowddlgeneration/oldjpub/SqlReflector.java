@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,33 +12,6 @@
  ******************************************************************************/
 package dbws.testing.shadowddlgeneration.oldjpub;
 
-//javase imports
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-
-//EclipseLink imports
-import dbws.testing.shadowddlgeneration.oldjpub.MethodFilter;
-import dbws.testing.shadowddlgeneration.oldjpub.PublisherException;
-import dbws.testing.shadowddlgeneration.oldjpub.Util;
-import dbws.testing.shadowddlgeneration.oldjpub.AllCollTypes;
-import dbws.testing.shadowddlgeneration.oldjpub.AllTypes;
-import dbws.testing.shadowddlgeneration.oldjpub.ElemInfo;
-import dbws.testing.shadowddlgeneration.oldjpub.FieldInfo;
-import dbws.testing.shadowddlgeneration.oldjpub.RowtypeInfo;
-import dbws.testing.shadowddlgeneration.oldjpub.SingleColumnViewRow;
-import dbws.testing.shadowddlgeneration.oldjpub.UserArguments;
-import dbws.testing.shadowddlgeneration.oldjpub.ViewCache;
-import dbws.testing.shadowddlgeneration.oldjpub.ViewCacheManager;
-import dbws.testing.shadowddlgeneration.oldjpub.ViewRow;
 import static dbws.testing.shadowddlgeneration.oldjpub.Util.ALL_ARGUMENTS;
 import static dbws.testing.shadowddlgeneration.oldjpub.Util.ALL_COLL_TYPES;
 import static dbws.testing.shadowddlgeneration.oldjpub.Util.ALL_OBJECTS;
@@ -60,6 +33,19 @@ import static dbws.testing.shadowddlgeneration.oldjpub.Util.PACKAGE_NAME;
 import static dbws.testing.shadowddlgeneration.oldjpub.Util.TOPLEVEL;
 import static dbws.testing.shadowddlgeneration.oldjpub.Util.TYPE_NAME;
 import static dbws.testing.shadowddlgeneration.oldjpub.Util.getDefaultTypeLen;
+
+//javase imports
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 /*
  * SQL Type Reflection Facility
@@ -883,7 +869,7 @@ public class SqlReflector {
         // Case 1: result is null
         // Case 2: result not null, predefined, OracleTypes_TBD
         if (modifier != null && modifier.equals("PL/SQL RECORD")) {
-            List<FieldInfo> fieldInfo = PlsqlRecordType.getFieldInfo(packageName, methodName, methodNo,
+            List<FieldInfo> fieldInfo = PlsqlRecordType.getFieldInfo(Util.getSchema(schema, type), packageName, methodName, methodNo,
                 sequence, this);
             List<AttributeField> fields = SqlTypeWithFields.reflectFields(false, fieldInfo, this,
                 parentType, true /* isGrandparent */);

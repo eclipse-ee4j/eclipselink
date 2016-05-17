@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -17,8 +17,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-//EclipseLink imports
-import dbws.testing.shadowddlgeneration.oldjpub.Util;
 
 /**
  * A SqlName encapsulates the name of a database entity, that is, anything declared directly within
@@ -286,14 +284,17 @@ public class SqlName extends Name {
      *            the package from which the class is referenced
      * @return the name of an SQL type.
      */
+    @Override
     public String getUseClass(String currPackage) {
         return ((JavaName)getLangName()).getUseClass(currPackage);
     }
 
+    @Override
     public String getUseClass() {
         return ((JavaName)getLangName()).getUseClass();
     }
 
+    @Override
     public String getUseClass(boolean full) {
         return ((JavaName)getLangName()).getUseClass(full);
     }
@@ -301,6 +302,7 @@ public class SqlName extends Name {
     /**
      * Returns the Java use package name of an SqlName.
      */
+    @Override
     public String getUsePackage() {
         return ((JavaName)getLangName()).getUsePackage();
     }
@@ -308,6 +310,7 @@ public class SqlName extends Name {
     /**
      * return ture, if this type has user subclass
      */
+    @Override
     public boolean hasUseClass() {
         return ((JavaName)getLangName()).hasUseClass();
     }
@@ -315,6 +318,7 @@ public class SqlName extends Name {
     /**
      * Returns the use interface name of a SqlName.
      */
+    @Override
     public String getUseItf() {
         return ((JavaName)getLangName()).getUseItf();
     }
@@ -329,6 +333,7 @@ public class SqlName extends Name {
     /**
      * Returns the Java use interface
      */
+    @Override
     public String getUseItfPackage() {
         return ((JavaName)getLangName()).getUseItfPackage();
     }
@@ -336,10 +341,12 @@ public class SqlName extends Name {
     /**
      * If both decl interface and use interface are defined, we use the latter
      */
+    @Override
     public boolean hasUseItf() {
         return getUseItf() != null;
     }
 
+    @Override
     public boolean hasDeclItf() {
         return getDeclItf() != null;
     }
@@ -393,6 +400,7 @@ public class SqlName extends Name {
      *
      * * @return the decl class name of a type.
      */
+    @Override
     public String getDeclClass() {
         return getLangName().getDeclClass();
     }
@@ -406,6 +414,7 @@ public class SqlName extends Name {
      *
      * * @return the decl package name of a type.
      */
+    @Override
     public String getDeclPackage() {
         return getLangName().getDeclPackage();
     }
@@ -417,6 +426,7 @@ public class SqlName extends Name {
     /**
      * Returns the declaration interface name of a SqlName.
      */
+    @Override
     public String getDeclItf() {
         return ((JavaName)getLangName()).getDeclItf();
     }
@@ -431,6 +441,7 @@ public class SqlName extends Name {
     /**
      * Returns the Java declaration interface of an SqlName.
      */
+    @Override
     public String getDeclItfPackage() {
         return ((JavaName)getLangName()).getDeclItfPackage();
     }
@@ -461,7 +472,7 @@ public class SqlName extends Name {
             if (useName == null) {
                 useName = sqlIdToJavaId(m_name, true);
             }
-            langName = (LangName)new JavaName(packageName, useName, useItf, generatedName,
+            langName = new JavaName(packageName, useName, useItf, generatedName,
                 generatedItf);
 
             setAnnotation(langName);
@@ -479,6 +490,7 @@ public class SqlName extends Name {
      * Returns the complete name of the declared entity. The returned name includes the schema name
      * and the name of the entity within the schema.
      */
+    @Override
     public String toString() {
         String fullName = (m_sourceName.equals("")) ? "<top-level scope>"
             : ((m_printAsIs || m_sourceName.indexOf(".") < 0) ? m_sourceName : "\"" + m_sourceName
@@ -695,6 +707,7 @@ public class SqlName extends Name {
      */
     // Used for mapping SqlName to SqlType in
     // SqlType.m_predefinedTypes and SqlType.m_namedTypes
+    @Override
     public boolean equals(Object obj) {
         if (obj == null) {
             return false;
@@ -712,6 +725,7 @@ public class SqlName extends Name {
     /**
      * Returns a hash code for the Name. Implemented so that Names may be put in Hashtables.
      */
+    @Override
     public int hashCode() {
         return m_sourceName.hashCode();
     }
@@ -834,28 +848,25 @@ public class SqlName extends Name {
             if (rs.next()) {
                 upper_s = rs.getString(1);
             }
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             System.err.println(ex.getMessage());
             upper_s = s;
-        }
-        finally {
+        } finally {
             if (rs != null)
                 try {
                     rs.close();
+                } catch (SQLException e) {
                 }
-                catch (SQLException _) {
-                };
             if (stmt != null)
                 try {
                     stmt.close();
+                } catch (SQLException e) {
                 }
-                catch (SQLException _) {
-                };
         }
 
-        String dbName = isQuoted(s) ? s.substring(1, s.length() - 1) : (upper_s == null) ? ""
-            : upper_s;
+        String dbName = isQuoted(s)
+                ? s.substring(1, s.length() - 1)
+                : (upper_s == null) ? "" : upper_s;
         return dbName;
     }
 

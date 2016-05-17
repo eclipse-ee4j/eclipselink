@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,26 +12,19 @@
  ******************************************************************************/
 package dbws.testing.shadowddlgeneration.oldjpub;
 
+import static dbws.testing.shadowddlgeneration.oldjpub.Util.ALL_ARGUMENTS;
+import static dbws.testing.shadowddlgeneration.oldjpub.Util.DATA_LEVEL;
+import static dbws.testing.shadowddlgeneration.oldjpub.Util.OBJECT_NAME;
+import static dbws.testing.shadowddlgeneration.oldjpub.Util.OVERLOAD;
+import static dbws.testing.shadowddlgeneration.oldjpub.Util.OWNER;
+import static dbws.testing.shadowddlgeneration.oldjpub.Util.PACKAGE_NAME;
+import static dbws.testing.shadowddlgeneration.oldjpub.Util.SEQUENCE;
+
 //javase imports
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-//EclipseLink imports
-import dbws.testing.shadowddlgeneration.oldjpub.PublisherException;
-import dbws.testing.shadowddlgeneration.oldjpub.FieldInfo;
-import dbws.testing.shadowddlgeneration.oldjpub.PlsqlTypeInfo;
-import dbws.testing.shadowddlgeneration.oldjpub.RowtypeInfo;
-import dbws.testing.shadowddlgeneration.oldjpub.UserArguments;
-import dbws.testing.shadowddlgeneration.oldjpub.ViewCache;
-import dbws.testing.shadowddlgeneration.oldjpub.ViewRow;
-import static dbws.testing.shadowddlgeneration.oldjpub.Util.ALL_ARGUMENTS;
-import static dbws.testing.shadowddlgeneration.oldjpub.Util.DATA_LEVEL;
-import static dbws.testing.shadowddlgeneration.oldjpub.Util.OBJECT_NAME;
-import static dbws.testing.shadowddlgeneration.oldjpub.Util.OVERLOAD;
-import static dbws.testing.shadowddlgeneration.oldjpub.Util.PACKAGE_NAME;
-import static dbws.testing.shadowddlgeneration.oldjpub.Util.SEQUENCE;
 
 public class PlsqlRecordType extends SqlTypeWithFields {
 
@@ -48,6 +41,7 @@ public class PlsqlRecordType extends SqlTypeWithFields {
         m_fields = fields;
     }
 
+    @Override
     public List<AttributeField> getDeclaredFields(boolean publishedOnly) throws SQLException,
         PublisherException {
         if (!publishedOnly) {
@@ -73,16 +67,18 @@ public class PlsqlRecordType extends SqlTypeWithFields {
      * Returns an array of Field objects reflecting all the accessible fields of this Type object.
      * Returns an array of length 0 if this Type object has no accesible fields.
      */
+    @Override
     public List<AttributeField> getFields(boolean publishedOnly) throws SecurityException,
         SQLException, PublisherException {
         return getDeclaredFields(publishedOnly);
     }
 
+    @Override
     protected List<FieldInfo> getFieldInfo() {
         return m_fieldInfo;
     }
 
-    public static List<FieldInfo> getFieldInfo(String packageName, String methodName, String methodNo,
+    public static List<FieldInfo> getFieldInfo(String schema, String packageName, String methodName, String methodNo,
         int sequence, SqlReflector reflector) throws SQLException {
 
         int data_level = -1;
@@ -96,7 +92,7 @@ public class PlsqlRecordType extends SqlTypeWithFields {
 
         ViewCache viewCache = reflector.getViewCache();
         Iterator<ViewRow> iter = viewCache.getRows(ALL_ARGUMENTS, new String[0], new String[]{
-            PACKAGE_NAME, OBJECT_NAME, OVERLOAD}, new Object[]{packageName,
+            OWNER, PACKAGE_NAME, OBJECT_NAME, OVERLOAD}, new Object[]{schema, packageName,
             methodName, methodNo}, new String[]{SEQUENCE});
         ArrayList<ViewRow> viewRows = new ArrayList<ViewRow>();
         while (iter.hasNext()) {
@@ -117,8 +113,8 @@ public class PlsqlRecordType extends SqlTypeWithFields {
             }
         }
         data_level++;
-        iter = viewCache.getRows(ALL_ARGUMENTS, new String[0], new String[]{PACKAGE_NAME,
-            OBJECT_NAME, OVERLOAD, DATA_LEVEL}, new Object[]{packageName,
+        iter = viewCache.getRows(ALL_ARGUMENTS, new String[0], new String[]{OWNER, PACKAGE_NAME,
+            OBJECT_NAME, OVERLOAD, DATA_LEVEL}, new Object[]{schema, packageName,
             methodName, methodNo, Integer.valueOf(data_level)}, new String[]{SEQUENCE});
         viewRows = new ArrayList<ViewRow>();
         while (iter.hasNext()) { // DISTINCT

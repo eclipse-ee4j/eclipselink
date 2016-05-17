@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -77,7 +77,7 @@ public class AllTests {
     public static final String DEFAULT_DATABASE_USERNAME = "user";
     public static final String DEFAULT_DATABASE_PASSWORD = "password";
     public static final String DEFAULT_DATABASE_URL = "jdbc:oracle:thin:@localhost:1521:ORCL";
-    public static final String DATABASE_PLATFORM = "org.eclipse.persistence.platform.database.oracle.Oracle11Platform";
+    public static final String DATABASE_PLATFORM = "org.eclipse.persistence.platform.database.oracle.Oracle12Platform";
     // DDL creation
     public static final String DATABASE_DDL_CREATE_KEY = "db.ddl.create";
     public static final String DEFAULT_DATABASE_DDL_CREATE = "false";
