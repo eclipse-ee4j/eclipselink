@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -159,6 +159,8 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
         } else if (javaClass == CoreClassConstants.STRING) {
            if(sourceObject instanceof List){
                return convertListToString(sourceObject, null);
+           } else if (sourceObject instanceof Character[]) {
+               return convertObjectToString(sourceObject);
            } else if (sourceObject instanceof Object[]) {
                return convertArrayToString((Object[]) sourceObject, null);
            } else {
