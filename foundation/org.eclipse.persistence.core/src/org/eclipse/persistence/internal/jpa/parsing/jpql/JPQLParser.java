@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,24 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.parsing.jpql;
 
-import java.util.List;
 import java.util.ArrayList;
-
-import org.eclipse.persistence.internal.libraries.antlr.runtime.*;
-// Third party (ANLTR) stuff
-/*import org.eclipse.persistence.internal.libraries.antlr.ANTLRException;
-import org.eclipse.persistence.internal.libraries.antlr.LLkParser;
-import org.eclipse.persistence.internal.libraries.antlr.MismatchedCharException;
-import org.eclipse.persistence.internal.libraries.antlr.MismatchedTokenException;
-import org.eclipse.persistence.internal.libraries.antlr.NoViableAltException;
-import org.eclipse.persistence.internal.libraries.antlr.NoViableAltForCharException;
-import org.eclipse.persistence.internal.libraries.antlr.ParserSharedInputState;
-import org.eclipse.persistence.internal.libraries.antlr.RecognitionException;
-import org.eclipse.persistence.internal.libraries.antlr.Token;
-import org.eclipse.persistence.internal.libraries.antlr.TokenBuffer;
-import org.eclipse.persistence.internal.libraries.antlr.TokenStream;
-import org.eclipse.persistence.internal.libraries.antlr.TokenStreamException;
-import org.eclipse.persistence.internal.libraries.antlr.TokenStreamRecognitionException;*/
+import java.util.List;
 
 //toplink imports
 import org.eclipse.persistence.exceptions.JPQLException;
@@ -37,6 +21,13 @@ import org.eclipse.persistence.internal.jpa.parsing.JPQLParseTree;
 import org.eclipse.persistence.internal.jpa.parsing.NodeFactory;
 import org.eclipse.persistence.internal.jpa.parsing.NodeFactoryImpl;
 import org.eclipse.persistence.internal.jpa.parsing.jpql.antlr.JPQLParserBuilder;
+// Third party (ANLTR) stuff
+import org.eclipse.persistence.internal.libraries.antlr.runtime.MismatchedTokenException;
+import org.eclipse.persistence.internal.libraries.antlr.runtime.NoViableAltException;
+import org.eclipse.persistence.internal.libraries.antlr.runtime.RecognitionException;
+import org.eclipse.persistence.internal.libraries.antlr.runtime.RecognizerSharedState;
+import org.eclipse.persistence.internal.libraries.antlr.runtime.Token;
+import org.eclipse.persistence.internal.libraries.antlr.runtime.TokenStream;
 
 /**
  * EJBQLParser is the superclass of the ANTLR generated parser.
@@ -297,7 +288,7 @@ public abstract class JPQLParser extends org.eclipse.persistence.internal.librar
             MismatchedTokenException mismatched = (MismatchedTokenException)ex;
             Token token = mismatched.token;
             if (token != null) {
-                if (token.equals(Token.EOF_TOKEN)) {
+                if (token.getType() == Token.EOF) {
                     result = JPQLException.unexpectedEOF(getQueryInfo(),
                         mismatched.line, mismatched.charPositionInLine, ex);
                 }
@@ -312,7 +303,7 @@ public abstract class JPQLParser extends org.eclipse.persistence.internal.librar
             NoViableAltException noviable = (NoViableAltException)ex;
             Token token = noviable.token;
             if (token != null) {
-                if (token.equals(Token.EOF_TOKEN)) {
+                if (token.getType() == Token.EOF) {
                     result = JPQLException.unexpectedEOF(getQueryInfo(),
                         noviable.line, noviable.charPositionInLine, ex);
                 }
@@ -326,7 +317,7 @@ public abstract class JPQLParser extends org.eclipse.persistence.internal.librar
             InvalidIdentifierException invalid = (InvalidIdentifierException)ex;
             Token token = invalid.getToken();
             if (token != null) {
-                if (token.equals(Token.EOF_TOKEN)) {
+                if (token.getType() == Token.EOF) {
                     result = JPQLException.unexpectedEOF(getQueryInfo(),
                             token.getLine(), token.getCharPositionInLine(), ex);
                 }
@@ -359,6 +350,7 @@ public abstract class JPQLParser extends org.eclipse.persistence.internal.librar
     /**
      * Method called by the ANTLR generated code in case of an error.
      */
+    @Override
     public void reportError(RecognitionException ex) {
         addError(ex);
     }

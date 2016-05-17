@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -10,157 +10,171 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/
-// $ANTLR 3.0 JPQL.g 2010-05-03 16:14:54
 
-    package org.eclipse.persistence.internal.jpa.parsing.jpql.antlr;
+// $ANTLR 3.5.2 org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g 2016-05-10 11:03:30
 
-    import org.eclipse.persistence.internal.jpa.parsing.jpql.InvalidIdentifierStartException;
+package org.eclipse.persistence.internal.jpa.parsing.jpql.antlr;
+
+import org.eclipse.persistence.internal.jpa.parsing.jpql.InvalidIdentifierStartException;
+import org.eclipse.persistence.internal.libraries.antlr.runtime.BaseRecognizer;
+import org.eclipse.persistence.internal.libraries.antlr.runtime.CharStream;
+import org.eclipse.persistence.internal.libraries.antlr.runtime.DFA;
+import org.eclipse.persistence.internal.libraries.antlr.runtime.EarlyExitException;
+import org.eclipse.persistence.internal.libraries.antlr.runtime.Lexer;
+import org.eclipse.persistence.internal.libraries.antlr.runtime.MismatchedSetException;
+import org.eclipse.persistence.internal.libraries.antlr.runtime.NoViableAltException;
+import org.eclipse.persistence.internal.libraries.antlr.runtime.RecognitionException;
+import org.eclipse.persistence.internal.libraries.antlr.runtime.RecognizerSharedState;
 
 
-import org.eclipse.persistence.internal.libraries.antlr.runtime.*;
+import java.util.Stack;
+import java.util.List;
+import java.util.ArrayList;
 
+@SuppressWarnings("all")
 public class JPQLLexer extends Lexer {
-    public static final int EXPONENT=116;
-    public static final int FLOAT_SUFFIX=117;
-    public static final int DATE_STRING=118;
-    public static final int MOD=51;
-    public static final int CURRENT_TIME=19;
-    public static final int CASE=14;
-    public static final int NEW=52;
-    public static final int LEFT_ROUND_BRACKET=83;
-    public static final int DOUBLE_LITERAL=98;
-    public static final int TIME_LITERAL=102;
-    public static final int COUNT=17;
-    public static final int EQUALS=82;
-    public static final int NOT=53;
     public static final int EOF=-1;
-    public static final int TIME_STRING=119;
-    public static final int TYPE=73;
-    public static final int LEFT_CURLY_BRACKET=107;
-    public static final int GREATER_THAN_EQUAL_TO=88;
-    public static final int ESCAPE=28;
-    public static final int NAMED_PARAM=105;
-    public static final int BOTH=12;
-    public static final int TIMESTAMP_LITERAL=103;
-    public static final int NUMERIC_DIGITS=114;
-    public static final int SELECT=61;
-    public static final int DIVIDE=94;
-    public static final int COALESCE=15;
-    public static final int ASC=9;
-    public static final int CONCAT=16;
-    public static final int KEY=41;
-    public static final int NULL=54;
-    public static final int ELSE=24;
-    public static final int TRAILING=69;
-    public static final int DELETE=22;
-    public static final int VALUE=77;
-    public static final int DATE_LITERAL=101;
-    public static final int OF=57;
-    public static final int LEADING=42;
-    public static final int RIGHT_CURLY_BRACKET=108;
-    public static final int EMPTY=25;
-    public static final int INTEGER_SUFFIX=112;
     public static final int ABS=4;
-    public static final int GROUP=34;
-    public static final int NOT_EQUAL_TO=86;
-    public static final int WS=106;
-    public static final int FETCH=31;
-    public static final int STRING_LITERAL_SINGLE_QUOTED=100;
-    public static final int INTEGER_LITERAL=95;
-    public static final int FUNC=32;
-    public static final int OR=58;
-    public static final int TRIM=71;
-    public static final int LESS_THAN=89;
-    public static final int RIGHT_ROUND_BRACKET=84;
-    public static final int POSITIONAL_PARAM=104;
-    public static final int LOWER=47;
-    public static final int FROM=33;
-    public static final int END=26;
-    public static final int FALSE=30;
-    public static final int LESS_THAN_EQUAL_TO=90;
-    public static final int DISTINCT=23;
-    public static final int CURRENT_DATE=18;
-    public static final int SIZE=63;
-    public static final int UPPER=76;
-    public static final int WHERE=79;
-    public static final int NULLIF=55;
-    public static final int MEMBER=49;
-    public static final int INNER=38;
-    public static final int ORDER=59;
-    public static final int TEXTCHAR=109;
-    public static final int MAX=48;
-    public static final int UPDATE=75;
-    public static final int AND=6;
-    public static final int SUM=67;
-    public static final int STRING_LITERAL_DOUBLE_QUOTED=99;
-    public static final int LENGTH=44;
-    public static final int INDEX=37;
-    public static final int AS=8;
-    public static final int IN=36;
-    public static final int THEN=68;
-    public static final int UNKNOWN=74;
-    public static final int MULTIPLY=93;
-    public static final int OBJECT=56;
-    public static final int COMMA=81;
-    public static final int IS=39;
-    public static final int LEFT=43;
-    public static final int AVG=10;
-    public static final int SOME=65;
     public static final int ALL=5;
-    public static final int IDENT=80;
-    public static final int PLUS=91;
-    public static final int HEX_LITERAL=111;
-    public static final int EXISTS=29;
-    public static final int DOT=85;
-    public static final int CURRENT_TIMESTAMP=20;
-    public static final int LIKE=45;
-    public static final int OUTER=60;
-    public static final int BY=13;
-    public static final int GREATER_THAN=87;
-    public static final int OCTAL_LITERAL=113;
-    public static final int HEX_DIGIT=110;
-    public static final int SET=62;
-    public static final int HAVING=35;
-    public static final int ENTRY=27;
-    public static final int MIN=50;
-    public static final int SQRT=64;
-    public static final int MINUS=92;
-    public static final int LONG_LITERAL=96;
-    public static final int TRUE=72;
-    public static final int JOIN=40;
-    public static final int SUBSTRING=66;
-    public static final int FLOAT_LITERAL=97;
-    public static final int DOUBLE_SUFFIX=115;
+    public static final int AND=6;
     public static final int ANY=7;
-    public static final int LOCATE=46;
-    public static final int WHEN=78;
-    public static final int DESC=21;
+    public static final int AS=8;
+    public static final int ASC=9;
+    public static final int AVG=10;
     public static final int BETWEEN=11;
-    public static final int TREAT=70;
+    public static final int BOTH=12;
+    public static final int BY=13;
+    public static final int CASE=14;
+    public static final int COALESCE=15;
+    public static final int COMMA=16;
+    public static final int CONCAT=17;
+    public static final int COUNT=18;
+    public static final int CURRENT_DATE=19;
+    public static final int CURRENT_TIME=20;
+    public static final int CURRENT_TIMESTAMP=21;
+    public static final int DATE_LITERAL=22;
+    public static final int DATE_STRING=23;
+    public static final int DELETE=24;
+    public static final int DESC=25;
+    public static final int DISTINCT=26;
+    public static final int DIVIDE=27;
+    public static final int DOT=28;
+    public static final int DOUBLE_LITERAL=29;
+    public static final int DOUBLE_SUFFIX=30;
+    public static final int ELSE=31;
+    public static final int EMPTY=32;
+    public static final int END=33;
+    public static final int ENTRY=34;
+    public static final int EQUALS=35;
+    public static final int ESCAPE=36;
+    public static final int EXISTS=37;
+    public static final int EXPONENT=38;
+    public static final int FALSE=39;
+    public static final int FETCH=40;
+    public static final int FLOAT_LITERAL=41;
+    public static final int FLOAT_SUFFIX=42;
+    public static final int FROM=43;
+    public static final int FUNC=44;
+    public static final int GREATER_THAN=45;
+    public static final int GREATER_THAN_EQUAL_TO=46;
+    public static final int GROUP=47;
+    public static final int HAVING=48;
+    public static final int HEX_DIGIT=49;
+    public static final int HEX_LITERAL=50;
+    public static final int IDENT=51;
+    public static final int IN=52;
+    public static final int INDEX=53;
+    public static final int INNER=54;
+    public static final int INTEGER_LITERAL=55;
+    public static final int INTEGER_SUFFIX=56;
+    public static final int IS=57;
+    public static final int JOIN=58;
+    public static final int KEY=59;
+    public static final int LEADING=60;
+    public static final int LEFT=61;
+    public static final int LEFT_CURLY_BRACKET=62;
+    public static final int LEFT_ROUND_BRACKET=63;
+    public static final int LENGTH=64;
+    public static final int LESS_THAN=65;
+    public static final int LESS_THAN_EQUAL_TO=66;
+    public static final int LIKE=67;
+    public static final int LOCATE=68;
+    public static final int LONG_LITERAL=69;
+    public static final int LOWER=70;
+    public static final int MAX=71;
+    public static final int MEMBER=72;
+    public static final int MIN=73;
+    public static final int MINUS=74;
+    public static final int MOD=75;
+    public static final int MULTIPLY=76;
+    public static final int NAMED_PARAM=77;
+    public static final int NEW=78;
+    public static final int NOT=79;
+    public static final int NOT_EQUAL_TO=80;
+    public static final int NULL=81;
+    public static final int NULLIF=82;
+    public static final int NUMERIC_DIGITS=83;
+    public static final int OBJECT=84;
+    public static final int OCTAL_LITERAL=85;
+    public static final int OF=86;
+    public static final int OR=87;
+    public static final int ORDER=88;
+    public static final int OUTER=89;
+    public static final int PLUS=90;
+    public static final int POSITIONAL_PARAM=91;
+    public static final int RIGHT_CURLY_BRACKET=92;
+    public static final int RIGHT_ROUND_BRACKET=93;
+    public static final int SELECT=94;
+    public static final int SET=95;
+    public static final int SIZE=96;
+    public static final int SOME=97;
+    public static final int SQRT=98;
+    public static final int STRING_LITERAL_DOUBLE_QUOTED=99;
+    public static final int STRING_LITERAL_SINGLE_QUOTED=100;
+    public static final int SUBSTRING=101;
+    public static final int SUM=102;
+    public static final int TEXTCHAR=103;
+    public static final int THEN=104;
+    public static final int TIMESTAMP_LITERAL=105;
+    public static final int TIME_LITERAL=106;
+    public static final int TIME_STRING=107;
+    public static final int TRAILING=108;
+    public static final int TREAT=109;
+    public static final int TRIM=110;
+    public static final int TRUE=111;
+    public static final int TYPE=112;
+    public static final int UNKNOWN=113;
+    public static final int UPDATE=114;
+    public static final int UPPER=115;
+    public static final int VALUE=116;
+    public static final int WHEN=117;
+    public static final int WHERE=118;
+    public static final int WS=119;
 
-    // delegates
-    // delegators
+    // delegate
+    // delegator
+    public Lexer[] getDelegates() {
+        return new Lexer[] {};
+    }
 
-    public JPQLLexer() {;}
+    public JPQLLexer() {}
     public JPQLLexer(CharStream input) {
         this(input, new RecognizerSharedState());
     }
     public JPQLLexer(CharStream input, RecognizerSharedState state) {
         super(input,state);
-
     }
-    public String getGrammarFileName() { return "JPQL.g"; }
+    @Override public String getGrammarFileName() { return "org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g"; }
 
     // $ANTLR start "ABS"
     public final void mABS() throws RecognitionException {
         try {
             int _type = ABS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:9:5: ( 'abs' )
-            // JPQL.g:9:7: 'abs'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:17:5: ( 'abs' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:17:7: 'abs'
             {
             match("abs");
-
 
             }
 
@@ -168,6 +182,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "ABS"
@@ -177,11 +192,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = ALL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:10:5: ( 'all' )
-            // JPQL.g:10:7: 'all'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:18:5: ( 'all' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:18:7: 'all'
             {
             match("all");
-
 
             }
 
@@ -189,6 +203,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "ALL"
@@ -198,11 +213,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = AND;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:11:5: ( 'and' )
-            // JPQL.g:11:7: 'and'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:19:5: ( 'and' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:19:7: 'and'
             {
             match("and");
-
 
             }
 
@@ -210,6 +224,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "AND"
@@ -219,11 +234,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = ANY;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:12:5: ( 'any' )
-            // JPQL.g:12:7: 'any'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:20:5: ( 'any' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:20:7: 'any'
             {
             match("any");
-
 
             }
 
@@ -231,6 +245,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "ANY"
@@ -240,11 +255,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = AS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:13:4: ( 'as' )
-            // JPQL.g:13:6: 'as'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:21:4: ( 'as' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:21:6: 'as'
             {
             match("as");
-
 
             }
 
@@ -252,6 +266,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "AS"
@@ -261,11 +276,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = ASC;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:14:5: ( 'asc' )
-            // JPQL.g:14:7: 'asc'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:22:5: ( 'asc' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:22:7: 'asc'
             {
             match("asc");
-
 
             }
 
@@ -273,6 +287,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "ASC"
@@ -282,11 +297,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = AVG;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:15:5: ( 'avg' )
-            // JPQL.g:15:7: 'avg'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:23:5: ( 'avg' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:23:7: 'avg'
             {
             match("avg");
-
 
             }
 
@@ -294,6 +308,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "AVG"
@@ -303,11 +318,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = BETWEEN;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:16:9: ( 'between' )
-            // JPQL.g:16:11: 'between'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:24:9: ( 'between' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:24:11: 'between'
             {
             match("between");
-
 
             }
 
@@ -315,6 +329,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "BETWEEN"
@@ -324,11 +339,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = BOTH;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:17:6: ( 'both' )
-            // JPQL.g:17:8: 'both'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:25:6: ( 'both' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:25:8: 'both'
             {
             match("both");
-
 
             }
 
@@ -336,6 +350,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "BOTH"
@@ -345,11 +360,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = BY;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:18:4: ( 'by' )
-            // JPQL.g:18:6: 'by'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:26:4: ( 'by' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:26:6: 'by'
             {
             match("by");
-
 
             }
 
@@ -357,6 +371,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "BY"
@@ -366,11 +381,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = CASE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:19:6: ( 'case' )
-            // JPQL.g:19:8: 'case'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:27:6: ( 'case' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:27:8: 'case'
             {
             match("case");
-
 
             }
 
@@ -378,6 +392,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "CASE"
@@ -387,11 +402,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = COALESCE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:20:10: ( 'coalesce' )
-            // JPQL.g:20:12: 'coalesce'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:28:10: ( 'coalesce' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:28:12: 'coalesce'
             {
             match("coalesce");
-
 
             }
 
@@ -399,6 +413,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "COALESCE"
@@ -408,11 +423,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = CONCAT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:21:8: ( 'concat' )
-            // JPQL.g:21:10: 'concat'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:29:8: ( 'concat' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:29:10: 'concat'
             {
             match("concat");
-
 
             }
 
@@ -420,6 +434,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "CONCAT"
@@ -429,11 +444,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = COUNT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:22:7: ( 'count' )
-            // JPQL.g:22:9: 'count'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:30:7: ( 'count' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:30:9: 'count'
             {
             match("count");
-
 
             }
 
@@ -441,6 +455,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "COUNT"
@@ -450,11 +465,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = CURRENT_DATE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:23:14: ( 'current_date' )
-            // JPQL.g:23:16: 'current_date'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:31:14: ( 'current_date' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:31:16: 'current_date'
             {
             match("current_date");
-
 
             }
 
@@ -462,6 +476,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "CURRENT_DATE"
@@ -471,11 +486,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = CURRENT_TIME;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:24:14: ( 'current_time' )
-            // JPQL.g:24:16: 'current_time'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:32:14: ( 'current_time' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:32:16: 'current_time'
             {
             match("current_time");
-
 
             }
 
@@ -483,6 +497,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "CURRENT_TIME"
@@ -492,53 +507,31 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = CURRENT_TIMESTAMP;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:25:19: ( 'current_timestamp' )
-            // JPQL.g:25:21: 'current_timestamp'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:33:19: ( 'current_timestamp' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:33:21: 'current_timestamp'
             {
             match("current_timestamp");
 
-
             }
 
             state.type = _type;
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "CURRENT_TIMESTAMP"
-
-    // $ANTLR start "DESC"
-    public final void mDESC() throws RecognitionException {
-        try {
-            int _type = DESC;
-            int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:26:6: ( 'desc' )
-            // JPQL.g:26:8: 'desc'
-            {
-            match("desc");
-
-
-            }
-
-            state.type = _type;
-            state.channel = _channel;
-        }
-        finally {
-        }
-    }
-    // $ANTLR end "DESC"
 
     // $ANTLR start "DELETE"
     public final void mDELETE() throws RecognitionException {
         try {
             int _type = DELETE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:27:8: ( 'delete' )
-            // JPQL.g:27:10: 'delete'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:34:8: ( 'delete' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:34:10: 'delete'
             {
             match("delete");
-
 
             }
 
@@ -546,20 +539,41 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "DELETE"
+
+    // $ANTLR start "DESC"
+    public final void mDESC() throws RecognitionException {
+        try {
+            int _type = DESC;
+            int _channel = DEFAULT_TOKEN_CHANNEL;
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:35:6: ( 'desc' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:35:8: 'desc'
+            {
+            match("desc");
+
+            }
+
+            state.type = _type;
+            state.channel = _channel;
+        }
+        finally {
+            // do for sure before leaving
+        }
+    }
+    // $ANTLR end "DESC"
 
     // $ANTLR start "DISTINCT"
     public final void mDISTINCT() throws RecognitionException {
         try {
             int _type = DISTINCT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:28:10: ( 'distinct' )
-            // JPQL.g:28:12: 'distinct'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:36:10: ( 'distinct' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:36:12: 'distinct'
             {
             match("distinct");
-
 
             }
 
@@ -567,6 +581,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "DISTINCT"
@@ -576,11 +591,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = ELSE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:29:6: ( 'else' )
-            // JPQL.g:29:8: 'else'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:37:6: ( 'else' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:37:8: 'else'
             {
             match("else");
-
 
             }
 
@@ -588,6 +602,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "ELSE"
@@ -597,11 +612,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = EMPTY;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:30:7: ( 'empty' )
-            // JPQL.g:30:9: 'empty'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:38:7: ( 'empty' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:38:9: 'empty'
             {
             match("empty");
-
 
             }
 
@@ -609,6 +623,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "EMPTY"
@@ -618,11 +633,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = END;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:31:5: ( 'end' )
-            // JPQL.g:31:7: 'end'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:39:5: ( 'end' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:39:7: 'end'
             {
             match("end");
-
 
             }
 
@@ -630,6 +644,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "END"
@@ -639,11 +654,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = ENTRY;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:32:7: ( 'entry' )
-            // JPQL.g:32:9: 'entry'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:40:7: ( 'entry' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:40:9: 'entry'
             {
             match("entry");
-
 
             }
 
@@ -651,6 +665,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "ENTRY"
@@ -660,11 +675,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = ESCAPE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:33:8: ( 'escape' )
-            // JPQL.g:33:10: 'escape'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:41:8: ( 'escape' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:41:10: 'escape'
             {
             match("escape");
-
 
             }
 
@@ -672,6 +686,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "ESCAPE"
@@ -681,11 +696,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = EXISTS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:34:8: ( 'exists' )
-            // JPQL.g:34:10: 'exists'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:42:8: ( 'exists' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:42:10: 'exists'
             {
             match("exists");
-
 
             }
 
@@ -693,6 +707,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "EXISTS"
@@ -702,11 +717,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = FALSE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:35:7: ( 'false' )
-            // JPQL.g:35:9: 'false'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:43:7: ( 'false' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:43:9: 'false'
             {
             match("false");
-
 
             }
 
@@ -714,6 +728,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "FALSE"
@@ -723,53 +738,31 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = FETCH;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:36:7: ( 'fetch' )
-            // JPQL.g:36:9: 'fetch'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:44:7: ( 'fetch' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:44:9: 'fetch'
             {
             match("fetch");
 
-
             }
 
             state.type = _type;
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "FETCH"
-
-    // $ANTLR start "FUNC"
-    public final void mFUNC() throws RecognitionException {
-        try {
-            int _type = FUNC;
-            int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:37:6: ( 'func' )
-            // JPQL.g:37:8: 'func'
-            {
-            match("func");
-
-
-            }
-
-            state.type = _type;
-            state.channel = _channel;
-        }
-        finally {
-        }
-    }
-    // $ANTLR end "FUNC"
 
     // $ANTLR start "FROM"
     public final void mFROM() throws RecognitionException {
         try {
             int _type = FROM;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:38:6: ( 'from' )
-            // JPQL.g:38:8: 'from'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:45:6: ( 'from' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:45:8: 'from'
             {
             match("from");
-
 
             }
 
@@ -777,20 +770,41 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "FROM"
+
+    // $ANTLR start "FUNC"
+    public final void mFUNC() throws RecognitionException {
+        try {
+            int _type = FUNC;
+            int _channel = DEFAULT_TOKEN_CHANNEL;
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:46:6: ( 'func' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:46:8: 'func'
+            {
+            match("func");
+
+            }
+
+            state.type = _type;
+            state.channel = _channel;
+        }
+        finally {
+            // do for sure before leaving
+        }
+    }
+    // $ANTLR end "FUNC"
 
     // $ANTLR start "GROUP"
     public final void mGROUP() throws RecognitionException {
         try {
             int _type = GROUP;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:39:7: ( 'group' )
-            // JPQL.g:39:9: 'group'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:47:7: ( 'group' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:47:9: 'group'
             {
             match("group");
-
 
             }
 
@@ -798,6 +812,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "GROUP"
@@ -807,11 +822,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = HAVING;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:40:8: ( 'having' )
-            // JPQL.g:40:10: 'having'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:48:8: ( 'having' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:48:10: 'having'
             {
             match("having");
-
 
             }
 
@@ -819,6 +833,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "HAVING"
@@ -828,11 +843,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = IN;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:41:4: ( 'in' )
-            // JPQL.g:41:6: 'in'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:49:4: ( 'in' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:49:6: 'in'
             {
             match("in");
-
 
             }
 
@@ -840,6 +854,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "IN"
@@ -849,11 +864,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = INDEX;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:42:7: ( 'index' )
-            // JPQL.g:42:9: 'index'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:50:7: ( 'index' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:50:9: 'index'
             {
             match("index");
-
 
             }
 
@@ -861,6 +875,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "INDEX"
@@ -870,11 +885,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = INNER;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:43:7: ( 'inner' )
-            // JPQL.g:43:9: 'inner'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:51:7: ( 'inner' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:51:9: 'inner'
             {
             match("inner");
-
 
             }
 
@@ -882,6 +896,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "INNER"
@@ -891,11 +906,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = IS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:44:4: ( 'is' )
-            // JPQL.g:44:6: 'is'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:52:4: ( 'is' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:52:6: 'is'
             {
             match("is");
-
 
             }
 
@@ -903,6 +917,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "IS"
@@ -912,11 +927,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = JOIN;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:45:6: ( 'join' )
-            // JPQL.g:45:8: 'join'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:53:6: ( 'join' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:53:8: 'join'
             {
             match("join");
-
 
             }
 
@@ -924,6 +938,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "JOIN"
@@ -933,11 +948,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = KEY;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:46:5: ( 'key' )
-            // JPQL.g:46:7: 'key'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:54:5: ( 'key' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:54:7: 'key'
             {
             match("key");
-
 
             }
 
@@ -945,6 +959,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "KEY"
@@ -954,11 +969,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = LEADING;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:47:9: ( 'leading' )
-            // JPQL.g:47:11: 'leading'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:55:9: ( 'leading' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:55:11: 'leading'
             {
             match("leading");
-
 
             }
 
@@ -966,6 +980,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "LEADING"
@@ -975,11 +990,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = LEFT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:48:6: ( 'left' )
-            // JPQL.g:48:8: 'left'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:56:6: ( 'left' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:56:8: 'left'
             {
             match("left");
-
 
             }
 
@@ -987,6 +1001,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "LEFT"
@@ -996,11 +1011,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = LENGTH;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:49:8: ( 'length' )
-            // JPQL.g:49:10: 'length'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:57:8: ( 'length' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:57:10: 'length'
             {
             match("length");
-
 
             }
 
@@ -1008,6 +1022,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "LENGTH"
@@ -1017,11 +1032,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = LIKE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:50:6: ( 'like' )
-            // JPQL.g:50:8: 'like'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:58:6: ( 'like' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:58:8: 'like'
             {
             match("like");
-
 
             }
 
@@ -1029,6 +1043,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "LIKE"
@@ -1038,11 +1053,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = LOCATE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:51:8: ( 'locate' )
-            // JPQL.g:51:10: 'locate'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:59:8: ( 'locate' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:59:10: 'locate'
             {
             match("locate");
-
 
             }
 
@@ -1050,6 +1064,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "LOCATE"
@@ -1059,11 +1074,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = LOWER;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:52:7: ( 'lower' )
-            // JPQL.g:52:9: 'lower'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:60:7: ( 'lower' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:60:9: 'lower'
             {
             match("lower");
-
 
             }
 
@@ -1071,6 +1085,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "LOWER"
@@ -1080,11 +1095,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = MAX;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:53:5: ( 'max' )
-            // JPQL.g:53:7: 'max'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:61:5: ( 'max' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:61:7: 'max'
             {
             match("max");
-
 
             }
 
@@ -1092,6 +1106,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "MAX"
@@ -1101,11 +1116,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = MEMBER;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:54:8: ( 'member' )
-            // JPQL.g:54:10: 'member'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:62:8: ( 'member' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:62:10: 'member'
             {
             match("member");
-
 
             }
 
@@ -1113,6 +1127,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "MEMBER"
@@ -1122,11 +1137,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = MIN;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:55:5: ( 'min' )
-            // JPQL.g:55:7: 'min'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:63:5: ( 'min' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:63:7: 'min'
             {
             match("min");
-
 
             }
 
@@ -1134,6 +1148,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "MIN"
@@ -1143,11 +1158,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = MOD;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:56:5: ( 'mod' )
-            // JPQL.g:56:7: 'mod'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:64:5: ( 'mod' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:64:7: 'mod'
             {
             match("mod");
-
 
             }
 
@@ -1155,6 +1169,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "MOD"
@@ -1164,11 +1179,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = NEW;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:57:5: ( 'new' )
-            // JPQL.g:57:7: 'new'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:65:5: ( 'new' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:65:7: 'new'
             {
             match("new");
-
 
             }
 
@@ -1176,6 +1190,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "NEW"
@@ -1185,11 +1200,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = NOT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:58:5: ( 'not' )
-            // JPQL.g:58:7: 'not'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:66:5: ( 'not' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:66:7: 'not'
             {
             match("not");
-
 
             }
 
@@ -1197,6 +1211,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "NOT"
@@ -1206,11 +1221,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = NULL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:59:6: ( 'null' )
-            // JPQL.g:59:8: 'null'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:67:6: ( 'null' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:67:8: 'null'
             {
             match("null");
-
 
             }
 
@@ -1218,6 +1232,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "NULL"
@@ -1227,11 +1242,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = NULLIF;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:60:8: ( 'nullif' )
-            // JPQL.g:60:10: 'nullif'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:68:8: ( 'nullif' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:68:10: 'nullif'
             {
             match("nullif");
-
 
             }
 
@@ -1239,6 +1253,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "NULLIF"
@@ -1248,11 +1263,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = OBJECT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:61:8: ( 'object' )
-            // JPQL.g:61:10: 'object'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:69:8: ( 'object' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:69:10: 'object'
             {
             match("object");
-
 
             }
 
@@ -1260,6 +1274,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "OBJECT"
@@ -1269,11 +1284,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = OF;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:62:4: ( 'of' )
-            // JPQL.g:62:6: 'of'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:70:4: ( 'of' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:70:6: 'of'
             {
             match("of");
-
 
             }
 
@@ -1281,6 +1295,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "OF"
@@ -1290,11 +1305,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = OR;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:63:4: ( 'or' )
-            // JPQL.g:63:6: 'or'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:71:4: ( 'or' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:71:6: 'or'
             {
             match("or");
-
 
             }
 
@@ -1302,6 +1316,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "OR"
@@ -1311,11 +1326,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = ORDER;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:64:7: ( 'order' )
-            // JPQL.g:64:9: 'order'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:72:7: ( 'order' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:72:9: 'order'
             {
             match("order");
-
 
             }
 
@@ -1323,6 +1337,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "ORDER"
@@ -1332,11 +1347,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = OUTER;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:65:7: ( 'outer' )
-            // JPQL.g:65:9: 'outer'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:73:7: ( 'outer' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:73:9: 'outer'
             {
             match("outer");
-
 
             }
 
@@ -1344,6 +1358,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "OUTER"
@@ -1353,11 +1368,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = SELECT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:66:8: ( 'select' )
-            // JPQL.g:66:10: 'select'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:74:8: ( 'select' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:74:10: 'select'
             {
             match("select");
-
 
             }
 
@@ -1365,6 +1379,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "SELECT"
@@ -1374,11 +1389,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = SET;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:67:5: ( 'set' )
-            // JPQL.g:67:7: 'set'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:75:5: ( 'set' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:75:7: 'set'
             {
             match("set");
-
 
             }
 
@@ -1386,6 +1400,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "SET"
@@ -1395,53 +1410,31 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = SIZE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:68:6: ( 'size' )
-            // JPQL.g:68:8: 'size'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:76:6: ( 'size' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:76:8: 'size'
             {
             match("size");
 
-
             }
 
             state.type = _type;
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "SIZE"
-
-    // $ANTLR start "SQRT"
-    public final void mSQRT() throws RecognitionException {
-        try {
-            int _type = SQRT;
-            int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:69:6: ( 'sqrt' )
-            // JPQL.g:69:8: 'sqrt'
-            {
-            match("sqrt");
-
-
-            }
-
-            state.type = _type;
-            state.channel = _channel;
-        }
-        finally {
-        }
-    }
-    // $ANTLR end "SQRT"
 
     // $ANTLR start "SOME"
     public final void mSOME() throws RecognitionException {
         try {
             int _type = SOME;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:70:6: ( 'some' )
-            // JPQL.g:70:8: 'some'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:77:6: ( 'some' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:77:8: 'some'
             {
             match("some");
-
 
             }
 
@@ -1449,20 +1442,41 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "SOME"
+
+    // $ANTLR start "SQRT"
+    public final void mSQRT() throws RecognitionException {
+        try {
+            int _type = SQRT;
+            int _channel = DEFAULT_TOKEN_CHANNEL;
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:78:6: ( 'sqrt' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:78:8: 'sqrt'
+            {
+            match("sqrt");
+
+            }
+
+            state.type = _type;
+            state.channel = _channel;
+        }
+        finally {
+            // do for sure before leaving
+        }
+    }
+    // $ANTLR end "SQRT"
 
     // $ANTLR start "SUBSTRING"
     public final void mSUBSTRING() throws RecognitionException {
         try {
             int _type = SUBSTRING;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:71:11: ( 'substring' )
-            // JPQL.g:71:13: 'substring'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:79:11: ( 'substring' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:79:13: 'substring'
             {
             match("substring");
-
 
             }
 
@@ -1470,6 +1484,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "SUBSTRING"
@@ -1479,11 +1494,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = SUM;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:72:5: ( 'sum' )
-            // JPQL.g:72:7: 'sum'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:80:5: ( 'sum' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:80:7: 'sum'
             {
             match("sum");
-
 
             }
 
@@ -1491,6 +1505,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "SUM"
@@ -1500,11 +1515,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = THEN;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:73:6: ( 'then' )
-            // JPQL.g:73:8: 'then'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:81:6: ( 'then' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:81:8: 'then'
             {
             match("then");
-
 
             }
 
@@ -1512,6 +1526,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "THEN"
@@ -1521,11 +1536,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = TRAILING;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:74:10: ( 'trailing' )
-            // JPQL.g:74:12: 'trailing'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:82:10: ( 'trailing' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:82:12: 'trailing'
             {
             match("trailing");
-
 
             }
 
@@ -1533,6 +1547,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "TRAILING"
@@ -1542,11 +1557,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = TREAT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:75:7: ( 'treat' )
-            // JPQL.g:75:9: 'treat'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:83:7: ( 'treat' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:83:9: 'treat'
             {
             match("treat");
-
 
             }
 
@@ -1554,6 +1568,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "TREAT"
@@ -1563,11 +1578,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = TRIM;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:76:6: ( 'trim' )
-            // JPQL.g:76:8: 'trim'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:84:6: ( 'trim' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:84:8: 'trim'
             {
             match("trim");
-
 
             }
 
@@ -1575,6 +1589,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "TRIM"
@@ -1584,11 +1599,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = TRUE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:77:6: ( 'true' )
-            // JPQL.g:77:8: 'true'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:85:6: ( 'true' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:85:8: 'true'
             {
             match("true");
-
 
             }
 
@@ -1596,6 +1610,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "TRUE"
@@ -1605,11 +1620,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = TYPE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:78:6: ( 'type' )
-            // JPQL.g:78:8: 'type'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:86:6: ( 'type' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:86:8: 'type'
             {
             match("type");
-
 
             }
 
@@ -1617,6 +1631,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "TYPE"
@@ -1626,11 +1641,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = UNKNOWN;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:79:9: ( 'unknown' )
-            // JPQL.g:79:11: 'unknown'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:87:9: ( 'unknown' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:87:11: 'unknown'
             {
             match("unknown");
-
 
             }
 
@@ -1638,6 +1652,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "UNKNOWN"
@@ -1647,11 +1662,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = UPDATE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:80:8: ( 'update' )
-            // JPQL.g:80:10: 'update'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:88:8: ( 'update' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:88:10: 'update'
             {
             match("update");
-
 
             }
 
@@ -1659,6 +1673,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "UPDATE"
@@ -1668,11 +1683,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = UPPER;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:81:7: ( 'upper' )
-            // JPQL.g:81:9: 'upper'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:89:7: ( 'upper' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:89:9: 'upper'
             {
             match("upper");
-
 
             }
 
@@ -1680,6 +1694,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "UPPER"
@@ -1689,11 +1704,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = VALUE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:82:7: ( 'value' )
-            // JPQL.g:82:9: 'value'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:90:7: ( 'value' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:90:9: 'value'
             {
             match("value");
-
 
             }
 
@@ -1701,6 +1715,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "VALUE"
@@ -1710,11 +1725,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = WHEN;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:83:6: ( 'when' )
-            // JPQL.g:83:8: 'when'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:91:6: ( 'when' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:91:8: 'when'
             {
             match("when");
-
 
             }
 
@@ -1722,6 +1736,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "WHEN"
@@ -1731,11 +1746,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = WHERE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:84:7: ( 'where' )
-            // JPQL.g:84:9: 'where'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:92:7: ( 'where' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:92:9: 'where'
             {
             match("where");
-
 
             }
 
@@ -1743,6 +1757,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "WHERE"
@@ -1752,17 +1767,17 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = DOT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:1394:5: ( '.' )
-            // JPQL.g:1394:7: '.'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1411:5: ( '.' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1411:7: '.'
             {
             match('.');
-
             }
 
             state.type = _type;
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "DOT"
@@ -1772,55 +1787,50 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = WS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:1397:5: ( ( ' ' | '\\t' | '\\n' | '\\r' )+ )
-            // JPQL.g:1397:7: ( ' ' | '\\t' | '\\n' | '\\r' )+
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1414:5: ( ( ' ' | '\\t' | '\\n' | '\\r' )+ )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1414:7: ( ' ' | '\\t' | '\\n' | '\\r' )+
             {
-            // JPQL.g:1397:7: ( ' ' | '\\t' | '\\n' | '\\r' )+
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1414:7: ( ' ' | '\\t' | '\\n' | '\\r' )+
             int cnt1=0;
             loop1:
-            do {
+            while (true) {
                 int alt1=2;
                 int LA1_0 = input.LA(1);
-
-                if ( ((LA1_0>='\t' && LA1_0<='\n')||LA1_0=='\r'||LA1_0==' ') ) {
+                if ( ((LA1_0 >= '\t' && LA1_0 <= '\n')||LA1_0=='\r'||LA1_0==' ') ) {
                     alt1=1;
                 }
 
-
                 switch (alt1) {
                 case 1 :
-                    // JPQL.g:
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:
                     {
-                    if ( (input.LA(1)>='\t' && input.LA(1)<='\n')||input.LA(1)=='\r'||input.LA(1)==' ' ) {
+                    if ( (input.LA(1) >= '\t' && input.LA(1) <= '\n')||input.LA(1)=='\r'||input.LA(1)==' ' ) {
                         input.consume();
-
                     }
                     else {
                         MismatchedSetException mse = new MismatchedSetException(null,input);
                         recover(mse);
-                        throw mse;}
-
-
+                        throw mse;
+                    }
                     }
                     break;
 
                 default :
                     if ( cnt1 >= 1 ) break loop1;
-                        EarlyExitException eee =
-                            new EarlyExitException(1, input);
-                        throw eee;
+                    EarlyExitException eee = new EarlyExitException(1, input);
+                    throw eee;
                 }
                 cnt1++;
-            } while (true);
+            }
 
              skip();
-
             }
 
             state.type = _type;
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "WS"
@@ -1830,17 +1840,17 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = LEFT_ROUND_BRACKET;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:1401:5: ( '(' )
-            // JPQL.g:1401:7: '('
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1418:5: ( '(' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1418:7: '('
             {
             match('(');
-
             }
 
             state.type = _type;
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "LEFT_ROUND_BRACKET"
@@ -1850,17 +1860,17 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = LEFT_CURLY_BRACKET;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:1405:5: ( '{' )
-            // JPQL.g:1405:7: '{'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1422:5: ( '{' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1422:7: '{'
             {
             match('{');
-
             }
 
             state.type = _type;
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "LEFT_CURLY_BRACKET"
@@ -1870,17 +1880,17 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = RIGHT_ROUND_BRACKET;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:1409:5: ( ')' )
-            // JPQL.g:1409:7: ')'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1426:5: ( ')' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1426:7: ')'
             {
             match(')');
-
             }
 
             state.type = _type;
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "RIGHT_ROUND_BRACKET"
@@ -1890,17 +1900,17 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = RIGHT_CURLY_BRACKET;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:1413:5: ( '}' )
-            // JPQL.g:1413:7: '}'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1430:5: ( '}' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1430:7: '}'
             {
             match('}');
-
             }
 
             state.type = _type;
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "RIGHT_CURLY_BRACKET"
@@ -1910,17 +1920,17 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = COMMA;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:1417:5: ( ',' )
-            // JPQL.g:1417:7: ','
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1434:5: ( ',' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1434:7: ','
             {
             match(',');
-
             }
 
             state.type = _type;
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "COMMA"
@@ -1930,8 +1940,8 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = IDENT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:1421:5: ( TEXTCHAR )
-            // JPQL.g:1421:7: TEXTCHAR
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1438:5: ( TEXTCHAR )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1438:7: TEXTCHAR
             {
             mTEXTCHAR();
 
@@ -1941,6 +1951,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "IDENT"
@@ -1951,10 +1962,10 @@ public class JPQLLexer extends Lexer {
             int c1;
             int c2;
 
-            // JPQL.g:1426:5: ( ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '$' | '`' | '~' | '@' | '#' | '%' | '^' | '&' | '|' | '[' | ']' | ';' c1= '\\u0080' .. '\\uFFFE' ) ( 'a' .. 'z' | '_' | '$' | '0' .. '9' | c2= '\\u0080' .. '\\uFFFE' )* )
-            // JPQL.g:1426:7: ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '$' | '`' | '~' | '@' | '#' | '%' | '^' | '&' | '|' | '[' | ']' | ';' c1= '\\u0080' .. '\\uFFFE' ) ( 'a' .. 'z' | '_' | '$' | '0' .. '9' | c2= '\\u0080' .. '\\uFFFE' )*
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1444:5: ( ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '$' | '`' | '~' | '@' | '#' | '%' | '^' | '&' | '|' | '[' | ']' | ';' c1= '\\u0080' .. '\\uFFFE' ) ( 'a' .. 'z' | '_' | '$' | '0' .. '9' |c2= '\\u0080' .. '\\uFFFE' )* )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1444:7: ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '$' | '`' | '~' | '@' | '#' | '%' | '^' | '&' | '|' | '[' | ']' | ';' c1= '\\u0080' .. '\\uFFFE' ) ( 'a' .. 'z' | '_' | '$' | '0' .. '9' |c2= '\\u0080' .. '\\uFFFE' )*
             {
-            // JPQL.g:1426:7: ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '$' | '`' | '~' | '@' | '#' | '%' | '^' | '&' | '|' | '[' | ']' | ';' c1= '\\u0080' .. '\\uFFFE' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1444:7: ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '$' | '`' | '~' | '@' | '#' | '%' | '^' | '&' | '|' | '[' | ']' | ';' c1= '\\u0080' .. '\\uFFFE' )
             int alt2=15;
             switch ( input.LA(1) ) {
             case 'a':
@@ -2085,111 +2096,95 @@ public class JPQLLexer extends Lexer {
             default:
                 NoViableAltException nvae =
                     new NoViableAltException("", 2, 0, input);
-
                 throw nvae;
             }
-
             switch (alt2) {
                 case 1 :
-                    // JPQL.g:1426:8: 'a' .. 'z'
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1444:8: 'a' .. 'z'
                     {
                     matchRange('a','z');
-
                     }
                     break;
                 case 2 :
-                    // JPQL.g:1426:19: 'A' .. 'Z'
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1444:19: 'A' .. 'Z'
                     {
                     matchRange('A','Z');
-
                     }
                     break;
                 case 3 :
-                    // JPQL.g:1426:30: '_'
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1444:30: '_'
                     {
                     match('_');
-
                     }
                     break;
                 case 4 :
-                    // JPQL.g:1426:36: '$'
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1444:36: '$'
                     {
                     match('$');
-
                     }
                     break;
                 case 5 :
-                    // JPQL.g:1426:42: '`'
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1444:42: '`'
                     {
                     match('`');
-
                     }
                     break;
                 case 6 :
-                    // JPQL.g:1426:48: '~'
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1444:48: '~'
                     {
                     match('~');
-
                     }
                     break;
                 case 7 :
-                    // JPQL.g:1426:54: '@'
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1444:54: '@'
                     {
                     match('@');
-
                     }
                     break;
                 case 8 :
-                    // JPQL.g:1426:60: '#'
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1444:60: '#'
                     {
                     match('#');
-
                     }
                     break;
                 case 9 :
-                    // JPQL.g:1426:66: '%'
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1444:66: '%'
                     {
                     match('%');
-
                     }
                     break;
                 case 10 :
-                    // JPQL.g:1426:72: '^'
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1444:72: '^'
                     {
                     match('^');
-
                     }
                     break;
                 case 11 :
-                    // JPQL.g:1426:78: '&'
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1444:78: '&'
                     {
                     match('&');
-
                     }
                     break;
                 case 12 :
-                    // JPQL.g:1426:84: '|'
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1444:84: '|'
                     {
                     match('|');
-
                     }
                     break;
                 case 13 :
-                    // JPQL.g:1426:90: '['
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1444:90: '['
                     {
                     match('[');
-
                     }
                     break;
                 case 14 :
-                    // JPQL.g:1426:96: ']'
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1444:96: ']'
                     {
                     match(']');
-
                     }
                     break;
                 case 15 :
-                    // JPQL.g:1426:102: ';' c1= '\\u0080' .. '\\uFFFE'
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1444:102: ';' c1= '\\u0080' .. '\\uFFFE'
                     {
                     match(';');
                     c1 = input.LA(1);
@@ -2199,19 +2194,17 @@ public class JPQLLexer extends Lexer {
                                     throw new InvalidIdentifierStartException(c1, getLine(), getCharPositionInLine());
                                }
 
-
                     }
                     break;
 
             }
 
-            // JPQL.g:1434:7: ( 'a' .. 'z' | '_' | '$' | '0' .. '9' | c2= '\\u0080' .. '\\uFFFE' )*
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1452:7: ( 'a' .. 'z' | '_' | '$' | '0' .. '9' |c2= '\\u0080' .. '\\uFFFE' )*
             loop3:
-            do {
+            while (true) {
                 int alt3=6;
                 int LA3_0 = input.LA(1);
-
-                if ( ((LA3_0>='a' && LA3_0<='z')) ) {
+                if ( ((LA3_0 >= 'a' && LA3_0 <= 'z')) ) {
                     alt3=1;
                 }
                 else if ( (LA3_0=='_') ) {
@@ -2220,45 +2213,40 @@ public class JPQLLexer extends Lexer {
                 else if ( (LA3_0=='$') ) {
                     alt3=3;
                 }
-                else if ( ((LA3_0>='0' && LA3_0<='9')) ) {
+                else if ( ((LA3_0 >= '0' && LA3_0 <= '9')) ) {
                     alt3=4;
                 }
-                else if ( ((LA3_0>='\u0080' && LA3_0<='\uFFFE')) ) {
+                else if ( ((LA3_0 >= '\u0080' && LA3_0 <= '\uFFFE')) ) {
                     alt3=5;
                 }
 
-
                 switch (alt3) {
                 case 1 :
-                    // JPQL.g:1434:8: 'a' .. 'z'
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1452:8: 'a' .. 'z'
                     {
                     matchRange('a','z');
-
                     }
                     break;
                 case 2 :
-                    // JPQL.g:1434:19: '_'
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1452:19: '_'
                     {
                     match('_');
-
                     }
                     break;
                 case 3 :
-                    // JPQL.g:1434:25: '$'
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1452:25: '$'
                     {
                     match('$');
-
                     }
                     break;
                 case 4 :
-                    // JPQL.g:1434:31: '0' .. '9'
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1452:31: '0' .. '9'
                     {
                     matchRange('0','9');
-
                     }
                     break;
                 case 5 :
-                    // JPQL.g:1435:8: c2= '\\u0080' .. '\\uFFFE'
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1453:8: c2= '\\u0080' .. '\\uFFFE'
                     {
                     c2 = input.LA(1);
                     matchRange('\u0080','\uFFFE');
@@ -2267,20 +2255,19 @@ public class JPQLLexer extends Lexer {
                                     throw new InvalidIdentifierStartException(c2, getLine(), getCharPositionInLine());
                                }
 
-
                     }
                     break;
 
                 default :
                     break loop3;
                 }
-            } while (true);
-
+            }
 
             }
 
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "TEXTCHAR"
@@ -2290,49 +2277,50 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = HEX_LITERAL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:1445:13: ( '0' ( 'x' | 'X' ) ( HEX_DIGIT )+ )
-            // JPQL.g:1445:15: '0' ( 'x' | 'X' ) ( HEX_DIGIT )+
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1462:13: ( '0' ( 'x' | 'X' ) ( HEX_DIGIT )+ )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1462:15: '0' ( 'x' | 'X' ) ( HEX_DIGIT )+
             {
             match('0');
             if ( input.LA(1)=='X'||input.LA(1)=='x' ) {
                 input.consume();
-
             }
             else {
                 MismatchedSetException mse = new MismatchedSetException(null,input);
                 recover(mse);
-                throw mse;}
-
-            // JPQL.g:1445:29: ( HEX_DIGIT )+
+                throw mse;
+            }
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1462:29: ( HEX_DIGIT )+
             int cnt4=0;
             loop4:
-            do {
+            while (true) {
                 int alt4=2;
                 int LA4_0 = input.LA(1);
-
-                if ( ((LA4_0>='0' && LA4_0<='9')||(LA4_0>='A' && LA4_0<='F')||(LA4_0>='a' && LA4_0<='f')) ) {
+                if ( ((LA4_0 >= '0' && LA4_0 <= '9')||(LA4_0 >= 'A' && LA4_0 <= 'F')||(LA4_0 >= 'a' && LA4_0 <= 'f')) ) {
                     alt4=1;
                 }
 
-
                 switch (alt4) {
                 case 1 :
-                    // JPQL.g:1445:29: HEX_DIGIT
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:
                     {
-                    mHEX_DIGIT();
-
+                    if ( (input.LA(1) >= '0' && input.LA(1) <= '9')||(input.LA(1) >= 'A' && input.LA(1) <= 'F')||(input.LA(1) >= 'a' && input.LA(1) <= 'f') ) {
+                        input.consume();
+                    }
+                    else {
+                        MismatchedSetException mse = new MismatchedSetException(null,input);
+                        recover(mse);
+                        throw mse;
+                    }
                     }
                     break;
 
                 default :
                     if ( cnt4 >= 1 ) break loop4;
-                        EarlyExitException eee =
-                            new EarlyExitException(4, input);
-                        throw eee;
+                    EarlyExitException eee = new EarlyExitException(4, input);
+                    throw eee;
                 }
                 cnt4++;
-            } while (true);
-
+            }
 
             }
 
@@ -2340,6 +2328,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "HEX_LITERAL"
@@ -2349,86 +2338,92 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = INTEGER_LITERAL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:1447:17: ( ( MINUS )? ( '0' | '1' .. '9' ( '0' .. '9' )* ) )
-            // JPQL.g:1447:19: ( MINUS )? ( '0' | '1' .. '9' ( '0' .. '9' )* )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1464:17: ( ( MINUS )? ( '0' | '1' .. '9' ( '0' .. '9' )* ) )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1464:19: ( MINUS )? ( '0' | '1' .. '9' ( '0' .. '9' )* )
             {
-            // JPQL.g:1447:19: ( MINUS )?
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1464:19: ( MINUS )?
             int alt5=2;
             int LA5_0 = input.LA(1);
-
             if ( (LA5_0=='-') ) {
                 alt5=1;
             }
             switch (alt5) {
                 case 1 :
-                    // JPQL.g:1447:19: MINUS
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:
                     {
-                    mMINUS();
-
+                    if ( input.LA(1)=='-' ) {
+                        input.consume();
+                    }
+                    else {
+                        MismatchedSetException mse = new MismatchedSetException(null,input);
+                        recover(mse);
+                        throw mse;
+                    }
                     }
                     break;
 
             }
 
-            // JPQL.g:1447:26: ( '0' | '1' .. '9' ( '0' .. '9' )* )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1464:26: ( '0' | '1' .. '9' ( '0' .. '9' )* )
             int alt7=2;
             int LA7_0 = input.LA(1);
-
             if ( (LA7_0=='0') ) {
                 alt7=1;
             }
-            else if ( ((LA7_0>='1' && LA7_0<='9')) ) {
+            else if ( ((LA7_0 >= '1' && LA7_0 <= '9')) ) {
                 alt7=2;
             }
+
             else {
                 NoViableAltException nvae =
                     new NoViableAltException("", 7, 0, input);
-
                 throw nvae;
             }
+
             switch (alt7) {
                 case 1 :
-                    // JPQL.g:1447:27: '0'
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1464:27: '0'
                     {
                     match('0');
-
                     }
                     break;
                 case 2 :
-                    // JPQL.g:1447:33: '1' .. '9' ( '0' .. '9' )*
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1464:33: '1' .. '9' ( '0' .. '9' )*
                     {
                     matchRange('1','9');
-                    // JPQL.g:1447:42: ( '0' .. '9' )*
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1464:42: ( '0' .. '9' )*
                     loop6:
-                    do {
+                    while (true) {
                         int alt6=2;
                         int LA6_0 = input.LA(1);
-
-                        if ( ((LA6_0>='0' && LA6_0<='9')) ) {
+                        if ( ((LA6_0 >= '0' && LA6_0 <= '9')) ) {
                             alt6=1;
                         }
 
-
                         switch (alt6) {
                         case 1 :
-                            // JPQL.g:1447:42: '0' .. '9'
+                            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:
                             {
-                            matchRange('0','9');
-
+                            if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
+                                input.consume();
+                            }
+                            else {
+                                MismatchedSetException mse = new MismatchedSetException(null,input);
+                                recover(mse);
+                                throw mse;
+                            }
                             }
                             break;
 
                         default :
                             break loop6;
                         }
-                    } while (true);
-
+                    }
 
                     }
                     break;
 
             }
-
 
             }
 
@@ -2436,6 +2431,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "INTEGER_LITERAL"
@@ -2445,10 +2441,11 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = LONG_LITERAL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:1449:14: ( INTEGER_LITERAL INTEGER_SUFFIX )
-            // JPQL.g:1449:16: INTEGER_LITERAL INTEGER_SUFFIX
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1466:14: ( INTEGER_LITERAL INTEGER_SUFFIX )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1466:16: INTEGER_LITERAL INTEGER_SUFFIX
             {
             mINTEGER_LITERAL();
+
             mINTEGER_SUFFIX();
 
             }
@@ -2457,6 +2454,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "LONG_LITERAL"
@@ -2466,58 +2464,65 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = OCTAL_LITERAL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:1451:15: ( ( MINUS )? '0' ( '0' .. '7' )+ )
-            // JPQL.g:1451:17: ( MINUS )? '0' ( '0' .. '7' )+
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1468:15: ( ( MINUS )? '0' ( '0' .. '7' )+ )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1468:17: ( MINUS )? '0' ( '0' .. '7' )+
             {
-            // JPQL.g:1451:17: ( MINUS )?
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1468:17: ( MINUS )?
             int alt8=2;
             int LA8_0 = input.LA(1);
-
             if ( (LA8_0=='-') ) {
                 alt8=1;
             }
             switch (alt8) {
                 case 1 :
-                    // JPQL.g:1451:17: MINUS
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:
                     {
-                    mMINUS();
-
+                    if ( input.LA(1)=='-' ) {
+                        input.consume();
+                    }
+                    else {
+                        MismatchedSetException mse = new MismatchedSetException(null,input);
+                        recover(mse);
+                        throw mse;
+                    }
                     }
                     break;
 
             }
 
             match('0');
-            // JPQL.g:1451:28: ( '0' .. '7' )+
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1468:28: ( '0' .. '7' )+
             int cnt9=0;
             loop9:
-            do {
+            while (true) {
                 int alt9=2;
                 int LA9_0 = input.LA(1);
-
-                if ( ((LA9_0>='0' && LA9_0<='7')) ) {
+                if ( ((LA9_0 >= '0' && LA9_0 <= '7')) ) {
                     alt9=1;
                 }
 
-
                 switch (alt9) {
                 case 1 :
-                    // JPQL.g:1451:29: '0' .. '7'
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:
                     {
-                    matchRange('0','7');
-
+                    if ( (input.LA(1) >= '0' && input.LA(1) <= '7') ) {
+                        input.consume();
+                    }
+                    else {
+                        MismatchedSetException mse = new MismatchedSetException(null,input);
+                        recover(mse);
+                        throw mse;
+                    }
                     }
                     break;
 
                 default :
                     if ( cnt9 >= 1 ) break loop9;
-                        EarlyExitException eee =
-                            new EarlyExitException(9, input);
-                        throw eee;
+                    EarlyExitException eee = new EarlyExitException(9, input);
+                    throw eee;
                 }
                 cnt9++;
-            } while (true);
-
+            }
 
             }
 
@@ -2525,6 +2530,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "OCTAL_LITERAL"
@@ -2532,23 +2538,22 @@ public class JPQLLexer extends Lexer {
     // $ANTLR start "HEX_DIGIT"
     public final void mHEX_DIGIT() throws RecognitionException {
         try {
-            // JPQL.g:1456:5: ( ( '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' ) )
-            // JPQL.g:1456:9: ( '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1474:5: ( ( '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' ) )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:
             {
-            if ( (input.LA(1)>='0' && input.LA(1)<='9')||(input.LA(1)>='A' && input.LA(1)<='F')||(input.LA(1)>='a' && input.LA(1)<='f') ) {
+            if ( (input.LA(1) >= '0' && input.LA(1) <= '9')||(input.LA(1) >= 'A' && input.LA(1) <= 'F')||(input.LA(1) >= 'a' && input.LA(1) <= 'f') ) {
                 input.consume();
-
             }
             else {
                 MismatchedSetException mse = new MismatchedSetException(null,input);
                 recover(mse);
-                throw mse;}
-
-
+                throw mse;
+            }
             }
 
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "HEX_DIGIT"
@@ -2556,23 +2561,22 @@ public class JPQLLexer extends Lexer {
     // $ANTLR start "INTEGER_SUFFIX"
     public final void mINTEGER_SUFFIX() throws RecognitionException {
         try {
-            // JPQL.g:1460:16: ( ( 'l' | 'L' ) )
-            // JPQL.g:1460:18: ( 'l' | 'L' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1478:16: ( ( 'l' | 'L' ) )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:
             {
             if ( input.LA(1)=='L'||input.LA(1)=='l' ) {
                 input.consume();
-
             }
             else {
                 MismatchedSetException mse = new MismatchedSetException(null,input);
                 recover(mse);
-                throw mse;}
-
-
+                throw mse;
+            }
             }
 
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "INTEGER_SUFFIX"
@@ -2580,196 +2584,221 @@ public class JPQLLexer extends Lexer {
     // $ANTLR start "NUMERIC_DIGITS"
     public final void mNUMERIC_DIGITS() throws RecognitionException {
         try {
-            // JPQL.g:1464:5: ( ( MINUS )? ( '0' .. '9' )+ '.' ( '0' .. '9' )* | ( MINUS )? '.' ( '0' .. '9' )+ | ( MINUS )? ( '0' .. '9' )+ )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1482:5: ( ( MINUS )? ( '0' .. '9' )+ '.' ( '0' .. '9' )* | ( MINUS )? '.' ( '0' .. '9' )+ | ( MINUS )? ( '0' .. '9' )+ )
             int alt17=3;
             alt17 = dfa17.predict(input);
             switch (alt17) {
                 case 1 :
-                    // JPQL.g:1464:9: ( MINUS )? ( '0' .. '9' )+ '.' ( '0' .. '9' )*
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1482:9: ( MINUS )? ( '0' .. '9' )+ '.' ( '0' .. '9' )*
                     {
-                    // JPQL.g:1464:9: ( MINUS )?
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1482:9: ( MINUS )?
                     int alt10=2;
                     int LA10_0 = input.LA(1);
-
                     if ( (LA10_0=='-') ) {
                         alt10=1;
                     }
                     switch (alt10) {
                         case 1 :
-                            // JPQL.g:1464:9: MINUS
+                            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:
                             {
-                            mMINUS();
-
+                            if ( input.LA(1)=='-' ) {
+                                input.consume();
+                            }
+                            else {
+                                MismatchedSetException mse = new MismatchedSetException(null,input);
+                                recover(mse);
+                                throw mse;
+                            }
                             }
                             break;
 
                     }
 
-                    // JPQL.g:1464:16: ( '0' .. '9' )+
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1482:16: ( '0' .. '9' )+
                     int cnt11=0;
                     loop11:
-                    do {
+                    while (true) {
                         int alt11=2;
                         int LA11_0 = input.LA(1);
-
-                        if ( ((LA11_0>='0' && LA11_0<='9')) ) {
+                        if ( ((LA11_0 >= '0' && LA11_0 <= '9')) ) {
                             alt11=1;
                         }
 
-
                         switch (alt11) {
                         case 1 :
-                            // JPQL.g:1464:17: '0' .. '9'
+                            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:
                             {
-                            matchRange('0','9');
-
+                            if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
+                                input.consume();
+                            }
+                            else {
+                                MismatchedSetException mse = new MismatchedSetException(null,input);
+                                recover(mse);
+                                throw mse;
+                            }
                             }
                             break;
 
                         default :
                             if ( cnt11 >= 1 ) break loop11;
-                                EarlyExitException eee =
-                                    new EarlyExitException(11, input);
-                                throw eee;
+                            EarlyExitException eee = new EarlyExitException(11, input);
+                            throw eee;
                         }
                         cnt11++;
-                    } while (true);
+                    }
 
                     match('.');
-                    // JPQL.g:1464:32: ( '0' .. '9' )*
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1482:32: ( '0' .. '9' )*
                     loop12:
-                    do {
+                    while (true) {
                         int alt12=2;
                         int LA12_0 = input.LA(1);
-
-                        if ( ((LA12_0>='0' && LA12_0<='9')) ) {
+                        if ( ((LA12_0 >= '0' && LA12_0 <= '9')) ) {
                             alt12=1;
                         }
 
-
                         switch (alt12) {
                         case 1 :
-                            // JPQL.g:1464:33: '0' .. '9'
+                            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:
                             {
-                            matchRange('0','9');
-
+                            if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
+                                input.consume();
+                            }
+                            else {
+                                MismatchedSetException mse = new MismatchedSetException(null,input);
+                                recover(mse);
+                                throw mse;
+                            }
                             }
                             break;
 
                         default :
                             break loop12;
                         }
-                    } while (true);
-
+                    }
 
                     }
                     break;
                 case 2 :
-                    // JPQL.g:1465:9: ( MINUS )? '.' ( '0' .. '9' )+
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1483:9: ( MINUS )? '.' ( '0' .. '9' )+
                     {
-                    // JPQL.g:1465:9: ( MINUS )?
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1483:9: ( MINUS )?
                     int alt13=2;
                     int LA13_0 = input.LA(1);
-
                     if ( (LA13_0=='-') ) {
                         alt13=1;
                     }
                     switch (alt13) {
                         case 1 :
-                            // JPQL.g:1465:9: MINUS
+                            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:
                             {
-                            mMINUS();
-
+                            if ( input.LA(1)=='-' ) {
+                                input.consume();
+                            }
+                            else {
+                                MismatchedSetException mse = new MismatchedSetException(null,input);
+                                recover(mse);
+                                throw mse;
+                            }
                             }
                             break;
 
                     }
 
                     match('.');
-                    // JPQL.g:1465:20: ( '0' .. '9' )+
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1483:20: ( '0' .. '9' )+
                     int cnt14=0;
                     loop14:
-                    do {
+                    while (true) {
                         int alt14=2;
                         int LA14_0 = input.LA(1);
-
-                        if ( ((LA14_0>='0' && LA14_0<='9')) ) {
+                        if ( ((LA14_0 >= '0' && LA14_0 <= '9')) ) {
                             alt14=1;
                         }
 
-
                         switch (alt14) {
                         case 1 :
-                            // JPQL.g:1465:21: '0' .. '9'
+                            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:
                             {
-                            matchRange('0','9');
-
+                            if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
+                                input.consume();
+                            }
+                            else {
+                                MismatchedSetException mse = new MismatchedSetException(null,input);
+                                recover(mse);
+                                throw mse;
+                            }
                             }
                             break;
 
                         default :
                             if ( cnt14 >= 1 ) break loop14;
-                                EarlyExitException eee =
-                                    new EarlyExitException(14, input);
-                                throw eee;
+                            EarlyExitException eee = new EarlyExitException(14, input);
+                            throw eee;
                         }
                         cnt14++;
-                    } while (true);
-
+                    }
 
                     }
                     break;
                 case 3 :
-                    // JPQL.g:1466:9: ( MINUS )? ( '0' .. '9' )+
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1484:9: ( MINUS )? ( '0' .. '9' )+
                     {
-                    // JPQL.g:1466:9: ( MINUS )?
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1484:9: ( MINUS )?
                     int alt15=2;
                     int LA15_0 = input.LA(1);
-
                     if ( (LA15_0=='-') ) {
                         alt15=1;
                     }
                     switch (alt15) {
                         case 1 :
-                            // JPQL.g:1466:9: MINUS
+                            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:
                             {
-                            mMINUS();
-
+                            if ( input.LA(1)=='-' ) {
+                                input.consume();
+                            }
+                            else {
+                                MismatchedSetException mse = new MismatchedSetException(null,input);
+                                recover(mse);
+                                throw mse;
+                            }
                             }
                             break;
 
                     }
 
-                    // JPQL.g:1466:16: ( '0' .. '9' )+
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1484:16: ( '0' .. '9' )+
                     int cnt16=0;
                     loop16:
-                    do {
+                    while (true) {
                         int alt16=2;
                         int LA16_0 = input.LA(1);
-
-                        if ( ((LA16_0>='0' && LA16_0<='9')) ) {
+                        if ( ((LA16_0 >= '0' && LA16_0 <= '9')) ) {
                             alt16=1;
                         }
 
-
                         switch (alt16) {
                         case 1 :
-                            // JPQL.g:1466:17: '0' .. '9'
+                            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:
                             {
-                            matchRange('0','9');
-
+                            if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
+                                input.consume();
+                            }
+                            else {
+                                MismatchedSetException mse = new MismatchedSetException(null,input);
+                                recover(mse);
+                                throw mse;
+                            }
                             }
                             break;
 
                         default :
                             if ( cnt16 >= 1 ) break loop16;
-                                EarlyExitException eee =
-                                    new EarlyExitException(16, input);
-                                throw eee;
+                            EarlyExitException eee = new EarlyExitException(16, input);
+                            throw eee;
                         }
                         cnt16++;
-                    } while (true);
-
+                    }
 
                     }
                     break;
@@ -2777,6 +2806,7 @@ public class JPQLLexer extends Lexer {
             }
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "NUMERIC_DIGITS"
@@ -2786,28 +2816,33 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = DOUBLE_LITERAL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:1470:5: ( NUMERIC_DIGITS ( DOUBLE_SUFFIX )? )
-            // JPQL.g:1470:9: NUMERIC_DIGITS ( DOUBLE_SUFFIX )?
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1487:5: ( NUMERIC_DIGITS ( DOUBLE_SUFFIX )? )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1487:9: NUMERIC_DIGITS ( DOUBLE_SUFFIX )?
             {
             mNUMERIC_DIGITS();
-            // JPQL.g:1470:24: ( DOUBLE_SUFFIX )?
+
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1487:24: ( DOUBLE_SUFFIX )?
             int alt18=2;
             int LA18_0 = input.LA(1);
-
             if ( (LA18_0=='d') ) {
                 alt18=1;
             }
             switch (alt18) {
                 case 1 :
-                    // JPQL.g:1470:24: DOUBLE_SUFFIX
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:
                     {
-                    mDOUBLE_SUFFIX();
-
+                    if ( input.LA(1)=='d' ) {
+                        input.consume();
+                    }
+                    else {
+                        MismatchedSetException mse = new MismatchedSetException(null,input);
+                        recover(mse);
+                        throw mse;
+                    }
                     }
                     break;
 
             }
-
 
             }
 
@@ -2815,6 +2850,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "DOUBLE_LITERAL"
@@ -2824,40 +2860,47 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = FLOAT_LITERAL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:1474:5: ( NUMERIC_DIGITS EXPONENT ( FLOAT_SUFFIX )? | NUMERIC_DIGITS FLOAT_SUFFIX )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1491:5: ( NUMERIC_DIGITS EXPONENT ( FLOAT_SUFFIX )? | NUMERIC_DIGITS FLOAT_SUFFIX )
             int alt20=2;
             alt20 = dfa20.predict(input);
             switch (alt20) {
                 case 1 :
-                    // JPQL.g:1474:9: NUMERIC_DIGITS EXPONENT ( FLOAT_SUFFIX )?
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1491:9: NUMERIC_DIGITS EXPONENT ( FLOAT_SUFFIX )?
                     {
                     mNUMERIC_DIGITS();
+
                     mEXPONENT();
-                    // JPQL.g:1474:33: ( FLOAT_SUFFIX )?
+
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1491:33: ( FLOAT_SUFFIX )?
                     int alt19=2;
                     int LA19_0 = input.LA(1);
-
                     if ( (LA19_0=='f') ) {
                         alt19=1;
                     }
                     switch (alt19) {
                         case 1 :
-                            // JPQL.g:1474:33: FLOAT_SUFFIX
+                            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:
                             {
-                            mFLOAT_SUFFIX();
-
+                            if ( input.LA(1)=='f' ) {
+                                input.consume();
+                            }
+                            else {
+                                MismatchedSetException mse = new MismatchedSetException(null,input);
+                                recover(mse);
+                                throw mse;
+                            }
                             }
                             break;
 
                     }
 
-
                     }
                     break;
                 case 2 :
-                    // JPQL.g:1475:9: NUMERIC_DIGITS FLOAT_SUFFIX
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1492:9: NUMERIC_DIGITS FLOAT_SUFFIX
                     {
                     mNUMERIC_DIGITS();
+
                     mFLOAT_SUFFIX();
 
                     }
@@ -2868,6 +2911,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "FLOAT_LITERAL"
@@ -2875,79 +2919,78 @@ public class JPQLLexer extends Lexer {
     // $ANTLR start "EXPONENT"
     public final void mEXPONENT() throws RecognitionException {
         try {
-            // JPQL.g:1481:5: ( ( 'e' | 'E' ) ( '+' | '-' )? ( '0' .. '9' )+ )
-            // JPQL.g:1481:9: ( 'e' | 'E' ) ( '+' | '-' )? ( '0' .. '9' )+
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1499:5: ( ( 'e' | 'E' ) ( '+' | '-' )? ( '0' .. '9' )+ )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1499:9: ( 'e' | 'E' ) ( '+' | '-' )? ( '0' .. '9' )+
             {
             if ( input.LA(1)=='E'||input.LA(1)=='e' ) {
                 input.consume();
-
             }
             else {
                 MismatchedSetException mse = new MismatchedSetException(null,input);
                 recover(mse);
-                throw mse;}
-
-            // JPQL.g:1481:21: ( '+' | '-' )?
+                throw mse;
+            }
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1499:21: ( '+' | '-' )?
             int alt21=2;
             int LA21_0 = input.LA(1);
-
             if ( (LA21_0=='+'||LA21_0=='-') ) {
                 alt21=1;
             }
             switch (alt21) {
                 case 1 :
-                    // JPQL.g:
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:
                     {
                     if ( input.LA(1)=='+'||input.LA(1)=='-' ) {
                         input.consume();
-
                     }
                     else {
                         MismatchedSetException mse = new MismatchedSetException(null,input);
                         recover(mse);
-                        throw mse;}
-
-
+                        throw mse;
+                    }
                     }
                     break;
 
             }
 
-            // JPQL.g:1481:32: ( '0' .. '9' )+
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1499:32: ( '0' .. '9' )+
             int cnt22=0;
             loop22:
-            do {
+            while (true) {
                 int alt22=2;
                 int LA22_0 = input.LA(1);
-
-                if ( ((LA22_0>='0' && LA22_0<='9')) ) {
+                if ( ((LA22_0 >= '0' && LA22_0 <= '9')) ) {
                     alt22=1;
                 }
 
-
                 switch (alt22) {
                 case 1 :
-                    // JPQL.g:1481:33: '0' .. '9'
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:
                     {
-                    matchRange('0','9');
-
+                    if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
+                        input.consume();
+                    }
+                    else {
+                        MismatchedSetException mse = new MismatchedSetException(null,input);
+                        recover(mse);
+                        throw mse;
+                    }
                     }
                     break;
 
                 default :
                     if ( cnt22 >= 1 ) break loop22;
-                        EarlyExitException eee =
-                            new EarlyExitException(22, input);
-                        throw eee;
+                    EarlyExitException eee = new EarlyExitException(22, input);
+                    throw eee;
                 }
                 cnt22++;
-            } while (true);
-
+            }
 
             }
 
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "EXPONENT"
@@ -2955,15 +2998,15 @@ public class JPQLLexer extends Lexer {
     // $ANTLR start "FLOAT_SUFFIX"
     public final void mFLOAT_SUFFIX() throws RecognitionException {
         try {
-            // JPQL.g:1487:5: ( 'f' )
-            // JPQL.g:1487:9: 'f'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1505:5: ( 'f' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1505:9: 'f'
             {
             match('f');
-
             }
 
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "FLOAT_SUFFIX"
@@ -2973,90 +3016,82 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = DATE_LITERAL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:1491:5: ( LEFT_CURLY_BRACKET ( 'd' ) ( ' ' | '\\t' )+ '\\'' DATE_STRING '\\'' ( ' ' | '\\t' )* RIGHT_CURLY_BRACKET )
-            // JPQL.g:1491:7: LEFT_CURLY_BRACKET ( 'd' ) ( ' ' | '\\t' )+ '\\'' DATE_STRING '\\'' ( ' ' | '\\t' )* RIGHT_CURLY_BRACKET
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1508:5: ( LEFT_CURLY_BRACKET ( 'd' ) ( ' ' | '\\t' )+ '\\'' DATE_STRING '\\'' ( ' ' | '\\t' )* RIGHT_CURLY_BRACKET )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1508:7: LEFT_CURLY_BRACKET ( 'd' ) ( ' ' | '\\t' )+ '\\'' DATE_STRING '\\'' ( ' ' | '\\t' )* RIGHT_CURLY_BRACKET
             {
             mLEFT_CURLY_BRACKET();
-            // JPQL.g:1491:26: ( 'd' )
-            // JPQL.g:1491:27: 'd'
+
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1508:26: ( 'd' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1508:27: 'd'
             {
             match('d');
-
             }
 
-            // JPQL.g:1491:32: ( ' ' | '\\t' )+
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1508:32: ( ' ' | '\\t' )+
             int cnt23=0;
             loop23:
-            do {
+            while (true) {
                 int alt23=2;
                 int LA23_0 = input.LA(1);
-
                 if ( (LA23_0=='\t'||LA23_0==' ') ) {
                     alt23=1;
                 }
 
-
                 switch (alt23) {
                 case 1 :
-                    // JPQL.g:
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:
                     {
                     if ( input.LA(1)=='\t'||input.LA(1)==' ' ) {
                         input.consume();
-
                     }
                     else {
                         MismatchedSetException mse = new MismatchedSetException(null,input);
                         recover(mse);
-                        throw mse;}
-
-
+                        throw mse;
+                    }
                     }
                     break;
 
                 default :
                     if ( cnt23 >= 1 ) break loop23;
-                        EarlyExitException eee =
-                            new EarlyExitException(23, input);
-                        throw eee;
+                    EarlyExitException eee = new EarlyExitException(23, input);
+                    throw eee;
                 }
                 cnt23++;
-            } while (true);
+            }
 
             match('\'');
             mDATE_STRING();
+
             match('\'');
-            // JPQL.g:1491:68: ( ' ' | '\\t' )*
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1508:68: ( ' ' | '\\t' )*
             loop24:
-            do {
+            while (true) {
                 int alt24=2;
                 int LA24_0 = input.LA(1);
-
                 if ( (LA24_0=='\t'||LA24_0==' ') ) {
                     alt24=1;
                 }
 
-
                 switch (alt24) {
                 case 1 :
-                    // JPQL.g:
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:
                     {
                     if ( input.LA(1)=='\t'||input.LA(1)==' ' ) {
                         input.consume();
-
                     }
                     else {
                         MismatchedSetException mse = new MismatchedSetException(null,input);
                         recover(mse);
-                        throw mse;}
-
-
+                        throw mse;
+                    }
                     }
                     break;
 
                 default :
                     break loop24;
                 }
-            } while (true);
+            }
 
             mRIGHT_CURLY_BRACKET();
 
@@ -3066,6 +3101,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "DATE_LITERAL"
@@ -3075,90 +3111,82 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = TIME_LITERAL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:1495:5: ( LEFT_CURLY_BRACKET ( 't' ) ( ' ' | '\\t' )+ '\\'' TIME_STRING '\\'' ( ' ' | '\\t' )* RIGHT_CURLY_BRACKET )
-            // JPQL.g:1495:7: LEFT_CURLY_BRACKET ( 't' ) ( ' ' | '\\t' )+ '\\'' TIME_STRING '\\'' ( ' ' | '\\t' )* RIGHT_CURLY_BRACKET
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1512:5: ( LEFT_CURLY_BRACKET ( 't' ) ( ' ' | '\\t' )+ '\\'' TIME_STRING '\\'' ( ' ' | '\\t' )* RIGHT_CURLY_BRACKET )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1512:7: LEFT_CURLY_BRACKET ( 't' ) ( ' ' | '\\t' )+ '\\'' TIME_STRING '\\'' ( ' ' | '\\t' )* RIGHT_CURLY_BRACKET
             {
             mLEFT_CURLY_BRACKET();
-            // JPQL.g:1495:26: ( 't' )
-            // JPQL.g:1495:27: 't'
+
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1512:26: ( 't' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1512:27: 't'
             {
             match('t');
-
             }
 
-            // JPQL.g:1495:32: ( ' ' | '\\t' )+
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1512:32: ( ' ' | '\\t' )+
             int cnt25=0;
             loop25:
-            do {
+            while (true) {
                 int alt25=2;
                 int LA25_0 = input.LA(1);
-
                 if ( (LA25_0=='\t'||LA25_0==' ') ) {
                     alt25=1;
                 }
 
-
                 switch (alt25) {
                 case 1 :
-                    // JPQL.g:
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:
                     {
                     if ( input.LA(1)=='\t'||input.LA(1)==' ' ) {
                         input.consume();
-
                     }
                     else {
                         MismatchedSetException mse = new MismatchedSetException(null,input);
                         recover(mse);
-                        throw mse;}
-
-
+                        throw mse;
+                    }
                     }
                     break;
 
                 default :
                     if ( cnt25 >= 1 ) break loop25;
-                        EarlyExitException eee =
-                            new EarlyExitException(25, input);
-                        throw eee;
+                    EarlyExitException eee = new EarlyExitException(25, input);
+                    throw eee;
                 }
                 cnt25++;
-            } while (true);
+            }
 
             match('\'');
             mTIME_STRING();
+
             match('\'');
-            // JPQL.g:1495:68: ( ' ' | '\\t' )*
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1512:68: ( ' ' | '\\t' )*
             loop26:
-            do {
+            while (true) {
                 int alt26=2;
                 int LA26_0 = input.LA(1);
-
                 if ( (LA26_0=='\t'||LA26_0==' ') ) {
                     alt26=1;
                 }
 
-
                 switch (alt26) {
                 case 1 :
-                    // JPQL.g:
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:
                     {
                     if ( input.LA(1)=='\t'||input.LA(1)==' ' ) {
                         input.consume();
-
                     }
                     else {
                         MismatchedSetException mse = new MismatchedSetException(null,input);
                         recover(mse);
-                        throw mse;}
-
-
+                        throw mse;
+                    }
                     }
                     break;
 
                 default :
                     break loop26;
                 }
-            } while (true);
+            }
 
             mRIGHT_CURLY_BRACKET();
 
@@ -3168,6 +3196,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "TIME_LITERAL"
@@ -3177,93 +3206,86 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = TIMESTAMP_LITERAL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:1499:5: ( LEFT_CURLY_BRACKET ( 'ts' ) ( ' ' | '\\t' )+ '\\'' DATE_STRING ' ' TIME_STRING '\\'' ( ' ' | '\\t' )* RIGHT_CURLY_BRACKET )
-            // JPQL.g:1499:7: LEFT_CURLY_BRACKET ( 'ts' ) ( ' ' | '\\t' )+ '\\'' DATE_STRING ' ' TIME_STRING '\\'' ( ' ' | '\\t' )* RIGHT_CURLY_BRACKET
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1516:5: ( LEFT_CURLY_BRACKET ( 'ts' ) ( ' ' | '\\t' )+ '\\'' DATE_STRING ' ' TIME_STRING '\\'' ( ' ' | '\\t' )* RIGHT_CURLY_BRACKET )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1516:7: LEFT_CURLY_BRACKET ( 'ts' ) ( ' ' | '\\t' )+ '\\'' DATE_STRING ' ' TIME_STRING '\\'' ( ' ' | '\\t' )* RIGHT_CURLY_BRACKET
             {
             mLEFT_CURLY_BRACKET();
-            // JPQL.g:1499:26: ( 'ts' )
-            // JPQL.g:1499:27: 'ts'
+
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1516:26: ( 'ts' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1516:27: 'ts'
             {
             match("ts");
 
-
             }
 
-            // JPQL.g:1499:33: ( ' ' | '\\t' )+
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1516:33: ( ' ' | '\\t' )+
             int cnt27=0;
             loop27:
-            do {
+            while (true) {
                 int alt27=2;
                 int LA27_0 = input.LA(1);
-
                 if ( (LA27_0=='\t'||LA27_0==' ') ) {
                     alt27=1;
                 }
 
-
                 switch (alt27) {
                 case 1 :
-                    // JPQL.g:
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:
                     {
                     if ( input.LA(1)=='\t'||input.LA(1)==' ' ) {
                         input.consume();
-
                     }
                     else {
                         MismatchedSetException mse = new MismatchedSetException(null,input);
                         recover(mse);
-                        throw mse;}
-
-
+                        throw mse;
+                    }
                     }
                     break;
 
                 default :
                     if ( cnt27 >= 1 ) break loop27;
-                        EarlyExitException eee =
-                            new EarlyExitException(27, input);
-                        throw eee;
+                    EarlyExitException eee = new EarlyExitException(27, input);
+                    throw eee;
                 }
                 cnt27++;
-            } while (true);
+            }
 
             match('\'');
             mDATE_STRING();
+
             match(' ');
             mTIME_STRING();
+
             match('\'');
-            // JPQL.g:1499:85: ( ' ' | '\\t' )*
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1516:85: ( ' ' | '\\t' )*
             loop28:
-            do {
+            while (true) {
                 int alt28=2;
                 int LA28_0 = input.LA(1);
-
                 if ( (LA28_0=='\t'||LA28_0==' ') ) {
                     alt28=1;
                 }
 
-
                 switch (alt28) {
                 case 1 :
-                    // JPQL.g:
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:
                     {
                     if ( input.LA(1)=='\t'||input.LA(1)==' ' ) {
                         input.consume();
-
                     }
                     else {
                         MismatchedSetException mse = new MismatchedSetException(null,input);
                         recover(mse);
-                        throw mse;}
-
-
+                        throw mse;
+                    }
                     }
                     break;
 
                 default :
                     break loop28;
                 }
-            } while (true);
+            }
 
             mRIGHT_CURLY_BRACKET();
 
@@ -3273,6 +3295,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "TIMESTAMP_LITERAL"
@@ -3282,8 +3305,8 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = DATE_STRING;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:1503:5: ( '0' .. '9' '0' .. '9' '0' .. '9' '0' .. '9' '-' '0' .. '9' '0' .. '9' '-' '0' .. '9' '0' .. '9' )
-            // JPQL.g:1503:7: '0' .. '9' '0' .. '9' '0' .. '9' '0' .. '9' '-' '0' .. '9' '0' .. '9' '-' '0' .. '9' '0' .. '9'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1520:5: ( '0' .. '9' '0' .. '9' '0' .. '9' '0' .. '9' '-' '0' .. '9' '0' .. '9' '-' '0' .. '9' '0' .. '9' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1520:7: '0' .. '9' '0' .. '9' '0' .. '9' '0' .. '9' '-' '0' .. '9' '0' .. '9' '-' '0' .. '9' '0' .. '9'
             {
             matchRange('0','9');
             matchRange('0','9');
@@ -3295,13 +3318,13 @@ public class JPQLLexer extends Lexer {
             match('-');
             matchRange('0','9');
             matchRange('0','9');
-
             }
 
             state.type = _type;
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "DATE_STRING"
@@ -3311,23 +3334,28 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = TIME_STRING;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:1507:5: ( '0' .. '9' ( '0' .. '9' )? ':' '0' .. '9' '0' .. '9' ':' '0' .. '9' '0' .. '9' '.' ( '0' .. '9' )* )
-            // JPQL.g:1507:7: '0' .. '9' ( '0' .. '9' )? ':' '0' .. '9' '0' .. '9' ':' '0' .. '9' '0' .. '9' '.' ( '0' .. '9' )*
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1524:5: ( '0' .. '9' ( '0' .. '9' )? ':' '0' .. '9' '0' .. '9' ':' '0' .. '9' '0' .. '9' '.' ( '0' .. '9' )* )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1524:7: '0' .. '9' ( '0' .. '9' )? ':' '0' .. '9' '0' .. '9' ':' '0' .. '9' '0' .. '9' '.' ( '0' .. '9' )*
             {
             matchRange('0','9');
-            // JPQL.g:1507:16: ( '0' .. '9' )?
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1524:16: ( '0' .. '9' )?
             int alt29=2;
             int LA29_0 = input.LA(1);
-
-            if ( ((LA29_0>='0' && LA29_0<='9')) ) {
+            if ( ((LA29_0 >= '0' && LA29_0 <= '9')) ) {
                 alt29=1;
             }
             switch (alt29) {
                 case 1 :
-                    // JPQL.g:1507:17: '0' .. '9'
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:
                     {
-                    matchRange('0','9');
-
+                    if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
+                        input.consume();
+                    }
+                    else {
+                        MismatchedSetException mse = new MismatchedSetException(null,input);
+                        recover(mse);
+                        throw mse;
+                    }
                     }
                     break;
 
@@ -3340,31 +3368,34 @@ public class JPQLLexer extends Lexer {
             matchRange('0','9');
             matchRange('0','9');
             match('.');
-            // JPQL.g:1507:76: ( '0' .. '9' )*
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1524:76: ( '0' .. '9' )*
             loop30:
-            do {
+            while (true) {
                 int alt30=2;
                 int LA30_0 = input.LA(1);
-
-                if ( ((LA30_0>='0' && LA30_0<='9')) ) {
+                if ( ((LA30_0 >= '0' && LA30_0 <= '9')) ) {
                     alt30=1;
                 }
 
-
                 switch (alt30) {
                 case 1 :
-                    // JPQL.g:1507:76: '0' .. '9'
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:
                     {
-                    matchRange('0','9');
-
+                    if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
+                        input.consume();
+                    }
+                    else {
+                        MismatchedSetException mse = new MismatchedSetException(null,input);
+                        recover(mse);
+                        throw mse;
+                    }
                     }
                     break;
 
                 default :
                     break loop30;
                 }
-            } while (true);
-
+            }
 
             }
 
@@ -3372,6 +3403,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "TIME_STRING"
@@ -3379,15 +3411,15 @@ public class JPQLLexer extends Lexer {
     // $ANTLR start "DOUBLE_SUFFIX"
     public final void mDOUBLE_SUFFIX() throws RecognitionException {
         try {
-            // JPQL.g:1512:5: ( 'd' )
-            // JPQL.g:1512:7: 'd'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1530:5: ( 'd' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1530:7: 'd'
             {
             match('d');
-
             }
 
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "DOUBLE_SUFFIX"
@@ -3397,17 +3429,17 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = EQUALS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:1516:5: ( '=' )
-            // JPQL.g:1516:7: '='
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1533:5: ( '=' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1533:7: '='
             {
             match('=');
-
             }
 
             state.type = _type;
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "EQUALS"
@@ -3417,17 +3449,17 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = GREATER_THAN;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:1520:5: ( '>' )
-            // JPQL.g:1520:7: '>'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1537:5: ( '>' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1537:7: '>'
             {
             match('>');
-
             }
 
             state.type = _type;
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "GREATER_THAN"
@@ -3437,11 +3469,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = GREATER_THAN_EQUAL_TO;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:1524:5: ( '>=' )
-            // JPQL.g:1524:7: '>='
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1541:5: ( '>=' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1541:7: '>='
             {
             match(">=");
-
 
             }
 
@@ -3449,6 +3480,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "GREATER_THAN_EQUAL_TO"
@@ -3458,17 +3490,17 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = LESS_THAN;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:1528:5: ( '<' )
-            // JPQL.g:1528:7: '<'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1545:5: ( '<' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1545:7: '<'
             {
             match('<');
-
             }
 
             state.type = _type;
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "LESS_THAN"
@@ -3478,11 +3510,10 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = LESS_THAN_EQUAL_TO;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:1532:5: ( '<=' )
-            // JPQL.g:1532:7: '<='
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1549:5: ( '<=' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1549:7: '<='
             {
             match("<=");
-
 
             }
 
@@ -3490,6 +3521,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "LESS_THAN_EQUAL_TO"
@@ -3499,36 +3531,34 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = NOT_EQUAL_TO;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:1536:5: ( '<>' | '!=' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1553:5: ( '<>' | '!=' )
             int alt31=2;
             int LA31_0 = input.LA(1);
-
             if ( (LA31_0=='<') ) {
                 alt31=1;
             }
             else if ( (LA31_0=='!') ) {
                 alt31=2;
             }
+
             else {
                 NoViableAltException nvae =
                     new NoViableAltException("", 31, 0, input);
-
                 throw nvae;
             }
+
             switch (alt31) {
                 case 1 :
-                    // JPQL.g:1536:7: '<>'
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1553:7: '<>'
                     {
                     match("<>");
-
 
                     }
                     break;
                 case 2 :
-                    // JPQL.g:1537:7: '!='
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1554:7: '!='
                     {
                     match("!=");
-
 
                     }
                     break;
@@ -3538,6 +3568,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "NOT_EQUAL_TO"
@@ -3547,17 +3578,17 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = MULTIPLY;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:1541:5: ( '*' )
-            // JPQL.g:1541:7: '*'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1558:5: ( '*' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1558:7: '*'
             {
             match('*');
-
             }
 
             state.type = _type;
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "MULTIPLY"
@@ -3567,17 +3598,17 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = DIVIDE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:1545:5: ( '/' )
-            // JPQL.g:1545:7: '/'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1562:5: ( '/' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1562:7: '/'
             {
             match('/');
-
             }
 
             state.type = _type;
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "DIVIDE"
@@ -3587,17 +3618,17 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = PLUS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:1549:5: ( '+' )
-            // JPQL.g:1549:7: '+'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1566:5: ( '+' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1566:7: '+'
             {
             match('+');
-
             }
 
             state.type = _type;
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "PLUS"
@@ -3607,17 +3638,17 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = MINUS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:1553:5: ( '-' )
-            // JPQL.g:1553:7: '-'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1570:5: ( '-' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1570:7: '-'
             {
             match('-');
-
             }
 
             state.type = _type;
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "MINUS"
@@ -3627,42 +3658,46 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = POSITIONAL_PARAM;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:1558:5: ( '?' ( '1' .. '9' ) ( '0' .. '9' )* )
-            // JPQL.g:1558:7: '?' ( '1' .. '9' ) ( '0' .. '9' )*
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1575:5: ( '?' ( '1' .. '9' ) ( '0' .. '9' )* )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1575:7: '?' ( '1' .. '9' ) ( '0' .. '9' )*
             {
             match('?');
-            // JPQL.g:1558:11: ( '1' .. '9' )
-            // JPQL.g:1558:12: '1' .. '9'
-            {
-            matchRange('1','9');
-
+            if ( (input.LA(1) >= '1' && input.LA(1) <= '9') ) {
+                input.consume();
             }
-
-            // JPQL.g:1558:22: ( '0' .. '9' )*
+            else {
+                MismatchedSetException mse = new MismatchedSetException(null,input);
+                recover(mse);
+                throw mse;
+            }
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1575:22: ( '0' .. '9' )*
             loop32:
-            do {
+            while (true) {
                 int alt32=2;
                 int LA32_0 = input.LA(1);
-
-                if ( ((LA32_0>='0' && LA32_0<='9')) ) {
+                if ( ((LA32_0 >= '0' && LA32_0 <= '9')) ) {
                     alt32=1;
                 }
 
-
                 switch (alt32) {
                 case 1 :
-                    // JPQL.g:1558:23: '0' .. '9'
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:
                     {
-                    matchRange('0','9');
-
+                    if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
+                        input.consume();
+                    }
+                    else {
+                        MismatchedSetException mse = new MismatchedSetException(null,input);
+                        recover(mse);
+                        throw mse;
+                    }
                     }
                     break;
 
                 default :
                     break loop32;
                 }
-            } while (true);
-
+            }
 
             }
 
@@ -3670,6 +3705,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "POSITIONAL_PARAM"
@@ -3679,8 +3715,8 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = NAMED_PARAM;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:1562:5: ( ':' TEXTCHAR )
-            // JPQL.g:1562:7: ':' TEXTCHAR
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1579:5: ( ':' TEXTCHAR )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1579:7: ':' TEXTCHAR
             {
             match(':');
             mTEXTCHAR();
@@ -3691,6 +3727,7 @@ public class JPQLLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "NAMED_PARAM"
@@ -3700,51 +3737,47 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = STRING_LITERAL_DOUBLE_QUOTED;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:1568:5: ( '\"' (~ ( '\"' ) )* '\"' )
-            // JPQL.g:1568:7: '\"' (~ ( '\"' ) )* '\"'
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1585:5: ( '\"' (~ ( '\"' ) )* '\"' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1585:7: '\"' (~ ( '\"' ) )* '\"'
             {
             match('\"');
-            // JPQL.g:1568:11: (~ ( '\"' ) )*
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1585:11: (~ ( '\"' ) )*
             loop33:
-            do {
+            while (true) {
                 int alt33=2;
                 int LA33_0 = input.LA(1);
-
-                if ( ((LA33_0>='\u0000' && LA33_0<='!')||(LA33_0>='#' && LA33_0<='\uFFFF')) ) {
+                if ( ((LA33_0 >= '\u0000' && LA33_0 <= '!')||(LA33_0 >= '#' && LA33_0 <= '\uFFFF')) ) {
                     alt33=1;
                 }
 
-
                 switch (alt33) {
                 case 1 :
-                    // JPQL.g:1568:12: ~ ( '\"' )
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:
                     {
-                    if ( (input.LA(1)>='\u0000' && input.LA(1)<='!')||(input.LA(1)>='#' && input.LA(1)<='\uFFFF') ) {
+                    if ( (input.LA(1) >= '\u0000' && input.LA(1) <= '!')||(input.LA(1) >= '#' && input.LA(1) <= '\uFFFF') ) {
                         input.consume();
-
                     }
                     else {
                         MismatchedSetException mse = new MismatchedSetException(null,input);
                         recover(mse);
-                        throw mse;}
-
-
+                        throw mse;
+                    }
                     }
                     break;
 
                 default :
                     break loop33;
                 }
-            } while (true);
+            }
 
             match('\"');
-
             }
 
             state.type = _type;
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "STRING_LITERAL_DOUBLE_QUOTED"
@@ -3754,57 +3787,49 @@ public class JPQLLexer extends Lexer {
         try {
             int _type = STRING_LITERAL_SINGLE_QUOTED;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPQL.g:1572:5: ( '\\'' (~ ( '\\'' ) | ( '\\'\\'' ) )* '\\'' )
-            // JPQL.g:1572:7: '\\'' (~ ( '\\'' ) | ( '\\'\\'' ) )* '\\''
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1589:5: ( '\\'' (~ ( '\\'' ) | ( '\\'\\'' ) )* '\\'' )
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1589:7: '\\'' (~ ( '\\'' ) | ( '\\'\\'' ) )* '\\''
             {
             match('\'');
-            // JPQL.g:1572:12: (~ ( '\\'' ) | ( '\\'\\'' ) )*
+            // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1589:12: (~ ( '\\'' ) | ( '\\'\\'' ) )*
             loop34:
-            do {
+            while (true) {
                 int alt34=3;
                 int LA34_0 = input.LA(1);
-
                 if ( (LA34_0=='\'') ) {
                     int LA34_1 = input.LA(2);
-
                     if ( (LA34_1=='\'') ) {
                         alt34=2;
                     }
 
-
                 }
-                else if ( ((LA34_0>='\u0000' && LA34_0<='&')||(LA34_0>='(' && LA34_0<='\uFFFF')) ) {
+                else if ( ((LA34_0 >= '\u0000' && LA34_0 <= '&')||(LA34_0 >= '(' && LA34_0 <= '\uFFFF')) ) {
                     alt34=1;
                 }
 
-
                 switch (alt34) {
                 case 1 :
-                    // JPQL.g:1572:13: ~ ( '\\'' )
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1589:13: ~ ( '\\'' )
                     {
-                    if ( (input.LA(1)>='\u0000' && input.LA(1)<='&')||(input.LA(1)>='(' && input.LA(1)<='\uFFFF') ) {
+                    if ( (input.LA(1) >= '\u0000' && input.LA(1) <= '&')||(input.LA(1) >= '(' && input.LA(1) <= '\uFFFF') ) {
                         input.consume();
-
                     }
                     else {
                         MismatchedSetException mse = new MismatchedSetException(null,input);
                         recover(mse);
-                        throw mse;}
-
-
+                        throw mse;
+                    }
                     }
                     break;
                 case 2 :
-                    // JPQL.g:1572:24: ( '\\'\\'' )
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1589:24: ( '\\'\\'' )
                     {
-                    // JPQL.g:1572:24: ( '\\'\\'' )
-                    // JPQL.g:1572:25: '\\'\\''
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1589:24: ( '\\'\\'' )
+                    // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1589:25: '\\'\\''
                     {
                     match("''");
 
-
                     }
-
 
                     }
                     break;
@@ -3812,783 +3837,784 @@ public class JPQLLexer extends Lexer {
                 default :
                     break loop34;
                 }
-            } while (true);
+            }
 
             match('\'');
-
             }
 
             state.type = _type;
             state.channel = _channel;
         }
         finally {
+            // do for sure before leaving
         }
     }
     // $ANTLR end "STRING_LITERAL_SINGLE_QUOTED"
 
+    @Override
     public void mTokens() throws RecognitionException {
-        // JPQL.g:1:8: ( ABS | ALL | AND | ANY | AS | ASC | AVG | BETWEEN | BOTH | BY | CASE | COALESCE | CONCAT | COUNT | CURRENT_DATE | CURRENT_TIME | CURRENT_TIMESTAMP | DESC | DELETE | DISTINCT | ELSE | EMPTY | END | ENTRY | ESCAPE | EXISTS | FALSE | FETCH | FUNC | FROM | GROUP | HAVING | IN | INDEX | INNER | IS | JOIN | KEY | LEADING | LEFT | LENGTH | LIKE | LOCATE | LOWER | MAX | MEMBER | MIN | MOD | NEW | NOT | NULL | NULLIF | OBJECT | OF | OR | ORDER | OUTER | SELECT | SET | SIZE | SQRT | SOME | SUBSTRING | SUM | THEN | TRAILING | TREAT | TRIM | TRUE | TYPE | UNKNOWN | UPDATE | UPPER | VALUE | WHEN | WHERE | DOT | WS | LEFT_ROUND_BRACKET | LEFT_CURLY_BRACKET | RIGHT_ROUND_BRACKET | RIGHT_CURLY_BRACKET | COMMA | IDENT | HEX_LITERAL | INTEGER_LITERAL | LONG_LITERAL | OCTAL_LITERAL | DOUBLE_LITERAL | FLOAT_LITERAL | DATE_LITERAL | TIME_LITERAL | TIMESTAMP_LITERAL | DATE_STRING | TIME_STRING | EQUALS | GREATER_THAN | GREATER_THAN_EQUAL_TO | LESS_THAN | LESS_THAN_EQUAL_TO | NOT_EQUAL_TO | MULTIPLY | DIVIDE | PLUS | MINUS | POSITIONAL_PARAM | NAMED_PARAM | STRING_LITERAL_DOUBLE_QUOTED | STRING_LITERAL_SINGLE_QUOTED )
+        // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:8: ( ABS | ALL | AND | ANY | AS | ASC | AVG | BETWEEN | BOTH | BY | CASE | COALESCE | CONCAT | COUNT | CURRENT_DATE | CURRENT_TIME | CURRENT_TIMESTAMP | DELETE | DESC | DISTINCT | ELSE | EMPTY | END | ENTRY | ESCAPE | EXISTS | FALSE | FETCH | FROM | FUNC | GROUP | HAVING | IN | INDEX | INNER | IS | JOIN | KEY | LEADING | LEFT | LENGTH | LIKE | LOCATE | LOWER | MAX | MEMBER | MIN | MOD | NEW | NOT | NULL | NULLIF | OBJECT | OF | OR | ORDER | OUTER | SELECT | SET | SIZE | SOME | SQRT | SUBSTRING | SUM | THEN | TRAILING | TREAT | TRIM | TRUE | TYPE | UNKNOWN | UPDATE | UPPER | VALUE | WHEN | WHERE | DOT | WS | LEFT_ROUND_BRACKET | LEFT_CURLY_BRACKET | RIGHT_ROUND_BRACKET | RIGHT_CURLY_BRACKET | COMMA | IDENT | HEX_LITERAL | INTEGER_LITERAL | LONG_LITERAL | OCTAL_LITERAL | DOUBLE_LITERAL | FLOAT_LITERAL | DATE_LITERAL | TIME_LITERAL | TIMESTAMP_LITERAL | DATE_STRING | TIME_STRING | EQUALS | GREATER_THAN | GREATER_THAN_EQUAL_TO | LESS_THAN | LESS_THAN_EQUAL_TO | NOT_EQUAL_TO | MULTIPLY | DIVIDE | PLUS | MINUS | POSITIONAL_PARAM | NAMED_PARAM | STRING_LITERAL_DOUBLE_QUOTED | STRING_LITERAL_SINGLE_QUOTED )
         int alt35=109;
         alt35 = dfa35.predict(input);
         switch (alt35) {
             case 1 :
-                // JPQL.g:1:10: ABS
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:10: ABS
                 {
                 mABS();
 
                 }
                 break;
             case 2 :
-                // JPQL.g:1:14: ALL
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:14: ALL
                 {
                 mALL();
 
                 }
                 break;
             case 3 :
-                // JPQL.g:1:18: AND
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:18: AND
                 {
                 mAND();
 
                 }
                 break;
             case 4 :
-                // JPQL.g:1:22: ANY
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:22: ANY
                 {
                 mANY();
 
                 }
                 break;
             case 5 :
-                // JPQL.g:1:26: AS
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:26: AS
                 {
                 mAS();
 
                 }
                 break;
             case 6 :
-                // JPQL.g:1:29: ASC
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:29: ASC
                 {
                 mASC();
 
                 }
                 break;
             case 7 :
-                // JPQL.g:1:33: AVG
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:33: AVG
                 {
                 mAVG();
 
                 }
                 break;
             case 8 :
-                // JPQL.g:1:37: BETWEEN
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:37: BETWEEN
                 {
                 mBETWEEN();
 
                 }
                 break;
             case 9 :
-                // JPQL.g:1:45: BOTH
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:45: BOTH
                 {
                 mBOTH();
 
                 }
                 break;
             case 10 :
-                // JPQL.g:1:50: BY
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:50: BY
                 {
                 mBY();
 
                 }
                 break;
             case 11 :
-                // JPQL.g:1:53: CASE
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:53: CASE
                 {
                 mCASE();
 
                 }
                 break;
             case 12 :
-                // JPQL.g:1:58: COALESCE
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:58: COALESCE
                 {
                 mCOALESCE();
 
                 }
                 break;
             case 13 :
-                // JPQL.g:1:67: CONCAT
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:67: CONCAT
                 {
                 mCONCAT();
 
                 }
                 break;
             case 14 :
-                // JPQL.g:1:74: COUNT
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:74: COUNT
                 {
                 mCOUNT();
 
                 }
                 break;
             case 15 :
-                // JPQL.g:1:80: CURRENT_DATE
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:80: CURRENT_DATE
                 {
                 mCURRENT_DATE();
 
                 }
                 break;
             case 16 :
-                // JPQL.g:1:93: CURRENT_TIME
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:93: CURRENT_TIME
                 {
                 mCURRENT_TIME();
 
                 }
                 break;
             case 17 :
-                // JPQL.g:1:106: CURRENT_TIMESTAMP
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:106: CURRENT_TIMESTAMP
                 {
                 mCURRENT_TIMESTAMP();
 
                 }
                 break;
             case 18 :
-                // JPQL.g:1:124: DESC
-                {
-                mDESC();
-
-                }
-                break;
-            case 19 :
-                // JPQL.g:1:129: DELETE
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:124: DELETE
                 {
                 mDELETE();
 
                 }
                 break;
+            case 19 :
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:131: DESC
+                {
+                mDESC();
+
+                }
+                break;
             case 20 :
-                // JPQL.g:1:136: DISTINCT
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:136: DISTINCT
                 {
                 mDISTINCT();
 
                 }
                 break;
             case 21 :
-                // JPQL.g:1:145: ELSE
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:145: ELSE
                 {
                 mELSE();
 
                 }
                 break;
             case 22 :
-                // JPQL.g:1:150: EMPTY
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:150: EMPTY
                 {
                 mEMPTY();
 
                 }
                 break;
             case 23 :
-                // JPQL.g:1:156: END
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:156: END
                 {
                 mEND();
 
                 }
                 break;
             case 24 :
-                // JPQL.g:1:160: ENTRY
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:160: ENTRY
                 {
                 mENTRY();
 
                 }
                 break;
             case 25 :
-                // JPQL.g:1:166: ESCAPE
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:166: ESCAPE
                 {
                 mESCAPE();
 
                 }
                 break;
             case 26 :
-                // JPQL.g:1:173: EXISTS
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:173: EXISTS
                 {
                 mEXISTS();
 
                 }
                 break;
             case 27 :
-                // JPQL.g:1:180: FALSE
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:180: FALSE
                 {
                 mFALSE();
 
                 }
                 break;
             case 28 :
-                // JPQL.g:1:186: FETCH
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:186: FETCH
                 {
                 mFETCH();
 
                 }
                 break;
             case 29 :
-                // JPQL.g:1:192: FUNC
-                {
-                mFUNC();
-
-                }
-                break;
-            case 30 :
-                // JPQL.g:1:197: FROM
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:192: FROM
                 {
                 mFROM();
 
                 }
                 break;
+            case 30 :
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:197: FUNC
+                {
+                mFUNC();
+
+                }
+                break;
             case 31 :
-                // JPQL.g:1:202: GROUP
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:202: GROUP
                 {
                 mGROUP();
 
                 }
                 break;
             case 32 :
-                // JPQL.g:1:208: HAVING
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:208: HAVING
                 {
                 mHAVING();
 
                 }
                 break;
             case 33 :
-                // JPQL.g:1:215: IN
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:215: IN
                 {
                 mIN();
 
                 }
                 break;
             case 34 :
-                // JPQL.g:1:218: INDEX
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:218: INDEX
                 {
                 mINDEX();
 
                 }
                 break;
             case 35 :
-                // JPQL.g:1:224: INNER
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:224: INNER
                 {
                 mINNER();
 
                 }
                 break;
             case 36 :
-                // JPQL.g:1:230: IS
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:230: IS
                 {
                 mIS();
 
                 }
                 break;
             case 37 :
-                // JPQL.g:1:233: JOIN
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:233: JOIN
                 {
                 mJOIN();
 
                 }
                 break;
             case 38 :
-                // JPQL.g:1:238: KEY
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:238: KEY
                 {
                 mKEY();
 
                 }
                 break;
             case 39 :
-                // JPQL.g:1:242: LEADING
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:242: LEADING
                 {
                 mLEADING();
 
                 }
                 break;
             case 40 :
-                // JPQL.g:1:250: LEFT
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:250: LEFT
                 {
                 mLEFT();
 
                 }
                 break;
             case 41 :
-                // JPQL.g:1:255: LENGTH
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:255: LENGTH
                 {
                 mLENGTH();
 
                 }
                 break;
             case 42 :
-                // JPQL.g:1:262: LIKE
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:262: LIKE
                 {
                 mLIKE();
 
                 }
                 break;
             case 43 :
-                // JPQL.g:1:267: LOCATE
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:267: LOCATE
                 {
                 mLOCATE();
 
                 }
                 break;
             case 44 :
-                // JPQL.g:1:274: LOWER
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:274: LOWER
                 {
                 mLOWER();
 
                 }
                 break;
             case 45 :
-                // JPQL.g:1:280: MAX
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:280: MAX
                 {
                 mMAX();
 
                 }
                 break;
             case 46 :
-                // JPQL.g:1:284: MEMBER
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:284: MEMBER
                 {
                 mMEMBER();
 
                 }
                 break;
             case 47 :
-                // JPQL.g:1:291: MIN
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:291: MIN
                 {
                 mMIN();
 
                 }
                 break;
             case 48 :
-                // JPQL.g:1:295: MOD
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:295: MOD
                 {
                 mMOD();
 
                 }
                 break;
             case 49 :
-                // JPQL.g:1:299: NEW
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:299: NEW
                 {
                 mNEW();
 
                 }
                 break;
             case 50 :
-                // JPQL.g:1:303: NOT
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:303: NOT
                 {
                 mNOT();
 
                 }
                 break;
             case 51 :
-                // JPQL.g:1:307: NULL
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:307: NULL
                 {
                 mNULL();
 
                 }
                 break;
             case 52 :
-                // JPQL.g:1:312: NULLIF
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:312: NULLIF
                 {
                 mNULLIF();
 
                 }
                 break;
             case 53 :
-                // JPQL.g:1:319: OBJECT
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:319: OBJECT
                 {
                 mOBJECT();
 
                 }
                 break;
             case 54 :
-                // JPQL.g:1:326: OF
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:326: OF
                 {
                 mOF();
 
                 }
                 break;
             case 55 :
-                // JPQL.g:1:329: OR
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:329: OR
                 {
                 mOR();
 
                 }
                 break;
             case 56 :
-                // JPQL.g:1:332: ORDER
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:332: ORDER
                 {
                 mORDER();
 
                 }
                 break;
             case 57 :
-                // JPQL.g:1:338: OUTER
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:338: OUTER
                 {
                 mOUTER();
 
                 }
                 break;
             case 58 :
-                // JPQL.g:1:344: SELECT
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:344: SELECT
                 {
                 mSELECT();
 
                 }
                 break;
             case 59 :
-                // JPQL.g:1:351: SET
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:351: SET
                 {
                 mSET();
 
                 }
                 break;
             case 60 :
-                // JPQL.g:1:355: SIZE
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:355: SIZE
                 {
                 mSIZE();
 
                 }
                 break;
             case 61 :
-                // JPQL.g:1:360: SQRT
-                {
-                mSQRT();
-
-                }
-                break;
-            case 62 :
-                // JPQL.g:1:365: SOME
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:360: SOME
                 {
                 mSOME();
 
                 }
                 break;
+            case 62 :
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:365: SQRT
+                {
+                mSQRT();
+
+                }
+                break;
             case 63 :
-                // JPQL.g:1:370: SUBSTRING
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:370: SUBSTRING
                 {
                 mSUBSTRING();
 
                 }
                 break;
             case 64 :
-                // JPQL.g:1:380: SUM
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:380: SUM
                 {
                 mSUM();
 
                 }
                 break;
             case 65 :
-                // JPQL.g:1:384: THEN
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:384: THEN
                 {
                 mTHEN();
 
                 }
                 break;
             case 66 :
-                // JPQL.g:1:389: TRAILING
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:389: TRAILING
                 {
                 mTRAILING();
 
                 }
                 break;
             case 67 :
-                // JPQL.g:1:398: TREAT
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:398: TREAT
                 {
                 mTREAT();
 
                 }
                 break;
             case 68 :
-                // JPQL.g:1:404: TRIM
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:404: TRIM
                 {
                 mTRIM();
 
                 }
                 break;
             case 69 :
-                // JPQL.g:1:409: TRUE
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:409: TRUE
                 {
                 mTRUE();
 
                 }
                 break;
             case 70 :
-                // JPQL.g:1:414: TYPE
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:414: TYPE
                 {
                 mTYPE();
 
                 }
                 break;
             case 71 :
-                // JPQL.g:1:419: UNKNOWN
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:419: UNKNOWN
                 {
                 mUNKNOWN();
 
                 }
                 break;
             case 72 :
-                // JPQL.g:1:427: UPDATE
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:427: UPDATE
                 {
                 mUPDATE();
 
                 }
                 break;
             case 73 :
-                // JPQL.g:1:434: UPPER
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:434: UPPER
                 {
                 mUPPER();
 
                 }
                 break;
             case 74 :
-                // JPQL.g:1:440: VALUE
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:440: VALUE
                 {
                 mVALUE();
 
                 }
                 break;
             case 75 :
-                // JPQL.g:1:446: WHEN
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:446: WHEN
                 {
                 mWHEN();
 
                 }
                 break;
             case 76 :
-                // JPQL.g:1:451: WHERE
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:451: WHERE
                 {
                 mWHERE();
 
                 }
                 break;
             case 77 :
-                // JPQL.g:1:457: DOT
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:457: DOT
                 {
                 mDOT();
 
                 }
                 break;
             case 78 :
-                // JPQL.g:1:461: WS
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:461: WS
                 {
                 mWS();
 
                 }
                 break;
             case 79 :
-                // JPQL.g:1:464: LEFT_ROUND_BRACKET
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:464: LEFT_ROUND_BRACKET
                 {
                 mLEFT_ROUND_BRACKET();
 
                 }
                 break;
             case 80 :
-                // JPQL.g:1:483: LEFT_CURLY_BRACKET
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:483: LEFT_CURLY_BRACKET
                 {
                 mLEFT_CURLY_BRACKET();
 
                 }
                 break;
             case 81 :
-                // JPQL.g:1:502: RIGHT_ROUND_BRACKET
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:502: RIGHT_ROUND_BRACKET
                 {
                 mRIGHT_ROUND_BRACKET();
 
                 }
                 break;
             case 82 :
-                // JPQL.g:1:522: RIGHT_CURLY_BRACKET
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:522: RIGHT_CURLY_BRACKET
                 {
                 mRIGHT_CURLY_BRACKET();
 
                 }
                 break;
             case 83 :
-                // JPQL.g:1:542: COMMA
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:542: COMMA
                 {
                 mCOMMA();
 
                 }
                 break;
             case 84 :
-                // JPQL.g:1:548: IDENT
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:548: IDENT
                 {
                 mIDENT();
 
                 }
                 break;
             case 85 :
-                // JPQL.g:1:554: HEX_LITERAL
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:554: HEX_LITERAL
                 {
                 mHEX_LITERAL();
 
                 }
                 break;
             case 86 :
-                // JPQL.g:1:566: INTEGER_LITERAL
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:566: INTEGER_LITERAL
                 {
                 mINTEGER_LITERAL();
 
                 }
                 break;
             case 87 :
-                // JPQL.g:1:582: LONG_LITERAL
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:582: LONG_LITERAL
                 {
                 mLONG_LITERAL();
 
                 }
                 break;
             case 88 :
-                // JPQL.g:1:595: OCTAL_LITERAL
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:595: OCTAL_LITERAL
                 {
                 mOCTAL_LITERAL();
 
                 }
                 break;
             case 89 :
-                // JPQL.g:1:609: DOUBLE_LITERAL
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:609: DOUBLE_LITERAL
                 {
                 mDOUBLE_LITERAL();
 
                 }
                 break;
             case 90 :
-                // JPQL.g:1:624: FLOAT_LITERAL
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:624: FLOAT_LITERAL
                 {
                 mFLOAT_LITERAL();
 
                 }
                 break;
             case 91 :
-                // JPQL.g:1:638: DATE_LITERAL
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:638: DATE_LITERAL
                 {
                 mDATE_LITERAL();
 
                 }
                 break;
             case 92 :
-                // JPQL.g:1:651: TIME_LITERAL
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:651: TIME_LITERAL
                 {
                 mTIME_LITERAL();
 
                 }
                 break;
             case 93 :
-                // JPQL.g:1:664: TIMESTAMP_LITERAL
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:664: TIMESTAMP_LITERAL
                 {
                 mTIMESTAMP_LITERAL();
 
                 }
                 break;
             case 94 :
-                // JPQL.g:1:682: DATE_STRING
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:682: DATE_STRING
                 {
                 mDATE_STRING();
 
                 }
                 break;
             case 95 :
-                // JPQL.g:1:694: TIME_STRING
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:694: TIME_STRING
                 {
                 mTIME_STRING();
 
                 }
                 break;
             case 96 :
-                // JPQL.g:1:706: EQUALS
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:706: EQUALS
                 {
                 mEQUALS();
 
                 }
                 break;
             case 97 :
-                // JPQL.g:1:713: GREATER_THAN
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:713: GREATER_THAN
                 {
                 mGREATER_THAN();
 
                 }
                 break;
             case 98 :
-                // JPQL.g:1:726: GREATER_THAN_EQUAL_TO
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:726: GREATER_THAN_EQUAL_TO
                 {
                 mGREATER_THAN_EQUAL_TO();
 
                 }
                 break;
             case 99 :
-                // JPQL.g:1:748: LESS_THAN
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:748: LESS_THAN
                 {
                 mLESS_THAN();
 
                 }
                 break;
             case 100 :
-                // JPQL.g:1:758: LESS_THAN_EQUAL_TO
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:758: LESS_THAN_EQUAL_TO
                 {
                 mLESS_THAN_EQUAL_TO();
 
                 }
                 break;
             case 101 :
-                // JPQL.g:1:777: NOT_EQUAL_TO
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:777: NOT_EQUAL_TO
                 {
                 mNOT_EQUAL_TO();
 
                 }
                 break;
             case 102 :
-                // JPQL.g:1:790: MULTIPLY
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:790: MULTIPLY
                 {
                 mMULTIPLY();
 
                 }
                 break;
             case 103 :
-                // JPQL.g:1:799: DIVIDE
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:799: DIVIDE
                 {
                 mDIVIDE();
 
                 }
                 break;
             case 104 :
-                // JPQL.g:1:806: PLUS
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:806: PLUS
                 {
                 mPLUS();
 
                 }
                 break;
             case 105 :
-                // JPQL.g:1:811: MINUS
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:811: MINUS
                 {
                 mMINUS();
 
                 }
                 break;
             case 106 :
-                // JPQL.g:1:817: POSITIONAL_PARAM
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:817: POSITIONAL_PARAM
                 {
                 mPOSITIONAL_PARAM();
 
                 }
                 break;
             case 107 :
-                // JPQL.g:1:834: NAMED_PARAM
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:834: NAMED_PARAM
                 {
                 mNAMED_PARAM();
 
                 }
                 break;
             case 108 :
-                // JPQL.g:1:846: STRING_LITERAL_DOUBLE_QUOTED
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:846: STRING_LITERAL_DOUBLE_QUOTED
                 {
                 mSTRING_LITERAL_DOUBLE_QUOTED();
 
                 }
                 break;
             case 109 :
-                // JPQL.g:1:875: STRING_LITERAL_SINGLE_QUOTED
+                // org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:875: STRING_LITERAL_SINGLE_QUOTED
                 {
                 mSTRING_LITERAL_SINGLE_QUOTED();
 
@@ -4596,7 +4622,6 @@ public class JPQLLexer extends Lexer {
                 break;
 
         }
-
     }
 
 
@@ -4640,8 +4665,7 @@ public class JPQLLexer extends Lexer {
         }
     }
 
-    // Made static for performance reasons.
-    static class DFA17 extends DFA {
+    protected class DFA17 extends DFA {
 
         public DFA17(BaseRecognizer recognizer) {
             this.recognizer = recognizer;
@@ -4654,10 +4678,12 @@ public class JPQLLexer extends Lexer {
             this.special = DFA17_special;
             this.transition = DFA17_transition;
         }
+        @Override
         public String getDescription() {
-            return "1462:1: fragment NUMERIC_DIGITS : ( ( MINUS )? ( '0' .. '9' )+ '.' ( '0' .. '9' )* | ( MINUS )? '.' ( '0' .. '9' )+ | ( MINUS )? ( '0' .. '9' )+ );";
+            return "1481:1: fragment NUMERIC_DIGITS : ( ( MINUS )? ( '0' .. '9' )+ '.' ( '0' .. '9' )* | ( MINUS )? '.' ( '0' .. '9' )+ | ( MINUS )? ( '0' .. '9' )+ );";
         }
     }
+
     static final String DFA20_eotS =
         "\11\uffff";
     static final String DFA20_eofS =
@@ -4667,19 +4693,19 @@ public class JPQLLexer extends Lexer {
     static final String DFA20_maxS =
         "\2\71\1\146\1\71\1\146\2\uffff\2\146";
     static final String DFA20_acceptS =
-        "\5\uffff\1\2\1\1\2\uffff";
+        "\5\uffff\1\1\1\2\2\uffff";
     static final String DFA20_specialS =
         "\11\uffff}>";
     static final String[] DFA20_transitionS = {
             "\1\1\1\3\1\uffff\12\2",
             "\1\3\1\uffff\12\2",
-            "\1\4\1\uffff\12\2\13\uffff\1\6\37\uffff\1\6\1\5",
+            "\1\4\1\uffff\12\2\13\uffff\1\5\37\uffff\1\5\1\6",
             "\12\7",
-            "\12\10\13\uffff\1\6\37\uffff\1\6\1\5",
+            "\12\10\13\uffff\1\5\37\uffff\1\5\1\6",
             "",
             "",
-            "\12\7\13\uffff\1\6\37\uffff\1\6\1\5",
-            "\12\10\13\uffff\1\6\37\uffff\1\6\1\5"
+            "\12\7\13\uffff\1\5\37\uffff\1\5\1\6",
+            "\12\10\13\uffff\1\5\37\uffff\1\5\1\6"
     };
 
     static final short[] DFA20_eot = DFA.unpackEncodedString(DFA20_eotS);
@@ -4698,8 +4724,7 @@ public class JPQLLexer extends Lexer {
         }
     }
 
-    // Made static for performance reasons.
-    static class DFA20 extends DFA {
+    protected class DFA20 extends DFA {
 
         public DFA20(BaseRecognizer recognizer) {
             this.recognizer = recognizer;
@@ -4712,134 +4737,127 @@ public class JPQLLexer extends Lexer {
             this.special = DFA20_special;
             this.transition = DFA20_transition;
         }
+        @Override
         public String getDescription() {
-            return "1473:1: FLOAT_LITERAL : ( NUMERIC_DIGITS EXPONENT ( FLOAT_SUFFIX )? | NUMERIC_DIGITS FLOAT_SUFFIX );";
+            return "1490:1: FLOAT_LITERAL : ( NUMERIC_DIGITS EXPONENT ( FLOAT_SUFFIX )? | NUMERIC_DIGITS FLOAT_SUFFIX );";
         }
     }
+
     static final String DFA35_eotS =
-        "\1\uffff\24\34\1\142\2\uffff\1\143\4\uffff\1\151\1\157\1\151\1"+
-        "\uffff\1\165\1\167\10\uffff\3\34\1\175\3\34\1\u0081\20\34\1\u0098"+
-        "\1\u0099\15\34\1\u00aa\1\u00ac\15\34\1\156\5\uffff\1\u00c3\1\156"+
-        "\2\uffff\1\156\5\uffff\3\151\4\uffff\1\u00ca\1\u00cb\1\u00cc\1\u00cd"+
-        "\1\u00ce\1\uffff\1\u00cf\2\34\1\uffff\12\34\1\u00dc\13\34\2\uffff"+
-        "\1\34\1\u00e9\6\34\1\u00f0\1\34\1\u00f2\1\u00f3\1\u00f4\1\u00f5"+
-        "\2\34\1\uffff\1\34\1\uffff\2\34\1\u00fb\4\34\1\u0100\13\34\2\uffff"+
-        "\1\u00c3\1\uffff\2\156\1\u00c3\1\156\2\151\6\uffff\1\34\1\u0111"+
-        "\1\u0112\4\34\1\u0117\2\34\1\u011a\1\34\1\uffff\5\34\1\u0121\1\u0122"+
-        "\4\34\1\u0127\1\uffff\1\34\1\u0129\1\34\1\u012b\2\34\1\uffff\1\34"+
-        "\4\uffff\1\u0130\4\34\1\uffff\1\u0135\1\u0136\1\u0137\1\34\1\uffff"+
-        "\1\u0139\2\34\1\u013c\1\u013d\1\u013e\4\34\1\u0143\1\34\1\u00c3"+
-        "\1\156\1\151\1\34\2\uffff\2\34\1\u0149\1\34\1\uffff\2\34\1\uffff"+
-        "\1\u014d\1\u014e\2\34\1\u0151\1\u0152\2\uffff\1\u0153\1\34\1\u0155"+
-        "\1\u0156\1\uffff\1\34\1\uffff\1\34\1\uffff\1\34\1\u015a\2\34\1\uffff"+
-        "\1\34\1\u015e\1\u015f\1\34\3\uffff\1\34\1\uffff\1\34\1\u0163\3\uffff"+
-        "\2\34\1\u0166\1\u0167\1\uffff\1\u0168\1\uffff\2\34\1\u016b\1\uffff"+
-        "\1\34\1\u016d\1\34\2\uffff\1\u016f\1\u0170\3\uffff\1\u0171\2\uffff"+
-        "\1\34\1\u0173\1\u0174\1\uffff\1\u0175\1\u0176\1\u0177\2\uffff\1"+
-        "\u0178\2\34\1\uffff\1\34\1\u017c\3\uffff\1\u017d\1\34\1\uffff\1"+
-        "\34\1\uffff\1\34\3\uffff\1\u0181\6\uffff\2\34\1\u0184\2\uffff\1"+
-        "\u0185\1\34\1\u0188\1\uffff\1\34\1\u018a\2\uffff\2\34\1\uffff\1"+
-        "\u018d\1\uffff\2\34\1\uffff\2\34\1\u0192\1\u0194\1\uffff\1\34\1"+
-        "\uffff\3\34\1\u0199\1\uffff";
+        "\1\uffff\24\34\1\141\2\uffff\1\143\4\uffff\1\150\1\162\1\150\1\uffff\1"+
+        "\165\1\167\10\uffff\3\34\1\175\3\34\1\u0081\20\34\1\u0098\1\u0099\15\34"+
+        "\1\u00aa\1\u00ac\15\34\1\uffff\1\154\4\uffff\1\u00c3\2\uffff\2\154\3\uffff"+
+        "\2\150\2\uffff\1\150\4\uffff\1\u00ca\1\u00cb\1\u00cc\1\u00cd\1\u00ce\1"+
+        "\uffff\1\u00cf\2\34\1\uffff\12\34\1\u00dc\13\34\2\uffff\1\34\1\u00e9\6"+
+        "\34\1\u00f0\1\34\1\u00f2\1\u00f3\1\u00f4\1\u00f5\2\34\1\uffff\1\34\1\uffff"+
+        "\2\34\1\u00fb\4\34\1\u0100\13\34\2\uffff\1\u00c3\1\uffff\2\154\1\u00c3"+
+        "\1\154\2\150\6\uffff\1\34\1\u0111\1\u0112\5\34\1\u0118\1\34\1\u011a\1"+
+        "\34\1\uffff\5\34\1\u0121\1\u0122\4\34\1\u0127\1\uffff\1\34\1\u0129\1\34"+
+        "\1\u012b\2\34\1\uffff\1\34\4\uffff\1\u0130\4\34\1\uffff\1\u0135\1\u0136"+
+        "\1\u0137\1\34\1\uffff\1\u0139\2\34\1\u013c\1\u013d\1\u013e\4\34\1\u0143"+
+        "\1\34\1\u00c3\1\154\1\150\1\34\2\uffff\2\34\1\u0149\2\34\1\uffff\1\34"+
+        "\1\uffff\1\u014d\1\u014e\2\34\1\u0151\1\u0152\2\uffff\1\u0153\1\34\1\u0155"+
+        "\1\u0156\1\uffff\1\34\1\uffff\1\34\1\uffff\1\34\1\u015a\2\34\1\uffff\1"+
+        "\34\1\u015e\1\u015f\1\34\3\uffff\1\34\1\uffff\1\34\1\u0163\3\uffff\2\34"+
+        "\1\u0166\1\u0167\1\uffff\1\u0168\1\uffff\2\34\1\u016b\1\uffff\1\34\1\u016d"+
+        "\1\34\2\uffff\1\u016f\1\u0170\3\uffff\1\u0171\2\uffff\1\34\1\u0173\1\u0174"+
+        "\1\uffff\1\u0175\1\u0176\1\u0177\2\uffff\1\u0178\2\34\1\uffff\1\34\1\u017c"+
+        "\3\uffff\1\u017d\1\34\1\uffff\1\34\1\uffff\1\34\3\uffff\1\u0181\6\uffff"+
+        "\2\34\1\u0184\2\uffff\1\u0185\1\34\1\u0188\1\uffff\1\34\1\u018a\2\uffff"+
+        "\2\34\1\uffff\1\u018d\1\uffff\2\34\1\uffff\2\34\1\u0192\1\u0194\1\uffff"+
+        "\1\34\1\uffff\3\34\1\u0199\1\uffff";
     static final String DFA35_eofS =
         "\u019a\uffff";
     static final String DFA35_minS =
-        "\1\11\1\142\1\145\1\141\1\145\1\154\1\141\1\162\1\141\1\156\1\157"+
-        "\2\145\1\141\1\145\1\142\1\145\1\150\1\156\1\141\1\150\1\60\2\uffff"+
-        "\1\144\4\uffff\3\56\1\uffff\2\75\10\uffff\1\163\1\154\1\144\1\44"+
-        "\1\147\2\164\1\44\1\163\1\141\1\162\1\154\2\163\1\160\1\144\1\143"+
-        "\1\151\1\154\1\164\1\156\2\157\1\166\2\44\1\151\1\171\1\141\1\153"+
-        "\1\143\1\170\1\155\1\156\1\144\1\167\1\164\1\154\1\152\2\44\1\164"+
-        "\1\154\1\172\1\162\1\155\1\142\1\145\1\141\1\160\1\153\1\144\1\154"+
-        "\1\145\1\60\2\uffff\1\11\2\uffff\2\56\2\uffff\1\60\4\uffff\1\60"+
-        "\3\56\4\uffff\5\44\1\uffff\1\44\1\167\1\150\1\uffff\1\145\1\154"+
-        "\1\143\1\156\1\162\1\143\1\145\1\164\1\145\1\164\1\44\1\162\1\141"+
-        "\2\163\2\143\1\155\1\165\1\151\2\145\2\uffff\1\156\1\44\1\144\1"+
-        "\164\1\147\1\145\1\141\1\145\1\44\1\142\4\44\1\154\1\145\1\uffff"+
-        "\1\145\1\uffff\2\145\1\44\1\145\1\164\1\145\1\163\1\44\1\156\1\151"+
-        "\1\141\1\155\2\145\1\156\1\141\1\145\1\165\1\156\2\uffff\1\56\1"+
-        "\uffff\1\56\1\60\4\56\6\uffff\1\145\2\44\1\145\1\141\1\164\1\145"+
-        "\1\44\1\164\1\151\1\44\1\171\1\uffff\1\171\1\160\1\164\1\145\1\150"+
-        "\2\44\1\160\1\156\1\170\1\162\1\44\1\uffff\1\151\1\44\1\164\1\44"+
-        "\1\164\1\162\1\uffff\1\145\4\uffff\1\44\1\143\2\162\1\143\1\uffff"+
-        "\3\44\1\164\1\uffff\1\44\1\154\1\164\3\44\1\157\1\164\1\162\1\145"+
-        "\1\44\1\145\3\55\1\145\2\uffff\1\163\1\164\1\44\1\156\1\uffff\1"+
-        "\145\1\156\1\uffff\2\44\1\145\1\163\2\44\2\uffff\1\44\1\147\2\44"+
-        "\1\uffff\1\156\1\uffff\1\150\1\uffff\1\145\1\44\1\162\1\146\1\uffff"+
-        "\1\164\2\44\1\164\3\uffff\1\162\1\uffff\1\151\1\44\3\uffff\1\167"+
-        "\1\145\2\44\1\uffff\1\44\1\uffff\1\156\1\143\1\44\1\uffff\1\164"+
-        "\1\44\1\143\2\uffff\2\44\3\uffff\1\44\2\uffff\1\147\2\44\1\uffff"+
-        "\3\44\2\uffff\1\44\1\151\1\156\1\uffff\1\156\1\44\3\uffff\1\44\1"+
-        "\145\1\uffff\1\137\1\uffff\1\164\3\uffff\1\44\6\uffff\1\156\1\147"+
-        "\1\44\2\uffff\1\44\1\144\1\44\1\uffff\1\147\1\44\2\uffff\1\141\1"+
-        "\151\1\uffff\1\44\1\uffff\1\164\1\155\1\uffff\2\145\2\44\1\uffff"+
-        "\1\164\1\uffff\1\141\1\155\1\160\1\44\1\uffff";
+        "\1\11\1\142\1\145\1\141\1\145\1\154\1\141\1\162\1\141\1\156\1\157\2\145"+
+        "\1\141\1\145\1\142\1\145\1\150\1\156\1\141\1\150\1\60\2\uffff\1\144\4"+
+        "\uffff\3\56\1\uffff\2\75\10\uffff\1\163\1\154\1\144\1\44\1\147\2\164\1"+
+        "\44\1\163\1\141\1\162\1\154\2\163\1\160\1\144\1\143\1\151\1\154\1\164"+
+        "\1\157\1\156\1\157\1\166\2\44\1\151\1\171\1\141\1\153\1\143\1\170\1\155"+
+        "\1\156\1\144\1\167\1\164\1\154\1\152\2\44\1\164\1\154\1\172\1\155\1\162"+
+        "\1\142\1\145\1\141\1\160\1\153\1\144\1\154\1\145\1\uffff\1\60\2\uffff"+
+        "\1\11\1\uffff\1\56\2\uffff\1\56\1\60\3\uffff\2\56\1\60\1\uffff\1\56\4"+
+        "\uffff\5\44\1\uffff\1\44\1\167\1\150\1\uffff\1\145\1\154\1\143\1\156\1"+
+        "\162\1\145\1\143\1\164\1\145\1\164\1\44\1\162\1\141\2\163\1\143\1\155"+
+        "\1\143\1\165\1\151\2\145\2\uffff\1\156\1\44\1\144\1\164\1\147\1\145\1"+
+        "\141\1\145\1\44\1\142\4\44\1\154\1\145\1\uffff\1\145\1\uffff\2\145\1\44"+
+        "\2\145\1\164\1\163\1\44\1\156\1\151\1\141\1\155\2\145\1\156\1\141\1\145"+
+        "\1\165\1\156\2\uffff\1\56\1\uffff\1\56\1\60\4\56\6\uffff\1\145\2\44\1"+
+        "\145\1\141\1\164\1\145\1\164\1\44\1\151\1\44\1\171\1\uffff\1\171\1\160"+
+        "\1\164\1\145\1\150\2\44\1\160\1\156\1\170\1\162\1\44\1\uffff\1\151\1\44"+
+        "\1\164\1\44\1\164\1\162\1\uffff\1\145\4\uffff\1\44\1\143\2\162\1\143\1"+
+        "\uffff\3\44\1\164\1\uffff\1\44\1\154\1\164\3\44\1\157\1\164\1\162\1\145"+
+        "\1\44\1\145\3\55\1\145\2\uffff\1\163\1\164\1\44\1\156\1\145\1\uffff\1"+
+        "\156\1\uffff\2\44\1\145\1\163\2\44\2\uffff\1\44\1\147\2\44\1\uffff\1\156"+
+        "\1\uffff\1\150\1\uffff\1\145\1\44\1\162\1\146\1\uffff\1\164\2\44\1\164"+
+        "\3\uffff\1\162\1\uffff\1\151\1\44\3\uffff\1\167\1\145\2\44\1\uffff\1\44"+
+        "\1\uffff\1\156\1\143\1\44\1\uffff\1\164\1\44\1\143\2\uffff\2\44\3\uffff"+
+        "\1\44\2\uffff\1\147\2\44\1\uffff\3\44\2\uffff\1\44\1\151\1\156\1\uffff"+
+        "\1\156\1\44\3\uffff\1\44\1\145\1\uffff\1\137\1\uffff\1\164\3\uffff\1\44"+
+        "\6\uffff\1\156\1\147\1\44\2\uffff\1\44\1\144\1\44\1\uffff\1\147\1\44\2"+
+        "\uffff\1\141\1\151\1\uffff\1\44\1\uffff\1\164\1\155\1\uffff\2\145\2\44"+
+        "\1\uffff\1\164\1\uffff\1\141\1\155\1\160\1\44\1\uffff";
     static final String DFA35_maxS =
-        "\1\176\1\166\1\171\1\165\1\151\1\170\1\165\1\162\1\141\1\163\1"+
-        "\157\1\145\2\157\3\165\1\171\1\160\1\141\1\150\1\71\2\uffff\1\164"+
-        "\4\uffff\1\170\1\71\1\154\1\uffff\1\75\1\76\10\uffff\1\163\1\154"+
-        "\1\171\1\ufffe\1\147\2\164\1\ufffe\1\163\1\165\1\162\3\163\1\160"+
-        "\1\164\1\143\1\151\1\154\1\164\1\156\2\157\1\166\2\ufffe\1\151\1"+
-        "\171\1\156\1\153\1\167\1\170\1\155\1\156\1\144\1\167\1\164\1\154"+
-        "\1\152\2\ufffe\2\164\1\172\1\162\2\155\1\145\1\165\1\160\1\153\1"+
-        "\160\1\154\1\145\1\146\2\uffff\1\163\2\uffff\2\146\2\uffff\1\146"+
-        "\4\uffff\1\71\3\154\4\uffff\5\ufffe\1\uffff\1\ufffe\1\167\1\150"+
-        "\1\uffff\1\145\1\154\1\143\1\156\1\162\1\143\1\145\1\164\1\145\1"+
-        "\164\1\ufffe\1\162\1\141\2\163\2\143\1\155\1\165\1\151\2\145\2\uffff"+
-        "\1\156\1\ufffe\1\144\1\164\1\147\1\145\1\141\1\145\1\ufffe\1\142"+
-        "\4\ufffe\1\154\1\145\1\uffff\1\145\1\uffff\2\145\1\ufffe\1\145\1"+
-        "\164\1\145\1\163\1\ufffe\1\156\1\151\1\141\1\155\2\145\1\156\1\141"+
-        "\1\145\1\165\1\162\2\uffff\1\146\1\uffff\4\146\2\154\6\uffff\1\145"+
-        "\2\ufffe\1\145\1\141\1\164\1\145\1\ufffe\1\164\1\151\1\ufffe\1\171"+
-        "\1\uffff\1\171\1\160\1\164\1\145\1\150\2\ufffe\1\160\1\156\1\170"+
-        "\1\162\1\ufffe\1\uffff\1\151\1\ufffe\1\164\1\ufffe\1\164\1\162\1"+
-        "\uffff\1\145\4\uffff\1\ufffe\1\143\2\162\1\143\1\uffff\3\ufffe\1"+
-        "\164\1\uffff\1\ufffe\1\154\1\164\3\ufffe\1\157\1\164\1\162\1\145"+
-        "\1\ufffe\1\145\2\146\1\154\1\145\2\uffff\1\163\1\164\1\ufffe\1\156"+
-        "\1\uffff\1\145\1\156\1\uffff\2\ufffe\1\145\1\163\2\ufffe\2\uffff"+
-        "\1\ufffe\1\147\2\ufffe\1\uffff\1\156\1\uffff\1\150\1\uffff\1\145"+
-        "\1\ufffe\1\162\1\146\1\uffff\1\164\2\ufffe\1\164\3\uffff\1\162\1"+
-        "\uffff\1\151\1\ufffe\3\uffff\1\167\1\145\2\ufffe\1\uffff\1\ufffe"+
-        "\1\uffff\1\156\1\143\1\ufffe\1\uffff\1\164\1\ufffe\1\143\2\uffff"+
-        "\2\ufffe\3\uffff\1\ufffe\2\uffff\1\147\2\ufffe\1\uffff\3\ufffe\2"+
-        "\uffff\1\ufffe\1\151\1\156\1\uffff\1\156\1\ufffe\3\uffff\1\ufffe"+
-        "\1\145\1\uffff\1\137\1\uffff\1\164\3\uffff\1\ufffe\6\uffff\1\156"+
-        "\1\147\1\ufffe\2\uffff\1\ufffe\1\164\1\ufffe\1\uffff\1\147\1\ufffe"+
-        "\2\uffff\1\141\1\151\1\uffff\1\ufffe\1\uffff\1\164\1\155\1\uffff"+
-        "\2\145\2\ufffe\1\uffff\1\164\1\uffff\1\141\1\155\1\160\1\ufffe\1"+
-        "\uffff";
+        "\1\176\1\166\1\171\1\165\1\151\1\170\1\165\1\162\1\141\1\163\1\157\1\145"+
+        "\2\157\3\165\1\171\1\160\1\141\1\150\1\71\2\uffff\1\164\4\uffff\1\170"+
+        "\1\71\1\154\1\uffff\1\75\1\76\10\uffff\1\163\1\154\1\171\1\ufffe\1\147"+
+        "\2\164\1\ufffe\1\163\1\165\1\162\3\163\1\160\1\164\1\143\1\151\1\154\1"+
+        "\164\1\157\1\156\1\157\1\166\2\ufffe\1\151\1\171\1\156\1\153\1\167\1\170"+
+        "\1\155\1\156\1\144\1\167\1\164\1\154\1\152\2\ufffe\2\164\1\172\1\155\1"+
+        "\162\1\155\1\145\1\165\1\160\1\153\1\160\1\154\1\145\1\uffff\1\146\2\uffff"+
+        "\1\163\1\uffff\1\146\2\uffff\2\146\3\uffff\2\154\1\71\1\uffff\1\154\4"+
+        "\uffff\5\ufffe\1\uffff\1\ufffe\1\167\1\150\1\uffff\1\145\1\154\1\143\1"+
+        "\156\1\162\1\145\1\143\1\164\1\145\1\164\1\ufffe\1\162\1\141\2\163\1\143"+
+        "\1\155\1\143\1\165\1\151\2\145\2\uffff\1\156\1\ufffe\1\144\1\164\1\147"+
+        "\1\145\1\141\1\145\1\ufffe\1\142\4\ufffe\1\154\1\145\1\uffff\1\145\1\uffff"+
+        "\2\145\1\ufffe\2\145\1\164\1\163\1\ufffe\1\156\1\151\1\141\1\155\2\145"+
+        "\1\156\1\141\1\145\1\165\1\162\2\uffff\1\146\1\uffff\4\146\2\154\6\uffff"+
+        "\1\145\2\ufffe\1\145\1\141\1\164\1\145\1\164\1\ufffe\1\151\1\ufffe\1\171"+
+        "\1\uffff\1\171\1\160\1\164\1\145\1\150\2\ufffe\1\160\1\156\1\170\1\162"+
+        "\1\ufffe\1\uffff\1\151\1\ufffe\1\164\1\ufffe\1\164\1\162\1\uffff\1\145"+
+        "\4\uffff\1\ufffe\1\143\2\162\1\143\1\uffff\3\ufffe\1\164\1\uffff\1\ufffe"+
+        "\1\154\1\164\3\ufffe\1\157\1\164\1\162\1\145\1\ufffe\1\145\2\146\1\154"+
+        "\1\145\2\uffff\1\163\1\164\1\ufffe\1\156\1\145\1\uffff\1\156\1\uffff\2"+
+        "\ufffe\1\145\1\163\2\ufffe\2\uffff\1\ufffe\1\147\2\ufffe\1\uffff\1\156"+
+        "\1\uffff\1\150\1\uffff\1\145\1\ufffe\1\162\1\146\1\uffff\1\164\2\ufffe"+
+        "\1\164\3\uffff\1\162\1\uffff\1\151\1\ufffe\3\uffff\1\167\1\145\2\ufffe"+
+        "\1\uffff\1\ufffe\1\uffff\1\156\1\143\1\ufffe\1\uffff\1\164\1\ufffe\1\143"+
+        "\2\uffff\2\ufffe\3\uffff\1\ufffe\2\uffff\1\147\2\ufffe\1\uffff\3\ufffe"+
+        "\2\uffff\1\ufffe\1\151\1\156\1\uffff\1\156\1\ufffe\3\uffff\1\ufffe\1\145"+
+        "\1\uffff\1\137\1\uffff\1\164\3\uffff\1\ufffe\6\uffff\1\156\1\147\1\ufffe"+
+        "\2\uffff\1\ufffe\1\164\1\ufffe\1\uffff\1\147\1\ufffe\2\uffff\1\141\1\151"+
+        "\1\uffff\1\ufffe\1\uffff\1\164\1\155\1\uffff\2\145\2\ufffe\1\uffff\1\164"+
+        "\1\uffff\1\141\1\155\1\160\1\ufffe\1\uffff";
     static final String DFA35_acceptS =
-        "\26\uffff\1\116\1\117\1\uffff\1\121\1\122\1\123\1\124\3\uffff\1"+
-        "\140\2\uffff\1\145\1\146\1\147\1\150\1\152\1\153\1\154\1\155\67"+
-        "\uffff\1\115\1\120\1\uffff\1\133\1\125\2\uffff\1\126\1\127\1\uffff"+
-        "\1\137\1\132\1\131\1\151\4\uffff\1\142\1\141\1\144\1\143\5\uffff"+
-        "\1\5\3\uffff\1\12\26\uffff\1\41\1\44\20\uffff\1\66\1\uffff\1\67"+
-        "\23\uffff\1\135\1\134\1\uffff\1\130\6\uffff\1\1\1\2\1\3\1\4\1\6"+
-        "\1\7\14\uffff\1\27\14\uffff\1\46\6\uffff\1\55\1\uffff\1\57\1\60"+
-        "\1\61\1\62\5\uffff\1\73\4\uffff\1\100\20\uffff\1\11\1\13\4\uffff"+
-        "\1\22\2\uffff\1\25\6\uffff\1\35\1\36\4\uffff\1\45\1\uffff\1\50\1"+
-        "\uffff\1\52\4\uffff\1\63\4\uffff\1\74\1\75\1\76\1\uffff\1\101\2"+
-        "\uffff\1\104\1\105\1\106\4\uffff\1\113\1\uffff\1\136\3\uffff\1\16"+
-        "\3\uffff\1\26\1\30\2\uffff\1\33\1\34\1\37\1\uffff\1\42\1\43\3\uffff"+
-        "\1\54\3\uffff\1\70\1\71\3\uffff\1\103\2\uffff\1\111\1\112\1\114"+
-        "\2\uffff\1\15\1\uffff\1\23\1\uffff\1\31\1\32\1\40\1\uffff\1\51\1"+
-        "\53\1\56\1\64\1\65\1\72\3\uffff\1\110\1\10\3\uffff\1\47\2\uffff"+
-        "\1\107\1\14\2\uffff\1\24\1\uffff\1\102\2\uffff\1\77\4\uffff\1\17"+
-        "\1\uffff\1\20\4\uffff\1\21";
+        "\26\uffff\1\116\1\117\1\uffff\1\121\1\122\1\123\1\124\3\uffff\1\140\2"+
+        "\uffff\1\145\1\146\1\147\1\150\1\152\1\153\1\154\1\155\66\uffff\1\115"+
+        "\1\uffff\1\120\1\133\1\uffff\1\125\1\uffff\1\126\1\127\2\uffff\1\131\1"+
+        "\132\1\137\3\uffff\1\151\1\uffff\1\142\1\141\1\144\1\143\5\uffff\1\5\3"+
+        "\uffff\1\12\26\uffff\1\41\1\44\20\uffff\1\66\1\uffff\1\67\23\uffff\1\135"+
+        "\1\134\1\uffff\1\130\6\uffff\1\1\1\2\1\3\1\4\1\6\1\7\14\uffff\1\27\14"+
+        "\uffff\1\46\6\uffff\1\55\1\uffff\1\57\1\60\1\61\1\62\5\uffff\1\73\4\uffff"+
+        "\1\100\20\uffff\1\11\1\13\5\uffff\1\23\1\uffff\1\25\6\uffff\1\35\1\36"+
+        "\4\uffff\1\45\1\uffff\1\50\1\uffff\1\52\4\uffff\1\63\4\uffff\1\74\1\75"+
+        "\1\76\1\uffff\1\101\2\uffff\1\104\1\105\1\106\4\uffff\1\113\1\uffff\1"+
+        "\136\3\uffff\1\16\3\uffff\1\26\1\30\2\uffff\1\33\1\34\1\37\1\uffff\1\42"+
+        "\1\43\3\uffff\1\54\3\uffff\1\70\1\71\3\uffff\1\103\2\uffff\1\111\1\112"+
+        "\1\114\2\uffff\1\15\1\uffff\1\22\1\uffff\1\31\1\32\1\40\1\uffff\1\51\1"+
+        "\53\1\56\1\64\1\65\1\72\3\uffff\1\110\1\10\3\uffff\1\47\2\uffff\1\107"+
+        "\1\14\2\uffff\1\24\1\uffff\1\102\2\uffff\1\77\4\uffff\1\17\1\uffff\1\20"+
+        "\4\uffff\1\21";
     static final String DFA35_specialS =
         "\u019a\uffff}>";
     static final String[] DFA35_transitionS = {
-            "\2\26\2\uffff\1\26\22\uffff\1\26\1\43\1\51\4\34\1\52\1\27\1"+
-            "\31\1\44\1\46\1\33\1\36\1\25\1\45\1\35\11\37\1\50\1\34\1\42"+
-            "\1\40\1\41\1\47\34\34\1\uffff\4\34\1\1\1\2\1\3\1\4\1\5\1\6\1"+
-            "\7\1\10\1\11\1\12\1\13\1\14\1\15\1\16\1\17\3\34\1\20\1\21\1"+
-            "\22\1\23\1\24\3\34\1\30\1\34\1\32\1\34",
+            "\2\26\2\uffff\1\26\22\uffff\1\26\1\43\1\51\4\34\1\52\1\27\1\31\1\44\1"+
+            "\46\1\33\1\36\1\25\1\45\1\35\11\37\1\50\1\34\1\42\1\40\1\41\1\47\34\34"+
+            "\1\uffff\4\34\1\1\1\2\1\3\1\4\1\5\1\6\1\7\1\10\1\11\1\12\1\13\1\14\1"+
+            "\15\1\16\1\17\3\34\1\20\1\21\1\22\1\23\1\24\3\34\1\30\1\34\1\32\1\34",
             "\1\53\11\uffff\1\54\1\uffff\1\55\4\uffff\1\56\2\uffff\1\57",
             "\1\60\11\uffff\1\61\11\uffff\1\62",
             "\1\63\15\uffff\1\64\5\uffff\1\65",
             "\1\66\3\uffff\1\67",
             "\1\70\1\71\1\72\4\uffff\1\73\4\uffff\1\74",
-            "\1\75\3\uffff\1\76\14\uffff\1\100\2\uffff\1\77",
+            "\1\75\3\uffff\1\76\14\uffff\1\77\2\uffff\1\100",
             "\1\101",
             "\1\102",
             "\1\103\4\uffff\1\104",
@@ -4849,26 +4867,24 @@ public class JPQLLexer extends Lexer {
             "\1\112\3\uffff\1\113\3\uffff\1\114\5\uffff\1\115",
             "\1\116\11\uffff\1\117\5\uffff\1\120",
             "\1\121\3\uffff\1\122\13\uffff\1\123\2\uffff\1\124",
-            "\1\125\3\uffff\1\126\5\uffff\1\130\1\uffff\1\127\3\uffff\1"+
-            "\131",
+            "\1\125\3\uffff\1\126\5\uffff\1\127\1\uffff\1\130\3\uffff\1\131",
             "\1\132\11\uffff\1\133\6\uffff\1\134",
             "\1\135\1\uffff\1\136",
             "\1\137",
             "\1\140",
-            "\12\141",
+            "\12\142",
             "",
             "",
-            "\1\145\17\uffff\1\144",
+            "\1\144\17\uffff\1\145",
             "",
             "",
             "",
             "",
-            "\1\153\1\uffff\10\147\2\150\1\154\12\uffff\1\155\6\uffff\1"+
-            "\152\13\uffff\1\146\13\uffff\1\156\2\155\5\uffff\1\152\13\uffff"+
-            "\1\146",
-            "\1\160\1\uffff\1\161\11\162",
-            "\1\153\1\uffff\12\163\1\154\12\uffff\1\155\6\uffff\1\152\27"+
-            "\uffff\1\156\2\155\5\uffff\1\152",
+            "\1\153\1\uffff\10\147\2\152\1\156\12\uffff\1\155\6\uffff\1\151\13\uffff"+
+            "\1\146\13\uffff\1\154\2\155\5\uffff\1\151\13\uffff\1\146",
+            "\1\161\1\uffff\1\157\11\160",
+            "\1\153\1\uffff\12\163\1\156\12\uffff\1\155\6\uffff\1\151\27\uffff\1"+
+            "\154\2\155\5\uffff\1\151",
             "",
             "\1\164",
             "\1\166\1\43",
@@ -4883,17 +4899,16 @@ public class JPQLLexer extends Lexer {
             "\1\170",
             "\1\171",
             "\1\172\24\uffff\1\173",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\2\34\1\174\27\34"+
-            "\5\uffff\uff7f\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\2\34\1\174\27\34\5\uffff"+
+            "\uff7f\34",
             "\1\176",
             "\1\177",
             "\1\u0080",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
             "\1\u0082",
             "\1\u0083\14\uffff\1\u0084\6\uffff\1\u0085",
             "\1\u0086",
-            "\1\u0088\6\uffff\1\u0087",
+            "\1\u0087\6\uffff\1\u0088",
             "\1\u0089",
             "\1\u008a",
             "\1\u008b",
@@ -4906,10 +4921,9 @@ public class JPQLLexer extends Lexer {
             "\1\u0093",
             "\1\u0094",
             "\1\u0095",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\3\34\1\u0096\11"+
-            "\34\1\u0097\14\34\5\uffff\uff7f\34",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\3\34\1\u0096\11\34\1\u0097"+
+            "\14\34\5\uffff\uff7f\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
             "\1\u009a",
             "\1\u009b",
             "\1\u009c\4\uffff\1\u009d\7\uffff\1\u009e",
@@ -4923,10 +4937,9 @@ public class JPQLLexer extends Lexer {
             "\1\u00a7",
             "\1\u00a8",
             "\1\u00a9",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\3\34\1\u00ab\26"+
-            "\34\5\uffff\uff7f\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\3\34\1\u00ab\26\34\5\uffff"+
+            "\uff7f\34",
             "\1\u00ad",
             "\1\u00ae\7\uffff\1\u00af",
             "\1\u00b0",
@@ -4940,46 +4953,40 @@ public class JPQLLexer extends Lexer {
             "\1\u00bc\13\uffff\1\u00bd",
             "\1\u00be",
             "\1\u00bf",
-            "\12\141\13\uffff\1\155\37\uffff\2\155",
+            "",
+            "\12\142\13\uffff\1\155\37\uffff\2\155",
             "",
             "",
             "\1\u00c1\26\uffff\1\u00c1\122\uffff\1\u00c0",
             "",
-            "",
-            "\1\153\1\uffff\10\u00c2\2\u00c4\1\154\12\uffff\1\155\36\uffff"+
-            "\1\156\2\155",
-            "\1\153\1\uffff\12\u00c4\1\154\12\uffff\1\155\37\uffff\2\155",
+            "\1\153\1\uffff\10\u00c2\2\u00c4\1\156\12\uffff\1\155\36\uffff\1\154"+
+            "\2\155",
             "",
             "",
+            "\1\153\1\uffff\12\u00c4\1\156\12\uffff\1\155\37\uffff\2\155",
             "\12\u00c5\13\uffff\1\155\37\uffff\2\155",
             "",
             "",
             "",
+            "\1\153\1\uffff\10\u00c6\2\u00c7\13\uffff\1\155\6\uffff\1\151\27\uffff"+
+            "\1\154\2\155\5\uffff\1\151",
+            "\1\153\1\uffff\12\u00c8\13\uffff\1\155\6\uffff\1\151\27\uffff\1\154"+
+            "\2\155\5\uffff\1\151",
+            "\12\142",
             "",
-            "\12\141",
-            "\1\153\1\uffff\10\u00c6\2\u00c7\13\uffff\1\155\6\uffff\1\152"+
-            "\27\uffff\1\156\2\155\5\uffff\1\152",
-            "\1\153\1\uffff\12\u00c8\13\uffff\1\155\6\uffff\1\152\27\uffff"+
-            "\1\156\2\155\5\uffff\1\152",
-            "\1\153\1\uffff\12\u00c9\1\154\12\uffff\1\155\6\uffff\1\152"+
-            "\27\uffff\1\156\2\155\5\uffff\1\152",
-            "",
-            "",
+            "\1\153\1\uffff\12\u00c9\1\156\12\uffff\1\155\6\uffff\1\151\27\uffff"+
+            "\1\154\2\155\5\uffff\1\151",
             "",
             "",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
             "",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
+            "",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
+            "",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
             "\1\u00d0",
             "\1\u00d1",
             "",
@@ -4993,8 +5000,7 @@ public class JPQLLexer extends Lexer {
             "\1\u00d9",
             "\1\u00da",
             "\1\u00db",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
             "\1\u00dd",
             "\1\u00de",
             "\1\u00df",
@@ -5009,25 +5015,19 @@ public class JPQLLexer extends Lexer {
             "",
             "",
             "\1\u00e8",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
             "\1\u00ea",
             "\1\u00eb",
             "\1\u00ec",
             "\1\u00ed",
             "\1\u00ee",
             "\1\u00ef",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
             "\1\u00f1",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
             "\1\u00f6",
             "\1\u00f7",
             "",
@@ -5035,14 +5035,12 @@ public class JPQLLexer extends Lexer {
             "",
             "\1\u00f9",
             "\1\u00fa",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
             "\1\u00fc",
             "\1\u00fd",
             "\1\u00fe",
             "\1\u00ff",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
             "\1\u0101",
             "\1\u0102",
             "\1\u0103",
@@ -5056,18 +5054,16 @@ public class JPQLLexer extends Lexer {
             "\1\u010b\3\uffff\1\u010c",
             "",
             "",
-            "\1\153\1\uffff\10\u010d\2\u010e\13\uffff\1\155\36\uffff\1"+
-            "\156\2\155",
+            "\1\153\1\uffff\10\u010d\2\u010e\13\uffff\1\155\36\uffff\1\154\2\155",
             "",
             "\1\153\1\uffff\12\u010e\13\uffff\1\155\37\uffff\2\155",
             "\12\u00c5\13\uffff\1\155\37\uffff\2\155",
-            "\1\153\1\uffff\10\u00c6\2\u00c7\13\uffff\1\155\36\uffff\1"+
-            "\156\2\155",
+            "\1\153\1\uffff\10\u00c6\2\u00c7\13\uffff\1\155\36\uffff\1\154\2\155",
             "\1\153\1\uffff\12\u00c7\13\uffff\1\155\37\uffff\2\155",
-            "\1\153\1\uffff\12\u00c8\13\uffff\1\155\6\uffff\1\152\27\uffff"+
-            "\1\156\2\155\5\uffff\1\152",
-            "\1\153\1\uffff\12\u010f\13\uffff\1\155\6\uffff\1\152\27\uffff"+
-            "\1\156\2\155\5\uffff\1\152",
+            "\1\153\1\uffff\12\u00c8\13\uffff\1\155\6\uffff\1\151\27\uffff\1\154"+
+            "\2\155\5\uffff\1\151",
+            "\1\153\1\uffff\12\u010f\13\uffff\1\155\6\uffff\1\151\27\uffff\1\154"+
+            "\2\155\5\uffff\1\151",
             "",
             "",
             "",
@@ -5075,20 +5071,16 @@ public class JPQLLexer extends Lexer {
             "",
             "",
             "\1\u0110",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
             "\1\u0113",
             "\1\u0114",
             "\1\u0115",
             "\1\u0116",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
-            "\1\u0118",
+            "\1\u0117",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
             "\1\u0119",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
             "\1\u011b",
             "",
             "\1\u011c",
@@ -5096,23 +5088,18 @@ public class JPQLLexer extends Lexer {
             "\1\u011e",
             "\1\u011f",
             "\1\u0120",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
             "\1\u0123",
             "\1\u0124",
             "\1\u0125",
             "\1\u0126",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
             "",
             "\1\u0128",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
             "\1\u012a",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
             "\1\u012c",
             "\1\u012d",
             "",
@@ -5121,91 +5108,71 @@ public class JPQLLexer extends Lexer {
             "",
             "",
             "",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\10\34\1\u012f\21"+
-            "\34\5\uffff\uff7f\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\10\34\1\u012f\21\34\5\uffff"+
+            "\uff7f\34",
             "\1\u0131",
             "\1\u0132",
             "\1\u0133",
             "\1\u0134",
             "",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
             "\1\u0138",
             "",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
             "\1\u013a",
             "\1\u013b",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
             "\1\u013f",
             "\1\u0140",
             "\1\u0141",
             "\1\u0142",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
             "\1\u0144",
-            "\1\u0145\1\153\1\uffff\10\u00c6\2\u00c7\13\uffff\1\155\36"+
-            "\uffff\1\156\2\155",
-            "\1\u0145\1\153\1\uffff\12\u00c7\13\uffff\1\155\37\uffff\2"+
-            "\155",
-            "\1\u0145\1\153\1\uffff\12\u00c8\13\uffff\1\155\6\uffff\1\152"+
-            "\27\uffff\1\156\2\155\5\uffff\1\152",
+            "\1\u0145\1\153\1\uffff\10\u00c6\2\u00c7\13\uffff\1\155\36\uffff\1\154"+
+            "\2\155",
+            "\1\u0145\1\153\1\uffff\12\u00c7\13\uffff\1\155\37\uffff\2\155",
+            "\1\u0145\1\153\1\uffff\12\u00c8\13\uffff\1\155\6\uffff\1\151\27\uffff"+
+            "\1\154\2\155\5\uffff\1\151",
             "\1\u0146",
             "",
             "",
             "\1\u0147",
             "\1\u0148",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
             "\1\u014a",
-            "",
             "\1\u014b",
+            "",
             "\1\u014c",
             "",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
             "\1\u014f",
             "\1\u0150",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
             "",
             "",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
             "\1\u0154",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
             "",
             "\1\u0157",
             "",
             "\1\u0158",
             "",
             "\1\u0159",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
             "\1\u015b",
             "\1\u015c",
             "",
             "\1\u015d",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
             "\1\u0160",
             "",
             "",
@@ -5213,70 +5180,53 @@ public class JPQLLexer extends Lexer {
             "\1\u0161",
             "",
             "\1\u0162",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
             "",
             "",
             "",
             "\1\u0164",
             "\1\u0165",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
             "",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
             "",
             "\1\u0169",
             "\1\u016a",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
             "",
             "\1\u016c",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
             "\1\u016e",
             "",
             "",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
             "",
             "",
             "",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
             "",
             "",
             "\1\u0172",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
             "",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
             "",
             "",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
             "\1\u0179",
             "\1\u017a",
             "",
             "\1\u017b",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
             "",
             "",
             "",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
             "\1\u017e",
             "",
             "\1\u017f",
@@ -5285,8 +5235,7 @@ public class JPQLLexer extends Lexer {
             "",
             "",
             "",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
             "",
             "",
             "",
@@ -5295,44 +5244,37 @@ public class JPQLLexer extends Lexer {
             "",
             "\1\u0182",
             "\1\u0183",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
             "",
             "",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
             "\1\u0186\17\uffff\1\u0187",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
             "",
             "\1\u0189",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
             "",
             "",
             "\1\u018b",
             "\1\u018c",
             "",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
             "",
             "\1\u018e",
             "\1\u018f",
             "",
             "\1\u0190",
             "\1\u0191",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\22\34\1\u0193\7"+
-            "\34\5\uffff\uff7f\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\22\34\1\u0193\7\34\5\uffff"+
+            "\uff7f\34",
             "",
             "\1\u0195",
             "",
             "\1\u0196",
             "\1\u0197",
             "\1\u0198",
-            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f"+
-            "\34",
+            "\1\34\13\uffff\12\34\45\uffff\1\34\1\uffff\32\34\5\uffff\uff7f\34",
             ""
     };
 
@@ -5352,8 +5294,7 @@ public class JPQLLexer extends Lexer {
         }
     }
 
-    // Made static for performance reasons.
-    static class DFA35 extends DFA {
+    protected class DFA35 extends DFA {
 
         public DFA35(BaseRecognizer recognizer) {
             this.recognizer = recognizer;
@@ -5366,10 +5307,10 @@ public class JPQLLexer extends Lexer {
             this.special = DFA35_special;
             this.transition = DFA35_transition;
         }
+        @Override
         public String getDescription() {
-            return "1:1: Tokens : ( ABS | ALL | AND | ANY | AS | ASC | AVG | BETWEEN | BOTH | BY | CASE | COALESCE | CONCAT | COUNT | CURRENT_DATE | CURRENT_TIME | CURRENT_TIMESTAMP | DESC | DELETE | DISTINCT | ELSE | EMPTY | END | ENTRY | ESCAPE | EXISTS | FALSE | FETCH | FUNC | FROM | GROUP | HAVING | IN | INDEX | INNER | IS | JOIN | KEY | LEADING | LEFT | LENGTH | LIKE | LOCATE | LOWER | MAX | MEMBER | MIN | MOD | NEW | NOT | NULL | NULLIF | OBJECT | OF | OR | ORDER | OUTER | SELECT | SET | SIZE | SQRT | SOME | SUBSTRING | SUM | THEN | TRAILING | TREAT | TRIM | TRUE | TYPE | UNKNOWN | UPDATE | UPPER | VALUE | WHEN | WHERE | DOT | WS | LEFT_ROUND_BRACKET | LEFT_CURLY_BRACKET | RIGHT_ROUND_BRACKET | RIGHT_CURLY_BRACKET | COMMA | IDENT | HEX_LITERAL | INTEGER_LITERAL | LONG_LITERAL | OCTAL_LITERAL | DOUBLE_LITERAL | FLOAT_LITERAL | DATE_LITERAL | TIME_LITERAL | TIMESTAMP_LITERAL | DATE_STRING | TIME_STRING | EQUALS | GREATER_THAN | GREATER_THAN_EQUAL_TO | LESS_THAN | LESS_THAN_EQUAL_TO | NOT_EQUAL_TO | MULTIPLY | DIVIDE | PLUS | MINUS | POSITIONAL_PARAM | NAMED_PARAM | STRING_LITERAL_DOUBLE_QUOTED | STRING_LITERAL_SINGLE_QUOTED );";
+            return "1:1: Tokens : ( ABS | ALL | AND | ANY | AS | ASC | AVG | BETWEEN | BOTH | BY | CASE | COALESCE | CONCAT | COUNT | CURRENT_DATE | CURRENT_TIME | CURRENT_TIMESTAMP | DELETE | DESC | DISTINCT | ELSE | EMPTY | END | ENTRY | ESCAPE | EXISTS | FALSE | FETCH | FROM | FUNC | GROUP | HAVING | IN | INDEX | INNER | IS | JOIN | KEY | LEADING | LEFT | LENGTH | LIKE | LOCATE | LOWER | MAX | MEMBER | MIN | MOD | NEW | NOT | NULL | NULLIF | OBJECT | OF | OR | ORDER | OUTER | SELECT | SET | SIZE | SOME | SQRT | SUBSTRING | SUM | THEN | TRAILING | TREAT | TRIM | TRUE | TYPE | UNKNOWN | UPDATE | UPPER | VALUE | WHEN | WHERE | DOT | WS | LEFT_ROUND_BRACKET | LEFT_CURLY_BRACKET | RIGHT_ROUND_BRACKET | RIGHT_CURLY_BRACKET | COMMA | IDENT | HEX_LITERAL | INTEGER_LITERAL | LONG_LITERAL | OCTAL_LITERAL | DOUBLE_LITERAL | FLOAT_LITERAL | DATE_LITERAL | TIME_LITERAL | TIMESTAMP_LITERAL | DATE_STRING | TIME_STRING | EQUALS | GREATER_THAN | GREATER_THAN_EQUAL_TO | LESS_THAN | LESS_THAN_EQUAL_TO | NOT_EQUAL_TO | MULTIPLY | DIVIDE | PLUS | MINUS | POSITIONAL_PARAM | NAMED_PARAM | STRING_LITERAL_DOUBLE_QUOTED | STRING_LITERAL_SINGLE_QUOTED );";
         }
     }
-
 
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -101,20 +101,37 @@ tokens {
     WHERE='where';
 }
 @header {
-    package org.eclipse.persistence.internal.jpa.parsing.jpql.antlr;
+package org.eclipse.persistence.internal.jpa.parsing.jpql.antlr;
 
-    import java.util.List;
-    import java.util.ArrayList;
-
-    import static org.eclipse.persistence.internal.jpa.parsing.NodeFactory.*;
-    import org.eclipse.persistence.internal.jpa.parsing.jpql.InvalidIdentifierException;
-    import org.eclipse.persistence.exceptions.JPQLException;
+import org.eclipse.persistence.internal.jpa.parsing.NodeFactory.TrimSpecification;
+import org.eclipse.persistence.internal.jpa.parsing.jpql.InvalidIdentifierException;
+import org.eclipse.persistence.internal.libraries.antlr.runtime.BaseRecognizer;
+import org.eclipse.persistence.internal.libraries.antlr.runtime.BitSet;
+import org.eclipse.persistence.internal.libraries.antlr.runtime.DFA;
+import org.eclipse.persistence.internal.libraries.antlr.runtime.EarlyExitException;
+import org.eclipse.persistence.internal.libraries.antlr.runtime.FailedPredicateException;
+import org.eclipse.persistence.internal.libraries.antlr.runtime.IntStream;
+import org.eclipse.persistence.internal.libraries.antlr.runtime.NoViableAltException;
+import org.eclipse.persistence.internal.libraries.antlr.runtime.ParserRuleReturnScope;
+import org.eclipse.persistence.internal.libraries.antlr.runtime.RecognitionException;
+import org.eclipse.persistence.internal.libraries.antlr.runtime.RecognizerSharedState;
+import org.eclipse.persistence.internal.libraries.antlr.runtime.Token;
+import org.eclipse.persistence.internal.libraries.antlr.runtime.TokenStream;
 }
 
 @lexer::header {
-    package org.eclipse.persistence.internal.jpa.parsing.jpql.antlr;
+package org.eclipse.persistence.internal.jpa.parsing.jpql.antlr;
 
-    import org.eclipse.persistence.internal.jpa.parsing.jpql.InvalidIdentifierStartException;
+import org.eclipse.persistence.internal.jpa.parsing.jpql.InvalidIdentifierStartException;
+import org.eclipse.persistence.internal.libraries.antlr.runtime.BaseRecognizer;
+import org.eclipse.persistence.internal.libraries.antlr.runtime.CharStream;
+import org.eclipse.persistence.internal.libraries.antlr.runtime.DFA;
+import org.eclipse.persistence.internal.libraries.antlr.runtime.EarlyExitException;
+import org.eclipse.persistence.internal.libraries.antlr.runtime.Lexer;
+import org.eclipse.persistence.internal.libraries.antlr.runtime.MismatchedSetException;
+import org.eclipse.persistence.internal.libraries.antlr.runtime.NoViableAltException;
+import org.eclipse.persistence.internal.libraries.antlr.runtime.RecognitionException;
+import org.eclipse.persistence.internal.libraries.antlr.runtime.RecognizerSharedState;
 }
 
 
@@ -1325,9 +1342,6 @@ scope{
     ;
 
 subselectIdentificationVariableDeclaration [List varDecls]
-@init {
-    Object node = null;
-}
     : identificationVariableDeclaration[varDecls]
     | n = associationPathExpression (AS)? i=IDENT
         {
@@ -1574,6 +1588,3 @@ STRING_LITERAL_DOUBLE_QUOTED
 STRING_LITERAL_SINGLE_QUOTED
     : '\'' (~ ('\'') | ('\'\''))* '\''
     ;
-
-
-
