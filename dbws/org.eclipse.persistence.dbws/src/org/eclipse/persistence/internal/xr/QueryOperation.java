@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -14,22 +14,41 @@
 package org.eclipse.persistence.internal.xr;
 
 // Javase imports
+import static org.eclipse.persistence.internal.helper.ClassConstants.STRING;
+import static org.eclipse.persistence.internal.oxm.Constants.BASE_64_BINARY_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.DATE_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.DATE_TIME_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.INT_QNAME;
+import static org.eclipse.persistence.internal.oxm.Constants.TIME_QNAME;
+import static org.eclipse.persistence.internal.xr.Util.DEFAULT_ATTACHMENT_MIMETYPE;
+import static org.eclipse.persistence.internal.xr.Util.EMPTY_STR;
+import static org.eclipse.persistence.internal.xr.Util.SLASH_CHAR;
+import static org.eclipse.persistence.internal.xr.Util.SXF_QNAME;
+import static org.eclipse.persistence.internal.xr.Util.TEMP_DOC;
+import static org.eclipse.persistence.internal.xr.Util.sqlToXmlName;
+import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.DEFAULT_SIMPLE_XML_FORMAT_TAG;
+import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.DEFAULT_SIMPLE_XML_TAG;
+import static org.eclipse.persistence.oxm.XMLConstants.SCHEMA_INSTANCE_URL;
+import static org.eclipse.persistence.oxm.XMLConstants.SCHEMA_URL;
+import static org.eclipse.persistence.oxm.XMLConstants.XMLNS_URL;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.security.AccessController;
+import java.security.PrivilegedActionException;
 import java.sql.Blob;
 import java.sql.Date;
+import java.sql.SQLException;
+import java.sql.SQLXML;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Vector;
 import java.util.List;
-
-import org.w3c.dom.Element;
+import java.util.Vector;
 
 // Java extension imports
 import javax.activation.DataHandler;
@@ -37,8 +56,8 @@ import javax.xml.namespace.QName;
 
 // EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.DBWSException;
+import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
 import org.eclipse.persistence.internal.databaseaccess.OutputParameterForCallableStatement;
 import org.eclipse.persistence.internal.descriptors.InstantiationPolicy;
@@ -59,6 +78,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat;
 import org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormatModel;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.AttributeAccessor;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
@@ -75,24 +95,7 @@ import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.Session;
-
-import static org.eclipse.persistence.internal.helper.ClassConstants.STRING;
-import static org.eclipse.persistence.internal.oxm.Constants.INT_QNAME;
-import static org.eclipse.persistence.internal.xr.Util.DEFAULT_ATTACHMENT_MIMETYPE;
-import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.DEFAULT_SIMPLE_XML_FORMAT_TAG;
-import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.DEFAULT_SIMPLE_XML_TAG;
-import static org.eclipse.persistence.internal.xr.Util.sqlToXmlName;
-import static org.eclipse.persistence.internal.xr.Util.EMPTY_STR;
-import static org.eclipse.persistence.internal.xr.Util.SLASH_CHAR;
-import static org.eclipse.persistence.internal.xr.Util.SXF_QNAME;
-import static org.eclipse.persistence.internal.xr.Util.TEMP_DOC;
-import static org.eclipse.persistence.oxm.XMLConstants.BASE_64_BINARY_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.DATE_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.DATE_TIME_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.SCHEMA_INSTANCE_URL;
-import static org.eclipse.persistence.oxm.XMLConstants.SCHEMA_URL;
-import static org.eclipse.persistence.oxm.XMLConstants.TIME_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.XMLNS_URL;
+import org.w3c.dom.Element;
 
 /**
  * <p><b>INTERNAL:</b>An XR QueryOperation is an executable representation of a <tt>SELECT</tt>
@@ -103,8 +106,8 @@ import static org.eclipse.persistence.oxm.XMLConstants.XMLNS_URL;
  */
 @SuppressWarnings({"serial", "unchecked"/*, "rawtypes"*/})
 public class QueryOperation extends Operation {
-    public static final String ORACLESQLXML_STR = "oracle.jdbc.driver.OracleSQLXML";
     public static final String ORACLEOPAQUE_STR = "oracle.sql.OPAQUE";
+    private static final String IORACLEOPAQUE_STR = "oracle.jdbc.OracleOpaque";
     protected static final String RESULT_STR = "result";
     protected static final String XMLTYPEFACTORY_STR = "org.eclipse.persistence.internal.platform.database.oracle.xdb.XMLTypeFactoryImpl";
     protected static final String GETSTRING_METHOD = "getString";
@@ -114,7 +117,7 @@ public class QueryOperation extends Operation {
     protected static final String RESULTS_STR = "results";
     protected static final String VALUEOBJECT_STR = "ValueObject";
     protected static final String VALUE_STR = "value";
-    protected static final String SIMPLEXML_FORMAT_STR = "/simple-xml-format";    
+    protected static final String SIMPLEXML_FORMAT_STR = "/simple-xml-format";
     protected static final String SIMPLEXML_STR = "simpleXML";
     protected static final String DATABASEQUERY_STR = "databasequery";
     protected static final String ITEMS_STR = "ITEMS";
@@ -122,7 +125,7 @@ public class QueryOperation extends Operation {
     protected static final String XSI_STR = "xmlns:xsi";
     protected static final String XSITYPE_STR = "xsi:type";
     protected static final String BASE64_BINARY_STR = "xsd:base64Binary";
-    
+
     protected Result result;
     protected QueryHandler queryHandler;
     protected boolean userDefined = true;
@@ -258,28 +261,23 @@ public class QueryOperation extends Operation {
                         public Object getAttributeValueFromObject(Object object)
                             throws DescriptorException {
                             Object result = null;
-                            InputStream is = null;
                             DataHandler dataHandler = (DataHandler)object;
                             try {
                                 result = dataHandler.getContent();
                                 if (result instanceof InputStream) {
-                                    is = (InputStream)result;
-                                    byte[] buf = new byte[2048];
-                                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                                    int bytesRead = is.read(buf);
-                                    while (bytesRead >= 0) {
-                                        baos.write(buf, 0, bytesRead);
-                                        bytesRead = is.read(buf);
+                                    try (InputStream is = (InputStream) result) {
+                                        byte[] buf = new byte[2048];
+                                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                                        int bytesRead = is.read(buf);
+                                        while (bytesRead >= 0) {
+                                            baos.write(buf, 0, bytesRead);
+                                            bytesRead = is.read(buf);
+                                        }
+                                        result = baos.toByteArray();
                                     }
-                                    result = baos.toByteArray();
                                 }
                             } catch (IOException e) {
                                 // ignore
-                            } finally {
-                                try {
-                                    is.close();
-                                } catch (IOException e) {
-                                }
                             }
                             return result;
                         }
@@ -367,7 +365,7 @@ public class QueryOperation extends Operation {
     @Override
     public Object invoke(XRServiceAdapter xrService, Invocation invocation) {
         DatabaseQuery query = queryHandler.getDatabaseQuery();
-        
+
         if (query.getProperty(DATABASEQUERY_STR) != null) {
             query = (DatabaseQuery) query.getProperty(DATABASEQUERY_STR);
         }
@@ -394,50 +392,50 @@ public class QueryOperation extends Operation {
         if (isSimpleXMLFormat() && query.isDataReadQuery()) {
             ((DataReadQuery) query).setResultType(DataReadQuery.MAP);
         }
-        
+
         // now execute the query
         Object value = xrService.getORSession().getActiveSession().executeQuery(query);
 
         if (value != null) {
-        	// a recent change in core results in an empty vector being returned in cases
-        	// where before we'd expect an int value (typically 1) - need to handle this
+            // a recent change in core results in an empty vector being returned in cases
+            // where before we'd expect an int value (typically 1) - need to handle this
             if (result != null && (result.getType() == INT_QNAME || result.getType().equals(SXF_QNAME))) {
-                if (value instanceof ArrayList && ((ArrayList) value).isEmpty()) {
+                if (value instanceof ArrayList && ((ArrayList<?>) value).isEmpty()) {
                     ((ArrayList) value).add(1);
-                } else  if (value instanceof Vector && ((Vector) value).isEmpty()) {
+                } else  if (value instanceof Vector && ((Vector<?>) value).isEmpty()) {
                     ((Vector) value).add(1);
                 }
             }
-        	
+
             // JPA spec returns an ArrayList<Object[]> for stored procedure queries - will need to unwrap.
             // Note that for legacy deployment XML projects this is not the case.
             if (value instanceof ArrayList) {
-                ArrayList returnedList = (ArrayList) value;
+                ArrayList<?> returnedList = (ArrayList<?>) value;
                 if (returnedList.size() > 0 && returnedList.get(0) instanceof Object[]) {
                     Object[] objs = (Object[]) returnedList.get(0);
                     if (isCollection()) {
-                        value = new ArrayList();
+                        value = new ArrayList<Object>();
                         for (Object obj : objs) {
-                            ((ArrayList) value).add(obj);
+                            ((ArrayList<Object>) value).add(obj);
                         }
                     } else {
                         value = objs[0];
                     }
                 }
             }
-         
+
             // handle SimpleXML
             if (isSimpleXMLFormat()) {
                 value = createSimpleXMLFormat(xrService, value);
             } else {
                 if (!isCollection() && value instanceof Vector) {
                     // JPAQuery will return a single result in a Vector
-                    if (((Vector) value).isEmpty()) {
+                    if (((Vector<?>) value).isEmpty()) {
                         return null;
                     }
-                    value = ((Vector) value).firstElement();
-                }            
-                
+                    value = ((Vector<?>) value).firstElement();
+                }
+
                 QName resultType = getResultType();
                 if (resultType != null) {
                     // handle binary content
@@ -450,7 +448,7 @@ public class QueryOperation extends Operation {
                         if (value instanceof Blob) {
                             value = ((XMLConversionManager) xrService.getOXSession().
                                     getDatasourcePlatform().getConversionManager()).
-                                    convertObject((Blob) value, ClassConstants.APBYTE);
+                                    convertObject(value, ClassConstants.APBYTE);
                         }
                         return AttachmentHelper.buildAttachmentHandler((byte[])value, mimeType);
                     }
@@ -480,7 +478,7 @@ public class QueryOperation extends Operation {
                                 }
                             } else if (isCollection() && value instanceof Vector) {
                                 // could be a collection of populated objects, in which case we just return it
-                                if (((Vector) value).size() > 0 && !(((Vector) value).get(0) instanceof AbstractRecord)) {
+                                if (((Vector<?>) value).size() > 0 && !(((Vector<?>) value).get(0) instanceof AbstractRecord)) {
                                     return value;
                                 }
                                 XRDynamicEntity_CollectionWrapper xrCollWrapper = new XRDynamicEntity_CollectionWrapper();
@@ -490,7 +488,7 @@ public class QueryOperation extends Operation {
                                     populateTargetObjectFromRecord(desc.getMappings(), results.get(i), o, (AbstractSession)xrService.getORSession());
                                     xrCollWrapper.add(o);
                                 }
-                                targetObject = xrCollWrapper;                                
+                                targetObject = xrCollWrapper;
                             } else if (value instanceof AbstractRecord) {
                                 targetObject = desc.getObjectBuilder().buildNewInstance();
                                 populateTargetObjectFromRecord(desc.getMappings(), (AbstractRecord) value, targetObject, (AbstractSession)xrService.getORSession());
@@ -501,11 +499,11 @@ public class QueryOperation extends Operation {
                             ClassDescriptor desc = xrService.getORSession().getDescriptorForAlias(xdesc.getAlias());
                             targetObject = desc.getObjectBuilder().buildNewInstance();
                             Object[] objs = new Object[1];
-                            objs[0] = ((ArrayList)value).get(0);
+                            objs[0] = ((ArrayList<?>)value).get(0);
                             DatabaseRecord dr = new DatabaseRecord();
                             dr.add(new DatabaseField(ITEMS_STR), objs);
                             populateTargetObjectFromRecord(desc.getMappings(), (AbstractRecord) dr, targetObject, (AbstractSession)xrService.getORSession());
-                        }                        
+                        }
                         value = targetObject;
                     }
                 }
@@ -563,22 +561,22 @@ public class QueryOperation extends Operation {
             // now create a record using DatabaseField/value pairs
             DatabaseRecord dr = new DatabaseRecord();
             if (paramFlds.size() > 0) {
-                for (int i=0; i <  ((ArrayList) value).size(); i++) {
-                    dr.add(paramFlds.get(i), ((ArrayList) value).get(i));
+                for (int i=0; i <  ((ArrayList<?>) value).size(); i++) {
+                    dr.add(paramFlds.get(i), ((ArrayList<?>) value).get(i));
                 }
             } else {
-                dr.add(new DatabaseField(RESULT_STR), ((ArrayList) value).get(0));
+                dr.add(new DatabaseField(RESULT_STR), ((ArrayList<?>) value).get(0));
             }
             records = new Vector<DatabaseRecord>();
             records.add(dr);
         } else if (value instanceof Vector) {
-            Class vectorContent = ((Vector)value).firstElement().getClass();
+            Class<?> vectorContent = ((Vector<?>)value).firstElement().getClass();
             if (DatabaseRecord.class.isAssignableFrom(vectorContent)) {
                 records = (Vector<DatabaseRecord>)value;
             } else {
                 records = new Vector<DatabaseRecord>();
                 DatabaseRecord dr = new DatabaseRecord();
-                dr.add(new DatabaseField(RESULT_STR), ((Vector)value).firstElement());
+                dr.add(new DatabaseField(RESULT_STR), ((Vector<?>)value).firstElement());
                 records.add(dr);
             }
         } else {
@@ -590,16 +588,17 @@ public class QueryOperation extends Operation {
         SimpleXMLFormatModel simpleXMLFormatModel = new SimpleXMLFormatModel();
         XMLConversionManager conversionManager =
             (XMLConversionManager) xrService.getOXSession().getDatasourcePlatform().getConversionManager();
+        SessionLog log = xrService.getOXSession().getSessionLog();
         for (DatabaseRecord dr : records) {
             Element rowElement = TEMP_DOC.createElement(tempXMLTag);
-            for (DatabaseField field : (Vector<DatabaseField>)dr.getFields()) {
+            for (DatabaseField field : dr.getFields()) {
                 // handle complex types, i.e. ones we have a descriptor for
                 if (field instanceof ObjectRelationalDatabaseField) {
                     ObjectRelationalDatabaseField ordtField = (ObjectRelationalDatabaseField) field;
                     if (xrService.getOXSession().getDescriptor(ordtField.getType()) != null) {
                         xrService.getXMLContext().createMarshaller().marshal(dr.get(field), rowElement);
                         continue;
-                    }	  
+                    }
                 }
                 Object fieldValue = dr.get(field);
                 if (fieldValue != null) {
@@ -617,51 +616,48 @@ public class QueryOperation extends Operation {
                         Timestamp tsValue = (Timestamp)fieldValue;
                         fieldValue = conversionManager.convertObject(tsValue, STRING, DATE_TIME_QNAME);
                     } else if (fieldValue instanceof Blob) {
-                        fieldValue = conversionManager.convertObject((Blob) fieldValue, ClassConstants.APBYTE);
-                    } else if (fieldValue.getClass().getName().equalsIgnoreCase(ORACLESQLXML_STR)) {
+                        fieldValue = conversionManager.convertObject(fieldValue, ClassConstants.APBYTE);
+                    } else if (SQLXML.class.isAssignableFrom(fieldValue.getClass())) {
                         // handle XMLType case where an oracle.jdbc.driver.OracleSQLXML instance was returned
+                        SQLXML sqlXml = (SQLXML) fieldValue;
                         try {
-                            Class oracleSQLXML;
-                            Method getStringMethod;
-                            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                                oracleSQLXML = AccessController.doPrivileged(new PrivilegedClassForName(ORACLESQLXML_STR, true, this.getClass().getClassLoader()));
-                                getStringMethod = AccessController.doPrivileged(new PrivilegedGetDeclaredMethod(oracleSQLXML, GETSTRING_METHOD, new Class[] {}));
-                                fieldValue = (String) AccessController.doPrivileged(new PrivilegedMethodInvoker(getStringMethod, fieldValue, new Object[] {}));
-                            } else {
-                                oracleSQLXML = PrivilegedAccessHelper.getClassForName(ORACLESQLXML_STR, true, this.getClass().getClassLoader());
-                                getStringMethod = PrivilegedAccessHelper.getDeclaredMethod(oracleSQLXML, GETSTRING_METHOD, new Class[] {});
-                                fieldValue = (String) PrivilegedAccessHelper.invokeMethod(getStringMethod, fieldValue, new Object[] {});
-                            }
-                        } catch (Exception x) {
-                            // if the required resources are not available there's nothing we can do...
+                            String str = sqlXml.getString();
+                            sqlXml.free();
+                            // Oracle 12c appends a \n character to the xml string
+                            fieldValue = str.endsWith("\n") ? str.substring(0, str.length() - 1) : str;
+                        } catch (SQLException e) {
+                            log.logThrowable(SessionLog.FINE, SessionLog.DBWS, e);
                         }
                     } else if (fieldValue.getClass().getName().equalsIgnoreCase(ORACLEOPAQUE_STR)) {
                         // handle XMLType case where an oracle.sql.OPAQUE instance was returned
                         try {
-                            Class oracleOPAQUE;
-                            Class xmlTypeFactoryClass;
-                            Constructor xmlTypeFactoryConstructor;
+                            Class<?> oracleOPAQUE;
+                            Class<?> xmlTypeFactoryClass;
+                            Constructor<?> xmlTypeFactoryConstructor;
                             Object xmlTypeFactory;
                             Method getStringMethod;
                             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                                oracleOPAQUE = AccessController.doPrivileged(new PrivilegedClassForName(ORACLEOPAQUE_STR, true, this.getClass().getClassLoader()));
+                                oracleOPAQUE = AccessController.doPrivileged(new PrivilegedClassForName(IORACLEOPAQUE_STR, true, this.getClass().getClassLoader()));
                                 xmlTypeFactoryClass = AccessController.doPrivileged(new PrivilegedClassForName(XMLTYPEFACTORY_STR, true, this.getClass().getClassLoader()));
                                 xmlTypeFactoryConstructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(xmlTypeFactoryClass, new Class[0], true));
                                 xmlTypeFactory = AccessController.doPrivileged(new PrivilegedInvokeConstructor(xmlTypeFactoryConstructor, new Object[0]));
                                 getStringMethod = AccessController.doPrivileged(new PrivilegedGetDeclaredMethod(xmlTypeFactoryClass, GETSTRING_METHOD, new Class[] {oracleOPAQUE}));
-                                fieldValue = (String) AccessController.doPrivileged(new PrivilegedMethodInvoker(getStringMethod, fieldValue, new Object[] {}));
+                                fieldValue = AccessController.doPrivileged(new PrivilegedMethodInvoker(getStringMethod, fieldValue, new Object[] {}));
                             } else {
-                                oracleOPAQUE = PrivilegedAccessHelper.getClassForName(ORACLEOPAQUE_STR, false, this.getClass().getClassLoader());
+                                oracleOPAQUE = PrivilegedAccessHelper.getClassForName(IORACLEOPAQUE_STR, false, this.getClass().getClassLoader());
                                 xmlTypeFactoryClass = PrivilegedAccessHelper.getClassForName(XMLTYPEFACTORY_STR, true, this.getClass().getClassLoader());
                                 xmlTypeFactoryConstructor = PrivilegedAccessHelper.getConstructorFor(xmlTypeFactoryClass, new Class[0], true);
                                 xmlTypeFactory = PrivilegedAccessHelper.invokeConstructor(xmlTypeFactoryConstructor, new Object[0]);
                                 getStringMethod = PrivilegedAccessHelper.getDeclaredMethod(xmlTypeFactoryClass, GETSTRING_METHOD, new Class[] {oracleOPAQUE});
-                                fieldValue = (String) PrivilegedAccessHelper.invokeMethod(getStringMethod, xmlTypeFactory, new Object[] {fieldValue});
+                                fieldValue = PrivilegedAccessHelper.invokeMethod(getStringMethod, xmlTypeFactory, new Object[] {fieldValue});
                             }
-                        } catch (Exception x) {
+                        } catch (RuntimeException x) {
+                            throw x;
+                        } catch (ReflectiveOperationException | PrivilegedActionException e) {
                             // if the required resources are not available there's nothing we can do...
+                            log.logThrowable(SessionLog.FINE, SessionLog.DBWS, e);
                         }
-                    } 
+                    }
 
                     String elementName;
                     if (field.getName() == null || (elementName = sqlToXmlName(field.getName())).equals(EMPTY_STR)) {
