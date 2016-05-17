@@ -22,6 +22,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLXML;
 import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -206,6 +207,12 @@ public class Oracle9Platform extends Oracle8Platform {
             return getTIMESTAMPLTZFromResultSet(resultSet, columnNumber, type, session);
         } else if (type == OracleTypes.ROWID) {
             return resultSet.getString(columnNumber);
+        } else if (type == Types.SQLXML) {
+            SQLXML sqlXml = resultSet.getSQLXML(columnNumber);
+            String str = sqlXml.getString();
+            sqlXml.free();
+            // Oracle 12c appends a \n character to the xml string
+            return str.endsWith("\n") ? str.substring(0, str.length() - 1) : str;
         } else if (type == OracleTypes.OPAQUE) {
             try {
                 Object result = resultSet.getObject(columnNumber);
