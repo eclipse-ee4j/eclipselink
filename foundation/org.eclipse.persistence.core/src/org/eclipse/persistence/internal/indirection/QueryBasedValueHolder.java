@@ -130,7 +130,10 @@ public class QueryBasedValueHolder extends DatabaseValueHolder {
         if (this.query.isObjectBuildingQuery() && ((ObjectBuildingQuery)this.query).shouldRefreshIdentityMapResult()){
             this.refreshCascade = ((ObjectBuildingQuery)this.query).getCascadePolicy();
         }
-        return session.executeQuery(getQuery(), getRow());
+        Object result = session.executeQuery(getQuery(), getRow());
+        // Bug 489898 - ensure that the query's session is dereferenced, post-execution
+        getQuery().setSession(null);
+        return result;
     }
 
     /**
