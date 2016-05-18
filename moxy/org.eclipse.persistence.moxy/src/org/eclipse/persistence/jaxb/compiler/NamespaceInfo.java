@@ -115,7 +115,8 @@ public class NamespaceInfo {
             // default name-space
             final String defaultNS = this.namespaceResolver.getDefaultNamespaceURI();
             if (defaultNS != null) {
-                addToDescriptorNamespaceResolver(canUseDefaultNamespace, null, defaultNS, contextResolver);
+                boolean isDefault = canUseDefaultNamespace || defaultNS.equals(namespace);
+                addToDescriptorNamespaceResolver(isDefault, null, defaultNS, contextResolver);
             }
         }
         return this.namespaceResolverForDescriptor;
