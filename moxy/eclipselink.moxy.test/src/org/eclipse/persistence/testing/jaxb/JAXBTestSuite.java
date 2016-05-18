@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -81,6 +81,7 @@ public class JAXBTestSuite extends TestCase {
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlschema.attributeformdefault.unqualified.AttributeUnqualifiedTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlschema.attributeformdefault.unqualified.NoAttributeUnqualifiedTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlschema.defaultns.emptyprefix.DefaultNamespaceEmptyStringTestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlschema.defaultns.singleemptyprefix.DefaultNamespaceSingleEmptyStringTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlelements.XmlElementsStringTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlelements.XmlElementsAdapterTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlelements.XmlElementsIntegerTestCases.class);
