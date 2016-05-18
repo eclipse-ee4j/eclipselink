@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,8 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.unwrappedconnection;
 
-import java.sql.Struct;
 import java.sql.SQLException;
+import java.sql.Struct;
 import java.util.Map;
 
 public class TestStruct implements Struct {
@@ -24,17 +24,19 @@ public class TestStruct implements Struct {
         this.struct = struct;
     }
 
+    @Override
     public Object[] getAttributes() throws SQLException {
         return struct.getAttributes();
     }
 
+    @Override
     public Object[] getAttributes(Map<String, Class<?>> map) throws SQLException {
         return struct.getAttributes(map);
     }
 
+    @Override
     public String getSQLTypeName() throws SQLException {
         return struct.getSQLTypeName();
     }
-
 
 }

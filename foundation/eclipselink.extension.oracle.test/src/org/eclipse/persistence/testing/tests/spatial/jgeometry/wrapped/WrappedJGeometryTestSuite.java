@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -31,12 +31,12 @@ public class WrappedJGeometryTestSuite {
         TestSuite suite;
         suite = new TestSuite("Wrapped Spatial tests");
         suite.addTest(CreateTests.suite());
+        suite.addTest(UpdateTests.suite());
         suite.addTest(Query_Basic_Tests.suite());
         suite.addTest(Query_OrderedHint.suite());
-        suite.addTest(Query_SpatialOp_ExpReport_Tests.suite());
         suite.addTest(Query_SpatialOp_ExpExp_Tests.suite());
         suite.addTest(Query_SpatialExpOp_ExpGeom_Tests.suite());
-        suite.addTest(UpdateTests.suite());
+        suite.addTest(Query_SpatialOp_ExpReport_Tests.suite());
         suite.addTest(DeleteTests.suite());
         suite.addTest(NamedQueryTests.suite());
         return suite;

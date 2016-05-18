@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -20,6 +20,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.NClob;
 import java.sql.PreparedStatement;
+import java.sql.SQLClientInfoException;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.SQLXML;
@@ -33,194 +34,289 @@ import java.util.concurrent.Executor;
 import oracle.jdbc.OracleConnection;
 
 /**
- * This class provides a wrapper around a  real Oracle Connection to allow eclipselink
- * unwrap functionality to be tested.
+ * This class provides a wrapper around a real Oracle Connection to allow
+ * eclipselink unwrap functionality to be tested.
  */
 
-public class TestOracleConnection implements Connection{
+public class TestOracleConnection implements Connection {
 
     OracleConnection conn;
-    public TestOracleConnection(OracleConnection connection){
+
+    public TestOracleConnection(OracleConnection connection) {
         conn = connection;
     }
 
+    @Override
     public void clearWarnings() throws SQLException {
-       conn.clearWarnings();
+        conn.clearWarnings();
     }
+
+    @Override
     public void close() throws SQLException {
         conn.close();
     }
+
+    @Override
     public void commit() throws SQLException {
         conn.commit();
     }
+
+    @Override
     public Statement createStatement() throws SQLException {
         return new TestStatement(conn.createStatement());
     }
+
+    @Override
     public Statement createStatement(int resultSetType, int resultSetConcurrency, int resultSetHoldability) throws SQLException {
         return new TestStatement(conn.createStatement(resultSetType, resultSetConcurrency, resultSetHoldability));
     }
+
+    @Override
     public Statement createStatement(int resultSetType, int resultSetConcurrency) throws SQLException {
         return new TestStatement(conn.createStatement(resultSetType, resultSetConcurrency));
     }
+
+    @Override
     public boolean getAutoCommit() throws SQLException {
         return conn.getAutoCommit();
     }
+
+    @Override
     public String getCatalog() throws SQLException {
         return conn.getCatalog();
     }
+
+    @Override
     public int getHoldability() throws SQLException {
         return conn.getHoldability();
 
     }
+
+    @Override
     public DatabaseMetaData getMetaData() throws SQLException {
         return conn.getMetaData();
     }
+
+    @Override
     public int getTransactionIsolation() throws SQLException {
         return conn.getTransactionIsolation();
     }
+
+    @Override
     public Map<String, Class<?>> getTypeMap() throws SQLException {
         return getTypeMap();
     }
+
+    @Override
     public SQLWarning getWarnings() throws SQLException {
         return conn.getWarnings();
     }
+
+    @Override
     public boolean isClosed() throws SQLException {
         return conn.isClosed();
     }
+
+    @Override
     public boolean isReadOnly() throws SQLException {
         return conn.isReadOnly();
     }
+
+    @Override
     public String nativeSQL(String sql) throws SQLException {
         return conn.nativeSQL(sql);
     }
+
+    @Override
     public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency, int resultSetHoldability) throws SQLException {
-        return conn.prepareCall(sql,resultSetType,resultSetConcurrency,resultSetHoldability);
+        return conn.prepareCall(sql, resultSetType, resultSetConcurrency, resultSetHoldability);
     }
+
+    @Override
     public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency) throws SQLException {
-        return conn.prepareCall(sql,resultSetType,resultSetConcurrency);
+        return conn.prepareCall(sql, resultSetType, resultSetConcurrency);
     }
+
+    @Override
     public CallableStatement prepareCall(String sql) throws SQLException {
         return conn.prepareCall(sql);
     }
+
+    @Override
     public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency, int resultSetHoldability) throws SQLException {
         return new TestPreparedStatement(conn.prepareStatement(sql, resultSetType, resultSetConcurrency, resultSetHoldability));
     }
+
+    @Override
     public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency) throws SQLException {
         return new TestPreparedStatement(conn.prepareStatement(sql, resultSetType, resultSetConcurrency));
     }
+
+    @Override
     public PreparedStatement prepareStatement(String sql, int autoGeneratedKeys) throws SQLException {
         return new TestPreparedStatement(conn.prepareStatement(sql, autoGeneratedKeys));
     }
+
+    @Override
     public PreparedStatement prepareStatement(String sql, int[] columnIndexes) throws SQLException {
         return new TestPreparedStatement(conn.prepareStatement(sql, columnIndexes));
     }
+
+    @Override
     public PreparedStatement prepareStatement(String sql, String[] columnNames) throws SQLException {
         return new TestPreparedStatement(conn.prepareStatement(sql, columnNames));
     }
+
+    @Override
     public PreparedStatement prepareStatement(String sql) throws SQLException {
         return new TestPreparedStatement(conn.prepareStatement(sql));
     }
+
+    @Override
     public void releaseSavepoint(Savepoint savepoint) throws SQLException {
         conn.releaseSavepoint(savepoint);
     }
+
+    @Override
     public void rollback() throws SQLException {
         conn.rollback();
     }
+
+    @Override
     public void rollback(Savepoint savepoint) throws SQLException {
         conn.rollback(savepoint);
     }
+
+    @Override
     public void setAutoCommit(boolean autoCommit) throws SQLException {
         conn.setAutoCommit(autoCommit);
     }
+
+    @Override
     public void setCatalog(String catalog) throws SQLException {
         conn.setCatalog(catalog);
     }
+
+    @Override
     public void setHoldability(int holdability) throws SQLException {
         conn.setHoldability(holdability);
     }
+
+    @Override
     public void setReadOnly(boolean readOnly) throws SQLException {
         conn.setReadOnly(readOnly);
     }
+
+    @Override
     public Savepoint setSavepoint() throws SQLException {
         return conn.setSavepoint();
     }
 
+    @Override
     public Savepoint setSavepoint(String name) throws SQLException {
         return conn.setSavepoint(name);
     }
 
+    @Override
     public void setTransactionIsolation(int level) throws SQLException {
         conn.setTransactionIsolation(level);
-
     }
 
+    @Override
     public void setTypeMap(Map<String, Class<?>> arg0) throws SQLException {
         conn.setTypeMap(arg0);
     }
 
-    public Connection getPhysicalConnection(){
+    public Connection getPhysicalConnection() {
         return conn;
     }
 
-    // 236070: Methods introduced in JDK 1.6
-    public Array createArrayOf(String typeName, Object[] elements) {
-        return null;
+    @Override
+    public Array createArrayOf(String typeName, Object[] elements) throws SQLException {
+        return conn.createArrayOf(typeName, elements);
     }
 
-    public Blob createBlob() {
-        return null;
+    @Override
+    public Blob createBlob() throws SQLException {
+        return conn.createBlob();
     }
 
-    public Clob createClob() {
-        return null;
+    @Override
+    public Clob createClob() throws SQLException {
+        return conn.createClob();
     }
 
-    public NClob createNClob() {
-        return null;
+    @Override
+    public NClob createNClob() throws SQLException {
+        return conn.createNClob();
     }
 
-    public SQLXML createSQLXML() {
-        return null;
+    @Override
+    public SQLXML createSQLXML() throws SQLException {
+        return conn.createSQLXML();
     }
 
-    public Struct createStruct(String typeName, Object[] attributes) {
-        return null;
+    @Override
+    public Struct createStruct(String typeName, Object[] attributes) throws SQLException {
+        return conn.createStruct(typeName, attributes);
     }
 
-    public Properties getClientInfo() {
-        return null;
+    @Override
+    public Properties getClientInfo() throws SQLException {
+        return conn.getClientInfo();
     }
 
-    public String getClientInfo(String name) {
-        return null;
+    @Override
+    public String getClientInfo(String name) throws SQLException {
+        return conn.getClientInfo(name);
     }
 
-    public boolean isValid(int timeout) {
-        return false;
+    @Override
+    public boolean isValid(int timeout) throws SQLException {
+        return conn.isValid(timeout);
     }
 
-    public void setClientInfo(String name, String value) {
+    @Override
+    public void setClientInfo(String name, String value) throws SQLClientInfoException {
+        conn.setClientInfo(name, value);
     }
 
+    @Override
     public void setClientInfo(Properties properties) {
     }
 
-    // From java.sql.Wrapper
-    public boolean isWrapperFor(Class<?> iFace) throws SQLException{
-        return false;
+    @Override
+    public boolean isWrapperFor(Class<?> iFace) throws SQLException {
+        return conn.isWrapperFor(iFace);
     }
 
-    public <T>T unwrap(Class<T> iFace)  throws SQLException {
-        return iFace.cast(this);
+    @Override
+    public <T> T unwrap(Class<T> iFace) throws SQLException {
+        return conn.unwrap(iFace);
     }
 
-    public int getNetworkTimeout(){return 0;}
+    @Override
+    public int getNetworkTimeout() throws SQLException {
+        return conn.getNetworkTimeout();
+    }
 
-    public void setNetworkTimeout(Executor executor, int milliseconds){}
+    @Override
+    public void setNetworkTimeout(Executor executor, int milliseconds) throws SQLException {
+        conn.setNetworkTimeout(executor, milliseconds);
+    }
 
-    public void abort(Executor executor){}
+    @Override
+    public void abort(Executor executor) throws SQLException {
+        conn.abort(executor);
+    }
 
-    public String getSchema(){return null;}
+    @Override
+    public String getSchema() throws SQLException {
+        return conn.getSchema();
+    }
 
-    public void setSchema(String schema){}
+    @Override
+    public void setSchema(String schema) throws SQLException {
+        conn.setSchema(schema);
+    }
 }

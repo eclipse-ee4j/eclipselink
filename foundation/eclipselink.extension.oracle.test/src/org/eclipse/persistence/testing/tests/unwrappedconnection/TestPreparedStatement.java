@@ -418,20 +418,14 @@ public class TestPreparedStatement implements PreparedStatement{
         prepareStatement.setQueryTimeout(seconds);
     }
 
-    // 236070: Methods introduced in JDK 1.6
-
     @Override
     public void setAsciiStream(int columnIndex, InputStream stream, long length)  throws SQLException {
+        prepareStatement.setAsciiStream(columnIndex, stream, length);
     }
 
     @Override
     public void setAsciiStream(int columnIndex, InputStream stream)  throws SQLException {
-    }
-
-    public void setAsciiStream(String columnLabel, InputStream stream, long length)  throws SQLException {
-    }
-
-    public void setAsciiStream(String columnLabel, InputStream stream)  throws SQLException {
+        prepareStatement.setAsciiStream(columnIndex, stream);
     }
 
     @Override
@@ -440,99 +434,67 @@ public class TestPreparedStatement implements PreparedStatement{
 
     @Override
     public void setBlob(int columnIndex, InputStream stream)  throws SQLException {
-    }
-
-    public void setBlob(String columnLabel, InputStream stream, long length)  throws SQLException {
-    }
-
-    public void setBlob(String columnLabel, InputStream stream)  throws SQLException {
+        prepareStatement.setBlob(columnIndex, stream);
     }
 
     @Override
     public void setBinaryStream(int columnIndex, InputStream stream, long length)  throws SQLException {
+        prepareStatement.setBinaryStream(columnIndex, stream, length);
     }
 
     @Override
     public void setBinaryStream(int columnIndex, InputStream stream)  throws SQLException {
-    }
-
-    public void setBinaryStream(String columnLabel, InputStream stream, long length)  throws SQLException {
-    }
-
-    public void setBinaryStream(String columnLabel, InputStream stream)  throws SQLException {
+        prepareStatement.setBinaryStream(columnIndex, stream);
     }
 
     @Override
     public void setCharacterStream(int columnIndex, Reader reader, long length)  throws SQLException {
+        prepareStatement.setCharacterStream(columnIndex, reader, length);
     }
 
     @Override
     public void setCharacterStream(int columnIndex, Reader reader)  throws SQLException {
-    }
-
-    public void setCharacterStream(String columnLabel, Reader reader, long length)  throws SQLException {
-    }
-
-    public void setCharacterStream(String columnLabel, Reader reader)  throws SQLException {
+        prepareStatement.setCharacterStream(columnIndex, reader);
     }
 
     @Override
     public void setClob(int columnIndex, Reader reader, long length)  throws SQLException {
+        prepareStatement.setClob(columnIndex, reader, length);
     }
 
     @Override
     public void setClob(int columnIndex, Reader reader)  throws SQLException {
-    }
-
-    public void setClob(String columnLabel, Reader reader, long length)  throws SQLException {
-    }
-
-    public void setClob(String columnLabel, Reader reader)  throws SQLException {
+        prepareStatement.setClob(columnIndex, reader);
     }
 
     @Override
     public void setNCharacterStream(int columnIndex, Reader reader, long length)  throws SQLException {
+        prepareStatement.setNCharacterStream(columnIndex, reader, length);
     }
 
     @Override
     public void setNCharacterStream(int columnIndex, Reader reader)  throws SQLException {
-    }
-
-    public void setNCharacterStream(String columnLabel, Reader reader, long length)  throws SQLException {
-    }
-
-    public void setNCharacterStream(String columnLabel, Reader reader)  throws SQLException {
+        prepareStatement.setNCharacterStream(columnIndex, reader);
     }
 
     @Override
     public void setNClob(int columnIndex, Reader reader, long length)  throws SQLException {
+        prepareStatement.setNClob(columnIndex, reader, length);
     }
 
     @Override
     public void setNClob(int columnIndex, Reader reader)  throws SQLException {
-    }
-
-    public void setNClob(String columnLabel, Reader reader, long length)  throws SQLException {
-    }
-
-    public void setNClob(String columnLabel, Reader reader)  throws SQLException {
+        prepareStatement.setNClob(columnIndex, reader);
     }
 
     @Override
     public void setNClob(int columnIndex, NClob nclob)  throws SQLException {
-    }
-
-    public void setNClob(String columnLabel, NClob nclob)  throws SQLException {
+        prepareStatement.setNClob(columnIndex, nclob);
     }
 
     @Override
     public void setNString(int columnIndex, String nString)  throws SQLException {
-    }
-
-    public void setNString(String columnLabel, String nString)  throws SQLException {
-    }
-
-    public void setSQLXML(String columnLabel, SQLXML sqlxml)  throws SQLException {
+        prepareStatement.setNString(columnIndex, nString);
     }
 
     @Override
@@ -542,38 +504,41 @@ public class TestPreparedStatement implements PreparedStatement{
 
     @Override
     public void setRowId(int columnIndex, RowId rowid)  throws SQLException {
-    }
-
-    public void setRowId(String columnLabel, RowId rowid)  throws SQLException {
+        prepareStatement.setRowId(columnIndex, rowid);
     }
 
     @Override
     public boolean isClosed()  throws SQLException {
-        return false;
+        return prepareStatement.isClosed();
     }
 
     @Override
     public boolean isPoolable()  throws SQLException {
-        return false;
+        return prepareStatement.isPoolable();
     }
 
     @Override
     public void setPoolable(boolean poolable)  throws SQLException {
+        prepareStatement.setPoolable(poolable);
     }
 
     @Override
     public boolean isWrapperFor(Class<?> iFace) throws SQLException{
-        return false;
+        return prepareStatement.isWrapperFor(iFace);
     }
 
     @Override
     public <T>T unwrap(Class<T> iFace)  throws SQLException {
-        return iFace.cast(this);
+        return prepareStatement.unwrap(iFace);
     }
 
     @Override
-    public boolean isCloseOnCompletion(){return false;}
+    public boolean isCloseOnCompletion() throws SQLException{
+        return prepareStatement.isCloseOnCompletion();
+    }
 
     @Override
-    public void closeOnCompletion(){}
+    public void closeOnCompletion() throws SQLException {
+        prepareStatement.closeOnCompletion();
+    }
 }

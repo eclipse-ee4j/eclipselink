@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -17,9 +17,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 import javax.sql.DataSource;
-import java.util.logging.Logger;
 
 import oracle.jdbc.OracleConnection;
 
@@ -38,6 +38,7 @@ public class TestOracleDataSource implements DataSource {
         this.properties = properties;
     }
 
+    @Override
     public Connection getConnection() throws SQLException {
         try {
             Class.forName(driverName);
@@ -48,33 +49,40 @@ public class TestOracleDataSource implements DataSource {
         return new TestOracleConnection((OracleConnection)DriverManager.getConnection(url, properties));
     }
 
+    @Override
     public Connection getConnection(String user, String password) throws SQLException {
         properties.put("user", user);
         properties.put("password", password);
         return getConnection();
     }
 
+    @Override
     public int getLoginTimeout() throws SQLException {
         return 0;
     }
 
+    @Override
     public PrintWriter getLogWriter() throws SQLException {
         return null;
     }
 
+    @Override
     public Logger getParentLogger() {return null;}
 
+    @Override
     public void setLoginTimeout(int arg1) throws SQLException {
     }
 
+    @Override
     public void setLogWriter(PrintWriter arg1) throws SQLException {
     }
 
-    // From java.sql.Wrapper
+    @Override
     public boolean isWrapperFor(Class<?> iFace) throws SQLException{
         return false;
     }
 
+    @Override
     public <T>T unwrap(Class<T> iFace)  throws SQLException {
         return iFace.cast(this);
     }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,16 +12,17 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.spatial.jgeometry.wrapped;
 
-import junit.extensions.TestSetup;
-import junit.framework.Test;
-import junit.framework.TestSuite;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.queries.UpdateAllQuery;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.TestProblemException;
-import org.eclipse.persistence.testing.tests.spatial.jgeometry.SampleGeometries;
 import org.eclipse.persistence.testing.models.spatial.jgeometry.wrapped.MyGeometry;
 import org.eclipse.persistence.testing.models.spatial.jgeometry.wrapped.WrappedSpatial;
+import org.eclipse.persistence.testing.tests.spatial.jgeometry.SampleGeometries;
+
+import junit.extensions.TestSetup;
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
 /**
  * This test requires the following SQL be run prior to running the test suite:
@@ -44,15 +45,24 @@ public class UpdateTests extends WrappedSpatialTestCase {
         suite.addTest(new UpdateTests("testReplaceExisting"));
 
         return new TestSetup(suite) {
+            private boolean shouldBindAllParameters;
+            @Override
             protected void setUp(){
                 try{
+                    shouldBindAllParameters = getSession().getLogin().getShouldBindAllParameters();
                     WrappedSpatialTestCase.repopulate(getSession(), true);
                 } catch (Exception e){
                     throw new TestProblemException("Could not setup JGeometry test model. Note: This model requires you to run the following CREATE OR REPLACE TYPE MY_GEOMETRY AS OBJECT (id NUMBER, geom MDSYS.SDO_GEOMETRY): ", e);
                 }
             }
 
+            @Override
             protected void tearDown() {
+                try {
+                    getSession().getLogin().setShouldBindAllParameters(shouldBindAllParameters);
+                } catch (Exception e){
+                    throw new TestProblemException("Could not clean up JGeometry test model", e);
+                }
             }
         };
     }
@@ -71,6 +81,7 @@ public class UpdateTests extends WrappedSpatialTestCase {
     }
 
     public void testUpdateAllToNull() throws Exception {
+        session.getLogin().setShouldBindAllParameters(false);
         UnitOfWork uow = session.acquireUnitOfWork();
 
         UpdateAllQuery uaq = new UpdateAllQuery(WrappedSpatial.class);

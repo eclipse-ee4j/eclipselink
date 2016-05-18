@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -21,52 +21,63 @@ public class TestArray implements Array {
 
     private Array array;
 
-    public TestArray(Array array){
+    public TestArray(Array array) {
         this.array = array;
     }
 
+    @Override
     public Object getArray() throws SQLException {
         return array.getArray();
     }
 
+    @Override
     public Object getArray(long index, int count, Map<String, Class<?>> map) throws SQLException {
         return array.getArray(index, count, map);
     }
 
+    @Override
     public Object getArray(long index, int count) throws SQLException {
         return array.getArray(index, count);
     }
 
+    @Override
     public Object getArray(Map<String, Class<?>> map) throws SQLException {
         return array.getArray(map);
     }
 
+    @Override
     public int getBaseType() throws SQLException {
         return array.getBaseType();
     }
 
+    @Override
     public String getBaseTypeName() throws SQLException {
         return array.getBaseTypeName();
     }
 
+    @Override
     public ResultSet getResultSet() throws SQLException {
         return array.getResultSet();
     }
 
+    @Override
     public ResultSet getResultSet(long index, int count, Map<String, Class<?>> map) throws SQLException {
         return array.getResultSet(index, count, map);
     }
 
+    @Override
     public ResultSet getResultSet(long index, int count) throws SQLException {
         return array.getResultSet(index, count);
     }
 
+    @Override
     public ResultSet getResultSet(Map<String, Class<?>> map) throws SQLException {
         return array.getResultSet(map);
     }
 
+    @Override
     public void free() throws SQLException {
-        //array.free();
+        array.free();
     }
 
 }

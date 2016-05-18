@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -20,22 +20,26 @@ public class TestRef implements Ref {
 
     private Ref ref;
 
-    public TestRef(Ref ref){
+    public TestRef(Ref ref) {
         this.ref = ref;
     }
 
+    @Override
     public String getBaseTypeName() throws SQLException {
         return ref.getBaseTypeName();
     }
 
+    @Override
     public Object getObject() throws SQLException {
         return ref.getObject();
     }
 
+    @Override
     public Object getObject(Map<String, Class<?>> map) throws SQLException {
         return ref.getObject(map);
     }
 
+    @Override
     public void setObject(Object value) throws SQLException {
         ref.setObject(value);
     }
