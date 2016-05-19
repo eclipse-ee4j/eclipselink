@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -40,6 +40,7 @@ public class ClearDatabaseSchemaTest extends TestCase {
         setDescription("Clears the database for MYSQL, Oracle DB, Derby, MSSQL, HSQL, Postgres.");
     }
 
+    @Override
     public void test() {
         //TODO: add missing platforms, currently supported are:
         //MySQL, Oracle DB, Derby, HSQLDB, PostgreSQL, MSSQL
@@ -117,12 +118,16 @@ public class ClearDatabaseSchemaTest extends TestCase {
 
     private void resetOracle(AbstractSession session) {
         session.executeNonSelectingSQL("BEGIN FOR cur_rec IN (\n" + "SELECT object_name, object_type FROM user_objects WHERE object_type IN "
-                + "('TABLE', 'VIEW', 'PACKAGE', 'PROCEDURE', 'FUNCTION', 'SEQUENCE'))\n"
+                + "('TABLE', 'VIEW', 'PACKAGE', 'PROCEDURE', 'FUNCTION', 'SEQUENCE', 'TYPE'))\n"
                 + "LOOP BEGIN IF cur_rec.object_type = 'TABLE' "
                 + "THEN EXECUTE IMMEDIATE 'DROP ' || cur_rec.object_type || ' \"' || cur_rec.object_name || '\" CASCADE CONSTRAINTS'; "
+                + "ELSIF cur_rec.object_type = 'TYPE' THEN EXECUTE IMMEDIATE 'DROP ' || cur_rec.object_type || ' \"' || cur_rec.object_name || '\" FORCE'; "
                 + "ELSE EXECUTE IMMEDIATE 'DROP ' || cur_rec.object_type || ' \"' || cur_rec.object_name || '\"'; "
-                + "END IF;\nEXCEPTION WHEN OTHERS " + "THEN DBMS_OUTPUT.put_line ('FAILED: DROP ' || cur_rec.object_type || ' \"' || cur_rec.object_name || '\"');"
+                + "END IF;\nEXCEPTION WHEN OTHERS "
+                + "THEN DBMS_OUTPUT.put_line ('FAILED: DROP ' || cur_rec.object_type || ' \"' || cur_rec.object_name || '\"');"
                 + "END;\nEND LOOP; END;");
+        session.executeNonSelectingSQL("PURGE user_recyclebin");
+        session.executeNonSelectingSQL("PURGE recyclebin");
     }
 
     private void resetDerby(AbstractSession session) {
