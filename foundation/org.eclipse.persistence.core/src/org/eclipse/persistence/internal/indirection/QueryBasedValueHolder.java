@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -95,7 +95,10 @@ public class QueryBasedValueHolder extends DatabaseValueHolder {
         if (session == null) {
             throw ValidationException.instantiatingValueholderWithNullSession();
         }
-        return session.executeQuery(getQuery(), getRow());
+        Object result = session.executeQuery(getQuery(), getRow());
+        // Bug 489898 - ensure that the query's session is dereferenced, post-execution
+        getQuery().setSession(null);
+        return result;
     }
 
     /**
