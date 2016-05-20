@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -38,7 +38,7 @@ import org.eclipse.persistence.logging.SessionLog;
  * the new variable. Also, triggers the process of weaving the methods of the
  * class.
  *
- * @see org.eclipse.persistence.internal.weaving.MethodWeaver
+ * @see org.eclipse.persistence.internal.jpa.weaving.MethodWeaver
  */
 
 public class ClassWeaver extends ClassVisitor implements Opcodes {
@@ -281,7 +281,7 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
      * Add a method to track property changes. The method will look as follows:
      *
      * public void _toplink_propertyChange(String s, Object obj, Object obj1){
-     * if(_persistence_listener != null && obj != obj1){
+     * if(_persistence_listener != null {@literal &&} obj != obj1){
      * _persistence_listener.propertyChange(new PropertyChangeEvent(this, s,
      * obj, obj1)); } }
      */

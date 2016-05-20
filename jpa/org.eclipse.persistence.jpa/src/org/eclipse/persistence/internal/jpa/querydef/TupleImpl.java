@@ -1,3 +1,16 @@
+/*******************************************************************************
+ * Copyright (c) 2011, 2016 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * Contributors:
+ *     Gordon Yorke - Initial development
+ *
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.querydef;
 
 import java.io.Serializable;
@@ -21,12 +34,13 @@ public class TupleImpl implements Tuple, Serializable{
 
     /**
      * Get the value of the specified result element.
-     * @param resultElement  tuple result element
+     * @param tupleElement  tuple result element
      * @return value of result element
      * @throws IllegalArgumentException if result element
      *         does not correspond to an element in the
      *         query result tuple
      */
+    @Override
     public <X> X get(TupleElement<X> tupleElement){
         int index = this.selections.indexOf(tupleElement);
         if (index==-1) {
@@ -45,6 +59,7 @@ public class TupleImpl implements Tuple, Serializable{
      *         does not correspond to an element in the
      *         query tuple result or type is incorrect
      */
+    @Override
     public <X> X get(String alias, Class<X> type){
         Object result = this.get(alias);
         if (type==null || !(result==null || type.isInstance(result))) {
@@ -63,6 +78,7 @@ public class TupleImpl implements Tuple, Serializable{
      *         does not correspond to an element in the
      *         query result tuple
      */
+    @Override
     public Object get(String alias){
         //don't use the ReportQueryResult's get(string) since it returns null when the name is invalid
         int index = this.rqr.getNames().indexOf(alias);
@@ -83,6 +99,7 @@ public class TupleImpl implements Tuple, Serializable{
      * @throws IllegalArgumentException if i exceeds
      *         length of result tuple or type is incorrect
      */
+    @Override
     public <X> X get(int i, Class<X> type){
         Object result = this.get(i);
         if (type==null || !(result==null || type.isInstance(result))) {
@@ -101,6 +118,7 @@ public class TupleImpl implements Tuple, Serializable{
      * @throws IllegalArgumentException if i exceeds
      *         length of result list
      */
+    @Override
     public Object get(int i){
         if (i<0 || (i >= this.rqr.getResults().size()) ) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
@@ -113,6 +131,7 @@ public class TupleImpl implements Tuple, Serializable{
      * Return the values of the result tuple as an array.
      * @return result element values
      */
+    @Override
     public Object[] toArray(){
         return this.rqr.getResults().toArray();
     }
@@ -120,6 +139,7 @@ public class TupleImpl implements Tuple, Serializable{
     /**
      * Return the elements of the tuple
      */
+    @Override
     public List<TupleElement<?>> getElements(){
         return (List<TupleElement<?>>) this.selections;
     }

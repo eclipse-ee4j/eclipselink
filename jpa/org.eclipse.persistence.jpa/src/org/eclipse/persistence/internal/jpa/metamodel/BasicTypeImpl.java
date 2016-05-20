@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,7 +27,7 @@ import javax.persistence.metamodel.BasicType;
  * Instances of the type BasicType represent basic types (including
  * temporal and enumerated types).
  *
- * @see javax.persistence.metamodel.Basic
+ * @see javax.persistence.metamodel.BasicType
  *
  * @since EclipseLink 1.2 - JPA 2.0
  * @param <X> The type of the represented basic type
@@ -46,6 +46,7 @@ public class BasicTypeImpl<X> extends TypeImpl<X> implements BasicType<X> {
      *  Return the persistence type.
      *  @return persistence type
      */
+    @Override
     public PersistenceType getPersistenceType() {
         return PersistenceType.BASIC;
     }

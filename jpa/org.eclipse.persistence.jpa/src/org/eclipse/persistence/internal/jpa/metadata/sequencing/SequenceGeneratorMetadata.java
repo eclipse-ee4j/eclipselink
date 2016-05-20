@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,7 +27,7 @@ import org.eclipse.persistence.sequencing.NativeSequence;
 
 /**
  * A wrapper class to the MetadataSequenceGenerator that holds onto a
- * @SequenceGenerator for its metadata values.
+ * &#064;SequenceGenerator for its metadata values.
  *
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the

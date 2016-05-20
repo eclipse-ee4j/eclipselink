@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -47,13 +47,11 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
-
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ConverterAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EmbeddableAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.MappedSuperclassAccessor;
-
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataFactory;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataFile;
@@ -64,10 +62,8 @@ import org.eclipse.persistence.internal.jpa.metadata.converters.ObjectTypeConver
 import org.eclipse.persistence.internal.jpa.metadata.converters.SerializedConverterMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.StructConverterMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.TypeConverterMetadata;
-
 import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.mappings.AccessMethodsMetadata;
-
 import org.eclipse.persistence.internal.jpa.metadata.partitioning.HashPartitioningMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.partitioning.PartitioningMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.partitioning.PinnedPartitioningMetadata;
@@ -87,7 +83,6 @@ import org.eclipse.persistence.internal.jpa.metadata.queries.OracleObjectTypeMet
 import org.eclipse.persistence.internal.jpa.metadata.queries.PLSQLRecordMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.PLSQLTableMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.SQLResultSetMappingMetadata;
-
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.SequenceGeneratorMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.TableGeneratorMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.UuidGeneratorMetadata;
@@ -317,6 +312,7 @@ public class XMLEntityMappings extends ORMetadata {
      * INTERNAL:
      * Return the logger from the project.
      */
+    @Override
     public MetadataLogger getLogger() {
         return m_project.getLogger();
     }
@@ -347,6 +343,7 @@ public class XMLEntityMappings extends ORMetadata {
     /**
      * INTERNAL:
      */
+    @Override
     public MetadataFactory getMetadataFactory() {
         return m_factory;
     }
@@ -478,6 +475,7 @@ public class XMLEntityMappings extends ORMetadata {
     /**
      * INTERNAL:
      */
+    @Override
     public MetadataProject getProject() {
         return m_project;
     }
@@ -718,11 +716,11 @@ public class XMLEntityMappings extends ORMetadata {
 
     /**
      * INTERNAL:
-     * Process the metadata from the <entity-mappings> level except for the
+     * Process the metadata from the &lt;entity-mappings&gt; level except for the
      * classes themselves. They will be processed afterwards and controlled
      * by the MetadataProcessor. Note: this method does a few things of
      * interest. It not only adds metadata to the project but it will also
-     * override (that is EclipseLink-ORM-XML-->JPA-XML && JPA-XML-->Annotation)
+     * override (that is EclipseLink-ORM-XML--&gt;JPA-XML && JPA-XML--&gt;Annotation)
      * the necessary metadata and log messages to the user. A validation
      * exception could also be thrown. See the related processing methods for
      * more details.
@@ -1284,6 +1282,7 @@ public class XMLEntityMappings extends ORMetadata {
      * INTERNAL:
      * Set the project reference for this EntityMappings object.
      */
+    @Override
     public void setProject(MetadataProject project) {
         m_project = project;
     }

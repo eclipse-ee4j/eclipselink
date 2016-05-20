@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -43,7 +43,9 @@ import javax.persistence.Parameter;
 import javax.persistence.PersistenceException;
 import javax.persistence.PessimisticLockException;
 import javax.persistence.Query;
+import javax.persistence.QueryTimeoutException;
 import javax.persistence.TemporalType;
+import javax.persistence.TransactionRequiredException;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.QueryException;
@@ -596,7 +598,7 @@ public class QueryImpl {
     /**
      * Set the position of the first result to retrieve.
      *
-     * @param start
+     * @param startPosition
      *            position of the first result, numbered from 0
      * @return the same query instance
      */
@@ -1013,7 +1015,7 @@ public class QueryImpl {
     public <T> Parameter<T> getParameter(String name, Class<T> type) {
         //don't rollback transaction on error
         entityManager.verifyOpen();
-        Parameter param = (Parameter) getInternalParameters().get(name);
+        Parameter param = getInternalParameters().get(name);
         if (param == null) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NO_PARAMETER_WITH_NAME", new Object[] { name, this.databaseQuery }));
         } else if (param.getParameterType() != null && type != null && !type.isAssignableFrom(param.getParameterType())){
@@ -1029,7 +1031,7 @@ public class QueryImpl {
     public <T> Parameter<T> getParameter(int position, Class<T> type) {
         //don't rollback transaction on error
         entityManager.verifyOpen();
-        Parameter param = (Parameter) getInternalParameters().get(String.valueOf(position));
+        Parameter param = getInternalParameters().get(String.valueOf(position));
         if (param == null) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NO_PARAMETER_WITH_INDEX", new Object[] { position, this.databaseQuery }));
         } else if (param.getParameterType() != null && type != null && !type.isAssignableFrom(param.getParameterType())){
@@ -1045,7 +1047,7 @@ public class QueryImpl {
     public Parameter<?> getParameter(String name) {
         //don't rollback transaction on error
         entityManager.verifyOpen();
-        Parameter param = (Parameter) getInternalParameters().get(name);
+        Parameter param = getInternalParameters().get(name);
         if (param == null) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NO_PARAMETER_WITH_NAME", new Object[] { name, this.databaseQuery }));
         }
@@ -1059,7 +1061,7 @@ public class QueryImpl {
     public Parameter<?> getParameter(int position) {
         //don't rollback transaction on error
         entityManager.verifyOpen();
-        Parameter param = (Parameter) getInternalParameters().get(String.valueOf(position));
+        Parameter param = getInternalParameters().get(String.valueOf(position));
         if (param == null) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NO_PARAMETER_WITH_INDEX", new Object[] { position, this.databaseQuery }));
         }
@@ -1137,7 +1139,6 @@ public class QueryImpl {
     }
 
     /**
-     * @see Query#getSupportedHints()
      * @since Java Persistence 2.0
      */
     public Set<String> getSupportedHints() {
@@ -1163,6 +1164,7 @@ public class QueryImpl {
         throw new PersistenceException(ExceptionLocalization.buildMessage("unable_to_unwrap_jpa", new String[]{Query.class.getName(), cls.getName()}));
     }
 
+    @Override
     public String toString() {
         return getClass().getSimpleName() + "(" + String.valueOf(this.databaseQuery) + ")";
     }

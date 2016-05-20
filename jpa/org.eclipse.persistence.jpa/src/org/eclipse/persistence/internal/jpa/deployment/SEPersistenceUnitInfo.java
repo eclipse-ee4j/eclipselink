@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -14,17 +14,21 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.deployment;
 
-import javax.persistence.*;
-import javax.persistence.spi.*;
-import javax.sql.DataSource;
-
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
-import java.net.MalformedURLException;
-import java.net.URL;
+
+import javax.persistence.PersistenceException;
+import javax.persistence.SharedCacheMode;
+import javax.persistence.ValidationMode;
+import javax.persistence.spi.ClassTransformer;
+import javax.persistence.spi.PersistenceUnitInfo;
+import javax.persistence.spi.PersistenceUnitTransactionType;
+import javax.sql.DataSource;
 
 /**
  * Internal implementation of the PersistenceUnitInfo detailed in the EJB 3.0 specification
@@ -71,8 +75,9 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
 
     /**
     * @return The name of the persistence unit.
-    * Corresponds to the <name> element in the persistence.xml file.
+    * Corresponds to the &lt;name&gt; element in the persistence.xml file.
     */
+    @Override
     public String getPersistenceUnitName(){
         return persistenceUnitName;
     }
@@ -98,9 +103,10 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
     /**
     * @return The fully qualified name of the persistence provider
     * implementation class.
-    * Corresponds to the <provider> element in the persistence.xml
+    * Corresponds to the &lt;provider&gt; element in the persistence.xml
     * file.
     */
+    @Override
     public String getPersistenceProviderClassName(){
         return persistenceProviderClassName;
     }
@@ -115,6 +121,7 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
     * The transaction type corresponds to the transaction-type
     * attribute in the persistence.xml file.
     */
+    @Override
     public PersistenceUnitTransactionType getTransactionType(){
         return persistenceUnitTransactionType;
     }
@@ -126,10 +133,11 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
     /**
     * @return the JTA-enabled data source to be used by the
     * persistence provider.
-    * The data source corresponds to the <jta-data-source>
+    * The data source corresponds to the &lt;jta-data-source&gt;
     * element in the persistence.xml file or is provided at
     * deployment or by the container.
     */
+    @Override
     public DataSource getJtaDataSource(){
         return jtaDataSource;
     }
@@ -142,10 +150,11 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
     * @return The non-JTA-enabled data source to be used by the
     * persistence provider for accessing data outside a JTA
     * transaction.
-    * The data source corresponds to the named <non-jta-data-source>
+    * The data source corresponds to the named &lt;non-jta-data-source&gt;
     * element in the persistence.xml file or provided at
     * deployment or by the container.
     */
+    @Override
     public DataSource getNonJtaDataSource(){
         return nonJtaDataSource;
     }
@@ -161,9 +170,10 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
     * mapping format, be uniquely named and be resource-loadable
     * from the application classpath. This list will not include
     * the orm.xml file if one was specified.
-    * Each mapping file name corresponds to a <mapping-file>
+    * Each mapping file name corresponds to a &lt;mapping-file&gt;
     * element in the persistence.xml file.
     */
+    @Override
     public List<String> getMappingFileNames(){
         return mappingFiles;
     }
@@ -174,9 +184,10 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
     /**
     * @return The list of JAR file URLs that the persistence
     * provider must examine for managed classes of the persistence
-    * unit. Each jar file URL corresponds to a named <jar-file>
+    * unit. Each jar file URL corresponds to a named &lt;jar-file&gt;
     * element in the persistence.xml file.
     */
+    @Override
     public List<URL> getJarFileUrls(){
         if (jarFileUrls == null) { // lazy initialization
             List<URL> jarFileUrls = new ArrayList<URL>(jarFiles.size());
@@ -206,6 +217,7 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
     * the WEB-INF/classes directory, this will be the URL of
     * that directory.
     */
+    @Override
     public URL getPersistenceUnitRootUrl(){
         return persistenceUnitRootUrl;
     }
@@ -217,9 +229,10 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
     /**
     * @return The list of the names of the classes that the
     * persistence provider must add it to its set of managed
-    * classes. Each name corresponds to a named <class> element
+    * classes. Each name corresponds to a named &lt;class&gt; element
     * in the persistence.xml file.
     */
+    @Override
     public List<String> getManagedClassNames(){
         return managedClassNames;
     }
@@ -231,9 +244,10 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
     * @return Whether classes in the root of the persistence
     * unit that have not been explicitly listed are to be
     * included in the set of managed classes.
-    * This value corresponds to the <exclude-unlisted-classes>
+    * This value corresponds to the &lt;exclude-unlisted-classes&gt;
     * element in the persistence.xml file.
     */
+    @Override
     public boolean excludeUnlistedClasses(){
         return excludeUnlistedClasses;
     }
@@ -243,8 +257,9 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
     }
     /**
     * @return Properties object. Each property corresponds
-    * to a <property> element in the persistence.xml file
+    * to a &lt;property&gt; element in the persistence.xml file
     */
+    @Override
     public Properties getProperties(){
         return properties;
     }
@@ -256,6 +271,7 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
     * @return ClassLoader that the provider may use to load any
     * classes, resources, or open URLs.
     */
+    @Override
     public ClassLoader getClassLoader(){
         return realClassLoader;
     }
@@ -273,6 +289,7 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
     * @param transformer A provider-supplied transformer that the
     * Container invokes at class-(re)definition time
     */
+    @Override
     public void addTransformer(ClassTransformer transformer){
         // not required for our Java SE implementation
     }
@@ -288,6 +305,7 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
     * @return Temporary ClassLoader with same visibility as current
     * loader
     */
+    @Override
     public ClassLoader getNewTempClassLoader(){
         return tempClassLoader;
     }
@@ -297,7 +315,7 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
     }
 
     /**
-     * @see PersistenceUnitInfo#setSharedCacheMode()
+     * @see PersistenceUnitInfo#getSharedCacheMode()
      * @since Java Persistence 2.0
      */
     public void setSharedCacheMode(String sharedCacheMode) {
@@ -330,6 +348,7 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
      * @see PersistenceUnitInfo#getPersistenceXMLSchemaVersion()
      * @since Java Persistence 2.0
      */
+    @Override
     public String getPersistenceXMLSchemaVersion() {
         // TODO
         throw new PersistenceException("Not Yet Implemented");
@@ -339,6 +358,7 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
      * @see PersistenceUnitInfo#getSharedCacheMode()
      * @since Java Persistence 2.0
      */
+    @Override
     public SharedCacheMode getSharedCacheMode() {
         return cacheMode;
     }
@@ -347,6 +367,7 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
      * @see PersistenceUnitInfo#getValidationMode()
      * @since Java Persistence 2.0
      */
+    @Override
     public ValidationMode getValidationMode() {
         return validationMode;
     }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -56,6 +56,7 @@ public class PathImpl<X> extends ExpressionImpl<X> implements Path<X>, Cloneable
      *
      * @return bindable object corresponding to the path
      */
+    @Override
     public  Bindable<X> getModel(){
         return (Bindable<X>) this.modelArtifact;
 
@@ -66,6 +67,7 @@ public class PathImpl<X> extends ExpressionImpl<X> implements Path<X>, Cloneable
      *
      * @return parent
      */
+    @Override
     public Path<?> getParentPath(){
         return this.pathParent;
     }
@@ -74,10 +76,11 @@ public class PathImpl<X> extends ExpressionImpl<X> implements Path<X>, Cloneable
      * Return the path corresponding to the referenced non-collection valued
      * attribute.
      *
-     * @param model
+     * @param att
      *            attribute
      * @return path corresponding to the referenced attribute
      */
+    @Override
     public <Y> Path<Y> get(SingularAttribute<? super X, Y> att){
         throw new IllegalStateException(ExceptionLocalization.buildMessage("pathnode_is_primitive_node"));
     }
@@ -86,10 +89,11 @@ public class PathImpl<X> extends ExpressionImpl<X> implements Path<X>, Cloneable
      * Return the path corresponding to the referenced collection-valued
      * attribute.
      *
-     * @param model
+     * @param collection
      *            collection-valued attribute
      * @return expression corresponding to the referenced attribute
      */
+    @Override
     public <E, C extends java.util.Collection<E>> Expression<C> get(PluralAttribute<X, C, E> collection){
         throw new IllegalStateException(ExceptionLocalization.buildMessage("pathnode_is_primitive_node"));
     }
@@ -97,10 +101,11 @@ public class PathImpl<X> extends ExpressionImpl<X> implements Path<X>, Cloneable
     /**
      * Return the path corresponding to the referenced map-valued attribute.
      *
-     * @param model
+     * @param map
      *            map-valued attribute
      * @return expression corresponding to the referenced attribute
      */
+    @Override
     public <K, V, M extends java.util.Map<K, V>> Expression<M> get(MapAttribute<X, K, V> map){
         throw new IllegalStateException(ExceptionLocalization.buildMessage("pathnode_is_primitive_node"));
     }
@@ -110,18 +115,22 @@ public class PathImpl<X> extends ExpressionImpl<X> implements Path<X>, Cloneable
      *
      * @return expression corresponding to the type of the path
      */
+    @Override
     public Expression<Class<? extends X>> type(){
         throw new IllegalStateException(ExceptionLocalization.buildMessage("pathnode_type_does_not_apply_to_primitive_node"));
     }
 
+    @Override
     public <Y> Path<Y> get(String attName) {
         throw new IllegalStateException(ExceptionLocalization.buildMessage("pathnode_is_primitive_node"));
     }
 
+    @Override
     public void findRootAndParameters(CommonAbstractCriteriaImpl query){
         ((PathImpl)this.pathParent).findRootAndParameters(query);
     }
 
+    @Override
     protected Object clone() {
         try {
             return super.clone();

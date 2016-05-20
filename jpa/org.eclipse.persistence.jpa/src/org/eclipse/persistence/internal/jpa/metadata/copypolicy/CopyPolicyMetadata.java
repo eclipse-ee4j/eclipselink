@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -19,11 +19,11 @@
 package org.eclipse.persistence.internal.jpa.metadata.copypolicy;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.copying.CopyPolicy;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
-import org.eclipse.persistence.descriptors.copying.CopyPolicy;
 
 /**
  * INTERNAL:
@@ -38,9 +38,9 @@ import org.eclipse.persistence.descriptors.copying.CopyPolicy;
  *   'companion' annotation needed for processing.
  * - methods should be preserved in alphabetical order.
  *
- * @see org.eclipse.persistence.internal.jpa.metadata.copypolicy.CustomCopyPolicy
- * @see org.eclipse.persistence.internal.jpa.metadata.copypolicy.InstantiationCopyPolicy
- * @see org.eclipse.persistence.internal.jpa.metadata.copypolicy.CloneCopyPolicy
+ * @see CopyPolicy
+ * @see org.eclipse.persistence.annotations.CloneCopyPolicy
+ * @see org.eclipse.persistence.annotations.InstantiationCopyPolicy
  *
  * @author tware
  */

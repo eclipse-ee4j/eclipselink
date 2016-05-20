@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -928,7 +928,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
     /**
      * INTERNAL:
      * Return the raw class for this accessor.
-     * E.g. For an accessor with a type of java.util.Collection<Employee>, this
+     * E.g. For an accessor with a type of java.util.Collection&lt;Employee&gt;, this
      * method will return java.util.Collection. To check for the attribute
      * type we must go through the method calls since some accessors define
      * the attribute type through a target entity specification. Do not access
@@ -947,7 +947,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
     /**
      * INTERNAL:
      * Return the raw class with any generic specifications for this accessor.
-     * E.g. For an accessor with a type of java.util.Collection<Employee>, this
+     * E.g. For an accessor with a type of java.util.Collection&lt;Employee&gt;, this
      * method will return java.util.CollectionEmployee. To check for the
      * attribute type we must go through the method calls since some accessors
      * define the attribute type through a target entity specification. Do not

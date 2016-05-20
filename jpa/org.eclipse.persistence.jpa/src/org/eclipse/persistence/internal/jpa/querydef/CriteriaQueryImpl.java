@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -76,6 +76,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      *            query result
      * @return the modified query
      */
+    @Override
     public CriteriaQuery<T> select(Selection<? extends T> selection) {
         findRootAndParameters(selection);
         this.selection = (SelectionImpl) selection;
@@ -120,28 +121,28 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      * specification of the criteria query object as well as the arguments to
      * the multiselect method as follows:
      *
-     * If the type of the criteria query is CriteriaQuery<Tuple>, a Tuple object
+     * If the type of the criteria query is CriteriaQuery&lt;Tuple&gt;, a Tuple object
      * corresponding to the arguments of the multiselect method will be
      * instantiated and returned for each row that results from the query
      * execution.
      *
-     * If the type of the criteria query is CriteriaQuery<X> for some
+     * If the type of the criteria query is CriteriaQuery&lt;X&gt; for some
      * user-defined class X, then the arguments to the multiselect method will
      * be passed to the X constructor and an instance of type X will be returned
      * for each row. The IllegalStateException will be thrown if a constructor
      * for the given argument types does not exist.
      *
-     * If the type of the criteria query is CriteriaQuery<X[]> for some class X,
+     * If the type of the criteria query is CriteriaQuery&lt;X[]&gt; for some class X,
      * an instance of type X[] will be returned for each row. The elements of
      * the array will correspond to the arguments of the multiselect method. The
      * IllegalStateException will be thrown if the arguments to the multiselect
      * method are not of type X.
      *
-     * If the type of the criteria query is CriteriaQuery<Object>, and only a
+     * If the type of the criteria query is CriteriaQuery&lt;Object&gt;, and only a
      * single argument is passed to the multiselect method, an instance of type
      * Object will be returned for each row.
      *
-     * If the type of the criteria query is CriteriaQuery<Object>, and more than
+     * If the type of the criteria query is CriteriaQuery&lt;Object&gt;, and more than
      * one argument is passed to the multiselect method, an instance of type
      * Object[] will be instantiated and returned for each row. The elements of
      * the array will correspond to the arguments to the multiselect method.
@@ -151,6 +152,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      *            the query result
      * @return the modified query
      */
+    @Override
     public CriteriaQuery<T> multiselect(Selection<?>... selections) {
         if (selections == null || selections.length == 0) {
             this.selection = null;
@@ -202,29 +204,29 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      * specification of the criteria query object as well as the arguments to
      * the multiselect method as follows:
      *
-     * If the type of the criteria query is CriteriaQuery<Tuple>, a Tuple object
+     * If the type of the criteria query is CriteriaQuery&lt;Tuple&gt;, a Tuple object
      * corresponding to the items in the selection list passed to the
      * multiselect method will be instantiated and returned for each row that
      * results from the query execution.
      *
-     * If the type of the criteria query is CriteriaQuery<X> for some
+     * If the type of the criteria query is CriteriaQuery&lt;X&gt; for some
      * user-defined class X, then the items in the selection list passed to the
      * multiselect method will be passed to the X constructor and an instance of
      * type X will be returned for each row. The IllegalStateException will be
      * thrown if a constructor for the given argument types does not exist.
      *
-     * If the type of the criteria query is CriteriaQuery<X[]> for some class X,
+     * If the type of the criteria query is CriteriaQuery&lt;X[]&gt; for some class X,
      * an instance of type X[] will be returned for each row. The elements of
      * the array will correspond to the items in the selection list passed to
      * the multiselect method. The IllegalStateException will be thrown if the
      * elements in the selection list passed to the multiselect method are not
      * of type X.
      *
-     * If the type of the criteria query is CriteriaQuery<Object>, and the
+     * If the type of the criteria query is CriteriaQuery&lt;Object&gt;, and the
      * selection list passed to the multiselect method contains only a single
      * item, an instance of type Object will be returned for each row.
      *
-     * If the type of the criteria query is CriteriaQuery<Object>, and the
+     * If the type of the criteria query is CriteriaQuery&lt;Object&gt;, and the
      * selection list passed to the multiselect method contains more than one
      * item, an instance of type Object[] will be instantiated and returned for
      * each row. The elements of the array will correspond to the items in the
@@ -235,6 +237,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      *            returned in the query result
      * @return the modified query
      */
+    @Override
     public CriteriaQuery<T> multiselect(List<Selection<?>> selectionList) {
         if (selectionList == null) {
             this.selection = null;
@@ -254,6 +257,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      *            a simple or compound boolean expression
      * @return the modified query
      */
+    @Override
     public CriteriaQuery<T> where(Expression<Boolean> restriction) {
         return (CriteriaQuery<T>) super.where(restriction);
     }
@@ -270,6 +274,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      *            zero or more restriction predicates
      * @return the modified query
      */
+    @Override
     public CriteriaQuery<T> where(Predicate... restrictions) {
         return (CriteriaQuery<T>) super.where(restrictions);
     }
@@ -285,6 +290,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      *            zero or more grouping expressions
      * @return the modified query
      */
+    @Override
     public CriteriaQuery<T> groupBy(Expression<?>... grouping) {
         super.groupBy(grouping);
         return this;
@@ -301,6 +307,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      *            list of zero or more grouping expressions
      * @return the modified query
      */
+    @Override
     public CriteriaQuery<T> groupBy(List<Expression<?>> grouping) {
         super.groupBy(grouping);
         return this;
@@ -315,6 +322,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      *            a simple or compound boolean expression
      * @return the modified query
      */
+    @Override
     public CriteriaQuery<T> having(Expression<Boolean> restriction) {
         super.having(restriction);
         return this;
@@ -332,6 +340,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      *            zero or more restriction predicates
      * @return the modified query
      */
+    @Override
     public CriteriaQuery<T> having(Predicate... restrictions) {
         super.having(restrictions);
         return this;
@@ -349,6 +358,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      *            zero or more ordering expressions
      * @return the modified query.
      */
+    @Override
     public CriteriaQuery<T> orderBy(Order... o) {
         this.orderBy = new ArrayList();
         for (Order order : o) {
@@ -369,6 +379,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      *            list of zero or more ordering expressions
      * @return the modified query.
      */
+    @Override
     public CriteriaQuery<T> orderBy(List<Order> o) {
         this.orderBy = o;
         return this;
@@ -427,11 +438,13 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      *            retained
      * @return the modified query.
      */
+    @Override
     public CriteriaQuery<T> distinct(boolean distinct) {
         super.distinct(distinct);
         return this;
     }
 
+    @Override
     public void addJoin(FromImpl from) {
         if (this.joins == null) {
             this.joins = new ArrayList<FromImpl>();
@@ -439,6 +452,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
         this.joins.add(from);
     }
 
+    @Override
     protected DatabaseQuery getDatabaseQuery() {
         ObjectLevelReadQuery query = null;
         if (this.selection == null || !this.selection.isCompoundSelection()) {
@@ -454,6 +468,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      *
      * @return the list of ordering expressions
      */
+    @Override
     public List<Order> getOrderList() {
         return this.orderBy;
     }
@@ -464,6 +479,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      *
      * @return the selection item of the query
      */
+    @Override
     public Selection<T> getSelection() {
         return (Selection<T>) this.selection;
     }
@@ -687,6 +703,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
     /**
      * Translates from the criteria query to a EclipseLink Database Query.
      */
+    @Override
     public DatabaseQuery translate() {
         ObjectLevelReadQuery query = (ObjectLevelReadQuery)super.translate();
 

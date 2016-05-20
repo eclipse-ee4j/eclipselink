@@ -148,7 +148,7 @@ import org.eclipse.persistence.sessions.server.ServerSession;
  * </ul>
  * An example <tt><b>eclipselink-dbws.xml</b></tt> descriptor file:
  * <pre>
- * &lt;?xml version="1.0" encoding="UTF-8"?>
+ * &lt;?xml version="1.0" encoding="UTF-8"?&gt;
  * &lt;dbws
  *   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
  *   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -174,6 +174,7 @@ import org.eclipse.persistence.sessions.server.ServerSession;
  *     &lt;sql&gt;&lt;![CDATA[select * from EMP]]&gt;&lt;/sql&gt;
  *   &lt;/query&gt;
  * &lt;/dbws&gt;
+ * </pre>
  */
 public class XRServiceFactory  {
     public XRServiceAdapter xrService;

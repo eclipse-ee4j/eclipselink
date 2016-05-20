@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -177,7 +177,7 @@ public class MetadataConstants {
 
     /**
      * Metamodel processing for MappedSuperclasses non-functional names.<p>
-     * @See MetadataProject.addMetamodelMappedSuperclass()
+     * @see MetadataProject#addMetamodelMappedSuperclass(org.eclipse.persistence.internal.jpa.metadata.accessors.classes.MappedSuperclassAccessor, MetadataDescriptor)
      **/
     public static final String MAPPED_SUPERCLASS_RESERVED_PK_NAME = "__PK_METAMODEL_RESERVED_IN_MEM_ONLY_FIELD_NAME";
     public static final String MAPPED_SUPERCLASS_RESERVED_TABLE_NAME = "__METAMODEL_RESERVED_IN_MEM_ONLY_TABLE_NAME";

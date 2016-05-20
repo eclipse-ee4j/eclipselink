@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -13,11 +13,12 @@
 
 package org.eclipse.persistence.internal.xr;
 
+import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
+
 // Javase imports
 
 // Java extension imports
 import javax.xml.namespace.QName;
-import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 
 // EclipseLink imports
 import org.eclipse.persistence.exceptions.DBWSException;
@@ -70,7 +71,7 @@ public class Parameter {
     }
     /**
      * Set the optional indicator
-     * @param name
+     * @param optional
      */
     public void setOptional(boolean optional) {
         this.optional = optional;

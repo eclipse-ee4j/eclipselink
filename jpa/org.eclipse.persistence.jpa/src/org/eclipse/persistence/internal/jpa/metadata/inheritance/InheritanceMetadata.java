@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -21,6 +21,10 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.inheritance;
 
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_INHERITANCE_JOINED;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_INHERITANCE_SINGLE_TABLE;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_INHERITANCE_TABLE_PER_CLASS;
+
 import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.descriptors.TablePerClassPolicy;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
@@ -30,10 +34,6 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.MappedSuperclassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
-
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_INHERITANCE_JOINED;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_INHERITANCE_SINGLE_TABLE;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_INHERITANCE_TABLE_PER_CLASS;
 
 /**
  * Object to represent inheritance metadata. The processing of this metadata
@@ -124,7 +124,7 @@ public class InheritanceMetadata extends ORMetadata {
      *
      * What we know:
      * - All parent classes will already have been processed. Inheritance
-     *   hierarchies are processed top->down.
+     *   hierarchies are processed top-&gt;down.
      * - Always go through the given descriptors pointer to its class accessor,
      *   as we can not rely on the reloaded accessors for inheritance checks,
      *   mapped superclasses etc. Use the descriptors provided.

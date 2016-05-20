@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -47,8 +47,6 @@ public class XPathEngine {
      * Execute the XPath statement relative to the context node.
      *
      * @param contextNode the node relative to which the XPath statement will be executed
-     * @param xmlField the field containing the XPath statement to be executed
-     * @param namespaceResolver used to resolve namespace prefixes to the corresponding namespace URI
      * @return the first node located matching the XPath statement
      * @throws XMLPlatformException
      */
@@ -73,8 +71,6 @@ public class XPathEngine {
      * Execute the XPath statement relative to the context node.
      *
      * @param contextNode the node relative to which the XPath statement will be executed
-     * @param xmlField the field containing the XPath statement to be executed
-     * @param namespaceResolver used to resolve namespace prefixes to the corresponding namespace URI
      * @return a list of nodes matching the XPath statement
      * @throws XMLPlatformException
      */

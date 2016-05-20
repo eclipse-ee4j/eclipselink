@@ -31,14 +31,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.*;
-
-import org.eclipse.persistence.config.ReferenceMode;
+import javax.persistence.Cache;
+import javax.persistence.EntityGraph;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.FlushModeType;
+import javax.persistence.PersistenceException;
+import javax.persistence.PersistenceUnitUtil;
+import javax.persistence.Query;
+import javax.persistence.SynchronizationType;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.metamodel.Metamodel;
+
 import org.eclipse.persistence.config.EntityManagerProperties;
 import org.eclipse.persistence.config.FlushClearCache;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.config.ReferenceMode;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
 import org.eclipse.persistence.internal.jpa.querydef.CriteriaBuilderImpl;
@@ -70,7 +78,7 @@ import org.eclipse.persistence.sessions.server.ServerSession;
  *
  * @see javax.persistence.EntityManager
  * @see org.eclipse.persistence.jpa.JpaEntityManager
- * @see org.eclipse.persistence.jpa.EntityManagerFactory
+ * @see org.eclipse.persistence.jpa.JpaEntityManagerFactory
  *
  * @author gyorke
  * @since TopLink Essentials - JPA 1.0
@@ -142,7 +150,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
      * Will return an instance of the Factory. Should only be called by
      * EclipseLink.
      *
-     * @param serverSession
+     * @param databaseSession
      */
     public EntityManagerFactoryDelegate(AbstractSession databaseSession, JpaEntityManagerFactory owner) {
         this.session = databaseSession;
@@ -181,6 +189,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
      * partially constructed session stored in our setupImpl and completes its
      * construction
      */
+    @Override
     public DatabaseSessionImpl getDatabaseSession() {
         return (DatabaseSessionImpl)getAbstractSession();
     }
@@ -237,6 +246,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
      * construction
      * TODO: should throw IllegalStateException if not ServerSession
      */
+    @Override
     public ServerSession getServerSession() {
         return (ServerSession)getAbstractSession();
     }
@@ -248,6 +258,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
      * construction
      * TODO: should throw IllegalStateException if not SessionBroker
      */
+    @Override
     public SessionBroker getSessionBroker() {
         return (SessionBroker)getAbstractSession();
     }
@@ -258,6 +269,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
      * throw an {@link IllegalStateException}, except for {@link #isOpen}, which
      * will return <code>false</code>.
      */
+    @Override
     public synchronized void close() {
         verifyOpen();
         isOpen = false;
@@ -276,6 +288,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
      * Indicates whether or not this factory is open. Returns <code>true</code>
      * until a call to {@link #close} is made.
      */
+    @Override
     public boolean isOpen() {
         return isOpen;
     }
@@ -283,6 +296,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     /**
      * PUBLIC: Returns an EntityManager for this deployment.
      */
+    @Override
     public EntityManager createEntityManager() {
         return createEntityManagerImpl(null, null);
     }
@@ -290,14 +304,17 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     /**
      * PUBLIC: Returns an EntityManager for this deployment.
      */
+    @Override
     public EntityManager createEntityManager(Map properties) {
         return createEntityManagerImpl(properties, null);
     }
 
+    @Override
     public EntityManager createEntityManager(SynchronizationType synchronizationType, Map map) {
         return createEntityManagerImpl(map, SynchronizationType.SYNCHRONIZED);
     }
 
+    @Override
     public EntityManager createEntityManager(SynchronizationType synchronizationType) {
         return createEntityManagerImpl(null, synchronizationType);
     }
@@ -332,6 +349,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
      * to refresh will not affect that metadata on this EntityManagerFactory.
      * @return
      */
+    @Override
     public EntityManagerFactoryDelegate unwrap(){
         return this;
     }
@@ -342,6 +360,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
         }
     }
 
+    @Override
     protected void finalize() throws Throwable {
         if (isOpen()) {
             close();
@@ -436,6 +455,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
      * This call will throw an exception when called on EntityManagerFactoryImplDelegate
      * @param properties
      */
+    @Override
     public void refreshMetadata(Map properties){
         throw new UnsupportedOperationException();
     }
@@ -516,6 +536,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
      * @throws IllegalStateException
      *             if the entity manager factory has been closed.
      */
+    @Override
     public PersistenceUnitUtil getPersistenceUnitUtil() {
         if (!isOpen()){
             throw new IllegalStateException(ExceptionLocalization.buildMessage("getpersistenceunitutil_called_on_closed_emf"));
@@ -591,6 +612,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
      * @see javax.persistence.EntityManagerFactory#getCache()
      * @since Java Persistence 2.0
      */
+    @Override
     public Cache getCache() {
         verifyOpen();
         if (null == myCache) {
@@ -603,6 +625,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
      * @see javax.persistence.EntityManagerFactory#getProperties()
      * @since Java Persistence API 2.0
      */
+    @Override
     public Map<String, Object> getProperties() {
         if (!this.isOpen()) {
             throw new IllegalStateException(ExceptionLocalization.buildMessage("operation_on_closed_entity_manager_factory"));
@@ -619,6 +642,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
      * @see javax.persistence.EntityManagerFactory#getCriteriaBuilder()
      * @since Java Persistence 2.0
      */
+    @Override
     public CriteriaBuilder getCriteriaBuilder() {
         return new CriteriaBuilderImpl(this.getMetamodel());
     }
@@ -633,6 +657,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
      * @see javax.persistence.EntityManagerFactory#getMetamodel()
      * @since Java Persistence 2.0
      */
+    @Override
     public Metamodel getMetamodel() {
         if (!this.isOpen()) {
             throw new IllegalStateException(ExceptionLocalization.buildMessage("operation_on_closed_entity_manager_factory"));
@@ -684,6 +709,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
      * @return false if entity's state has not been loaded or if the attribute
      *         state has not been loaded, otherwise true
      */
+    @Override
     public boolean isLoaded(Object entity, String attributeName) {
         if (Boolean.TRUE.equals(EntityManagerFactoryImpl.isLoaded(entity, attributeName, session))) {
             return true;
@@ -704,6 +730,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
      *            whose load state is to be determined
      * @return false if the entity has not been loaded, else true.
      */
+    @Override
     public boolean isLoaded(Object entity) {
         if (Boolean.TRUE.equals(EntityManagerFactoryImpl.isLoaded(entity, session))) {
             return true;
@@ -721,6 +748,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
      * @throws IllegalArgumentException
      *             if the entity is found not to be an entity.
      */
+    @Override
     public Object getIdentifier(Object entity) {
         try{
             return EntityManagerFactoryImpl.getIdentifier(entity, session);
@@ -745,6 +773,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
         this.commitOrder = commitOrder;
     }
 
+    @Override
     public void addNamedQuery(String name, Query query) {
         DatabaseQuery unwrapped = (DatabaseQuery) query.unwrap(DatabaseQuery.class).clone();
         if (((QueryImpl)query).lockMode != null){
@@ -759,6 +788,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
         this.getServerSession().addQuery(name, unwrapped, true);
     }
 
+    @Override
     public <T> T unwrap(Class<T> cls) {
         if (cls.equals(JpaEntityManagerFactory.class) || cls.equals(EntityManagerFactoryImpl.class)) {
             return (T) this;
@@ -776,6 +806,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
         throw new PersistenceException(ExceptionLocalization.buildMessage("unable_to_unwrap_jpa", new String[]{EntityManagerFactory.class.getName(),cls.getName()}));
     }
 
+    @Override
     public <T> void addNamedEntityGraph(String graphName, EntityGraph<T> entityGraph) {
         AttributeGroup group = ((EntityGraphImpl)entityGraph).getAttributeGroup().clone();
         group.setName(graphName);

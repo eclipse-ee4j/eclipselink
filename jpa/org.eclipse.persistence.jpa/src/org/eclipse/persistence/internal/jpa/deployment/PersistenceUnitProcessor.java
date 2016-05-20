@@ -682,7 +682,7 @@ public class PersistenceUnitProcessor {
     /**
      * Build the unique persistence name by concatenating the decoded URL with the persistence unit name.
      * A decoded URL is required while persisting on a multi-bytes OS.
-     * @param URL
+     * @param url
      * @param puName
      * @return String
      */

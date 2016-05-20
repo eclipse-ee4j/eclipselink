@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -31,6 +31,7 @@ import javax.persistence.criteria.MapJoin;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.SetJoin;
 import javax.persistence.metamodel.Attribute;
+import javax.persistence.metamodel.Attribute.PersistentAttributeType;
 import javax.persistence.metamodel.Bindable;
 import javax.persistence.metamodel.CollectionAttribute;
 import javax.persistence.metamodel.ListAttribute;
@@ -38,9 +39,8 @@ import javax.persistence.metamodel.ManagedType;
 import javax.persistence.metamodel.MapAttribute;
 import javax.persistence.metamodel.Metamodel;
 import javax.persistence.metamodel.PluralAttribute;
-import javax.persistence.metamodel.SingularAttribute;
-import javax.persistence.metamodel.Attribute.PersistentAttributeType;
 import javax.persistence.metamodel.PluralAttribute.CollectionType;
+import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.Type.PersistenceType;
 
 import org.eclipse.persistence.internal.expressions.ObjectExpression;
@@ -88,6 +88,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
      *
      * @return fetch joins made from this type
      */
+    @Override
     public java.util.Set<Fetch<X, ?>> getFetches(){
         return this.fetches;
     }
@@ -98,6 +99,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
      *  @return boolean indicating whether the object has been
      *          obtained through correlation
      */
+    @Override
     public boolean isCorrelated(){
         return this.correlatedParent != null;
     }
@@ -110,6 +112,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
      *  @throws IllegalStateException if the From object has
      *          not been obtained through correlation
      */
+    @Override
     public From<Z, X> getCorrelationParent() {
         if (this.correlatedParent == null){
             throw new IllegalStateException(ExceptionLocalization.buildMessage("cannot_get_from_non_correlated_query"));
@@ -125,6 +128,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
      *            target of the join
      * @return the resulting fetch join
      */
+    @Override
     public <Y> Fetch<X, Y> fetch(SingularAttribute<? super X, Y> assoc){
         return this.fetch(assoc, JoinType.INNER);
     }
@@ -138,6 +142,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
      *            join type
      * @return the resulting fetch join
      */
+    @Override
     public <Y> Fetch<X, Y> fetch(SingularAttribute<? super X, Y> assoc, JoinType jt){
         if (((SingularAttribute)assoc).getType().getPersistenceType().equals(PersistenceType.BASIC)){
             throw new IllegalStateException(ExceptionLocalization.buildMessage("CAN_NOT_JOIN_TO_BASIC"));
@@ -164,6 +169,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
      *            target of the join
      * @return the resulting join
      */
+    @Override
     public <Y> Fetch<X, Y> fetch(PluralAttribute<? super X, ?, Y> assoc){
         return fetch(assoc, JoinType.INNER);
     }
@@ -177,6 +183,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
      *            join type
      * @return the resulting join
      */
+    @Override
     public <Y> Fetch<X, Y> fetch(PluralAttribute<? super X, ?, Y> assoc, JoinType jt) {
         org.eclipse.persistence.expressions.Expression node;
         Fetch fetch;
@@ -195,7 +202,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
             } else if (assoc.getCollectionType().equals(CollectionType.SET)) {
                 fetch = new BasicSetJoinImpl<X, Y>(this, this.metamodel, ((PluralAttribute) assoc).getBindableJavaType(), node, (Bindable) assoc, jt);
             } else {
-                fetch = new BasicMapJoinImpl(this, this.metamodel, ((PluralAttribute) assoc).getBindableJavaType(), node, (Bindable) assoc, jt);
+                fetch = new BasicMapJoinImpl(this, this.metamodel, ((PluralAttribute) assoc).getBindableJavaType(), node, assoc, jt);
             }
         } else {
             if (assoc.getCollectionType().equals(CollectionType.COLLECTION)) {
@@ -205,7 +212,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
             } else if (assoc.getCollectionType().equals(CollectionType.SET)) {
                 fetch = new SetJoinImpl<X, Y>(this, metamodel.managedType(((PluralAttribute) assoc).getBindableJavaType()), this.metamodel, ((PluralAttribute) assoc).getBindableJavaType(), node, (Bindable) assoc, jt);
             } else {
-                fetch = new MapJoinImpl(this, metamodel.managedType(((PluralAttribute) assoc).getBindableJavaType()), this.metamodel, ((PluralAttribute) assoc).getBindableJavaType(), node, (Bindable) assoc, jt);
+                fetch = new MapJoinImpl(this, metamodel.managedType(((PluralAttribute) assoc).getBindableJavaType()), this.metamodel, ((PluralAttribute) assoc).getBindableJavaType(), node, assoc, jt);
             }
         }
         this.fetches.add(fetch);
@@ -222,6 +229,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
      *            join
      * @return the resulting fetch join
      */
+    @Override
     public <T, Y> Fetch<T, Y> fetch(String assocName){
         return fetch(assocName, JoinType.INNER);
     }
@@ -230,13 +238,14 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
      * Fetch join to the specified attribute or association using the given join
      * type.
      *
-     * @param name
+     * @param assocName
      *            assocName of the attribute or association for the target of
      *            the join
      * @param jt
      *            join type
      * @return the resulting fetch join
      */
+    @Override
     public <T, Y> Fetch<T, Y> fetch(String assocName, JoinType jt){
         Attribute attribute = this.managedType.getAttribute(assocName);
         if (attribute.isCollection()) {
@@ -247,6 +256,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
     }
 
 
+    @Override
     public Set<Join<X, ?>> getJoins() {
         return joins;
     }
@@ -255,10 +265,11 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
      * Return the path corresponding to the referenced non-collection valued
      * attribute.
      *
-     * @param model
+     * @param att
      *            attribute
      * @return path corresponding to the referenced attribute
      */
+    @Override
     public <Y> Path<Y> get(SingularAttribute<? super X, Y> att){
         if (att.getPersistentAttributeType().equals(PersistentAttributeType.BASIC)){
             return new PathImpl<Y>(this, this.metamodel, att.getBindableJavaType(),this.currentNode.get(att.getName()), att);
@@ -274,7 +285,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
      * Return the path corresponding to the referenced collection-valued
      * attribute.
      *
-     * @param model
+     * @param collection
      *            collection-valued attribute
      * @return expression corresponding to the referenced attribute
      */
@@ -288,7 +299,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
     /**
      * Return the path corresponding to the referenced map-valued attribute.
      *
-     * @param model
+     * @param map
      *            map-valued attribute
      * @return expression corresponding to the referenced attribute
      */
@@ -345,10 +356,12 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
         return join;
     }
 
+    @Override
     public <Y> Join<X, Y> join(SingularAttribute<? super X, Y> attribute) {
         return this.join(attribute, JoinType.INNER);
     }
 
+    @Override
     public <Y> Join<X, Y> join(SingularAttribute<? super X, Y> attribute, JoinType jt) {
         if (((SingularAttribute)attribute).getType().getPersistenceType().equals(PersistenceType.BASIC)){
             throw new IllegalStateException(ExceptionLocalization.buildMessage("CAN_NOT_JOIN_TO_BASIC"));
@@ -369,22 +382,27 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
         return join;
     }
 
+    @Override
     public <Y> CollectionJoin<X, Y> join(CollectionAttribute<? super X, Y> collection) {
         return this.join(collection, JoinType.INNER);
     }
 
+    @Override
     public <Y> SetJoin<X, Y> join(javax.persistence.metamodel.SetAttribute<? super X, Y> set) {
         return this.join(set, JoinType.INNER);
     }
 
+    @Override
     public <Y> ListJoin<X, Y> join(ListAttribute<? super X, Y> list) {
         return this.join(list, JoinType.INNER);
     }
 
+    @Override
     public <K, V> MapJoin<X, K, V> join(MapAttribute<? super X, K, V> map) {
         return this.join(map, JoinType.INNER);
     }
 
+    @Override
     public <Y> CollectionJoin<X, Y> join(CollectionAttribute<? super X, Y> collection, JoinType jt) {
         org.eclipse.persistence.expressions.Expression node;
         Class clazz = collection.getBindableJavaType();
@@ -406,6 +424,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
         return join;
     }
 
+    @Override
     public <Y> SetJoin<X, Y> join(javax.persistence.metamodel.SetAttribute<? super X, Y> set, JoinType jt) {
         org.eclipse.persistence.expressions.Expression node;
         Class clazz = set.getBindableJavaType();
@@ -427,6 +446,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
         return join;
     }
 
+    @Override
     public <Y> ListJoin<X, Y> join(ListAttribute<? super X, Y> list, JoinType jt) {
         org.eclipse.persistence.expressions.Expression node;
         Class clazz = list.getBindableJavaType();
@@ -448,6 +468,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
         return join;
     }
 
+    @Override
     public <K, V> MapJoin<X, K, V> join(MapAttribute<? super X, K, V> map, JoinType jt) {
         org.eclipse.persistence.expressions.Expression node;
         Class clazz = map.getBindableJavaType();
@@ -460,19 +481,21 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
             node = this.currentNode.anyOfAllowingNone(map.getName());
         }
         if (map.getElementType().getPersistenceType().equals(PersistenceType.BASIC)) {
-            join = new BasicMapJoinImpl(this, this.metamodel, clazz, node, (Bindable) map, jt);
+            join = new BasicMapJoinImpl(this, this.metamodel, clazz, node, map, jt);
         } else {
-            join = new MapJoinImpl(this, metamodel.managedType(clazz), this.metamodel, clazz, node, (Bindable) map, jt);
+            join = new MapJoinImpl(this, metamodel.managedType(clazz), this.metamodel, clazz, node, map, jt);
         }
         this.joins.add(join);
         ((FromImpl)join).isJoin = true;
         return join;
     }
 
+    @Override
     public <T, Y> Join<T, Y> join(String attributeName) {
         return join(attributeName, JoinType.INNER);
     }
 
+    @Override
     public <T, Y> Join<T, Y> join(String attributeName, JoinType jt) {
         Attribute attribute = this.managedType.getAttribute(attributeName);
         if (attribute.isCollection()) {
@@ -514,10 +537,12 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
         }
     }
 
+    @Override
     public <T, Y> CollectionJoin<T, Y> joinCollection(String attributeName) {
         return joinCollection(attributeName, JoinType.INNER);
     }
 
+    @Override
     public <T, Y> CollectionJoin<T, Y> joinCollection(String attributeName, JoinType jt) {
         try {
             return (CollectionJoin<T, Y>) join(attributeName, jt);
@@ -526,10 +551,12 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
         }
     }
 
+    @Override
     public <T, Y> ListJoin<T, Y> joinList(String attributeName) {
         return joinList(attributeName, JoinType.INNER);
     }
 
+    @Override
     public <T, Y> ListJoin<T, Y> joinList(String attributeName, JoinType jt) {
         try {
             return (ListJoin<T, Y>) join(attributeName, jt);
@@ -538,10 +565,12 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
         }
     }
 
+    @Override
     public <T, K, Y> MapJoin<T, K, Y> joinMap(String attributeName) {
         return joinMap(attributeName, JoinType.INNER);
     }
 
+    @Override
     public <T, K, Y> MapJoin<T, K, Y> joinMap(String attributeName, JoinType jt) {
         try {
             return (MapJoin<T, K, Y>) join(attributeName, jt);
@@ -550,10 +579,12 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
         }
     }
 
+    @Override
     public <T, Y> SetJoin<T, Y> joinSet(String attributeName) {
         return joinSet(attributeName, JoinType.INNER);
     }
 
+    @Override
     public <T, Y> SetJoin<T, Y> joinSet(String attributeName, JoinType jt) {
         try {
             return (SetJoin<T, Y>) join(attributeName, jt);
@@ -588,6 +619,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
         return fetches;
     }
 
+    @Override
     public boolean isFrom(){
         return true;
     }

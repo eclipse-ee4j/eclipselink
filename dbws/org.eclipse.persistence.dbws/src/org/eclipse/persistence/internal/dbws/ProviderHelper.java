@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -55,6 +55,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+import javax.xml.ws.Provider;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.soap.SOAPFaultException;
@@ -110,7 +111,7 @@ import org.w3c.dom.NodeList;
  *          +---classes
  *          |   +---META-INF
  *          |   |    eclipselink-dbws.xml
- *          |   |    eclipselink-dbws-sessions.xml -- name can be overridden by <sessions-file> entry in eclipselink-dbws.xml
+ *          |   |    eclipselink-dbws-sessions.xml -- name can be overridden by &lt;sessions-file&gt; entry in eclipselink-dbws.xml
  *          |   |    eclipselink-dbws-or.xml
  *          |   |    eclipselink-dbws-ox.xml
  *          |   |

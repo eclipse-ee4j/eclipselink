@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -199,7 +199,7 @@ public class ConvertMetadata extends ORMetadata {
      *
      * Calling this method will also update the attribute name on the first call
      * to it. This call is made when sorting convert annotations. Unlike XML,
-     * where the user can sort through <convert> and <map-key-convert> elements,
+     * where the user can sort through &lt;convert&gt; and &lt;map-key-convert&gt; elements,
      * there is only a single Convert annotation that uses a "key" prefix on the
      * attribute name to signify a map key convert. An unforunate decision by
      * the JPA spec committee, but we can make it work of course.

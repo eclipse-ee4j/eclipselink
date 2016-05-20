@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -47,8 +47,8 @@ public class BatchQueryOperation extends QueryOperation {
      * The returned ValueOject will hold either 0 (success) or
      * 1 (failure).
      *
-     * @Override
      */
+    @Override
     public Object invoke(XRServiceAdapter xrService, Invocation invocation) {
         ValueObject v = new ValueObject();
         for (String sqlString : batchSql) {
@@ -70,8 +70,8 @@ public class BatchQueryOperation extends QueryOperation {
     /**
      * No validation can be done for a batch query operation.
      *
-     * @Override
      */
+    @Override
     public void validate(XRServiceAdapter xrService) {}
 
     /**
@@ -80,8 +80,8 @@ public class BatchQueryOperation extends QueryOperation {
      * the OX project.  This class is used to hold the
      * result of the batch SQL execution.
      *
-     * @Override
      */
+    @Override
     public void initialize(XRServiceAdapter xrService) {
         addValueObjectDescriptor(xrService);
     }

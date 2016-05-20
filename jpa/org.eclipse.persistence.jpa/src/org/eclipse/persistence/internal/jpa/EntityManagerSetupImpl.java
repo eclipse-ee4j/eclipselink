@@ -376,13 +376,13 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     protected String state = STATE_INITIAL;
 
     /**
-     *     Initial -----------> PredeployFailed ---
+     *     Initial -----------&gt; PredeployFailed ---
      *           |                                |
      *           V                                |
-     *         Predeployed ---> DeployFailed --   |
+     *         Predeployed ---&gt; DeployFailed --   |
      *           |                            |   |
      *           V                            V   V
-     *         HalfDeployed --> Deployed -> Undeployed
+     *         HalfDeployed --&gt; Deployed -&gt; Undeployed
      *           |                            ^
      *           V                            |
      *         DeployFailed -------------------
@@ -1666,7 +1666,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      * (by JavaSECMPInitializer.callPredeploy, typically in preMain).
      * That provides 1 to 1 correspondence between factoryCount and the number of open factories.
      *
-     * In case factoryCount > 0 the method just increments factoryCount.
+     * In case factoryCount &gt; 0 the method just increments factoryCount.
      * factory == 0 triggers creation of a new session.
      *
      * This method and undeploy - the only methods altering factoryCount - should be synchronized.

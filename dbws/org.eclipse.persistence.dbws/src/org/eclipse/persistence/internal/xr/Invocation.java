@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -60,7 +60,7 @@ public class Invocation {
 
     /**
      * <p><b>PUBLIC</b>: Get the runtime argument value with the given name
-     * @param   name of argument
+     * @param key  name of argument
      * @return  desired runtime argument value
      */
     public Object getParameter(String key) {
@@ -68,8 +68,8 @@ public class Invocation {
     }
     /**
      * <p><b>INTERNAL</b>: Set a runtime argument value
-     * @param name of argument
-     * @param parameter runtime argument value
+     * @param key name of argument
+     * @param value runtime argument value
      */
     public void setParameter(String key, Object value) {
         parameters.put(key, value);

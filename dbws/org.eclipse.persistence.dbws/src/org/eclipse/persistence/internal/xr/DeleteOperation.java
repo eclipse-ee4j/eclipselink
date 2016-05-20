@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,6 +12,10 @@
  ******************************************************************************/
 
 package org.eclipse.persistence.internal.xr;
+
+import static org.eclipse.persistence.internal.xr.Util.PK_QUERYNAME;
+import static org.eclipse.persistence.internal.xr.Util.TYPE_STR;
+import static org.eclipse.persistence.internal.xr.Util.UNDERSCORE_STR;
 
 //javase imports
 import java.util.List;
@@ -26,10 +30,6 @@ import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.jpa.JPAQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.sessions.UnitOfWork;
-
-import static org.eclipse.persistence.internal.xr.Util.PK_QUERYNAME;
-import static org.eclipse.persistence.internal.xr.Util.TYPE_STR;
-import static org.eclipse.persistence.internal.xr.Util.UNDERSCORE_STR;
 
 /**
  * <p><b>INTERNAL:</b>An XR DeleteOperation is an executable representation of a <tt>DELETE</tt>
@@ -97,7 +97,7 @@ public class DeleteOperation extends Operation {
      * @return  result - can be <code>null</code> if the underlying <tt>DELETE</tt> operation on the
      *          database does not return a value
      *
-     * @see  {@link Operation}
+     * @see  Operation
      */
     @SuppressWarnings("rawtypes")
     @Override

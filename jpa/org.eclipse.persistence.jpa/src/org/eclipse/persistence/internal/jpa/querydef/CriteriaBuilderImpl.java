@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -36,11 +36,11 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Predicate.BooleanOperator;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.SetJoin;
 import javax.persistence.criteria.Subquery;
-import javax.persistence.criteria.Predicate.BooleanOperator;
 import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.Metamodel;
 import javax.persistence.metamodel.Type.PersistenceType;
@@ -48,9 +48,9 @@ import javax.persistence.metamodel.Type.PersistenceType;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.expressions.ExpressionMath;
 import org.eclipse.persistence.expressions.ExpressionOperator;
+import org.eclipse.persistence.internal.expressions.ArgumentListFunctionExpression;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.expressions.FunctionExpression;
-import org.eclipse.persistence.internal.expressions.ArgumentListFunctionExpression;
 import org.eclipse.persistence.internal.expressions.SubSelectExpression;
 import org.eclipse.persistence.internal.helper.BasicTypeHelperImpl;
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -76,6 +76,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *  Create a Criteria query object.
      *  @return query object
      */
+    @Override
     public CriteriaQuery<Object> createQuery(){
         return new CriteriaQueryImpl(this.metamodel, ResultType.UNKNOWN, ClassConstants.OBJECT, this);
     }
@@ -84,6 +85,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *  Create a Criteria query object.
      *  @return query object
      */
+    @Override
     public <T> CriteriaQuery<T> createQuery(Class<T> resultClass) {
         if (resultClass == null) {
             return (CriteriaQuery<T>) this.createQuery();
@@ -118,6 +120,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *  objects as its result.
      *  @return query object
      */
+    @Override
     public CriteriaQuery<Tuple> createTupleQuery(){
         return new CriteriaQueryImpl(this.metamodel, ResultType.TUPLE, Tuple.class, this);
     }
@@ -131,11 +134,13 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            arguments to the constructor
      * @return selection item
      */
+    @Override
     public <Y> CompoundSelection<Y> construct(Class<Y> result, Selection<?>... selections){
         return new ConstructorSelectionImpl(result, selections);
     }
 
 
+    @Override
     public CompoundSelection<Tuple> tuple(Selection<?>... selections){
         return new CompoundSelectionImpl(Tuple.class, selections, true);
     }
@@ -147,6 +152,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      * @throws IllegalArgumentException if an argument is a tuple- or
      *          array-valued selection item
      */
+    @Override
     public CompoundSelection<Object[]> array(Selection<?>... selections){
         return new CompoundSelectionImpl(ClassConstants.AOBJECT, selections, true);
     }
@@ -158,6 +164,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            expression used to define the ordering
      * @return ascending ordering corresponding to the expression
      */
+    @Override
     public Order asc(Expression<?> x){
         if (((InternalSelection)x).getCurrentNode() == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
@@ -172,6 +179,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            expression used to define the ordering
      * @return descending ordering corresponding to the expression
      */
+    @Override
     public Order desc(Expression<?> x){
         if (((InternalSelection)x).getCurrentNode() == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
@@ -188,6 +196,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            expression representing input value to avg operation
      * @return avg expression
      */
+    @Override
     public <N extends Number> Expression<Double> avg(Expression<N> x){
         return new FunctionExpressionImpl<Double>(this.metamodel, ClassConstants.DOUBLE,((InternalSelection)x).getCurrentNode().average(), buildList(x),"AVG");
     }
@@ -199,6 +208,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            expression representing input value to sum operation
      * @return sum expression
      */
+    @Override
     public <N extends Number> Expression<N> sum(Expression<N> x){
         return new FunctionExpressionImpl<N>(this.metamodel, (Class<N>) x.getJavaType(), ((InternalSelection)x).getCurrentNode().sum(), buildList(x),"SUM");
     }
@@ -210,6 +220,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            expression representing input value to max operation
      * @return max expression
      */
+    @Override
     public <N extends Number> Expression<N> max(Expression<N> x){
         return new FunctionExpressionImpl<N>(this.metamodel, (Class<N>) x.getJavaType(), ((InternalSelection)x).getCurrentNode().maximum(), buildList(x),"MAX");
     }
@@ -221,6 +232,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            expression representing input value to min operation
      * @return min expression
      */
+    @Override
     public <N extends Number> Expression<N> min(Expression<N> x){
         return new FunctionExpressionImpl<N>(this.metamodel, (Class<N>) x.getJavaType(), ((InternalSelection)x).getCurrentNode().minimum(), buildList(x),"MIN");
     }
@@ -233,6 +245,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            expression representing input value to greatest operation
      * @return greatest expression
      */
+    @Override
     public <X extends Comparable<? super X>> Expression<X> greatest(Expression<X> x){
         if (((InternalSelection)x).getCurrentNode() == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
@@ -248,6 +261,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            expression representing input value to least operation
      * @return least expression
      */
+    @Override
     public <X extends Comparable<? super X>> Expression<X> least(Expression<X> x){
         if (((InternalSelection)x).getCurrentNode() == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
@@ -262,6 +276,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            expression representing input value to count operation
      * @return count expression
      */
+    @Override
     public Expression<Long> count(Expression<?> x){
         if (((InternalSelection)x).getCurrentNode() == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
@@ -277,6 +292,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            operation
      * @return count distinct expression
      */
+    @Override
     public Expression<Long> countDistinct(Expression<?> x){
         if (((InternalSelection)x).getCurrentNode() == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
@@ -292,6 +308,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            subquery whose result is to be tested
      * @return exists predicate
      */
+    @Override
     public Predicate exists(Subquery<?> subquery){
         // Setting SubQuery's SubSelectExpression as a base for the expression created by operator allows setting a new ExpressionBuilder later in the SubSelectExpression (see integrateRoot method in SubQueryImpl).
         return new CompoundExpressionImpl(metamodel, ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.Exists)).expressionFor(((SubQueryImpl)subquery).getCurrentNode()), buildList(subquery), "exists");
@@ -304,6 +321,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      * @param subquery
      * @return all expression
      */
+    @Override
     public <Y> Expression<Y> all(Subquery<Y> subquery){
         return new FunctionExpressionImpl<Y>(metamodel, (Class<Y>) subquery.getJavaType(), new ExpressionBuilder().all(((InternalSelection)subquery).getCurrentNode()), buildList(subquery), "all");
     }
@@ -315,6 +333,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      * @param subquery
      * @return all expression
      */
+    @Override
     public <Y> Expression<Y> some(Subquery<Y> subquery){
         return new FunctionExpressionImpl<Y>(metamodel, (Class<Y>) subquery.getJavaType(), new ExpressionBuilder().some(((InternalSelection)subquery).getCurrentNode()), buildList(subquery), "some");
     }
@@ -326,6 +345,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      * @param subquery
      * @return any expression
      */
+    @Override
     public <Y> Expression<Y> any(Subquery<Y> subquery){
         return new FunctionExpressionImpl<Y>(metamodel, (Class<Y>) subquery.getJavaType(), new ExpressionBuilder().any(((InternalSelection)subquery).getCurrentNode()), buildList(subquery), "any");
    }
@@ -340,6 +360,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            boolean expression
      * @return and predicate
      */
+    @Override
     public Predicate and(Expression<Boolean> x, Expression<Boolean> y){
         CompoundExpressionImpl xp = null;
         CompoundExpressionImpl yp = null;
@@ -386,6 +407,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            boolean expression
      * @return or predicate
      */
+    @Override
     public Predicate or(Expression<Boolean> x, Expression<Boolean> y){
         CompoundExpressionImpl xp = null;
         CompoundExpressionImpl yp = null;
@@ -423,10 +445,11 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      * Create a conjunction of the given restriction predicates. A conjunction
      * of zero predicates is true.
      *
-     * @param restriction
+     * @param restrictions
      *            zero or more restriction predicates
      * @return and predicate
      */
+    @Override
     public Predicate and(Predicate... restrictions){
         int max = restrictions.length;
         if (max == 0){
@@ -443,10 +466,11 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      * Create a disjunction of the given restriction predicates. A disjunction
      * of zero predicates is false.
      *
-     * @param restriction
+     * @param restrictions
      *            zero or more restriction predicates
      * @return and predicate
      */
+    @Override
     public Predicate or(Predicate... restrictions){
         int max = restrictions.length;
         if (max == 0){
@@ -466,6 +490,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            restriction expression
      * @return not predicate
      */
+    @Override
     public Predicate not(Expression<Boolean> restriction){
         if (((InternalExpression)restriction).isPredicate()){
             return ((Predicate)restriction).not();
@@ -494,6 +519,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *
      * @return and predicate
      */
+    @Override
     public Predicate conjunction(){
         return new PredicateImpl(this.metamodel, null, null, BooleanOperator.AND);
     }
@@ -504,6 +530,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *
      * @return or predicate
      */
+    @Override
     public Predicate disjunction(){
         return new PredicateImpl(this.metamodel, null, null, BooleanOperator.OR);
     }
@@ -517,6 +544,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            expression to be tested if true
      * @return predicate
      */
+    @Override
     public Predicate isTrue(Expression<Boolean> x){
         if (((InternalExpression)x).isPredicate()){
             if (((InternalSelection)x).getCurrentNode() == null){
@@ -537,6 +565,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            expression to be tested if false
      * @return predicate
      */
+    @Override
     public Predicate isFalse(Expression<Boolean> x){
         if (((InternalExpression)x).isPredicate()){
             if (((InternalSelection)x).getCurrentNode() == null){
@@ -558,6 +587,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      * @param x expression
      * @return predicate
      */
+    @Override
     public Predicate isNull(Expression<?> x){
         return new PredicateImpl(this.metamodel, ((InternalSelection)x).getCurrentNode().isNull(), new ArrayList(), BooleanOperator.AND);
     }
@@ -567,6 +597,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      * @param x expression
      * @return predicate
      */
+    @Override
     public Predicate isNotNull(Expression<?> x){
         return new PredicateImpl(this.metamodel, ((InternalSelection)x).getCurrentNode().notNull(),new ArrayList(), BooleanOperator.AND);
     }
@@ -581,6 +612,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            expression
      * @return equality predicate
      */
+    @Override
     public Predicate equal(Expression<?> x, Expression<?> y){
 
         List list = new ArrayList();
@@ -598,6 +630,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            expression
      * @return inequality predicate
      */
+    @Override
     public Predicate notEqual(Expression<?> x, Expression<?> y){
         if (((InternalSelection)x).getCurrentNode() == null || ((InternalSelection)y).getCurrentNode() == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
@@ -617,6 +650,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            object
      * @return equality predicate
      */
+    @Override
     public Predicate equal(Expression<?> x, Object y){
         //parameter is not an expression.
         if (((InternalSelection)x).getCurrentNode() == null){
@@ -639,6 +673,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            object
      * @return inequality predicate
      */
+    @Override
     public Predicate notEqual(Expression<?> x, Object y){
         if (((InternalSelection)x).getCurrentNode() == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
@@ -661,6 +696,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            expression
      * @return greater-than predicate
      */
+    @Override
     public <Y extends Comparable<? super Y>> Predicate greaterThan(Expression<? extends Y> x, Expression<? extends Y> y){
         if (((InternalSelection)x).getCurrentNode() == null || ((InternalSelection)y).getCurrentNode() == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
@@ -681,6 +717,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            expression
      * @return less-than predicate
      */
+    @Override
     public <Y extends Comparable<? super Y>> Predicate lessThan(Expression<? extends Y> x, Expression<? extends Y> y){
         if (((InternalSelection)x).getCurrentNode() == null || ((InternalSelection)y).getCurrentNode() == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
@@ -698,6 +735,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            expression
      * @return greater-than-or-equal predicate
      */
+    @Override
     public <Y extends Comparable<? super Y>> Predicate greaterThanOrEqualTo(Expression<? extends Y> x, Expression<? extends Y> y){
         if (((ExpressionImpl)x).getCurrentNode() == null || ((ExpressionImpl)y).getCurrentNode() == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
@@ -718,6 +756,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            expression
      * @return less-than-or-equal predicate
      */
+    @Override
     public <Y extends Comparable<? super Y>> Predicate lessThanOrEqualTo(Expression<? extends Y> x, Expression<? extends Y> y){
         if (((ExpressionImpl)x).getCurrentNode() == null || ((ExpressionImpl)y).getCurrentNode() == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
@@ -740,6 +779,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            expression
      * @return between predicate
      */
+    @Override
     public <Y extends Comparable<? super Y>> Predicate between(Expression<? extends Y> v, Expression<? extends Y> x, Expression<? extends Y> y){
 
         List list = new ArrayList();
@@ -759,6 +799,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            value
      * @return greater-than predicate
      */
+    @Override
     public <Y extends Comparable<? super Y>> Predicate greaterThan(Expression<? extends Y> x, Y y){
         Expression<Y> expressionY = this.internalLiteral(y);
         if (((ExpressionImpl)x).getCurrentNode() == null ){
@@ -780,6 +821,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            value
      * @return less-than predicate
      */
+    @Override
     public <Y extends Comparable<? super Y>> Predicate lessThan(Expression<? extends Y> x, Y y){
         Expression<Y> expressionY = this.internalLiteral(y);
         if (((ExpressionImpl)x).getCurrentNode() == null ){
@@ -801,6 +843,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            value
      * @return greater-than-or-equal predicate
      */
+    @Override
     public <Y extends Comparable<? super Y>> Predicate greaterThanOrEqualTo(Expression<? extends Y> x, Y y){
         Expression<Y> expressionY = this.internalLiteral(y);
         if (((ExpressionImpl)x).getCurrentNode() == null ){
@@ -822,6 +865,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            value
      * @return less-than-or-equal predicate
      */
+    @Override
     public <Y extends Comparable<? super Y>> Predicate lessThanOrEqualTo(Expression<? extends Y> x, Y y){
         Expression<Y> expressionY = this.internalLiteral(y);
         if (((ExpressionImpl)x).getCurrentNode() == null ){
@@ -845,6 +889,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            value
      * @return between predicate
      */
+    @Override
     public <Y extends Comparable<? super Y>> Predicate between(Expression<? extends Y> v, Y x, Y y){
         List list = new ArrayList();
         list.add(v);
@@ -872,6 +917,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            expression
      * @return greater-than predicate
      */
+    @Override
     public Predicate gt(Expression<? extends Number> x, Expression<? extends Number> y){
         List list = new ArrayList();
         list.add(x);
@@ -889,6 +935,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            expression
      * @return less-than predicate
      */
+    @Override
     public Predicate lt(Expression<? extends Number> x, Expression<? extends Number> y){
         return new CompoundExpressionImpl(this.metamodel, ((InternalSelection)x).getCurrentNode().lessThan(((InternalSelection)y).getCurrentNode()), buildList(x,y), "lessThan");
     }
@@ -903,6 +950,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            expression
      * @return greater-than-or-equal predicate
      */
+    @Override
     public Predicate ge(Expression<? extends Number> x, Expression<? extends Number> y){
         List list = new ArrayList();
         list.add(x);
@@ -920,6 +968,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            expression
      * @return less-than-or-equal predicate
      */
+    @Override
     public Predicate le(Expression<? extends Number> x, Expression<? extends Number> y){
         List list = new ArrayList();
         list.add(x);
@@ -937,6 +986,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            value
      * @return greater-than predicate
      */
+    @Override
     public Predicate gt(Expression<? extends Number> x, Number y){
         List list = new ArrayList();
         list.add(x);
@@ -954,6 +1004,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            value
      * @return less-than predicate
      */
+    @Override
     public Predicate lt(Expression<? extends Number> x, Number y){
         return new CompoundExpressionImpl(this.metamodel, ((InternalSelection)x).getCurrentNode().lessThan(y), buildList(x,internalLiteral(y)), "lt");
     }
@@ -968,6 +1019,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            value
      * @return greater-than-or-equal predicate
      */
+    @Override
     public Predicate ge(Expression<? extends Number> x, Number y){
         List list = new ArrayList();
         list.add(x);
@@ -985,6 +1037,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            value
      * @return less-than-or-equal predicate
      */
+    @Override
     public Predicate le(Expression<? extends Number> x, Number y){
         return new CompoundExpressionImpl(this.metamodel, ((InternalSelection)x).getCurrentNode().lessThanEqual(y), buildList(x, internalLiteral(y)), "le");
     }
@@ -998,6 +1051,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            expression
      * @return negated expression
      */
+    @Override
     public <N extends Number> Expression<N> neg(Expression<N> x){
         return new FunctionExpressionImpl(this.metamodel, ClassConstants.INTEGER, ExpressionMath.negate(((InternalSelection)x).getCurrentNode()), buildList(x), "neg");
     }
@@ -1009,6 +1063,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            expression
      * @return absolute value
      */
+    @Override
     public <N extends Number> Expression<N> abs(Expression<N> x){
         return new FunctionExpressionImpl<N>(metamodel, (Class<N>) x.getJavaType(), ExpressionMath.abs(((InternalSelection)x).getCurrentNode()), buildList(x),"ABS");
     }
@@ -1022,6 +1077,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            expression
      * @return sum
      */
+    @Override
     public <N extends Number> Expression<N> sum(Expression<? extends N> x, Expression<? extends N> y){
         return new FunctionExpressionImpl(this.metamodel, (Class<N>)BasicTypeHelperImpl.getInstance().extendedBinaryNumericPromotion(x.getJavaType(), y.getJavaType()), ExpressionMath.add(((InternalSelection)x).getCurrentNode(),((InternalSelection)y).getCurrentNode()), buildList(x,y), "sum");
     }
@@ -1031,6 +1087,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      * @param x  expression representing input value to sum operation
      * @return sum expression
      */
+    @Override
     public Expression<Long> sumAsLong(Expression<Integer> x) {
         return new FunctionExpressionImpl(this.metamodel, ClassConstants.LONG, ((InternalSelection)x).getCurrentNode().sum(), buildList(x),"SUM");
     }
@@ -1041,6 +1098,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      * @param x  expression representing input value to sum operation
      * @return sum expression
      */
+    @Override
     public Expression<Double> sumAsDouble(Expression<Float> x){
         return new FunctionExpressionImpl(this.metamodel, ClassConstants.DOUBLE, ((InternalSelection)x).getCurrentNode().sum(), buildList(x),"SUM");
     }
@@ -1053,6 +1111,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            expression
      * @return product
      */
+    @Override
     public <N extends Number> Expression<N> prod(Expression<? extends N> x, Expression<? extends N> y){
         return new FunctionExpressionImpl(this.metamodel, (Class<N>)BasicTypeHelperImpl.getInstance().extendedBinaryNumericPromotion(x.getJavaType(), y.getJavaType()), ExpressionMath.multiply(((InternalSelection)x).getCurrentNode(),((InternalSelection)y).getCurrentNode()), buildList(x,y), "prod");
     }
@@ -1066,6 +1125,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            expression
      * @return difference
      */
+    @Override
     public <N extends Number> Expression<N> diff(Expression<? extends N> x, Expression<? extends N> y){
         List list = new ArrayList();
         list.add(x);
@@ -1082,6 +1142,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            value
      * @return sum
      */
+    @Override
     public <N extends Number> Expression<N> sum(Expression<? extends N> x, N y){
         return new FunctionExpressionImpl(this.metamodel, (Class<N>)BasicTypeHelperImpl.getInstance().extendedBinaryNumericPromotion(x.getJavaType(), y.getClass()), ExpressionMath.add(((InternalSelection)x).getCurrentNode(),y), buildList(x,internalLiteral(y)), "sum");
     }
@@ -1095,6 +1156,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            value
      * @return product
      */
+    @Override
     public <N extends Number> Expression<N> prod(Expression<? extends N> x, N y){
         return new FunctionExpressionImpl(this.metamodel, (Class<N>)BasicTypeHelperImpl.getInstance().extendedBinaryNumericPromotion(x.getJavaType(), y.getClass()), ExpressionMath.multiply(((InternalSelection)x).getCurrentNode(),y), buildList(x,internalLiteral(y)), "prod");
     }
@@ -1108,6 +1170,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            value
      * @return difference
      */
+    @Override
     public <N extends Number> Expression<N> diff(Expression<? extends N> x, N y){
         List list = new ArrayList();
         list.add(x);
@@ -1124,6 +1187,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            expression
      * @return sum
      */
+    @Override
     public <N extends Number> Expression<N> sum(N x, Expression<? extends N> y){
         return new FunctionExpressionImpl(this.metamodel, (Class<N>)BasicTypeHelperImpl.getInstance().extendedBinaryNumericPromotion(x.getClass(), y.getJavaType()), ExpressionMath.add(new ConstantExpression(x, ((InternalSelection)y).getCurrentNode()),((InternalSelection)y).getCurrentNode()), buildList(internalLiteral(x),y), "sum");
     }
@@ -1137,6 +1201,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            expression
      * @return product
      */
+    @Override
     public <N extends Number> Expression<N> prod(N x, Expression<? extends N> y){
         return new FunctionExpressionImpl(this.metamodel, (Class<N>)BasicTypeHelperImpl.getInstance().extendedBinaryNumericPromotion(x.getClass(), y.getJavaType()), ExpressionMath.multiply(new ConstantExpression(x, ((InternalSelection)y).getCurrentNode()),((InternalSelection)y).getCurrentNode()), buildList(internalLiteral(x),y), "prod");
     }
@@ -1150,6 +1215,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            expression
      * @return difference
      */
+    @Override
     public <N extends Number> Expression<N> diff(N x, Expression<? extends N> y){
         List list = new ArrayList();
         ExpressionImpl literal = (ExpressionImpl) this.internalLiteral(x);
@@ -1167,6 +1233,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            expression
      * @return quotient
      */
+    @Override
     public Expression<Number> quot(Expression<? extends Number> x, Expression<? extends Number> y){
         return new FunctionExpressionImpl(this.metamodel, (Class)BasicTypeHelperImpl.getInstance().extendedBinaryNumericPromotion(x.getJavaType(), y.getClass()), ExpressionMath.divide(((InternalSelection)x).getCurrentNode(),((InternalSelection)y).getCurrentNode()), buildList(x,y), "quot");
     }
@@ -1180,6 +1247,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            value
      * @return quotient
      */
+    @Override
     public Expression<Number> quot(Expression<? extends Number> x, Number y){
         return new FunctionExpressionImpl(this.metamodel, (Class)BasicTypeHelperImpl.getInstance().extendedBinaryNumericPromotion(x.getJavaType(), y.getClass()), ExpressionMath.divide(((InternalSelection)x).getCurrentNode(),y), buildList(x,internalLiteral(y)), "quot");
     }
@@ -1193,6 +1261,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            expression
      * @return quotient
      */
+    @Override
     public Expression<Number> quot(Number x, Expression<? extends Number> y){
         return new FunctionExpressionImpl(this.metamodel, ClassConstants.NUMBER, ExpressionMath.divide(new ConstantExpression(x, ((InternalSelection)y).getCurrentNode()),((InternalSelection)y).getCurrentNode()), buildList(internalLiteral(x),y), "quot");
     }
@@ -1206,6 +1275,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            expression
      * @return modulus
      */
+    @Override
     public Expression<Integer> mod(Expression<Integer> x, Expression<Integer> y){
         return new FunctionExpressionImpl(this.metamodel, ClassConstants.INTEGER, ExpressionMath.mod(((InternalSelection)x).getCurrentNode(),((InternalSelection)y).getCurrentNode()), buildList(x,y), "mod");
     }
@@ -1219,6 +1289,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            value
      * @return modulus
      */
+    @Override
     public Expression<Integer> mod(Expression<Integer> x, Integer y){
         return new FunctionExpressionImpl(this.metamodel, ClassConstants.INTEGER, ExpressionMath.mod(((InternalSelection)x).getCurrentNode(),y), buildList(x,internalLiteral(y)), "mod");
     }
@@ -1232,6 +1303,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            expression
      * @return modulus
      */
+    @Override
     public Expression<Integer> mod(Integer x, Expression<Integer> y){
         Expression xExp = internalLiteral(x);
         return new FunctionExpressionImpl(this.metamodel, ClassConstants.INTEGER, ExpressionMath.mod(((InternalSelection)xExp).getCurrentNode(),((InternalSelection)y).getCurrentNode()), buildList(xExp,y), "mod");
@@ -1244,6 +1316,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            expression
      * @return modulus
      */
+    @Override
     public Expression<Double> sqrt(Expression<? extends Number> x){
         return new FunctionExpressionImpl(this.metamodel, ClassConstants.DOUBLE, ExpressionMath.sqrt(((InternalSelection)x).getCurrentNode()), buildList(x), "sqrt");
     }
@@ -1254,8 +1327,9 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *
      * @param number
      *            numeric expression
-     * @return Expression<Long>
+     * @return Expression&lt;Long&gt;
      */
+    @Override
     public Expression<Long> toLong(Expression<? extends Number> number){
         return (Expression<Long>) number;
     }
@@ -1265,8 +1339,9 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *
      * @param number
      *            numeric expression
-     * @return Expression<Integer>
+     * @return Expression&lt;Integer&gt;
      */
+    @Override
     public Expression<Integer> toInteger(Expression<? extends Number> number){
         return (Expression<Integer>) number;
     }
@@ -1276,8 +1351,9 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *
      * @param number
      *            numeric expression
-     * @return Expression<Float>
+     * @return Expression&lt;Float&gt;
      */
+    @Override
     public Expression<Float> toFloat(Expression<? extends Number> number){
         return (Expression<Float>) number;
     }
@@ -1287,8 +1363,9 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *
      * @param number
      *            numeric expression
-     * @return Expression<Double>
+     * @return Expression&lt;Double&gt;
      */
+    @Override
     public Expression<Double> toDouble(Expression<? extends Number> number){
         return (Expression<Double>) number;
     }
@@ -1298,8 +1375,9 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *
      * @param number
      *            numeric expression
-     * @return Expression<BigDecimal>
+     * @return Expression&lt;BigDecimal&gt;
      */
+    @Override
     public Expression<BigDecimal> toBigDecimal(Expression<? extends Number> number){
         return (Expression<BigDecimal>) number;
     }
@@ -1309,8 +1387,9 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *
      * @param number
      *            numeric expression
-     * @return Expression<BigInteger>
+     * @return Expression&lt;BigInteger&gt;
      */
+    @Override
     public Expression<BigInteger> toBigInteger(Expression<? extends Number> number){
         return (Expression<BigInteger>) number;
     }
@@ -1320,8 +1399,9 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *
      * @param character
      *            expression
-     * @return Expression<String>
+     * @return Expression&lt;String&gt;
      */
+    @Override
     public Expression<String> toString(Expression<Character> character){
         ExpressionImpl impl = (ExpressionImpl) character;
         return impl;
@@ -1334,6 +1414,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      * @param value
      * @return expression literal
      */
+    @Override
     public <T> Expression<T> literal(T value){
         if (value == null) {
             throw new IllegalArgumentException( ExceptionLocalization.buildMessage("jpa_criteriaapi_null_literal_value", new Object[]{}));
@@ -1347,6 +1428,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      * @param resultClass  type of the null literal
      * @return null expression literal
      */
+    @Override
     public <T> Expression<T> nullLiteral(Class<T> resultClass){
         return new ExpressionImpl<T>(metamodel, resultClass, new ConstantExpression(null, new ExpressionBuilder()), null);
     }
@@ -1369,6 +1451,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      * @param paramClass parameter class
      * @return parameter expression
      */
+    @Override
     public <T> ParameterExpression<T> parameter(Class<T> paramClass){
         return new ParameterExpressionImpl<T>(metamodel, paramClass);
     }
@@ -1381,6 +1464,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      * @param name
      * @return parameter
      */
+    @Override
     public <T> ParameterExpression<T> parameter(Class<T> paramClass, String name){
         return new ParameterExpressionImpl<T>(metamodel, paramClass, name);
     }
@@ -1393,6 +1477,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            expression
      * @return predicate
      */
+    @Override
     public <C extends Collection<?>> Predicate isEmpty(Expression<C> collection){
         if (((InternalExpression)collection).isLiteral()){
             if (((Collection)((ConstantExpression)((InternalSelection)collection).getCurrentNode()).getValue()).isEmpty()){
@@ -1411,6 +1496,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            expression
      * @return predicate
      */
+    @Override
     public <C extends Collection<?>> Predicate isNotEmpty(Expression<C> collection){
         return new CompoundExpressionImpl(metamodel, ((InternalSelection)collection).getCurrentNode().size(ClassConstants.INTEGER).equal(0).not(), buildList(collection), "isNotEmpty");
     }
@@ -1421,6 +1507,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      * @param collection
      * @return size expression
      */
+    @Override
     public <C extends Collection<?>> Expression<Integer> size(C collection){
         return internalLiteral(collection.size());
     }
@@ -1432,6 +1519,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            expression
      * @return size expression
      */
+    @Override
     public <C extends java.util.Collection<?>> Expression<Integer> size(Expression<C> collection){
         return new FunctionExpressionImpl(metamodel, ClassConstants.INTEGER, ((InternalSelection)collection).getCurrentNode().size(ClassConstants.INTEGER), buildList(collection), SIZE);
     }
@@ -1447,6 +1535,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      * @return predicate
      */
 
+    @Override
     public <E, C extends Collection<E>> Predicate isMember(E elem, Expression<C> collection){
         return new CompoundExpressionImpl(metamodel, ((InternalSelection)collection).getCurrentNode().equal(elem), buildList(collection, internalLiteral(elem)), "isMember");
     }
@@ -1461,6 +1550,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            expression
      * @return predicate
      */
+    @Override
     public <E, C extends Collection<E>> Predicate isNotMember(E elem, Expression<C> collection){
         return new CompoundExpressionImpl(metamodel, ((InternalSelection)collection).getCurrentNode().notEqual(elem), buildList(collection, internalLiteral(elem)), "isMember");
 
@@ -1476,6 +1566,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            expression
      * @return predicate
      */
+    @Override
     public <E, C extends Collection<E>> Predicate isMember(Expression<E> elem, Expression<C> collection){
         return new CompoundExpressionImpl(metamodel, ((InternalSelection)collection).getCurrentNode().equal(((InternalSelection)elem).getCurrentNode()), buildList(collection, elem), "isMember");
     }
@@ -1490,6 +1581,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            expression
      * @return predicate
      */
+    @Override
     public <E, C extends Collection<E>> Predicate isNotMember(Expression<E> elem, Expression<C> collection){
         ReportQuery subQuery = new ReportQuery();
         subQuery.setReferenceClass(((ExpressionImpl)elem).getJavaType());
@@ -1512,6 +1604,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      * @param map
      * @return collection expression
      */
+    @Override
     public <V, M extends Map<?, V>> Expression<Collection<V>> values(M map){
         return internalLiteral(map.values());
     }
@@ -1522,6 +1615,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      * @param map
      * @return set expression
      */
+    @Override
     public <K, M extends Map<K, ?>> Expression<Set<K>> keys(M map){
         return internalLiteral(map.keySet());
     }
@@ -1537,6 +1631,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            string expression
      * @return like predicate
      */
+    @Override
     public Predicate like(Expression<String> x, Expression<String> pattern){
         List list = this.buildList(x, pattern);
         return new CompoundExpressionImpl(this.metamodel,
@@ -1555,6 +1650,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            escape character expression
      * @return like predicate
      */
+    @Override
     public Predicate like(Expression<String> x, Expression<String> pattern, Expression<Character> escapeChar){
         List list = this.buildList(x, pattern, escapeChar);
         return new CompoundExpressionImpl(this.metamodel,
@@ -1573,6 +1669,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            escape character
      * @return like predicate
      */
+    @Override
     public Predicate like(Expression<String> x, Expression<String> pattern, char escapeChar){
 
         return this.like(x, pattern, this.internalLiteral(escapeChar));
@@ -1588,6 +1685,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            string
      * @return like predicate
      */
+    @Override
     public Predicate like(Expression<String> x, String pattern){
         List list = this.buildList(x, this.internalLiteral(pattern));
         return new CompoundExpressionImpl(this.metamodel, ((InternalSelection)x).getCurrentNode().like(pattern), list, "like");
@@ -1605,6 +1703,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            escape character expression
      * @return like predicate
      */
+    @Override
     public Predicate like(Expression<String> x, String pattern, Expression<Character> escapeChar){
         return this.like(x, this.internalLiteral(pattern), escapeChar);
     }
@@ -1621,6 +1720,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            escape character
      * @return like predicate
      */
+    @Override
     public Predicate like(Expression<String> x, String pattern, char escapeChar){
         List list = this.buildList(x, this.internalLiteral(pattern), this.internalLiteral(escapeChar));
         String escapeString = String.valueOf(escapeChar);
@@ -1639,6 +1739,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            string expression
      * @return like predicate
      */
+    @Override
     public Predicate notLike(Expression<String> x, Expression<String> pattern){
         List list = this.buildList(x, pattern);
 
@@ -1658,6 +1759,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            escape character expression
      * @return like predicate
      */
+    @Override
     public Predicate notLike(Expression<String> x, Expression<String> pattern, Expression<Character> escapeChar){
         List list = this.buildList(x, pattern, escapeChar);
 
@@ -1678,6 +1780,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            escape character
      * @return like predicate
      */
+    @Override
     public Predicate notLike(Expression<String> x, Expression<String> pattern, char escapeChar){
         return this.notLike(x, pattern, this.internalLiteral(escapeChar));
     }
@@ -1692,6 +1795,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            string
      * @return like predicate
      */
+    @Override
     public Predicate notLike(Expression<String> x, String pattern){
         List list = new ArrayList();
         list.add(x);
@@ -1713,6 +1817,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            escape character expression
      * @return like predicate
      */
+    @Override
     public Predicate notLike(Expression<String> x, String pattern, Expression<Character> escapeChar){
         return this.notLike(x, this.internalLiteral(pattern), escapeChar);
     }
@@ -1729,6 +1834,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            escape character
      * @return like predicate
      */
+    @Override
     public Predicate notLike(Expression<String> x, String pattern, char escapeChar){
         return this.notLike(x, this.internalLiteral(pattern), this.internalLiteral(escapeChar));
     }
@@ -1742,6 +1848,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            string expression
      * @return expression corresponding to concatenation
      */
+    @Override
     public Expression<String> concat(Expression<String> x, Expression<String> y){
         List list = new ArrayList();
         list.add(x);
@@ -1765,6 +1872,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            string
      * @return expression corresponding to concatenation
      */
+    @Override
     public Expression<String> concat(Expression<String> x, String y){
         List list = new ArrayList();
         list.add(x);
@@ -1782,6 +1890,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            string expression
      * @return expression corresponding to concatenation
      */
+    @Override
     public Expression<String> concat(String x, Expression<String> y){
         List list = new ArrayList();
         ExpressionImpl literal = (ExpressionImpl) this.internalLiteral(x);
@@ -1800,6 +1909,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            start position expression
      * @return expression corresponding to substring extraction
      */
+    @Override
     public Expression<String> substring(Expression<String> x, Expression<Integer> from) {
         return new FunctionExpressionImpl<String>(metamodel, ClassConstants.STRING, ((InternalSelection) x).getCurrentNode().substring(((InternalSelection) from).getCurrentNode()), buildList(x, from), "subString");
     }
@@ -1814,6 +1924,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            start position
      * @return expression corresponding to substring extraction
      */
+    @Override
     public Expression<String> substring(Expression<String> x, int from){
         return substring(x, this.internalLiteral(from));
 
@@ -1831,6 +1942,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            length expression
      * @return expression corresponding to substring extraction
      */
+    @Override
     public Expression<String> substring(Expression<String> x, Expression<Integer> from, Expression<Integer> len){
         return new FunctionExpressionImpl<String>(metamodel, ClassConstants.STRING, ((InternalSelection) x).getCurrentNode().substring(((InternalSelection) from).getCurrentNode(), ((InternalSelection) len).getCurrentNode()), buildList(x, from, len), "subString");
     }
@@ -1847,6 +1959,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            length
      * @return expression corresponding to substring extraction
      */
+    @Override
     public Expression<String> substring(Expression<String> x, int from, int len){
         return new FunctionExpressionImpl<String>(metamodel, ClassConstants.STRING, ((InternalSelection) x).getCurrentNode().substring(from, len), buildList(x, internalLiteral(from), internalLiteral(len)), "subString");
     }
@@ -1858,6 +1971,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            expression for string to trim
      * @return trim expression
      */
+    @Override
     public Expression<String> trim(Expression<String> x){
         List list = this.buildList(x);
         return new FunctionExpressionImpl(this.metamodel, ClassConstants.STRING, ((InternalSelection)x).getCurrentNode().trim(), list, "trim");
@@ -1872,6 +1986,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            expression for string to trim
      * @return trim expression
      */
+    @Override
     public Expression<String> trim(Trimspec ts, Expression<String> x){
         List list = this.buildList(x);
 
@@ -1893,6 +2008,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            expression for string to trim
      * @return trim expression
      */
+    @Override
     public Expression<String> trim(Expression<Character> t, Expression<String> x){
         List list = this.buildList(x, t);
         return new FunctionExpressionImpl(this.metamodel, ClassConstants.STRING, ((InternalSelection)x).getCurrentNode().trim(((InternalSelection)t).getCurrentNode()), list, "trim");
@@ -1909,6 +2025,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            expression for string to trim
      * @return trim expression
      */
+    @Override
     public Expression<String> trim(Trimspec ts, Expression<Character> t, Expression<String> x){
         List list = this.buildList(x, t);
 
@@ -1932,6 +2049,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            expression for string to trim
      * @return trim expression
      */
+    @Override
     public Expression<String> trim(char t, Expression<String> x){
         return trim(this.internalLiteral(t), x);
     }
@@ -1947,6 +2065,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            expression for string to trim
      * @return trim expression
      */
+    @Override
     public Expression<String> trim(Trimspec ts, char t, Expression<String> x){
         return trim(ts, this.internalLiteral(t), x);
     }
@@ -1958,6 +2077,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            string expression
      * @return expression to convert to lowercase
      */
+    @Override
     public Expression<String> lower(Expression<String> x){
         List list = this.buildList(x);
         return new FunctionExpressionImpl(this.metamodel, ClassConstants.STRING, ((InternalSelection)x).getCurrentNode().toLowerCase(), list, "lower");
@@ -1970,6 +2090,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            string expression
      * @return expression to convert to uppercase
      */
+    @Override
     public Expression<String> upper(Expression<String> x){
         List list = this.buildList(x);
         return new FunctionExpressionImpl(this.metamodel, ClassConstants.STRING, ((InternalSelection)x).getCurrentNode().toUpperCase(), list, "upper");
@@ -1982,6 +2103,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            string expression
      * @return length expression
      */
+    @Override
     public Expression<Integer> length(Expression<String> x){
         return new FunctionExpressionImpl(metamodel, ClassConstants.INTEGER, ((InternalSelection)x).getCurrentNode().length(), buildList(x), "length");
     }
@@ -1998,6 +2120,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            expression for string to be located
      * @return expression corresponding to position
      */
+    @Override
     public Expression<Integer> locate(Expression<String> x, Expression<String> pattern){
         return new FunctionExpressionImpl<Integer>(metamodel, ClassConstants.INTEGER, ((InternalSelection)x).getCurrentNode().locate(((InternalSelection)pattern).getCurrentNode()), buildList(x, pattern),"locate");
     }
@@ -2016,6 +2139,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            expression for position at which to start search
      * @return expression corresponding to position
      */
+    @Override
     public Expression<Integer> locate(Expression<String> x, Expression<String> pattern, Expression<Integer> from){
         return new FunctionExpressionImpl<Integer>(metamodel, ClassConstants.INTEGER, ((InternalSelection)x).getCurrentNode().locate(((InternalSelection)pattern).getCurrentNode(), ((InternalSelection)from).getCurrentNode()), buildList(x, pattern, from),"locate");
     }
@@ -2032,6 +2156,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            string to be located
      * @return expression corresponding to position
      */
+    @Override
     public Expression<Integer> locate(Expression<String> x, String pattern){
         return new FunctionExpressionImpl<Integer>(metamodel, ClassConstants.INTEGER, ((InternalSelection)x).getCurrentNode().locate(pattern), buildList(x, internalLiteral(pattern)),"locate");
     }
@@ -2050,6 +2175,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            position at which to start search
      * @return expression corresponding to position
      */
+    @Override
     public Expression<Integer> locate(Expression<String> x, String pattern, int from){
         return new FunctionExpressionImpl<Integer>(metamodel, ClassConstants.INTEGER, ((InternalSelection)x).getCurrentNode().locate(pattern, from), buildList(x, internalLiteral(pattern), internalLiteral(from)),"locate");
     }
@@ -2060,6 +2186,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *
      * @return expression for current date
      */
+    @Override
     public Expression<java.sql.Date> currentDate(){
         return new ExpressionImpl(metamodel, ClassConstants.SQLDATE, new ExpressionBuilder().currentDateDate());
     }
@@ -2069,6 +2196,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *
      * @return expression for current timestamp
      */
+    @Override
     public Expression<java.sql.Timestamp> currentTimestamp(){
         return new ExpressionImpl(metamodel, ClassConstants.TIMESTAMP, new ExpressionBuilder().currentTimeStamp());
     }
@@ -2078,6 +2206,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *
      * @return expression for current time
      */
+    @Override
     public Expression<java.sql.Time> currentTime(){
         return new ExpressionImpl(metamodel, ClassConstants.TIME, new ExpressionBuilder().currentTime());
     }
@@ -2090,6 +2219,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            to be tested against list of values
      * @return in predicate
      */
+    @Override
     public <T> In<T> in(Expression<? extends T> expression){
         List list = new ArrayList();
         list.add(expression);
@@ -2107,6 +2237,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            expression
      * @return expression corresponding to the given coalesce expression
      */
+    @Override
     public <Y> Expression<Y> coalesce(Expression<? extends Y> x, Expression<? extends Y> y){
         ArgumentListFunctionExpression coalesce = ((InternalSelection)x).getCurrentNode().coalesce();
         coalesce.addChild(((InternalSelection)x).getCurrentNode());
@@ -2124,6 +2255,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            value
      * @return coalesce expression
      */
+    @Override
     public <Y> Expression<Y> coalesce(Expression<? extends Y> x, Y y){
         ArgumentListFunctionExpression coalesce = ((InternalSelection)x).getCurrentNode().coalesce();
         coalesce.addChild(((InternalSelection)x).getCurrentNode());
@@ -2141,6 +2273,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            expression
      * @return expression corresponding to the given nullif expression
      */
+    @Override
     public <Y> Expression<Y> nullif(Expression<Y> x, Expression<?> y){
         return new FunctionExpressionImpl(metamodel, x.getJavaType(), ((InternalSelection)x).getCurrentNode().nullIf(((InternalSelection)y).getCurrentNode()), buildList(x, y), "nullIf");
     }
@@ -2155,6 +2288,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            value
      * @return expression corresponding to the given nullif expression
      */
+    @Override
     public <Y> Expression<Y> nullif(Expression<Y> x, Y y){
         return new FunctionExpressionImpl(metamodel, x.getJavaType(), ((InternalSelection)x).getCurrentNode().nullIf(y), buildList(x, internalLiteral(y)), "nullIf");
     }
@@ -2164,6 +2298,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *
      * @return coalesce expression
      */
+    @Override
     public <T> Coalesce<T> coalesce(){
         ArgumentListFunctionExpression coalesce = new ExpressionBuilder().coalesce();
         return new CoalesceImpl(metamodel, Object.class, coalesce, new ArrayList());
@@ -2176,6 +2311,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            to be tested against the case conditions
      * @return simple case expression
      */
+    @Override
     public <C, R> SimpleCase<C, R> selectCase(Expression<? extends C> expression){
         ArgumentListFunctionExpression caseStatement = new ExpressionBuilder().caseStatement();
         return new SimpleCaseImpl(metamodel, Object.class, caseStatement, new ArrayList(), expression);
@@ -2186,6 +2322,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *
      * @return general case expression
      */
+    @Override
     public <R> Case<R> selectCase(){
         ArgumentListFunctionExpression caseStatement = new ExpressionBuilder().caseConditionStatement();
         return new CaseImpl(metamodel, Object.class, caseStatement, new ArrayList());
@@ -2202,6 +2339,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *            function arguments
      * @return expression
      */
+    @Override
     public <T> Expression<T> function(String name, Class<T> type, Expression<?>... args){
         if (args != null && args.length > 0){
         List<org.eclipse.persistence.expressions.Expression> params = new ArrayList<org.eclipse.persistence.expressions.Expression>();
@@ -2221,6 +2359,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      * Allow a Criteria Expression to be built from a EclipseLink native API Expression object.
      * This allows for an extended functionality supported in EclipseLink Expressions to be used in Criteria.
      */
+    @Override
     public <T> Expression<T> fromExpression(org.eclipse.persistence.expressions.Expression expression, Class<T> type) {
         return new FunctionExpressionImpl<T>(this.metamodel, type, expression, new ArrayList(0));
     }
@@ -2230,6 +2369,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      * Allow a Criteria Expression to be built from a EclipseLink native API Expression object.
      * This allows for an extended functionality supported in EclipseLink Expressions to be used in Criteria.
      */
+    @Override
     public Expression fromExpression(org.eclipse.persistence.expressions.Expression expression) {
         return new FunctionExpressionImpl(this.metamodel, Object.class, expression, new ArrayList(0));
     }
@@ -2239,6 +2379,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      * Allow a Criteria Expression to be converted to a EclipseLink native API Expression object.
      * This allows for roots and paths defined in the Criteria to be used with EclipseLink native API Expresions.
      */
+    @Override
     public org.eclipse.persistence.expressions.Expression toExpression(Expression expression) {
         return ((SelectionImpl)expression).getCurrentNode();
     }
@@ -2265,7 +2406,8 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
           * @param value  value
           * @return coalesce expression
           */
-         public Coalesce<X> value(X value){
+         @Override
+        public Coalesce<X> value(X value){
              org.eclipse.persistence.expressions.Expression exp = org.eclipse.persistence.expressions.Expression.from(value, new ExpressionBuilder());
              ((FunctionExpression)currentNode).addChild(exp);
              return this;
@@ -2276,7 +2418,8 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
           * @param value expression
           * @return coalesce expression
           */
-         public Coalesce<X> value(Expression<? extends X> value){
+         @Override
+        public Coalesce<X> value(Expression<? extends X> value){
              org.eclipse.persistence.expressions.Expression exp = ((InternalSelection)value).getCurrentNode();
              exp = org.eclipse.persistence.expressions.Expression.from(exp, currentNode);
              ((FunctionExpression)currentNode).addChild(exp);
@@ -2306,6 +2449,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
          * @param result  "then" result value
          * @return general case expression
          */
+        @Override
         public Case<R> when(Expression<Boolean> condition, R result){
             org.eclipse.persistence.expressions.Expression conditionExp = ((InternalSelection)condition).getCurrentNode();
             conditionExp = org.eclipse.persistence.expressions.Expression.from(conditionExp, currentNode);
@@ -2321,6 +2465,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
          * @param result  "then" result expression
          * @return general case expression
          */
+        @Override
         public Case<R> when(Expression<Boolean> condition, Expression<? extends R> result){
             org.eclipse.persistence.expressions.Expression conditionExp = ((InternalSelection)condition).getCurrentNode();
             conditionExp = org.eclipse.persistence.expressions.Expression.from(conditionExp, currentNode);
@@ -2336,6 +2481,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
          * @param result  "else" result
          * @return expression
          */
+        @Override
         public Expression<R> otherwise(R result){
               org.eclipse.persistence.expressions.Expression resultExp = org.eclipse.persistence.expressions.Expression.from(result, new ExpressionBuilder());
             ((ArgumentListFunctionExpression)currentNode).addRightMostChild(resultExp);
@@ -2347,6 +2493,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
          * @param result  "else" result expression
          * @return expression
          */
+        @Override
         public Expression<R> otherwise(Expression<? extends R> result){
             org.eclipse.persistence.expressions.Expression resultExp = ((InternalSelection)result).getCurrentNode();
             resultExp = org.eclipse.persistence.expressions.Expression.from(resultExp, currentNode);
@@ -2383,6 +2530,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
          * conditions.
          * @return expression
          */
+        @Override
         public Expression<C> getExpression(){
             return expression;
         }
@@ -2393,6 +2541,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
          * @param result  "then" result value
          * @return simple case expression
          */
+        @Override
         public SimpleCase<C, R> when(C condition, R result){
             org.eclipse.persistence.expressions.Expression conditionExp = org.eclipse.persistence.expressions.Expression.from(condition, new ExpressionBuilder());
             ((FunctionExpression)currentNode).addChild(conditionExp);
@@ -2407,6 +2556,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
          * @param result  "then" result expression
          * @return simple case expression
          */
+        @Override
         public SimpleCase<C, R> when(C condition, Expression<? extends R> result){
             org.eclipse.persistence.expressions.Expression conditionExp = org.eclipse.persistence.expressions.Expression.from(condition, new ExpressionBuilder());
             ((FunctionExpression)currentNode).addChild(conditionExp);
@@ -2421,6 +2571,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
          * @param result  "else" result
          * @return expression
          */
+        @Override
         public Expression<R> otherwise(R result){
             org.eclipse.persistence.expressions.Expression resultExp = org.eclipse.persistence.expressions.Expression.from(result, new ExpressionBuilder());
             ((ArgumentListFunctionExpression)currentNode).addRightMostChild(resultExp);
@@ -2432,6 +2583,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
          * @param result  "else" result expression
          * @return expression
          */
+        @Override
         public Expression<R> otherwise(Expression<? extends R> result){
 
             org.eclipse.persistence.expressions.Expression resultExp = ((InternalSelection)result).getCurrentNode();
@@ -2441,6 +2593,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         }
     }
 
+    @Override
     public <T> CriteriaDelete<T> createCriteriaDelete(Class<T> targetEntity) {
         if (targetEntity != null) {
             TypeImpl type = ((MetamodelImpl)this.metamodel).getType(targetEntity);
@@ -2451,6 +2604,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         throw new IllegalArgumentException(ExceptionLocalization.buildMessage("unknown_bean_class", new Object[] { targetEntity }));
     }
 
+    @Override
     public <T> CriteriaUpdate<T> createCriteriaUpdate(Class<T> targetEntity) {
         if (targetEntity != null) {
             TypeImpl type = ((MetamodelImpl)this.metamodel).getType(targetEntity);
@@ -2461,6 +2615,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         throw new IllegalArgumentException(ExceptionLocalization.buildMessage("unknown_bean_class", new Object[] { targetEntity }));
     }
 
+    @Override
     public <X, T, V extends T> Join<X, V> treat(Join<X, T> join, Class<V> type) {
         JoinImpl parentJoin = (JoinImpl)join;
         JoinImpl joinImpl = new JoinImpl<X, V>(parentJoin, this.metamodel.managedType(type), this.metamodel,
@@ -2471,6 +2626,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         return joinImpl;
     }
 
+    @Override
     public <X, T, E extends T> CollectionJoin<X, E> treat(CollectionJoin<X, T> join, Class<E> type) {
         CollectionJoinImpl parentJoin = (CollectionJoinImpl)join;
         CollectionJoin joinImpl = null;
@@ -2487,6 +2643,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         return joinImpl;
     }
 
+    @Override
     public <X, T, E extends T> SetJoin<X, E> treat(SetJoin<X, T> join, Class<E> type) {
         SetJoinImpl parentJoin = (SetJoinImpl)join;
         SetJoin joinImpl = null;
@@ -2503,6 +2660,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         return joinImpl;
     }
 
+    @Override
     public <X, T, E extends T> ListJoin<X, E> treat(ListJoin<X, T> join, Class<E> type) {
         ListJoinImpl parentJoin = (ListJoinImpl)join;
         ListJoin joinImpl = null;
@@ -2519,6 +2677,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         return joinImpl;
     }
 
+    @Override
     public <X, K, T, V extends T> MapJoin<X, K, V> treat(MapJoin<X, K, T> join, Class<V> type) {
         MapJoinImpl parentJoin = (MapJoinImpl)join;
         MapJoin joinImpl = null;
@@ -2535,6 +2694,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         return joinImpl;
     }
 
+    @Override
     public <X, T extends X> Path<T> treat(Path<X> path, Class<T> type) {
         //Handle all the paths that might get passed in.:
         PathImpl parentPath = (PathImpl)path;
@@ -2546,6 +2706,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         return newPath;
     }
 
+    @Override
     public <X, T extends X> Root<T> treat(Root<X> root, Class<T> type) {
         RootImpl parentRoot = (RootImpl)root;
         EntityType entity = this.metamodel.entity(type);

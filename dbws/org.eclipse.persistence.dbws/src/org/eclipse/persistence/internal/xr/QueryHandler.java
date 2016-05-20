@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -58,7 +58,7 @@ public abstract class QueryHandler {
 
     /**
      * <p><b>INTERNAL</b>: Initialize this <code>QueryHandler</code>'s <code>DatabaseQuery</code>
-     * @param dbwsService      the given <code>DBWSService</code>
+     * @param xrService      the given <code>DBWSService</code>
      * @param queryOperation the given <code>QueryOperation</code>
      */
     public void initializeDatabaseQuery(XRServiceAdapter xrService, QueryOperation queryOperation) {
@@ -121,7 +121,7 @@ public abstract class QueryHandler {
      * {@link Call}. Typically no work is required, but for some <code>QueryHandlers</code>
      * (<code>JPQLQueryHandler</code>, <code>StoredProcedureQueryHandler</code>, etc.) special
      * handling may be required.
-     * @param dbwsService      the given <code>DBWSService</code>
+     * @param xrService      the given <code>DBWSService</code>
      * @param queryOperation the given <code>QueryOperation</code>
      * @param databaseQuery the given <code>DatabaseQuery</code>
      */
@@ -133,7 +133,7 @@ public abstract class QueryHandler {
     /**
      * <p><b>INTERNAL</b>: Initialize this <code>QueryHandler</code>'s <code>DatabaseQuery</code>'s
      * arguments from the {@link Operation}'s {@link Parameter Parameters}
-     * @param dbwsService      the given <code>DBWSService</code>
+     * @param xrService      the given <code>DBWSService</code>
      * @param queryOperation the given <code>QueryOperation</code>
      * @param databaseQuery the given <code>DatabaseQuery</code>
      */

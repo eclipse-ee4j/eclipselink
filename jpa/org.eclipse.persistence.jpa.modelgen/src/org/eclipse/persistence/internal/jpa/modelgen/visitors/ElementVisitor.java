@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -16,6 +16,9 @@
  *       - 330660: Canonical model generator throws ClassCastException when using package-info.java
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.modelgen.visitors;
+
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.ECLIPSELINK_PERSISTENCE_PACKAGE_PREFIX;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PERSISTENCE_PACKAGE_PREFIX;
 
 import java.util.List;
 import java.util.Set;
@@ -40,11 +43,6 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataC
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataField;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataMethod;
 import org.eclipse.persistence.internal.jpa.modelgen.MetadataMirrorFactory;
-import org.eclipse.persistence.internal.jpa.modelgen.visitors.AnnotationValueVisitor;
-import org.eclipse.persistence.internal.jpa.modelgen.visitors.TypeVisitor;
-
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PERSISTENCE_PACKAGE_PREFIX;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.ECLIPSELINK_PERSISTENCE_PACKAGE_PREFIX;
 
 /**
  * An element visitor.
@@ -253,7 +251,7 @@ public class ElementVisitor<R, P> extends AbstractElementVisitor6<MetadataAnnota
     /**
      * INTERNAL:
      * Visit a generic type parameter (either to a field or method)
-     * e.g Collection<X>, the type parameter being X.
+     * e.g Collection&lt;X&gt;, the type parameter being X.
      */
     @Override
     public MetadataClass visitTypeParameter(TypeParameterElement typeParameterElement, MetadataClass metadataClass) {

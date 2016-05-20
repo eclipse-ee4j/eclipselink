@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -119,10 +119,8 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
     /**
      * Build a DatabaseQuery from an JPQL string.
      *
-     * @param jpql
+     * @param jpqlQuery
      *            the JPQL string.
-     * @param flushOnExecute
-     *            flush the unit of work before executing the query.
      * @param session
      *            the session to get the descriptors for this query for.
      * @param hints
@@ -276,6 +274,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      * @throws IllegalArgumentException
      *             if the second argument is not valid for the implementation
      */
+    @Override
     public TypedQuery<X> setHint(String hintName, Object value) {
         try {
             entityManager.verifyOpen();
@@ -294,6 +293,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      * @throws IllegalStateException
      *             if not a Java Persistence query language SELECT query
      */
+    @Override
     public EJBQueryImpl setLockMode(LockModeType lockMode) {
         return (EJBQueryImpl) super.setLockMode(lockMode);
     }
@@ -304,6 +304,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      *
      * @return Collection of results
      */
+    @Override
     public Collection getResultCollection() {
         // bug51411440: need to throw IllegalStateException if query
         // executed on closed em
@@ -350,6 +351,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      *
      * @return Cursor on results, either a CursoredStream, or ScrollableCursor
      */
+    @Override
     public Cursor getResultCursor() {
         // bug51411440: need to throw IllegalStateException if query executed on closed em
         this.entityManager.verifyOpenWithSetRollbackOnly();
@@ -403,10 +405,11 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
     /**
      * Set the position of the first result to retrieve.
      *
-     * @param start
+     * @param startPosition
      *            position of the first result, numbered from 0
      * @return the same query instance
      */
+    @Override
     public EJBQueryImpl setFirstResult(int startPosition) {
         return (EJBQueryImpl) super.setFirstResult(startPosition);
     }
@@ -416,6 +419,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      *
      * @param flushMode
      */
+    @Override
     public EJBQueryImpl setFlushMode(FlushModeType flushMode) {
         return (EJBQueryImpl) super.setFlushMode(flushMode);
     }
@@ -426,6 +430,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      * @param maxResult
      * @return the same query instance
      */
+    @Override
     public EJBQueryImpl setMaxResults(int maxResult) {
         return (EJBQueryImpl) super.setMaxResults(maxResult);
     }
@@ -438,6 +443,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      * @param temporalType
      * @return the same query instance
      */
+    @Override
     public TypedQuery setParameter(int position, Calendar value, TemporalType temporalType) {
         entityManager.verifyOpenWithSetRollbackOnly();
         return setParameter(position, convertTemporalType(value, temporalType));
@@ -451,6 +457,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      * @param temporalType
      * @return the same query instance
      */
+    @Override
     public TypedQuery setParameter(int position, Date value, TemporalType temporalType) {
         entityManager.verifyOpenWithSetRollbackOnly();
         return setParameter(position, convertTemporalType(value, temporalType));
@@ -463,6 +470,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      * @param value
      * @return the same query instance
      */
+    @Override
     public TypedQuery setParameter(int position, Object value) {
         try {
             entityManager.verifyOpen();
@@ -477,13 +485,14 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
     /**
      * Bind an instance of java.util.Calendar to a Parameter object.
      *
-     * @param parameter
+     * @param param
      * @param value
      * @param temporalType
      * @return the same query instance
      * @throws IllegalArgumentException
      *             if position does not correspond to a parameter of the query
      */
+    @Override
     public TypedQuery setParameter(Parameter<Calendar> param, Calendar value, TemporalType temporalType) {
         entityManager.verifyOpenWithSetRollbackOnly();
         if (param == null)
@@ -503,7 +512,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
     /**
      * Bind an instance of java.util.Date to a Parameter object.
      *
-     * @param parameter
+     * @param param
      *            object
      * @param value
      * @param temporalType
@@ -511,6 +520,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      * @throws IllegalArgumentException
      *             if position does not correspond to a parameter of the query
      */
+    @Override
     public TypedQuery setParameter(Parameter<Date> param, Date value, TemporalType temporalType) {
         if (param == null)
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NULL_PARAMETER_PASSED_TO_SET_PARAMETER"));
@@ -537,6 +547,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      * @throws IllegalArgumentException
      *             if parameter does not correspond to a parameter of the query
      */
+    @Override
     public <T> TypedQuery setParameter(Parameter<T> param, T value) {
         if (param == null) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NULL_PARAMETER_PASSED_TO_SET_PARAMETER"));
@@ -561,6 +572,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      * @param temporalType
      * @return the same query instance
      */
+    @Override
     public TypedQuery setParameter(String name, Calendar value, TemporalType temporalType) {
         entityManager.verifyOpenWithSetRollbackOnly();
         return setParameter(name, convertTemporalType(value, temporalType));
@@ -574,6 +586,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      * @param temporalType
      * @return the same query instance
      */
+    @Override
     public TypedQuery setParameter(String name, Date value, TemporalType temporalType) {
         entityManager.verifyOpenWithSetRollbackOnly();
         return setParameter(name, convertTemporalType(value, temporalType));
@@ -587,6 +600,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      * @param value
      * @return the same query instance
      */
+    @Override
     public TypedQuery setParameter(String name, Object value) {
         try {
             entityManager.verifyOpen();
@@ -598,6 +612,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
         }
     }
 
+    @Override
     public String toString() {
         return getClass().getSimpleName() + "(" + String.valueOf(this.databaseQuery) + ")";
     }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -59,10 +59,11 @@ public class BasicMapJoinImpl<Z, K, E> extends MapJoinImpl<Z, K, E> {
      * Return the path corresponding to the referenced non-collection valued
      * attribute.
      *
-     * @param model
+     * @param att
      *            attribute
      * @return path corresponding to the referenced attribute
      */
+    @Override
     public <Y> Path<Y> get(SingularAttribute<? super E, Y> att){
         throw new IllegalStateException(ExceptionLocalization.buildMessage("pathnode_is_primitive_node"));
     }
@@ -71,7 +72,7 @@ public class BasicMapJoinImpl<Z, K, E> extends MapJoinImpl<Z, K, E> {
      * Return the path corresponding to the referenced collection-valued
      * attribute.
      *
-     * @param model
+     * @param collection
      *            collection-valued attribute
      * @return expression corresponding to the referenced attribute
      */
@@ -83,7 +84,7 @@ public class BasicMapJoinImpl<Z, K, E> extends MapJoinImpl<Z, K, E> {
     /**
      * Return the path corresponding to the referenced map-valued attribute.
      *
-     * @param model
+     * @param map
      *            map-valued attribute
      * @return expression corresponding to the referenced attribute
      */

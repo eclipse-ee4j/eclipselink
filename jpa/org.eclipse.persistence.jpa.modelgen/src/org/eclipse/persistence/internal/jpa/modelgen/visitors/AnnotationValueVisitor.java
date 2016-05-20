@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -66,8 +66,8 @@ public class AnnotationValueVisitor<R, P> extends AbstractAnnotationValueVisitor
      * INTERNAL:
      *  e.g.
      *  joinColumns={
-     *    @JoinColumn(name="ID1", referencedColumnName="ID"),
-     *    @JoinColumn(name="ID2", referencedColumnName="ID")}
+     *    &#064;JoinColumn(name="ID1", referencedColumnName="ID"),
+     *    &#064;JoinColumn(name="ID2", referencedColumnName="ID")}
      */
     @Override
     public Object visitArray(List<? extends AnnotationValue> annotationValues, Object arg1) {

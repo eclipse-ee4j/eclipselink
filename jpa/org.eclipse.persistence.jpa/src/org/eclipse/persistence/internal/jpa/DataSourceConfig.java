@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -22,9 +22,6 @@ import java.io.StringWriter;
  * At least one (transactional) data source must be specified and
  * potentially a non-transactional if such a data source is appropriate
  * (e.g. for non-transactional operations).
- * <p>
- * @see ContainerConfig
- * @see EntityContainer
  */
 public class DataSourceConfig {
 
@@ -68,6 +65,7 @@ public class DataSourceConfig {
     /**
      * INTERNAL:
      */
+    @Override
     public String toString() {
         StringWriter writer = new StringWriter();
         if(dsName != null) {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -15,6 +15,7 @@ package org.eclipse.persistence.internal.eis.adapters.jms;
 
 //JDK imports
 import java.util.ArrayList;
+
 import javax.resource.cci.IndexedRecord;
 
 /**
@@ -53,6 +54,7 @@ public class CciJMSRecord extends ArrayList implements IndexedRecord {
      *
      * @return the description
      */
+    @Override
     public String getRecordShortDescription() {
         return description;
     }
@@ -60,8 +62,9 @@ public class CciJMSRecord extends ArrayList implements IndexedRecord {
     /**
      * Set the description for this record.
      *
-     * @param description
+     * @param theDescription
      */
+    @Override
     public void setRecordShortDescription(String theDescription) {
         description = theDescription;
     }
@@ -71,6 +74,7 @@ public class CciJMSRecord extends ArrayList implements IndexedRecord {
      *
      * @return the name of this record
      */
+    @Override
     public String getRecordName() {
         return name;
     }
@@ -78,8 +82,9 @@ public class CciJMSRecord extends ArrayList implements IndexedRecord {
     /**
      * Set the record name
      *
-     * @param name - the name of this record
+     * @param theName - the name of this record
      */
+    @Override
     public void setRecordName(String theName) {
         name = theName;
     }

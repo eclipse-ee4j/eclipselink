@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2015  Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2016  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -22,7 +22,7 @@ import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 
 /**
  * Generates a subclass of given collection implementing CollectionProxy interface.
- * {@see CollectionProxy}
+ * {@link org.eclipse.persistence.jpa.rs.util.CollectionProxy}
  *
  * @author Dmitry Kornilov
  * @since EclipseLink 2.6.0
@@ -51,7 +51,7 @@ public class CollectionProxyClassWriter implements EclipseLinkClassWriter, Opcod
     /**
      * Returns a class name for CollectionProxy based on parent class name and field name
      * to generate proxy for.
-     * The name is constructed as _<className>_<fieldName>_RestCollectionProxy.
+     * The name is constructed as _&lt;className&gt;_&lt;fieldName&gt;_RestCollectionProxy.
      *
      * @param entityName full class name (including package)
      * @param fieldName field name
@@ -66,7 +66,7 @@ public class CollectionProxyClassWriter implements EclipseLinkClassWriter, Opcod
 
     /**
      * Returns a class name for generated CollectionProxy.
-     * {@see CollectionProxyClassWriter#getClassName(String, String)}
+     * {@link #getClassName(String, String)}
      *
      * @return Rest collection proxy name.
      */
@@ -76,20 +76,20 @@ public class CollectionProxyClassWriter implements EclipseLinkClassWriter, Opcod
 
     /**
      *  public class Proxy extends SuperType implements CollectionProxy {
-     *      private List<LinkV2> links;
+     *      private List&lt;LinkV2&gt; links;
      *
      *      public CollectionProxy(Collection c) {
      *          super();
      *          this.addAll(c);
      *      }
      *
-     *      @Override
-     *      public List<LinkV2> getLinks() {
+     *      &#064;Override
+     *      public List&lt;LinkV2&gt; getLinks() {
      *          return links;
      *      }
      *
-     *      @Override
-     *      public void setLinks(List<LinkV2> links) {
+     *      &#064;Override
+     *      public void setLinks(List&lt;LinkV2&gt; links) {
      *          this.links = links;
      *      }
      *  }
@@ -97,7 +97,6 @@ public class CollectionProxyClassWriter implements EclipseLinkClassWriter, Opcod
      * @param loader
      * @param className
      * @return
-     * @throws Exception
      */
     @Override
     public byte[] writeClass(DynamicClassLoader loader, String className) {

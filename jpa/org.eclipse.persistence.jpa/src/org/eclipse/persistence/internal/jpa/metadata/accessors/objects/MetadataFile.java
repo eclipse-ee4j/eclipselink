@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -47,6 +47,7 @@ public class MetadataFile extends MetadataAccessibleObject {
      * return whatever is necessary (and of course, change this comment to
      * reflect the new dependency).
      */
+    @Override
     public String getAttributeName() {
         return getName();
     }
@@ -57,8 +58,8 @@ public class MetadataFile extends MetadataAccessibleObject {
      * top most entity mappings tag. At least it's something. Could probably
      * get more descriptive, right now it's only used in merging and for those
      * elements that do not tie to an annotated element (class, method or field)
-     * That is, unnamed <entity-mappings> level elements and
-     * <persistence-unit-metadata> and <persistence-unit-defaults> elements.
+     * That is, unnamed &lt;entity-mappings&gt; level elements and
+     * &lt;persistence-unit-metadata&gt; and &lt;persistence-unit-defaults&gt; elements.
      * So this will have to do for now ... plus no one looks at the logging
      * messages anyway ... ;-)
      */
@@ -70,6 +71,7 @@ public class MetadataFile extends MetadataAccessibleObject {
      * INTERNAL:
      * Returns the name/url of the metadata file.
      */
+    @Override
     public String getName() {
         return m_entityMappings.getMappingFileOrURL().toString();
     }

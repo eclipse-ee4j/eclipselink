@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -132,7 +132,7 @@ public class EntityManagerFactoryProvider {
      * Check the provided map for an object with the given key.  If that object is not available, check the
      * System properties.  If it is not available from either location, return the default value.
      * @param propertyKey
-     * @param map
+     * @param overrides
      * @param defaultValue
      * @return
      */

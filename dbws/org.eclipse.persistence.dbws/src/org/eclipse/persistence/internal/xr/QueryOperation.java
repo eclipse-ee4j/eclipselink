@@ -363,7 +363,7 @@ public class QueryOperation extends Operation {
      * @return  result - the result of the underlying <tt>SELECT</tt> operation on
      *          the database, or <code>null</code>.
      *
-     * @see  {@link Operation}
+     * @see  Operation
      */
     @Override
     public Object invoke(XRServiceAdapter xrService, Invocation invocation) {

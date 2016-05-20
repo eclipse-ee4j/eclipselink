@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -315,10 +315,10 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     /**
      * INTERNAL:
      * Return the raw class for this accessible object. E.g. For an
-     * accessible object with a type of java.util.Collection<Employee>, this
+     * accessible object with a type of java.util.Collection&lt;Employee&gt;, this
      * method will return java.util.Collection.
-     * @see getReferenceClassFromGeneric() to get Employee.class back.
-     * @see getRawClassWithGenerics() to get java.util.CollectionEmployee back.
+     * @see #getReferenceClassFromGeneric(MetadataDescriptor) to get Employee.class back.
+     * @see #getRawClassWithGenerics(MetadataDescriptor) to get java.util.CollectionEmployee back.
      */
     public MetadataClass getRawClass(MetadataDescriptor descriptor) {
         if (m_rawClass == null) {
@@ -349,11 +349,11 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * INTERNAL:
      * Return the complete raw class with generics for this accessible object.
      * E.g. For an accessible object with a type of
-     * java.util.Collection<Employee>, this method will return
+     * java.util.Collection&lt;Employee&gt;, this method will return
      * java.util.CollectionEmployee. Note, the generics are appended to the name
      * of the class.
-     * @see getReferenceClassFromGeneric() to get Employee.class back.
-     * @see getRawClass() to get java.util.Collection back.
+     * @see #getReferenceClassFromGeneric(MetadataDescriptor) to get Employee.class back.
+     * @see #getRawClass(MetadataDescriptor) to get java.util.Collection back.
      */
     public MetadataClass getRawClassWithGenerics(MetadataDescriptor descriptor) {
         if (m_rawClassWithGenerics == null) {
@@ -382,13 +382,13 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * accessible object.
      * Here is what you will get back from this method given the following
      * scenarios:
-     * 1 - public Collection<String> getTasks() => String.class
-     * 2 - public Map<String, Integer> getTasks() => Integer.class
-     * 3 - public Employee getEmployee() => null
-     * 4 - public Collection getTasks() => null
-     * 5 - public Map getTasks() => null
-     * 6 - public Collection<byte[]> getAudio() => byte[].class
-     * 7 - public Map<X,Y> on a MappedSuperclass where Y is defined in the Entity superclass<T> => Void.class (in all bug 266912 cases)
+     * 1 - public Collection&lt;String&gt; getTasks() =&gt; String.class
+     * 2 - public Map&lt;String, Integer&gt; getTasks() =&gt; Integer.class
+     * 3 - public Employee getEmployee() =&gt; null
+     * 4 - public Collection getTasks() =&gt; null
+     * 5 - public Map getTasks() =&gt; null
+     * 6 - public Collection&lt;byte[]&gt; getAudio() =&gt; byte[].class
+     * 7 - public Map&lt;X,Y&gt; on a MappedSuperclass where Y is defined in the Entity superclass&lt;T&gt; =&gt; Void.class (in all bug 266912 cases)
      */
     public MetadataClass getReferenceClassFromGeneric(MetadataDescriptor descriptor) {
         // TODO: investigate multiple levels of generics.

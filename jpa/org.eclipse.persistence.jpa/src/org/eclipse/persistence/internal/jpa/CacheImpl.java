@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -54,6 +54,7 @@ public class CacheImpl implements JpaCache {
      * Returns true if the cache contains an Object with the id and Class type, and is valid.
      * @see Cache#contains(Class, Object)
      */
+    @Override
     public boolean contains(Class cls, Object id) {
         getEntityManagerFactory().verifyOpen();
         Object pk =  createPrimaryKeyFromId(cls, id);
@@ -126,6 +127,7 @@ public class CacheImpl implements JpaCache {
      * @param id - Primary key of the Entity or MappedSuperclass Class
      *    A null id means invalidate the class - possibly the entire tree or subtree
      */
+    @Override
     public void evict(Class classToEvict, Object id) {
         evict(classToEvict, id, false);
     }
@@ -146,6 +148,7 @@ public class CacheImpl implements JpaCache {
      *    A null id means invalidate the class - possibly the entire tree or subtree
      * @param invalidateInCluster - Invalidate the object id in the cluster, this only applies to a non-null id.
      */
+    @Override
     public void evict(Class classToEvict, Object id, boolean invalidateInCluster) {
         getEntityManagerFactory().verifyOpen();
         /**
@@ -186,6 +189,7 @@ public class CacheImpl implements JpaCache {
      * @see Cache#evict(Class)
      * @param entityOrMappedSuperclassToEvict - Entity or MappedSuperclass Class
      */
+    @Override
     public void evict(Class entityOrMappedSuperclassToEvict) {
         // A null id means invalidate the class - possibly the entire tree or subtree
         evict(entityOrMappedSuperclassToEvict, null);
@@ -193,8 +197,9 @@ public class CacheImpl implements JpaCache {
 
     /**
      * Sets all instances in the cache to be invalid.
-     * @see Cache#evict(Object)
+     * @see Cache#evictAll()
      */
+    @Override
     public void evictAll() {
         getEntityManagerFactory().verifyOpen();
         getEntityManagerFactory().getDatabaseSession().getIdentityMapAccessor().invalidateAll();
@@ -231,6 +236,7 @@ public class CacheImpl implements JpaCache {
      * be maintained for any Objects currently read in.  This should only be called
      * if the application knows that it no longer has references to Objects held in the cache.
      */
+    @Override
     public void clear() {
         getEntityManagerFactory().verifyOpen();
         getAccessor().initializeAllIdentityMaps();
@@ -244,6 +250,7 @@ public class CacheImpl implements JpaCache {
      * <p> NOTE: Caution must be used in doing this to ensure that the Objects within the cache
      * are not referenced from other Objects of other classes or from the application.
      */
+    @Override
     public void clear(Class cls) {
         getEntityManagerFactory().verifyOpen();
         getAccessor().initializeIdentityMap(cls);
@@ -252,6 +259,7 @@ public class CacheImpl implements JpaCache {
     /**
      * Clear all the query results caches.
      */
+    @Override
     public void clearQueryCache() {
         getEntityManagerFactory().verifyOpen();
         getAccessor().clearQueryCache();
@@ -260,6 +268,7 @@ public class CacheImpl implements JpaCache {
     /**
      * Clear the named query results cache associated with the query name.
      */
+    @Override
     public void clearQueryCache(String queryName) {
         getEntityManagerFactory().verifyOpen();
         getAccessor().clearQueryCache(queryName);
@@ -268,6 +277,7 @@ public class CacheImpl implements JpaCache {
     /**
      * Clear all named query results cache associated with entity class.
      */
+    @Override
     public void clearQueryCache(Class entityClass) {
         getEntityManagerFactory().verifyOpen();
         getAccessor().invalidateQueryCache(entityClass);
@@ -278,6 +288,7 @@ public class CacheImpl implements JpaCache {
      * cache invalidation feature and returns the difference between the next expiry
      * time of the Object and its read time.  The method will return 0 for invalidated Objects.
      */
+    @Override
     public long timeToLive(Object object) {
         getEntityManagerFactory().verifyOpen();
         return getAccessor().getRemainingValidTime(object);
@@ -287,6 +298,7 @@ public class CacheImpl implements JpaCache {
      * Returns true if the Object with the same id and Class type of the
      * the given Object is valid in the cache.
      */
+    @Override
     public boolean isValid(Object object) {
         getEntityManagerFactory().verifyOpen();
         return getAccessor().isValid(object);
@@ -295,6 +307,7 @@ public class CacheImpl implements JpaCache {
     /**
      * Returns true if the Object with the id and Class type is valid in the cache.
      */
+    @Override
     public boolean isValid(Class cls, Object id) {
         getEntityManagerFactory().verifyOpen();
         Object cacheKey = createPrimaryKeyFromId(cls, id);
@@ -309,6 +322,7 @@ public class CacheImpl implements JpaCache {
      * Used to print all the Objects in the cache.
      * The output of this method will be logged to this persistence unit's SessionLog at SEVERE level.
      */
+    @Override
     public void print() {
         getEntityManagerFactory().verifyOpen();
         getAccessor().printIdentityMaps();
@@ -318,6 +332,7 @@ public class CacheImpl implements JpaCache {
      * Used to print all the Objects in the cache of the Class type.
      * The output of this method will be logged to this persistence unit's SessionLog at SEVERE level.
      */
+    @Override
     public void print(Class cls) {
         getEntityManagerFactory().verifyOpen();
         getAccessor().printIdentityMap(cls);
@@ -327,6 +342,7 @@ public class CacheImpl implements JpaCache {
      * Used to print all the currently locked cache keys in the cache.
      * The output of this method will be logged to this persistence unit's SessionLog at SEVERE level.
      */
+    @Override
     public void printLocks() {
         getEntityManagerFactory().verifyOpen();
         getAccessor().printIdentityMapLocks();
@@ -338,6 +354,7 @@ public class CacheImpl implements JpaCache {
      * Object that is not in the cache. This method will validate that all cached
      * Objects are in a correct state.
      */
+    @Override
     public void validate() {
         getEntityManagerFactory().verifyOpen();
         getAccessor().validateCache();
@@ -347,6 +364,7 @@ public class CacheImpl implements JpaCache {
      * Returns the Object from the cache map with the id
      * and Class type.
      */
+    @Override
     public Object getObject(Class cls, Object id) {
         getEntityManagerFactory().verifyOpen();
         Object cacheKey = createPrimaryKeyFromId(cls, id);
@@ -360,6 +378,7 @@ public class CacheImpl implements JpaCache {
      * as other objects may have relationships to previous object, or this object may have
      * relationships to other objects.
      */
+    @Override
     public Object putObject(Object object) {
         getEntityManagerFactory().verifyOpen();
         return getAccessor().putInIdentityMap(object);
@@ -371,6 +390,7 @@ public class CacheImpl implements JpaCache {
      * <p> NOTE: Caution should be used when calling to avoid violating Object identity.
      * The application should only call this if its known that no references to the Object exist.
      */
+    @Override
     public Object removeObject(Object object) {
         getEntityManagerFactory().verifyOpen();
         return getAccessor().removeFromIdentityMap(object);
@@ -382,6 +402,7 @@ public class CacheImpl implements JpaCache {
      * <p> NOTE: Caution should be used when calling to avoid violating Object identity.
      * The application should only call this if its known that no references to the Object exist.
      */
+    @Override
     public Object removeObject(Class cls, Object id) {
         getEntityManagerFactory().verifyOpen();
         Object cacheKey = createPrimaryKeyFromId(cls, id);
@@ -391,6 +412,7 @@ public class CacheImpl implements JpaCache {
     /**
      * Returns true if the cache contains an Object with the same id and Class type of the given object.
      */
+    @Override
     public boolean contains(Object object) {
         return contains(object.getClass(), getId(object));
     }
@@ -399,6 +421,7 @@ public class CacheImpl implements JpaCache {
      * Sets the object to be invalid in the cache.
      * @see JpaCache#evict(Object)
      */
+    @Override
     public void evict(Object object) {
         getEntityManagerFactory().verifyOpen();
         getAccessor().invalidateObject(object);
@@ -410,6 +433,7 @@ public class CacheImpl implements JpaCache {
      * If true is passed, the object is also invalidated across cache coordination.
      * Cache coordination must be enabled for this to have an affect.
      */
+    @Override
     public void evict(Object object, boolean invalidateInCluster) {
         getEntityManagerFactory().verifyOpen();
         getAccessor().invalidateObject(object, invalidateInCluster);
@@ -448,8 +472,9 @@ public class CacheImpl implements JpaCache {
      * If the CMPPolicy associated with the domain object's descriptor is null
      * the Id will be determined using the ObjectBuilder on the descriptor - which may return
      * the Id stored in the weaved _persistence_primaryKey field.
-     * @See {@link JpaCache#getId(Object)}
+     * @see JpaCache#getId(Object)
      */
+    @Override
     public Object getId(Object object) {
         getEntityManagerFactory().verifyOpen();
         ClassDescriptor aDescriptor = getSession().getDescriptor(object.getClass());
@@ -470,6 +495,7 @@ public class CacheImpl implements JpaCache {
         }
     }
 
+    @Override
     public <T> T unwrap(Class<T> cls) {
         if (cls.equals(JpaCache.class)){
             return (T) this;

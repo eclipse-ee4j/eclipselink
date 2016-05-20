@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2015  Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2016  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -20,7 +20,7 @@ import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 
 /**
  * This class is used to generate XML type adapters for collection references in JPARS 2.0.
- * The generated classes are subclasses of {@see RestCollectionAdapter}.
+ * The generated classes are subclasses of {@link org.eclipse.persistence.jpa.rs.util.xmladapters.RestCollectionAdapter}.
  *
  * @author Dmitry Kornilov
  * @since EclipseLink 2.6.0
@@ -42,7 +42,7 @@ public class RestCollectionAdapterClassWriter implements EclipseLinkClassWriter,
 
     /**
      * Returns a class name for a RestCollectionAdapter for given class.
-     * The name is constructed as _<className>RestCollectionAdapter.
+     * The name is constructed as _&lt;className&gt;RestCollectionAdapter.
      *
      * @param className class name of the class to get RestCollectionAdapter name for.
      * @return RestCollectionAdapter name.
@@ -56,7 +56,7 @@ public class RestCollectionAdapterClassWriter implements EclipseLinkClassWriter,
 
     /**
      * Returns a class name for a RestCollectionAdapter.
-     * {@see RestCollectionAdapterClassWriter#getClassName(String)}
+     * {@link #getClassName(String)}
      *
      * @return RestCollectionAdapter name.
      */
@@ -65,7 +65,7 @@ public class RestCollectionAdapterClassWriter implements EclipseLinkClassWriter,
     }
 
     /**
-     * public class _EntityRestCollectionAdapter extends RestCollectionAdapter<Entity> {
+     * public class _EntityRestCollectionAdapter extends RestCollectionAdapter&lt;Entity&gt; {
      *     public _EntityRestCollectionAdapter() {
      *         super();
      *     }

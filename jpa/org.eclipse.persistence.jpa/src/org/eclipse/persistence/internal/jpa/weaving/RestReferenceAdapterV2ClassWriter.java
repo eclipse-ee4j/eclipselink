@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2015  Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2016  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -20,7 +20,7 @@ import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 
 /**
  * This class is used to generate XML type adapters for single entity references in JPARS 2.0.
- * The generated classes are subclasses of {@see RestReferenceV2Adapter}.
+ * The generated classes are subclasses of {@link org.eclipse.persistence.jpa.rs.util.xmladapters.ReferenceAdapterV2}.
  *
  * @author Dmitry Kornilov
  * @since EclipseLink 2.6.0
@@ -63,7 +63,7 @@ public class RestReferenceAdapterV2ClassWriter implements EclipseLinkClassWriter
     }
 
     /**
-     *  public class Adapter extends ReferenceAdapterV2<T> {
+     *  public class Adapter extends ReferenceAdapterV2&lt;T&gt; {
      *      public Adapter() {
      *          super();
      *      }
