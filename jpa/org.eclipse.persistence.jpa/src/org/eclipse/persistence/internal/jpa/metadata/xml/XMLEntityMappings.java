@@ -720,7 +720,7 @@ public class XMLEntityMappings extends ORMetadata {
      * classes themselves. They will be processed afterwards and controlled
      * by the MetadataProcessor. Note: this method does a few things of
      * interest. It not only adds metadata to the project but it will also
-     * override (that is EclipseLink-ORM-XML--&gt;JPA-XML && JPA-XML--&gt;Annotation)
+     * override (that is EclipseLink-ORM-XML--&gt;JPA-XML {@literal &&} JPA-XML--&gt;Annotation)
      * the necessary metadata and log messages to the user. A validation
      * exception could also be thrown. See the related processing methods for
      * more details.

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,6 +12,14 @@
  ******************************************************************************/
 package org.eclipse.persistence.tools.dbws;
 
+import static org.eclipse.persistence.internal.xr.Util.DBWS_SCHEMA_XML;
+//EclipseLink imports
+import static org.eclipse.persistence.internal.xr.Util.DBWS_WSDL;
+import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.archive;
+import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_CLASS_FILE;
+import static org.eclipse.persistence.tools.dbws.Util.SWAREF_FILENAME;
+import static org.eclipse.persistence.tools.dbws.Util.UNDER_DBWS;
+
 //javase imports
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,27 +27,19 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
 
-//EclipseLink imports
-import static org.eclipse.persistence.internal.xr.Util.DBWS_WSDL;
-import static org.eclipse.persistence.internal.xr.Util.DBWS_SCHEMA_XML;
-import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.archive;
-import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_CLASS_FILE;
-import static org.eclipse.persistence.tools.dbws.Util.SWAREF_FILENAME;
-import static org.eclipse.persistence.tools.dbws.Util.UNDER_DBWS;
-
 /**
  * <p>
  * <b>PUBLIC:</b> JavasePackager extends {@link ProviderPackager}. It generates a simplified version<br>
  * of the JAX-WS Provider Endpoint that can be run using the Javase 6 'containerless' Endpoint API:
  * <pre>
- *   Endpoint endpoint = Endpoint.create(new @WebService or @WebServiceProvider);
+ *   Endpoint endpoint = Endpoint.create(new &#064;WebService or &#064;WebServiceProvider);
  *   endpoint.publish(ENDPOINT_ADDRESS);
  *   QName serviceQName = new QName(serviceNamespace, serviceName);
  *   QName portQName = new QName(serviceNamespace, portName);
  *   service = Service.create(serviceQName);
  *   service.addPort(portQName, javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING, ENDPOINT_ADDRESS);
  *   ...
- *   Dispatch<SOAPMessage> dispatch = testService.createDispatch(portQName, SOAPMessage.class,
+ *   Dispatch&lt;SOAPMessage&gt; dispatch = testService.createDispatch(portQName, SOAPMessage.class,
  *     Service.Mode.MESSAGE);
  *   SOAPMessage response = dispatch.invoke(request);
  *   ...
@@ -83,14 +83,13 @@ public class JavasePackager extends ProviderPackager {
      * by returning null, the generated _dbws.DDBWProvider class will have a slightly-different
      * class annotation:
      * <pre>
-     * @WebServiceProvider(
+     * &#064;WebServiceProvider(
      *   // note: no 'wsdlLocation' attribute
      *   serviceName = ${serviceName},
      *   portName = ${servicePort},
      *   targetNamespace = ${serviceNamespace}
      * )
-</pre>
-)
+     * </pre>
      */
     @Override
     public String getWSDLPathPrefix() {

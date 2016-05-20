@@ -88,25 +88,21 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     protected boolean isOutputCursorResultSet = false;
 
     /**
-     * Base constructor for EJBQueryImpl. Initializes basic variables.
+     * Base constructor for StoredProcedureQueryImpl. Initializes basic variables.
      */
     protected StoredProcedureQueryImpl(EntityManagerImpl entityManager) {
         super(entityManager);
     }
 
     /**
-     * Create an EJBQueryImpl with a DatabaseQuery.
+     * Create an StoredProcedureQueryImpl with a DatabaseQuery.
      */
     public StoredProcedureQueryImpl(DatabaseQuery query, EntityManagerImpl entityManager) {
         super(query, entityManager);
     }
 
     /**
-     * Create an EJBQueryImpl with either a query name or an jpql string.
-     *
-     * @param isNamedQuery
-     *            determines whether to treat the queryDescription as jpql or a
-     *            query name.
+     * Create an StoredProcedureQueryImpl with a query name.
      */
     public StoredProcedureQueryImpl(String name, EntityManagerImpl entityManager) {
         super(entityManager);

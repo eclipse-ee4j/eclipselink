@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -16,6 +16,25 @@ package org.eclipse.persistence.tools.dbws;
 import static java.util.logging.Level.SEVERE;
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI;
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
+// EclipseLink imports
+import static org.eclipse.persistence.internal.xr.Util.DBWS_OR_XML;
+import static org.eclipse.persistence.internal.xr.Util.DBWS_OX_XML;
+import static org.eclipse.persistence.internal.xr.Util.DBWS_SCHEMA_XML;
+import static org.eclipse.persistence.internal.xr.Util.DBWS_SERVICE_XML;
+import static org.eclipse.persistence.internal.xr.Util.DBWS_SESSIONS_XML;
+import static org.eclipse.persistence.internal.xr.Util.DBWS_WSDL;
+import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.archive;
+import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.ignore;
+import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.noArchive;
+import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_CLASS_FILE;
+import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_SOURCE_FILE;
+import static org.eclipse.persistence.tools.dbws.Util.DEFAULT_PLATFORM_CLASSNAME;
+import static org.eclipse.persistence.tools.dbws.Util.DEFAULT_WSDL_LOCATION_URI;
+import static org.eclipse.persistence.tools.dbws.Util.PROVIDER_LISTENER_CLASS_FILE;
+import static org.eclipse.persistence.tools.dbws.Util.PROVIDER_LISTENER_SOURCE_FILE;
+import static org.eclipse.persistence.tools.dbws.Util.SWAREF_FILENAME;
+import static org.eclipse.persistence.tools.dbws.Util.WEB_XML_FILENAME;
+import static org.eclipse.persistence.tools.dbws.XRPackager.__nullStream;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -40,26 +59,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.wsdl.WSDLException;
-
-// EclipseLink imports
-import static org.eclipse.persistence.internal.xr.Util.DBWS_OR_XML;
-import static org.eclipse.persistence.internal.xr.Util.DBWS_OX_XML;
-import static org.eclipse.persistence.internal.xr.Util.DBWS_SCHEMA_XML;
-import static org.eclipse.persistence.internal.xr.Util.DBWS_SERVICE_XML;
-import static org.eclipse.persistence.internal.xr.Util.DBWS_SESSIONS_XML;
-import static org.eclipse.persistence.internal.xr.Util.DBWS_WSDL;
-import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.archive;
-import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.ignore;
-import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.noArchive;
-import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_CLASS_FILE;
-import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_SOURCE_FILE;
-import static org.eclipse.persistence.tools.dbws.Util.DEFAULT_PLATFORM_CLASSNAME;
-import static org.eclipse.persistence.tools.dbws.Util.DEFAULT_WSDL_LOCATION_URI;
-import static org.eclipse.persistence.tools.dbws.Util.PROVIDER_LISTENER_CLASS_FILE;
-import static org.eclipse.persistence.tools.dbws.Util.PROVIDER_LISTENER_SOURCE_FILE;
-import static org.eclipse.persistence.tools.dbws.Util.SWAREF_FILENAME;
-import static org.eclipse.persistence.tools.dbws.Util.WEB_XML_FILENAME;
-import static org.eclipse.persistence.tools.dbws.XRPackager.__nullStream;
 
 import org.eclipse.persistence.dbws.DBWSModel;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -154,12 +153,12 @@ public class DBWSBuilder extends DBWSBuilderModel {
      *
      * This method expects 6 or 7 arguments (7 if the archive file name is provided), as follows:
      *   [0] -builderFile
-     *   [1] <builder filename>
+     *   [1] &lt;builder filename&gt;
      *   [2] -stageDir
-     *   [3] <stage dir>
+     *   [3] &lt;stage dir&gt;
      *   [4] -packagAs
-     *   [5] <package type> (wls, jdev, etc.)
-     *   [6] <archive filename> (optional)
+     *   [5] &lt;package type&gt; (wls, jdev, etc.)
+     *   [6] &lt;archive filename&gt; (optional)
      */
     public void start(String[] args) throws WSDLException {
         if (args.length > 5 && BUILDER_FILE_PATH.equals(args[0]) && STAGE_DIR.equals(args[2]) && args[4].startsWith(BUILDER_PACKAGING)) {
@@ -604,7 +603,7 @@ public class DBWSBuilder extends DBWSBuilderModel {
                 @SuppressWarnings("unused")
                 Class driverClass = null;
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    driverClass = (Class)AccessController.doPrivileged(
+                    driverClass = AccessController.doPrivileged(
                         new PrivilegedClassForName(driverClassName));
                 }
                 else {
@@ -696,7 +695,7 @@ public class DBWSBuilder extends DBWSBuilderModel {
             try {
                 Class platformClass = null;
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    platformClass = (Class)AccessController.doPrivileged(
+                    platformClass = AccessController.doPrivileged(
                         new PrivilegedClassForName(platformClassname));
                 }
                 else {

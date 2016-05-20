@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -1012,7 +1012,7 @@ public class Util {
     }
 
     /**
-     * Indicates if a given List<DatabaseType> contains one or more arguments that
+     * Indicates if a given List&lt;ArgumentType&gt; contains one or more arguments that
      * are considered 'complex', i.e. PLSQLRecordType, PLSQLCollectionType,
      * VArrayType, ObjectType, or NestedTableType
      */
@@ -1026,7 +1026,7 @@ public class Util {
     }
 
     /**
-     * Indicates if a given List<DatabaseType> contains one or more arguments
+     * Indicates if a given List&lt;ArgumentType&gt; contains one or more arguments
      * that are considered PL/SQL scalars, i.e. PLSQLBoolean, PLSQLInteger,
      * BinaryInteger, etc.
      */
@@ -1040,7 +1040,7 @@ public class Util {
     }
 
     /**
-     * Indicates if a given List<ArgumentType> contains a PL/SQL Cursor
+     * Indicates if a given List&lt;ArgumentType&gt; contains a PL/SQL Cursor
      * type.
      */
     public static boolean hasPLSQLCursorArg(List<ArgumentType> arguments) {

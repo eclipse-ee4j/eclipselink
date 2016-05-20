@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,6 +12,14 @@
  ******************************************************************************/
 package org.eclipse.persistence.tools.dbws;
 
+import static org.eclipse.persistence.internal.xr.Util.DBWS_WSDL;
+import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.noArchive;
+import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_CLASS_FILE;
+import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_SOURCE_FILE;
+import static org.eclipse.persistence.tools.dbws.Util.DOT_CLASS;
+import static org.eclipse.persistence.tools.dbws.Util.PROVIDER_LISTENER_CLASS_FILE;
+import static org.eclipse.persistence.tools.dbws.Util.PROVIDER_LISTENER_SOURCE_FILE;
+
 //javase imports
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -22,21 +30,17 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
+import javax.servlet.ServletContextListener;
 //java eXtension imports
 import javax.tools.Diagnostic;
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaFileObject;
+import javax.xml.ws.Provider;
+
+import org.eclipse.persistence.internal.dbws.ProviderHelper;
 
 //EclipseLink imports
 import _dbws.ProviderListener;
-import org.eclipse.persistence.internal.dbws.ProviderHelper;
-import static org.eclipse.persistence.internal.xr.Util.DBWS_WSDL;
-import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.noArchive;
-import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_CLASS_FILE;
-import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_SOURCE_FILE;
-import static org.eclipse.persistence.tools.dbws.Util.DOT_CLASS;
-import static org.eclipse.persistence.tools.dbws.Util.PROVIDER_LISTENER_CLASS_FILE;
-import static org.eclipse.persistence.tools.dbws.Util.PROVIDER_LISTENER_SOURCE_FILE;
 
 /**
  * <p>

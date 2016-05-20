@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -347,7 +347,7 @@ public abstract class BaseDBWSBuilderHelper {
     }
 
     /**
-     * Builds OR/OX projects, descriptors & mappings.  This method can be
+     * Builds OR/OX projects, descriptors {@literal &} mappings.  This method can be
      * used when no complex types exist, and only table(s) and secondary
      * SQL will be used when building.
      */
@@ -356,7 +356,7 @@ public abstract class BaseDBWSBuilderHelper {
     }
 
     /**
-     * Builds OR/OX projects, descriptors & mappings, based on a given list
+     * Builds OR/OX projects, descriptors {@literal &} mappings, based on a given list
      * of types, as well as table(s) and secondary SQL.
      */
     public void buildOROXProjects(NamingConventionTransformer nct, List<CompositeDatabaseType> types) {
@@ -510,8 +510,8 @@ public abstract class BaseDBWSBuilderHelper {
 
     /**
      * Gather table and procedure information based on TableOperation
-     * and ProcedureOperation.  End result will be List<TableType>
-     * and List<ProcedureType>.
+     * and ProcedureOperation.  End result will be List&lt;TableType&gt;
+     * and List&lt;ProcedureType&gt;.
      */
     public void buildDbArtifacts() {
         List<TableOperationModel> tableOperations = new ArrayList<TableOperationModel>();

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,6 +12,17 @@
  ******************************************************************************/
 
 package org.eclipse.persistence.tools.dbws;
+
+import static org.eclipse.persistence.internal.xr.Util.DASH_STR;
+import static org.eclipse.persistence.internal.xr.Util.DBWS_OR_SESSION_NAME_SUFFIX;
+import static org.eclipse.persistence.internal.xr.Util.DBWS_OR_XML;
+import static org.eclipse.persistence.internal.xr.Util.DBWS_OX_SESSION_NAME_SUFFIX;
+import static org.eclipse.persistence.internal.xr.Util.DBWS_OX_XML;
+import static org.eclipse.persistence.internal.xr.Util.DBWS_SCHEMA_XML;
+import static org.eclipse.persistence.internal.xr.Util.DBWS_SERVICE_XML;
+import static org.eclipse.persistence.internal.xr.Util.EMPTY_STR;
+import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.noArchive;
+import static org.eclipse.persistence.tools.dbws.Util.SWAREF_FILENAME;
 
 //javase imports
 import java.io.File;
@@ -28,17 +39,6 @@ import org.eclipse.persistence.internal.sessions.factories.model.log.DefaultSess
 import org.eclipse.persistence.internal.sessions.factories.model.login.DatabaseLoginConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.session.DatabaseSessionConfig;
 
-import static org.eclipse.persistence.internal.xr.Util.DASH_STR;
-import static org.eclipse.persistence.internal.xr.Util.DBWS_OR_SESSION_NAME_SUFFIX;
-import static org.eclipse.persistence.internal.xr.Util.DBWS_OX_SESSION_NAME_SUFFIX;
-import static org.eclipse.persistence.internal.xr.Util.DBWS_OR_XML;
-import static org.eclipse.persistence.internal.xr.Util.DBWS_OX_XML;
-import static org.eclipse.persistence.internal.xr.Util.DBWS_SCHEMA_XML;
-import static org.eclipse.persistence.internal.xr.Util.DBWS_SERVICE_XML;
-import static org.eclipse.persistence.internal.xr.Util.EMPTY_STR;
-import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.noArchive;
-import static org.eclipse.persistence.tools.dbws.Util.SWAREF_FILENAME;
-
 /**
  * <p>
  * <b>PUBLIC:</b> XRPackager implements the {@link DBWSPackager} interface. This packager is <br>
@@ -52,7 +52,7 @@ import static org.eclipse.persistence.tools.dbws.Util.SWAREF_FILENAME;
  *    |   eclipselink-dbws-or.xml
  *    |   eclipselink-dbws-ox.xml
  *    |   eclipselink-dbws-schema.xsd
- *    |   eclipselink-dbws-sessions.xml    -- name can be overriden by <sessions-file> entry in eclipselink-dbws.xml
+ *    |   eclipselink-dbws-sessions.xml    -- name can be overriden by &lt;sessions-file&gt; entry in eclipselink-dbws.xml
  *    |   <i>swaref.xsd</i>                       -- optional if attachements are enabled
  * </pre>
  *
@@ -109,10 +109,12 @@ public class XRPackager implements DBWSPackager {
         this.archiveUse = useJavaArchive;
     }
 
+    @Override
     public void setDBWSBuilder(DBWSBuilder builder) {
         this.builder = builder;
     }
 
+    @Override
     public void setAdditionalArgs(String[] additionalArgs) {
         this.additionalArgs = additionalArgs;
         if (additionalArgs != null) {
@@ -128,23 +130,29 @@ public class XRPackager implements DBWSPackager {
             setArchiveFilename(builder.getProjectName());
         }
     }
+    @Override
     public File getStageDir() {
         return this.stageDir;
     }
+    @Override
     public void setStageDir(File stageDir) {
         this.stageDir = stageDir;
     }
 
+    @Override
     public String getSessionsFileName() {
         return sessionsFileName;
     }
+    @Override
     public void setSessionsFileName(String sessionsFileName) {
         this.sessionsFileName = sessionsFileName;
     }
 
+    @Override
     public boolean hasAttachments() {
         return hasAttachments;
     }
+    @Override
     public void setHasAttachments(boolean hasAttachments) {
         this.hasAttachments = hasAttachments;
     }
@@ -155,6 +163,7 @@ public class XRPackager implements DBWSPackager {
     public void setArchiver(Archiver archiver) {
         this.archiver = archiver;
     }
+    @Override
     public void setArchiveUse(ArchiveUse packagerUse) {
         this.archiveUse = packagerUse;
         processArchiveUse();
@@ -174,24 +183,28 @@ public class XRPackager implements DBWSPackager {
     public Archiver buildDefaultArchiver() {
         return null;
     }
+    @Override
     public String getArchiveFilename() {
         if (archiver != null) {
             return archiver.getFilename();
         }
         return null;
     }
+    @Override
     public void setArchiveFilename(String archiveFilename) {
         if (archiver != null) {
             archiver.setFilename(archiveFilename);
         }
     }
 
+    @Override
     public String getPackagerLabel() {
         return packagerLabel;
     }
     public String getArchiverLabel() {
         return archiveUse.name();
     }
+    @Override
     public String getUsage() {
         StringBuilder sb = new StringBuilder("-packageAs:[default=");
         sb.append(getArchiverLabel());
@@ -207,22 +220,27 @@ public class XRPackager implements DBWSPackager {
         return " [jarFilename]";
     }
 
+    @Override
     public void start() {
         if (stageDir == null) {
             throw new DBWSException(this.getClass().getSimpleName() + " stageDir cannot be null");
         }
     }
 
+    @Override
     public OutputStream getSchemaStream() throws FileNotFoundException {
         return new FileOutputStream(new File(stageDir, DBWS_SCHEMA_XML));
     }
+    @Override
     public void closeSchemaStream(OutputStream schemaStream) {
         closeStream(schemaStream);
     }
 
+    @Override
     public OutputStream getSessionsStream(String sessionsFileName) throws FileNotFoundException {
         return new FileOutputStream(new File(stageDir, sessionsFileName));
     }
+    @Override
     public SessionConfigs buildSessionsXML(OutputStream dbwsSessionsStream, DBWSBuilder builder) {
         // build basic sessions.xml - no server platform settings, no Datasource settings
         SessionConfigs ts =    new SessionConfigs();
@@ -269,99 +287,124 @@ public class XRPackager implements DBWSPackager {
         return ts;
     }
 
+    @Override
     public void closeSessionsStream(OutputStream sessionsStream) {
         closeStream(sessionsStream);
     }
 
+    @Override
     public OutputStream getServiceStream() throws FileNotFoundException {
         return new FileOutputStream(new File(stageDir, DBWS_SERVICE_XML));
     }
+    @Override
     public void closeServiceStream(OutputStream serviceStream) {
         closeStream(serviceStream);
     }
 
+    @Override
     public OutputStream getOrStream() throws FileNotFoundException {
         return new FileOutputStream(new File(stageDir, DBWS_OR_XML));
     }
+    @Override
     public String getOrProjectPathPrefix() {
         if (archiver == null) {
             return null;
         }
         return archiver.getOrProjectPathPrefix();
     }
+    @Override
     public void closeOrStream(OutputStream orStream) {
         closeStream(orStream);
     }
 
+    @Override
     public OutputStream getOxStream() throws FileNotFoundException {
         return new FileOutputStream(new File(stageDir, DBWS_OX_XML));
     }
+    @Override
     public String getOxProjectPathPrefix() {
         if (archiver == null) {
             return null;
         }
         return archiver.getOxProjectPathPrefix();
     }
+    @Override
     public void closeOxStream(OutputStream oxStream) {
         closeStream(oxStream);
     }
 
+    @Override
     public OutputStream getWSDLStream() throws FileNotFoundException {
         return __nullStream;
     }
+    @Override
     public String getWSDLPathPrefix() {
         if (archiver == null) {
             return null;
         }
         return archiver.getWSDLPathPrefix();
     }
+    @Override
     public void closeWSDLStream(OutputStream wsdlStream) {
         closeStream(wsdlStream);
     }
 
+    @Override
     public OutputStream getSWARefStream() throws FileNotFoundException {
         if (!hasAttachments) {
             return __nullStream;
         }
         return new FileOutputStream(new File(stageDir, SWAREF_FILENAME));
     }
+    @Override
     public void closeSWARefStream(OutputStream swarefStream) {
         closeStream(swarefStream);
     }
 
+    @Override
     public OutputStream getWebXmlStream() throws FileNotFoundException {
         return __nullStream;
     }
+    @Override
     public void writeWebXml(OutputStream webXmlStream, DBWSBuilder dbwsBuilder) {
     }
+    @Override
     public void closeWebXmlStream(OutputStream webXmlStream) {
         closeStream(webXmlStream);
     }
 
+    @Override
     public OutputStream getProviderSourceStream() throws FileNotFoundException {
         return __nullStream;
     }
+    @Override
     public void closeProviderSourceStream(OutputStream sourceProviderStream) {
         closeStream(sourceProviderStream);
     }
 
+    @Override
     public OutputStream getProviderClassStream() throws FileNotFoundException {
         return __nullStream;
     }
+    @Override
     public void closeProviderClassStream(OutputStream classProviderStream) {
         closeStream(classProviderStream);
     }
 
+    @Override
     public OutputStream getProviderListenerSourceStream() throws FileNotFoundException {
         return __nullStream;
     }
+    @Override
     public void closeProviderListenerSourceStream(OutputStream sourceProviderListenerStream) {
         closeStream(sourceProviderListenerStream);
     }
 
+    @Override
     public OutputStream getProviderListenerClassStream() throws FileNotFoundException {
         return __nullStream;
     }
+    @Override
     public void closeProviderListenerClassStream(OutputStream classProviderListenerStream) {
         closeStream(classProviderListenerStream);
     }
@@ -383,6 +426,7 @@ public class XRPackager implements DBWSPackager {
         }
     }
 
+    @Override
     public void end() {
         if (archiver != null) {
             archiver.archive();
