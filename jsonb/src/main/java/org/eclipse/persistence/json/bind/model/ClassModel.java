@@ -13,7 +13,7 @@
 package org.eclipse.persistence.json.bind.model;
 
 import org.eclipse.persistence.json.bind.internal.AnnotationIntrospector;
-import org.eclipse.persistence.json.bind.internal.JsonbContext;
+import org.eclipse.persistence.json.bind.internal.ProcessingContext;
 
 import javax.json.bind.JsonbException;
 import java.util.Collections;
@@ -84,7 +84,7 @@ public class ClassModel {
             }
         }
         final ClassModel parent =
-                JsonbContext.getInstance().getMappingContext().getClassModel(classModel.getRawType().getSuperclass());
+                ProcessingContext.getMappingContext().getClassModel(classModel.getRawType().getSuperclass());
         return parent == null ? null : searchProperty(parent, jsonReadName);
     }
 

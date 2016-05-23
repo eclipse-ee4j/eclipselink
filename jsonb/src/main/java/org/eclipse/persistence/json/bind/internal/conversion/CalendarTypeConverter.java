@@ -1,6 +1,6 @@
 package org.eclipse.persistence.json.bind.internal.conversion;
 
-import org.eclipse.persistence.json.bind.internal.JsonbContext;
+import org.eclipse.persistence.json.bind.internal.ProcessingContext;
 import org.eclipse.persistence.json.bind.model.Customization;
 
 import javax.json.bind.JsonbConfig;
@@ -8,7 +8,11 @@ import javax.json.bind.annotation.JsonbDateFormat;
 import java.lang.reflect.Type;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.*;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.time.temporal.TemporalAccessor;
@@ -32,7 +36,7 @@ public class CalendarTypeConverter extends AbstractTypeConverter<Calendar> {
 
     @Override
     public Calendar fromJson(String jsonValue, Type type, Customization customization) {
-        final JsonbDateFormatter formatter = customization.getDateTimeFormatter();
+        final JsonbDateFormatter formatter = getDateFormatter(customization);
         Calendar result = (Calendar) calendarTemplate.clone();
         final String format = formatter.getFormat();
         if (JsonbDateFormat.TIME_IN_MILLIS.equals(format)) {
@@ -87,7 +91,7 @@ public class CalendarTypeConverter extends AbstractTypeConverter<Calendar> {
 
     @Override
     public String toJson(Calendar object, Customization customization) {
-        final JsonbDateFormatter formatter = customization.getDateTimeFormatter();
+        final JsonbDateFormatter formatter = getDateFormatter(customization);
         if (JsonbDateFormat.TIME_IN_MILLIS.equals(formatter.getFormat())) {
             return String.valueOf(object.getTime().getTime());
         }
@@ -95,7 +99,7 @@ public class CalendarTypeConverter extends AbstractTypeConverter<Calendar> {
         Locale locale = formatter.getLocale();
         if (JsonbDateFormat.DEFAULT_FORMAT.equals(formatter.getFormat())) {
             final Optional<Object> strictJson =
-                    JsonbContext.getInstance().getConfig().getProperty(JsonbConfig.STRICT_IJSON);
+                    ProcessingContext.getJsonbContext().getConfig().getProperty(JsonbConfig.STRICT_IJSON);
 
             //Use ISO_DATE_TIME, convert to java.time first
             //TODO PERF subject to reconsider if conversion between java.time and java.util outweights threadsafe java.time formatter.
@@ -113,6 +117,10 @@ public class CalendarTypeConverter extends AbstractTypeConverter<Calendar> {
         DateFormat custom = new SimpleDateFormat(formatter.getFormat(), locale);
         custom.setTimeZone(object.getTimeZone());
         return custom.format(object.getTime());
+    }
+
+    private JsonbDateFormatter getDateFormatter(Customization customization) {
+        return customization != null ? customization.getDateTimeFormatter() : JsonbDateFormatter.getDefault();
     }
 
 }

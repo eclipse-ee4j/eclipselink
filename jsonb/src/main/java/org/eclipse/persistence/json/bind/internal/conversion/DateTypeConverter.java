@@ -23,7 +23,7 @@ public class DateTypeConverter extends AbstractTypeConverter<Date> {
 
     @Override
     public Date fromJson(String jsonValue, Type type, Customization customization) {
-        final JsonbDateFormatter dateFormatter = customization.getDateTimeFormatter();
+        final JsonbDateFormatter dateFormatter = getDateFormatter(customization);
         if(JsonbDateFormat.TIME_IN_MILLIS.equals(dateFormatter.getFormat())) {
             return new Date(Long.parseLong(jsonValue));
         }
@@ -37,7 +37,7 @@ public class DateTypeConverter extends AbstractTypeConverter<Date> {
 
     @Override
     public String toJson(Date object, Customization customization) {
-        final JsonbDateFormatter formatter = customization.getDateTimeFormatter();
+        final JsonbDateFormatter formatter = getDateFormatter(customization);
         if (JsonbDateFormat.TIME_IN_MILLIS.equals(formatter.getFormat())) {
             return String.valueOf(object.getTime());
         }
@@ -49,6 +49,10 @@ public class DateTypeConverter extends AbstractTypeConverter<Date> {
             return new SimpleDateFormat(JsonbDateFormatter.ISO_8601_DATE_TIME_FORMAT, formatter.getLocale());
         }
         return new SimpleDateFormat(formatter.getFormat(), formatter.getLocale());
+    }
+
+    private JsonbDateFormatter getDateFormatter(Customization customization) {
+        return customization != null ? customization.getDateTimeFormatter() : JsonbDateFormatter.getDefault();
     }
 
 }

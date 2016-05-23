@@ -14,7 +14,7 @@
 package org.eclipse.persistence.json.bind.model;
 
 import org.eclipse.persistence.json.bind.internal.AnnotationIntrospector;
-import org.eclipse.persistence.json.bind.internal.JsonbContext;
+import org.eclipse.persistence.json.bind.internal.ProcessingContext;
 
 import javax.json.bind.config.PropertyVisibilityStrategy;
 import java.lang.reflect.Field;
@@ -143,7 +143,7 @@ public abstract class PropertyValuePropagation {
         final Optional<PropertyVisibilityStrategy> classLevelStrategy =
                 AnnotationIntrospector.getInstance().getPropertyVisibilityStrategy(declaringClass);
         Optional<PropertyVisibilityStrategy> strategy =
-                Optional.ofNullable(classLevelStrategy.orElse(JsonbContext.getInstance().getPropertyVisibilityStrategy()));
+                Optional.ofNullable(classLevelStrategy.orElse(ProcessingContext.getJsonbContext().getPropertyVisibilityStrategy()));
 
         return strategy.map(visibilityCheckFunction);
     }

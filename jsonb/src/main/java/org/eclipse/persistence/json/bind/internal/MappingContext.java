@@ -12,8 +12,13 @@
  ******************************************************************************/
 package org.eclipse.persistence.json.bind.internal;
 
+import org.eclipse.persistence.json.bind.internal.conversion.ConvertersMapTypeConverter;
+import org.eclipse.persistence.json.bind.internal.conversion.TypeConverter;
 import org.eclipse.persistence.json.bind.model.ClassModel;
 
+import javax.json.JsonValue;
+import java.util.Collection;
+import java.util.Map;
 import java.util.Stack;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -31,13 +36,26 @@ import java.util.concurrent.ConcurrentHashMap;
 public class MappingContext {
     private final ConcurrentHashMap<Class<?>, ClassModel> classes = new ConcurrentHashMap<>();
     private final ClassParser classParser = new ClassParser();
+    private final TypeConverter converter = ConvertersMapTypeConverter.getInstance();
+    private static final Class<?>[] supportedTypes;
+
+    static {
+        supportedTypes = new Class[]{Collection.class, Map.class, JsonValue.class};
+    }
 
     /**
      * Search for class model.
      * Parse class and create one if not found.
      * @param clazz clazz to search by or parse, not null.
      */
-    public void parseClassModel(Class<?> clazz) {
+    public ClassModel getOrCreateClassModel(Class<?> clazz) {
+        if (supported(clazz)) {
+            throw new IllegalStateException("Trying to load class model for supported class.");
+        }
+        ClassModel classModel = classes.get(clazz);
+        if (classModel != null) {
+            return classModel;
+        }
         final Stack<Class> newClassModels = new Stack<>();
         for (Class classToParse = clazz; classToParse != Object.class; classToParse = classToParse.getSuperclass()) {
             newClassModels.push(classToParse);
@@ -46,11 +64,12 @@ public class MappingContext {
         while (!newClassModels.empty()) {
             Class toParse = newClassModels.pop();
             classes.computeIfAbsent(toParse, aClass -> {
-                final ClassModel classModel = new ClassModel(aClass);
-                classParser.parseProperties(classModel);
-                return  classModel;
+                final ClassModel newClassModel = new ClassModel(aClass);
+                classParser.parseProperties(newClassModel);
+                return  newClassModel;
             });
         }
+        return classes.get(clazz);
     }
 
     /**
@@ -60,6 +79,15 @@ public class MappingContext {
      */
     public ClassModel getClassModel(Class<?> clazz) {
         return classes.get(clazz);
+    }
+
+    public boolean supported(Class<?> clazz) {
+        for (final Class<?> supportedType : supportedTypes) {
+            if (supportedType.isAssignableFrom(clazz)) {
+                return true;
+            }
+        }
+        return converter.supportsToJson(clazz);
     }
 
 }

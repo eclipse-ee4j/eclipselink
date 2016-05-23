@@ -15,6 +15,8 @@ package org.eclipse.persistence.json.bind.internal.unmarshaller;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * {@link ParameterizedType} implementation containing array of resolved TypeVariable type args.
@@ -70,5 +72,22 @@ public class ResolvedParameterizedType implements ParameterizedType {
             sb.append("]");
         }
         return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || !(o instanceof ParameterizedType)) return false;
+        final ParameterizedType that = (ParameterizedType) o;
+        return this.getRawType().equals(that.getRawType())
+                && Objects.equals(this.getOwnerType(), that.getOwnerType())
+                && Arrays.equals(resolvedTypeArgs, that.getActualTypeArguments());
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(resolvedTypeArgs) ^
+                (getOwnerType() == null ? 0 : getOwnerType().hashCode() ) ^
+                (getRawType() == null   ? 0 : getRawType().hashCode() );
     }
 }

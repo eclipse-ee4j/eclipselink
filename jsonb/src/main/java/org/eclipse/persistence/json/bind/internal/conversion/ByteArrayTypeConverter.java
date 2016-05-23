@@ -1,6 +1,6 @@
 package org.eclipse.persistence.json.bind.internal.conversion;
 
-import org.eclipse.persistence.json.bind.internal.JsonbContext;
+import org.eclipse.persistence.json.bind.internal.ProcessingContext;
 import org.eclipse.persistence.json.bind.model.Customization;
 
 import javax.json.bind.JsonbConfig;
@@ -22,10 +22,10 @@ public class ByteArrayTypeConverter extends AbstractTypeConverter<byte[]> {
 
     @Override
     public byte[] fromJson(String jsonValue, Type type, Customization customization) {
-        if ((boolean)JsonbContext.getInstance().getConfig().getProperty(JsonbConfig.STRICT_IJSON).orElse(false)) {
+        if ((boolean) ProcessingContext.getJsonbContext().getConfig().getProperty(JsonbConfig.STRICT_IJSON).orElse(false)) {
             return Base64.getUrlDecoder().decode(jsonValue);
-        } else if (JsonbContext.getInstance().getConfig().getProperty(JsonbConfig.BINARY_DATA_STRATEGY).isPresent()) {
-            String strategy = (String) JsonbContext.getInstance().getConfig().getProperty(JsonbConfig.BINARY_DATA_STRATEGY).get();
+        } else if (ProcessingContext.getJsonbContext().getConfig().getProperty(JsonbConfig.BINARY_DATA_STRATEGY).isPresent()) {
+            String strategy = (String) ProcessingContext.getJsonbContext().getConfig().getProperty(JsonbConfig.BINARY_DATA_STRATEGY).get();
             if (strategy == null){
                 throw new JsonbException("Unsupported binary data strategy!");
             }
@@ -51,10 +51,10 @@ public class ByteArrayTypeConverter extends AbstractTypeConverter<byte[]> {
 
     @Override
     public String toJson(byte[] object, Customization customization) {
-        if ((boolean)JsonbContext.getInstance().getConfig().getProperty(JsonbConfig.STRICT_IJSON).orElse(false)) {
+        if ((boolean)ProcessingContext.getJsonbContext().getConfig().getProperty(JsonbConfig.STRICT_IJSON).orElse(false)) {
             return Base64.getUrlEncoder().encodeToString(object);
-        } else if (JsonbContext.getInstance().getConfig().getProperty(JsonbConfig.BINARY_DATA_STRATEGY).isPresent()) {
-            String strategy = (String) JsonbContext.getInstance().getConfig().getProperty(JsonbConfig.BINARY_DATA_STRATEGY).get();
+        } else if (ProcessingContext.getJsonbContext().getConfig().getProperty(JsonbConfig.BINARY_DATA_STRATEGY).isPresent()) {
+            String strategy = (String) ProcessingContext.getJsonbContext().getConfig().getProperty(JsonbConfig.BINARY_DATA_STRATEGY).get();
             if (strategy == null){
                 throw new JsonbException("Unsupported binary data strategy!");
             }

@@ -12,7 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.json.bind.internal.unmarshaller;
 
-import org.eclipse.persistence.json.bind.internal.JsonbContext;
+import org.eclipse.persistence.json.bind.internal.ProcessingContext;
 import org.eclipse.persistence.json.bind.internal.ReflectionUtils;
 import org.eclipse.persistence.json.bind.model.ClassModel;
 import org.eclipse.persistence.json.bind.model.Customization;
@@ -26,7 +26,7 @@ import java.util.Collection;
  *
  * @author Roman Grigoriadi
  */
-class CollectionItem<T extends Collection<?>> extends AbstractItem<T> implements UnmarshallerItem<T>, EmbeddedItem {
+class CollectionItem<T extends Collection<?>> extends AbstractUnmarshallerItem<T> implements UnmarshallerItem<T>, EmbeddedItem {
 
     /**
      * Generic bound parameter of List.
@@ -73,11 +73,13 @@ class CollectionItem<T extends Collection<?>> extends AbstractItem<T> implements
         if (getWrapper() != null) {
             return getWrapperPropertyModel().getCustomization();
         }*/
-        ClassModel componentClassModel = JsonbContext.getInstance().getMappingContext()
+        ClassModel componentClassModel = ProcessingContext.getMappingContext()
                 .getClassModel(ReflectionUtils.getRawType(collectionValueType));
         return componentClassModel != null ? componentClassModel.getClassCustomization() : null;
     }
 
-
-
+    @Override
+    protected String getLastPropertyName() {
+        return null; //no json keys for collections
+    }
 }

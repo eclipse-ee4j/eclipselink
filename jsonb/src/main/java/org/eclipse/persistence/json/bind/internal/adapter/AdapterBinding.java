@@ -22,9 +22,7 @@ import java.util.Objects;
  *
  * @author Roman Grigoriadi
  */
-public class JsonbAdapterInfo {
-
-    private final Type fromType;
+public class AdapterBinding extends AbstractComponentBinding {
 
     private final Type toType;
 
@@ -36,25 +34,12 @@ public class JsonbAdapterInfo {
      * @param toType to not null
      * @param adapter adapter not null
      */
-    public JsonbAdapterInfo(Type fromType, Type toType, JsonbAdapter<?, ?> adapter) {
-        Objects.requireNonNull(fromType);
+    public AdapterBinding(Type fromType, Type toType, JsonbAdapter<?, ?> adapter) {
+        super(fromType);
         Objects.requireNonNull(toType);
         Objects.requireNonNull(adapter);
-        this.fromType = fromType;
         this.toType = toType;
         this.adapter = adapter;
-    }
-
-    /**
-     * Represents a type from which to adapt into.
-     * For example a type of a field in a class that we would like to adapt and map differently.
-     * During marshalling object of Type is adapted to custom object and than mapped.
-     * During unmarshalling object is unmarshalled into adapted type first, than converted to field type and set.
-     *
-     * @return Type from which to adapt
-     */
-    public Type getFromType() {
-        return fromType;
     }
 
     /**
@@ -75,5 +60,10 @@ public class JsonbAdapterInfo {
      */
     public JsonbAdapter<?, ?> getAdapter() {
         return adapter;
+    }
+
+    @Override
+    public Class<?> getComponentClass() {
+        return adapter.getClass();
     }
 }

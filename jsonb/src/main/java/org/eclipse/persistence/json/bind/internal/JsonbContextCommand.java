@@ -20,25 +20,25 @@ import java.util.Objects;
  *
  * @author Roman Grigoriadi
  */
-abstract class JsonbContextCommand {
+abstract class JsonbContextCommand<T> {
 
     /**
      * Set JsonbContext to thread local, call business and unset thereafter.
      *
      * @param context jsonb context not null
      */
-    public final void execute(JsonbContext context) {
+    public final T execute(ProcessingContext context) {
         Objects.nonNull(context);
         try {
-            JsonbContext.setInstance(context);
-            doInJsonbContext();
+            ProcessingContext.setInstance(context);
+            return doInProcessingContext();
         } finally {
-            JsonbContext.removeInstance();
+            ProcessingContext.removeInstance();
         }
     }
 
     /**
-     * Implement you business work, which will have JsonbContext available in thread local here.
+     * Implement you business work, which will have ProcessingContext available in thread local here.
      */
-    protected abstract void doInJsonbContext();
+    protected abstract T doInProcessingContext();
 }

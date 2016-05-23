@@ -12,7 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.json.bind.internal.unmarshaller;
 
-import org.eclipse.persistence.json.bind.internal.JsonbContext;
+import org.eclipse.persistence.json.bind.internal.ProcessingContext;
 import org.eclipse.persistence.json.bind.internal.ReflectionUtils;
 import org.eclipse.persistence.json.bind.model.ClassModel;
 import org.eclipse.persistence.json.bind.model.Customization;
@@ -28,7 +28,7 @@ import java.util.Map;
  *
  * @author Roman Grigoriadi
  */
-public class MapItem extends AbstractItem<Map<?, ?>> implements UnmarshallerItem<Map<?, ?>>, EmbeddedItem {
+public class MapItem extends AbstractUnmarshallerItem<Map<?, ?>> implements UnmarshallerItem<Map<?, ?>>, EmbeddedItem {
 
     /**
      * Type of value in the map.
@@ -77,7 +77,7 @@ public class MapItem extends AbstractItem<Map<?, ?>> implements UnmarshallerItem
         if (getWrapper() != null) {
             return getWrapperPropertyModel().getCustomization();
         }*/
-        ClassModel componentClassModel = JsonbContext.getInstance().getMappingContext()
+        ClassModel componentClassModel = ProcessingContext.getMappingContext()
                 .getClassModel(ReflectionUtils.getRawType(mapValueRuntimeType));
         return componentClassModel != null ? componentClassModel.getClassCustomization() : null;
     }

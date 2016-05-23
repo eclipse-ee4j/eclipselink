@@ -13,6 +13,7 @@
 
 package org.eclipse.persistence.json.bind.internal.conversion;
 
+import javax.json.bind.annotation.JsonbDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
@@ -78,5 +79,14 @@ public class JsonbDateFormatter {
      */
     public Locale getLocale() {
         return locale;
+    }
+
+    /**
+     * Default date formatter if none is provided.
+     *
+     * @return default date formatter
+     */
+    public static JsonbDateFormatter getDefault() {
+        return new JsonbDateFormatter(JsonbDateFormat.DEFAULT_FORMAT, Locale.getDefault());
     }
 }

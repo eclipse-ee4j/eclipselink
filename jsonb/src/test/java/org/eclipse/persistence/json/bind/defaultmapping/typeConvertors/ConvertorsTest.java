@@ -12,13 +12,38 @@
  ******************************************************************************/
 package org.eclipse.persistence.json.bind.defaultmapping.typeConvertors;
 
-import org.eclipse.persistence.json.bind.JsonBindingBuilder;
-import org.eclipse.persistence.json.bind.defaultmapping.typeConvertors.model.*;
-import org.eclipse.persistence.json.bind.internal.JsonbContext;
-import org.eclipse.persistence.json.bind.internal.MappingContext;
-import org.eclipse.persistence.json.bind.internal.TestJsonbContextCommand;
-import org.eclipse.persistence.json.bind.internal.cdi.DefaultConstructorCreator;
-import org.eclipse.persistence.json.bind.internal.conversion.*;
+import org.eclipse.persistence.json.bind.internal.JsonBindingBuilder;
+import org.eclipse.persistence.json.bind.defaultmapping.typeConvertors.model.BigDecimalWrapper;
+import org.eclipse.persistence.json.bind.defaultmapping.typeConvertors.model.BigIntegerWrapper;
+import org.eclipse.persistence.json.bind.defaultmapping.typeConvertors.model.ByteArrayWrapper;
+import org.eclipse.persistence.json.bind.defaultmapping.typeConvertors.model.CalendarWrapper;
+import org.eclipse.persistence.json.bind.defaultmapping.typeConvertors.model.StringWrapper;
+import org.eclipse.persistence.json.bind.internal.conversion.BooleanTypeConverter;
+import org.eclipse.persistence.json.bind.internal.conversion.CharacterTypeConverter;
+import org.eclipse.persistence.json.bind.internal.conversion.ConvertersMapTypeConverter;
+import org.eclipse.persistence.json.bind.internal.conversion.DateTypeConverter;
+import org.eclipse.persistence.json.bind.internal.conversion.DoubleTypeConverter;
+import org.eclipse.persistence.json.bind.internal.conversion.EnumTypeConverter;
+import org.eclipse.persistence.json.bind.internal.conversion.FloatTypeConverter;
+import org.eclipse.persistence.json.bind.internal.conversion.InstantTypeConverter;
+import org.eclipse.persistence.json.bind.internal.conversion.IntegerTypeConverter;
+import org.eclipse.persistence.json.bind.internal.conversion.JsonbDateFormatter;
+import org.eclipse.persistence.json.bind.internal.conversion.LocalDateTimeTypeConverter;
+import org.eclipse.persistence.json.bind.internal.conversion.LocalDateTypeConverter;
+import org.eclipse.persistence.json.bind.internal.conversion.LocalTimeTypeConverter;
+import org.eclipse.persistence.json.bind.internal.conversion.LongTypeConverter;
+import org.eclipse.persistence.json.bind.internal.conversion.NumberTypeConverter;
+import org.eclipse.persistence.json.bind.internal.conversion.OffsetDateTimeTypeConverter;
+import org.eclipse.persistence.json.bind.internal.conversion.OffsetTimeTypeConverter;
+import org.eclipse.persistence.json.bind.internal.conversion.OptionalDoubleTypeConverter;
+import org.eclipse.persistence.json.bind.internal.conversion.OptionalIntTypeConverter;
+import org.eclipse.persistence.json.bind.internal.conversion.OptionalLongTypeConverter;
+import org.eclipse.persistence.json.bind.internal.conversion.ShortTypeConverter;
+import org.eclipse.persistence.json.bind.internal.conversion.TimeZoneTypeConverter;
+import org.eclipse.persistence.json.bind.internal.conversion.TypeConverter;
+import org.eclipse.persistence.json.bind.internal.conversion.URITypeConverter;
+import org.eclipse.persistence.json.bind.internal.conversion.URLTypeConverter;
+import org.eclipse.persistence.json.bind.internal.conversion.ZonedDateTimeTypeConverter;
 import org.eclipse.persistence.json.bind.internal.properties.MessageKeys;
 import org.eclipse.persistence.json.bind.internal.properties.Messages;
 import org.eclipse.persistence.json.bind.model.CustomizationBuilder;
@@ -26,15 +51,11 @@ import org.eclipse.persistence.json.bind.model.PropertyCustomization;
 import org.junit.Assert;
 import org.junit.Test;
 
-import javax.json.Json;
-import javax.json.JsonBuilderFactory;
-import javax.json.JsonObject;
 import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbConfig;
 import javax.json.bind.JsonbException;
 import javax.json.bind.annotation.JsonbDateFormat;
 import javax.json.bind.config.BinaryDataStrategy;
-import javax.json.spi.JsonProvider;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.MalformedURLException;
@@ -43,8 +64,24 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.*;
-import java.util.*;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.Month;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.util.Base64;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+import java.util.OptionalDouble;
+import java.util.OptionalInt;
+import java.util.OptionalLong;
+import java.util.TimeZone;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -158,25 +195,6 @@ public class ConvertorsTest {
         assertEquals(1, integerTypeConverter.fromJson("1", int.class, null), 0);
         Integer actual = converter.fromJson("1", int.class, null);
         assertEquals(1, actual, 0);
-    }
-
-    @Test
-    public void testJsonObjectConvetor() {
-        JsonObjectTypeConverter jsonObjectTypeConverter = new JsonObjectTypeConverter();
-        final JsonBuilderFactory factory = Json.createBuilderFactory(null);
-        final JsonObject jsonObject = factory.createObjectBuilder()
-                .add("name", "home")
-                .add("city", "Prague")
-                .build();
-
-        JsonbContext context = new JsonbContext(new MappingContext(), new JsonbConfig(), new DefaultConstructorCreator(), JsonProvider.provider());
-        new TestJsonbContextCommand() {
-            @Override
-            protected void doInJsonbContext() {
-                assertEquals("{\"name\":\"home\",\"city\":\"Prague\"}", jsonObjectTypeConverter.toJson(jsonObject, null));
-                assertEquals(jsonObject, jsonObjectTypeConverter.fromJson("{\"name\":\"home\",\"city\":\"Prague\"}", JsonObject.class, null));
-            }
-        }.execute(context);
     }
 
     @Test

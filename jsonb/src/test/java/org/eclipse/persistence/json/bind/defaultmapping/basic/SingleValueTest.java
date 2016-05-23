@@ -1,6 +1,6 @@
 package org.eclipse.persistence.json.bind.defaultmapping.basic;
 
-import org.eclipse.persistence.json.bind.JsonBindingBuilder;
+import org.eclipse.persistence.json.bind.internal.JsonBindingBuilder;
 import org.eclipse.persistence.json.bind.internal.properties.MessageKeys;
 import org.eclipse.persistence.json.bind.internal.properties.Messages;
 import org.junit.Assert;

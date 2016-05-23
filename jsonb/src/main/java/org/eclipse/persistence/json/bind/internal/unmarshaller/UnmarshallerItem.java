@@ -13,6 +13,8 @@
 
 package org.eclipse.persistence.json.bind.internal.unmarshaller;
 
+import javax.json.stream.JsonParser;
+
 /**
  * @author Roman Grigoriadi
  */
@@ -43,4 +45,20 @@ public interface UnmarshallerItem<T> extends CurrentItem<T> {
      * @return new populated item.
      */
     UnmarshallerItem<?> newItem(String fieldName, JsonValueType jsonValueType);
+
+    boolean hasNext();
+
+    JsonParser.Event next();
+
+    /**
+     * Drives JSONP {@link javax.json.stream.JsonParser} to deserialize json document.
+     * @return instance of a type for this item
+     */
+    void deserialize();
+
+    /**
+     * Last JSON parsing event.
+     * @return parsing event
+     */
+    JsonParser.Event getLastEvent();
 }

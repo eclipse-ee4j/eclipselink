@@ -1,9 +1,11 @@
 package org.eclipse.persistence.json.bind.internal.conversion;
 
-import org.eclipse.persistence.json.bind.internal.JsonbContext;
+import org.eclipse.persistence.json.bind.internal.ProcessingContext;
 import org.eclipse.persistence.json.bind.model.Customization;
 
-import javax.json.*;
+import javax.json.JsonBuilderFactory;
+import javax.json.JsonNumber;
+import javax.json.JsonObject;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 
@@ -20,7 +22,7 @@ public class JsonNumberTypeConverter extends AbstractTypeConverter<JsonNumber> {
 
     @Override
     public JsonNumber fromJson(String jsonValue, Type type, Customization customization) {
-        final JsonBuilderFactory factory = JsonbContext.getInstance().getJsonProvider().createBuilderFactory(null);
+        final JsonBuilderFactory factory = ProcessingContext.getJsonbContext().getJsonProvider().createBuilderFactory(null);
         JsonObject jsonObject;
         try {
             Integer integer = Integer.parseInt(jsonValue);

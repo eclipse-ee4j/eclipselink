@@ -13,7 +13,9 @@
 
 package org.eclipse.persistence.json.bind.model;
 
-import org.eclipse.persistence.json.bind.internal.adapter.JsonbAdapterInfo;
+import org.eclipse.persistence.json.bind.internal.adapter.AdapterBinding;
+import org.eclipse.persistence.json.bind.internal.adapter.DeserializerBinding;
+import org.eclipse.persistence.json.bind.internal.adapter.SerializerBinding;
 import org.eclipse.persistence.json.bind.internal.conversion.JsonbDateFormatter;
 
 import java.text.NumberFormat;
@@ -33,7 +35,11 @@ public class CustomizationBuilder {
 
     private String jsonWriteName;
 
-    private JsonbAdapterInfo adapterInfo;
+    private AdapterBinding adapterInfo;
+
+    private SerializerBinding serializerBinding;
+
+    private DeserializerBinding deserializerBinding;
 
     private JsonbDateFormatter dateFormatter;
 
@@ -118,7 +124,7 @@ public class CustomizationBuilder {
      * Adapter a class or a property of a class.
      * @return adapter
      */
-    public JsonbAdapterInfo getAdapterInfo() {
+    public AdapterBinding getAdapterInfo() {
         return adapterInfo;
     }
 
@@ -126,8 +132,40 @@ public class CustomizationBuilder {
      * Adapter a class or a property of a class.
      * @param adapterInfo adapter info
      */
-    public void setAdapterInfo(JsonbAdapterInfo adapterInfo) {
+    public void setAdapterInfo(AdapterBinding adapterInfo) {
         this.adapterInfo = adapterInfo;
+    }
+
+    /**
+     * Meta info for user serializers.
+     * @return serializer info
+     */
+    public SerializerBinding getSerializerBinding() {
+        return serializerBinding;
+    }
+
+    /**
+     * Set serializer info.
+     * @param serializerBinding
+     */
+    public void setSerializerBinding(SerializerBinding serializerBinding) {
+        this.serializerBinding = serializerBinding;
+    }
+
+    /**
+     * Deserializer info.
+     * @return deserialzier
+     */
+    public DeserializerBinding getDeserializerBinding() {
+        return deserializerBinding;
+    }
+
+    /**
+     * Deserializer info.
+     * @param deserializerBinding deserializer
+     */
+    public void setDeserializerBinding(DeserializerBinding deserializerBinding) {
+        this.deserializerBinding = deserializerBinding;
     }
 
     /**

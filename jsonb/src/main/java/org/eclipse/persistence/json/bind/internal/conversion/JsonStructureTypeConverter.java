@@ -1,6 +1,6 @@
 package org.eclipse.persistence.json.bind.internal.conversion;
 
-import org.eclipse.persistence.json.bind.internal.JsonbContext;
+import org.eclipse.persistence.json.bind.internal.ProcessingContext;
 import org.eclipse.persistence.json.bind.model.Customization;
 
 import javax.json.JsonStructure;
@@ -19,13 +19,13 @@ public class JsonStructureTypeConverter extends AbstractTypeConverter<JsonStruct
 
     @Override
     public JsonStructure fromJson(String jsonValue, Type type, Customization customization) {
-        return getJsonObject(jsonValue);
+        throw new UnsupportedOperationException("Unexpected call");
     }
 
     @Override
     public String toJson(JsonStructure object, Customization customization) {
         final StringWriter stringWriter = new StringWriter();
-        final JsonWriter jsonWriter = JsonbContext.getInstance().getJsonProvider().createWriter(stringWriter);
+        final JsonWriter jsonWriter = ProcessingContext.getJsonbContext().getJsonProvider().createWriter(stringWriter);
         jsonWriter.write(object);
         jsonWriter.close();
 

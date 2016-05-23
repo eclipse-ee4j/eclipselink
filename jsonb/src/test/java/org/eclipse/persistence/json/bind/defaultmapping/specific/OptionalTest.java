@@ -12,7 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.json.bind.defaultmapping.specific;
 
-import org.eclipse.persistence.json.bind.JsonBindingBuilder;
+import org.eclipse.persistence.json.bind.internal.JsonBindingBuilder;
 import org.eclipse.persistence.json.bind.defaultmapping.generics.model.ScalarValueWrapper;
 import org.junit.Test;
 

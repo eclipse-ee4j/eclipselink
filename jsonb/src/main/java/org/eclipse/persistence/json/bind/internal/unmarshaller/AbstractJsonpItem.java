@@ -26,7 +26,7 @@ import java.math.BigDecimal;
  *
  * @author Roman Grigoriadi
  */
-public abstract class AbstractJsonpItem<T extends JsonValue> extends AbstractItem<T> implements UnmarshallerItem<T> {
+public abstract class AbstractJsonpItem<T extends JsonValue> extends AbstractUnmarshallerItem<T> implements UnmarshallerItem<T> {
 
     /**
      * Create instance of current item with its builder.
@@ -64,8 +64,8 @@ public abstract class AbstractJsonpItem<T extends JsonValue> extends AbstractIte
         switch (jsonValueType) {
             case OBJECT:
             case ARRAY:
-                return new UnmarshallerItemBuilder().withJsonKeyName(fieldName).withJsonValueType(jsonValueType)
-                        .withWrapper(this).withType(JsonObject.class).build();
+                return newUnmarshallerItemBuilder().withJsonKeyName(fieldName).withJsonValueType(jsonValueType)
+                        .withType(JsonObject.class).build();
 
             default:
                 throw new IllegalStateException("Not expected any other type than ARRAY or OBJECT.");

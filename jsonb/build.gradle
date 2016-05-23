@@ -3,11 +3,11 @@ apply plugin: 'idea'
 apply plugin: "maven"
 
 group = "org.eclipse.persistence.json.bind"
-version = "0.1.0-SNAPSHOT"
+version = "1.0-SNAPSHOT"
 
 jar {
     baseName = 'jsonb-ri'
-    version =  '0.1.0-SNAPSHOT'
+    version =  '1.0-SNAPSHOT'
 }
 
 def defaultEncoding = 'UTF-8'
@@ -39,7 +39,7 @@ repositories {
 }
 
 dependencies {
-    compile 'javax.json.bind:javax.json.bind-api:0.1-SNAPSHOT'
+    compile 'javax.json.bind:javax.json.bind-api:1.0-SNAPSHOT'
     compile 'javax.json:javax.json-api:1.0'
     compile 'javax.enterprise:cdi-api:1.2'
 

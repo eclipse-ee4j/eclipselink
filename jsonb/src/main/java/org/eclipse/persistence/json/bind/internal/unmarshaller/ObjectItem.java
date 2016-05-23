@@ -12,9 +12,9 @@
  ******************************************************************************/
 package org.eclipse.persistence.json.bind.internal.unmarshaller;
 
+import org.eclipse.persistence.json.bind.internal.ProcessingContext;
 import org.eclipse.persistence.json.bind.internal.ReflectionUtils;
-import org.eclipse.persistence.json.bind.internal.adapter.AdapterMatcher;
-import org.eclipse.persistence.json.bind.internal.adapter.JsonbAdapterInfo;
+import org.eclipse.persistence.json.bind.internal.adapter.AdapterBinding;
 import org.eclipse.persistence.json.bind.internal.properties.MessageKeys;
 import org.eclipse.persistence.json.bind.internal.properties.Messages;
 import org.eclipse.persistence.json.bind.model.PropertyModel;
@@ -31,7 +31,7 @@ import java.util.logging.Logger;
  *
  * @author Roman Grigoriadi
  */
-class ObjectItem<T> extends AbstractItem<T> implements UnmarshallerItem<T> {
+class ObjectItem<T> extends AbstractUnmarshallerItem<T> implements UnmarshallerItem<T> {
 
     private static final Logger log = Logger.getLogger(ObjectItem.class.getName());
 
@@ -76,9 +76,9 @@ class ObjectItem<T> extends AbstractItem<T> implements UnmarshallerItem<T> {
         }
         Type valueType = resolveValueType(valuePropertyModel.getPropertyType(), jsonValueType);
         Class<?> valueClass = ReflectionUtils.getRawType(valueType);
-        final Optional<JsonbAdapterInfo> adapterInfoOptional = AdapterMatcher.getInstance().getAdapterInfo(valueType, valuePropertyModel);
+        final Optional<AdapterBinding> adapterInfoOptional = ProcessingContext.getJsonbContext().getComponentMatcher().getAdapterBinding(valueType, valuePropertyModel);
         if (adapterInfoOptional.isPresent()) {
-            JsonbAdapterInfo adapterInfo = adapterInfoOptional.get();
+            AdapterBinding adapterInfo = adapterInfoOptional.get();
             final Class<?> rawAdaptTo = ReflectionUtils.getRawType(adapterInfo.getToType());
             Object toAdapt = getTypeConverter().supportsFromJson(rawAdaptTo) ?
                     getTypeConverter().fromJson(value, rawAdaptTo, valuePropertyModel.getCustomization()) : value;
@@ -108,7 +108,7 @@ class ObjectItem<T> extends AbstractItem<T> implements UnmarshallerItem<T> {
         //TODO missing json object skip (implement empty stub item for such cases).
 
         //create current item instance of identified object field
-        return new UnmarshallerItemBuilder().withWrapper(this).withFieldModel(newPropertyModel).withJsonKeyName(fieldName).withJsonValueType(jsonValueType).build();
+        return newUnmarshallerItemBuilder().withFieldModel(newPropertyModel).withJsonKeyName(fieldName).withJsonValueType(jsonValueType).build();
     }
 
 }

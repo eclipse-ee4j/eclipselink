@@ -181,7 +181,7 @@ public class IJsonJsonGeneratorDecorator implements JsonGenerator {
     }
 
     private void evaluateIjson() {
-        boolean isStrict = (boolean) JsonbContext.getInstance().getConfig().getProperty(JsonbConfig.STRICT_IJSON).orElse(false);
+        boolean isStrict = (boolean) ProcessingContext.getJsonbContext().getConfig().getProperty(JsonbConfig.STRICT_IJSON).orElse(false);
         if (isStrict){
             throw new JsonbException(Messages.getMessage(MessageKeys.IJSON_ENABLED_SINGLE_VALUE));
         }

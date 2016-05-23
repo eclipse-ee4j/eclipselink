@@ -13,7 +13,7 @@
 
 package org.eclipse.persistence.json.bind.internal.unmarshaller;
 
-import org.eclipse.persistence.json.bind.internal.JsonbContext;
+import org.eclipse.persistence.json.bind.internal.ProcessingContext;
 
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
@@ -36,7 +36,7 @@ public class JsonObjectItem extends AbstractJsonpItem<JsonObject> {
      */
     protected JsonObjectItem(UnmarshallerItemBuilder builder) {
         super(builder);
-        objectBuilder = JsonbContext.getInstance().getJsonProvider().createObjectBuilder();
+        objectBuilder = ProcessingContext.getJsonbContext().getJsonProvider().createObjectBuilder();
     }
 
     @Override

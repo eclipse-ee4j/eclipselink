@@ -13,6 +13,8 @@
 
 package org.eclipse.persistence.json.bind.internal.cdi;
 
+import org.eclipse.persistence.json.bind.internal.JsonBinding;
+
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.BeanManager;
@@ -23,7 +25,7 @@ import java.util.concurrent.ConcurrentMap;
 
 /**
  * CDI instance manager.
- * Instances are are created and stored per instance of {@link org.eclipse.persistence.json.bind.JsonBinding}.
+ * Instances are are created and stored per instance of {@link JsonBinding}.
  * Calling close on JsonBinding, cleans up Jsonb CDI instances and in case of "dependant" scope its dependencies.
  *
  * @author Roman Grigoriadi

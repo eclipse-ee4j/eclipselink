@@ -12,10 +12,12 @@
  ******************************************************************************/
 package org.eclipse.persistence.json.bind.internal.unmarshaller;
 
-import org.eclipse.persistence.json.bind.internal.JsonbContext;
+import org.eclipse.persistence.json.bind.internal.ComponentMatcher;
+import org.eclipse.persistence.json.bind.internal.ProcessingContext;
 import org.eclipse.persistence.json.bind.internal.ReflectionUtils;
-import org.eclipse.persistence.json.bind.internal.adapter.AdapterMatcher;
-import org.eclipse.persistence.json.bind.internal.adapter.JsonbAdapterInfo;
+import org.eclipse.persistence.json.bind.internal.Unmarshaller;
+import org.eclipse.persistence.json.bind.internal.adapter.AdapterBinding;
+import org.eclipse.persistence.json.bind.internal.adapter.DeserializerBinding;
 import org.eclipse.persistence.json.bind.internal.conversion.ConvertersMapTypeConverter;
 import org.eclipse.persistence.json.bind.internal.conversion.TypeConverter;
 import org.eclipse.persistence.json.bind.internal.properties.MessageKeys;
@@ -27,6 +29,7 @@ import org.eclipse.persistence.json.bind.model.TypeWrapper;
 
 import javax.json.JsonValue;
 import javax.json.bind.JsonbException;
+import javax.json.stream.JsonParser;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Type;
 import java.util.ArrayDeque;
@@ -84,6 +87,16 @@ public class UnmarshallerItemBuilder {
      */
     private Object instance;
 
+    /**
+     * Deserialization context.
+     */
+    private final Unmarshaller deserializationContext;
+
+    /**
+     * JSONP parser to use
+     */
+    private final JsonParser parser;
+
     private final TypeConverter converter = ConvertersMapTypeConverter.getInstance();
 
     /**
@@ -91,6 +104,17 @@ public class UnmarshallerItemBuilder {
      * Null for embedded objects such as collections, or known conversion types.
      */
     private ClassModel classModel;
+
+    /**
+     * Creates instance of builder.
+     *
+     * @param deserializationContext not null mandatory
+     */
+    public UnmarshallerItemBuilder(Unmarshaller deserializationContext, JsonParser parser) {
+        Objects.requireNonNull(deserializationContext);
+        this.deserializationContext = deserializationContext;
+        this.parser = parser;
+    }
 
     /**
      * Wrapper item for this item.
@@ -154,8 +178,14 @@ public class UnmarshallerItemBuilder {
         runtimeType = resolveRuntimeType();
         Class rawType = ReflectionUtils.getRawType(runtimeType);
 
-        AdapterMatcher matcher = AdapterMatcher.getInstance();
-        final Optional<JsonbAdapterInfo> adapterInfoOptional = matcher.getAdapterInfo(runtimeType, propertyModel);
+        Optional<DeserializerBinding<?>> deserializerOptional = ProcessingContext.getJsonbContext().getComponentMatcher().getDeserialzierBinding(runtimeType, propertyModel);
+        if (deserializerOptional.isPresent() &&
+                !(wrapper instanceof DeserializerItem && ReflectionUtils.getRawType(wrapper.getRuntimeType()).isAssignableFrom(rawType))) {
+            return new DeserializerItem<>(this, deserializerOptional.get().getJsonbDeserializer());
+        }
+
+        ComponentMatcher matcher = ProcessingContext.getJsonbContext().getComponentMatcher();
+        final Optional<AdapterBinding> adapterInfoOptional = matcher.getAdapterBinding(runtimeType, propertyModel);
         Optional<Class> rawTypeOptional = adapterInfoOptional.map(adapterInfo->{
             runtimeType = adapterInfo.getToType();
             wrapper = new AdaptedObjectItemDecorator<>(adapterInfoOptional.get(), wrapper);
@@ -206,7 +236,7 @@ public class UnmarshallerItemBuilder {
                 final ObjectItem<Object> objectItem = new ObjectItem<>(this);
                 return wrapAdapted(adapterInfoOptional, objectItem);
             default:
-                throw new JsonbException(String.format("Invalid json type %s.", rawType));
+                throw new JsonbException(Messages.getMessage(MessageKeys.INVALID_DESERIALIZATION_JSON_TYPE, jsonValueType, rawType));
         }
     }
 
@@ -217,16 +247,14 @@ public class UnmarshallerItemBuilder {
      * @return Class model
      */
     private ClassModel getClassModel(Class<?> rawType) {
-        ClassModel classModel = JsonbContext.getInstance().getMappingContext().getClassModel(rawType);
+        ClassModel classModel = ProcessingContext.getMappingContext().getClassModel(rawType);
         if (classModel == null) {
-            JsonbContext.getInstance().getMappingContext().parseClassModel(rawType);
-            classModel = JsonbContext.getInstance().getMappingContext().getClassModel(rawType);
-            Objects.requireNonNull(classModel);
+            classModel = ProcessingContext.getMappingContext().getOrCreateClassModel(rawType);
         }
         return classModel;
     }
 
-    private UnmarshallerItem<?> wrapAdapted(Optional<JsonbAdapterInfo> adapterInfoOptional, UnmarshallerItem<?> item) {
+    private UnmarshallerItem<?> wrapAdapted(Optional<AdapterBinding> adapterInfoOptional, UnmarshallerItem<?> item) {
         final Optional<UnmarshallerItem<?>> adaptedItemOptional = adapterInfoOptional.map(adapterInfo -> {
             setAdaptedItemCaptor((AdaptedObjectItemDecorator)wrapper, item);
             return wrapper;
@@ -353,4 +381,15 @@ public class UnmarshallerItemBuilder {
         return classModel;
     }
 
+    public Unmarshaller getDeserializationContext() {
+        return deserializationContext;
+    }
+
+    /**
+     * Jsonp parser to use.
+     * @return parser
+     */
+    public JsonParser getParser() {
+        return parser;
+    }
 }

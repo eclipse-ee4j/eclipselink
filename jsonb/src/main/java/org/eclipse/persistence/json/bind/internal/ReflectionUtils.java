@@ -19,9 +19,16 @@ import org.eclipse.persistence.json.bind.internal.unmarshaller.EmbeddedItem;
 import org.eclipse.persistence.json.bind.internal.unmarshaller.ResolvedParameterizedType;
 
 import javax.json.bind.JsonbException;
-import java.lang.reflect.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
+import java.lang.reflect.WildcardType;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 /**
@@ -35,21 +42,36 @@ public class ReflectionUtils {
 
     /**
      * Get raw type by type.
-     * Only for ParametrizedTypes and Classes.
-     * Can't handle TypeVariables and Wildcards.
+     * Only for ParametrizedTypes, GenericArrayTypes and Classes.
+     *
+     * Empty optional is returned if raw type cannot be resolved.
      *
      * @param type Type to get class information from, not null.
      * @return Class of a type.
      */
-    public static Class<?> getRawType(Type type) {
+    public static Optional<Class<?>> getOptionalRawType(Type type) {
         if (type instanceof Class) {
-            return (Class<?>) type;
+            return Optional.of((Class<?>) type);
         } else if (type instanceof ParameterizedType) {
-            return (Class<?>) ((ParameterizedType) type).getRawType();
+            return Optional.of((Class<?>) ((ParameterizedType) type).getRawType());
         } else if (type instanceof GenericArrayType) {
-            return ((GenericArrayType) type).getClass();
+            return Optional.of(((GenericArrayType) type).getClass());
         }
-        throw new JsonbException(Messages.getMessage(MessageKeys.TYPE_RESOLUTION_ERROR, type));
+        return Optional.empty();
+        }
+
+    /**
+     * Get raw type by type.
+     * Resolves only ParametrizedTypes, GenericArrayTypes and Classes.
+     *
+     * Exception is thrown if raw type cannot be resolved.
+     *
+     * @param type Type to get class information from, not null.
+     * @return Class of a raw type.
+     */
+    public static Class<?> getRawType(Type type) {
+        return getOptionalRawType(type)
+                .orElseThrow(()->new JsonbException(Messages.getMessage(MessageKeys.TYPE_RESOLUTION_ERROR, type)));
     }
 
     /**
@@ -167,6 +189,37 @@ public class ReflectionUtils {
         } catch (NoSuchMethodException e) {
             throw new JsonbException(Messages.getMessage(MessageKeys.NO_DEFAULT_CONSTRUCTOR, clazz), e);
         }
+    }
+
+    /**
+     * For generic adapters like:
+     * <p>
+     *     {@code
+     *     interface ContainerAdapter<T> extends JsonbAdapter<Box<T>, Crate<T>>...;
+     *     class IntegerBoxToCrateAdapter implements ContainerAdapter<Integer>...;
+     *     }
+     * </p>
+     * We need to find a JsonbAdapter class which will hold basic generic type arguments,
+     * and resolve them if they are TypeVariables from there.
+     *
+     * @param classToSearch class to resolve parameterized interface
+     * @param parameterizedInterface interface to search
+     *
+     * @return type of JsonbAdapter
+     */
+    public static ParameterizedType findParameterizedType(Class<?> classToSearch, Class<?> parameterizedInterface) {
+        Class current = classToSearch;
+        while (current != Object.class) {
+            for (Type currentInterface : current.getGenericInterfaces()) {
+                if (currentInterface instanceof ParameterizedType &&
+                        ((ParameterizedType) currentInterface).getRawType().equals(parameterizedInterface)) {
+                    return (ParameterizedType) currentInterface;
+                }
+            }
+            current = current.getSuperclass();
+        }
+        //TODO messages
+        throw new JsonbException(String.format("Type: %s does not implement a parametrized type interface", parameterizedInterface));
     }
 
     private static ParameterizedType findParameterizedSuperclass(Type type) {

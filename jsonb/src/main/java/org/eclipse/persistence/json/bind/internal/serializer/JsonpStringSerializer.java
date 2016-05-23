@@ -13,7 +13,7 @@
 
 package org.eclipse.persistence.json.bind.internal.serializer;
 
-import org.eclipse.persistence.json.bind.internal.JsonbContext;
+import org.eclipse.persistence.json.bind.internal.ProcessingContext;
 import org.eclipse.persistence.json.bind.internal.properties.MessageKeys;
 import org.eclipse.persistence.json.bind.internal.properties.Messages;
 
@@ -41,7 +41,7 @@ public class JsonpStringSerializer extends AbstractJsonpSerializer<String> {
     }
 
     public String getValue(String value){
-        if ((boolean) JsonbContext.getInstance().getConfig().getProperty(JsonbConfig.STRICT_IJSON).orElse(false)) {
+        if ((boolean) ProcessingContext.getJsonbContext().getConfig().getProperty(JsonbConfig.STRICT_IJSON).orElse(false)) {
             try {
                 String newString = new String(value.getBytes("UTF-8"), "UTF-8");
                 if (!newString.equals(value)) {

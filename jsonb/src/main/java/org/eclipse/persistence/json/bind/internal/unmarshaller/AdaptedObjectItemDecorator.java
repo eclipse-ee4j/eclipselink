@@ -13,7 +13,7 @@
 
 package org.eclipse.persistence.json.bind.internal.unmarshaller;
 
-import org.eclipse.persistence.json.bind.internal.adapter.JsonbAdapterInfo;
+import org.eclipse.persistence.json.bind.internal.adapter.AdapterBinding;
 import org.eclipse.persistence.json.bind.internal.properties.MessageKeys;
 import org.eclipse.persistence.json.bind.internal.properties.Messages;
 import org.eclipse.persistence.json.bind.model.ClassModel;
@@ -21,6 +21,7 @@ import org.eclipse.persistence.json.bind.model.PropertyModel;
 
 import javax.json.bind.JsonbException;
 import javax.json.bind.adapter.JsonbAdapter;
+import javax.json.stream.JsonParser;
 import java.lang.reflect.Type;
 
 /**
@@ -34,7 +35,7 @@ public class AdaptedObjectItemDecorator<A, T> implements UnmarshallerItem<T>, De
 
     private UnmarshallerItem<A> adaptedItem;
 
-    private final JsonbAdapterInfo adapterInfo;
+    private final AdapterBinding adapterInfo;
 
     private final UnmarshallerItem<?> wrapperItem;
 
@@ -43,13 +44,16 @@ public class AdaptedObjectItemDecorator<A, T> implements UnmarshallerItem<T>, De
      * @param adapterInfo adapter type info
      * @param wrapperItem wrapper item to get instance from
      */
-    public AdaptedObjectItemDecorator(JsonbAdapterInfo adapterInfo, UnmarshallerItem<?> wrapperItem) {
+    public AdaptedObjectItemDecorator(AdapterBinding adapterInfo, UnmarshallerItem<?> wrapperItem) {
         this.adapterInfo = adapterInfo;
         this.wrapperItem = wrapperItem;
     }
 
     @Override
     public void appendItem(UnmarshallerItem<?> valueItem) {
+        if (wrapperItem == null) {
+            return;
+        }
         wrapperItem.appendItem(this);
     }
 
@@ -64,6 +68,16 @@ public class AdaptedObjectItemDecorator<A, T> implements UnmarshallerItem<T>, De
     }
 
     @Override
+    public boolean hasNext() {
+        return adaptedItem.hasNext();
+    }
+
+    @Override
+    public JsonParser.Event next() {
+        return adaptedItem.next();
+    }
+
+    @Override
     public ClassModel getClassModel() {
         throw new UnsupportedOperationException();
     }
@@ -75,7 +89,7 @@ public class AdaptedObjectItemDecorator<A, T> implements UnmarshallerItem<T>, De
         try {
             return ((JsonbAdapter<T, A>) adapterInfo.getAdapter()).adaptFromJson(a);
         } catch (Exception e) {
-            throw new JsonbException(Messages.getMessage(MessageKeys.ADAPTER_EXCEPTION, adapterInfo.getFromType(), adapterInfo.getToType(), adapterInfo.getAdapter().getClass()), e);
+            throw new JsonbException(Messages.getMessage(MessageKeys.ADAPTER_EXCEPTION, adapterInfo.getBindingType(), adapterInfo.getToType(), adapterInfo.getAdapter().getClass()), e);
         }
     }
 
@@ -111,5 +125,15 @@ public class AdaptedObjectItemDecorator<A, T> implements UnmarshallerItem<T>, De
     @Override
     public UnmarshallerItem<?> getWrapperItem() {
         return wrapperItem;
+    }
+
+    @Override
+    public void deserialize() {
+        adaptedItem.deserialize();
+    }
+
+    @Override
+    public JsonParser.Event getLastEvent() {
+        return adaptedItem.getLastEvent();
     }
 }

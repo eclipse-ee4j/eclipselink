@@ -109,12 +109,6 @@ public abstract class AbstractItem<T> implements CurrentItem<T> {
         return runtimeType;
     }
 
-    protected UnmarshallerItem<?> newCollectionOrMapItem(String fieldName, Type valueType, JsonValueType jsonValueType) {
-        Type actualValueType = ReflectionUtils.resolveType(this, valueType);
-        actualValueType = actualValueType != Object.class ? actualValueType : jsonValueType.getConversionType();
-        return new UnmarshallerItemBuilder().withWrapper((UnmarshallerItem<?>) this).withType(actualValueType).withJsonKeyName(fieldName).withJsonValueType(jsonValueType).build();
-    }
-
     protected Type resolveValueType(Type runtimeType, JsonValueType jsonValueType) {
         final Type actualType = ReflectionUtils.resolveType(this, runtimeType);
         return actualType != Object.class ? actualType : jsonValueType.getConversionType();

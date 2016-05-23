@@ -1,6 +1,6 @@
 package org.eclipse.persistence.json.bind.internal.conversion;
 
-import org.eclipse.persistence.json.bind.internal.JsonbContext;
+import org.eclipse.persistence.json.bind.internal.ProcessingContext;
 import org.eclipse.persistence.json.bind.model.Customization;
 
 import javax.json.JsonBuilderFactory;
@@ -19,7 +19,7 @@ public class JsonStringTypeConverter extends AbstractTypeConverter<JsonString> {
 
     @Override
     public JsonString fromJson(String jsonValue, Type type, Customization customization) {
-        final JsonBuilderFactory factory = JsonbContext.getInstance().getJsonProvider().createBuilderFactory(null);
+        final JsonBuilderFactory factory = ProcessingContext.getJsonbContext().getJsonProvider().createBuilderFactory(null);
         final JsonObject jsonObject = factory.createObjectBuilder()
                 .add("json", jsonValue)
                 .build();

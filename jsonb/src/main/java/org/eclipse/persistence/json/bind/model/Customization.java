@@ -13,6 +13,9 @@
 
 package org.eclipse.persistence.json.bind.model;
 
+import org.eclipse.persistence.json.bind.internal.adapter.AdapterBinding;
+import org.eclipse.persistence.json.bind.internal.adapter.DeserializerBinding;
+import org.eclipse.persistence.json.bind.internal.adapter.SerializerBinding;
 import org.eclipse.persistence.json.bind.internal.conversion.JsonbDateFormatter;
 
 import java.text.NumberFormat;
@@ -24,6 +27,12 @@ import java.text.NumberFormat;
  * @author Roman Grigoriadi
  */
 public abstract class Customization {
+
+    private final AdapterBinding adapterBinding;
+
+    private final SerializerBinding serializerBinding;
+
+    private final DeserializerBinding deserializerBinding;
 
     private final boolean nillable;
 
@@ -43,6 +52,9 @@ public abstract class Customization {
         this.jsonbTransient = builder.isJsonbTransient();
         this.dateTimeFormatter = builder.getDateFormatter();
         this.numberFormat = builder.getNumberFormat();
+        this.adapterBinding = builder.getAdapterInfo();
+        this.serializerBinding = builder.getSerializerBinding();
+        this.deserializerBinding = builder.getDeserializerBinding();
     }
 
     /**
@@ -78,5 +90,33 @@ public abstract class Customization {
      */
     public NumberFormat getNumberFormat() {
         return numberFormat;
+    }
+
+
+    /**
+     * Adapter wrapper class with resolved generic information.
+     *
+     * @return adapter wrapper
+     */
+    public AdapterBinding getAdapterBinding() {
+        return adapterBinding;
+    }
+
+    /**
+     * Serializer wrapper with resolved generic info.
+     *
+     * @return serialzier wrapper
+     */
+    public SerializerBinding getSerializerBinding() {
+        return serializerBinding;
+    }
+
+    /**
+     * Deserializer wrapper with resolved generic info.
+     *
+     * @return deserialzier wrapper
+     */
+    public DeserializerBinding getDeserializerBinding() {
+        return deserializerBinding;
     }
 }

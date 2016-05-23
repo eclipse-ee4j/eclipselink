@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.json.bind;
 
+import org.eclipse.persistence.json.bind.internal.JsonBindingBuilder;
+
 import javax.json.bind.JsonbBuilder;
 import javax.json.bind.spi.JsonbProvider;
 

@@ -13,19 +13,16 @@
 package org.eclipse.persistence.json.bind.internal;
 
 
-import org.eclipse.persistence.json.bind.internal.naming.PropertyNamingStrategy;
 import org.eclipse.persistence.json.bind.internal.properties.MessageKeys;
 import org.eclipse.persistence.json.bind.internal.properties.Messages;
-import org.eclipse.persistence.json.bind.internal.unmarshaller.*;
+import org.eclipse.persistence.json.bind.internal.unmarshaller.JsonValueType;
+import org.eclipse.persistence.json.bind.internal.unmarshaller.UnmarshallerItem;
+import org.eclipse.persistence.json.bind.internal.unmarshaller.UnmarshallerItemBuilder;
 
-import javax.json.bind.JsonbConfig;
 import javax.json.bind.JsonbException;
+import javax.json.bind.serializer.DeserializationContext;
 import javax.json.stream.JsonParser;
-import java.io.InputStream;
-import java.io.Reader;
-import java.io.StringReader;
 import java.lang.reflect.Type;
-import java.nio.charset.Charset;
 
 /**
  * JSONB unmarshaller.
@@ -33,146 +30,80 @@ import java.nio.charset.Charset;
  *
  * @author Roman Grigoriadi
  */
-public class Unmarshaller extends JsonTextProcessor {
-
-    private final JsonParser parser;
-
-    private final Type rootType;
+public class Unmarshaller extends ProcessingContext implements DeserializationContext {
 
     /**
-     * Stack of processed objects.
-     * As events are discovered by {@link JsonParser} objects are created and pushed to this stack.
+     * Creates instance of unmarshaller.
+     * @param jsonbContext context to use
      */
-    private UnmarshallerItem<?> currentItem;
-
-    /**
-     * Currently processed JSON item key name.
-     */
-    private String currentFieldName;
-
-    /**
-     * Create unmarshaller instance with string JSON.
-     * @param jsonbContext Context of Jsonb
-     * @param rootType Class of a root object to be created.
-     * @param json JSON to parse.
-     */
-    public Unmarshaller(JsonbContext jsonbContext, Type rootType, String json) {
+    public Unmarshaller(JsonbContext jsonbContext) {
         super(jsonbContext);
-        this.rootType = rootType;
-        this.parser = jsonbContext.getJsonProvider().createParser(new StringReader(json));
     }
 
-    /**
-     * Create unmarshaller instance with input stream.
-     * @param jsonbContext Context of Jsonb
-     * @param rootType Class of a root object to be created.
-     * @param jsonStream input stream with JSON.
-     */
-    public Unmarshaller(JsonbContext jsonbContext, Type rootType, InputStream jsonStream) {
-        super(jsonbContext);
-        this.rootType = rootType;
-        this.parser = jsonbContext.getJsonProvider().createParserFactory(createJsonpProperties(jsonbContext.getConfig()))
-                .createParser(jsonStream,
-                        Charset.forName((String) jsonbContext.getConfig().getProperty(JsonbConfig.ENCODING).orElse("UTF-8")));
-    }
+    private UnmarshallerItem<?> current;
 
-    /**
-     * Create unmarshaller instance with readable.
-     * @param jsonbContext Context of Jsonb
-     * @param rootType Class of a root object to be created.
-     * @param reader reader to read from.
-     */
-    public Unmarshaller(JsonbContext jsonbContext, Type rootType, Reader reader) {
-        super(jsonbContext);
-        this.rootType = rootType;
-        this.parser = jsonbContext.getJsonProvider().createParser(reader);
-    }
-
-
-    /**
-     * Drive the {@link JsonParser} and processes its events.
-     * @param <T> Type of result.
-     * @return Result instance of a root object.
-     */
-    @SuppressWarnings("unchecked")
-    public <T> T parse() {
-        new JsonbContextCommand() {
             @Override
-            protected void doInJsonbContext() {
-                while (parser.hasNext()) {
-                    JsonParser.Event event = parser.next();
-                    switch (event) {
-                        case START_OBJECT:
-                        case START_ARRAY:
-                            onObjectStarted(JsonValueType.of(event));
-                            break;
-                        case END_OBJECT:
-                        case END_ARRAY:
-                            onObjectEnded();
-                            break;
-                        case VALUE_FALSE:
-                            onValue(Boolean.FALSE.toString(), JsonValueType.of(event));
-                            break;
-                        case VALUE_TRUE:
-                            onValue(Boolean.TRUE.toString(), JsonValueType.of(event));
-                            break;
-                        case VALUE_STRING:
-                        case VALUE_NUMBER:
-                            onValue(parser.getString(), JsonValueType.of(event));
-                            break;
-                        case VALUE_NULL:
-                            onValue(null, JsonValueType.NULL);
-                            break;
-                        case KEY_NAME:
-                            currentFieldName = parser.getString();
-                            break;
-                        default:
-                            throw new JsonbException(Messages.getMessage(MessageKeys.NOT_VALUE_TYPE, event));
+    public <T> T deserialize(Class<T> clazz, JsonParser parser) {
+        final JsonParser.Event rootEvent = getRootEvent(parser);
+        if (isValueEvent(rootEvent)) {
+            return convertDefault(clazz, parser.getString());
                     }
+        return deserializeItem(clazz, parser, rootEvent);
                 }
+
+    @Override
+    public <T> T deserialize(Type type, JsonParser parser) {
+        return deserializeItem(type, parser, getRootEvent(parser));
             }
-        }.execute(jsonbContext);
-        parser.close();
-        return (T) currentItem.getInstance();
+
+    @SuppressWarnings("unchecked")
+    private <T> T deserializeItem(Type type, JsonParser parser, JsonParser.Event event) {
+        final UnmarshallerItem<?> item = new UnmarshallerItemBuilder(this, parser).withWrapper(current)
+                .withType(type).withJsonValueType(JsonValueType.of(event)).build();
+        item.deserialize();
+        return (T) item.getInstance();
+    }
+
+    private JsonParser.Event getRootEvent(JsonParser parser) {
+        if (parser.getLocation().getStreamOffset() == 0 || current.getLastEvent() == JsonParser.Event.KEY_NAME) {
+            return parser.next();
+        }
+        return current.getLastEvent();
+    }
+
+
+    private <T> T convertDefault(Class<T> fromClass, String value) {
+        if (!converter.supportsFromJson(fromClass)) {
+            throw new JsonbException(Messages.getMessage(MessageKeys.CONVERSION_NOT_SUPPORTED, fromClass));
+        }
+        return converter.fromJson(value, fromClass, null);
+        }
+
+    /**
+     * Get currently processed json item.
+     * @return current item
+     */
+    public UnmarshallerItem<?> getCurrent() {
+        return current;
     }
 
     /**
-     * Determine class mappings and create an instance of a new item.
-     * Currently processed item is pushed to stack, for waiting till new object is finished.
+     * Set currently processed item.
+     * @param current current item
      */
-    private void onObjectStarted(JsonValueType jsonValueType) {
-        //Create root item object when parser encounters first parenthesis.
-        if (currentItem == null) {
-            currentItem = new UnmarshallerItemBuilder().withType(rootType != Object.class ? rootType : jsonValueType.getConversionType()).withJsonValueType(jsonValueType).build();
-            return;
-        }
-        UnmarshallerItem<?> wrapper = currentItem;
-        currentItem = wrapper.newItem(getClassPropertyName(currentFieldName), jsonValueType);
+    public void setCurrent(UnmarshallerItem<?> current) {
+        this.current = current;
     }
 
-    private void onObjectEnded() {
-        //root object finished
-        if (currentItem.getWrapper() == null) {
-            return;
-        }
-        UnmarshallerItem<?> finished = currentItem;
-        ((UnmarshallerItem<?>) finished.getWrapper()).appendItem(finished);
-        currentItem = (UnmarshallerItem<?>) finished.getWrapper();
-        while (currentItem instanceof DecoratorItem) {
-            currentItem = ((DecoratorItem<?>)currentItem).getWrapperItem();
-        }
+    private boolean isValueEvent(JsonParser.Event event) {
+        switch (event) {
+            case VALUE_FALSE:
+            case VALUE_TRUE:
+            case VALUE_NUMBER:
+            case VALUE_STRING:
+                return true;
+            default: return false;
+    }
     }
 
-    /**
-     * Create supported type from JSON value.
-     * @param value A JSON value.
-     */
-    private void onValue(String value, JsonValueType type) {
-        currentItem.appendValue(getClassPropertyName(currentFieldName), value, type);
-    }
-
-    private String getClassPropertyName(String jsonKeyName) {
-        final PropertyNamingStrategy namingStrategy = JsonbContext.getInstance().getPropertyNamingStrategy();
-        return namingStrategy != null ? namingStrategy.toModelPropertyName(jsonKeyName) : jsonKeyName;
-    }
 }

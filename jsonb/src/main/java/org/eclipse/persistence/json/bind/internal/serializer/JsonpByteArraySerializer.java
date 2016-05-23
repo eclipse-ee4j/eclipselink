@@ -13,7 +13,7 @@
 
 package org.eclipse.persistence.json.bind.internal.serializer;
 
-import org.eclipse.persistence.json.bind.internal.JsonbContext;
+import org.eclipse.persistence.json.bind.internal.ProcessingContext;
 
 import javax.json.bind.JsonbConfig;
 import javax.json.bind.JsonbException;
@@ -37,10 +37,10 @@ class JsonpByteArraySerializer extends AbstractJsonpSerializer<byte[]> {
     @Override
     void writeValue(String keyName, byte[] value, JsonGenerator jsonGenerator) {
         String array;
-        if ((boolean) JsonbContext.getInstance().getConfig().getProperty(JsonbConfig.STRICT_IJSON).orElse(false)) {
+        if ((boolean) ProcessingContext.getJsonbContext().getConfig().getProperty(JsonbConfig.STRICT_IJSON).orElse(false)) {
             array = Base64.getUrlEncoder().encodeToString(value);
-        } else if (JsonbContext.getInstance().getConfig().getProperty(JsonbConfig.BINARY_DATA_STRATEGY).isPresent()) {
-            String strategy = (String) JsonbContext.getInstance().getConfig().getProperty(JsonbConfig.BINARY_DATA_STRATEGY).get();
+        } else if (ProcessingContext.getJsonbContext().getConfig().getProperty(JsonbConfig.BINARY_DATA_STRATEGY).isPresent()) {
+            String strategy = (String) ProcessingContext.getJsonbContext().getConfig().getProperty(JsonbConfig.BINARY_DATA_STRATEGY).get();
             if (strategy == null) {
                 throw new JsonbException("Unsupported binary data strategy!");
             }

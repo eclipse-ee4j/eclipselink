@@ -13,7 +13,7 @@
 
 package org.eclipse.persistence.json.bind.internal.unmarshaller;
 
-import org.eclipse.persistence.json.bind.internal.JsonbContext;
+import org.eclipse.persistence.json.bind.internal.ProcessingContext;
 import org.eclipse.persistence.json.bind.internal.ReflectionUtils;
 import org.eclipse.persistence.json.bind.model.ClassModel;
 import org.eclipse.persistence.json.bind.model.Customization;
@@ -27,7 +27,7 @@ import java.util.List;
  *
  * @author Roman Grigoriadi
  */
-public abstract class AbstractArrayItem<T> extends AbstractItem<T> implements UnmarshallerItem<T>, EmbeddedItem {
+public abstract class AbstractArrayItem<T> extends AbstractUnmarshallerItem<T> implements UnmarshallerItem<T>, EmbeddedItem {
 
     /**
      * Runtime type class of an array.
@@ -68,7 +68,7 @@ public abstract class AbstractArrayItem<T> extends AbstractItem<T> implements Un
     @Override
     public UnmarshallerItem<?> newItem(String fieldName, JsonValueType jsonValueType) {
         Type actualValueType = componentClass;
-        return new UnmarshallerItemBuilder().withWrapper(this).withType(actualValueType).withJsonValueType(jsonValueType).build();
+        return newUnmarshallerItemBuilder().withType(actualValueType).withJsonValueType(jsonValueType).build();
     }
 
     protected abstract List<?> getItems();
@@ -78,7 +78,7 @@ public abstract class AbstractArrayItem<T> extends AbstractItem<T> implements Un
         if (getWrapper() != null) {
             return getWrapperPropertyModel().getCustomization();
         }*/
-        ClassModel componentClassModel = JsonbContext.getInstance().getMappingContext().getClassModel(componentClass);
+        ClassModel componentClassModel = ProcessingContext.getMappingContext().getClassModel(componentClass);
         return componentClassModel != null ? componentClassModel.getClassCustomization() : null;
     }
 }

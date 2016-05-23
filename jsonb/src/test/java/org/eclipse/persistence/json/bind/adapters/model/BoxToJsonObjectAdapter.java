@@ -13,7 +13,7 @@
 
 package org.eclipse.persistence.json.bind.adapters.model;
 
-import org.eclipse.persistence.json.bind.internal.JsonbContext;
+import org.eclipse.persistence.json.bind.internal.ProcessingContext;
 
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
@@ -25,7 +25,7 @@ import javax.json.bind.adapter.JsonbAdapter;
 public class BoxToJsonObjectAdapter implements JsonbAdapter<Box, JsonObject> {
     @Override
     public JsonObject adaptToJson(Box obj) throws Exception {
-        final JsonObjectBuilder builder = JsonbContext.getInstance().getJsonProvider().createObjectBuilder();
+        final JsonObjectBuilder builder = ProcessingContext.getJsonbContext().getJsonProvider().createObjectBuilder();
         builder.add("boxStrField", obj.getBoxStrField());
         builder.add("boxIntegerField", obj.getBoxIntegerField());
         return builder.build();

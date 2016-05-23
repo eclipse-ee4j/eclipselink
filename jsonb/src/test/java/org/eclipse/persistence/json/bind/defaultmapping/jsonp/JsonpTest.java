@@ -134,7 +134,6 @@ public class JsonpTest {
 
         String expected = "{\"jsonArray\":[{\"strVal\":\"string value\",\"numVal\":2.0,\"nullVal\":null,\"boolVal\":true,\"innerJsonObject\":{\"innerStr\":\"string val\",\"innerNum\":11.1},\"innerArrayObject\":[null,false,11,10,\"array STR value\",{\"innerStr\":\"string val\",\"innerNum\":11.1}]},true,{\"innerStr\":\"string val\",\"innerNum\":11.1},101.0,10],\"jsonObject\":{\"strVal\":\"string value\",\"numVal\":2.0,\"nullVal\":null,\"boolVal\":true,\"innerJsonObject\":{\"innerStr\":\"string val\",\"innerNum\":11.1},\"innerArrayObject\":[null,false,11,10,\"array STR value\",{\"innerStr\":\"string val\",\"innerNum\":11.1}]}}";
         final String actual = jsonb.toJson(pojo);
-//        System.out.println("actual = " + actual);
         assertEquals(expected, actual);
 
         JsonpPojo result = jsonb.fromJson(expected, JsonpPojo.class);

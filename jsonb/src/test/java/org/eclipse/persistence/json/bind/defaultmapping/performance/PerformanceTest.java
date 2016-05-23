@@ -1,6 +1,6 @@
 package org.eclipse.persistence.json.bind.defaultmapping.performance;
 
-import org.eclipse.persistence.json.bind.JsonBindingBuilder;
+import org.eclipse.persistence.json.bind.internal.JsonBindingBuilder;
 import org.eclipse.persistence.json.bind.defaultmapping.anonymous.OuterPojo;
 import org.eclipse.persistence.json.bind.defaultmapping.collections.Language;
 import org.eclipse.persistence.json.bind.defaultmapping.generics.model.GenericTestClass;

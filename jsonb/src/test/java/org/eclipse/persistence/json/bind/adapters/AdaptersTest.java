@@ -407,6 +407,5 @@ public class AdaptersTest {
         /*JsonObjectPojo result = jsonb.fromJson(json, JsonObjectPojo.class);
         assertEquals("strFieldValue", result.box.getBoxStrField());
         assertEquals(Integer.valueOf(110), result.box.getBoxIntegerField());*/
-        System.out.println("json = " + json);
     }
 }

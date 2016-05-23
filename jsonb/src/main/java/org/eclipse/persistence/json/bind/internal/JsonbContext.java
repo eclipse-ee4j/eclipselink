@@ -13,29 +13,24 @@
 
 package org.eclipse.persistence.json.bind.internal;
 
-import org.eclipse.persistence.json.bind.internal.adapter.AdapterMatcher;
-import org.eclipse.persistence.json.bind.internal.adapter.JsonbAdapterInfo;
 import org.eclipse.persistence.json.bind.internal.cdi.JsonbComponentInstanceCreator;
 import org.eclipse.persistence.json.bind.internal.naming.DefaultNamingStrategies;
 import org.eclipse.persistence.json.bind.internal.naming.PropertyNamingStrategy;
 
 import javax.json.bind.JsonbConfig;
 import javax.json.bind.JsonbException;
-import javax.json.bind.adapter.JsonbAdapter;
 import javax.json.bind.config.PropertyVisibilityStrategy;
 import javax.json.spi.JsonProvider;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 /**
- * Context holding common objects in {@link ThreadLocal}
+ * Context holding effectively immutable objects per JSONB configuration.
+ * Thread safe
  *
  * @author Roman Grigoriadi
  */
 public class JsonbContext {
-
-    private static final ThreadLocal<JsonbContext> instances = new ThreadLocal<>();
 
     private final JsonbConfig jsonbConfig;
 
@@ -47,9 +42,9 @@ public class JsonbContext {
 
     private final PropertyNamingStrategy propertyNamingStrategy;
 
-    private final List<JsonbAdapterInfo> adapters;
-
     private final JsonProvider jsonProvider;
+
+    private final ComponentMatcher componentMatcher;
 
     /**
      * Creates and initialize context.
@@ -68,8 +63,9 @@ public class JsonbContext {
         this.componentInstanceCreator = componentInstanceCreator;
         this.propertyNamingStrategy = resolvePropertyNamingStrategy();
         this.propertyVisibilityStrategy = resolvePropertyVisibilityStrategy();
-        this.adapters = resolveAdapters();
         this.jsonProvider = jsonProvider;
+        this.componentMatcher = new ComponentMatcher();
+        this.componentMatcher.init(this);
     }
 
     private PropertyNamingStrategy resolvePropertyNamingStrategy() {
@@ -97,9 +93,6 @@ public class JsonbContext {
         return (PropertyVisibilityStrategy) propertyVisibilityStrategy;
     }
 
-    private List<JsonbAdapterInfo> resolveAdapters() {
-        return AdapterMatcher.getInstance().parseRegisteredAddapters((JsonbAdapter<?, ?>[]) jsonbConfig.getProperty(JsonbConfig.ADAPTERS).orElse(new JsonbAdapter<?,?>[]{}));
-    }
 
     /**
      * Instance of Jsonb jsonbConfig.
@@ -114,7 +107,7 @@ public class JsonbContext {
      * @return mapping context
      */
     public MappingContext getMappingContext() {
-        return getInstance().mappingContext;
+        return mappingContext;
     }
 
     /**
@@ -122,39 +115,16 @@ public class JsonbContext {
      * @return strategy for property visibility
      */
     public PropertyVisibilityStrategy getPropertyVisibilityStrategy() {
-        return getInstance().propertyVisibilityStrategy;
-    }
-
-    public List<JsonbAdapterInfo> getAdapters() {
-        return getInstance().adapters;
-    }
-
-    public PropertyNamingStrategy getPropertyNamingStrategy() {
-        return getInstance().propertyNamingStrategy;
-    }
-
-    static void setInstance(JsonbContext context) {
-        if (instances.get() != null) {
-            throw new IllegalStateException("JsonbContext already set!");
-        }
-        instances.set(context);
-    }
-
-    static void removeInstance() {
-        if (instances.get() == null) {
-            throw new IllegalStateException("JsonbContext is not set!");
-        }
-        instances.remove();
+        return propertyVisibilityStrategy;
     }
 
     /**
-     * Instance of this context.
-     * @return instance
+     * Property naming strategy.
+     * @return strategy for property naming.
      */
-    public static JsonbContext getInstance() {
-        return instances.get();
+    public PropertyNamingStrategy getPropertyNamingStrategy() {
+        return propertyNamingStrategy;
     }
-
 
     /**
      * Provider of JSONP implementation.
@@ -171,5 +141,13 @@ public class JsonbContext {
      */
     public JsonbComponentInstanceCreator getComponentInstanceCreator() {
         return componentInstanceCreator;
+    }
+
+    /**
+     * Component matcher for lookup of (de)serializers and adapters.
+     * @return component matcher
+     */
+    public ComponentMatcher getComponentMatcher() {
+        return componentMatcher;
     }
 }

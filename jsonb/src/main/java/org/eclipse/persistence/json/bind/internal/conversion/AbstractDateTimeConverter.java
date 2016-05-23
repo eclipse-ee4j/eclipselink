@@ -36,7 +36,7 @@ public abstract class AbstractDateTimeConverter<T extends TemporalAccessor> exte
 
     @Override
     public T fromJson(String jsonValue, Type type, Customization customization) {
-        JsonbDateFormatter formatter = customization.getDateTimeFormatter();
+        JsonbDateFormatter formatter = getDateFormatter(customization);
         if (JsonbDateFormat.TIME_IN_MILLIS.equals(formatter.getFormat())) {
             return fromInstant(Instant.ofEpochMilli(Long.parseLong(jsonValue)));
         } else if (formatter.getDateTimeFormatter() != null) {
@@ -45,9 +45,13 @@ public abstract class AbstractDateTimeConverter<T extends TemporalAccessor> exte
         return parseDefault(jsonValue, formatter.getLocale());
     }
 
+    private JsonbDateFormatter getDateFormatter(Customization customization) {
+        return customization != null ? customization.getDateTimeFormatter() : JsonbDateFormatter.getDefault();
+    }
+
     @Override
     public String toJson(T object, Customization customization) {
-        JsonbDateFormatter formatter = customization.getDateTimeFormatter();
+        JsonbDateFormatter formatter = getDateFormatter(customization);
         if (JsonbDateFormat.TIME_IN_MILLIS.equals(formatter.getFormat())) {
             return String.valueOf(toInstant(object).toEpochMilli());
         } else if (formatter.getDateTimeFormatter() != null) {

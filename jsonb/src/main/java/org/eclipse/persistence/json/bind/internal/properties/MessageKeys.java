@@ -58,7 +58,9 @@ public enum MessageKeys {
     OFFSET_DATE_TIME_FROM_MILLIS("offsetDateTimeFromMillis"),
     TIME_TO_EPOCH_MILLIS_ERROR("timeToEpochMillisError"),
     JSONB_CONFIG_PROPERTY_INVALID_TYPE("configPropertyInvalidType"),
-    ;
+    CONVERSION_NOT_SUPPORTED("conversionNotSupported"),
+    END_OF_JSON_STRUCTURE("endOfJsonStructure"),
+    INVALID_DESERIALIZATION_JSON_TYPE("invalidDeserializationType");
 
     /** Message bundle key. */
     final String key;

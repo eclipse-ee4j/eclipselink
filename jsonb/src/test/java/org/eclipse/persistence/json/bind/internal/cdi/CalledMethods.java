@@ -40,10 +40,6 @@ public class CalledMethods {
         return results.containsKey(methodName);
     }
 
-    public void printCalled() {
-        results.forEach((s, c) -> System.out.println("CALLED: "+s+" x"+c));
-    }
-
     public void registerCall(@Observes MethodCalledEvent methodCalledEvent) {
         results.compute(methodCalledEvent.getMethdoName(), (s, c) -> c == null ? 1 : c + 1);
     }

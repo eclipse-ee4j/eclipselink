@@ -13,8 +13,9 @@
 
 package org.eclipse.persistence.json.bind.internal;
 
-import org.eclipse.persistence.json.bind.internal.adapter.AdapterMatcher;
-import org.eclipse.persistence.json.bind.internal.adapter.JsonbAdapterInfo;
+import org.eclipse.persistence.json.bind.internal.adapter.AdapterBinding;
+import org.eclipse.persistence.json.bind.internal.adapter.DeserializerBinding;
+import org.eclipse.persistence.json.bind.internal.adapter.SerializerBinding;
 import org.eclipse.persistence.json.bind.internal.conversion.JsonbDateFormatter;
 import org.eclipse.persistence.json.bind.internal.properties.MessageKeys;
 import org.eclipse.persistence.json.bind.internal.properties.Messages;
@@ -23,14 +24,32 @@ import org.eclipse.persistence.json.bind.model.Property;
 import javax.json.bind.JsonbConfig;
 import javax.json.bind.JsonbException;
 import javax.json.bind.adapter.JsonbAdapter;
-import javax.json.bind.annotation.*;
+import javax.json.bind.annotation.JsonbCreator;
+import javax.json.bind.annotation.JsonbDateFormat;
+import javax.json.bind.annotation.JsonbNillable;
+import javax.json.bind.annotation.JsonbNumberFormat;
+import javax.json.bind.annotation.JsonbProperty;
+import javax.json.bind.annotation.JsonbPropertyOrder;
+import javax.json.bind.annotation.JsonbTransient;
+import javax.json.bind.annotation.JsonbTypeAdapter;
+import javax.json.bind.annotation.JsonbTypeDeserializer;
+import javax.json.bind.annotation.JsonbTypeSerializer;
+import javax.json.bind.annotation.JsonbVisibility;
 import javax.json.bind.config.PropertyVisibilityStrategy;
+import javax.json.bind.serializer.JsonbDeserializer;
+import javax.json.bind.serializer.JsonbSerializer;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 /**
@@ -42,6 +61,8 @@ public class AnnotationIntrospector {
 
     private static final AnnotationIntrospector instance = new AnnotationIntrospector();
 
+    private final ComponentMatcher componentMatcher;
+
     /**
      * Gets a singleton instance to use
      * @return instance
@@ -50,7 +71,9 @@ public class AnnotationIntrospector {
         return instance;
     }
 
-    private AnnotationIntrospector() {}
+    private AnnotationIntrospector() {
+        componentMatcher = ProcessingContext.getJsonbContext().getComponentMatcher();
+    }
 
     /**
      * Gets a name of property for JSON marshalling.
@@ -93,20 +116,67 @@ public class AnnotationIntrospector {
      * @param property property not null
      * @return adapter info
      */
-    public JsonbAdapterInfo getAdapter(Property property) {
+    public AdapterBinding getAdapterBinding(Property property) {
         Objects.requireNonNull(property);
-        Optional<JsonbTypeAdapter> annotation = getAnnotationFromProperty(JsonbTypeAdapter.class, property);
-        final Optional<JsonbAdapterInfo> adapterInfoOptional = annotation.map(annot -> {
-            final JsonbAdapter adapterInstance = JsonbContext.getInstance().getComponentInstanceCreator().getOrCreateComponent(annot.value());
-            final JsonbAdapterInfo adapterInfo = AdapterMatcher.getInstance().introspectAdapterInfo(adapterInstance);
-            if ((property.getPropertyType() instanceof Class<?>) &&
-                    ReflectionUtils.getRawType(property.getPropertyType()) != ReflectionUtils.getRawType(adapterInfo.getFromType())) {
-                throw new JsonbException(Messages.getMessage(MessageKeys.ADAPTER_INCOMPATIBLE, adapterInfo.getFromType(), property.getPropertyType()));
-            }
-            return adapterInfo;
-        });
-        return adapterInfoOptional.orElse(null);
+        Optional<JsonbTypeAdapter> adapterAnnotation = getAnnotationFromPropertyIncludingType(JsonbTypeAdapter.class, property);
+        final Optional<AdapterBinding> adapterBindingOptional = getAdapterBindingFromAnnotation(adapterAnnotation, ReflectionUtils.getOptionalRawType(property.getPropertyType()));
+        if (adapterBindingOptional.isPresent()) {
+            return adapterBindingOptional.get();
+        }
+        return adapterBindingOptional.orElse(null);
     }
+
+    private Optional<AdapterBinding> getAdapterBindingFromAnnotation(Optional<JsonbTypeAdapter> adapterAnnotation, Optional<Class<?>> expectedClass) {
+        final Optional<AdapterBinding> adapterBindingOptional = adapterAnnotation.map((adaAnn) -> {
+            final Class<? extends JsonbAdapter> adapterClass = adaAnn.value();
+            return ProcessingContext.getJsonbContext().getComponentMatcher().introspectAdapterBinding(adapterClass,
+                    () -> ProcessingContext.getJsonbContext().getComponentInstanceCreator().getOrCreateComponent(adapterClass));
+        });
+        if (adapterBindingOptional.isPresent() && expectedClass.isPresent()
+                && !(ReflectionUtils.getRawType(adapterBindingOptional.get().getBindingType()).equals(expectedClass.get()))) {
+            throw new JsonbException(Messages.getMessage(MessageKeys.ADAPTER_INCOMPATIBLE, adapterBindingOptional.get().getBindingType(), expectedClass.get()));
+        }
+        return adapterBindingOptional;
+    }
+
+    /**
+     * Checks for {@link JsonbDeserializer} on a property.
+     * @param property property not null
+     * @return adapter info
+     */
+    public DeserializerBinding getDeserializerBinding(Property property) {
+        Objects.requireNonNull(property);
+        Optional<JsonbTypeDeserializer> deserializerAnnotation = getAnnotationFromPropertyIncludingType(JsonbTypeDeserializer.class, property);
+        final Optional<DeserializerBinding> bindingOptional = deserializerAnnotation.map((deserAnn) -> {
+            final Class<? extends JsonbDeserializer> deserializerClass = deserAnn.value();
+            return ProcessingContext.getJsonbContext().getComponentMatcher().introspectDeserializerBinding(deserializerClass,
+                    () -> ProcessingContext.getJsonbContext().getComponentInstanceCreator().getOrCreateComponent(deserializerClass));
+        });
+        if (bindingOptional.isPresent()) {
+            return bindingOptional.get();
+        }
+        return bindingOptional.orElse(null);
+    }
+
+    /**
+     * Checks for {@link JsonbSerializer} on a property.
+     * @param property property not null
+     * @return adapter info
+     */
+    public SerializerBinding getSerializerBinding(Property property) {
+        Objects.requireNonNull(property);
+        Optional<JsonbTypeSerializer> serializerAnnotation = getAnnotationFromPropertyIncludingType(JsonbTypeSerializer.class, property);
+        final Optional<SerializerBinding> bindingOptional = serializerAnnotation.map((serAnn) -> {
+            final Class<? extends JsonbSerializer> serializerClass = serAnn.value();
+            return ProcessingContext.getJsonbContext().getComponentMatcher().introspectSerialzierBinding(serializerClass,
+                    () -> ProcessingContext.getJsonbContext().getComponentInstanceCreator().getOrCreateComponent(serializerClass));
+        });
+        if (bindingOptional.isPresent()) {
+            return bindingOptional.get();
+        }
+        return bindingOptional.orElse(null);
+    }
+
     /**
      * Checks if property is nillable.
      * Looks for {@link JsonbProperty} nillable attribute only.
@@ -164,6 +234,17 @@ public class AnnotationIntrospector {
      * @return formatter to use
      */
     public JsonbDateFormatter getJsonbDateFormat(Property property) {
+        //Filter non-date properties first
+        final Optional<Class<?>> propertyRawTypeOptional = ReflectionUtils.getOptionalRawType(property.getPropertyType());
+        if (propertyRawTypeOptional.isPresent()) {
+            Class<?> rawType = propertyRawTypeOptional.get();
+            if (!(Date.class.isAssignableFrom(rawType) || Calendar.class.isAssignableFrom(rawType)
+                    || TemporalAccessor.class.isAssignableFrom(rawType))) {
+                return null;
+            }
+        }
+        //TODO what about non date generic properties that cannot be resolved statically for a class model,
+        //TODO they will inherit JsonbDateFormat from class which will consume memory footprint.
         Objects.requireNonNull(property);
         final Optional<JsonbDateFormatter> propertyFormatter = getAnnotationFromProperty(JsonbDateFormat.class, property)
                 .map(formatAnnot -> createJsonbDateFormatter(formatAnnot.value(), getDateFormatLocale(formatAnnot), property));
@@ -192,7 +273,7 @@ public class AnnotationIntrospector {
     }
 
     private JsonbDateFormatter getGlobalConfigJsonbDateFormatter() {
-        final Optional<Object> formatProperty = JsonbContext.getInstance().getConfig().getProperty(JsonbConfig.DATE_FORMAT);
+        final Optional<Object> formatProperty = ProcessingContext.getJsonbContext().getConfig().getProperty(JsonbConfig.DATE_FORMAT);
         String format = formatProperty.map(f -> {
             if (!(f instanceof String)) {
                 throw new JsonbException(Messages.getMessage(MessageKeys.JSONB_CONFIG_PROPERTY_INVALID_TYPE, JsonbConfig.DATE_FORMAT, String.class.getSimpleName()));
@@ -213,13 +294,15 @@ public class AnnotationIntrospector {
             //are used in the converters
             return new JsonbDateFormatter(format, locale);
         }
-        final Class<?> propertyRawType = property.getPropertyType() instanceof Class ?
-                (Class<?>) property.getPropertyType() : null;
+
+        final Optional<Class<?>> optionalRawType = ReflectionUtils.getOptionalRawType(property.getPropertyType());
 
         //Can't resolve date type if it is declared as generic type var
-        if (propertyRawType == null) {
+        if (!optionalRawType.isPresent()) {
             return new JsonbDateFormatter(DateTimeFormatter.ofPattern(format, locale), format, locale);
         }
+
+        final Class<?> propertyRawType = optionalRawType.get();
 
         //Calendar and dates
         if (Date.class.isAssignableFrom(propertyRawType) || Calendar.class.isAssignableFrom(propertyRawType)) {
@@ -275,6 +358,26 @@ public class AnnotationIntrospector {
         return Optional.empty();
     }
 
+    /**
+     * Same as getAnnotationFromProperty, but also searches a type of property for class level annotation.
+     */
+    private <T extends Annotation> Optional<T> getAnnotationFromPropertyIncludingType(Class<T> annotationClass, Property property) {
+        final Optional<T> annotationFromProperty = getAnnotationFromProperty(annotationClass, property);
+        if (annotationFromProperty.isPresent()) {
+            return annotationFromProperty;
+        }
+        return getAnnotationFromPropertyRawTypeClass(property, annotationClass);
+    }
+
+    /**
+     * Return class model of a property if resolvable (No runtime type here).
+     */
+    private <T extends Annotation> Optional<T> getAnnotationFromPropertyRawTypeClass(Property property, Class<T> annotationClazz) {
+        final Optional<Class<?>> propertyRawTypeOptional = ReflectionUtils.getOptionalRawType(property.getPropertyType());
+        return propertyRawTypeOptional.isPresent() ? searchAnnotationInClassHierarchy(annotationClazz, propertyRawTypeOptional.get())
+                : Optional.empty();
+    }
+
 
 
     private <T extends Annotation> T getFieldAnnotation(Class<T> annotationClass, Field field ) {
@@ -292,7 +395,7 @@ public class AnnotationIntrospector {
     }
 
     private <T extends Annotation> Optional<T> searchAnnotationInClassHierarchy(Class<T> annotationClass, Class<?> declaringClass) {
-        if (declaringClass == null || declaringClass == Object.class) {
+        if (declaringClass == null || declaringClass == Object.class || ProcessingContext.getMappingContext().supported(declaringClass)) {
             return Optional.empty();
         }
         Optional<T> candidate = Optional.ofNullable(declaringClass.getAnnotation(annotationClass));
@@ -355,7 +458,7 @@ public class AnnotationIntrospector {
     }
 
     private Locale getConfigLocale() {
-        final Optional<Object> localeProperty = JsonbContext.getInstance().getConfig().getProperty(JsonbConfig.LOCALE);
+        final Optional<Object> localeProperty = ProcessingContext.getJsonbContext().getConfig().getProperty(JsonbConfig.LOCALE);
         return  localeProperty.map(loc -> {
             if (!(loc instanceof Locale)) {
                 throw new JsonbException(Messages.getMessage(MessageKeys.JSONB_CONFIG_PROPERTY_INVALID_TYPE, JsonbConfig.LOCALE, Locale.class.getSimpleName()));

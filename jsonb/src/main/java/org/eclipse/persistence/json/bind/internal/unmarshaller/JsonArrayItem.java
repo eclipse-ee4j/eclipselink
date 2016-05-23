@@ -13,7 +13,7 @@
 
 package org.eclipse.persistence.json.bind.internal.unmarshaller;
 
-import org.eclipse.persistence.json.bind.internal.JsonbContext;
+import org.eclipse.persistence.json.bind.internal.ProcessingContext;
 
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
@@ -54,7 +54,7 @@ public class JsonArrayItem extends AbstractJsonpItem<JsonArray> {
      */
     protected JsonArrayItem(UnmarshallerItemBuilder builder) {
         super(builder);
-        arrayBuilder = JsonbContext.getInstance().getJsonProvider().createArrayBuilder();
+        arrayBuilder = ProcessingContext.getJsonbContext().getJsonProvider().createArrayBuilder();
     }
 
     @Override

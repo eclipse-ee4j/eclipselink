@@ -71,6 +71,6 @@ public class TypeWrapperItem<T> extends ObjectItem<TypeWrapper<T>> {
     @Override
     public UnmarshallerItem<?> newItem(String fieldName, JsonValueType jsonValueType) {
         PropertyModel newPropertyModel = getClassModel().findPropertyModelByJsonReadName(fieldName);
-        return new UnmarshallerItemBuilder().withType(concreteWrappedClass).withWrapper(this).withFieldModel(newPropertyModel).withJsonKeyName(fieldName).withJsonValueType(jsonValueType).build();
+        return newUnmarshallerItemBuilder().withType(concreteWrappedClass).withFieldModel(newPropertyModel).withJsonKeyName(fieldName).withJsonValueType(jsonValueType).build();
     }
 }
