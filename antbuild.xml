@@ -517,6 +517,7 @@
     <target name="clean-testing" description="Clean the testing projects">
         <ant antfile="antbuild.xml" dir="${eclipselink.core.test}"           target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.jpa.test}"            target="clean"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.hermes.test}"         target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.moxy.test}"           target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.sdo.test}"            target="clean"/>
         <ant antfile="build.xml"    dir="${eclipselink.util.workbench.test}" target="clean"/>
@@ -704,6 +705,7 @@
     <target name="build-core-test">
         <ant antfile="antbuild.xml" dir="${eclipselink.core.test}"    target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.jpa.test}"     target="build"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.hermes.test}"  target="build"/>
         <!-- ant antfile="${eclipselink.jpa.test}/antbuild.xml"                    target="all"/ -->
         <ant antfile="antbuild.xml" dir="${eclipselink.jpa.wdf.test}" target="build-against-jar"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.jpars.test}"   target="build"/>
@@ -1542,7 +1544,7 @@
             depends="clear-db, test-core-srg, test-jpa22-srg, test-jpars, test-moxy-srg, test-sdo-srg, test-dbws-srg, test-dbws-builder-srg, generate-report"
             />
     <target name="test-lrg-only" description="run all the LRG test suites"
-            depends="test-core, test-jpa22, test-jpa-jse, test-wdf, test-jpars, test-moxy, test-sdo, test-dbws, test-dbws-builder, test-osgi"
+            depends="test-core, test-jpa22, test-jpa-jse, test-jpql, test-wdf, test-jpars, test-moxy, test-sdo, test-dbws, test-dbws-builder, test-osgi"
             />
     <target name="test-lrg" description="run all the LRG test suites"
             depends="clear-db, test-lrg-only, generate-report"
@@ -1596,6 +1598,10 @@
     </target>
     <target name="test-jpa22-srg" description="run the jpa srg tests">
         <ant antfile="antbuild.xml" dir="${eclipselink.jpa.test}" target="test-srg22"/>
+    </target>
+    <!-- Run JPQL suite. -->
+    <target name="test-jpql" description="run the JPQL tests">
+        <ant antfile="antbuild.xml" dir="${eclipselink.hermes.test}" target="test"/>
     </target>
     <!-- Run WDF suite -->
     <target name="build-wdf" description="build the WDF jpa tests">

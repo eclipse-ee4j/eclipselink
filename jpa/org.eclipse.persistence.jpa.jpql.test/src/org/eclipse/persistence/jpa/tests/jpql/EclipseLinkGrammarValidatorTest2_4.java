@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -13,7 +13,10 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.tests.jpql;
 
+import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
+
 import java.util.List;
+
 import org.eclipse.persistence.jpa.jpql.AbstractGrammarValidator;
 import org.eclipse.persistence.jpa.jpql.EclipseLinkGrammarValidator;
 import org.eclipse.persistence.jpa.jpql.EclipseLinkVersion;
@@ -21,7 +24,6 @@ import org.eclipse.persistence.jpa.jpql.JPQLQueryProblem;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLQueryStringFormatter;
 import org.junit.Ignore;
 import org.junit.Test;
-import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
 
 /**
  * The unit-test class used for testing a JPQL query grammatically when the JPA version is 2.1 and
@@ -105,14 +107,39 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
         return isNewerThanOrEqual(EclipseLinkVersion.VERSION_2_4);
     }
 
+    /**
+     * Check that parsing {@code table('employee') t} returns error. This select expression is invalid.
+     * @throws Exception when test fails.
+     */
     @Test
     public void test_BadExpression_InvalidExpression_4() throws Exception {
 
-        String jpqlQuery  = "select e from Employee e where e.id in (select table('employee') t from Employee e)";
-        int startPosition = "select e from Employee e where e.id in(select ".length();
-        int endPosition   = "select e from Employee e where e.id in(select table('employee')".length();
+        final String jpqlQuery  = "select e from Employee e where e.id in (select table('employee') t from Employee e)";
+        final int startPosition = "select e from Employee e where e.id in (select ".length() - 1;
+        final int endPosition   = "select e from Employee e where e.id in (select table('employee') t".length() - 1;
 
-        List<JPQLQueryProblem> problems = validate(jpqlQuery);
+        final List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+        testHasOnlyOneProblem(
+            problems,
+            AbstractSelectClause_InvalidSelectExpression,
+            startPosition,
+            endPosition
+        );
+    }
+
+    /**
+     * Check that parsing {@code table('employee').id t} returns error. This select expression is invalid.
+     * @throws Exception when test fails.
+     */
+    @Test
+    public void test_BadExpression_InvalidExpression_5() throws Exception {
+
+        final String jpqlQuery  = "select e from Employee e where e.id in (select table('employee').id t from Employee e)";
+        final int startPosition = "select e from Employee e where e.id in (select ".length() - 1;
+        final int endPosition   = "select e from Employee e where e.id in (select table('employee').id".length() - 1;
+
+        final List<JPQLQueryProblem> problems = validate(jpqlQuery);
 
         testHasOnlyOneProblem(
             problems,
@@ -149,7 +176,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
     @Test
     public void test_CastExpression_MissingDatabaseType_3() throws Exception {
 
-        String jpqlQuery = "Select cast(e.firstName) from Employee e";
+        String jpqlQuery  = "Select cast(e.firstName) from Employee e";
         int startPosition = "Select cast(e.firstName".length();
         int endPosition   = startPosition;
 
@@ -166,7 +193,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
     @Test
     public void test_CastExpression_MissingDatabaseType_4() throws Exception {
 
-        String jpqlQuery = "Select cast(e.firstName ) from Employee e";
+        String jpqlQuery  = "Select cast(e.firstName ) from Employee e";
         int startPosition = "Select cast(e.firstName ".length();
         int endPosition   = startPosition;
 

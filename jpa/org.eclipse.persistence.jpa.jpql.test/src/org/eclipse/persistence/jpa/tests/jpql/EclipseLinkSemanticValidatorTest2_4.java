@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -153,21 +153,29 @@ public final class EclipseLinkSemanticValidatorTest2_4 extends AbstractSemanticV
         testHasNoProblems(problems);
     }
 
+    /**
+     * Check that parsing {@code Employee.id} token returns errors. Column id does not exists in mapping because
+     * Employee is not an entity identification variable and ID column is mapped as empId.
+     * @throws Exception when test fails.
+     */
     @Test
     public final void test_StateFieldPathExpression_NotResolvable_001() throws Exception {
 
         // Note: EclipseLinkSemanticValidatorExtension not implemented
-        String jpqlQuery  = "select e from Employee e where e.empId in (select table('employee').id from Employee e)";
-        int startPosition = "select e from Employee e where e.empId in(select ".length();
-        int endPosition   = "select e from Employee e where e.empId in(select table('employee').id".length();
+        final String jpqlQuery  = "select e from Employee e where e.empId in (select Employee.id from Employee e)";
+        final int startPosition = "select e from Employee e where e.empId in (select ".length() - 1;
+        final int endPositionSFPENotResolvable
+                                = "select e from Employee e where e.empId in (select Employee.id".length() - 1;
+        final int endPositionIVINotDeclared
+                                = "select e from Employee e where e.empId in (select Employee".length() - 1;
 
-        List<JPQLQueryProblem> problems = validate(jpqlQuery);
+        final List<JPQLQueryProblem> problems = validate(jpqlQuery);
 
-        testHasOnlyOneProblem(
+        testHasOnlyTheseProblems(
             problems,
-            StateFieldPathExpression_NotResolvable,
-            startPosition,
-            endPosition
+            new String[] {IdentificationVariable_Invalid_NotDeclared, StateFieldPathExpression_NotResolvable},
+            new int[] {startPosition, startPosition},
+            new int[] {endPositionIVINotDeclared, endPositionSFPENotResolvable}
         );
     }
 
