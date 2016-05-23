@@ -17,11 +17,16 @@ import org.eclipse.persistence.json.bind.internal.ReflectionUtils;
 import org.eclipse.persistence.json.bind.internal.adapter.AdapterBinding;
 import org.eclipse.persistence.json.bind.internal.properties.MessageKeys;
 import org.eclipse.persistence.json.bind.internal.properties.Messages;
+import org.eclipse.persistence.json.bind.model.ClassModel;
+import org.eclipse.persistence.json.bind.model.JsonbCreator;
 import org.eclipse.persistence.json.bind.model.PropertyModel;
 
 import javax.json.bind.JsonbException;
 import javax.json.bind.adapter.JsonbAdapter;
 import java.lang.reflect.Type;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.logging.Logger;
@@ -35,6 +40,10 @@ class ObjectItem<T> extends AbstractUnmarshallerItem<T> implements UnmarshallerI
 
     private static final Logger log = Logger.getLogger(ObjectItem.class.getName());
 
+    private Map<String, Object> values = new HashMap<>();
+
+    private T instance;
+
     /**
      * Creates instance of an item.
      * @param builder builder to build from
@@ -44,13 +53,56 @@ class ObjectItem<T> extends AbstractUnmarshallerItem<T> implements UnmarshallerI
     }
 
     /**
-     * Set populated instance of current object to its unfinished wrapper,
-     * pushed to stack queue for resume parse later.
-     * @param abstractItem
+     * Due to support of custom (parametrized) constructors and factory methods, values are held in map,
+     * which is transferred into instance values by calling getInstance.
+     *
+     * @return instance
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public T getInstance() {
+        if (instance != null) {
+            return instance;
+        }
+        final Class<?> rawType = ReflectionUtils.getRawType(getRuntimeType());
+        final JsonbCreator creator = getClassModel().getClassCustomization().getCreator();
+        instance = creator != null ? createInstance((Class<T>) rawType, creator)
+                : ReflectionUtils.createNoArgConstructorInstance((Class<T>) rawType);
+
+        for(Iterator<ClassModel> classModelIterator = ProcessingContext.getMappingContext().classModelIterator(rawType); classModelIterator.hasNext();) {
+            classModelIterator.next().getProperties().entrySet().stream()
+                    .filter((entry)->creator == null || !creator.contains(entry.getKey()))
+                    .forEach((entry)->{
+                if (values.containsKey(entry.getKey())) {
+                    final Object value = values.get(entry.getKey());
+                    entry.getValue().setValue(instance, value);
+                }
+            });
+        }
+        return instance;
+    }
+
+    /**
+     * Creates instance with custom jsonb creator (parameterized constructor or factory method)
+     */
+    private T createInstance(Class<T> rawType, JsonbCreator creator) {
+        final T instance;
+        final Object[] paramValues = new Object[creator.getParams().length];
+        for(int i=0; i<creator.getParams().length; i++) {
+            paramValues[i] = values.get(creator.getParams()[i]);
+        }
+        instance = creator.call(paramValues, rawType);
+        return instance;
+    }
+
+    /**
+     * Set populated instance of current object to its unfinished wrapper values map.
+     *
+     * @param abstractItem item with result
      */
     @Override
     public void appendItem(UnmarshallerItem<?> abstractItem) {
-        abstractItem.getWrapperPropertyModel().setValue(getInstance(), abstractItem.getInstance());
+        values.put(abstractItem.getWrapperPropertyModel().getPropertyName(), abstractItem.getInstance());
     }
 
     /**
@@ -71,7 +123,7 @@ class ObjectItem<T> extends AbstractUnmarshallerItem<T> implements UnmarshallerI
             return;
         }
         if (jsonValueType == JsonValueType.NULL) {
-            valuePropertyModel.setValue(getInstance(), null);
+            values.put(valuePropertyModel.getPropertyName(), null);
             return;
         }
         Type valueType = resolveValueType(valuePropertyModel.getPropertyType(), jsonValueType);
@@ -88,7 +140,7 @@ class ObjectItem<T> extends AbstractUnmarshallerItem<T> implements UnmarshallerI
             } catch (Exception e) {
                 throw new JsonbException(Messages.getMessage(MessageKeys.ADAPTER_EXCEPTION, e));
             }
-            valuePropertyModel.setValue(getInstance(), adapted);
+            values.put(valuePropertyModel.getPropertyName(), adapted);
             return;
         }
 
@@ -96,7 +148,7 @@ class ObjectItem<T> extends AbstractUnmarshallerItem<T> implements UnmarshallerI
             throw new JsonbException("Can't convert JSON value into: " + valuePropertyModel.getPropertyType());
         }
         Object converted = getTypeConverter().fromJson(value, valueClass, valuePropertyModel.getCustomization());
-        valuePropertyModel.setValue(getInstance(), converted);
+        values.put(valuePropertyModel.getPropertyName(), converted);
         log.finest(Messages.getMessage(MessageKeys.SETTING_PROPERTY_DESERIALIZER, key, getClassModel().getRawType().getName(), value));
     }
 

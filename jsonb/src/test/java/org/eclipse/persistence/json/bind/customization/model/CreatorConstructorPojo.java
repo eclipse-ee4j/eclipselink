@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -11,28 +11,28 @@
  * Roman Grigoriadi
  ******************************************************************************/
 
-package org.eclipse.persistence.json.bind.model;
+package org.eclipse.persistence.json.bind.customization.model;
+
+import javax.json.bind.annotation.JsonbCreator;
+import java.math.BigDecimal;
 
 /**
- * Customization, which could be applied on a class or package level.
- *
  * @author Roman Grigoriadi
  */
-public class ClassCustomization extends Customization {
+public class CreatorConstructorPojo {
 
-    private final JsonbCreator creator;
+    public String str1;
 
-    /**
-     * Copies properties from builder an creates immutable instance.
-     *
-     * @param builder not null
-     */
-    ClassCustomization(CustomizationBuilder builder) {
-        super(builder);
-        this.creator = builder.getCreator();
+    public String str2;
+
+    public BigDecimal bigDec;
+
+    public CreatorFactoryMethodPojo innerFactoryCreator;
+
+    @JsonbCreator
+    public CreatorConstructorPojo(String str1, String str2) {
+        this.str1 = str1;
+        this.str2 = str2;
     }
 
-    public JsonbCreator getCreator() {
-        return creator;
-    }
 }

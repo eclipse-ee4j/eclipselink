@@ -60,6 +60,7 @@ public class ClassModel {
         final CustomizationBuilder builder = new CustomizationBuilder();
         builder.setNillable(introspector.isClassNillable(clazz));
         builder.setDateFormatter(introspector.getJsonbDateFormat(clazz));
+        builder.setCreator(introspector.getCreator(clazz));
         return builder.buildClassCustomization();
     }
 

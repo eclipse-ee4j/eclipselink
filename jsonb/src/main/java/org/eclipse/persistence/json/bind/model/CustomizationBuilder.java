@@ -45,6 +45,8 @@ public class CustomizationBuilder {
 
     private NumberFormat numberFormat;
 
+    private JsonbCreator creator;
+
     /**
      * Creates customization for class properties.
      * @return class property customization
@@ -199,5 +201,21 @@ public class CustomizationBuilder {
      */
     public void setNumberFormat(NumberFormat numberFormat) {
         this.numberFormat = numberFormat;
+    }
+
+    /**
+     * Custom constructor or method for user instantiation.
+     * @return creator
+     */
+    public JsonbCreator getCreator() {
+        return creator;
+    }
+
+    /**
+     * Custom constructor or method for user instantiation.
+     * @return creator
+     */
+    public void setCreator(JsonbCreator creator) {
+        this.creator = creator;
     }
 }

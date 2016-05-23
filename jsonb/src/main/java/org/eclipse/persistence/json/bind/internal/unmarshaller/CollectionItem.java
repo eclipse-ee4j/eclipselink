@@ -19,7 +19,13 @@ import org.eclipse.persistence.json.bind.model.Customization;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Queue;
+import java.util.Set;
 
 /**
  * Item implementation for {@link java.util.List} fields
@@ -33,6 +39,8 @@ class CollectionItem<T extends Collection<?>> extends AbstractUnmarshallerItem<T
      */
     private final Type collectionValueType;
 
+    private T instance;
+
     /**
      * @param builder
      */
@@ -41,6 +49,36 @@ class CollectionItem<T extends Collection<?>> extends AbstractUnmarshallerItem<T
         collectionValueType = getRuntimeType() instanceof ParameterizedType ?
                 ReflectionUtils.resolveType(this, ((ParameterizedType) getRuntimeType()).getActualTypeArguments()[0])
                 : Object.class;
+        instance = createInstance();
+    }
+
+    @SuppressWarnings("unchecked")
+    private T createInstance() {
+        Class<T> rawType = (Class<T>) ReflectionUtils.getRawType(getRuntimeType());
+        assert Collection.class.isAssignableFrom(rawType);
+
+        if (rawType.isInterface()) {
+            if (List.class.isAssignableFrom(rawType)) {
+                return (T) new ArrayList<>();
+            }
+            if (Set.class.isAssignableFrom(rawType)) {
+                return (T) new HashSet<>();
+            }
+            if (Queue.class.isAssignableFrom(rawType)) {
+                return (T) new ArrayDeque<>();
+            }
+        }
+        return ReflectionUtils.createNoArgConstructorInstance(rawType);
+    }
+
+    /**
+     * Instance of an item. Unmarshalling sets values to such instance.
+     *
+     * @return instance
+     */
+    @Override
+    public T getInstance() {
+        return instance;
     }
 
     @Override

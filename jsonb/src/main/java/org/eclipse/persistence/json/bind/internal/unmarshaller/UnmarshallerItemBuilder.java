@@ -32,17 +32,10 @@ import javax.json.bind.JsonbException;
 import javax.json.stream.JsonParser;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Type;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Queue;
-import java.util.Set;
 
 /**
  * Builder for currently processed items by unmarshaller.
@@ -81,11 +74,6 @@ public class UnmarshallerItemBuilder {
      * Type of json event, in case of creating new item can be either ARRAY, or OBJECT.
      */
     private JsonValueType jsonValueType;
-
-    /**
-     * Actual instance of an object to be processed.
-     */
-    private Object instance;
 
     /**
      * Deserialization context.
@@ -195,13 +183,12 @@ public class UnmarshallerItemBuilder {
         switch (jsonValueType) {
             case ARRAY:
                 final UnmarshallerItem<?> item;
-
                 if (JsonValue.class.isAssignableFrom(rawType)) {
                     return new JsonArrayItem(this);
                 } else if (rawType.isArray() || runtimeType instanceof GenericArrayType) {
                     item = createArrayItem(rawType.getComponentType());
                 } else if (Collection.class.isAssignableFrom(rawType)) {
-                    item = createCollectionItem();
+                    item = new CollectionItem<>(this);
                 } else {
                     throw new JsonbException(String.format("JSON array not expected for unmarshalling into field %s of type %s.", jsonKeyName, rawType));
                 }
@@ -211,7 +198,7 @@ public class UnmarshallerItemBuilder {
                     return new JsonObjectItem(this);
                 }
                 if (Map.class.isAssignableFrom(rawType)) {
-                    final UnmarshallerItem<?> mapItem = createMapItem();
+                    final UnmarshallerItem<?> mapItem = new MapItem(this);
                     return wrapAdapted(adapterInfoOptional, mapItem);
                 }
                 if (rawType.isInterface()) {
@@ -227,7 +214,6 @@ public class UnmarshallerItemBuilder {
                 }
 
                 classModel = getClassModel(rawType);
-                instance = ReflectionUtils.createNoArgConstructorInstance(classModel.getRawType());
                 //Special handling for TypeWrapperItem
                 if (TypeWrapper.class.isAssignableFrom(rawType)) {
                     return wrapAdapted(adapterInfoOptional,  new TypeWrapperItem<>(this,
@@ -239,6 +225,8 @@ public class UnmarshallerItemBuilder {
                 throw new JsonbException(Messages.getMessage(MessageKeys.INVALID_DESERIALIZATION_JSON_TYPE, jsonValueType, rawType));
         }
     }
+
+
 
     /***
      * Gets or load class model for a class an its superclasses.
@@ -298,32 +286,6 @@ public class UnmarshallerItemBuilder {
         }
     }
 
-    private UnmarshallerItem<?> createCollectionItem() {
-        Class<?> rawType = ReflectionUtils.getRawType(runtimeType);
-        assert Collection.class.isAssignableFrom(rawType);
-
-        if (rawType.isInterface()) {
-            if (List.class.isAssignableFrom(rawType)) {
-                this.instance = new ArrayList<>();
-            }
-            if (Set.class.isAssignableFrom(rawType)) {
-                this.instance = new HashSet<>();
-            }
-            if (Queue.class.isAssignableFrom(rawType)) {
-                this.instance = new ArrayDeque<>();
-            }
-        } else {
-            instance = ReflectionUtils.createNoArgConstructorInstance(rawType);
-        }
-        return new CollectionItem<>(this);
-    }
-
-    private UnmarshallerItem<?> createMapItem() {
-        Class<?> rawType = ReflectionUtils.getRawType(runtimeType);
-        this.instance = rawType.isInterface() ? new HashMap<>() : ReflectionUtils.createNoArgConstructorInstance(rawType);
-        return new MapItem(this);
-    }
-
     private Type unwrapAnonymous(Type type) {
         if (type instanceof Class<?> && ((Class)type).isAnonymousClass()) {
             return ((Class) type).getGenericSuperclass();
@@ -353,14 +315,6 @@ public class UnmarshallerItemBuilder {
      */
     public String getJsonKeyName() {
         return jsonKeyName;
-    }
-
-    /**
-     * Created instance to work on / unmarshall into.
-     * @return created instance
-     */
-    public Object getInstance() {
-        return instance;
     }
 
     /**

@@ -18,6 +18,7 @@ import org.eclipse.persistence.json.bind.model.ClassModel;
 
 import javax.json.JsonValue;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Stack;
 import java.util.concurrent.ConcurrentHashMap;
@@ -70,6 +71,31 @@ public class MappingContext {
             });
         }
         return classes.get(clazz);
+    }
+
+    /**
+     * Provided class class model is returned first by iterator.
+     * Following class models are sorted by hierarchy from provided class up to the Object.class.
+     *
+     * @param clazz class to start iteration of class models from
+     * @return iterator of class models
+     */
+    public Iterator<ClassModel> classModelIterator(final Class<?> clazz) {
+        return new Iterator<ClassModel>() {
+            private Class<?> next = clazz;
+
+            @Override
+            public boolean hasNext() {
+                return next != Object.class;
+            }
+
+            @Override
+            public ClassModel next() {
+                final ClassModel result = classes.get(next);
+                next = next.getSuperclass();
+                return result;
+            }
+        };
     }
 
     /**

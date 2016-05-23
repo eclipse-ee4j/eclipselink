@@ -60,7 +60,11 @@ public enum MessageKeys {
     JSONB_CONFIG_PROPERTY_INVALID_TYPE("configPropertyInvalidType"),
     CONVERSION_NOT_SUPPORTED("conversionNotSupported"),
     END_OF_JSON_STRUCTURE("endOfJsonStructure"),
-    INVALID_DESERIALIZATION_JSON_TYPE("invalidDeserializationType");
+    INVALID_DESERIALIZATION_JSON_TYPE("invalidDeserializationType"),
+    ERROR_CALLING_JSONB_CREATOR("errorCallingJsonbCreator"),
+    INCOMPATIBLE_FACTORY_CREATOR_RETURN_TYPE("incompatibleFactoryCreatorReturnType"),
+    MULTIPLE_JSONB_CREATORS("multipleJsonbCreators"),
+    ;
 
     /** Message bundle key. */
     final String key;

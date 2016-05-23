@@ -51,11 +51,6 @@ public abstract class AbstractItem<T> implements CurrentItem<T> {
     private final TypeConverter typeConverter;
 
     /**
-     * An object instance to work on.
-     */
-    private final T instance;
-
-    /**
      * Key name in JSON document prepending processed object parentheses.
      */
     private final String jsonKeyName;
@@ -68,7 +63,6 @@ public abstract class AbstractItem<T> implements CurrentItem<T> {
         this.wrapper = builder.getWrapper();
         this.wrapperPropertyModel = builder.getPropertyModel();
         this.classModel = builder.getClassModel();
-        this.instance = (T) builder.getInstance();
         this.runtimeType = builder.getRuntimeType();
         this.jsonKeyName = builder.getJsonKeyName();
         this.typeConverter = ConvertersMapTypeConverter.getInstance();
@@ -78,11 +72,6 @@ public abstract class AbstractItem<T> implements CurrentItem<T> {
     @Override
     public ClassModel getClassModel() {
         return classModel;
-    }
-
-    @Override
-    public T getInstance() {
-        return instance;
     }
 
     @Override

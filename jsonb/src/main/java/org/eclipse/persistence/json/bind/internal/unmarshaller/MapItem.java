@@ -19,6 +19,7 @@ import org.eclipse.persistence.json.bind.model.Customization;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -28,13 +29,15 @@ import java.util.Map;
  *
  * @author Roman Grigoriadi
  */
-public class MapItem extends AbstractUnmarshallerItem<Map<?, ?>> implements UnmarshallerItem<Map<?, ?>>, EmbeddedItem {
+public class MapItem<T extends Map<?,?>> extends AbstractUnmarshallerItem<T> implements UnmarshallerItem<T>, EmbeddedItem {
 
     /**
      * Type of value in the map.
      * (Keys must always be Strings, because of JSON spec)
      */
     private final Type mapValueRuntimeType;
+
+    private final T instance;
 
     /**
      * @param builder
@@ -44,8 +47,20 @@ public class MapItem extends AbstractUnmarshallerItem<Map<?, ?>> implements Unma
         mapValueRuntimeType = getRuntimeType() instanceof ParameterizedType ?
                 ReflectionUtils.resolveType(this, ((ParameterizedType) getRuntimeType()).getActualTypeArguments()[1])
                 : Object.class;
+
+        this.instance = createInstance();
     }
 
+    @SuppressWarnings("unchecked")
+    private T createInstance() {
+        Class<T> rawType = (Class<T>) ReflectionUtils.getRawType(getRuntimeType());
+        return rawType.isInterface() ? (T) new HashMap<>() : ReflectionUtils.createNoArgConstructorInstance(rawType);
+    }
+
+    @Override
+    public T getInstance() {
+        return instance;
+    }
 
     @Override
     public void appendItem(UnmarshallerItem<?> valueItem) {

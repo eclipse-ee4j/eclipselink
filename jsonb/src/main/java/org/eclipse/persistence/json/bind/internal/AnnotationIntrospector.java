@@ -19,12 +19,12 @@ import org.eclipse.persistence.json.bind.internal.adapter.SerializerBinding;
 import org.eclipse.persistence.json.bind.internal.conversion.JsonbDateFormatter;
 import org.eclipse.persistence.json.bind.internal.properties.MessageKeys;
 import org.eclipse.persistence.json.bind.internal.properties.Messages;
+import org.eclipse.persistence.json.bind.model.JsonbCreator;
 import org.eclipse.persistence.json.bind.model.Property;
 
 import javax.json.bind.JsonbConfig;
 import javax.json.bind.JsonbException;
 import javax.json.bind.adapter.JsonbAdapter;
-import javax.json.bind.annotation.JsonbCreator;
 import javax.json.bind.annotation.JsonbDateFormat;
 import javax.json.bind.annotation.JsonbNillable;
 import javax.json.bind.annotation.JsonbNumberFormat;
@@ -39,13 +39,19 @@ import javax.json.bind.config.PropertyVisibilityStrategy;
 import javax.json.bind.serializer.JsonbDeserializer;
 import javax.json.bind.serializer.JsonbSerializer;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.Parameter;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -109,6 +115,44 @@ public class AnnotationIntrospector {
         }
 
         return property.getName();
+    }
+
+    /**
+     * Searches for JsonbCreator annotation on constructors and static methods.
+     *
+     * @param clazz class to search
+     * @return JsonbCreator metadata object
+     */
+    public JsonbCreator getCreator(Class<?> clazz) {
+        JsonbCreator jsonbCreator = null;
+        for (Constructor<?> constructor : clazz.getDeclaredConstructors()) {
+            final javax.json.bind.annotation.JsonbCreator annot = constructor.getAnnotation(javax.json.bind.annotation.JsonbCreator.class);
+            if (annot != null) {
+                jsonbCreator = createJsonbCreator(constructor, jsonbCreator, clazz);
+            }
+        }
+
+        for (Method method : clazz.getDeclaredMethods()) {
+            final javax.json.bind.annotation.JsonbCreator annot = method.getAnnotation(javax.json.bind.annotation.JsonbCreator.class);
+            if (annot != null && Modifier.isStatic(method.getModifiers())) {
+                if (!clazz.equals(method.getReturnType())) {
+                    throw new JsonbException(Messages.getMessage(MessageKeys.INCOMPATIBLE_FACTORY_CREATOR_RETURN_TYPE, method, clazz));
+                }
+                jsonbCreator = createJsonbCreator(method, jsonbCreator, clazz);
+            }
+        }
+        return jsonbCreator;
+    }
+
+    private JsonbCreator createJsonbCreator(Executable executable, JsonbCreator existing, Class<?> clazz) {
+        if (existing != null) {
+            throw new JsonbException(Messages.getMessage(MessageKeys.MULTIPLE_JSONB_CREATORS, clazz));
+        }
+        List<String> paramNames = new ArrayList<>();
+        for (Parameter param : executable.getParameters()) {
+            paramNames.add(param.getName());
+        }
+        return new JsonbCreator(executable, paramNames.toArray(new String[paramNames.size()]));
     }
 
     /**
