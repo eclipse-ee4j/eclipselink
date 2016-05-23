@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -14,6 +14,8 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementrefs
 
 import java.io.File;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,7 +23,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
-import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementrefs.collectiontype.Root;
@@ -30,7 +31,6 @@ import org.w3c.dom.Document;
 
 /**
  * Tests XmlElementRefs via eclipselink-oxm.xml
- *
  */
 public class XmlElementRefsTestCases extends ExternalizedMetadataTestCases {
     private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementrefs";
@@ -38,8 +38,6 @@ public class XmlElementRefsTestCases extends ExternalizedMetadataTestCases {
 
     /**
      * This is the preferred (and only) constructor.
-     *
-     * @param name
      */
     public XmlElementRefsTestCases(String name) {
         super(name);
@@ -50,11 +48,11 @@ public class XmlElementRefsTestCases extends ExternalizedMetadataTestCases {
      *
      * Positive test.
      */
-    public void testXmlElementRefsSchemaGen() {
+    public void testXmlElementRefsSchemaGen() throws URISyntaxException {
         MyStreamSchemaOutputResolver outputResolver = new MyStreamSchemaOutputResolver();
         generateSchemaWithFileName(new Class[] { Foos.class, ObjectFactory.class }, CONTEXT_PATH, PATH + "eclipselink-oxm.xml", 2, outputResolver);
         // validate schema
-        String controlSchema = PATH + "schema.xsd";
+        URI controlSchema = Thread.currentThread().getContextClassLoader().getResource(PATH + "schema.xsd").toURI();
         compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE).toString(), new File(controlSchema));
     }
 
@@ -66,7 +64,7 @@ public class XmlElementRefsTestCases extends ExternalizedMetadataTestCases {
      */
     public void testXmlElementRefs() throws JAXBException {
         // load XML metadata
-        MySchemaOutputResolver outputResolver = generateSchema(new Class[] { Foos.class, ObjectFactory.class }, CONTEXT_PATH, PATH, 2);
+        generateSchema(new Class[] { Foos.class, ObjectFactory.class }, CONTEXT_PATH, PATH, 2);
 
         // load instance doc
         String src = PATH + "foos.xml";
@@ -126,10 +124,10 @@ public class XmlElementRefsTestCases extends ExternalizedMetadataTestCases {
      */
     public void testCollectionType() {
         try {
-            Map<String, Object> properties = new HashMap<String, Object>();
-            properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, new File(PATH + "collectiontype/oxm.xml"));
-            javax.xml.bind.JAXBContext jCtx = JAXBContextFactory.createContext(new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementrefs.collectiontype.ObjectFactory.class, Root.class }, properties);
-        } catch (JAXBException e) {
+            Map<String, Object> properties = new HashMap<>();
+            properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, new File(Thread.currentThread().getContextClassLoader().getResource(PATH + "collectiontype/oxm.xml").toURI()));
+            JAXBContextFactory.createContext(new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementrefs.collectiontype.ObjectFactory.class, Root.class }, properties);
+        } catch (Exception e) {
             e.printStackTrace();
             fail("An unexpected exception was thrown while attempting to create the JAXBContext: " + e.getMessage());
         }

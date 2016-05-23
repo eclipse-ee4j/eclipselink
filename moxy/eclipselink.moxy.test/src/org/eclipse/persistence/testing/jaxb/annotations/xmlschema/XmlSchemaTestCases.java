@@ -95,9 +95,10 @@ public class XmlSchemaTestCases {
         return w;
     }
 
-    public Validator createValidator() throws SAXException {
+    public Validator createValidator() throws Exception {
         SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        Schema articleSchema = factory.newSchema(new File("org/eclipse/persistence/testing/jaxb/annotations/xmlschema/extended.xsd"));
+        Schema articleSchema = factory.newSchema(new File(Thread.currentThread().getContextClassLoader().
+                getResource("org/eclipse/persistence/testing/jaxb/annotations/xmlschema/extended.xsd").toURI()));
         return articleSchema.newValidator();
     }
 }

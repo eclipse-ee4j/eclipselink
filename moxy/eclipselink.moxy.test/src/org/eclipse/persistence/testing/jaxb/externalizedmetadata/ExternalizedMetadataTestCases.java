@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -15,12 +15,8 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -52,7 +48,6 @@ import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.compiler.Generator;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelImpl;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelInputImpl;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.platform.xml.XMLComparer;
 import org.eclipse.persistence.sessions.Project;
@@ -440,6 +435,31 @@ public class ExternalizedMetadataTestCases extends TestCase {
             theSchema = sFact.newSchema(outputResolver.schemaFiles.get(namespace));
             Validator validator = theSchema.newValidator();
             StreamSource ss = new StreamSource(new File(src));
+            validator.validate(ss);
+        } catch (Exception e) {
+            //e.printStackTrace();
+            if (e.getMessage() == null) {
+                return "An unknown exception occurred.";
+            }
+            return e.getMessage();
+        }
+        return null;
+    }
+
+    /**
+     * Validates a given instance doc against the generated schema.
+     *
+     * @param src
+     * @param schemaIndex index in output resolver's list of generated schemas
+     * @param outputResolver contains one or more schemas to validate against
+     */
+    protected String validateAgainstSchema(InputStream src, String namespace, MySchemaOutputResolver outputResolver) {
+        SchemaFactory sFact = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        Schema theSchema;
+        try {
+            theSchema = sFact.newSchema(outputResolver.schemaFiles.get(namespace));
+            Validator validator = theSchema.newValidator();
+            StreamSource ss = new StreamSource(src);
             validator.validate(ss);
         } catch (Exception e) {
             //e.printStackTrace();

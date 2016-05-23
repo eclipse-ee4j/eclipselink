@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -52,11 +52,7 @@ import java.util.Set;
  */
 public class BeanValidationRuntimeTestCase extends junit.framework.TestCase {
 
-    private static final String RESOURCES_PATH = "org/eclipse/persistence/testing/jaxb/beanvalidation/rt/";
-    private static final File FILE_VALID = new File(RESOURCES_PATH + "employee.xml");
-    private static final File FILE_INVALID = new File(RESOURCES_PATH + "employeeInvalid.xml");
-    private static final File FILE_JSON_VALID = new File(RESOURCES_PATH + "employee.json");
-    private static final File FILE_JSON_INVALID = new File(RESOURCES_PATH + "employeeInvalid.json");
+    private static final String RESOURCES_PATH_RELATIVE = "org/eclipse/persistence/testing/jaxb/beanvalidation/rt/";
     private static final String JAVAX_NOT_NULL_MESSAGE = "{javax.validation.constraints.NotNull.message}";
     private static final String JAVAX_MIN_MESSAGE = "{javax.validation.constraints.Min.message}";
     private static final String JAVAX_SIZE_MESSAGE = "{javax.validation.constraints.Size.message}";
@@ -65,6 +61,11 @@ public class BeanValidationRuntimeTestCase extends junit.framework.TestCase {
     private static final String JAVAX_DIGITS_MESSAGE = "{javax.validation.constraints.Digits.message}";
     private static final Class[] EMPLOYEE = new Class[]{Employee.class};
     private static final boolean DEBUG = false;
+
+    private static File FILE_VALID;
+    private static File FILE_INVALID;
+    private static File FILE_JSON_VALID;
+    private static File FILE_JSON_INVALID;
 
     private boolean toggle = true; // Value is sensitive to the order of methods in testBeanValidation() method.
     private ValidatorFactory preferredValidatorFactory;
@@ -248,6 +249,12 @@ public class BeanValidationRuntimeTestCase extends junit.framework.TestCase {
         /* tests setting the property through unmarshaller */
         unmarshallerValidOn.setProperty(UnmarshallerProperties.BEAN_VALIDATION_MODE, BeanValidationMode.CALLBACK);
         unmarshallerValidOff = (JAXBUnmarshaller) ctxValidationOff.createUnmarshaller();
+
+        String RESOURCES_PATH = Thread.currentThread().getContextClassLoader().getResource(RESOURCES_PATH_RELATIVE).getPath();
+        FILE_VALID = new File(RESOURCES_PATH + "employee.xml");
+        FILE_INVALID = new File(RESOURCES_PATH + "employeeInvalid.xml");
+        FILE_JSON_VALID = new File(RESOURCES_PATH + "employee.json");
+        FILE_JSON_INVALID = new File(RESOURCES_PATH + "employeeInvalid.json");
     }
 
     @After

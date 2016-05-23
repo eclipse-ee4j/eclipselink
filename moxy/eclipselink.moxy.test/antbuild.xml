@@ -143,10 +143,9 @@
         <pathelement path="${moxytest.2.moxy.dir}/target/${classes.dir}"/>
         <pathelement path="${moxytest.2.moxy.dir}/${resource.dir}"/>
         <pathelement path="${moxytest.2.dynamic.dir}/${classes.dir}"/>
-        <pathelement path="${classes.dir}"/>
-        <pathelement path="${resource.dir}"/>
         <pathelement path="${moxytest.2.core.dir}/target/${classes.dir}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/org.eclipse.persistence.asm"/>
+        <pathelement path="${build.dir}/${classes.dir}"/>
         <pathelement path="${jaxb-xjc.lib}"/>
         <pathelement path="${jaxb-impl.lib}"/>
         <pathelement path="${jaxb-core.lib}"/>
@@ -182,8 +181,7 @@
         <pathelement path="${moxytest.2.common.plugins.dir}/${mail.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${asm.jar}"/>
         <pathelement path="${moxytest.2.moxy.dir}/target/${classes.dir}"/>
-        <pathelement path="${classes.dir}"/>
-        <pathelement path="${resource.dir}"/>
+        <pathelement path="${build.dir}/${classes.dir}"/>
         <pathelement path="${moxytest.2.core.dir}/target/${classes.dir}"/>
         <pathelement path="${jacocoagent.lib}"/>
         <pathelement path="${jmockit.lib}"/>
@@ -220,8 +218,7 @@
         <pathelement path="${moxytest.2.common.plugins.dir}/${mail.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${jaxrs.jar}"/>
         <pathelement path="${oep.nosql.lib}"/>
-        <pathelement path="${classes.dir}"/>
-        <pathelement path="${resource.dir}"/>
+        <pathelement path="${build.dir}/${classes.dir}"/>
         <pathelement path="${eclipselink.lib}"/>
         <pathelement path="${jaxb-xjc.lib}"/>
         <pathelement path="${jaxb-impl.lib}"/>
@@ -259,10 +256,11 @@
         <pathelement path="${moxytest.2.common.plugins.dir}/${transaction.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${mail.jar}"/>
         <pathelement path="${oep.nosql.lib}"/>
-        <pathelement path="${classes.dir}"/>
-        <pathelement path="${resource.dir}"/>
+        <pathelement path="${build.dir}/${classes.dir}"/>
         <pathelement path="${eclipselink.lib}"/>
     </path>
+
+    <mkdir dir="${build.dir}"/>
 
     <!-- Test targets -->
     <target name="test" depends="clean-reports, compile-and-run-tests, moxy-junit-report"
@@ -383,9 +381,10 @@
         <unzip src="${moxytest.2.trunk.dir}/${eclipselink.zip.file}" dest="${unzip.temp.file}"/>
         <chmod dir="${unzip.temp.file}/eclipselink/bin" perm="+x" includes="**/*"/>
 
-        <delete dir="${report.dir}/installer" includeEmptyDirs="true" failonerror="false"/>
+        <delete dir="${report.dir}/installer" failonerror="false"/>
         <mkdir dir="${report.dir}/installer"/>
-        <junit printsummary="yes" fork="true" dir="${resource.dir}" showoutput="yes" maxmemory="512m">
+        <mkdir dir="${build.dir}/${test.dir}"/>
+        <junit printsummary="yes" fork="true" dir="${build.dir}/${test.dir}" tempdir="${build.dir}/${test.dir}" showoutput="yes" maxmemory="512m">
             <env key="ECLIPSELINK_UNZIP_DIR" value="${unzip.temp.file}"/>
             <batchtest todir="${report.dir}/installer">
                 <fileset dir="${src.dir}">
@@ -397,7 +396,7 @@
                 <path refid="jaxb.run.path"/>
             </classpath>
         </junit>
-        <delete dir="${unzip.temp.file}" includeEmptyDirs="true" failonerror="false"/>
+        <delete dir="${unzip.temp.file}" failonerror="false"/>
     </target>
     <!-- The following targets build and run against eclipselink.jar -->
     <target name="compile-and-run-tests-against-jar" depends="compile-tests-against-jar"
@@ -435,12 +434,6 @@
             </fileset>
             <report format="noframes" todir="${report.dir}/jaxb"/>
         </junitreport>
-        <delete includeEmptyDirs="true" failonerror="false">
-            <fileset dir="${resource.dir}/${tmp.dir}"/>
-            <fileset dir="${resource.dir}">
-                <include name="File*.xml"/>
-            </fileset>
-        </delete>
     </target>
     <target name="oxm-junit-report" description="create oxm junit report">
         <junitreport todir="${report.dir}/oxm">
@@ -466,41 +459,32 @@
             </fileset>
             <report format="noframes" todir="${report.dir}/srg"/>
         </junitreport>
-        <delete includeEmptyDirs="true" failonerror="false">
-            <fileset dir="${resource.dir}/${tmp.dir}"/>
-            <fileset dir="${resource.dir}">
-                <include name="File*.xml"/>
-            </fileset>
-        </delete>
     </target>
 
 
     <!-- Clean targets -->
     <target name="clean-reports" depends="clean-oxm-reports, clean-jaxb-reports"
             description="clean moxy junit report directory">
-        <delete dir="${report.dir}/jaxb" includeEmptyDirs="true" failonerror="false"/>
-        <delete dir="${report.dir}/oxm" includeEmptyDirs="true" failonerror="false"/>
+        <delete dir="${report.dir}/jaxb" failonerror="false"/>
+        <delete dir="${report.dir}/oxm" failonerror="false"/>
         <mkdir dir="${report.dir}/jaxb"/>
         <mkdir dir="${report.dir}/oxm"/>
         <mkdir dir="${report.dir}/installer"/>
     </target>
     <target name="clean-oxm-reports" description="clean moxy (oxm) junit report directory">
-        <delete dir="${report.dir}/oxm" includeEmptyDirs="true" failonerror="false"/>
+        <delete dir="${report.dir}/oxm" failonerror="false"/>
         <mkdir dir="${report.dir}/oxm"/>
     </target>
     <target name="clean-jaxb-reports" description="clean moxy (jaxb) junit report directory">
-        <delete dir="${report.dir}/jaxb" includeEmptyDirs="true" failonerror="false"/>
+        <delete dir="${report.dir}/jaxb" failonerror="false"/>
         <mkdir dir="${report.dir}/jaxb"/>
     </target>
     <target name="clean-installer-reports" description="clean moxy (installer) junit report directory">
-        <delete dir="${report.dir}/installer" includeEmptyDirs="true" failonerror="false"/>
+        <delete dir="${report.dir}/installer" failonerror="false"/>
         <mkdir dir="${report.dir}/installer"/>
     </target>
     <target name="clean" description="clean the build">
-        <delete includeEmptyDirs="true" failonerror="false">
-            <fileset dir="${classes.dir}"/>
-        </delete>
-        <mkdir dir="${classes.dir}"/>
+        <delete dir="${build.dir}" failonerror="false"/>
     </target>
 
     <!-- Test run macros -->
@@ -508,12 +492,12 @@
         <attribute name="runpathref"/>
         <sequential>
             <echo message="Bean Validation jars found: ${validate.jar.exists}."/>
-            <delete dir="${report.dir}/jaxb" includeEmptyDirs="true" failonerror="false"/>
+            <delete dir="${report.dir}/jaxb" failonerror="false"/>
             <mkdir dir="${report.dir}/jaxb"/>
-            <mkdir dir="${resource.dir}/${tmp.dir}"/>
+            <mkdir dir="${build.dir}/${test.dir}/${tmp.dir}"/>
             <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
             <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
-            <junit printsummary="yes" fork="true" dir="${resource.dir}" showoutput="yes" maxmemory="512m">
+            <junit printsummary="yes" fork="true" dir="${build.dir}/${test.dir}" tempdir="${build.dir}/${test.dir}" showoutput="yes" maxmemory="512m">
                 <!--<jvmarg value="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"/>-->
                 <jvmarg value="-ea"/>
                 <jvmarg value="-javaagent:${jmockit.lib}"/>
@@ -573,12 +557,12 @@
     <macrodef name="run_jaxb_srg_tests">
         <attribute name="runpathref"/>
         <sequential>
-            <delete dir="${report.dir}/srg/jaxb" includeEmptyDirs="true" failonerror="false"/>
+            <delete dir="${report.dir}/srg/jaxb" failonerror="false"/>
             <mkdir dir="${report.dir}/srg/jaxb"/>
-            <mkdir dir="${resource.dir}/${tmp.dir}"/>
+            <mkdir dir="${build.dir}/${test.dir}/${tmp.dir}"/>
             <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
             <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
-            <junit printsummary="yes" fork="true" dir="${resource.dir}" showoutput="yes" maxmemory="512m">
+            <junit printsummary="yes" fork="true" dir="${build.dir}/${test.dir}" tempdir="${build.dir}/${test.dir}" showoutput="yes" maxmemory="512m">
                 <jvmarg value="-ea"/>
                 <jvmarg line="${additional.jvmargs}"/>
                 <env key="T_WORK" value="${tmp.dir}"/>
@@ -603,9 +587,10 @@
     <macrodef name="run_oxm_srg_tests">
         <attribute name="runpathref"/>
         <sequential>
-            <delete dir="${report.dir}/srg/oxm" includeEmptyDirs="true" failonerror="false"/>
+            <delete dir="${report.dir}/srg/oxm" failonerror="false"/>
             <mkdir dir="${report.dir}/srg/oxm/default"/>
-            <junit printsummary="yes" fork="true" dir="${resource.dir}" showoutput="yes" maxmemory="512m">
+            <mkdir dir="${build.dir}/${test.dir}"/>
+            <junit printsummary="yes" fork="true" dir="${build.dir}/${test.dir}" tempdir="${build.dir}/${test.dir}" showoutput="yes" maxmemory="512m">
                 <sysproperty key="useLogging" value="false"/>
                 <sysproperty key="eclipselink.xml.platform" value="${xml.platform}"/>
                 <sysproperty key="parser" value="${parser}"/>
@@ -625,9 +610,10 @@
     <macrodef name="run_oxm_tests">
         <attribute name="runpathref"/>
         <sequential>
-            <delete dir="${report.dir}/oxm/default" includeEmptyDirs="true" failonerror="false"/>
+            <delete dir="${report.dir}/oxm/default" failonerror="false"/>
             <mkdir dir="${report.dir}/oxm/default"/>
-            <junit printsummary="yes" fork="true" dir="${resource.dir}" showoutput="yes" maxmemory="512m">
+            <mkdir dir="${build.dir}/${test.dir}"/>
+            <junit printsummary="yes" fork="true" dir="${build.dir}/${test.dir}" tempdir="${build.dir}/${test.dir}" showoutput="yes" maxmemory="512m">
                 <jvmarg value="-ea"/>
                 <sysproperty key="useLogging" value="false"/>
                 <sysproperty key="eclipselink.xml.platform" value="${xml.platform}"/>
@@ -670,9 +656,10 @@
     <macrodef name="run_oxm_dom_tests">
         <attribute name="runpathref"/>
         <sequential>
-            <delete dir="${report.dir}/oxm/dom" includeEmptyDirs="true" failonerror="false"/>
+            <delete dir="${report.dir}/oxm/dom" failonerror="false"/>
             <mkdir dir="${report.dir}/oxm/dom"/>
-            <junit printsummary="yes" fork="true" dir="${resource.dir}" showoutput="yes" maxmemory="512m">
+            <mkdir dir="${build.dir}/${test.dir}"/>
+            <junit printsummary="yes" fork="true" dir="${build.dir}/${test.dir}" tempdir="${build.dir}/${test.dir}" showoutput="yes" maxmemory="512m">
                 <jvmarg value="-ea"/>
                 <sysproperty key="platformType" value="DOM"/>
                 <sysproperty key="metadataType" value="JAVA"/>
@@ -717,9 +704,10 @@
     <macrodef name="run_oxm_deploymentxml_tests">
         <attribute name="runpathref"/>
         <sequential>
-            <delete dir="${report.dir}/oxm/deploymentxml" includeEmptyDirs="true" failonerror="false"/>
+            <delete dir="${report.dir}/oxm/deploymentxml" failonerror="false"/>
             <mkdir dir="${report.dir}/oxm/deploymentxml"/>
-            <junit printsummary="yes" fork="true" dir="${resource.dir}" showoutput="yes" maxmemory="512m">
+            <mkdir dir="${build.dir}/${test.dir}"/>
+            <junit printsummary="yes" fork="true" dir="${build.dir}/${test.dir}" tempdir="${build.dir}/${test.dir}" showoutput="yes" maxmemory="512m">
                 <jvmarg value="-ea"/>
                 <sysproperty key="platformType" value="DOM"/>
                 <sysproperty key="metadataType" value="XML_ECLIPSELINK"/>
@@ -782,9 +770,10 @@
     <macrodef name="run_oxm_deploymentxml_tl_tests">
         <attribute name="runpathref"/>
         <sequential>
-            <delete dir="${report.dir}/oxm/deploymentxml-tl" includeEmptyDirs="true" failonerror="false"/>
+            <delete dir="${report.dir}/oxm/deploymentxml-tl" failonerror="false"/>
             <mkdir dir="${report.dir}/oxm/deploymentxml-tl"/>
-            <junit printsummary="yes" fork="true" dir="${resource.dir}" showoutput="yes" maxmemory="512m">
+            <mkdir dir="${build.dir}/${test.dir}"/>
+            <junit printsummary="yes" fork="true" dir="${build.dir}/${test.dir}" tempdir="${build.dir}/${test.dir}" showoutput="yes" maxmemory="512m">
                 <jvmarg value="-ea"/>
                 <sysproperty key="platformType" value="DOM"/>
                 <sysproperty key="metadataType" value="XML_TOPLINK"/>
@@ -843,9 +832,10 @@
     <macrodef name="run_oxm_docpres_tests">
         <attribute name="runpathref"/>
         <sequential>
-            <delete dir="${report.dir}/oxm/docpres" includeEmptyDirs="true" failonerror="false"/>
+            <delete dir="${report.dir}/oxm/docpres" failonerror="false"/>
             <mkdir dir="${report.dir}/oxm/docpres"/>
-            <junit printsummary="yes" fork="true" dir="${resource.dir}" showoutput="yes" maxmemory="512m">
+            <mkdir dir="${build.dir}/${test.dir}"/>
+            <junit printsummary="yes" fork="true" dir="${build.dir}/${test.dir}" tempdir="${build.dir}/${test.dir}" showoutput="yes" maxmemory="512m">
                 <jvmarg value="-ea"/>
                 <sysproperty key="platformType" value="DOC_PRES"/>
                 <sysproperty key="metadataType" value="JAVA"/>
@@ -896,9 +886,10 @@
         <attribute name="subcomponent"/>
         <attribute name="compilepathref"/>
         <sequential>
-            <mkdir dir="${classes.dir}"/>
+            <mkdir dir="${build.dir}/${classes.dir}"/>
+            <property name="moxy.test.dir" location="${build.dir}/.."/>
             <javac srcdir="${src.dir}"
-                   destdir="${classes.dir}"
+                   destdir="${build.dir}/${classes.dir}"
                    debug="${javac.debug}"
                    debuglevel="${javac.debuglevel}"
                    encoding="UTF-8"
@@ -911,6 +902,10 @@
                     <path refid="@{compilepathref}"/>
                 </classpath>
             </javac>
+            <copy todir="${build.dir}/${classes.dir}">
+                <fileset dir="${moxy.test.dir}/${resource.dir}" includes="org/eclipse/persistence/testing/@{subcomponent}/**"/>
+                <file name="${moxy.test.dir}/${resource.dir}/sessions.xml"/>
+            </copy>
         </sequential>
     </macrodef>
 </project>

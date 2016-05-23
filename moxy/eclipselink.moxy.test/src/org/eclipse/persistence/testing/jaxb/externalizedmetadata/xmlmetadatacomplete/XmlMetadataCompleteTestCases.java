@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -13,25 +13,9 @@
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlmetadatacomplete;
 
 import java.io.File;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Vector;
+import java.net.URISyntaxException;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.namespace.QName;
-
-import junit.textui.TestRunner;
-
-import org.eclipse.persistence.jaxb.JAXBContext;
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.oxm.XMLDescriptor;
-import org.eclipse.persistence.oxm.mappings.XMLCollectionReferenceMapping;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
-import org.w3c.dom.Document;
 
 /**
  * Tests ignoring annotations via xml-mapping-metadata-complete.
@@ -50,8 +34,6 @@ public class XmlMetadataCompleteTestCases extends ExternalizedMetadataTestCases 
 
     /**
      * This is the preferred (and only) constructor.
-     *
-     * @param name
      */
     public XmlMetadataCompleteTestCases(String name) {
         super(name);
@@ -73,10 +55,11 @@ public class XmlMetadataCompleteTestCases extends ExternalizedMetadataTestCases 
      *
      * Positive test.
      */
-    public void testNoOverrideSchemaGen() {
+    public void testNoOverrideSchemaGen() throws URISyntaxException {
         MySchemaOutputResolver resolver = generateSchemaWithFileName(classes, CONTEXT_PATH, OXM_DOC, 1);
         // validate the schema
-        compareSchemas(resolver.schemaFiles.get(EMPTY_NAMESPACE), new File(XSD_DOC));
+        compareSchemas(resolver.schemaFiles.get(EMPTY_NAMESPACE),
+                new File(Thread.currentThread().getContextClassLoader().getResource(XSD_DOC).toURI()));
     }
 
     /**
@@ -84,11 +67,13 @@ public class XmlMetadataCompleteTestCases extends ExternalizedMetadataTestCases 
      *
      * Positive test.
      */
-    public void testOverrideSchemaGen() {
+    public void testOverrideSchemaGen() throws URISyntaxException {
         MyStreamSchemaOutputResolver resolver = new MyStreamSchemaOutputResolver();
         generateSchemaWithFileName(classes, CONTEXT_PATH, OXM_OVERRIDES_DOC, 2, resolver);
         // validate the schema2
-        compareSchemas(resolver.schemaFiles.get(EMPTY_NAMESPACE).toString(), new File(XSD_DOC_OVERRIDE_1));
-        compareSchemas(resolver.schemaFiles.get(NSX_NAMESPACE).toString(), new File(XSD_DOC_OVERRIDE_2));
+        compareSchemas(resolver.schemaFiles.get(EMPTY_NAMESPACE).toString(),
+                new File(Thread.currentThread().getContextClassLoader().getResource(XSD_DOC_OVERRIDE_1).toURI()));
+        compareSchemas(resolver.schemaFiles.get(NSX_NAMESPACE).toString(),
+                new File(Thread.currentThread().getContextClassLoader().getResource(XSD_DOC_OVERRIDE_2).toURI()));
     }
 }

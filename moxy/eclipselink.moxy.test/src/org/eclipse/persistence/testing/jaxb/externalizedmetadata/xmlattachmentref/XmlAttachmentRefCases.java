@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -14,11 +14,12 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlattachmentr
 
 import java.io.File;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.activation.DataHandler;
-import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
@@ -28,7 +29,6 @@ import javax.xml.transform.stream.StreamSource;
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.Employee;
 import org.w3c.dom.Document;
 
 /**
@@ -55,10 +55,10 @@ public class XmlAttachmentRefCases extends ExternalizedMetadataTestCases {
      *
      * Positive test.
      */
-    public void testSchemaGen() {
+    public void testSchemaGen() throws URISyntaxException {
         outputResolver = generateSchema(CONTEXT_PATH, PATH, 1);
         // validate schema
-        String controlSchema = PATH + "schema.xsd";
+        URI controlSchema = Thread.currentThread().getContextClassLoader().getResource(PATH + "schema.xsd").toURI();
         compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
     }
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -22,10 +22,8 @@ import org.junit.After;
 import org.junit.Before;
 
 import javax.validation.Validation;
-import java.io.File;
-import java.io.IOException;
 import java.io.StringWriter;
-import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Set;
 
 /**
@@ -38,14 +36,42 @@ public class ValidationXMLTestCase extends junit.framework.TestCase {
     private static final String MIN_MESSAGE = "{javax.validation.constraints.Min.message}";
     private static final String MOXY_JAXBCONTEXT_FACTORY = JAXBContextFactory.class.getName();
     private static final String SYSTEM_PROPERTY_JAXBCONTEXT = "javax.xml.bind.JAXBContext";
+    private static final String VALIDATION_XML = "META-INF/validation.xml";
+    private static final String CONSTRAINTS_XML = "META-INF/validation/constraints.xml";
+    private static final String CONSTRAINTS2_XML = "META-INF/validation/constraints2.xml";
+    private static final String VALIDATION_XML_PATH = "org/eclipse/persistence/testing/jaxb/beanvalidation/validation.xml";
+    private static final String CONSTRAINTS_XML_PATH = "org/eclipse/persistence/testing/jaxb/beanvalidation/constraints.xml";
+    private static final String CONSTRAINTS2_XML_PATH = "org/eclipse/persistence/testing/jaxb/beanvalidation/constraints2.xml";
     private static final boolean DEBUG = false;
-    private static File DEACTIVATED_VALIDATION_XML;
-    private static File ACTIVATED_VALIDATION_XML;
+
+    private ClassLoader classLoader;
+    private Thread currentThread = Thread.currentThread();
+
+    private static final class ValidationClassLoader extends ClassLoader {
+        ValidationClassLoader(ClassLoader parent) {
+            super(parent);
+        }
+
+        @Override
+        public URL getResource(String name) {
+            if (name != null) {
+                switch (name) {
+                case VALIDATION_XML:
+                    return getParent().getResource(VALIDATION_XML_PATH);
+                case CONSTRAINTS_XML:
+                    return getParent().getResource(CONSTRAINTS_XML_PATH);
+                case CONSTRAINTS2_XML:
+                    return getParent().getResource(CONSTRAINTS2_XML_PATH);
+                }
+            }
+            return super.getResource(name);
+        }
+    }
 
     /**
      * Tests fix for endless invocation loop between
      * unmarshaller - validator - unmarshaller.
-     * File {@link #DEACTIVATED_VALIDATION_XML} must be present on classpath.
+     * File {@link #VALIDATION_XML} must be present on classpath.
      */
     public void testEndlessLoopInvocations() throws Exception {
         final String previous = System.getProperty(SYSTEM_PROPERTY_JAXBCONTEXT);
@@ -106,27 +132,12 @@ public class ValidationXMLTestCase extends junit.framework.TestCase {
 
     @Before
     public void setUp() throws Exception {
-        createTimeWindow();
+        classLoader = new ValidationClassLoader(currentThread.getContextClassLoader());
+        currentThread.setContextClassLoader(classLoader);
     }
 
     @After
     public void tearDown() throws Exception {
-        closeTimeWindow();
-    }
-
-    private void createTimeWindow() throws URISyntaxException, IOException {
-        ClassLoader cl = Thread.currentThread().getContextClassLoader();
-        //noinspection ConstantConditions
-        DEACTIVATED_VALIDATION_XML = new File(cl.getResource("META-INF/deactivated_validation.xml").toURI());
-        ACTIVATED_VALIDATION_XML = new File(DEACTIVATED_VALIDATION_XML.getCanonicalPath().replace("deactivated_", ""));
-        assertFalse(ACTIVATED_VALIDATION_XML.exists());
-        boolean renamingSucceeded = DEACTIVATED_VALIDATION_XML.renameTo(ACTIVATED_VALIDATION_XML);
-        assertTrue(renamingSucceeded);
-    }
-
-    private void closeTimeWindow() {
-        boolean restoringOriginalNameSucceeded = ACTIVATED_VALIDATION_XML.renameTo(DEACTIVATED_VALIDATION_XML);
-        assertTrue(restoringOriginalNameSucceeded);
-        assertFalse(ACTIVATED_VALIDATION_XML.exists());
+        currentThread.setContextClassLoader(classLoader.getParent());
     }
 }

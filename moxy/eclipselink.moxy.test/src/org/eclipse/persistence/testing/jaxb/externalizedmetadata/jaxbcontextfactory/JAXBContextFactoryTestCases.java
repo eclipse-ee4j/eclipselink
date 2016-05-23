@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -13,12 +13,13 @@
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -61,18 +62,19 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
     private static final String INPUT_STRM_PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/jaxbcontextfactory/bindingformat/inputstream/";
     private static final String READER_PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/jaxbcontextfactory/bindingformat/reader/";
     private static final String SOURCE_PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/jaxbcontextfactory/bindingformat/source/";
-    private static final String FILE_OXM_XML = FILE_PATH + FOO_OXM_XML;
-    private static final String FILE_OXM_JSON = FILE_PATH + FOO_OXM_JSON;
-    private static final String FILE_OXM_JSON_INVALID = FILE_PATH + "foo-oxm-invalid.json";
-    private static final String INPUT_SRC_OXM_XML = INPUT_SRC_PATH + FOO_OXM_XML;
-    private static final String INPUT_SRC_OXM_JSON = INPUT_SRC_PATH + FOO_OXM_JSON;
-    private static final String INPUT_STRM_OXM_XML = INPUT_STRM_PATH + FOO_OXM_XML;
-    private static final String INPUT_STRM_OXM_JSON = INPUT_STRM_PATH + FOO_OXM_JSON;
-    private static final String READER_OXM_XML = READER_PATH + FOO_OXM_XML;
-    private static final String READER_EMPTY_OXM_XML = READER_PATH + "foo-oxm_empty.xml";
-    private static final String READER_EMPTY_OXM_JSON = READER_PATH + "foo-oxm_empty.json";
 
-    private static final String READER_OXM_JSON = READER_PATH + FOO_OXM_JSON;
+    private static URI FILE_OXM_XML;
+    private static URI FILE_OXM_JSON;
+    private static URI FILE_OXM_JSON_INVALID;
+    private static URL INPUT_SRC_OXM_XML;
+    private static URL INPUT_SRC_OXM_JSON;
+    private static URL INPUT_STRM_OXM_XML;
+    private static URL INPUT_STRM_OXM_JSON;
+    private static URL READER_OXM_XML;
+    private static URL READER_EMPTY_OXM_XML;
+    private static URL READER_EMPTY_OXM_JSON;
+    private static URL READER_OXM_JSON;
+
     private static final String SOURCE_OXM_XML = SOURCE_PATH + FOO_OXM_XML;
     private static final String SOURCE_OXM_JSON = SOURCE_PATH + FOO_OXM_JSON;
     private static final String FILE_XML = FILE_PATH + FOO_XML;
@@ -99,6 +101,19 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
 
     public void setUp() throws Exception {
         super.setUp();
+
+        FILE_OXM_XML = Thread.currentThread().getContextClassLoader().getResource(FILE_PATH + FOO_OXM_XML).toURI();
+        FILE_OXM_JSON = Thread.currentThread().getContextClassLoader().getResource(FILE_PATH + FOO_OXM_JSON).toURI();
+        FILE_OXM_JSON_INVALID = Thread.currentThread().getContextClassLoader().getResource(FILE_PATH + "foo-oxm-invalid.json").toURI();
+
+        INPUT_SRC_OXM_XML = Thread.currentThread().getContextClassLoader().getResource(INPUT_SRC_PATH + FOO_OXM_XML);
+        INPUT_SRC_OXM_JSON = Thread.currentThread().getContextClassLoader().getResource(INPUT_SRC_PATH + FOO_OXM_JSON);
+        INPUT_STRM_OXM_XML = Thread.currentThread().getContextClassLoader().getResource(INPUT_STRM_PATH + FOO_OXM_XML);
+        INPUT_STRM_OXM_JSON = Thread.currentThread().getContextClassLoader().getResource(INPUT_STRM_PATH + FOO_OXM_JSON);
+        READER_OXM_XML = Thread.currentThread().getContextClassLoader().getResource(READER_PATH + FOO_OXM_XML);
+        READER_EMPTY_OXM_XML = Thread.currentThread().getContextClassLoader().getResource(READER_PATH + "foo-oxm_empty.xml");
+        READER_EMPTY_OXM_JSON = Thread.currentThread().getContextClassLoader().getResource(READER_PATH + "foo-oxm_empty.json");
+        READER_OXM_JSON = Thread.currentThread().getContextClassLoader().getResource(READER_PATH + FOO_OXM_JSON);
     }
 
     /**
@@ -109,9 +124,9 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
      *
      * Positive test.
      */
-    public void testLoadXmlFileViaPackage() {
+    public void testLoadXmlFileViaPackage() throws IOException {
         outputResolver = generateSchema(new Class[] { Employee.class }, CONTEXT_PATH, PATH, 1);
-        String src = PATH + "employee.xml";
+        InputStream src = Thread.currentThread().getContextClassLoader().getResource(PATH + "employee.xml").openStream();
         String result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
     }
@@ -124,13 +139,13 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
      *
      * 1 x Positive test, 1x Negative test
      */
-    public void testLoadMultipleXmlFilesViaSamePackage() {
+    public void testLoadMultipleXmlFilesViaSamePackage() throws IOException {
         outputResolver = generateSchema(new Class[] { Employee.class, Address.class }, CONTEXT_PATH, PATH, 1);
-        String src = PATH + "address.xml";
+        InputStream src = Thread.currentThread().getContextClassLoader().getResource(PATH + "address.xml").openStream();
         String result = validateAgainstSchema(src, null, outputResolver);
         // address is set to transient in Xml, should fail
         assertTrue("Schema validation passed unxepectedly", result != null);
-        src = PATH + "employee.xml";
+        src = Thread.currentThread().getContextClassLoader().getResource(PATH + "employee.xml").openStream();
         result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
     }
@@ -143,13 +158,13 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
      *
      * 1 x Positive tests, 1x Negative test
      */
-    public void testLoadMultipleXmlFilesViaDifferentPackage() {
+    public void testLoadMultipleXmlFilesViaDifferentPackage() throws IOException {
         outputResolver = generateSchema(new Class[] { Employee.class, Address.class, }, CONTEXT_PATH, PATH, 1);
 
-        String src = PATH + "employee.xml";
+        InputStream src = Thread.currentThread().getContextClassLoader().getResource(PATH + "employee.xml").openStream();
         String result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
-        src = PATH + "address.xml";
+        src = Thread.currentThread().getContextClassLoader().getResource(PATH + "address.xml").openStream();
         result = validateAgainstSchema(src, null, outputResolver);
         // address is set to transient in Xml, should fail
         assertTrue("Schema validation passed unxepectedly", result != null);
@@ -160,7 +175,7 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
      *
      * Positive test.
      */
-    public void testLoadXmlFilesViaProperties() {
+    public void testLoadXmlFilesViaProperties() throws IOException, URISyntaxException {
         String contextPath = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.properties.foo:org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.properties.bar";
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         String metadataFile = PATH + "properties/bar/eclipselink-oxm.xml";
@@ -169,7 +184,7 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
         if (iStream == null) {
             fail("Couldn't load metadata file [" + metadataFile + "]");
         }
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        HashMap<String, Source> metadataSourceMap = new HashMap<>();
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.properties.bar", new StreamSource(iStream));
 
         metadataFile = PATH + "properties/foo/eclipselink-oxm.xml";
@@ -180,19 +195,19 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
         }
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.properties.foo", new StreamSource(iStream));
 
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        Map<String, Map<String, Source>> properties = new HashMap<>();
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
 
         outputResolver = generateSchema(contextPath, properties, 1);
 
         // validate schema against control schema
-        compareSchemas(new File(PATH + "properties/schema.xsd"), outputResolver.schemaFiles.get(EMPTY_NAMESPACE));
+        compareSchemas(new File(classLoader.getResource(PATH + "properties/schema.xsd").toURI()), outputResolver.schemaFiles.get(EMPTY_NAMESPACE));
 
         // validate instance docs against schema
-        String src = PATH + "properties/bar/employee.xml";
+        InputStream src = classLoader.getResource(PATH + "properties/bar/employee.xml").openStream();
         String result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
-        src = PATH + "properties/foo/home-address.xml";
+        src = classLoader.getResource(PATH + "properties/foo/home-address.xml").openStream();
         result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
     }
@@ -234,7 +249,7 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
             fail("Couldn't load metadata file [" + metadataFile + "]");
         }
 
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        HashMap<String, Source> metadataSourceMap = new HashMap<>();
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.stringarray.a", new StreamSource(iStream));
 
         metadataFile = PATH + "stringarray/b/eclipselink-oxm.xml";
@@ -244,7 +259,7 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
         }
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.stringarray.b", new StreamSource(iStream));
 
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        Map<String, Map<String, Source>> properties = new HashMap<>();
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
 
         MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
@@ -258,11 +273,11 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
 
             jaxbContext = (JAXBContext) JAXBContextFactory.createContext(types, properties, loader);
             jaxbContext.generateSchema(outputResolver);
-            String controlSchema = PATH + "stringarray/bean_schema.xsd";
+            URI controlSchema = Thread.currentThread().getContextClassLoader().getResource(PATH + "stringarray/bean_schema.xsd").toURI();
             compareSchemas(outputResolver.schemaFiles.get(BEAN_NAMESPACE), new File(controlSchema));
-            controlSchema = PATH + "stringarray/string_array_schema.xsd";
+            controlSchema = Thread.currentThread().getContextClassLoader().getResource(PATH + "stringarray/string_array_schema.xsd").toURI();
             compareSchemas(outputResolver.schemaFiles.get(ARRAY_NAMESPACE), new File(controlSchema));
-        } catch (JAXBException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             fail(e.getMessage());
         }
@@ -281,7 +296,7 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
             fail("Couldn't load metadata file [" + metadataFile + "]");
         }
 
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        HashMap<String, Source> metadataSourceMap = new HashMap<>();
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.stringarray.a", new StreamSource(iStream));
 
         metadataFile = PATH + "stringarray/b/eclipselink-oxm.xml";
@@ -291,7 +306,7 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
         }
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.stringarray.b", new StreamSource(iStream));
 
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        Map<String, Map<String, Source>> properties = new HashMap<>();
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
 
         MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
@@ -306,17 +321,17 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
             jaxbContext = (JAXBContext) JAXBContextFactory.createContext(types, properties, loader);
             jaxbContext.generateSchema(outputResolver);
             String controlSchema = PATH + "stringarray/bean_schema.xsd";
-            compareSchemas(outputResolver.schemaFiles.get(BEAN_NAMESPACE), new File(controlSchema));
+            compareSchemas(outputResolver.schemaFiles.get(BEAN_NAMESPACE), new File(Thread.currentThread().getContextClassLoader().getResource(controlSchema).toURI()));
             controlSchema = PATH + "stringarray/string_array_schema.xsd";
-            compareSchemas(outputResolver.schemaFiles.get(ARRAY_NAMESPACE), new File(controlSchema));
-        } catch (JAXBException e) {
+            compareSchemas(outputResolver.schemaFiles.get(ARRAY_NAMESPACE),  new File(Thread.currentThread().getContextClassLoader().getResource(controlSchema).toURI()));
+        } catch (Exception e) {
             e.printStackTrace();
             fail(e.getMessage());
         }
     }
 
     public void testBindingFormatFile() throws Exception {
-        Map<String, Object> properties = new HashMap<String, Object>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, new File(FILE_OXM_XML));
         Class[] classes = new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.file.Foo.class };
         JAXBContext jCtx = (JAXBContext) JAXBContextFactory.createContext(classes, properties, loader);
@@ -324,7 +339,7 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
     }
 
     public void testBindingFormatXMLMetadataSource() throws Exception {
-        Map<String, Object> properties = new HashMap<String, Object>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, new XMLMetadataSource(new File(FILE_OXM_XML)));
         Class[] classes = new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.file.Foo.class };
         JAXBContext jCtx = (JAXBContext) JAXBContextFactory.createContext(classes, properties, loader);
@@ -332,15 +347,15 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
     }
 
     public void testBindingFormatInputSource() throws Exception {
-        Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, new InputSource(new FileInputStream(INPUT_SRC_OXM_XML)));
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, new InputSource(INPUT_SRC_OXM_XML.openStream()));
         Class[] classes = new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.inputsource.Foo.class };
         JAXBContext jCtx = (JAXBContext) JAXBContextFactory.createContext(classes, properties, loader);
         doTestInputSrc(jCtx);
     }
 
     public void testBindingFormatString() throws Exception {
-        Map<String, Object> properties = new HashMap<String, Object>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, INPUT_SRC_OXM_XML);
         Class[] classes = new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.inputsource.Foo.class };
         JAXBContext jCtx = (JAXBContext) JAXBContextFactory.createContext(classes, properties, loader);
@@ -349,12 +364,13 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
 
     public void testBindingFormatStringClasspath() throws Exception {
         URL[] urls = new URL[1];
-        File f = new File("./org/eclipse/persistence/testing/jaxb/externalizedmetadata/jaxbcontextfactory/bindingformat/testfolder");
+        File f = new File(Thread.currentThread().getContextClassLoader().
+                getResource("org/eclipse/persistence/testing/jaxb/externalizedmetadata/jaxbcontextfactory/bindingformat/testfolder").toURI());
         urls[0] = f.toURL();
         URLClassLoader testLoader = new URLClassLoader(urls);
 
 
-        Map<String, Object> properties = new HashMap<String, Object>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, "subfolder/foo-oxm.xml");
 
         Class[] classes = new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.inputsource.Foo.class };
@@ -363,12 +379,12 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
     }
 
     public void testBindingFormatStringInvalid() throws Exception {
-        Map<String, Object> properties = new HashMap<String, Object>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, "foobar");
         Class[] classes = new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.inputsource.Foo.class };
         boolean exceptionThrown = false;
         try {
-            JAXBContext jCtx = (JAXBContext) JAXBContextFactory.createContext(classes, properties, loader);
+            JAXBContextFactory.createContext(classes, properties, loader);
         } catch(Exception ex) {
             exceptionThrown = true;
             assertTrue("Incorrect exception caught", ((org.eclipse.persistence.exceptions.JAXBException)ex).getErrorCode() == 50027);
@@ -379,8 +395,8 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
     }
 
     public void testBindingFormatStringURL() throws Exception {
-        Map<String, Object> properties = new HashMap<String, Object>();
-        File file = new File(INPUT_SRC_OXM_XML);
+        Map<String, Object> properties = new HashMap<>();
+        File file = new File(INPUT_SRC_OXM_XML.toURI());
         URL url = file.toURI().toURL();
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, url.toExternalForm());
         Class[] classes = new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.inputsource.Foo.class };
@@ -389,7 +405,7 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
 
     }
     public void testBindingFormatMetadataSourceString() throws Exception {
-        Map<String, Object> properties = new HashMap<String, Object>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, new XMLMetadataSource(INPUT_SRC_OXM_XML));
         Class[] classes = new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.inputsource.Foo.class };
         JAXBContext jCtx = (JAXBContext) JAXBContextFactory.createContext(classes, properties, loader);
@@ -399,7 +415,7 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
     public void testBindingFormatMetadatSourceNull() throws Exception {
         boolean exception = false;
         try {
-            Map<String, Object> properties = new HashMap<String, Object>();
+            Map<String, Object> properties = new HashMap<>();
             properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, new XMLMetadataSource((File)null));
         } catch(IllegalArgumentException ex) {
             exception = true;
@@ -407,12 +423,12 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
         assertTrue("Expected exception not thrown", exception);
     }
     public void testBindingFormatMetadataSourceStringInvalid() throws Exception {
-        Map<String, Object> properties = new HashMap<String, Object>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, new XMLMetadataSource("foobar"));
         Class[] classes = new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.inputsource.Foo.class };
         boolean exceptionThrown = false;
         try {
-            JAXBContext jCtx = (JAXBContext) JAXBContextFactory.createContext(classes, properties, loader);
+            JAXBContextFactory.createContext(classes, properties, loader);
         } catch(Exception ex) {
             exceptionThrown = true;
             assertTrue("Incorrect exception caught", ((org.eclipse.persistence.exceptions.JAXBException)ex).getErrorCode() == 50076);
@@ -423,8 +439,8 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
     }
 
     public void testBindingFormatMetadataSourceURLString() throws Exception {
-        Map<String, Object> properties = new HashMap<String, Object>();
-        File file = new File(INPUT_SRC_OXM_XML);
+        Map<String, Object> properties = new HashMap<>();
+        File file = new File(INPUT_SRC_OXM_XML.toURI());
         URL url = file.toURI().toURL();
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, new XMLMetadataSource(url.toExternalForm()));
         Class[] classes = new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.inputsource.Foo.class };
@@ -433,16 +449,16 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
     }
 
     public void testBindingFormatInputStream() throws Exception {
-        Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, new FileInputStream(INPUT_STRM_OXM_XML));
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, INPUT_STRM_OXM_XML.openStream());
         Class[] classes = new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.inputstream.Foo.class };
         JAXBContext jCtx = (JAXBContext) JAXBContextFactory.createContext(classes, properties, loader);
         doTestInputStrm(jCtx);
     }
 
     public void testBindingsEmptyXML() throws Exception {
-        Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, new InputStreamReader(new FileInputStream(READER_EMPTY_OXM_XML)));
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, new InputStreamReader(READER_EMPTY_OXM_XML.openStream()));
         Class[] classes = new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.reader.FooWithRootElement.class };
         JAXBContext jCtx = (JAXBContext) JAXBContextFactory.createContext(classes, null, loader);
 
@@ -452,8 +468,8 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
     }
 
     public void testBindingsEmptyJSON() throws Exception {
-        Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, new InputStreamReader(new FileInputStream(READER_EMPTY_OXM_JSON)));
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, new InputStreamReader(READER_EMPTY_OXM_JSON.openStream()));
         Class[] classes = new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.reader.FooWithRootElement.class };
         JAXBContext jCtx = (JAXBContext) JAXBContextFactory.createContext(classes, null, loader);
 
@@ -463,15 +479,15 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
     }
 
     public void testBindingFormatReader() throws Exception {
-        Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, new InputStreamReader(new FileInputStream(READER_OXM_XML)));
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, new InputStreamReader(READER_OXM_XML.openStream()));
         Class[] classes = new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.reader.Foo.class };
         JAXBContext jCtx = (JAXBContext) JAXBContextFactory.createContext(classes, properties, loader);
         doTestReader(jCtx);
     }
 
     public void testBindingFormatSource() throws Exception {
-        Map<String, Object> properties = new HashMap<String, Object>();
+        Map<String, Object> properties = new HashMap<>();
         InputStream is = ClassLoader.getSystemResourceAsStream(SOURCE_OXM_XML);
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, new StreamSource(is));
         Class[] classes = new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.source.Foo.class };
@@ -480,13 +496,13 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
     }
 
     public void testBindingFormatList() throws Exception {
-        List<Object> inputFiles = new ArrayList<Object>();
+        List<Object> inputFiles = new ArrayList<>();
         inputFiles.add(new File(FILE_OXM_XML));
-        inputFiles.add(new InputSource(new FileInputStream(INPUT_SRC_OXM_XML)));
-        inputFiles.add(new FileInputStream(INPUT_STRM_OXM_XML));
-        inputFiles.add(new InputStreamReader(new FileInputStream(READER_OXM_XML)));
+        inputFiles.add(new InputSource(INPUT_SRC_OXM_XML.openStream()));
+        inputFiles.add(INPUT_STRM_OXM_XML.openStream());
+        inputFiles.add(new InputStreamReader(READER_OXM_XML.openStream()));
         inputFiles.add(new StreamSource(ClassLoader.getSystemResourceAsStream(SOURCE_OXM_XML)));
-        Map<String, Object> properties = new HashMap<String, Object>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, inputFiles);
         Class[] listClasses = new Class[] {
                 org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.file.Foo.class,
@@ -503,11 +519,11 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
     }
 
     public void testBindingFormatList2() throws Exception {
-        List<Object> inputFiles = new ArrayList<Object>();
+        List<Object> inputFiles = new ArrayList<>();
         inputFiles.add(new File(FILE_OXM_XML));
-        inputFiles.add(new InputSource(new FileReader(INPUT_SRC_OXM_XML)));
-        inputFiles.add(new FileInputStream(INPUT_STRM_OXM_XML));
-        inputFiles.add(new InputStreamReader(new FileInputStream(READER_OXM_XML)));
+        inputFiles.add(new InputSource(INPUT_SRC_OXM_XML.openStream()));
+        inputFiles.add(INPUT_STRM_OXM_XML.openStream());
+        inputFiles.add(new InputStreamReader(READER_OXM_XML.openStream()));
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
         builderFactory.setNamespaceAware(true);
         Document n = builderFactory.newDocumentBuilder().parse(ClassLoader.getSystemResourceAsStream(SOURCE_OXM_XML));
@@ -515,7 +531,7 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
         DOMSource ds = new DOMSource(n);
         inputFiles.add(ds);
 
-        Map<String, Object> properties = new HashMap<String, Object>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, inputFiles);
         Class[] listClasses = new Class[] {
                 org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.file.Foo.class,
@@ -532,34 +548,32 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
     }
 
     public void testBindingFormatXMLInvalid() throws Exception {
-        List<Object> inputFiles = new ArrayList<Object>();
+        List<Object> inputFiles = new ArrayList<>();
         inputFiles.add(new File(FILE_PATH + "foo-oxm-invalid.xml"));
-        Map<String, Object> properties = new HashMap<String, Object>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, inputFiles);
         Class[] listClasses = new Class[] {
                 org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.file.Foo.class};
 
         try{
-            JAXBContext jCtx = (JAXBContext) JAXBContextFactory.createContext(listClasses, properties, loader);
+            JAXBContextFactory.createContext(listClasses, properties, loader);
         }catch(org.eclipse.persistence.exceptions.JAXBException ex){
             assertEquals(org.eclipse.persistence.exceptions.JAXBException.COULD_NOT_UNMARSHAL_METADATA, ex.getErrorCode());
             return;
         }
         fail("A JAXBException should have occured with error code " + org.eclipse.persistence.exceptions.JAXBException.COULD_NOT_UNMARSHAL_METADATA);
-
-
     }
 
     public void testBindingFormatJSONInvalid() throws Exception {
-        List<Object> inputFiles = new ArrayList<Object>();
+        List<Object> inputFiles = new ArrayList<>();
         inputFiles.add(new File(FILE_OXM_JSON_INVALID));
-        Map<String, Object> properties = new HashMap<String, Object>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, inputFiles);
         Class[] listClasses = new Class[] {
                 org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.file.Foo.class};
 
         try{
-            JAXBContext jCtx = (JAXBContext) JAXBContextFactory.createContext(listClasses, properties, loader);
+            JAXBContextFactory.createContext(listClasses, properties, loader);
         }catch(org.eclipse.persistence.exceptions.JAXBException ex){
             assertEquals(org.eclipse.persistence.exceptions.JAXBException.COULD_NOT_UNMARSHAL_METADATA, ex.getErrorCode());
             return;
@@ -568,14 +582,14 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
     }
 
     public void testBindingFormatJSONInvalid2() throws Exception {
-        List<Object> inputFiles = new ArrayList<Object>();
+        List<Object> inputFiles = new ArrayList<>();
         inputFiles.add(new File(FILE_PATH + "foo-oxm-invalid2.json"));
-        Map<String, Object> properties = new HashMap<String, Object>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, inputFiles);
         Class[] listClasses = new Class[] {
                 org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.file.Foo.class};
         try{
-            JAXBContext jCtx = (JAXBContext) JAXBContextFactory.createContext(listClasses, properties, loader);
+            JAXBContextFactory.createContext(listClasses, properties, loader);
         }catch(org.eclipse.persistence.exceptions.JAXBException ex){
             assertEquals(org.eclipse.persistence.exceptions.JAXBException.COULD_NOT_UNMARSHAL_METADATA, ex.getErrorCode());
             return;
@@ -586,13 +600,13 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
 
     //see: https://bugs.eclipse.org/bugs/show_bug.cgi?id=463573
     public void IGNORED_testBindingFormatListJSONWhitespace() throws Exception {
-         List<Object> inputFiles = new ArrayList<Object>();
+         List<Object> inputFiles = new ArrayList<>();
          inputFiles.add(new File(FILE_PATH + "foo-oxm-whitespace.json"));
-         inputFiles.add(new InputSource(new FileInputStream(INPUT_SRC_OXM_JSON)));
-         inputFiles.add(new FileInputStream(INPUT_STRM_OXM_JSON));
-         inputFiles.add(new InputStreamReader(new FileInputStream(READER_OXM_JSON)));
+         inputFiles.add(new InputSource(INPUT_SRC_OXM_JSON.openStream()));
+         inputFiles.add(INPUT_STRM_OXM_JSON.openStream());
+         inputFiles.add(new InputStreamReader(READER_OXM_JSON.openStream()));
          inputFiles.add(new StreamSource(ClassLoader.getSystemResourceAsStream(SOURCE_OXM_JSON)));
-         Map<String, Object> properties = new HashMap<String, Object>();
+         Map<String, Object> properties = new HashMap<>();
          properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, inputFiles);
          Class[] listClasses = new Class[] {
                  org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.file.Foo.class,
@@ -600,9 +614,9 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
                  org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.inputstream.Foo.class,
                  org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.reader.Foo.class,
                  org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.source.Foo.class};
-         try{
-            JAXBContext jCtx = (JAXBContext) JAXBContextFactory.createContext(listClasses, properties, loader);
-         }catch(org.eclipse.persistence.exceptions.JAXBException ex){
+        try {
+            JAXBContextFactory.createContext(listClasses, properties, loader);
+        } catch (org.eclipse.persistence.exceptions.JAXBException ex) {
             assertEquals(org.eclipse.persistence.exceptions.JAXBException.COULD_NOT_UNMARSHAL_METADATA, ex.getErrorCode());
             return;
         }
@@ -611,13 +625,13 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
     }
 
     public void testBindingFormatListJSON() throws Exception {
-        List<Object> inputFiles = new ArrayList<Object>();
+        List<Object> inputFiles = new ArrayList<>();
         inputFiles.add(new File(FILE_OXM_JSON));
-        inputFiles.add(new InputSource(new FileInputStream(INPUT_SRC_OXM_JSON)));
-        inputFiles.add(new FileInputStream(INPUT_STRM_OXM_JSON));
-        inputFiles.add(new InputStreamReader(new FileInputStream(READER_OXM_JSON)));
+        inputFiles.add(new InputSource(INPUT_SRC_OXM_JSON.openStream()));
+        inputFiles.add(INPUT_STRM_OXM_JSON.openStream());
+        inputFiles.add(new InputStreamReader(READER_OXM_JSON.openStream()));
         inputFiles.add(new StreamSource(ClassLoader.getSystemResourceAsStream(SOURCE_OXM_JSON)));
-        Map<String, Object> properties = new HashMap<String, Object>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, inputFiles);
         Class[] listClasses = new Class[] {
                 org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.file.Foo.class,
@@ -633,11 +647,11 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
         doTestSource(jCtx);
     }
     public void testBindingFormatListJSON2() throws Exception {
-        List<Object> inputFiles = new ArrayList<Object>();
+        List<Object> inputFiles = new ArrayList<>();
         inputFiles.add(new File(FILE_OXM_JSON));
-        inputFiles.add(new InputSource(new FileReader(INPUT_SRC_OXM_JSON)));
-        inputFiles.add(new FileInputStream(INPUT_STRM_OXM_JSON));
-        inputFiles.add(new InputStreamReader(new FileInputStream(READER_OXM_JSON)));
+        inputFiles.add(new InputSource(INPUT_SRC_OXM_JSON.openStream()));
+        inputFiles.add(INPUT_STRM_OXM_JSON.openStream());
+        inputFiles.add(new InputStreamReader(READER_OXM_JSON.openStream()));
 
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
         builderFactory.setNamespaceAware(true);
@@ -646,7 +660,7 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
         DOMSource ds = new DOMSource(n);
         inputFiles.add(ds);
 
-        Map<String, Object> properties = new HashMap<String, Object>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, inputFiles);
         Class[] listClasses = new Class[] {
                 org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.file.Foo.class,
@@ -663,13 +677,13 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
     }
 
     public void testBindingFormatListXMLandJSON() throws Exception {
-        List<Object> inputFiles = new ArrayList<Object>();
+        List<Object> inputFiles = new ArrayList<>();
         inputFiles.add(new File(FILE_OXM_XML));
-         inputFiles.add(new InputSource(new FileInputStream(INPUT_SRC_OXM_JSON)));
-        inputFiles.add(new FileInputStream(INPUT_STRM_OXM_XML));
-        inputFiles.add(new InputStreamReader(new FileInputStream(READER_OXM_JSON)));
+        inputFiles.add(new InputSource(INPUT_SRC_OXM_JSON.openStream()));
+        inputFiles.add(INPUT_STRM_OXM_XML.openStream());
+        inputFiles.add(new InputStreamReader(READER_OXM_JSON.openStream()));
         inputFiles.add(new StreamSource(ClassLoader.getSystemResourceAsStream(SOURCE_OXM_XML)));
-        Map<String, Object> properties = new HashMap<String, Object>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, inputFiles);
         Class[] listClasses = new Class[] {
                 org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.file.Foo.class,
@@ -686,13 +700,13 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
     }
 
     public void testBindingFormatListJSONandXML() throws Exception {
-        List<Object> inputFiles = new ArrayList<Object>();
+        List<Object> inputFiles = new ArrayList<>();
         inputFiles.add(new File(FILE_OXM_JSON));
-        inputFiles.add(new InputSource(new FileInputStream(INPUT_SRC_OXM_XML)));
-        inputFiles.add(new FileInputStream(INPUT_STRM_OXM_JSON));
-        inputFiles.add(new InputStreamReader(new FileInputStream(READER_OXM_XML)));
+        inputFiles.add(new InputSource(INPUT_SRC_OXM_XML.openStream()));
+        inputFiles.add(INPUT_STRM_OXM_JSON.openStream());
+        inputFiles.add(new InputStreamReader(READER_OXM_XML.openStream()));
         inputFiles.add(new StreamSource(ClassLoader.getSystemResourceAsStream(SOURCE_OXM_JSON)));
-        Map<String, Object> properties = new HashMap<String, Object>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, inputFiles);
         Class[] listClasses = new Class[] {
                 org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.file.Foo.class,
@@ -710,12 +724,13 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
 
     public void testBindingFormatNoPackageSet() {
         try {
-            Map<String, Object> properties = new HashMap<String, Object>();
-            properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, new FileInputStream(new File(NO_PKG_OXM_XML)));
-            JAXBContext jaxbContext = (JAXBContext) JAXBContextFactory.createContext(new Class[] {}, properties, loader);
+            Map<String, Object> properties = new HashMap<>();
+            properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, Thread.currentThread().getContextClassLoader().getResource((NO_PKG_OXM_XML)).openStream());
+            JAXBContextFactory.createContext(new Class[] {}, properties, loader);
         } catch (org.eclipse.persistence.exceptions.JAXBException jaxbe) {
             return;
         } catch (Exception e) {
+            fail("The expected exception was not thrown, received " + e.getMessage());
         }
         fail("The expected exception was not thrown.");
     }

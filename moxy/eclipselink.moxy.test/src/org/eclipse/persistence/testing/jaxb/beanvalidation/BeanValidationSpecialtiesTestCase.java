@@ -64,39 +64,33 @@ public class BeanValidationSpecialtiesTestCase extends junit.framework.TestCase 
     private static final String NOT_NULL_MESSAGE = "{javax.validation.constraints.NotNull.message}";
     private static final String CUSTOM_ANNOTATION_MESSAGE = "{org.eclipse.persistence.moxy.CustomAnnotation.message}";
 
-    private static final String GENERATOR_SCHEMA =
-            "org/eclipse/persistence/testing/jaxb/beanvalidation/generator/schema.xsd";
     private static final String GENERATOR_SCHEMA_WITH_FACETS =
             "org/eclipse/persistence/testing/jaxb/beanvalidation/generator/schema_with_facets.xsd";
-
-    private static final String JAXB_SERVICE_TEMPLATE = "META-INF/services/javax.xml.bind.JAXBContext_template";
-    private static final String JAXB_SERVICE_ACTIVE = "META-INF/services/javax.xml.bind.JAXBContext";
+    private static final String GENERATOR_SCHEMA_SUFFIX = "schema.xsd";
+    private static String GENERATOR_SCHEMA;
 
     public void testGenerator() throws Exception {
 
-
         try {
-
-            File file = new File(JAXB_SERVICE_TEMPLATE);
-            assertTrue(file.renameTo(new File(JAXB_SERVICE_ACTIVE)));
 
             Map<String, Object> props = new HashMap<>();
             props.put(JAXBContextProperties.BEAN_VALIDATION_FACETS, true);
-            javax.xml.bind.JAXBContext jaxbContext = javax.xml.bind.JAXBContext.newInstance(new Class[] {Employee.class},
-                    props);
+            javax.xml.bind.JAXBContext jaxbContext = JAXBContextFactory.createContext(new Class[] {Employee.class}, props);
+
+            String generatorSchemaWithFacetsPath = Thread.currentThread().getContextClassLoader().getResource(GENERATOR_SCHEMA_WITH_FACETS).getPath();
+            GENERATOR_SCHEMA = generatorSchemaWithFacetsPath.substring(0, generatorSchemaWithFacetsPath.lastIndexOf('/') + 1) + GENERATOR_SCHEMA_SUFFIX;
 
             SchemaOutputResolver sor = new MySchemaOutputResolver();
             jaxbContext.generateSchema(sor);
-
-            assertTrue(equalsXML(new File(GENERATOR_SCHEMA_WITH_FACETS), new File(GENERATOR_SCHEMA)));
+            assertTrue(equalsXML(new File(generatorSchemaWithFacetsPath), new File(GENERATOR_SCHEMA)));
 
         } finally {
-            //noinspection ResultOfMethodCallIgnored
-            File file = new File(JAXB_SERVICE_ACTIVE);
-            assertTrue("JAXB Service template was not properly renamed back to 'META-INF/services/javax.xml.bind" +
-                    ".JAXBContext_template. DO that manually.'", file.renameTo(new File(JAXB_SERVICE_TEMPLATE)));
-            assertTrue("Generated schema '" + GENERATOR_SCHEMA + "' was not deleted properly. DO that manually.", new
-                    File(GENERATOR_SCHEMA).delete());
+            if(GENERATOR_SCHEMA!=null) {
+                File generatorSchema = new File(GENERATOR_SCHEMA);
+                if(generatorSchema.exists()) {
+                    assertTrue("Generated schema '" + GENERATOR_SCHEMA + "' was not deleted properly. DO that manually.", generatorSchema.delete());
+                }
+            }
         }
 
     }
