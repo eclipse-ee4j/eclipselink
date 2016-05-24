@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -14,13 +14,14 @@
 package org.eclipse.persistence.queries;
 
 import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.internal.jpa.jpql.HermesParser;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
  * This interface defines the entry point for implementing a JPQL query parsing
  * system in EclipseLink.
  * <p>
- * By default, EclipseLink uses {@link ANTLRQueryBuilder} for parsing a query
+ * By default, EclipseLink uses {@link HermesParser} for parsing a query
  * and converting it into a {@link DatabaseQuery}.
  * <p>
  * Third-parties can implement this interface and provide a different JPQL
