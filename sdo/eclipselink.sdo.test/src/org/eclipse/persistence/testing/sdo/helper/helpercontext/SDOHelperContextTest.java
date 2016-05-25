@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -20,10 +20,13 @@ package org.eclipse.persistence.testing.sdo.helper.helpercontext;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.List;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.util.concurrent.ConcurrentHashMap;
 
 import junit.textui.TestRunner;
 
+import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.helper.SDOHelperContext;
@@ -31,6 +34,11 @@ import org.eclipse.persistence.sdo.helper.SDOHelperContext;
 import commonj.sdo.helper.HelperContext;
 import commonj.sdo.impl.HelperProvider;
 import commonj.sdo.impl.HelperProviderImpl;
+import org.junit.Assert;
+
+import javax.management.AttributeChangeNotification;
+import javax.management.Notification;
+import javax.management.NotificationListener;
 
 
 public class SDOHelperContextTest extends SDOHelperContextTestCases {
@@ -57,7 +65,7 @@ public class SDOHelperContextTest extends SDOHelperContextTestCases {
             String xsdString = getXSDString(xsdPath);
 
             // Define Types so that processing attributes completes
-            List types = aContext.getXSDHelper().define(xsdString);
+            aContext.getXSDHelper().define(xsdString);
 
             // first we set up root data object
             inStream = new FileInputStream(xmlPath);
@@ -108,12 +116,12 @@ public class SDOHelperContextTest extends SDOHelperContextTestCases {
     }
 
     public void testMultipleInstancesOfContexts() {
-        SDOProperty property1 = (SDOProperty)aNonStaticHelperContext1DataObject.getInstanceProperty("address");
-        SDOProperty property2 = (SDOProperty)aNonStaticHelperContext2DataObject.getInstanceProperty("address");
-        SDOProperty property3 = (SDOProperty)aStaticHelperContextDataObject.getInstanceProperty("address");
-        SDOType type1 = (SDOType)aNonStaticHelperContext1DataObject.getInstanceProperty("address").getType();
-        SDOType type2 = (SDOType)aNonStaticHelperContext2DataObject.getInstanceProperty("address").getType();
-        SDOType type3 = (SDOType)aStaticHelperContextDataObject.getInstanceProperty("address").getType();
+        SDOProperty property1 = aNonStaticHelperContext1DataObject.getInstanceProperty("address");
+        SDOProperty property2 = aNonStaticHelperContext2DataObject.getInstanceProperty("address");
+        SDOProperty property3 = aStaticHelperContextDataObject.getInstanceProperty("address");
+        SDOType type1 = aNonStaticHelperContext1DataObject.getInstanceProperty("address").getType();
+        SDOType type2 = aNonStaticHelperContext2DataObject.getInstanceProperty("address").getType();
+        SDOType type3 = aStaticHelperContextDataObject.getInstanceProperty("address").getType();
 
         // verify types do not xref
         assertNotSame(type1, type2);
@@ -170,6 +178,61 @@ public class SDOHelperContextTest extends SDOHelperContextTestCases {
             fail("Attempt to lookup property 'isDefault' failed: " + ex.getMessage());
         }
         assertFalse("Lookup of alias 'myEnterpriseId' returned the default context unexpectedly", isDefault);
+    }
+
+    @SuppressWarnings("unchecked")
+    public void testNotificationListenerWLS() throws Exception {
+        final String applicationName = "App1";
+        Class listenerClass = Class.forName("org.eclipse.persistence.sdo.helper.SDOHelperContext$MyNotificationListener");
+        Constructor<? extends NotificationListener> constructor = listenerClass.getDeclaredConstructor(String.class, int.class);
+        Field helperContextsField = SDOHelperContext.class.getDeclaredField("helperContexts");
+        Field appNameToClassLoaderMapField = SDOHelperContext.class.getDeclaredField("appNameToClassLoaderMap");
+        ConcurrentHashMap<String, HelperContext> contextMap = new ConcurrentHashMap<>();
+
+        constructor.setAccessible(true);
+        helperContextsField.setAccessible(true);
+        appNameToClassLoaderMapField.setAccessible(true);
+        try {
+            ConcurrentHashMap helperContexts = (ConcurrentHashMap) helperContextsField.get(SDOHelperContext.class);
+            ConcurrentHashMap appNameToClassLoaderMap = (ConcurrentHashMap) appNameToClassLoaderMapField.get(SDOHelperContext.class);
+            final Integer originalHelperContextsSize = helperContexts.size();
+            final Integer originalAppNameToClassLoaderMapSize = appNameToClassLoaderMap.size();
+
+            ClassLoader classLoader = new DynamicClassLoader(Thread.currentThread().getContextClassLoader());
+            helperContexts.putIfAbsent(applicationName, contextMap);
+            helperContexts.putIfAbsent(classLoader, contextMap);
+            appNameToClassLoaderMap.put(applicationName, classLoader);
+
+            Assert.assertTrue("App1 entry was not added to helperContexts map", helperContexts.containsKey(applicationName));
+            Assert.assertTrue("ClassLoader entry was not added to helperContexts map", helperContexts.containsKey(classLoader));
+            Assert.assertTrue("App1 entry was not added to appNameToClassLoaderMapContains map", appNameToClassLoaderMap.containsKey(applicationName));
+
+            NotificationListener listener = constructor.newInstance(applicationName, 0);
+            Notification notification = new AttributeChangeNotification(
+                    new Object(),
+                    System.currentTimeMillis(),
+                    System.currentTimeMillis(),
+                    "Some message",
+                    "ActiveVersionState",
+                    "Some type",
+                    2, // Old value
+                    0  // New value
+            );
+            listener.handleNotification(notification, new Object());
+
+            Assert.assertFalse("App1 entry was not added to helperContexts map", helperContexts.containsKey(applicationName));
+            Assert.assertFalse("ClassLoader entry was not added to helperContexts map", helperContexts.containsKey(classLoader));
+            Assert.assertFalse("App1 entry was not added to appNameToClassLoaderMapContains map", appNameToClassLoaderMap.containsKey(applicationName));
+            Assert.assertEquals("helperContexts map size not restored to original",
+                    originalHelperContextsSize.intValue(), helperContexts.size());
+            Assert.assertEquals("appNameToClassLoaderMap size not restored to original",
+                    originalAppNameToClassLoaderMapSize.intValue(), appNameToClassLoaderMap.size());
+        }
+        finally {
+            constructor.setAccessible(false);
+            helperContextsField.setAccessible(false);
+            appNameToClassLoaderMapField.setAccessible(false);
+        }
     }
 
 /*
