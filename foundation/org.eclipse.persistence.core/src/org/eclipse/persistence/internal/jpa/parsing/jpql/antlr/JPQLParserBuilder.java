@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,24 +12,20 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.parsing.jpql.antlr;
 
-import org.eclipse.persistence.internal.libraries.antlr.runtime.*;
-//import org.eclipse.persistence.internal.libraries.antlr.TokenBuffer;
-
-//eclipselink imports
-import org.eclipse.persistence.internal.jpa.parsing.jpql.CaseInsensitiveJPQLLexer;
 import org.eclipse.persistence.internal.jpa.parsing.jpql.CaseInsensitiveANTLRStringStream;
-import org.eclipse.persistence.internal.jpa.parsing.jpql.antlr.JPQLParser;
+import org.eclipse.persistence.internal.jpa.parsing.jpql.CaseInsensitiveJPQLLexer;
+import org.eclipse.persistence.internal.libraries.antlr.runtime.CommonTokenStream;
 
 /*****************************************************************
  * EJBQLParserBuilder constructs the parser for EJBQL.
- * This is specific to ANTLR version 2.7.3
+ * This is specific to ANTLR version 3.5.2
  *****************************************************************
  */
 public class JPQLParserBuilder {
 
     /**
      * INTERNAL
-     * Build a parser for the passed ejbql string, for ANTLR version 2.7.3
+     * Build a parser for the passed ejbql string, for ANTLR version 3.5.2
      */
     public static JPQLParser buildParser(String queryText) {
 
