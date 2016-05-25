@@ -578,9 +578,9 @@ public class SDOHelperContext implements HelperContext {
      */
     private static void resetHelperContext(String key) {
         // remove entry from helperContext map
-        boolean successHc = removeAppFromMap(helperContexts, key);
+        boolean successHc = removeAppFromMap(helperContexts, key, false);
         // remove app's helperContextResolver
-        boolean successHcr = removeAppFromMap(HELPER_CONTEXT_RESOLVERS, key);
+        boolean successHcr = removeAppFromMap(HELPER_CONTEXT_RESOLVERS, key, true);
         if (LOGGER.isLoggable(Level.WARNING) && !successHc && !successHcr) {
             LOGGER.warning("No entries found in maps for application:" + key);
         }
@@ -596,22 +596,20 @@ public class SDOHelperContext implements HelperContext {
      *
      * @param map from which app value should be removed
      * @param appName application name
-     * @return
+     * @param removeDefaultClassloader whether to try removing the default classloader
+     * @return true if any removal took place
      */
-    private static boolean removeAppFromMap(Map map, String appName) {
-        Object result = map.remove(appName);
-        // there may be a loader/context pair to remove
-        if (result != null)
-            return true;
+    private static boolean removeAppFromMap(Map map, String appName, boolean removeDefaultClassloader) {
+        boolean result = map.remove(appName) != null;
         // there may be a loader/context pair to remove
         ClassLoader appLoader = appNameToClassLoaderMap.get(appName);
         if (appLoader != null) {
-            result = map.remove(appLoader);
-        } else {
+            result = result | map.remove(appLoader) != null;
+        } else if (removeDefaultClassloader) {
             // try with Thread ContextClassLoader
-            result = map.remove(Thread.currentThread().getContextClassLoader());
+            result = result | map.remove(Thread.currentThread().getContextClassLoader()) != null;
         }
-        return result != null;
+        return result;
     }
 
     /**
