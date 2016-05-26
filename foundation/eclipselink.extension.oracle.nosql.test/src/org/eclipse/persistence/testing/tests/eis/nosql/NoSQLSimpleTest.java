@@ -27,7 +27,7 @@ import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Record;
 import org.eclipse.persistence.testing.framework.ReflectionHelper;
-import org.eclipse.persistence.testing.tests.nosql.LogTestExecution;
+import org.eclipse.persistence.testing.framework.junit.LogTestExecution;
 import org.eclipse.persistence.testing.tests.nosql.NoSQLURI;
 import org.eclipse.persistence.testing.tests.nosql.SessionHelper;
 import org.junit.After;

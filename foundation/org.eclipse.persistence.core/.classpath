@@ -10,7 +10,6 @@
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.resource_1.6.0.v201204270900.jar"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.transaction_1.1.0.v201002051055.jar"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm_5.0.1.v201405080102.jar" sourcepath="/ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm.source_5.0.1.v201405080102.jar"/>
-	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.slf4j.api_1.7.2.v20121108-1250.jar" sourcepath="/ECLIPSELINK_HOME/plugins/org.slf4j.api.source_1.7.2.v20121108-1250.jar"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

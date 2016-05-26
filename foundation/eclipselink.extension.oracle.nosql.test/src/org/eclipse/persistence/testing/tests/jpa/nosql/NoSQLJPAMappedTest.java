@@ -29,12 +29,12 @@ import org.eclipse.persistence.internal.nosql.adapters.nosql.OracleNoSQLOperatio
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.nosql.adapters.nosql.OracleNoSQLPlatform;
 import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.testing.framework.junit.LogTestExecution;
 import org.eclipse.persistence.testing.models.jpa.nosql.mapped.Address;
 import org.eclipse.persistence.testing.models.jpa.nosql.mapped.Customer;
 import org.eclipse.persistence.testing.models.jpa.nosql.mapped.Order;
 import org.eclipse.persistence.testing.tests.nosql.EntityManagerHelper;
 import org.eclipse.persistence.testing.tests.nosql.JPAModelHelper;
-import org.eclipse.persistence.testing.tests.nosql.LogTestExecution;
 import org.eclipse.persistence.testing.tests.nosql.MappedJPAModelHelper;
 import org.junit.After;
 import org.junit.AfterClass;

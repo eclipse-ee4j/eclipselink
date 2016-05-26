@@ -23,7 +23,7 @@ import java.sql.SQLException;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.testing.tests.nosql.LogTestExecution;
+import org.eclipse.persistence.testing.framework.junit.LogTestExecution;
 import org.eclipse.persistence.testing.tests.nosql.ModelHelper;
 import org.eclipse.persistence.testing.tests.nosql.NoSQLProperties;
 import org.eclipse.persistence.testing.tests.nosql.SessionHelper;

@@ -516,6 +516,7 @@
 
     <target name="clean-testing" description="Clean the testing projects">
         <ant antfile="antbuild.xml" dir="${eclipselink.core.test}"           target="clean"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.extension.test}"      target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.jpa.test}"            target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.hermes.test}"         target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.moxy.test}"           target="clean"/>
@@ -703,15 +704,16 @@
 
     <!-- Compiles tests (excluding workbench, dbws-util and Oracle extensions). -->
     <target name="build-core-test">
-        <ant antfile="antbuild.xml" dir="${eclipselink.core.test}"    target="build"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.jpa.test}"     target="build"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.hermes.test}"  target="build"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.core.test}"      target="build"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.extension.test}" target="build"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.jpa.test}"       target="build"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.hermes.test}"    target="build"/>
         <!-- ant antfile="${eclipselink.jpa.test}/antbuild.xml"                    target="all"/ -->
-        <ant antfile="antbuild.xml" dir="${eclipselink.jpa.wdf.test}" target="build-against-jar"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.jpars.test}"   target="build"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.moxy.test}"    target="compile-tests-against-jar"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.sdo.test}"     target="compile-sdo-tests-against-jar"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.dbws.test}"    target="build"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.jpa.wdf.test}"   target="build-against-jar"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.jpars.test}"     target="build"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.moxy.test}"      target="compile-tests-against-jar"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.sdo.test}"       target="compile-sdo-tests-against-jar"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.dbws.test}"      target="build"/>
     </target>
 
     <target name="build-nosql-test">
@@ -1544,7 +1546,7 @@
             depends="clear-db, test-core-srg, test-jpa22-srg, test-jpars, test-moxy-srg, test-sdo-srg, test-dbws-srg, test-dbws-builder-srg, generate-report"
             />
     <target name="test-lrg-only" description="run all the LRG test suites"
-            depends="test-core, test-jpa22, test-jpa-jse, test-jpql, test-wdf, test-jpars, test-moxy, test-sdo, test-dbws, test-dbws-builder, test-osgi"
+            depends="test-core, test-ext, test-jpa22, test-jpa-jse, test-jpql, test-wdf, test-jpars, test-moxy, test-sdo, test-dbws, test-dbws-builder, test-osgi"
             />
     <target name="test-lrg" description="run all the LRG test suites"
             depends="clear-db, test-lrg-only, generate-report"
@@ -1559,6 +1561,10 @@
     </target>
      <target name="test-browser" description="run the core testing browser">
         <ant antfile="antbuild.xml" dir="${eclipselink.core.test}" target="test-browser"/>
+    </target>
+    <!-- Run core extension suite. -->
+    <target name="test-ext" description="run the core extension tests">
+        <ant antfile="antbuild.xml" dir="${eclipselink.extension.test}" target="test"/>
     </target>
     <!-- Run core SRG. -->
     <target name="test-core-srg" description="run the core srg tests">

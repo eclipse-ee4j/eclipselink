@@ -21,7 +21,7 @@ import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.server.Server;
 import org.eclipse.persistence.testing.framework.TestErrorException;
-import org.eclipse.persistence.testing.tests.nosql.LogTestExecution;
+import org.eclipse.persistence.testing.framework.junit.LogTestExecution;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;

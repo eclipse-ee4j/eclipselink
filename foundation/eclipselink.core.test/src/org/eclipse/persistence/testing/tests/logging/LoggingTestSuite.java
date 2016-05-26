@@ -44,8 +44,6 @@ public class LoggingTestSuite extends TestSuite {
         LogCategoryTests.addTests(this);
         // EclipseLink log levels enumeration tests.
         LogLevelTests.addTests(this);
-        // SLF4J logger tests.
-        SLF4JLoggerTests.addTests(this);
     }
 
     // SRG test set is maintained by QA only, do NOT add any new test cases into it.

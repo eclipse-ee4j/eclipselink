@@ -1,0 +1,318 @@
+<!--***************************************************************************
+* Copyright (c) 2016 Oracle and/or its affiliates. All rights reserved.       *
+* This program and the accompanying materials are made available under        *
+* the terms of the Eclipse Public License v1.0 and Eclipse Distribution       *
+* License v. 1.0 which accompanies this distribution.                         *
+* The Eclipse Public License is available                                     *
+*     at http://www.eclipse.org/legal/epl-v10.html                            *
+* and the Eclipse Distribution License is available                           *
+*     at http://www.eclipse.org/org/documents/edl-v10.php.                    *
+*                                                                             *
+* Contributors:                                                               *
+*     Tomas Kraus - Initial API and implementation                            *
+****************************************************************************-->
+<!-- This ant project includes the following tasks:
+        - build        Compiles and packages all tests
+        - clean        Cleans all classes, packages and reports
+        - compile      Compiles all tests
+        - package      Packages all tests
+        - test         Runs all tests and generates report
+        - test-report  Generates tests report
+        - test-run     Runs all tests without report
+    -->
+<project name="eclipselink.extension.test" default="build" basedir=".">
+
+    <!--***********************************************************************
+    *   Common macros                                                         *
+    ************************************************************************-->
+
+    <!-- Loads property file if exists. -->
+    <macrodef name="load-properties-file">
+        <attribute name="file"/>
+        <sequential>
+            <local name="load.message"/>
+            <condition property="load.message" value=" + @{file} found"
+                                               else=" - @{file} not found">
+                <available file="@{file}"/>
+            </condition>
+            <echo message="${load.message}"/>
+            <property file="@{file}"/>
+        </sequential>
+    </macrodef>
+
+    <!-- Loads properties file set as "test.properties" property. -->
+    <macrodef name="load-test-properties">
+        <sequential>
+            <local name="load.message"/>
+            <local name="load.file.message"/>
+            <condition property="load.file.message"
+                       value=" + ${test.properties} found" else=" - ${test.properties} not found">
+                <available file="${test.properties}"/>
+            </condition>
+            <condition property="load.message" value="${load.file.message}"
+                       else=" - test.properties value was not set">
+                <isset property="test.properties"/>
+            </condition>
+            <echo message="${load.message}"/>
+            <property file="${test.properties}"/>
+        </sequential>
+    </macrodef>
+
+    <!-- Load all property files. -->
+    <macrodef name="load-properties">
+        <sequential>
+            <echo message="Loading test properties"/>
+            <load-test-properties/>
+            <load-properties-file file="${user.home}/build.properties"/>
+            <load-properties-file file="${user.home}/test.properties"/>
+            <load-properties-file file="${user.home}/local.build.properties"/>
+            <echo message="Loading build properties"/>
+            <load-properties-file file="${basedir}/antbuild.properties"/>
+            <load-properties-file file="${basedir}/test.properties"/>
+        </sequential>
+    </macrodef>
+
+    <!-- Replace all occurences of "from" in "src" property with "to" and store result into "dst" property. -->
+    <macrodef name="property-replace">
+        <attribute name="src"/>
+        <attribute name="dst"/>
+        <attribute name="from"/>
+        <attribute name="to"/>
+        <sequential>
+            <loadresource property="@{dst}">
+              <propertyresource name="@{src}"/>
+              <filterchain>
+                <tokenfilter>
+                  <filetokenizer/>
+                  <replacestring from="@{from}" to="@{to}"/>
+                </tokenfilter>
+              </filterchain>
+            </loadresource>
+        </sequential>
+    </macrodef>
+
+    <!-- Check Ant version. -->
+    <macrodef name="check-ant">
+        <sequential>
+            <local name="compat.ant"/>
+            <local name="compat.ant.msg"/>
+            <condition property="compat.ant" value="true">
+                <matches string="${ant.version}" pattern="1\.(?:[7-9]|[1-9]\d)(?:\.\d+)*.*"/>
+            </condition>
+            <condition property="compat.ant.msg" value=" + Ant: ${ant.version}"
+                       else=" - Ant: ${ant.version}${line.separator}   Build won't run properly unless running at least Ant 1.7.0">
+                <isset property="compat.ant"/>
+            </condition>
+            <echo message="${compat.ant.msg}"/>
+            <fail unless="compat.ant" message="Ant version &lt; 1.7.0."/>
+        </sequential>
+    </macrodef>
+
+    <!-- Check Java availability and version. -->
+    <macrodef name="check-java">
+        <sequential>
+            <local name="compat.jdk"/>
+            <local name="compat.jdk.msg"/>
+            <condition property="compat.jdk" value="true">
+                <matches string="${java.version}" pattern="1.(?:[8-9]|[1-9]\d)(?:.\d+)*.*"/>
+            </condition>
+            <condition property="compat.jdk.msg" value=" + JDK: ${java.version}"
+                       else=" - JDK: ${java.version}${line.separator}   Build won't run properly unless running at least JDK 1.8.">
+                <isset property="compat.jdk"/>
+            </condition>
+            <echo message="${compat.jdk.msg}"/>
+            <fail unless="compat.jdk" message="JDK version &lt; 1.8."/>
+        </sequential>
+    </macrodef>
+
+    <!-- Check all building utilities. -->
+    <macrodef name="check-utils">
+        <sequential>
+            <echo message="Checking build utilities:"/>
+            <check-ant/>
+            <check-java/>
+        </sequential>
+    </macrodef>
+
+    <!-- Run all jUnit tests. -->
+    <macrodef name="run-test">
+        <attribute name="testdir"/>
+        <attribute name="tests"/>
+        <attribute name="dir"/>
+        <attribute name="reportdir"/>
+        <attribute name="loglevel"/>
+        <sequential>
+            <echo message="jUnit tests settings:"/>
+            <echo message=" - testdir:   @{testdir}"/>
+            <echo message=" - tests:     @{tests}"/>
+            <echo message=" - dir:       @{dir}"/>
+            <echo message=" - reportdir: @{reportdir}"/>
+            <echo message=" - loglevel:  @{loglevel}"/>
+            <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
+            <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
+            <junit printsummary="yes" failureproperty="junit.failed" fork="yes" forkmode="once"
+                   showoutput="true" maxmemory="512m" dir="@{dir}">
+                <jvmarg value="-Declipselink.logging.level=@{loglevel}"/>
+                <!--jvmarg value="-Djava.security.manager"/>
+                <jvmarg value="-Djava.security.policy=./java.policy.allpermissions"/-->
+                <jvmarg line="${additional.jvmargs}"/>
+                <classpath>
+                    <path refid="core.extension.test.path"/>
+                </classpath>
+                <batchtest fork="yes" todir="@{reportdir}">
+                    <fileset dir="@{testdir}">
+                        <include name="@{tests}"/>
+                    </fileset>
+                </batchtest>
+                <formatter type="xml"/>
+            </junit>
+        </sequential>
+    </macrodef>
+
+    <!-- Generate jUnit tests report. -->
+    <macrodef name="generate-report">
+        <attribute name="reportdir"/>
+        <sequential>
+            <junitreport todir="@{reportdir}">
+                <fileset dir="@{reportdir}">
+                    <include name="*Test.xml"/>
+                </fileset>
+                <report format="noframes" todir="@{reportdir}"/>
+            </junitreport>
+            </sequential>
+    </macrodef>
+
+    <!--***********************************************************************
+    *   Initialization                                                        *
+    ************************************************************************-->
+
+    <!-- Load all property files. -->
+    <load-properties/>
+    <!-- Check build utilities. -->
+    <check-utils/>
+
+    <!-- EclipseLink project home directory.-->
+    <property name="eclipselink.home.dir" location="${basedir}/../.."/>
+    <!-- Plugins directory.-->
+    <property name="eclipselink.plugins.dir" location="${eclipselink.home.dir}/plugins"/>
+    <!-- Core tests directory -->
+    <property name="core.test.dir" location="../eclipselink.core.test"/>
+
+    <!-- Initialize common path. -->
+    <target name="common-path">
+        <path id="core.extension.common.path">
+            <fileset dir="${eclipselink.plugins.dir}" includes="org.eclipse.persistence.core_*.jar"/>
+            <fileset dir="${eclipselink.plugins.dir}" includes="org.eclipse.persistence.extension_*.jar"/>
+            <pathelement path="${core.test.dir}/${classes.dir}"/>
+            <pathelement path="${eclipselink.plugins.dir}/${org.slf4j.api.jar}"/>
+            <pathelement path="${eclipselink.plugins.dir}/${org.slf4j.api.jar}"/>
+            <pathelement path="${eclipselink.plugins.dir}/${ch.qos.logback.core.jar}"/>
+            <pathelement path="${eclipselink.plugins.dir}/${ch.qos.logback.classic.jar}"/>
+            <pathelement path="${eclipselink.plugins.dir}/${ch.qos.logback.slf4j.jar}"/>
+            <pathelement path="${junit.lib}"/>
+        </path>
+    </target>
+
+    <!-- Initialize build path. -->
+    <target name="build-path" depends="common-path">
+        <local name="path.msg"/>
+        <local name="path.msg.formated"/>
+        <path id="core.extension.build.path">
+            <path refid="core.extension.common.path"/>
+        </path>
+        <pathconvert property="path.msg" refid="core.extension.build.path"/>
+        <property-replace src="path.msg" dst="path.msg.formated"
+                          from="${path.separator}" to="${line.separator}            "/>
+        <echo message="Build Path: ${path.msg.formated}"/>
+    </target>
+
+    <!-- Initialize test path. -->
+    <target name="test-path" depends="common-path">
+        <local name="path.msg"/>
+        <local name="path.msg.formated"/>
+        <path id="core.extension.test.path">
+            <path refid="core.extension.common.path"/>
+            <pathelement path="${basedir}/${extension.test.jar}"/>
+        </path>
+        <pathconvert property="path.msg" refid="core.extension.test.path"/>
+        <property-replace src="path.msg" dst="path.msg.formated"
+                          from="${path.separator}" to="${line.separator}           "/>
+        <echo message="Test Path: ${path.msg.formated}"/>
+    </target>
+
+    <!-- Initialize build directory tree. -->
+    <target name="build-dirs">
+        <mkdir dir="${basedir}/${classes.dir}"/>
+    </target>
+
+    <!-- Initialize test directory tree. -->
+    <target name="test-dirs">
+        <mkdir dir="${basedir}/${run.dir}"/>
+        <mkdir dir="${basedir}/${report.dir}"/>
+    </target>
+
+    <!--***********************************************************************
+    *   Main targets                                                          *
+    ************************************************************************-->
+
+    <!-- Clean all tests. -->
+    <target name="clean" description="Cleans all classes, packages and reports">
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset file="${basedir}/${extension.test.jar}"/>
+            <fileset dir="${basedir}/${classes.dir}"/>
+            <fileset dir="${basedir}/${run.dir}"/>
+            <fileset dir="${basedir}/${report.dir}"/>
+        </delete>
+    </target>
+
+    <!-- Compile all tests. -->
+    <target name="build" depends="package" description="Compiles and packages all tests">
+    </target>
+
+    <!-- Compile all tests. -->
+    <target name="compile" depends="build-path,build-dirs"
+            description="Compiles all tests">
+        <javac srcdir="${basedir}/${src.dir}"
+               destdir="${basedir}/${classes.dir}"
+               debug="${javac.debug}"
+               debuglevel="${javac.debuglevel}"
+               encoding="UTF-8"
+               optimize="${javac.optimize}"
+               source="${javac.version}"
+               target="${javac.version}"
+               deprecation="${javac.deprecation}"
+               failonerror="true"
+               includeAntRuntime="true">
+            <compilerarg value="-Xlint:unchecked"/>
+            <classpath>
+                <path refid="core.extension.build.path"/>
+            </classpath>
+            <include name="org/eclipse/persistence/**"/>
+        </javac>
+    </target>
+
+    <!-- Package all tests. -->
+    <target name="package" depends="compile" description="Packages all tests">
+        <jar jarfile="${basedir}/${extension.test.jar}">
+            <fileset dir="${basedir}/${classes.dir}" includes="org/eclipse/persistence/**/*.class"/>
+        </jar>
+    </target>
+
+    <!-- Run all tests without report. -->
+    <target name="test-run" depends="test-path,test-dirs" description="Runs all tests without report">
+        <run-test testdir="${basedir}/${classes.dir}"
+                  tests="${test.class}"
+                  dir="${run.dir}"
+                  reportdir="${report.dir}"
+                  loglevel="${logging.level}"/>
+    </target>
+
+    <!-- Generate tests report. -->
+    <target name="test-report" description="Generates tests report">
+        <generate-report reportdir="${report.dir}"/>
+    </target>
+
+	<!-- Run all tests and generate report. -->
+    <target name="test" depends="test-run, test-report" description="Runs all tests and generates report"/>
+
+</project>

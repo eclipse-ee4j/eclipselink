@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2015  Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2016  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -11,13 +11,17 @@
  *      Jaro Kuruc  - Initial API and implementation.
  *      Tomas Kraus - EclipseLink 2.7 integration.
  ******************************************************************************/
-package org.eclipse.persistence.logging;
+package org.eclipse.persistence.logging.slf4j;
 
 import java.security.AccessController;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetSystemProperty;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.LogCategory;
+import org.eclipse.persistence.logging.LogLevel;
+import org.eclipse.persistence.logging.SessionLogEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -147,7 +151,6 @@ public class SLF4JLogger extends AbstractSessionLog {
     public SLF4JLogger() {
         super();
         // Set default logging levels for all logging categories.
-        final byte defaultCategoryId = LogCategory.ALL.getId();
         final byte defaultLevel = LogLevel.toValue(level).getId();
         logLevels = new LogLevel[LogCategory.length];
         for (LogCategory category : LogCategory.values()) {

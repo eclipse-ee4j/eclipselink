@@ -23,7 +23,7 @@ import javax.jms.TopicConnection;
 import javax.jms.TopicConnectionFactory;
 import javax.jms.TopicSession;
 
-import org.eclipse.persistence.testing.tests.nosql.LogTestExecution;
+import org.eclipse.persistence.testing.framework.junit.LogTestExecution;
 import org.eclipse.persistence.testing.tests.nosql.NoSQLProperties;
 import org.junit.Rule;
 import org.junit.Test;

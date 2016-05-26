@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015  Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -15,7 +15,6 @@ package org.eclipse.persistence.logging;
 import java.util.HashMap;
 import java.util.Map;
 
-// Package visibility because it's used in SLF4J bridge only.
 /**
  * EclipseLink categories used for logging name space.
  * The EclipseLink categories for the logging name space are:<br>
@@ -43,7 +42,7 @@ import java.util.Map;
  * <tr><td>&nbsp;</td><td>WEAVER</td>         <td>&nbsp;</td><td>= "weaver"</td></tr>
  * </table>
  */
-enum LogCategory {
+public enum LogCategory {
     ALL(        (byte)0x00, "all"),
     CACHE(      (byte)0x01, SessionLog.CACHE),
     CONNECTION( (byte)0x02, SessionLog.CONNECTION),
@@ -116,12 +115,11 @@ enum LogCategory {
         this.name = name;
     }
 
-    // Used only in logger internal code.
     /**
      * Get logging category ID.
      * @return Logging category ID.
      */
-    byte getId() {
+    public byte getId() {
         return id;
     }
 

@@ -7,9 +7,5 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.core"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.transaction_1.1.0.v201002051055.jar" sourcepath="/ECLIPSELINK_HOME/plugins/javax.transaction/src"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/jpa/plugins/javax.persistence_2.1.1.v201509150925.jar" sourcepath="/ECLIPSELINK_HOME/jpa/plugins/javax.persistence.source_2.1.1.v201509150925.jar"/>
-        <classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.slf4j.api_1.7.2.v20121108-1250.jar" sourcepath="/ECLIPSELINK_HOME/plugins/org.slf4j.api.source_1.7.2.v20121108-1250.jar"/>
-        <classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/ch.qos.logback.core_1.0.7.v20121108-1250.jar" sourcepath="/ECLIPSELINK_HOME/plugins/ch.qos.logback.core.source_1.0.7.v20121108-1250.jar"/>
-        <classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/ch.qos.logback.classic_1.0.7.v20121108-1250.jar" sourcepath="/ECLIPSELINK_HOME/plugins/ch.qos.logback.classic.source_1.0.7.v20121108-1250.jar"/>
-        <classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/ch.qos.logback.slf4j_1.0.7.v20121108-1250.jar" sourcepath="/ECLIPSELINK_HOME/plugins/ch.qos.logback.slf4j.source_1.0.7.v20121108-1250.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

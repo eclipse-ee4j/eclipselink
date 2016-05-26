@@ -13,5 +13,5 @@ Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.eclipse.persistence.extension
 Import-Package: org.jgroups;resolution:=optional,
  org.eclipse.persistence.internal.sessions;version="2.7.0",
- org.eclipse.persistence.sessions;version="2.7.0"
-
+ org.eclipse.persistence.sessions;version="2.7.0",
+ org.slf4j;resolution:=optional

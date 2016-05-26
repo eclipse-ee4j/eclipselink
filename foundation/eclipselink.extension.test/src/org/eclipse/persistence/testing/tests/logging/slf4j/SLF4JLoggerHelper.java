@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015  Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2016  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -10,7 +10,7 @@
  * Contributors:
  *      Tomas Kraus - Initial implementation
  ******************************************************************************/
-package org.eclipse.persistence.logging;
+package org.eclipse.persistence.testing.tests.logging.slf4j;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -18,6 +18,11 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.LogCategory;
+import org.eclipse.persistence.logging.LogLevel;
+import org.eclipse.persistence.logging.SessionLogEntry;
+import org.eclipse.persistence.logging.slf4j.SLF4JLogger;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
@@ -192,7 +197,6 @@ public class SLF4JLoggerHelper {
             categoryLogger.setLevel(Level.ALL);
             for (LogLevel loggerLevel : LogLevel.values()) {
                 // Verify messages with all log levels.
-                final byte loggerLevelId = loggerLevel.getId();
                 logger.setLevel(loggerLevel.getId(), category.getName());
                 for (LogLevel messageLevel : LogLevel.values()) {
                     final String message = "Log message";
@@ -224,7 +228,6 @@ public class SLF4JLoggerHelper {
             categoryLogger.setLevel(Level.ALL);
             for (LogLevel loggerLevel : LogLevel.values()) {
                 // Verify messages with all log levels.
-                final byte loggerLevelId = loggerLevel.getId();
                 logger.setLevel(loggerLevel.getId(), category.getName());
                 for (LogLevel messageLevel : LogLevel.values()) {
                     final Throwable exception = new RuntimeException("Exception message");
@@ -256,7 +259,6 @@ public class SLF4JLoggerHelper {
             categoryLogger.setLevel(Level.ALL);
             for (LogLevel loggerLevel : LogLevel.values()) {
                 // Verify messages with all log levels.
-                final byte loggerLevelId = loggerLevel.getId();
                 logger.setLevel(loggerLevel.getId(), category.getName());
                 for (LogLevel messageLevel : LogLevel.values()) {
                     final String message = "Log message";
@@ -281,7 +283,6 @@ public class SLF4JLoggerHelper {
                     final Check check2 = new Check() {
                         @Override
                         public void check(final ILoggingEvent logEvent) {
-                            final String eventMessage = logEvent.getMessage();
                             assertEquals("Logged message \"" + message + "\" must be stored as a message.",
                                     message, logEvent.getMessage());
                             assertEquals("Exception message must be stored in throwableProxy.",

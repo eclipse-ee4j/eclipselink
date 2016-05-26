@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015  Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -15,7 +15,6 @@ package org.eclipse.persistence.logging;
 import java.util.HashMap;
 import java.util.Map;
 
-// Package visibility because it's used in SLF4J bridge only.
 /**
  * Log levels for EclipseLink logging.
  * The EclipseLink logging levels available are:<br>
@@ -50,7 +49,7 @@ import java.util.Map;
  *         to avoid the overhead of logging.</td></tr>
  * </table>
  */
-enum LogLevel {
+public enum LogLevel {
 
     /** Log everything. */
     ALL(    (byte)0x00, "ALL"),
@@ -150,12 +149,11 @@ enum LogLevel {
         this.name = name;
     }
 
-    // Used only in logger internal code.
     /**
      * Get logging level ID.
      * @return Logging level ID.
      */
-    byte getId() {
+    public byte getId() {
         return id;
     }
 
@@ -178,10 +176,10 @@ enum LogLevel {
 
     /**
      * Check if a message of the given level ID would actually be logged under this logging level.
-     * @param level Message logging level.
+     * @param id Message logging level.
      * @return Value of {@code true} if the given message logging level will be logged or {@code false} otherwise.
      */
-    boolean shouldLog(final byte id) {
+    public boolean shouldLog(final byte id) {
         return this.id <= id;
     }
 
