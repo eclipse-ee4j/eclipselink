@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -19,6 +19,8 @@
  *          getClassForName is now public and referenced by MappingAccessor.getMapKeyReferenceClass()
  *     11/06/2009-2.0 Guy Pelletier
  *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
+ *     05/26/2016-2.7 Tomas Kraus
+ *       - 494610: Session Properties map should be Map<String, Object>
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -58,9 +60,9 @@ public class MetadataHelper {
      * the default "" is applied. If the given suffix is null, then the default
      * "_" will be applied.
      */
-    protected static String getCanonicalName(String name, Map<String, String> properties) {
-        String prefix = properties.get(CANONICAL_MODEL_PREFIX);
-        String suffix = properties.get(CANONICAL_MODEL_SUFFIX);
+    protected static String getCanonicalName(String name, Map<String, Object> properties) {
+        String prefix = (String)properties.get(CANONICAL_MODEL_PREFIX);
+        String suffix = (String)properties.get(CANONICAL_MODEL_SUFFIX);
 
         // If the suffix is not specified, before defaulting it check that a
         // prefix was not specified.
@@ -190,8 +192,8 @@ public class MetadataHelper {
      * prefix is null, the default "" is applied. If the suffix is null, then
      * the default "_" will be applied.
      */
-    public static String getQualifiedCanonicalName(String qualifiedName, Map<String, String> properties) {
-        String packageSuffix = properties.get(CANONICAL_MODEL_SUB_PACKAGE);
+    public static String getQualifiedCanonicalName(String qualifiedName, Map<String, Object> properties) {
+        String packageSuffix = (String)properties.get(CANONICAL_MODEL_SUB_PACKAGE);
         if (packageSuffix == null) {
             packageSuffix = CANONICAL_MODEL_SUB_PACKAGE_DEFAULT;
         } else {

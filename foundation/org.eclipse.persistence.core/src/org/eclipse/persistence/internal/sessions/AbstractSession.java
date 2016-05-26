@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -26,7 +26,9 @@
  *     08/11/2014-2.5 Rick Curtis
  *       - 440594: Tolerate invalid NamedQuery at EntityManager creation.
  *     09/03/2015 - Will Dazey
- *       - 456067 : Added support for defining query timeout units
+ *       - 456067: Added support for defining query timeout units
+ *     05/26/2016-2.7 Tomas Kraus
+ *       - 494610: Session Properties map should be Map<String, Object>
  ******************************************************************************/
 package org.eclipse.persistence.internal.sessions;
 
@@ -225,7 +227,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     transient protected SessionEventManager eventManager;
 
     /** Allow for user defined properties. */
-    protected Map<Object, Object> properties;
+    protected Map<String, Object> properties;
 
     /** Delegate that handles synchronizing a UnitOfWork with an external transaction. */
     transient protected ExternalTransactionController externalTransactionController;
@@ -2948,7 +2950,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * Allow for user defined properties.
      */
     @Override
-    public Map getProperties() {
+    public Map<String, Object> getProperties() {
         if (properties == null) {
             properties = new HashMap(5);
         }
@@ -4171,7 +4173,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * Set the user defined properties by shallow copying the propertiesMap.
      * @param propertiesMap
      */
-    public void setProperties(Map<Object, Object> propertiesMap) {
+    public void setProperties(Map<String, Object> propertiesMap) {
         if (null == propertiesMap) {
             // Keep current behavior and set properties map to null
             properties = null;

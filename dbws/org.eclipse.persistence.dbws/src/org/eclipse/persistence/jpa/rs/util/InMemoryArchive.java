@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -8,7 +8,9 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *      dclarke/tware - initial
+ *     dclarke/tware - initial API and implementation
+ *     05/26/2016-2.7 Tomas Kraus
+ *       - 494610: Session Properties map should be Map<String, Object>
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.util;
 
@@ -32,7 +34,7 @@ public class InMemoryArchive extends URLArchive {
     private InputStream stream = null;
 
     private InMemoryArchive(){
-        super(null, null);
+        super((URL)null, (String)null);
         String persistenceFactoryResource = InMemoryArchive.class.getName().replace('.', '/') + ".class";
         URL myURL = InMemoryArchive.class.getClassLoader().getResource(persistenceFactoryResource);
         try{

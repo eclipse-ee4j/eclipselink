@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     tware - initial implementation as part of extensibility feature
+ *     05/26/2016-2.7 Tomas Kraus
+ *       - 494610: Session Properties map should be Map<String, Object>
  ******************************************************************************/
 package org.eclipse.persistence.jpa;
 
@@ -63,7 +65,7 @@ public interface JpaEntityManagerFactory {
      * to be bootstrapped.  Existing EntityManagers will continue to use the old implementation
      * @param properties
      */
-    public void refreshMetadata(Map properties);
+    public void refreshMetadata(Map<String, Object> properties);
 
 }
 

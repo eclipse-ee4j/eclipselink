@@ -15,6 +15,8 @@
  *       - 389090: JPA 2.1 DDL Generation Support
  *     02/04/2013-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support
+ *     05/26/2016-2.7 Tomas Kraus
+ *       - 494610: Session Properties map should be Map<String, Object>
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa;
 
@@ -214,7 +216,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
      * @param properties
      */
     @Override
-    public void refreshMetadata(Map properties){
+    public void refreshMetadata(Map<String, Object> properties){
         EntityManagerSetupImpl setupImpl = delegate.getSetupImpl();
         if (setupImpl == null){
             throw PersistenceUnitLoadingException.cannotRefreshEntityManagerFactoryCreatedFromSession(delegate.getServerSession().getName());

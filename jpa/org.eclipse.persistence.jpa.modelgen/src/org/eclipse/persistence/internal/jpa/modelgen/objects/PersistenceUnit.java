@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -20,6 +20,8 @@
  *       - 330660: Canonical model generator throws ClassCastException when using package-info.java
  *     02/14/2013-2.5 Guy Pelletier
  *       - 338610: JPA 2.1 Functionality for Java EE 7 (JSR-338)
+ *     05/26/2016-2.7 Tomas Kraus
+ *       - 494610: Session Properties map should be Map<String, Object>
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.modelgen.objects;
 
@@ -72,7 +74,7 @@ public class PersistenceUnit {
     protected PersistenceUnitReader persistenceUnitReader;
     protected ProcessingEnvironment processingEnv;
     protected SEPersistenceUnitInfo persistenceUnitInfo;
-    protected HashMap<String, String> persistenceUnitProperties;
+    protected HashMap<String, Object> persistenceUnitProperties;
 
     /**
      * INTERNAL:
@@ -350,7 +352,7 @@ public class PersistenceUnit {
      * INTERNAL:
      */
     public void initPersistenceUnitProperties() {
-        persistenceUnitProperties = new HashMap<String, String>();
+        persistenceUnitProperties = new HashMap<String, Object>();
 
         // Determine how much validation we want to do. For now, last one
         // in wins (in the case of multiple settings) and we ignore null

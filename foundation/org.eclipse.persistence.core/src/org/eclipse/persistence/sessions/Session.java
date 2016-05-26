@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     09/03/2015 - Will Dazey
  *       - 456067 : Added support for defining query timeout units
+ *     05/26/2016-2.7 Tomas Kraus
+ *       - 494610: Session Properties map should be Map<String, Object>
  ******************************************************************************/
 package org.eclipse.persistence.sessions;
 
@@ -579,7 +581,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * ADVANCED:
      * Allow for user defined properties.
      */
-    public Map<Object, Object> getProperties();
+    public Map<String, Object> getProperties();
 
     /**
      * ADVANCED:
