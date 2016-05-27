@@ -169,7 +169,7 @@
         <property name="oracleddl.name"       value="EclipseLink OracleDDL Parser"/>
         <property name="oraclebndl.prefix"    value="org.eclipse.persistence.oracle"/>
         <property name="oraclebndl.criteria"  value="[1.0.0,9.0.0)"/>
-        <property name="oraclbndl.name"       value="EclipseLink Oracle Extensions"/>
+        <property name="oraclebndl.name"       value="EclipseLink Oracle Extensions"/>
         <property name="oraclenosql.prefix"   value="org.eclipse.persistence.oracle.nosql"/>
         <property name="oraclenosql.criteria" value="[1.0.0,9.0.0)"/>
         <property name="oraclenosql.name"     value="EclipseLink Oracle NoSQL database Extensions"/>
