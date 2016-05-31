@@ -203,13 +203,13 @@ public class LinkedNamespacesTestCases {
 
     public Validator createArticleValidator() throws SAXException {
         SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        Schema articleSchema = factory.newSchema(new File("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlschema/namespace/linked/article.xsd"));
+        Schema articleSchema = factory.newSchema(Thread.currentThread().getContextClassLoader().getResource("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlschema/namespace/linked/article.xsd"));
         return articleSchema.newValidator();
     }
 
     public Validator createBookValidator() throws SAXException {
         SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        Schema articleSchema = factory.newSchema(new File("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlschema/namespace/linked/book.xsd"));
+        Schema articleSchema = factory.newSchema(Thread.currentThread().getContextClassLoader().getResource("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlschema/namespace/linked/book.xsd"));
         return articleSchema.newValidator();
     }
 }
