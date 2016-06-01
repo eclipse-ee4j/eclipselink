@@ -30,7 +30,9 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -63,6 +65,8 @@ import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.DescriptorEventAdapter;
 import org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy;
 import org.eclipse.persistence.descriptors.invalidation.TimeToLiveCacheInvalidationPolicy;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.indirection.IndirectCollection;
 import org.eclipse.persistence.indirection.IndirectContainer;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
@@ -92,6 +96,7 @@ import org.eclipse.persistence.mappings.UnidirectionalOneToManyMapping;
 import org.eclipse.persistence.queries.CursoredStream;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.DoesExistQuery;
+import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.server.ServerSession;
@@ -146,6 +151,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.additionalcriteria.Sc
 import org.eclipse.persistence.testing.models.jpa.advanced.additionalcriteria.Student;
 import org.eclipse.persistence.tools.schemaframework.SchemaManager;
 import org.eclipse.persistence.tools.schemaframework.StoredFunctionDefinition;
+import org.junit.Assert;
 
 /**
  * This test suite tests EclipseLink JPA annotations extensions.
@@ -259,6 +265,9 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedJPAJunitTest("testAttributeOverrideToMultipleSameDefaultColumnName"));
         suite.addTest(new AdvancedJPAJunitTest("testJoinFetchWithRefreshOnRelatedEntity"));
         suite.addTest(new AdvancedJPAJunitTest("testSharedEmbeddedAttributeOverrides"));
+
+        suite.addTest(new AdvancedJPAJunitTest("testEmployeeToProjectWithBatchFetchTypeInReverseIteration"));
+        suite.addTest(new AdvancedJPAJunitTest("testEmployeeToProjectWithBatchFetchTypeInCustomIteration"));
 
         if (!isJPA10()) {
             // These tests use JPA 2.0 entity manager API
@@ -3470,6 +3479,136 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             } finally {
                 closeEntityManager(em);
             }
+        }
+    }
+
+    /**
+     * Bug 412056
+     * Test batch fetch with size smaller than results in reverse order
+     */
+    public void testEmployeeToProjectWithBatchFetchTypeInReverseIteration() {
+        final String lastName = "testEmployeeToProject";
+
+        // Set up
+        Set<Employee> employeesToRemove = new HashSet<>();
+        EntityManager em = createEntityManager();
+        for (int i = 0; i < 100; i++) {
+            beginTransaction(em);
+            Employee employee = new Employee();
+            employee.setLastName(lastName);
+            employeesToRemove.add(employee);
+            em.persist(employee);
+            for (int j = 0; j < 20; j++) {
+                Project project = new Project();
+                employee.addProject(project);
+                em.persist(project);
+            }
+            commitTransaction(em);
+        }
+
+        JpaEntityManager jpaEntityManager = (JpaEntityManager) em.getDelegate();
+        jpaEntityManager.getUnitOfWork().getIdentityMapAccessor().initializeAllIdentityMaps();
+        try {
+            Expression exp = new ExpressionBuilder(Employee.class);
+            EJBQueryImpl query = (EJBQueryImpl) jpaEntityManager.createQuery(exp, Employee.class);
+            ((ReadAllQuery) query.getDatabaseQuery()).addBatchReadAttribute("projects");
+            ((ReadAllQuery) query.getDatabaseQuery()).setBatchFetchType(BatchFetchType.IN);
+            ((ReadAllQuery) query.getDatabaseQuery()).setBatchFetchSize(10);
+            List<Employee> employees = query.getResultList();
+
+            // Trigger the bug
+            Collections.reverse(employees);
+
+            int count = 0;
+            try {
+                for (Employee employee : employees) {
+                    if(lastName.equals(employee.getLastName())) {
+                        for (Project project : employee.getProjects()) {
+                            count++;
+                        }
+                    }
+                }
+                Assert.assertEquals("Project objects received are not as many as expected", 2000, count);
+            } catch (ArrayIndexOutOfBoundsException x) {
+                Assert.fail(Helper.printStackTraceToString(x));
+            }
+        } finally {
+            // Clean up
+            beginTransaction(em);
+            for (Employee employee : employeesToRemove) {
+                employee = em.merge(employee);
+                for (Project project : employee.getProjects()) {
+                    em.remove(em.merge(project));
+                }
+                em.remove(employee);
+            }
+            commitTransaction(em);
+            closeEntityManager(em);
+        }
+    }
+
+    /**
+     * Bug 412056
+     * Test batch fetch with size smaller than results with custom iteration
+     */
+    public void testEmployeeToProjectWithBatchFetchTypeInCustomIteration() {
+        final String lastName = "testEmployeeToProject";
+
+        // Set up
+        Set<Employee> employeesToRemove = new HashSet<>();
+        EntityManager em = createEntityManager();
+        for (int i = 0; i < 100; i++) {
+            beginTransaction(em);
+            Employee employee = new Employee();
+            employee.setLastName(lastName);
+            employeesToRemove.add(employee);
+            em.persist(employee);
+            for (int j = 0; j < 20; j++) {
+                Project project = new Project();
+                employee.addProject(project);
+                em.persist(project);
+            }
+            commitTransaction(em);
+        }
+
+        JpaEntityManager jpaEntityManager = (JpaEntityManager) em.getDelegate();
+        jpaEntityManager.getUnitOfWork().getIdentityMapAccessor().initializeAllIdentityMaps();
+        try {
+            Expression exp = new ExpressionBuilder(Employee.class);
+            EJBQueryImpl query = (EJBQueryImpl) jpaEntityManager.createQuery(exp, Employee.class);
+            ((ReadAllQuery) query.getDatabaseQuery()).addBatchReadAttribute("projects");
+            ((ReadAllQuery) query.getDatabaseQuery()).setBatchFetchType(BatchFetchType.IN);
+            ((ReadAllQuery) query.getDatabaseQuery()).setBatchFetchSize(10);
+            List<Employee> employees = query.getResultList();
+
+            // Trigger the bug
+            employees.add(employees.remove(0));
+
+            int count = 0;
+            try {
+                for (Employee employee : employees) {
+                    if(lastName.equals(employee.getLastName())) {
+                        for (Project project : employee.getProjects()) {
+                            count++;
+                        }
+                    }
+                }
+                Assert.assertEquals("Project objects received are not as many as expected", 2000, count);
+            } catch (ArrayIndexOutOfBoundsException x) {
+                Assert.fail(Helper.printStackTraceToString(x));
+            }
+        } finally {
+            // Clean up
+            beginTransaction(em);
+            for (Employee employee : employeesToRemove) {
+                employee = em.merge(employee);
+                for (Project project : employee.getProjects()) {
+                    em.remove(em.merge(project));
+                }
+                em.remove(employee);
+            }
+            commitTransaction(em);
+            closeEntityManager(em);
         }
     }
 
