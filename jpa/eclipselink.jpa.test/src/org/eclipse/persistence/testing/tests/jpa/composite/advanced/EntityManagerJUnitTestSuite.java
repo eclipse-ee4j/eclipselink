@@ -63,6 +63,7 @@ import javax.persistence.Query;
 import javax.persistence.RollbackException;
 import javax.persistence.TemporalType;
 import javax.persistence.TransactionRequiredException;
+import javax.persistence.TypedQuery;
 import javax.persistence.spi.LoadState;
 import javax.persistence.spi.ProviderUtil;
 
@@ -439,6 +440,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         tests.add("testRollbackBroker");
         tests.add("testMustBeCompositeMember");
         tests.add("testNativeQueryWithResultType");
+        tests.add("testQueryWithRowLimitOnCompositePU");
         if (!isJPA10()) {
             tests.add("testSessionEventListeners");
         }
@@ -10826,5 +10828,44 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         Query query2 = em.createNativeQuery("select * from MBR2_EMPLOYEE where F_NAME = 'John'", Employee.class);
         List<Employee> list2 = query2.getResultList();
         closeEntityManager(em);
+    }
+
+    // Bug #493771
+    public void testQueryWithRowLimitOnCompositePU(){
+        EntityManager em = createEntityManager();
+        List<Employee> employeesToRemove = new ArrayList<>(10);
+
+        // Setup
+        beginTransaction(em);
+        for(int i=0; i<10; i++) {
+            Employee emp = new Employee();
+            emp.setFirstName("Al_" + i);
+            Department department = new Department("Al_" + i + "'sDepartment");
+            emp.setDepartment(department);
+            em.persist(department);
+            em.persist(emp);
+            employeesToRemove.add(emp);
+        }
+        commitTransaction(em);
+        em.clear();
+        clearCache();
+
+        try {
+            TypedQuery<Employee> query = em.createQuery("select e from Employee e", Employee.class);
+            query.setFirstResult(3).setMaxResults(3);
+            List<Employee> employees = query.getResultList();
+            assertNotNull(employees);
+            assertEquals("Number of Employees returned is not as expected", 3, employees.size());
+
+        // Clean up
+        } finally {
+            beginTransaction(em);
+            for(Employee emp:employeesToRemove){
+                emp = em.merge(emp);
+                em.remove(emp.getDepartment());
+                em.remove(emp);
+            }
+            commitTransaction(em);
+        }
     }
 }
