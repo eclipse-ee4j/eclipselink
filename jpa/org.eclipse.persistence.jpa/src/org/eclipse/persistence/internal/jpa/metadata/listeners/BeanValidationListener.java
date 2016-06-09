@@ -11,6 +11,8 @@
  *     08/20/2014-2.5 Rick Curtis
  *       - 441890: Cache Validator instances.
  *     Marcel Valovy - 2.6 - skip validation of objects that are not constrained.
+ *     02/17/2016-2.6 Dalia Abo Sheasha
+ *       - 487889: Fix EclipseLink Bean Validation optimization
  *     02/23/2016-2.6 Dalia Abo Sheasha
  *       - 487889: Fix EclipseLink Bean Validation optimization
  *     03/09/2016-2.6 Dalia Abo Sheasha
@@ -19,18 +21,10 @@
 
 package org.eclipse.persistence.internal.jpa.metadata.listeners;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import javax.validation.Path;
-import javax.validation.TraversableResolver;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
-import javax.validation.groups.Default;
-
 import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.descriptors.DescriptorEventAdapter;
-import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.DescriptorEvent;
+import org.eclipse.persistence.descriptors.DescriptorEventAdapter;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -38,12 +32,19 @@ import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Path;
+import javax.validation.TraversableResolver;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
+import javax.validation.groups.Default;
+import java.lang.annotation.ElementType;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.lang.annotation.ElementType;
 
 /**
  * Responsible for performing automatic bean validation on call back events.
@@ -105,7 +106,7 @@ public class BeanValidationListener extends DescriptorEventAdapter {
     private void validateOnCallbackEvent(DescriptorEvent event, String callbackEventName, Class[] validationGroup) {
         Object source = event.getSource();
         Validator validator = getValidator(event);
-        boolean isBeanConstrained = isBeanConstrained(source, validator);
+        boolean isBeanConstrained = validator.getConstraintsForClass(source.getClass()).isBeanConstrained();
         boolean noOptimization = "true".equalsIgnoreCase((String) event.getSession().getProperty(PersistenceUnitProperties.BEAN_VALIDATION_NO_OPTIMISATION));
         boolean shouldValidate = noOptimization || isBeanConstrained;
         if (shouldValidate) {
