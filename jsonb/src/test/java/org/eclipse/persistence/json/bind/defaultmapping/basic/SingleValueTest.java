@@ -4,6 +4,7 @@ import org.eclipse.persistence.json.bind.internal.JsonBindingBuilder;
 import org.eclipse.persistence.json.bind.internal.properties.MessageKeys;
 import org.eclipse.persistence.json.bind.internal.properties.Messages;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.json.bind.Jsonb;
@@ -17,6 +18,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @author David Kral
  */
+@Ignore
 public class SingleValueTest {
 
     @Test

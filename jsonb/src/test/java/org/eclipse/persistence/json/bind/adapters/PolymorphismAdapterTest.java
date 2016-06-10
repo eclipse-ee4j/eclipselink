@@ -143,7 +143,7 @@ public class PolymorphismAdapterTest {
             Pojo pojo = jsonb.fromJson(expected, Pojo.class);
             fail("Should throw class load not allowed");
         } catch (JsonbException e) {
-            assertEquals(Messages.getMessage(MessageKeys.CLASS_LOAD_NOT_ALLOWED, Dog.class.getName()), e.getMessage());
+            assertEquals(Messages.getMessage(MessageKeys.CLASS_LOAD_NOT_ALLOWED, Dog.class.getName()), e.getCause().getMessage());
         }
     }
 }

@@ -13,9 +13,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.json.bind.internal;
 
-import org.eclipse.persistence.json.bind.internal.conversion.ConvertersMapTypeConverter;
-import org.eclipse.persistence.json.bind.internal.conversion.TypeConverter;
-
 /**
  * Jsonb processing (serializing/deserialzing) context.
  * Instance is thread bound (in contrast to {@link JsonbContext}.
@@ -28,7 +25,6 @@ public abstract class ProcessingContext {
 
     protected static final String NULL = "null";
 
-    protected final TypeConverter converter;
 
     protected final JsonbContext jsonbContext;
     /**
@@ -38,7 +34,6 @@ public abstract class ProcessingContext {
      */
     public ProcessingContext(JsonbContext jsonbContext) {
         this.jsonbContext = jsonbContext;
-        this.converter = ConvertersMapTypeConverter.getInstance();
     }
 
 

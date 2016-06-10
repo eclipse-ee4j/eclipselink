@@ -118,7 +118,7 @@ public class ArrayTest {
     @Test
     public void testDeserializeJsonObjectIntoListOfMaps() {
         String json = "[{\"first\":1,\"second\":10}]";
-        Object result = jsonb.fromJson(json, Object.class);
+        Object result = jsonb.fromJson(json, List.class);
         assertTrue(result instanceof List);
         assertEquals(BigDecimal.ONE, ((Map) ((List) result).get(0)).get("first"));
         assertEquals(BigDecimal.TEN, ((Map) ((List) result).get(0)).get("second"));

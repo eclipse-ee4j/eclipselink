@@ -13,39 +13,19 @@
 
 package org.eclipse.persistence.json.bind.internal.serializer;
 
-import javax.json.stream.JsonGenerator;
+import org.eclipse.persistence.json.bind.internal.AbstractContainerSerializer;
+
+import javax.json.JsonValue;
 
 /**
  * Common serializer functionality.
  *
  * @author Roman Grigoriadi
  */
-public abstract class AbstractJsonpSerializer<T> {
+public abstract class AbstractJsonpSerializer<T extends JsonValue> extends AbstractContainerSerializer<T> {
 
+    protected AbstractJsonpSerializer(SerializerBuilder builder) {
+        super(builder);
+    }
 
-    /**
-     * Writes a value without json key.
-     *
-     * @param value value to write
-     * @param jsonGenerator jsonGenerator to use
-     */
-    abstract void writeValue(T value, JsonGenerator jsonGenerator);
-
-    /**
-     * Write json key with value
-     *
-     * @param keyName key name
-     * @param value value to write
-     * @param jsonGenerator jsonGenerator to use
-     */
-    abstract void writeValue(String keyName, T value, JsonGenerator jsonGenerator);
-
-    /**
-     * True if serializer can serialize provided value.
-     * @param value value to check
-     * @param <X> Type of value
-     * @throws NullPointerException if value is null
-     * @return true if supports
-     */
-    abstract <X> boolean supports(X value);
 }

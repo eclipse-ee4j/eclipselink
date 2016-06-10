@@ -15,7 +15,7 @@ package org.eclipse.persistence.json.bind.internal.unmarshaller;
 
 import org.eclipse.persistence.json.bind.internal.RuntimeTypeInfo;
 import org.eclipse.persistence.json.bind.model.ClassModel;
-import org.eclipse.persistence.json.bind.model.PropertyModel;
+import org.eclipse.persistence.json.bind.model.JsonBindingModel;
 
 /**
  * @author Roman Grigoriadi
@@ -29,27 +29,15 @@ public interface CurrentItem<T> extends RuntimeTypeInfo {
     ClassModel getClassModel();
 
     /**
-     * Instance of an item. Unmarshalling sets values to such instance.
-     * @return instance
-     */
-    T getInstance();
-
-    /**
-     * Model of a property.
-     * @return property model
-     */
-    PropertyModel getWrapperPropertyModel();
-
-    /**
-     * Key name in json string for this item
-     * @return
-     */
-    String getJsonKeyName();
-
-    /**
      * Item wrapper. Null only in case of a root item.
      * @return wrapper item of this item
      */
     CurrentItem<?> getWrapper();
+
+    /**
+     * Binding model of this item in wrapper. May be JavaBean property or a container like collection.
+     * @return wrapper model.
+     */
+    JsonBindingModel getWrapperModel();
 
 }

@@ -29,7 +29,7 @@ public class PropertyCustomization extends Customization {
      * Copies properties from builder an creates immutable instance.
      * @param builder not null
      */
-    PropertyCustomization(CustomizationBuilder builder) {
+    public PropertyCustomization(CustomizationBuilder builder) {
         super(builder);
         this.jsonReadName = builder.getJsonReadName();
         this.jsonWriteName = builder.getJsonWriteName();

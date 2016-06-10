@@ -64,6 +64,8 @@ public enum MessageKeys {
     ERROR_CALLING_JSONB_CREATOR("errorCallingJsonbCreator"),
     INCOMPATIBLE_FACTORY_CREATOR_RETURN_TYPE("incompatibleFactoryCreatorReturnType"),
     MULTIPLE_JSONB_CREATORS("multipleJsonbCreators"),
+    INTERNAL_ERROR("internalError"),
+    DESERIALIZE_VALUE_ERROR("deserializeValueError"),
     ;
 
     /** Message bundle key. */

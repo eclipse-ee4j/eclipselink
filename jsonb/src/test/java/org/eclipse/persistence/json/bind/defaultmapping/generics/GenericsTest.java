@@ -14,6 +14,8 @@
 package org.eclipse.persistence.json.bind.defaultmapping.generics;
 
 import org.eclipse.persistence.json.bind.defaultmapping.generics.model.*;
+import org.eclipse.persistence.json.bind.serializers.model.Box;
+import org.eclipse.persistence.json.bind.serializers.model.Crate;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -21,6 +23,8 @@ import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
@@ -165,7 +169,7 @@ public class GenericsTest {
         multipleBoundsClass.propagatedWildcardList = extendsBigDecimalList;
 
         String expected = "{\"genericTestClassPropagatedWildCard\":{\"field1\":\"genericTestClassField1\",\"field2\":10},\"propagatedWildcardList\":[11],\"wildcardField\":1}";
-        assertEquals(expected, jsonb.toJson(multipleBoundsClass));
+        assertEquals(expected, jsonb.toJson(multipleBoundsClass, new WildcardMultipleBoundsClass<BigDecimal>(){}.getClass()));
 
 
         WildcardMultipleBoundsClass<BigDecimal> result = jsonb.fromJson(expected, new WildcardMultipleBoundsClass<BigDecimal>(){}.getClass());
@@ -209,7 +213,7 @@ public class GenericsTest {
 
         String expected = "{\"genericList\":[{\"field1\":[1,2],\"field2\":\"GenericsInListF2\"}],\"genericTestClass\":{\"field1\":1,\"field2\":\"first\"}}";
 
-        assertEquals(expected, jsonb.toJson(propagatedGenericClass));
+        assertEquals(expected, jsonb.toJson(propagatedGenericClass, new PropagatedGenericClass<Integer, String>() {}.getClass()));
         PropagatedGenericClass<Integer, String> result = jsonb.fromJson(expected, new PropagatedGenericClass<Integer, String>() {}.getClass());
         assertEquals(GenericTestClass.class, result.genericList.get(0).getClass());
         assertEquals(Integer.valueOf(1), result.genericList.get(0).field1.get(0));
@@ -336,6 +340,21 @@ public class GenericsTest {
         assertEquals(Integer.valueOf(1), result.propagatedGenericArray.field2[0]);
         assertEquals(Integer.valueOf(10), result.propagatedGenericArray.field2[1]);
 
+    }
+
+    @Test
+    public void testMarshallRawList() throws ParseException {
+        List rawList = new ArrayList();
+        rawList.add(new SimpleDateFormat("ddMMyyyy").parse("24031981"));
+        Box box = new Box();
+        box.boxStr = "box string";
+        box.crate = new Crate();
+        box.crate.crateStr = "crate str";
+        rawList.add(box);
+
+        final Jsonb jsonb = JsonbBuilder.create();
+        String result = jsonb.toJson(rawList);
+        assertEquals("[\"1981-03-24T00:00:00\",{\"boxStr\":\"box string\",\"crate\":{\"crate_str\":\"crate str\"}}]", result);
     }
 
     public interface FunctionalInterface<T> {

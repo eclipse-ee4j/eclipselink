@@ -24,6 +24,7 @@ public class CrateSerializerWithConversion extends CrateSerializer {
     @Override
     public void serialize(Crate obj, JsonGenerator generator, SerializationContext ctx) {
         super.serialize(obj, generator, ctx);
-        ctx.serialize("date-converted", obj.date, generator);
+        //TODO fix / uncomment after keyname argument will be added to JsonbSerializer
+//        ctx.serialize("date-converted", obj.date, generator);
     }
 }

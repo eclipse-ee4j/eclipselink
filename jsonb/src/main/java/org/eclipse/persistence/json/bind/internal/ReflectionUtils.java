@@ -14,7 +14,7 @@ package org.eclipse.persistence.json.bind.internal;
 
 import org.eclipse.persistence.json.bind.internal.properties.MessageKeys;
 import org.eclipse.persistence.json.bind.internal.properties.Messages;
-import org.eclipse.persistence.json.bind.internal.unmarshaller.AbstractItem;
+import org.eclipse.persistence.json.bind.internal.unmarshaller.AbstractDeserializer;
 import org.eclipse.persistence.json.bind.internal.unmarshaller.EmbeddedItem;
 import org.eclipse.persistence.json.bind.internal.unmarshaller.ResolvedParameterizedType;
 
@@ -76,7 +76,7 @@ public class ReflectionUtils {
 
     /**
      * Get a raw type of any type.
-     * If type is a {@link TypeVariable} recursively search {@link AbstractItem} for resolution of typevar.
+     * If type is a {@link TypeVariable} recursively search {@link AbstractDeserializer} for resolution of typevar.
      * If type is a {@link WildcardType} find most specific upper / lower bound, which can be used. If most specific
      * bound is a {@link TypeVariable}, perform typevar resolution.
      *
@@ -96,7 +96,7 @@ public class ReflectionUtils {
 
     /**
      * Resolve a type by item.
-     * If type is a {@link TypeVariable} recursively search {@link AbstractItem} for resolution of typevar.
+     * If type is a {@link TypeVariable} recursively search {@link AbstractDeserializer} for resolution of typevar.
      * If type is a {@link WildcardType} find most specific upper / lower bound, which can be used. If most specific
      * bound is a {@link TypeVariable}, perform typevar resolution.
      *
@@ -127,7 +127,7 @@ public class ReflectionUtils {
         if (item == null) {
             //Bound not found, treat it as an Object.class
             //TODO needs a field declaration identification.
-            logger.warning(String.format("Field generic bound not found for type var %s declared in %s.", typeVariable, typeVariable.getGenericDeclaration()));
+            logger.warning(Messages.getMessage(MessageKeys.GENERIC_BOUND_NOT_FOUND, typeVariable, typeVariable.getGenericDeclaration()));
             return Object.class;
         }
 
@@ -161,6 +161,7 @@ public class ReflectionUtils {
                 if (resolvedArgs[i] == null) {
                     //TODO happens with mistyped runtime type, better explanation whats wrong
                     throw new IllegalStateException();
+//                    logger.warning(Messages.getMessage(MessageKeys.GENERIC_BOUND_NOT_FOUND, unresolvedArgs[i], typeToSearch));
                 }
             }
             if (resolvedArgs[i] instanceof ParameterizedType) {

@@ -226,20 +226,24 @@ public class AdaptersTest {
     @Test
     public void testAdaptTypeIntoCollection() throws Exception {
 
-        JsonbAdapter<?, ?>[] adapters = {new JsonbAdapter<String, List<String>>() {
+        JsonbAdapter<?, ?>[] adapters = {new JsonbAdapter<String, List<Integer>>() {
             @Override
-            public List<String> adaptToJson(String s) {
-                return Arrays.asList(s.split(","));
+            public List<Integer> adaptToJson(String s) {
+                List<Integer> result = new ArrayList<>();
+                for (String str : s.split(",")) {
+                    result.add(Integer.parseInt(str));
+                }
+                return result;
             }
 
             @Override
-            public String adaptFromJson(List<String> strings) {
+            public String adaptFromJson(List<Integer> ints) {
                 StringBuilder sb = new StringBuilder();
-                for (String s : strings) {
+                for (Integer i : ints) {
                     if (!sb.toString().isEmpty()) {
                         sb.append(",");
                     }
-                    sb.append(s);
+                    sb.append(i);
                 }
                 return sb.toString();
             }
@@ -247,9 +251,12 @@ public class AdaptersTest {
         };
         jsonb = JsonbBuilder.create(new JsonbConfig().setProperty(JsonbConfig.ADAPTERS, adapters));
 
-        String json = "{\"strValues\":[\"aa\",\"bb\",\"cc\"]}";
+        String json = "{\"strValues\":[11,22,33]}";
+        final NonGenericPojo object = new NonGenericPojo();
+        object.strValues = "11,22,33";
+        assertEquals(json, jsonb.toJson(object));
         NonGenericPojo pojo = jsonb.fromJson(json, NonGenericPojo.class);
-        assertEquals("aa,bb,cc", pojo.strValues);
+        assertEquals("11,22,33", pojo.strValues);
     }
 
     @Test
@@ -403,9 +410,8 @@ public class AdaptersTest {
         String json = jsonb.toJson(pojo);
         assertEquals("{\"box\":{\"boxStrField\":\"strFieldValue\",\"boxIntegerField\":110}}", json);
 
-//        TODO JsonObject in unmarshaller
-        /*JsonObjectPojo result = jsonb.fromJson(json, JsonObjectPojo.class);
+        JsonObjectPojo result = jsonb.fromJson(json, JsonObjectPojo.class);
         assertEquals("strFieldValue", result.box.getBoxStrField());
-        assertEquals(Integer.valueOf(110), result.box.getBoxIntegerField());*/
+        assertEquals(Integer.valueOf(110), result.box.getBoxIntegerField());
     }
 }

@@ -13,14 +13,11 @@
 
 package org.eclipse.persistence.json.bind.serializers.model;
 
-import org.eclipse.persistence.json.bind.internal.conversion.ConvertersMapTypeConverter;
-
 import javax.json.JsonObject;
 import javax.json.bind.serializer.DeserializationContext;
 import javax.json.bind.serializer.JsonbDeserializer;
 import javax.json.stream.JsonParser;
 import java.lang.reflect.Type;
-import java.util.Date;
 
 /**
  * @author Roman Grigoriadi
@@ -45,9 +42,6 @@ public class CrateJsonObjectDeserializer implements JsonbDeserializer<Crate> {
         crate.crateInner.crateInnerBigDec = crateJsonObject.getJsonObject("crateInner").getJsonNumber("crateInnerBigDec").bigDecimalValue();
         crate.crateStr = crateJsonObject.getString("crateStr");
         crate.crateBigDec = crateJsonObject.getJsonNumber("crateBigDec").bigDecimalValue();
-        //Not available in user api.. User has to use its own conversion.
-        crate.date = ConvertersMapTypeConverter.getInstance().fromJson(crateJsonObject.getString("date-converted"), Date.class, null);
-
         return crate;
     }
 }

@@ -58,7 +58,7 @@ class ClassParser {
     }
 
     private void parseMethods(ClassModel classModel, Map<String, Property> classProperties) {
-        for (Method method : classModel.getRawType().getDeclaredMethods()) {
+        for (Method method : classModel.getType().getDeclaredMethods()) {
             String name = method.getName();
             if (!name.startsWith(GET_PREFIX) && !name.startsWith(SET_PREFIX) && !name.startsWith(IS_PREFIX)) {
                 continue;
@@ -80,7 +80,7 @@ class ClassParser {
     }
 
     private void parseFields(ClassModel classModel, Map<String, Property> classProperties) {
-        for (Field field : classModel.getRawType().getDeclaredFields()) {
+        for (Field field : classModel.getType().getDeclaredFields()) {
             final String name = field.getName();
             if (field.getName().startsWith(GENERATED_PREFIX)) {
                 continue;

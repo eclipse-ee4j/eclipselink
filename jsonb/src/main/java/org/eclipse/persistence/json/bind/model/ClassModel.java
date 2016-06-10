@@ -85,15 +85,15 @@ public class ClassModel {
             }
         }
         final ClassModel parent =
-                ProcessingContext.getMappingContext().getClassModel(classModel.getRawType().getSuperclass());
+                ProcessingContext.getMappingContext().getClassModel(classModel.getType().getSuperclass());
         return parent == null ? null : searchProperty(parent, jsonReadName);
     }
 
-    /**
-     * Class this model is representing.
-     * @return class
-     */
-    public Class<?> getRawType() {
+    public Customization getCustomization() {
+        return classCustomization;
+    }
+
+    public Class<?> getType() {
         return clazz;
     }
 
@@ -115,7 +115,7 @@ public class ClassModel {
             if (propertyModel.getCustomization().getJsonReadName().equals(existing.getCustomization().getJsonReadName()) ||
                     propertyModel.getCustomization().getJsonWriteName().equals(existing.getCustomization().getJsonWriteName())) {
                 throw new JsonbException(String.format("Property %s clashes with property %s by read or write name in class %s.",
-                        propertyModel.getPropertyName(), existing.getPropertyName(), getRawType().getName()));
+                        propertyModel.getPropertyName(), existing.getPropertyName(), getType().getName()));
             }
         }
         properties.put(propertyModel.getPropertyName(), propertyModel);

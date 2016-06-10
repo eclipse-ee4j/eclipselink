@@ -26,6 +26,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.OptionalLong;
+import java.util.logging.Logger;
 
 import static org.junit.Assert.*;
 
@@ -35,6 +36,8 @@ import static org.junit.Assert.*;
 public class UnmarshallingUnsupportedTypesTest {
 
     private final Jsonb jsonb = JsonbBuilder.create();
+
+    private static final Logger logger = Logger.getLogger(UnmarshallingUnsupportedTypesTest.class.getSimpleName());
 
     @Test
     public void testUnmarshallToUnsupportedInterface() {
@@ -90,25 +93,21 @@ public class UnmarshallingUnsupportedTypesTest {
     public void testSupportedTypeAsObjectInJson() {
         //wrong, instant is wrapped with {}, unmarshalls to object.
         String json  = "{\"instant\":{\"instantWrongKey\":\"2015-12-28T14:57:00Z\"},\"optionalLong\":11}";
-        assertFail(json, SupportedTypes.class, "JSON object not expected for unmarshalling into field");
-
-        //wrong, zonedDateTime is wrapped with [], unmarshalls to collection.
-        json  = "{\"zonedDateTime\":[\"2015-12-28T15:57:00+01:00[Europe/Prague]\"]}";
-        assertFail(json, SupportedTypes.class, "JSON array not expected for unmarshalling into field");
+        assertFail(json, SupportedTypes.class, "Can't create instance of a class: class java.time.Instant, No default constructor found.");
     }
 
     @Test
     public void testPojoAsScalarValue() {
         //wrong, nestedPojo is a value.
         String json  = "{\"nestedPojo\":\"10\",\"optionalLong\":11}";
-        assertFail(json, SupportedTypes.class, "Can't convert JSON value into:");
+        assertFail(json, SupportedTypes.class, "Error deserialize JSON value into type: class org.eclipse.persistence.json.bind.defaultmapping.specific.model.SupportedTypes$NestedPojo");
     }
 
     @Test
     public void testPojoAsArray() {
         //wrong, nestedPojo is a collection.
         String json  = "{\"nestedPojo\":[\"10\"],\"optionalLong\":11}";
-        assertFail(json, SupportedTypes.class, "JSON array not expected for unmarshalling into field");
+        assertFail(json, SupportedTypes.class, "Can't deserialize JSON array into: class org.eclipse.persistence.json.bind.defaultmapping.specific.model.SupportedTypes$NestedPojo");
     }
 
     @Test
@@ -124,7 +123,12 @@ public class UnmarshallingUnsupportedTypesTest {
             jsonb.fromJson(json, clazz);
             fail();
         } catch (JsonbException e) {
-            assertTrue(e.getMessage().startsWith(msg));
+            if(!e.getMessage().startsWith(msg)) {
+                logger.severe("Exception message does not match");
+                logger.severe("Expected: "+ msg);
+                logger.severe("Current:  "+e.getMessage());
+                fail();
+            }
         }
     }
 }

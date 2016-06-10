@@ -24,7 +24,8 @@ import java.util.Objects;
  * @author Dmitry Kornilov
  * @author Roman Grigoriadi
  */
-public class PropertyModel implements Comparable<PropertyModel> {
+public class PropertyModel implements SerializerBindingModel, JsonBindingModel, Comparable<PropertyModel> {
+
     /**
      * Field propertyName as in class.
      */
@@ -155,8 +156,19 @@ public class PropertyModel implements Comparable<PropertyModel> {
      * Introspected customization of a property.
      * @return immutable property customization
      */
+    @Override
     public PropertyCustomization getCustomization() {
         return customization;
+    }
+
+    /**
+     * Class of a property, either bean property type or collection / array component type.
+     *
+     * @return class type
+     */
+    @Override
+    public Type getType() {
+        return getPropertyType();
     }
 
     @Override
@@ -175,5 +187,16 @@ public class PropertyModel implements Comparable<PropertyModel> {
     @Override
     public int hashCode() {
         return Objects.hash(propertyName);
+    }
+
+
+    @Override
+    public String getJsonWriteName() {
+        return getCustomization().getJsonWriteName();
+    }
+
+    @Override
+    public Context getContext() {
+        return Context.JSON_OBJECT;
     }
 }

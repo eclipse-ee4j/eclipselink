@@ -12,9 +12,18 @@
  ******************************************************************************/
 package org.eclipse.persistence.json.bind.defaultmapping.dates;
 
-import org.eclipse.persistence.json.bind.internal.JsonBindingBuilder;
-import org.eclipse.persistence.json.bind.defaultmapping.dates.model.*;
+import org.eclipse.persistence.json.bind.defaultmapping.dates.model.CalendarPojo;
+import org.eclipse.persistence.json.bind.defaultmapping.dates.model.ClassLevelDateAnnotation;
+import org.eclipse.persistence.json.bind.defaultmapping.dates.model.DatePojo;
+import org.eclipse.persistence.json.bind.defaultmapping.dates.model.InstantPojo;
+import org.eclipse.persistence.json.bind.defaultmapping.dates.model.LocalDatePojo;
+import org.eclipse.persistence.json.bind.defaultmapping.dates.model.LocalDateTimePojo;
+import org.eclipse.persistence.json.bind.defaultmapping.dates.model.LocalTimePojo;
+import org.eclipse.persistence.json.bind.defaultmapping.dates.model.OffsetDateTimePojo;
+import org.eclipse.persistence.json.bind.defaultmapping.dates.model.OffsetTimePojo;
+import org.eclipse.persistence.json.bind.defaultmapping.dates.model.ZonedDateTimePojo;
 import org.eclipse.persistence.json.bind.defaultmapping.generics.model.ScalarValueWrapper;
+import org.eclipse.persistence.json.bind.internal.JsonBindingBuilder;
 import org.junit.Test;
 
 import javax.json.bind.Jsonb;
@@ -25,8 +34,24 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.*;
-import java.util.*;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.Month;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
+import java.time.Period;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Locale;
+import java.util.SimpleTimeZone;
+import java.util.TimeZone;
 
 import static org.junit.Assert.assertEquals;
 
@@ -320,4 +345,5 @@ public class DatesTest {
         assertEquals(dateTime, result.getValue());
 
     }
+
 }

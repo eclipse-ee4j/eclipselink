@@ -14,13 +14,21 @@
 package org.eclipse.persistence.json.bind.internal;
 
 import org.eclipse.persistence.json.bind.internal.cdi.JsonbComponentInstanceCreator;
+import org.eclipse.persistence.json.bind.internal.internalOrdering.AnyOrderStrategy;
+import org.eclipse.persistence.json.bind.internal.internalOrdering.LexicographicalOrderStrategy;
+import org.eclipse.persistence.json.bind.internal.internalOrdering.PropOrderStrategy;
+import org.eclipse.persistence.json.bind.internal.internalOrdering.ReverseOrderStrategy;
 import org.eclipse.persistence.json.bind.internal.naming.DefaultNamingStrategies;
 import org.eclipse.persistence.json.bind.internal.naming.PropertyNamingStrategy;
 
 import javax.json.bind.JsonbConfig;
 import javax.json.bind.JsonbException;
+import javax.json.bind.config.PropertyOrderStrategy;
 import javax.json.bind.config.PropertyVisibilityStrategy;
 import javax.json.spi.JsonProvider;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -46,6 +54,8 @@ public class JsonbContext {
 
     private final ComponentMatcher componentMatcher;
 
+    private final Map<String, PropOrderStrategy> orderStrategies;
+
     /**
      * Creates and initialize context.
      *
@@ -64,8 +74,17 @@ public class JsonbContext {
         this.propertyNamingStrategy = resolvePropertyNamingStrategy();
         this.propertyVisibilityStrategy = resolvePropertyVisibilityStrategy();
         this.jsonProvider = jsonProvider;
+        this.orderStrategies = initOrderStrategies();
         this.componentMatcher = new ComponentMatcher();
         this.componentMatcher.init(this);
+    }
+
+    private Map<String, PropOrderStrategy> initOrderStrategies() {
+        Map<String, PropOrderStrategy> strategies = new HashMap<>();
+        strategies.put(PropertyOrderStrategy.LEXICOGRAPHICAL, new LexicographicalOrderStrategy());
+        strategies.put(PropertyOrderStrategy.REVERSE, new ReverseOrderStrategy());
+        strategies.put(PropertyOrderStrategy.ANY, new AnyOrderStrategy());
+        return Collections.unmodifiableMap(strategies);
     }
 
     private PropertyNamingStrategy resolvePropertyNamingStrategy() {
@@ -149,5 +168,14 @@ public class JsonbContext {
      */
     public ComponentMatcher getComponentMatcher() {
         return componentMatcher;
+    }
+
+    /**
+     * Property order strategies for serializers.
+     *
+     * @return property order strategies
+     */
+    public Map<String, PropOrderStrategy> getOrderStrategies() {
+        return orderStrategies;
     }
 }

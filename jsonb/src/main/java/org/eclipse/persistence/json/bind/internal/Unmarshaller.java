@@ -6,21 +6,19 @@
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
- *
+ * <p>
  * Contributors:
  * Roman Grigoriadi
  ******************************************************************************/
 package org.eclipse.persistence.json.bind.internal;
 
 
-import org.eclipse.persistence.json.bind.internal.properties.MessageKeys;
-import org.eclipse.persistence.json.bind.internal.properties.Messages;
+import org.eclipse.persistence.json.bind.internal.unmarshaller.CurrentItem;
+import org.eclipse.persistence.json.bind.internal.unmarshaller.DeserializerBuilder;
 import org.eclipse.persistence.json.bind.internal.unmarshaller.JsonValueType;
-import org.eclipse.persistence.json.bind.internal.unmarshaller.UnmarshallerItem;
-import org.eclipse.persistence.json.bind.internal.unmarshaller.UnmarshallerItemBuilder;
 
-import javax.json.bind.JsonbException;
 import javax.json.bind.serializer.DeserializationContext;
+import javax.json.bind.serializer.JsonbDeserializer;
 import javax.json.stream.JsonParser;
 import java.lang.reflect.Type;
 
@@ -40,50 +38,42 @@ public class Unmarshaller extends ProcessingContext implements DeserializationCo
         super(jsonbContext);
     }
 
-    private UnmarshallerItem<?> current;
+    private CurrentItem<?> current;
 
             @Override
     public <T> T deserialize(Class<T> clazz, JsonParser parser) {
-        final JsonParser.Event rootEvent = getRootEvent(parser);
-        if (isValueEvent(rootEvent)) {
-            return convertDefault(clazz, parser.getString());
-                    }
-        return deserializeItem(clazz, parser, rootEvent);
+        return deserializeItem(clazz, parser);
                 }
 
     @Override
     public <T> T deserialize(Type type, JsonParser parser) {
-        return deserializeItem(type, parser, getRootEvent(parser));
+        return deserializeItem(type, parser);
             }
 
     @SuppressWarnings("unchecked")
-    private <T> T deserializeItem(Type type, JsonParser parser, JsonParser.Event event) {
-        final UnmarshallerItem<?> item = new UnmarshallerItemBuilder(this, parser).withWrapper(current)
-                .withType(type).withJsonValueType(JsonValueType.of(event)).build();
-        item.deserialize();
-        return (T) item.getInstance();
+    private <T> T deserializeItem(Type type, JsonParser parser) {
+        final JsonbDeserializer<?> item = new DeserializerBuilder().withWrapper(current)
+                .withType(type).withJsonValueType(JsonValueType.of(getRootEvent(parser))).build();
+        return (T) item.deserialize(parser, this, type);
     }
 
+    /**
+     * Get root value event, either for new deserialization process, or deserialization subprocess invoked from
+     * custom user deserialzier.
+     */
     private JsonParser.Event getRootEvent(JsonParser parser) {
-        if (parser.getLocation().getStreamOffset() == 0 || current.getLastEvent() == JsonParser.Event.KEY_NAME) {
+        if (parser.getLocation().getStreamOffset() == 0) {
             return parser.next();
         }
-        return current.getLastEvent();
-    }
-
-
-    private <T> T convertDefault(Class<T> fromClass, String value) {
-        if (!converter.supportsFromJson(fromClass)) {
-            throw new JsonbException(Messages.getMessage(MessageKeys.CONVERSION_NOT_SUPPORTED, fromClass));
-        }
-        return converter.fromJson(value, fromClass, null);
+        final JsonParser.Event lastEvent = ((JsonbParser) parser).getCurrentLevel().getLastEvent();
+        return lastEvent == JsonParser.Event.KEY_NAME ? parser.next() : lastEvent;
         }
 
     /**
      * Get currently processed json item.
      * @return current item
      */
-    public UnmarshallerItem<?> getCurrent() {
+    public CurrentItem<?> getCurrent() {
         return current;
     }
 
@@ -91,19 +81,8 @@ public class Unmarshaller extends ProcessingContext implements DeserializationCo
      * Set currently processed item.
      * @param current current item
      */
-    public void setCurrent(UnmarshallerItem<?> current) {
+    public void setCurrent(CurrentItem<?> current) {
         this.current = current;
-    }
-
-    private boolean isValueEvent(JsonParser.Event event) {
-        switch (event) {
-            case VALUE_FALSE:
-            case VALUE_TRUE:
-            case VALUE_NUMBER:
-            case VALUE_STRING:
-                return true;
-            default: return false;
-    }
     }
 
 }

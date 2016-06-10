@@ -16,9 +16,10 @@ package org.eclipse.persistence.json.bind.internal;
 import org.eclipse.persistence.json.bind.internal.adapter.AdapterBinding;
 import org.eclipse.persistence.json.bind.internal.adapter.DeserializerBinding;
 import org.eclipse.persistence.json.bind.internal.adapter.SerializerBinding;
-import org.eclipse.persistence.json.bind.internal.conversion.JsonbDateFormatter;
+import org.eclipse.persistence.json.bind.internal.naming.PropertyNamingStrategy;
 import org.eclipse.persistence.json.bind.internal.properties.MessageKeys;
 import org.eclipse.persistence.json.bind.internal.properties.Messages;
+import org.eclipse.persistence.json.bind.internal.serializer.JsonbDateFormatter;
 import org.eclipse.persistence.json.bind.model.JsonbCreator;
 import org.eclipse.persistence.json.bind.model.Property;
 
@@ -114,7 +115,12 @@ public class AnnotationIntrospector {
             return fieldAnnotation.value();
         }
 
-        return property.getName();
+        return getPropertyWriteName(property.getName());
+    }
+
+    private String getPropertyWriteName(String defaultPropertyName) {
+        final PropertyNamingStrategy namingStrategy = ProcessingContext.getJsonbContext().getPropertyNamingStrategy();
+        return namingStrategy != null ? namingStrategy.toJsonPropertyName(defaultPropertyName) : defaultPropertyName;
     }
 
     /**
@@ -284,7 +290,7 @@ public class AnnotationIntrospector {
             Class<?> rawType = propertyRawTypeOptional.get();
             if (!(Date.class.isAssignableFrom(rawType) || Calendar.class.isAssignableFrom(rawType)
                     || TemporalAccessor.class.isAssignableFrom(rawType))) {
-                return null;
+//                return null;
             }
         }
         //TODO what about non date generic properties that cannot be resolved statically for a class model,
@@ -354,7 +360,7 @@ public class AnnotationIntrospector {
         }
 
         if (!TemporalAccessor.class.isAssignableFrom(propertyRawType)) {
-            throw new IllegalStateException(Messages.getMessage(MessageKeys.UNSUPPORTED_DATE_TYPE, propertyRawType));
+//            throw new IllegalStateException(Messages.getMessage(MessageKeys.UNSUPPORTED_DATE_TYPE, propertyRawType));
         }
         return new JsonbDateFormatter(DateTimeFormatter.ofPattern(format, locale), format, locale);
     }
@@ -439,7 +445,7 @@ public class AnnotationIntrospector {
     }
 
     private <T extends Annotation> Optional<T> searchAnnotationInClassHierarchy(Class<T> annotationClass, Class<?> declaringClass) {
-        if (declaringClass == null || declaringClass == Object.class || ProcessingContext.getMappingContext().supported(declaringClass)) {
+        if (declaringClass == null || declaringClass == Object.class) {
             return Optional.empty();
         }
         Optional<T> candidate = Optional.ofNullable(declaringClass.getAnnotation(annotationClass));
@@ -489,6 +495,9 @@ public class AnnotationIntrospector {
     }
 
     private <T extends Annotation> Optional<T> searchPackage(Class<T> annotationClass, Class clazz) {
+        if (clazz.isPrimitive() || clazz.isArray()) {
+            return Optional.empty();
+        }
         return Optional.ofNullable(clazz.getPackage().getAnnotation(annotationClass));
     }
 

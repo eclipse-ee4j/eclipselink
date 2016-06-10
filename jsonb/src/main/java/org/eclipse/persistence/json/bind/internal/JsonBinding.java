@@ -58,28 +58,28 @@ public class JsonBinding implements Jsonb {
 
     @Override
     public <T> T fromJson(String str, Class<T> type) throws JsonbException {
-        final JsonParser parser = jsonbContext.getJsonProvider().createParser(new StringReader(str));
+        final JsonParser parser = new JsonbRiParser(jsonbContext.getJsonProvider().createParser(new StringReader(str)));
         final Unmarshaller unmarshaller = new Unmarshaller(jsonbContext);
         return deserialize(type, parser, unmarshaller);
     }
 
     @Override
     public <T> T fromJson(String str, Type type) throws JsonbException {
-        JsonParser parser = jsonbContext.getJsonProvider().createParser(new StringReader(str));
+        JsonParser parser = new JsonbRiParser(jsonbContext.getJsonProvider().createParser(new StringReader(str)));
         Unmarshaller unmarshaller = new Unmarshaller(jsonbContext);
         return deserialize(type, parser, unmarshaller);
     }
 
     @Override
     public <T> T fromJson(Reader reader, Class<T> type) throws JsonbException {
-        JsonParser parser = jsonbContext.getJsonProvider().createParser(reader);
+        JsonParser parser = new JsonbRiParser(jsonbContext.getJsonProvider().createParser(reader));
         Unmarshaller unmarshaller = new Unmarshaller(jsonbContext);
         return deserialize(type, parser, unmarshaller);
     }
 
     @Override
     public <T> T fromJson(Reader reader, Type type) throws JsonbException {
-        JsonParser parser = jsonbContext.getJsonProvider().createParser(reader);
+        JsonParser parser = new JsonbRiParser(jsonbContext.getJsonProvider().createParser(reader));
         Unmarshaller unmarshaller = new Unmarshaller(jsonbContext);
         return deserialize(type, parser, unmarshaller);
     }
@@ -97,9 +97,9 @@ public class JsonBinding implements Jsonb {
     }
 
     private JsonParser inputStreamParser(InputStream stream) {
-        return jsonbContext.getJsonProvider().createParserFactory(createJsonpProperties(jsonbContext.getConfig()))
+        return new JsonbRiParser(jsonbContext.getJsonProvider().createParserFactory(createJsonpProperties(jsonbContext.getConfig()))
                 .createParser(stream,
-                        Charset.forName((String) jsonbContext.getConfig().getProperty(JsonbConfig.ENCODING).orElse("UTF-8")));
+                        Charset.forName((String) jsonbContext.getConfig().getProperty(JsonbConfig.ENCODING).orElse("UTF-8"))));
     }
 
     @Override

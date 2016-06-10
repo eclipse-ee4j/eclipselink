@@ -16,7 +16,7 @@ package org.eclipse.persistence.json.bind.model;
 import org.eclipse.persistence.json.bind.internal.adapter.AdapterBinding;
 import org.eclipse.persistence.json.bind.internal.adapter.DeserializerBinding;
 import org.eclipse.persistence.json.bind.internal.adapter.SerializerBinding;
-import org.eclipse.persistence.json.bind.internal.conversion.JsonbDateFormatter;
+import org.eclipse.persistence.json.bind.internal.serializer.JsonbDateFormatter;
 
 import java.text.NumberFormat;
 

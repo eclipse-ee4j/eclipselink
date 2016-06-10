@@ -18,6 +18,7 @@ import org.eclipse.persistence.json.bind.internal.adapter.AdapterBinding;
 import org.eclipse.persistence.json.bind.internal.adapter.ComponentBindings;
 import org.eclipse.persistence.json.bind.internal.adapter.DeserializerBinding;
 import org.eclipse.persistence.json.bind.internal.adapter.SerializerBinding;
+import org.eclipse.persistence.json.bind.model.JsonBindingModel;
 import org.eclipse.persistence.json.bind.model.PropertyModel;
 import org.eclipse.persistence.json.bind.model.TypeWrapper;
 
@@ -105,9 +106,9 @@ public class ComponentMatcher {
      * @return serializer optional
      */
     @SuppressWarnings("unchecked")
-    public <T> Optional<SerializerBinding<T>> getSerialzierBinding(Type propertyRuntimeType, PropertyModel propertyModel) {
+    public Optional<SerializerBinding<?>> getSerialzierBinding(Type propertyRuntimeType, JsonBindingModel propertyModel) {
         if (propertyModel == null || propertyModel.getCustomization().getSerializerBinding() == null) {
-            return getComponentInfo(propertyRuntimeType, ComponentBindings::getSerializer);
+            return searchComponentBinding(propertyRuntimeType, ComponentBindings::getSerializer);
         }
         return getComponentBinding(propertyRuntimeType, propertyModel.getCustomization().getSerializerBinding());
     }
@@ -115,15 +116,15 @@ public class ComponentMatcher {
     /**
      * Lookup deserializer binding for a given property runtime type.
      * @param propertyRuntimeType runtime type of a property
-     * @param propertyModel model of a property
+     * @param model model of a property
      * @return serializer optional
      */
     @SuppressWarnings("unchecked")
-    public Optional<DeserializerBinding<?>> getDeserialzierBinding(Type propertyRuntimeType, PropertyModel propertyModel) {
-        if (propertyModel == null || propertyModel.getCustomization().getSerializerBinding() == null) {
-            return getComponentInfo(propertyRuntimeType, ComponentBindings::getDeserializer);
+    public Optional<DeserializerBinding<?>> getDeserialzierBinding(Type propertyRuntimeType, JsonBindingModel model) {
+        if (model == null || model.getCustomization().getDeserializerBinding() == null) {
+            return searchComponentBinding(propertyRuntimeType, ComponentBindings::getDeserializer);
         }
-        return getComponentBinding(propertyRuntimeType, propertyModel.getCustomization().getDeserializerBinding());
+        return getComponentBinding(propertyRuntimeType, model.getCustomization().getDeserializerBinding());
     }
 
     /**
@@ -131,17 +132,18 @@ public class ComponentMatcher {
      * or return adapter searched by runtime type
      *
      * @param propertyRuntimeType runtime type not null
-     * @param propertyModel model nullable
+     * @param model model nullable
      * @return adapter info if present
      */
-    public Optional<AdapterBinding> getAdapterBinding(Type propertyRuntimeType, PropertyModel propertyModel) {
-        if (propertyModel != null && propertyModel.getClassModel().getRawType() == TypeWrapper.class) {
+    public Optional<AdapterBinding> getAdapterBinding(Type propertyRuntimeType, JsonBindingModel model) {
+        //TODO do we need type wrapper adapters at all? Make better check or remove.
+        if (model != null && model instanceof PropertyModel && ((PropertyModel) model).getClassModel().getType() == TypeWrapper.class) {
             return Optional.empty();
         }
-        if (propertyModel == null || propertyModel.getCustomization().getAdapterBinding() == null) {
-            return getComponentInfo(propertyRuntimeType, ComponentBindings::getAdapterInfo);
+        if (model == null || model.getCustomization().getAdapterBinding() == null) {
+            return searchComponentBinding(propertyRuntimeType, ComponentBindings::getAdapterInfo);
         }
-        return getComponentBinding(propertyRuntimeType, propertyModel.getCustomization().getAdapterBinding());
+        return getComponentBinding(propertyRuntimeType, model.getCustomization().getAdapterBinding());
     }
 
     private <T extends AbstractComponentBinding> Optional<T> getComponentBinding(Type propertyRuntimeType, T componentBinding) {
@@ -153,7 +155,7 @@ public class ComponentMatcher {
         return Optional.empty();
     }
 
-    private <T extends AbstractComponentBinding> Optional<T> getComponentInfo(Type runtimeType, ComponentSupplier<T> supplier) {
+    private <T extends AbstractComponentBinding> Optional<T> searchComponentBinding(Type runtimeType, ComponentSupplier<T> supplier) {
         for (ComponentBindings componentBindings : userComponents.values()) {
             final T component = supplier.getComponent(componentBindings);
             if (component != null && matches(runtimeType, componentBindings.getBindingType())) {

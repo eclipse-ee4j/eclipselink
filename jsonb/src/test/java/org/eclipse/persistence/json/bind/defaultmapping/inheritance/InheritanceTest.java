@@ -166,10 +166,12 @@ public class InheritanceTest {
         secondLevelGeneric.setInZero("IN_ZERO");
 
         String json = "{\"inZero\":\"IN_ZERO\",\"inFirstLevel\":{\"genericList\":[{\"field1\":[\"third\",\"fourth\"],\"field2\":0}],\"genericTestClass\":{\"field1\":\"FIRST_LEVEL_GENERIC_STRING\",\"field2\":11}},\"inZeroOverriddenInFirst\":\"STRING_IN_ZERO_OVERRIDDEN_IN_FIRST\",\"inSecondLevel\":{\"genericList\":[{\"field1\":[\"first\",\"second\"],\"field2\":10}],\"genericTestClass\":{\"field1\":\"SECOND_LEVEL_GENERIC_STRING\",\"field2\":1}}}";
-        assertEquals(json, jsonb.toJson(secondLevelGeneric));
 
+        final Class<? extends SecondLevelGeneric<PropagatedGenericClass<String, BigDecimal>, ExtendsPropagatedGenericClass<String, BigDecimal>, String>> runtimeType = new SecondLevelGeneric<PropagatedGenericClass<String, BigDecimal>, ExtendsPropagatedGenericClass<String, BigDecimal>, String>() {
+        }.getClass();
+        assertEquals(json, jsonb.toJson(secondLevelGeneric, runtimeType));
         SecondLevelGeneric<PropagatedGenericClass<String, BigDecimal>, ExtendsPropagatedGenericClass<String, BigDecimal>, String> result =
-                jsonb.fromJson(json, new SecondLevelGeneric<PropagatedGenericClass<String, BigDecimal>, ExtendsPropagatedGenericClass<String, BigDecimal>, String>() {}.getClass());
+                jsonb.fromJson(json, runtimeType);
 
         assertEquals("first", result.getInSecondLevel().genericList.get(0).field1.get(0));
         assertEquals("second", result.getInSecondLevel().genericList.get(0).field1.get(1));
