@@ -48,6 +48,7 @@ import java.util.Set;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
+import javax.annotation.processing.SupportedOptions;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
@@ -79,6 +80,13 @@ import org.eclipse.persistence.sessions.server.ServerSession;
  * @author Guy Pelletier
  * @since EclipseLink 1.2
  */
+@SupportedOptions({CANONICAL_MODEL_PREFIX,
+        CANONICAL_MODEL_SUFFIX,
+        CANONICAL_MODEL_SUB_PACKAGE,
+        CANONICAL_MODEL_LOAD_XML,
+        CANONICAL_MODEL_USE_STATIC_FACTORY,
+        CANONICAL_MODEL_GENERATE_TIMESTAMP,
+        ECLIPSELINK_PERSISTENCE_XML})
 @SupportedAnnotationTypes({"javax.persistence.*", "org.eclipse.persistence.annotations.*"})
 public class CanonicalModelProcessor extends AbstractProcessor {
     protected enum AttributeType {CollectionAttribute, ListAttribute, MapAttribute, SetAttribute, SingularAttribute }
