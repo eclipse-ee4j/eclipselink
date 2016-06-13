@@ -1361,6 +1361,23 @@ public class PersistenceUnitProperties {
     public static final String CANONICAL_MODEL_USE_STATIC_FACTORY_DEFAULT = "true";
 
     /**
+     * The "<code>eclipselink.canonicalmodel.generate_timestamp</code>" optional property can be used
+     * to disable usage of date in declaration of {@link javax.annotation.Generated} annotation.
+     * The default value is true.
+     *
+     * @see #CANONICAL_MODEL_GENERATE_TIMESTAMP_DEFAULT
+     */
+    public static final String CANONICAL_MODEL_GENERATE_TIMESTAMP = "eclipselink.canonicalmodel.generate_timestamp";
+
+    /**
+     * Default value for the "<code>eclipselink.canonicalmodel.generate_timestamp</code>" optional
+     * property.
+     *
+     * @see #CANONICAL_MODEL_GENERATE_TIMESTAMP
+     */
+    public static final String CANONICAL_MODEL_GENERATE_TIMESTAMP_DEFAULT = "true";
+
+    /**
      * Default caching properties - apply to all entities. May be overridden by
      * individual entity property with the same prefix. If you do not wish to
      * cache your entities, set this to "<code>false</code>".
