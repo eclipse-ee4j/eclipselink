@@ -9,7 +9,7 @@
 # Connect to wls server
 #===========================================================================
 
-connect('%%WL_USR%%','%%WL_PWD%%','t3://%%WL_HOST%%:%%WL_PORT%%')
+connect('@WL_USR@','@WL_PWD@','t3://@WL_HOST@:@WL_PORT@')
 
 #===========================================================================
 # Remove Data Sources using wlst on-line commonds
@@ -17,8 +17,8 @@ connect('%%WL_USR%%','%%WL_PWD%%','t3://%%WL_HOST%%:%%WL_PORT%%')
 
 edit()
 startEdit()
-delete('%%DS_NAME%%','JDBCSystemResource')
-delete('%%NON_JTA_DS_NAME%%','JDBCSystemResource')
+delete('@DS_NAME@','JDBCSystemResource')
+delete('@NON_JTA_DS_NAME@','JDBCSystemResource')
 save()
 activate()
 exit()

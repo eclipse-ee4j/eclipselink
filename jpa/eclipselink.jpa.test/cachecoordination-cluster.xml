@@ -142,11 +142,11 @@
     <target name="config-persistence-xml">
         <copy overwrite="true" file="${jpatest.basedir}/${resource.dir}/server/persistence.xml" tofile="${jpatest.basedir}/${resource.dir}/server/persistence_original.xml" />
         <copy overwrite="true" file="${jpatest.basedir}/${resource.dir}/server/persistence_cachecoordination.xml" tofile="${jpatest.basedir}/${resource.dir}/server/persistence_cachecoordination_original.xml"/>
-        <replace file="${jpatest.basedir}/${resource.dir}/server/persistence_cachecoordination.xml" token='%%data-source-name%%' value="jdbc/EclipseLinkDS"/>
-        <replace file="${jpatest.basedir}/${resource.dir}/server/persistence_cachecoordination.xml" token='%%topic-host-url%%' value="${rcm.wls.jms.topichost.url}"/>
-        <replace file="${jpatest.basedir}/${resource.dir}/server/persistence_cachecoordination.xml" token='%%topic-name%%' value="${rcm.wls.jms.topicname}"/>
-        <replace file="${jpatest.basedir}/${resource.dir}/server/persistence_cachecoordination.xml" token='%%topic-connection-factory%%' value="${rcm.wls.jms.topic.connectionfactory.name}"/>
-        <replace file="${jpatest.basedir}/${resource.dir}/server/persistence_cachecoordination.xml" token='%%cachecoordination-protocol%%' value="${cachecoordination.protocol}"/>
+        <replace file="${jpatest.basedir}/${resource.dir}/server/persistence_cachecoordination.xml" token='@data-source-name@' value="jdbc/EclipseLinkDS"/>
+        <replace file="${jpatest.basedir}/${resource.dir}/server/persistence_cachecoordination.xml" token='@topic-host-url@' value="${rcm.wls.jms.topichost.url}"/>
+        <replace file="${jpatest.basedir}/${resource.dir}/server/persistence_cachecoordination.xml" token='@topic-name@' value="${rcm.wls.jms.topicname}"/>
+        <replace file="${jpatest.basedir}/${resource.dir}/server/persistence_cachecoordination.xml" token='@topic-connection-factory@' value="${rcm.wls.jms.topic.connectionfactory.name}"/>
+        <replace file="${jpatest.basedir}/${resource.dir}/server/persistence_cachecoordination.xml" token='@cachecoordination-protocol@' value="${cachecoordination.protocol}"/>
     </target>
 
     <target name="cachecoordination-build-and-deploy-cluster" depends="set-app-name-cachecoordination">

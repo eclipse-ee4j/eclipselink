@@ -9,7 +9,7 @@
 # Connect to wls server
 #===========================================================================
 
-connect('%%WL_USR%%','%%WL_PWD%%','t3://%%WL_HOST%%:%%WL_PORT%%')
+connect('@WL_USR@','@WL_PWD@','t3://@WL_HOST@:@WL_PORT@')
 
 #===========================================================================
 # Create and configure JTA Data Source and target it to the server.
@@ -30,9 +30,9 @@ cd('/JDBCSystemResources/EclipseLinkDS/JDBCResource/EclipseLinkDS/JDBCDataSource
 set('JNDINames',jarray.array([String('jdbc/EclipseLinkDS')], String))
 
 cd('/JDBCSystemResources/EclipseLinkDS/JDBCResource/EclipseLinkDS/JDBCDriverParams/EclipseLinkDS')
-cmo.setUrl('%%DBURL%%')
-cmo.setDriverName('%%DBDRV%%')
-set('PasswordEncrypted','%%DBPWD%%')
+cmo.setUrl('@DBURL@')
+cmo.setDriverName('@DBDRV@')
+set('PasswordEncrypted','@DBPWD@')
 
 cd('/JDBCSystemResources/EclipseLinkDS/JDBCResource/EclipseLinkDS/JDBCConnectionPoolParams/EclipseLinkDS')
 cmo.setTestTableName('SQL SELECT 1 FROM DUAL')
@@ -41,13 +41,13 @@ cd('/JDBCSystemResources/EclipseLinkDS/JDBCResource/EclipseLinkDS/JDBCDriverPara
 cmo.createProperty('user')
 
 cd('/JDBCSystemResources/EclipseLinkDS/JDBCResource/EclipseLinkDS/JDBCDriverParams/EclipseLinkDS/Properties/EclipseLinkDS/Properties/user')
-cmo.setValue('%%DBUSR%%')
+cmo.setValue('@DBUSR@')
 
 #cd('/JDBCSystemResources/EclipseLinkDS/JDBCResource/EclipseLinkDS/JDBCDataSourceParams/EclipseLinkDS')
 #cmo.setGlobalTransactionsProtocol('OnePhaseCommit')
 
 cd('/SystemResources/EclipseLinkDS')
-set('Targets',jarray.array([ObjectName('com.bea:Name=%%TARGET_SERVER%%,Type=Server')], ObjectName))
+set('Targets',jarray.array([ObjectName('com.bea:Name=@TARGET_SERVER@,Type=Server')], ObjectName))
 
 # Create EclipseLinkDS2 for server-test-composite-advanced (DB2)
 
@@ -61,9 +61,9 @@ cd('/JDBCSystemResources/EclipseLinkDS2/JDBCResource/EclipseLinkDS2/JDBCDataSour
 set('JNDINames',jarray.array([String('jdbc/EclipseLinkDS2')], String))
 
 cd('/JDBCSystemResources/EclipseLinkDS2/JDBCResource/EclipseLinkDS2/JDBCDriverParams/EclipseLinkDS2')
-cmo.setUrl('%%DB2URL%%')
-cmo.setDriverName('%%DB2DRV%%')
-set('PasswordEncrypted','%%DB2PWD%%')
+cmo.setUrl('@DB2URL@')
+cmo.setDriverName('@DB2DRV@')
+set('PasswordEncrypted','@DB2PWD@')
 
 cd('/JDBCSystemResources/EclipseLinkDS2/JDBCResource/EclipseLinkDS2/JDBCConnectionPoolParams/EclipseLinkDS2')
 cmo.setTestTableName('SQL SELECT 1 FROM DUAL')
@@ -72,7 +72,7 @@ cd('/JDBCSystemResources/EclipseLinkDS2/JDBCResource/EclipseLinkDS2/JDBCDriverPa
 cmo.createProperty('user')
 
 cd('/JDBCSystemResources/EclipseLinkDS2/JDBCResource/EclipseLinkDS2/JDBCDriverParams/EclipseLinkDS2/Properties/EclipseLinkDS2/Properties/user')
-cmo.setValue('%%DB2USR%%')
+cmo.setValue('@DB2USR@')
 
 cd('/JDBCSystemResources/EclipseLinkDS2/JDBCResource/EclipseLinkDS2/JDBCDriverParams/EclipseLinkDS2/Properties/EclipseLinkDS2')
 cmo.createProperty('portNumber')
@@ -96,7 +96,7 @@ cd('/JDBCSystemResources/EclipseLinkDS2/JDBCResource/EclipseLinkDS2/JDBCDataSour
 cmo.setGlobalTransactionsProtocol('TwoPhaseCommit')
 
 cd('/SystemResources/EclipseLinkDS2')
-set('Targets',jarray.array([ObjectName('com.bea:Name=%%TARGET_SERVER%%,Type=Server')], ObjectName))
+set('Targets',jarray.array([ObjectName('com.bea:Name=@TARGET_SERVER@,Type=Server')], ObjectName))
 
 # Create EclipseLinkDS3 for server-test-composite-advanced (MySQL)
 
@@ -110,9 +110,9 @@ cd('/JDBCSystemResources/EclipseLinkDS3/JDBCResource/EclipseLinkDS3/JDBCDataSour
 set('JNDINames',jarray.array([String('jdbc/EclipseLinkDS3')], String))
 
 cd('/JDBCSystemResources/EclipseLinkDS3/JDBCResource/EclipseLinkDS3/JDBCDriverParams/EclipseLinkDS3')
-cmo.setUrl('%%DB3URL%%')
-cmo.setDriverName('%%DB3DRV%%')
-set('PasswordEncrypted','%%DB3PWD%%')
+cmo.setUrl('@DB3URL@')
+cmo.setDriverName('@DB3DRV@')
+set('PasswordEncrypted','@DB3PWD@')
 
 cd('/JDBCSystemResources/EclipseLinkDS3/JDBCResource/EclipseLinkDS3/JDBCConnectionPoolParams/EclipseLinkDS3')
 cmo.setTestTableName('SQL SELECT 1 FROM DUAL')
@@ -121,13 +121,13 @@ cd('/JDBCSystemResources/EclipseLinkDS3/JDBCResource/EclipseLinkDS3/JDBCDriverPa
 cmo.createProperty('user')
 
 cd('/JDBCSystemResources/EclipseLinkDS3/JDBCResource/EclipseLinkDS3/JDBCDriverParams/EclipseLinkDS3/Properties/EclipseLinkDS3/Properties/user')
-cmo.setValue('%%DB3USR%%')
+cmo.setValue('@DB3USR@')
 
 cd('/JDBCSystemResources/EclipseLinkDS3/JDBCResource/EclipseLinkDS3/JDBCDataSourceParams/EclipseLinkDS3')
 cmo.setGlobalTransactionsProtocol('EmulateTwoPhaseCommit')
 
 cd('/SystemResources/EclipseLinkDS3')
-set('Targets',jarray.array([ObjectName('com.bea:Name=%%TARGET_SERVER%%,Type=Server')], ObjectName))
+set('Targets',jarray.array([ObjectName('com.bea:Name=@TARGET_SERVER@,Type=Server')], ObjectName))
 
 save()
 activate()

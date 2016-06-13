@@ -28,10 +28,10 @@
         <class>test.org.eclipse.persistence.testing.models.jpa.spring.Route</class>
         <properties>
             <property name="eclipselink.ddl-generation" value="drop-and-create-tables" />
-            <property name="javax.persistence.jdbc.driver" value="%%driverClass%%" />
-            <property name="javax.persistence.jdbc.url" value="%%dbURL%%" />
-            <property name="javax.persistence.jdbc.user" value="%%dbUser%%" />
-            <property name="javax.persistence.jdbc.password" value="%%dbPassword%%" />
+            <property name="javax.persistence.jdbc.driver" value="@driverClass@" />
+            <property name="javax.persistence.jdbc.url" value="@dbURL@" />
+            <property name="javax.persistence.jdbc.user" value="@dbUser@" />
+            <property name="javax.persistence.jdbc.password" value="@dbPassword@" />
             <!--property name="eclipselink.logging.level" value="FINE"/-->
         </properties>
     </persistence-unit>

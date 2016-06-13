@@ -93,12 +93,12 @@
         <copy overwrite="true" todir="${jpatest.basedir}/resource/${server.name}/setup/META-INF">
             <fileset dir="${jpatest.basedir}/resource/${server.name}/templates/setup/META-INF" includes="*.*"/>
         </copy>
-        <replace file="${jpatest.basedir}/resource/${server.name}/setup/META-INF/data-sources.xml" token='%%data-source-name%%' value="${netweaver.datasource.name}"/>
-        <replace file="${jpatest.basedir}/resource/${server.name}/setup/META-INF/data-sources.xml" token='%%driver-name%%' value="${netweaver.datasource.driver.deployname}"/>
-        <replace file="${jpatest.basedir}/resource/${server.name}/setup/META-INF/data-sources.xml" token='%%driver-class-name%%' value="${netweaver.datasource.driver.class}"/>
-        <replace file="${jpatest.basedir}/resource/${server.name}/setup/META-INF/data-sources.xml" token='%%url%%' value="${netweaver.datasource.url}"/>
-        <replace file="${jpatest.basedir}/resource/${server.name}/setup/META-INF/data-sources.xml" token='%%user-name%%' value="${netweaver.datasource.user}"/>
-        <replace file="${jpatest.basedir}/resource/${server.name}/setup/META-INF/data-sources.xml" token='%%password%%' value="${netweaver.datasource.password}"/>
+        <replace file="${jpatest.basedir}/resource/${server.name}/setup/META-INF/data-sources.xml" token='@data-source-name@' value="${netweaver.datasource.name}"/>
+        <replace file="${jpatest.basedir}/resource/${server.name}/setup/META-INF/data-sources.xml" token='@driver-name@' value="${netweaver.datasource.driver.deployname}"/>
+        <replace file="${jpatest.basedir}/resource/${server.name}/setup/META-INF/data-sources.xml" token='@driver-class-name@' value="${netweaver.datasource.driver.class}"/>
+        <replace file="${jpatest.basedir}/resource/${server.name}/setup/META-INF/data-sources.xml" token='@url@' value="${netweaver.datasource.url}"/>
+        <replace file="${jpatest.basedir}/resource/${server.name}/setup/META-INF/data-sources.xml" token='@user-name@' value="${netweaver.datasource.user}"/>
+        <replace file="${jpatest.basedir}/resource/${server.name}/setup/META-INF/data-sources.xml" token='@password@' value="${netweaver.datasource.password}"/>
         <zip destfile="${jpatest.basedir}/${build.dir}/${netweaver.datasource.app}.ear">
             <fileset dir="${jpatest.basedir}/resource/${server.name}/setup"/>
         </zip>
@@ -119,8 +119,8 @@
         <copy overwrite="true" todir="${jpatest.basedir}/resource/${server.name}">
             <fileset dir="${jpatest.basedir}/resource/${server.name}/templates/" includes="undeploy_eclipselink.txt"/>
         </copy>
-        <replace file="${jpatest.basedir}/resource/${server.name}/undeploy_eclipselink.txt" token='%%eclipselink_app%%' value="${netweaver.eclipselink.app}"/>
-        <replace file="${jpatest.basedir}/resource/${server.name}/undeploy_eclipselink.txt" token='%%datasource_app%%' value="${netweaver.datasource.app}"/>
+        <replace file="${jpatest.basedir}/resource/${server.name}/undeploy_eclipselink.txt" token='@eclipselink_app@' value="${netweaver.eclipselink.app}"/>
+        <replace file="${jpatest.basedir}/resource/${server.name}/undeploy_eclipselink.txt" token='@datasource_app@' value="${netweaver.datasource.app}"/>
         <sapundeploy undeploystrategy="IfDependingStop">
             <saperrorhandling erroraction="prerequisites" errorstrategy="stop"/>
             <saperrorhandling erroraction="undeploy" errorstrategy="stop"/>
@@ -141,8 +141,8 @@
         <copy overwrite="true" todir="${jpatest.basedir}/resource/${server.name}/META-INF">
             <fileset dir="${jpatest.basedir}/resource/${server.name}/templates/META-INF" includes="*.*"/>
         </copy>
-        <replace dir="${jpatest.basedir}/resource/${server.name}/META-INF" token='%%eclipselinklib%%' value="${netweaver.eclipselink.app}"/>
-        <replace dir="${jpatest.basedir}/resource/${server.name}/META-INF" token='%%datasourcename%%' value="${netweaver.datasource.name}"/>
+        <replace dir="${jpatest.basedir}/resource/${server.name}/META-INF" token='@eclipselinklib@' value="${netweaver.eclipselink.app}"/>
+        <replace dir="${jpatest.basedir}/resource/${server.name}/META-INF" token='@datasourcename@' value="${netweaver.datasource.name}"/>
         <ear destfile="${basedir}/${ear.name}" update="true">
             <fileset dir="${jpatest.basedir}/resource/${server.name}" includes="META-INF/*.*"/>
         </ear>

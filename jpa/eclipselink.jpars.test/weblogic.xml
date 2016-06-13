@@ -75,10 +75,10 @@
     <!-- This replaces URL in JAX-RS testcases -->
     <target name="weblogic-jaxrsconfig">
         <property name="jaxrs-url" value="${weblogic.host}:${weblogic.port}"/>
-        <replace file="${jparstest.basedir}/${src.dir}/org/eclipse/persistence/testing/tests/jpa/jaxrs/DefaultJAXBContextTestCases.java" token='%%host:port%%' value="${jaxrs-url}"/>
-        <replace file="${jparstest.basedir}/${src.dir}/org/eclipse/persistence/testing/tests/jpa/jaxrs/ContextResolverTestCases.java" token='%%host:port%%' value="${jaxrs-url}"/>
-        <replace file="${jparstest.basedir}/${src.dir}/org/eclipse/persistence/testing/tests/jpa/jaxrs/MessageBodyReaderWriterTestCases.java" token='%%host:port%%' value="${jaxrs-url}"/>
-        <replace file="${jparstest.basedir}/resource/eclipselink-jaxrs-model/server/persistence.xml" token='%%server-platform%%' value="${server.platform}"/>
+        <replace file="${jparstest.basedir}/${src.dir}/org/eclipse/persistence/testing/tests/jpa/jaxrs/DefaultJAXBContextTestCases.java" token='@host:port@' value="${jaxrs-url}"/>
+        <replace file="${jparstest.basedir}/${src.dir}/org/eclipse/persistence/testing/tests/jpa/jaxrs/ContextResolverTestCases.java" token='@host:port@' value="${jaxrs-url}"/>
+        <replace file="${jparstest.basedir}/${src.dir}/org/eclipse/persistence/testing/tests/jpa/jaxrs/MessageBodyReaderWriterTestCases.java" token='@host:port@' value="${jaxrs-url}"/>
+        <replace file="${jparstest.basedir}/resource/eclipselink-jaxrs-model/server/persistence.xml" token='@server-platform@' value="${server.platform}"/>
     </target>
 
     <!-- This creates the server domain. -->
@@ -118,29 +118,29 @@
         </copy>
         <replace dir="${jparstest.basedir}/${temp.dir}">
             <include name="**/*.py"/>
-            <replacefilter token="%%WL_HOME%%" value="${weblogic.installdir}"/>
-            <replacefilter token="%%WL_HOST%%" value="${weblogic.host}"/>
-            <replacefilter token="%%WL_PORT%%" value="${weblogic.port}"/>
-            <replacefilter token="%%WL_PORT_SSL%%" value="${weblogic.port.ssl}"/>
-            <replacefilter token="%%WL_USR%%" value="${server.user}"/>
-            <replacefilter token="%%WL_PWD%%" value="${server.pwd}"/>
-            <replacefilter token="%%WL_DOMAIN%%" value="${weblogic.domain}"/>
-            <replacefilter token="%%DOMAIN_NAME%%" value="${domain.name}"/>
-            <replacefilter token="%%TARGET_SERVER%%" value="${target.server}"/>
-            <replacefilter token="%%DBDRV%%" value="${db.driver}"/>
-            <replacefilter token="%%DBURL%%" value="${db.url}"/>
-            <replacefilter token="%%DBUSR%%" value="${db.user}"/>
-            <replacefilter token="%%DBPWD%%" value="${db.pwd}"/>
-            <replacefilter token="%%DB2DRV%%" value="${db2.driver}"/>
-            <replacefilter token="%%DB2URL%%" value="${db2.url}"/>
-            <replacefilter token="%%DB2USR%%" value="${db2.user}"/>
-            <replacefilter token="%%DB2PWD%%" value="${db2.pwd}"/>
-            <replacefilter token="%%DB3DRV%%" value="${db3.driver}"/>
-            <replacefilter token="%%DB3URL%%" value="${db3.url}"/>
-            <replacefilter token="%%DB3USR%%" value="${db3.user}"/>
-            <replacefilter token="%%DB3PWD%%" value="${db3.pwd}"/>
-            <replacefilter token="%%DS_NAME%%" value="${ds.name}"/>
-            <replacefilter token="%%NON_JTA_DS_NAME%%" value="${ds.name.non.jta}"/>
+            <replacefilter token="@WL_HOME@" value="${weblogic.installdir}"/>
+            <replacefilter token="@WL_HOST@" value="${weblogic.host}"/>
+            <replacefilter token="@WL_PORT@" value="${weblogic.port}"/>
+            <replacefilter token="@WL_PORT_SSL@" value="${weblogic.port.ssl}"/>
+            <replacefilter token="@WL_USR@" value="${server.user}"/>
+            <replacefilter token="@WL_PWD@" value="${server.pwd}"/>
+            <replacefilter token="@WL_DOMAIN@" value="${weblogic.domain}"/>
+            <replacefilter token="@DOMAIN_NAME@" value="${domain.name}"/>
+            <replacefilter token="@TARGET_SERVER@" value="${target.server}"/>
+            <replacefilter token="@DBDRV@" value="${db.driver}"/>
+            <replacefilter token="@DBURL@" value="${db.url}"/>
+            <replacefilter token="@DBUSR@" value="${db.user}"/>
+            <replacefilter token="@DBPWD@" value="${db.pwd}"/>
+            <replacefilter token="@DB2DRV@" value="${db2.driver}"/>
+            <replacefilter token="@DB2URL@" value="${db2.url}"/>
+            <replacefilter token="@DB2USR@" value="${db2.user}"/>
+            <replacefilter token="@DB2PWD@" value="${db2.pwd}"/>
+            <replacefilter token="@DB3DRV@" value="${db3.driver}"/>
+            <replacefilter token="@DB3URL@" value="${db3.url}"/>
+            <replacefilter token="@DB3USR@" value="${db3.user}"/>
+            <replacefilter token="@DB3PWD@" value="${db3.pwd}"/>
+            <replacefilter token="@DS_NAME@" value="${ds.name}"/>
+            <replacefilter token="@NON_JTA_DS_NAME@" value="${ds.name.non.jta}"/>
         </replace>
     </target>
 
@@ -236,9 +236,9 @@
         <property name="ear.name" value="${application.name}.ear"/>
         <replace dir="${jparstest.basedir}/${temp.dir}">
             <include name="**/wls_*deploy.py"/>
-            <replacefilter token="%%appName%%" value="${application.name}"/>
-            <replacefilter token="%%testDir%%" value="${ear.dir}"/>
-            <replacefilter token="%%earName%%" value="${ear.name}"/>
+            <replacefilter token="@appName@" value="${application.name}"/>
+            <replacefilter token="@testDir@" value="${ear.dir}"/>
+            <replacefilter token="@earName@" value="${ear.name}"/>
         </replace>
 
         <java classname="weblogic.WLST" fork="yes">

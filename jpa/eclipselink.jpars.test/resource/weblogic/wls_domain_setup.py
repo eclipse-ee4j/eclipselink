@@ -9,7 +9,7 @@
 # Connect to wls server
 #===========================================================================
 
-connect('%%WL_USR%%','%%WL_PWD%%','t3://%%WL_HOST%%:%%WL_PORT%%')
+connect('@WL_USR@','@WL_PWD@','t3://@WL_HOST@:@WL_PORT@')
 
 #===========================================================================
 # Set EclipseLink JPA as DefaultJPAProvider for wls server
@@ -18,7 +18,7 @@ connect('%%WL_USR%%','%%WL_PWD%%','t3://%%WL_HOST%%:%%WL_PORT%%')
 edit()
 startEdit()
 
-cd('/JPA/%%DOMAIN_NAME%%')
+cd('/JPA/@DOMAIN_NAME@')
 cmo.setDefaultJPAProvider('org.eclipse.persistence.jpa.PersistenceProvider')
 
 save()

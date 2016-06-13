@@ -9,7 +9,7 @@
 # Connect to wls server
 #===========================================================================
 
-connect('%%WL_USR%%','%%WL_PWD%%','t3://%%WL_HOST%%:%%WL_PORT%%')
+connect('@WL_USR@','@WL_PWD@','t3://@WL_HOST@:@WL_PORT@')
 
 #===========================================================================
 # Create and configure JTA Data Source and target it to the server.
@@ -29,9 +29,9 @@ try:
     set('JNDINames',jarray.array([String('jdbc/EclipseLinkDS')], String))
 
     cd('/JDBCSystemResources/EclipseLinkDS/JDBCResource/EclipseLinkDS/JDBCDriverParams/EclipseLinkDS')
-    cmo.setUrl('%%DBURL%%')
-    cmo.setDriverName('%%DBDRV%%')
-    set('PasswordEncrypted','%%DBPWD%%')
+    cmo.setUrl('@DBURL@')
+    cmo.setDriverName('@DBDRV@')
+    set('PasswordEncrypted','@DBPWD@')
 
     cd('/JDBCSystemResources/EclipseLinkDS/JDBCResource/EclipseLinkDS/JDBCConnectionPoolParams/EclipseLinkDS')
     cmo.setTestTableName('SQL SELECT 1 FROM DUAL')
@@ -40,13 +40,13 @@ try:
     cmo.createProperty('user')
 
     cd('/JDBCSystemResources/EclipseLinkDS/JDBCResource/EclipseLinkDS/JDBCDriverParams/EclipseLinkDS/Properties/EclipseLinkDS/Properties/user')
-    cmo.setValue('%%DBUSR%%')
+    cmo.setValue('@DBUSR@')
 
     #cd('/JDBCSystemResources/EclipseLinkDS/JDBCResource/EclipseLinkDS/JDBCDataSourceParams/EclipseLinkDS')
     #cmo.setGlobalTransactionsProtocol('OnePhaseCommit')
 
     cd('/SystemResources/EclipseLinkDS')
-    set('Targets',jarray.array([ObjectName('com.bea:Name=%%TARGET_SERVER%%,Type=Server')], ObjectName))
+    set('Targets',jarray.array([ObjectName('com.bea:Name=@TARGET_SERVER@,Type=Server')], ObjectName))
 
     save()
     activate()
@@ -71,9 +71,9 @@ try:
     set('JNDINames',jarray.array([String('jdbc/ELNonJTADS')], String))
 
     cd('/JDBCSystemResources/ELNonJTADS/JDBCResource/ELNonJTADS/JDBCDriverParams/ELNonJTADS')
-    cmo.setUrl('%%DBURL%%')
-    cmo.setDriverName('%%DBDRV%%')
-    set('PasswordEncrypted','%%DBPWD%%')
+    cmo.setUrl('@DBURL@')
+    cmo.setDriverName('@DBDRV@')
+    set('PasswordEncrypted','@DBPWD@')
 
     cd('/JDBCSystemResources/ELNonJTADS/JDBCResource/ELNonJTADS/JDBCConnectionPoolParams/ELNonJTADS')
     cmo.setTestTableName('SQL SELECT 1 FROM DUAL')
@@ -82,13 +82,13 @@ try:
     cmo.createProperty('user')
 
     cd('/JDBCSystemResources/ELNonJTADS/JDBCResource/ELNonJTADS/JDBCDriverParams/ELNonJTADS/Properties/ELNonJTADS/Properties/user')
-    cmo.setValue('%%DBUSR%%')
+    cmo.setValue('@DBUSR@')
 
     cd('/JDBCSystemResources/ELNonJTADS/JDBCResource/ELNonJTADS/JDBCDataSourceParams/ELNonJTADS')
     cmo.setGlobalTransactionsProtocol('None')
 
     cd('/SystemResources/ELNonJTADS')
-    set('Targets',jarray.array([ObjectName('com.bea:Name=%%TARGET_SERVER%%,Type=Server')], ObjectName))
+    set('Targets',jarray.array([ObjectName('com.bea:Name=@TARGET_SERVER@,Type=Server')], ObjectName))
 
     save()
     activate()

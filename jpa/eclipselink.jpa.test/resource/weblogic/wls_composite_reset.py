@@ -9,7 +9,7 @@
 # Connect to wls server
 #===========================================================================
 
-connect('%%WL_USR%%','%%WL_PWD%%','t3://%%WL_HOST%%:%%WL_PORT%%')
+connect('@WL_USR@','@WL_PWD@','t3://@WL_HOST@:@WL_PORT@')
 
 #===========================================================================
 # Remove Data Sources using wlst on-line commonds for three composite models

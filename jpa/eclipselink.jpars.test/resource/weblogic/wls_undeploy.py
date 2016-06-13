@@ -9,7 +9,7 @@
 # Connect to wls server
 #===========================================================================
 
-connect('%%WL_USR%%','%%WL_PWD%%','t3://%%WL_HOST%%:%%WL_PORT%%')
+connect('@WL_USR@','@WL_PWD@','t3://@WL_HOST@:@WL_PORT@')
 
 #===========================================================================
 # Undeploy applications from wls server
@@ -17,8 +17,8 @@ connect('%%WL_USR%%','%%WL_PWD%%','t3://%%WL_HOST%%:%%WL_PORT%%')
 
 edit()
 startEdit()
-stopApplication('%%appName%%')
-undeploy(appName='%%appName%%')
+stopApplication('@appName@')
+undeploy(appName='@appName@')
 save()
 activate()
 exit()

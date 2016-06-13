@@ -89,10 +89,10 @@
     <!-- This replaces URL in JAX-RS testcases -->
     <target name="glassfish-jaxrsconfig">
         <property name="jaxrs-url" value="${glassfish.host}:8080"/>
-        <replace file="${jpatest.basedir}/${src.dir}/org/eclipse/persistence/testing/tests/jpa/jaxrs/DefaultJAXBContextTestCases.java" token='%%host:port%%' value="${jaxrs-url}"/>
-        <replace file="${jpatest.basedir}/${src.dir}/org/eclipse/persistence/testing/tests/jpa/jaxrs/ContextResolverTestCases.java" token='%%host:port%%' value="${jaxrs-url}"/>
-        <replace file="${jpatest.basedir}/${src.dir}/org/eclipse/persistence/testing/tests/jpa/jaxrs/MessageBodyReaderWriterTestCases.java" token='%%host:port%%' value="${jaxrs-url}"/>
-        <replace file="${jpatest.basedir}/resource/eclipselink-jaxrs-model/server/persistence.xml" token='%%server-platform%%' value="${server.platform}"/>
+        <replace file="${jpatest.basedir}/${src.dir}/org/eclipse/persistence/testing/tests/jpa/jaxrs/DefaultJAXBContextTestCases.java" token='@host:port@' value="${jaxrs-url}"/>
+        <replace file="${jpatest.basedir}/${src.dir}/org/eclipse/persistence/testing/tests/jpa/jaxrs/ContextResolverTestCases.java" token='@host:port@' value="${jaxrs-url}"/>
+        <replace file="${jpatest.basedir}/${src.dir}/org/eclipse/persistence/testing/tests/jpa/jaxrs/MessageBodyReaderWriterTestCases.java" token='@host:port@' value="${jaxrs-url}"/>
+        <replace file="${jpatest.basedir}/resource/eclipselink-jaxrs-model/server/persistence.xml" token='@server-platform@' value="${server.platform}"/>
     </target>
 
     <!-- Copies libraries to domain1 -->

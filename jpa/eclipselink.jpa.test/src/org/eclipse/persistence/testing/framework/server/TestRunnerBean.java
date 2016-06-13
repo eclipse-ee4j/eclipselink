@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -41,11 +41,11 @@ import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 public class TestRunnerBean implements TestRunner {
 
     /** The entity manager for the test is injected and passed to the test server platform. */
-    @PersistenceContext(unitName="%%puName%%")
+    @PersistenceContext(unitName="@puName@")
     private EntityManager entityManager;
 
     /** The entity manager factory for the test is injected and passed to the test server platform. */
-    @PersistenceUnit(unitName="%%puName%%")
+    @PersistenceUnit(unitName="@puName@")
     private EntityManagerFactory entityManagerFactory;
 
     /**

@@ -5,7 +5,7 @@
     <persistence-unit name="jpa1testmodel" transaction-type="RESOURCE_LOCAL">
         <description>ATS Test Persistence Unit</description>
             <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <non-jta-data-source>%%data-source-name%%</non-jta-data-source>
+        <non-jta-data-source>@data-source-name@</non-jta-data-source>
         <class>org.eclipse.persistence.testing.models.wdf.jpa1.component.Component</class>
         <class>org.eclipse.persistence.testing.models.wdf.jpa1.component.Metric</class>
         <class>org.eclipse.persistence.testing.models.wdf.jpa1.component.MetricFloat</class>
@@ -85,8 +85,8 @@
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
         <properties>
-                   %%server-platform-property%%
-                   <property name="eclipselink.target-database" value="%%database-platform%%"/>
+                   @server-platform-property@
+                   <property name="eclipselink.target-database" value="@database-platform@"/>
                    <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
                    <property name="eclipselink.temporal.mutable" value="true"/>
                    <property name="eclipselink.weaving" value="false"/>
@@ -96,7 +96,7 @@
 
     <persistence-unit name="jpa1testmodel-2" transaction-type="RESOURCE_LOCAL">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <non-jta-data-source>%%data-source-name%%</non-jta-data-source>
+        <non-jta-data-source>@data-source-name@</non-jta-data-source>
                 <class>org.eclipse.persistence.testing.models.wdf.jpa1.fancy.Animal</class>
                 <class>org.eclipse.persistence.testing.models.wdf.jpa1.fancy.Element</class>
                 <class>org.eclipse.persistence.testing.models.wdf.jpa1.fancy.Plant</class>
@@ -104,7 +104,7 @@
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
         <properties>
-                   <property name="eclipselink.target-database" value="%%database-platform%%"/>
+                   <property name="eclipselink.target-database" value="@database-platform@"/>
         </properties>
     </persistence-unit>
 
@@ -114,8 +114,8 @@
             <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <jta-data-source>jdbc/EclipseLinkDS</jta-data-source>
         <properties>
-                   %%server-platform-property%%
-                   <property name="eclipselink.target-database" value="%%database-platform%%"/>
+                   @server-platform-property@
+                   <property name="eclipselink.target-database" value="@database-platform@"/>
                    <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
                    <property name="eclipselink.cache.shared.default" value="false"/>
                    <property name="eclipselink.temporal.mutable" value="true"/>

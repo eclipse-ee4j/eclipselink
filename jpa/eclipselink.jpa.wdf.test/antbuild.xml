@@ -236,10 +236,10 @@
 
     <target name="package-model" depends="get-server-properties,set-app-name">
         <copy overwrite="true" file="${wdf_test.build.location}/resource/${MODEL}/persistence.xml" todir="${build.dir}/META-INF"/>
-        <replace dir="${build.dir}/META-INF" token='%%database-platform%%' value="${db.platform}">
+        <replace dir="${build.dir}/META-INF" token='@database-platform@' value="${db.platform}">
             <include name="persistence.xml"/>
         </replace>
-        <replace dir="${build.dir}/META-INF" token='%%data-source-name%%' value="${DS_NAME}">
+        <replace dir="${build.dir}/META-INF" token='@data-source-name@' value="${DS_NAME}">
             <include name="persistence.xml"/>
         </replace>
 
@@ -247,7 +247,7 @@
                                                        else="">
             <isset property="server.name"/>
         </condition>
-        <replace dir="${build.dir}/META-INF" token='%%server-platform-property%%' value="${SERVER-PLATFORM-PROPERTY}">
+        <replace dir="${build.dir}/META-INF" token='@server-platform-property@' value="${SERVER-PLATFORM-PROPERTY}">
             <include name="persistence.xml"/>
         </replace>
         <jar jarfile="${wdf_test.build.location}/${MODEL}.jar">

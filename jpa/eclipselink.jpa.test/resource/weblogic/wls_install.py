@@ -10,18 +10,18 @@
 #===========================================================================
 
 try:
-   readTemplate("%%WL_HOME%%/common/templates/wls/wls.jar")
+   readTemplate("@WL_HOME@/common/templates/wls/wls.jar")
 except:
-   readTemplate("%%WL_HOME%%/common/templates/domains/wls.jar")
+   readTemplate("@WL_HOME@/common/templates/domains/wls.jar")
 
 #===========================================================================
 # Configure the Administration Server and SSL port.
 #===========================================================================
 
 cd('Servers/AdminServer')
-set('Name','%%TARGET_SERVER%%')
+set('Name','@TARGET_SERVER@')
 set('ListenAddress','')
-set('ListenPort', %%WL_PORT%%)
+set('ListenPort', @WL_PORT@)
 
 create('AdminServer','SSL')
 cd('SSL/AdminServer')
@@ -34,15 +34,15 @@ set('ListenPort', 7002)
 
 cd('/')
 cd('Security/base_domain/User/weblogic')
-set('Name','%%WL_USR%%')
-cmo.setPassword('%%WL_PWD%%')
+set('Name','@WL_USR@')
+cmo.setPassword('@WL_PWD@')
 
 #===========================================================================
 # Write the domain and close the domain template.
 #===========================================================================
 
 setOption('OverwriteDomain', 'true')
-writeDomain('%%WL_DOMAIN%%')
+writeDomain('@WL_DOMAIN@')
 closeTemplate()
 
 #===========================================================================

@@ -95,15 +95,15 @@
     <target name="websphere-setup">
         <echo message="*****Config WebSphere Server*****"/>
         <copy overwrite="true" file="${was.jython.scripts.dir}/configWebSphere.py" tofile="${was.home}/bin/configWebSphere.py"/>
-        <replace file="${was.home}/bin/configWebSphere.py" token="%%oracleDriver%%" value="${oracle.extensions.jar.dir}/ojdbc7.jar"/>
-        <replace file="${was.home}/bin/configWebSphere.py" token="%%nodeName%%" value="${nodeName}"/>
-        <replace file="${was.home}/bin/configWebSphere.py" token="%%serverName%%" value="${serverName}"/>
-        <replace file="${was.home}/bin/configWebSphere.py" token="%%dbUser%%" value="${db.user}"/>
-        <replace file="${was.home}/bin/configWebSphere.py" token="%%dbPassword%%" value="${db.pwd}"/>
-        <replace file="${was.home}/bin/configWebSphere.py" token="%%dbURL%%" value="${db.url}"/>
+        <replace file="${was.home}/bin/configWebSphere.py" token="@oracleDriver@" value="${oracle.extensions.jar.dir}/ojdbc7.jar"/>
+        <replace file="${was.home}/bin/configWebSphere.py" token="@nodeName@" value="${nodeName}"/>
+        <replace file="${was.home}/bin/configWebSphere.py" token="@serverName@" value="${serverName}"/>
+        <replace file="${was.home}/bin/configWebSphere.py" token="@dbUser@" value="${db.user}"/>
+        <replace file="${was.home}/bin/configWebSphere.py" token="@dbPassword@" value="${db.pwd}"/>
+        <replace file="${was.home}/bin/configWebSphere.py" token="@dbURL@" value="${db.url}"/>
         <antcall target="set-transaction-type-for-non-jta-ds" inheritRefs="true"/>
-        <replace file="${was.home}/bin/configWebSphere.py" token="%%eclipselinkLibDir%%" value="${eclipselink.jar.dir}"/>
-        <replace file="${was.home}/bin/configWebSphere.py" token="%%oracleExtensionLibDir%%" value="${oracle.extensions.jar.dir}"/>
+        <replace file="${was.home}/bin/configWebSphere.py" token="@eclipselinkLibDir@" value="${eclipselink.jar.dir}"/>
+        <replace file="${was.home}/bin/configWebSphere.py" token="@oracleExtensionLibDir@" value="${oracle.extensions.jar.dir}"/>
         <sleep seconds="20"/>
         <exec executable="${was.home}/bin/wsadmin.${suffix}">
               <arg line="-lang jython -user ${server.user} -password ${server.pwd} -f ${was.home}/bin/configWebSphere.py"/>
@@ -111,7 +111,7 @@
     </target>
 
     <target name="set-transaction-type-for-non-jta-ds" if="is.nonjta.datasource">
-        <replace file="${was.home}/bin/configWebSphere.py" token="%%nonTransactionalDS%%" value="true"/>
+        <replace file="${was.home}/bin/configWebSphere.py" token="@nonTransactionalDS@" value="true"/>
     </target>
 
     <!-- websphere-setup removes and recreates datasource and shared library, so we don't need to do anything in websphere-reset. -->
@@ -153,13 +153,13 @@
     <target name="websphere-deploy">
         <echo message="*****Deploy ${application.name} on WebSphere Server*****"/>
         <copy overwrite="true" file="${was.jython.scripts.dir}/installApps.py" tofile="${was.home}/bin/installApps.py"/>
-        <replace file="${was.home}/bin/installApps.py" token="%%serverVersion%%" value="${server.version}"/>
-        <replace file="${was.home}/bin/installApps.py" token="%%cellName%%" value="${cellName}"/>
-        <replace file="${was.home}/bin/installApps.py" token="%%nodeName%%" value="${nodeName}"/>
-        <replace file="${was.home}/bin/installApps.py" token="%%serverName%%" value="${serverName}"/>
-        <replace file="${was.home}/bin/installApps.py" token="%%appName%%" value="${application.name}"/>
+        <replace file="${was.home}/bin/installApps.py" token="@serverVersion@" value="${server.version}"/>
+        <replace file="${was.home}/bin/installApps.py" token="@cellName@" value="${cellName}"/>
+        <replace file="${was.home}/bin/installApps.py" token="@nodeName@" value="${nodeName}"/>
+        <replace file="${was.home}/bin/installApps.py" token="@serverName@" value="${serverName}"/>
+        <replace file="${was.home}/bin/installApps.py" token="@appName@" value="${application.name}"/>
         <property name="ear.name" value="${application.name}.ear"/>
-        <replace file="${was.home}/bin/installApps.py" token="%%ear%%" value="${ear.name}"/>
+        <replace file="${was.home}/bin/installApps.py" token="@ear@" value="${ear.name}"/>
         <sleep seconds="20"/>
         <exec executable="${was.home}/bin/wsadmin.${suffix}">
             <arg line="-lang jython -user ${server.user} -password ${server.pwd} -f ${was.home}/bin/installApps.py"/>
@@ -173,7 +173,7 @@
     <target name="websphere-undeploy">
         <echo message="*****Undeploy ${application.name} on WebSphere Server*****"/>
         <copy overwrite="true" file="${was.jython.scripts.dir}/unInstallApps.py" tofile="${was.home}/bin/unInstallApps.py"/>
-        <replace file="${was.home}/bin/unInstallApps.py" token="%%appName%%" value="${application.name}"/>
+        <replace file="${was.home}/bin/unInstallApps.py" token="@appName@" value="${application.name}"/>
         <sleep seconds="20"/>
         <exec executable="${was.home}/bin/wsadmin.${suffix}">
             <arg line="-lang jython -user ${server.user} -password ${server.pwd} -f ${was.home}/bin/unInstallApps.py"/>

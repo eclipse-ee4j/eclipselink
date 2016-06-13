@@ -5,12 +5,12 @@
                   xsi:schemalocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_1_0.xsd">
 
     <entity class="org.eclipse.persistence.testing.models.jpa.proxyauthentication.Employee" metadata-complete="false">
-        <table name="%%dbUser%%.JPA_PROXY_EMPLOYEE"/>
+        <table name="@dbUser@.JPA_PROXY_EMPLOYEE"/>
         <attributes>
             <id name="id">
                 <generated-value strategy="TABLE" generator="JPA_PROXY_EMPLOYEE_TABLE_GENERATOR"/>
                 <table-generator name="JPA_PROXY_EMPLOYEE_TABLE_GENERATOR" 
-                                 table="%%dbUser%%.PROXY_EMPLOYEE_SEQ"
+                                 table="@dbUser@.PROXY_EMPLOYEE_SEQ"
                                  pk-column-name="SEQ_NAME"
                                  value-column-name="SEQ_COUNT"
                                  pk-column-value="PROXY_EMPLOYEE_SEQ"
@@ -21,7 +21,7 @@
     </entity>
     
     <entity class="org.eclipse.persistence.testing.models.jpa.proxyauthentication.PhoneNumber" metadata-complete="false">
-        <table name="%%proxyUser%%.PROXY_PHONENUMBER"/>
+        <table name="@proxyUser@.PROXY_PHONENUMBER"/>
     </entity>
     
 </entity-mappings>

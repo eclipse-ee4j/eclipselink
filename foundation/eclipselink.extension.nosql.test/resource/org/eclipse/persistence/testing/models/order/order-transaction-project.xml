@@ -56,7 +56,7 @@
       <platform-class>org.eclipse.persistence.platform.database.OraclePlatform</platform-class>
       <user-name>jsutherl</user-name>
       <password>BB742416276274A46959A54867978929</password>
-      <driver-class>%%driverClass%%</driver-class>
+      <driver-class>@driverClass@</driver-class>
       <connection-url>jdbc:oracle:thin:@tlsvrdb5.ca.oracle.com:1521:toplink</connection-url>
    </login>
 </object-persistence>

@@ -8,6 +8,6 @@
     <description>servertest</description>
     <display-name>servertest</display-name>
     <module>
-        <ejb>%%modelname%%_ejb.jar</ejb>
+        <ejb>@modelname@_ejb.jar</ejb>
     </module>
 </application>

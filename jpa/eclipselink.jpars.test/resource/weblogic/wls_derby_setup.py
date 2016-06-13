@@ -10,7 +10,7 @@
 # Connect to wls server
 #===========================================================================
 
-connect('%%WL_USR%%','%%WL_PWD%%','t3://%%WL_HOST%%:%%WL_PORT%%')
+connect('@WL_USR@','@WL_PWD@','t3://@WL_HOST@:@WL_PORT@')
 
 #===========================================================================
 # Create and configure JTA Data Source and target it to the server.
@@ -30,7 +30,7 @@ set('JNDINames',jarray.array([String('jdbc/EclipseLinkDS')], String))
 cd('/JDBCSystemResources/EclipseLinkDS/JDBCResource/EclipseLinkDS/JDBCDriverParams/EclipseLinkDS')
 cmo.setUrl('jdbc:derby://localhost:1527/ECLIPSELINK;create=true;ServerName=localhost;databaseName=ECLIPSELINK')
 cmo.setDriverName('org.apache.derby.jdbc.ClientXADataSource')
-set('PasswordEncrypted','%%DBPWD%%')
+set('PasswordEncrypted','@DBPWD@')
 
 cd('/JDBCSystemResources/EclipseLinkDS/JDBCResource/EclipseLinkDS/JDBCConnectionPoolParams/EclipseLinkDS')
 cmo.setTestTableName('SQL SELECT 1 FROM SYS.SYSTABLES\r\n\r\n')
@@ -39,7 +39,7 @@ cd('/JDBCSystemResources/EclipseLinkDS/JDBCResource/EclipseLinkDS/JDBCDriverPara
 cmo.createProperty('user')
 
 cd('/JDBCSystemResources/EclipseLinkDS/JDBCResource/EclipseLinkDS/JDBCDriverParams/EclipseLinkDS/Properties/EclipseLinkDS/Properties/user')
-cmo.setValue('%%DBUSR%%')
+cmo.setValue('@DBUSR@')
 
 cd('/JDBCSystemResources/EclipseLinkDS/JDBCResource/EclipseLinkDS/JDBCDriverParams/EclipseLinkDS/Properties/EclipseLinkDS')
 cmo.createProperty('portNumber')
@@ -63,7 +63,7 @@ cd('/JDBCSystemResources/EclipseLinkDS/JDBCResource/EclipseLinkDS/JDBCDataSource
 cmo.setGlobalTransactionsProtocol('TwoPhaseCommit')
 
 cd('/SystemResources/EclipseLinkDS')
-set('Targets',jarray.array([ObjectName('com.bea:Name=%%TARGET_SERVER%%,Type=Server')], ObjectName))
+set('Targets',jarray.array([ObjectName('com.bea:Name=@TARGET_SERVER@,Type=Server')], ObjectName))
 
 save()
 activate()
@@ -87,7 +87,7 @@ set('JNDINames',jarray.array([String('jdbc/ELNonJTADS')], String))
 cd('/JDBCSystemResources/ELNonJTADS/JDBCResource/ELNonJTADS/JDBCDriverParams/ELNonJTADS')
 cmo.setUrl('jdbc:derby://localhost:1527/ECLIPSELINK;create=true;ServerName=localhost;databaseName=ECLIPSELINK')
 cmo.setDriverName('org.apache.derby.jdbc.ClientDataSource')
-set('PasswordEncrypted','%%DBPWD%%')
+set('PasswordEncrypted','@DBPWD@')
 
 cd('/JDBCSystemResources/ELNonJTADS/JDBCResource/ELNonJTADS/JDBCConnectionPoolParams/ELNonJTADS')
 cmo.setTestTableName('SQL SELECT 1 FROM SYS.SYSTABLES\r\n\r\n')
@@ -96,7 +96,7 @@ cd('/JDBCSystemResources/ELNonJTADS/JDBCResource/ELNonJTADS/JDBCDriverParams/ELN
 cmo.createProperty('user')
 
 cd('/JDBCSystemResources/ELNonJTADS/JDBCResource/ELNonJTADS/JDBCDriverParams/ELNonJTADS/Properties/ELNonJTADS/Properties/user')
-cmo.setValue('%%DBUSR%%')
+cmo.setValue('@DBUSR@')
 
 cd('/JDBCSystemResources/ELNonJTADS/JDBCResource/ELNonJTADS/JDBCDriverParams/ELNonJTADS/Properties/ELNonJTADS')
 cmo.createProperty('portNumber')
@@ -120,7 +120,7 @@ cd('/JDBCSystemResources/ELNonJTADS/JDBCResource/ELNonJTADS/JDBCDataSourceParams
 cmo.setGlobalTransactionsProtocol('None')
 
 cd('/SystemResources/ELNonJTADS')
-set('Targets',jarray.array([ObjectName('com.bea:Name=%%TARGET_SERVER%%,Type=Server')], ObjectName))
+set('Targets',jarray.array([ObjectName('com.bea:Name=@TARGET_SERVER@,Type=Server')], ObjectName))
 
 save()
 activate()

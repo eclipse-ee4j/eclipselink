@@ -928,27 +928,27 @@
         <copy todir="${jpatest.basedir}/${build.dir}/${MODEL_NAME}">
             <fileset dir="${eclipselink.jpa.spring.test}/resource/jpa-spring" includes="**spring.xml"/>
         </copy>
-        <replace dir="${jpatest.basedir}/${build.dir}/${MODEL_NAME}" token='%%dbURL%%' value="${db.url}">
+        <replace dir="${jpatest.basedir}/${build.dir}/${MODEL_NAME}" token='@dbURL@' value="${db.url}">
             <include name="appContext.properties"/>
             <include name="META-INF/persistence.xml"/>
             <include name="**spring.xml"/>
         </replace>
-        <replace dir="${jpatest.basedir}/${build.dir}/${MODEL_NAME}" token='%%driverClass%%' value="${db.driver}">
+        <replace dir="${jpatest.basedir}/${build.dir}/${MODEL_NAME}" token='@driverClass@' value="${db.driver}">
             <include name="appContext.properties"/>
             <include name="META-INF/persistence.xml"/>
             <include name="**spring.xml"/>
         </replace>
-        <replace dir="${jpatest.basedir}/${build.dir}/${MODEL_NAME}" token='%%dbUser%%' value="${db.user}">
+        <replace dir="${jpatest.basedir}/${build.dir}/${MODEL_NAME}" token='@dbUser@' value="${db.user}">
             <include name="appContext.properties"/>
             <include name="META-INF/persistence.xml"/>
             <include name="**spring.xml"/>
         </replace>
-        <replace dir="${jpatest.basedir}/${build.dir}/${MODEL_NAME}" token='%%dbPassword%%' value="${db.pwd}">
+        <replace dir="${jpatest.basedir}/${build.dir}/${MODEL_NAME}" token='@dbPassword@' value="${db.pwd}">
             <include name="appContext.properties"/>
             <include name="**/persistence.xml"/>
             <include name="**spring.xml"/>
         </replace>
-        <replace dir="${jpatest.basedir}/${build.dir}/${MODEL_NAME}" token='%%dbPlatform%%' value="${db.platform}">
+        <replace dir="${jpatest.basedir}/${build.dir}/${MODEL_NAME}" token='@dbPlatform@' value="${db.platform}">
             <include name="appContext.properties"/>
             <include name="**/persistence.xml"/>
             <include name="**spring.xml"/>
@@ -2849,7 +2849,7 @@
 
     <target name="prepare-server-sessionbeans">
         <copy file="${jpatest.basedir}/src/org/eclipse/persistence/testing/framework/server/TestRunnerBean.java" tofile="${jpatest.basedir}/src/org/eclipse/persistence/testing/framework/server/TestRunnerBean.java_original"/>
-        <replace file="${jpatest.basedir}/${src.dir}/org/eclipse/persistence/testing/framework/server/TestRunnerBean.java" token='%%puName%%' value="${PERSISTENCE_UNIT_NAME}"/>
+        <replace file="${jpatest.basedir}/${src.dir}/org/eclipse/persistence/testing/framework/server/TestRunnerBean.java" token='@puName@' value="${PERSISTENCE_UNIT_NAME}"/>
         <antcall target="prepare-multiple-persistence-units-sessionbeans" inheritRefs="true"/>
     </target>
 
@@ -3106,34 +3106,34 @@
             </fileset>
         </copy>
 
-        <replace dir="${jpatest.basedir}/stage/META-INF" token='%%server-platform-class%%' value="${server.platform.class}">
+        <replace dir="${jpatest.basedir}/stage/META-INF" token='@server-platform-class@' value="${server.platform.class}">
             <include name="*.xml"/>
         </replace>
-        <replace dir="${jpatest.basedir}/stage/META-INF" token='%%server-platform%%' value="${server.platform}">
+        <replace dir="${jpatest.basedir}/stage/META-INF" token='@server-platform@' value="${server.platform}">
             <include name="*.xml"/>
         </replace>
-        <replace dir="${jpatest.basedir}/stage/META-INF" token='%%default%%' value="${PERSISTENCE_UNIT_NAME}">
+        <replace dir="${jpatest.basedir}/stage/META-INF" token='@default@' value="${PERSISTENCE_UNIT_NAME}">
             <include name="*.xml"/>
         </replace>
-        <replace dir="${jpatest.basedir}/stage/META-INF" token='%%session-data-source-name%%' value="${SESSION_DS_NAME}">
+        <replace dir="${jpatest.basedir}/stage/META-INF" token='@session-data-source-name@' value="${SESSION_DS_NAME}">
             <include name="*.xml"/>
         </replace>
-        <replace dir="${jpatest.basedir}/stage/META-INF" token='%%server-weaving%%' value="${server.weaving}">
+        <replace dir="${jpatest.basedir}/stage/META-INF" token='@server-weaving@' value="${server.weaving}">
             <include name="*.xml"/>
         </replace>
-        <replace dir="${jpatest.basedir}/stage/META-INF" token='%%database-platform%%' value="${db.platform}">
+        <replace dir="${jpatest.basedir}/stage/META-INF" token='@database-platform@' value="${db.platform}">
             <include name="*.xml"/>
         </replace>
-        <replace dir="${jpatest.basedir}/stage/META-INF" token='%%database2-platform%%' value="${db2.platform}">
+        <replace dir="${jpatest.basedir}/stage/META-INF" token='@database2-platform@' value="${db2.platform}">
             <include name="*.xml"/>
         </replace>
-        <replace dir="${jpatest.basedir}/stage/META-INF" token='%%database3-platform%%' value="${db3.platform}">
+        <replace dir="${jpatest.basedir}/stage/META-INF" token='@database3-platform@' value="${db3.platform}">
             <include name="*.xml"/>
         </replace>
-        <replace dir="${jpatest.basedir}/stage/META-INF" token='%%dbUser%%' value="${db.user}">
+        <replace dir="${jpatest.basedir}/stage/META-INF" token='@dbUser@' value="${db.user}">
             <include name="*.xml"/>
         </replace>
-        <replace dir="${jpatest.basedir}/stage/META-INF" token='%%proxyUser%%' value="${oracle.proxy.user}">
+        <replace dir="${jpatest.basedir}/stage/META-INF" token='@proxyUser@' value="${oracle.proxy.user}">
             <include name="*.xml"/>
         </replace>
         <!-- Replace datasource type, name and transaction type -->
@@ -3172,22 +3172,22 @@
     <target name="replace-datasource-type" depends="replace-jta-datasource,replace-nonjta-datasource"/>
 
     <target name="replace-jta-datasource" unless="is.nonjta.datasource">
-        <replace dir="${jpatest.basedir}/stage/META-INF" token='%%data-source-name%%' value="${DS_NAME}">
+        <replace dir="${jpatest.basedir}/stage/META-INF" token='@data-source-name@' value="${DS_NAME}">
             <include name="*.xml"/>
         </replace>
-        <replace dir="${jpatest.basedir}/stage/META-INF" token='%%data-source2-name%%' value="${DS2_NAME}">
+        <replace dir="${jpatest.basedir}/stage/META-INF" token='@data-source2-name@' value="${DS2_NAME}">
             <include name="*.xml"/>
         </replace>
-        <replace dir="${jpatest.basedir}/stage/META-INF" token='%%data-source3-name%%' value="${DS3_NAME}">
+        <replace dir="${jpatest.basedir}/stage/META-INF" token='@data-source3-name@' value="${DS3_NAME}">
             <include name="*.xml"/>
         </replace>
-        <replace dir="${jpatest.basedir}/stage/META-INF" token='%%transaction-type%%' value="JTA">
+        <replace dir="${jpatest.basedir}/stage/META-INF" token='@transaction-type@' value="JTA">
             <include name="*.xml"/>
         </replace>
-        <replace dir="${jpatest.basedir}/stage/META-INF" token='%%datasource-type%%' value="jta-data-source">
+        <replace dir="${jpatest.basedir}/stage/META-INF" token='@datasource-type@' value="jta-data-source">
             <include name="*.xml"/>
         </replace>
-        <replace dir="${jpatest.basedir}/stage/META-INF" token='%%NONJTA_DS_NAME%%' value="${NONJTA_DS_NAME}">
+        <replace dir="${jpatest.basedir}/stage/META-INF" token='@NONJTA_DS_NAME@' value="${NONJTA_DS_NAME}">
             <include name="*.xml"/>
         </replace>
     </target>
@@ -3210,19 +3210,19 @@
     </target>
 
     <target name="replace-nonjta-datasource" if="is.nonjta.datasource">
-        <replace dir="${jpatest.basedir}/stage/META-INF" token='%%data-source-name%%' value="${NONJTA_DS_NAME}">
+        <replace dir="${jpatest.basedir}/stage/META-INF" token='@data-source-name@' value="${NONJTA_DS_NAME}">
             <include name="*.xml"/>
         </replace>
-        <replace dir="${jpatest.basedir}/stage/META-INF" token='%%data-source2-name%%' value="${NONJTA_DS2_NAME}">
+        <replace dir="${jpatest.basedir}/stage/META-INF" token='@data-source2-name@' value="${NONJTA_DS2_NAME}">
             <include name="*.xml"/>
         </replace>
-        <replace dir="${jpatest.basedir}/stage/META-INF" token='%%data-source3-name%%' value="${NONJTA_DS3_NAME}">
+        <replace dir="${jpatest.basedir}/stage/META-INF" token='@data-source3-name@' value="${NONJTA_DS3_NAME}">
             <include name="*.xml"/>
         </replace>
-        <replace dir="${jpatest.basedir}/stage/META-INF" token='%%transaction-type%%' value="RESOURCE_LOCAL">
+        <replace dir="${jpatest.basedir}/stage/META-INF" token='@transaction-type@' value="RESOURCE_LOCAL">
             <include name="*.xml"/>
         </replace>
-        <replace dir="${jpatest.basedir}/stage/META-INF" token='%%datasource-type%%' value="non-jta-data-source">
+        <replace dir="${jpatest.basedir}/stage/META-INF" token='@datasource-type@' value="non-jta-data-source">
             <include name="*.xml"/>
         </replace>
     </target>
@@ -3375,7 +3375,7 @@
     <target name="server-build-ear-grid" if="is.grid.testing" depends="set-server-properties">
         <copy overwrite="true" file="./resource/server/application.xml" todir="${build.dir}/META-INF"/>
         <copy overwrite="true" file="./resource/${MODEL_NAME}/server/grid/weblogic-application.xml" todir="${build.dir}/META-INF"/>
-        <replace dir="${build.dir}/META-INF" token="%%modelname%%" value="${MODEL_NAME}">
+        <replace dir="${build.dir}/META-INF" token="@modelname@" value="${MODEL_NAME}">
             <include name="*.xml"/>
         </replace>
         <copy overwrite="true" file="./resource/${MODEL_NAME}/server/grid/grid.gar" todir="${build.dir}"/>
@@ -3394,7 +3394,7 @@
             <fileset dir="${jpatest.2.common.plugins.dir}" includes="org.eclipse.persistence.extension_*.jar"/>
         </copy>
         <copy overwrite="true" file="./resource/${MODEL_NAME}/server/kryo/META-INF/weblogic-application.xml" todir="${build.dir}/META-INF"/>
-        <replace dir="${build.dir}/META-INF" token="%%modelname%%" value="${MODEL_NAME}">
+        <replace dir="${build.dir}/META-INF" token="@modelname@" value="${MODEL_NAME}">
             <include name="*.xml"/>
         </replace>
         <ear destfile="${jpatest.basedir}/${build.dir}/${EAR_NAME}.ear" appxml="${build.dir}/META-INF/application.xml">
@@ -3429,7 +3429,7 @@
     <!-- Build server test ear. -->
     <target name="server-build-ear" unless="is.jpars.testing" depends="set-server-properties">
         <copy overwrite="true" file="./resource/server/application.xml" todir="${build.dir}/META-INF"/>
-        <replace dir="${build.dir}/META-INF" token='%%modelname%%' value="${MODEL_NAME}">
+        <replace dir="${build.dir}/META-INF" token='@modelname@' value="${MODEL_NAME}">
             <include name="*.xml"/>
         </replace>
         <ear destfile="${jpatest.basedir}/${build.dir}/${EAR_NAME}.ear" appxml="${build.dir}/META-INF/application.xml">
@@ -3474,7 +3474,7 @@
 
     <target name="server-build-composite-advanced-ear">
         <copy overwrite="true" file="./resource/server/application.xml" todir="${build.dir}/META-INF"/>
-        <replace dir="${build.dir}/META-INF" token='%%modelname%%' value="eclipselink-composite-advanced-model">
+        <replace dir="${build.dir}/META-INF" token='@modelname@' value="eclipselink-composite-advanced-model">
             <include name="*.xml"/>
         </replace>
         <ear destfile="${jpatest.basedir}/${build.dir}/${EAR_NAME}.ear" appxml="${build.dir}/META-INF/application.xml">
@@ -3518,7 +3518,7 @@
 
     <target name="server-build-xml-composite-advanced-ear">
         <copy overwrite="true" file="./resource/server/application.xml" todir="${build.dir}/META-INF"/>
-        <replace dir="${build.dir}/META-INF" token='%%modelname%%' value="eclipselink-xml-composite-advanced-model">
+        <replace dir="${build.dir}/META-INF" token='@modelname@' value="eclipselink-xml-composite-advanced-model">
             <include name="*.xml"/>
         </replace>
         <ear destfile="${jpatest.basedir}/${build.dir}/${EAR_NAME}.ear" appxml="${build.dir}/META-INF/application.xml">
@@ -3569,7 +3569,7 @@
 
     <target name="server-build-xml-extended-composite-advanced-ear">
         <copy overwrite="true" file="./resource/server/application.xml" todir="${build.dir}/META-INF"/>
-        <replace dir="${build.dir}/META-INF" token='%%modelname%%' value="eclipselink-xml-extended-composite-advanced-model">
+        <replace dir="${build.dir}/META-INF" token='@modelname@' value="eclipselink-xml-extended-composite-advanced-model">
             <include name="*.xml"/>
         </replace>
         <ear destfile="${jpatest.basedir}/${build.dir}/${EAR_NAME}.ear" appxml="${build.dir}/META-INF/application.xml">

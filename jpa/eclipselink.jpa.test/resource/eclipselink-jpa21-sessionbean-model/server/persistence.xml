@@ -3,9 +3,9 @@
   xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence
     http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
   version="2.1">
-    <persistence-unit name="%%default%%" transaction-type="%%transaction-type%%">
+    <persistence-unit name="@default@" transaction-type="@transaction-type@">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <%%datasource-type%%>%%data-source-name%%</%%datasource-type%%>
+        <@datasource-type@>@data-source-name@</@datasource-type@>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
     </persistence-unit>
 </persistence>
