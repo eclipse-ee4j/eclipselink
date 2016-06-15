@@ -13,6 +13,7 @@
 
 package org.eclipse.persistence.json.bind.internal.serializer;
 
+import org.eclipse.persistence.json.bind.internal.ProcessingContext;
 import org.eclipse.persistence.json.bind.model.PropertyModel;
 import org.eclipse.persistence.json.bind.model.SerializerBindingModel;
 
@@ -31,13 +32,6 @@ import java.util.Locale;
 
 public abstract class AbstractDateTimeSerializer<T extends TemporalAccessor> extends AbstractValueTypeSerializer<T> {
 
-    private JsonbDateFormatter getDateFormatter() {
-        if (model == null || model.getCustomization() == null) {
-            return JsonbDateFormatter.getDefault();
-        }
-
-        return model.getCustomization().getDateTimeFormatter();
-    }
 
     /**
      * Construct serializer with its class.
@@ -56,11 +50,11 @@ public abstract class AbstractDateTimeSerializer<T extends TemporalAccessor> ext
      */
     @Override
     public void serialize(T obj, JsonGenerator generator, SerializationContext ctx) {
+        final JsonbDateFormatter formatter = ProcessingContext.getJsonbContext().getComponentMatcher().getDateFormatter(model);
         if (model instanceof PropertyModel) {
-            generator.write(((PropertyModel)model).getPropertyName(), toJson(obj,
-                    getDateFormatter()));
+            generator.write(((PropertyModel)model).getPropertyName(), toJson(obj, formatter));
         } else {
-            generator.write(toJson(obj, getDateFormatter()));
+            generator.write(toJson(obj, formatter));
         }
     }
 
@@ -70,7 +64,7 @@ public abstract class AbstractDateTimeSerializer<T extends TemporalAccessor> ext
         } else if (formatter.getDateTimeFormatter() != null) {
             return formatter.getDateTimeFormatter().format(object);
         }
-        return formatDefault(object, formatter.getLocale());
+        return formatDefault(object, ProcessingContext.getJsonbContext().getLocale(formatter.getLocale()));
     }
 
     /**

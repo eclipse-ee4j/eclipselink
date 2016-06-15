@@ -21,7 +21,7 @@ import java.lang.reflect.Type;
 /**
  * @author David Král
  */
-public class DoubleTypeDeserializer extends AbstractValueTypeDeserializer<Double> {
+public class DoubleTypeDeserializer extends AbstractNumberDeserializer<Double> {
 
     protected static final String POSITIVE_INFINITY = "POSITIVE_INFINITY";
     protected static final String NEGATIVE_INFINITY = "NEGATIVE_INFINITY";
@@ -41,6 +41,7 @@ public class DoubleTypeDeserializer extends AbstractValueTypeDeserializer<Double
             case NEGATIVE_INFINITY:
                 return Double.NEGATIVE_INFINITY;
         }
-        return Double.parseDouble(jsonValue);
+        return deserializeForamtted(jsonValue, false).map(num->Double.parseDouble(num.toString()))
+                .orElseGet(()->Double.parseDouble(jsonValue));
     }
 }

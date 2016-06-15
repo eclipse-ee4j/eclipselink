@@ -36,6 +36,7 @@ public class CalendarTypeSerializer extends AbstractValueTypeSerializer<Calendar
 
     private final Calendar calendarTemplate;
 
+
     public CalendarTypeSerializer(SerializerBindingModel model) {
         super(Calendar.class, model);
         calendarTemplate = Calendar.getInstance();
@@ -48,7 +49,7 @@ public class CalendarTypeSerializer extends AbstractValueTypeSerializer<Calendar
             return String.valueOf(object.getTime().getTime());
         }
 
-        Locale locale = formatter.getLocale();
+        Locale locale = ProcessingContext.getJsonbContext().getLocale(formatter.getLocale());
         if (JsonbDateFormat.DEFAULT_FORMAT.equals(formatter.getFormat())) {
             final Optional<Object> strictJson =
                     ProcessingContext.getJsonbContext().getConfig().getProperty(JsonbConfig.STRICT_IJSON);
@@ -71,21 +72,13 @@ public class CalendarTypeSerializer extends AbstractValueTypeSerializer<Calendar
         return custom.format(object.getTime());
     }
 
-    private JsonbDateFormatter getDateFormatter() {
-        if (model == null || model.getCustomization() == null) {
-            return JsonbDateFormatter.getDefault();
-        }
-
-        return model.getCustomization().getDateTimeFormatter();
-    }
-
     @Override
     public void serialize(Calendar obj, JsonGenerator generator, SerializationContext ctx) {
+        final JsonbDateFormatter formatter = ProcessingContext.getJsonbContext().getComponentMatcher().getDateFormatter(model);
         if (model instanceof PropertyModel) {
-            generator.write(((PropertyModel)model).getPropertyName(), toJson(obj,
-                    getDateFormatter()));
+            generator.write(((PropertyModel)model).getPropertyName(), toJson(obj, formatter));
         } else {
-            generator.write(toJson(obj, getDateFormatter()));
+            generator.write(toJson(obj, formatter));
         }
     }
 

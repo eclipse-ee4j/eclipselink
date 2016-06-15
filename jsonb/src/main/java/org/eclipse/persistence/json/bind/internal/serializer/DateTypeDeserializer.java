@@ -13,6 +13,7 @@
 
 package org.eclipse.persistence.json.bind.internal.serializer;
 
+import org.eclipse.persistence.json.bind.internal.ProcessingContext;
 import org.eclipse.persistence.json.bind.internal.Unmarshaller;
 import org.eclipse.persistence.json.bind.internal.properties.MessageKeys;
 import org.eclipse.persistence.json.bind.internal.properties.Messages;
@@ -31,30 +32,23 @@ import java.util.Date;
  */
 public class DateTypeDeserializer extends AbstractValueTypeDeserializer<Date> {
 
+
     public DateTypeDeserializer(JsonBindingModel model) {
         super(Date.class, model);
     }
 
     private DateFormat getDateFormat(JsonbDateFormatter formatter) {
         if (JsonbDateFormat.DEFAULT_FORMAT.equals(formatter.getFormat())) {
-            return new SimpleDateFormat(JsonbDateFormatter.ISO_8601_DATE_TIME_FORMAT, formatter.getLocale());
+            return new SimpleDateFormat(JsonbDateFormatter.ISO_8601_DATE_TIME_FORMAT, ProcessingContext.getJsonbContext().getLocale(formatter.getLocale()));
         }
-        return new SimpleDateFormat(formatter.getFormat(), formatter.getLocale());
-    }
-
-    private JsonbDateFormatter getDateFormatter() {
-        if (model == null || model.getCustomization() == null) {
-            return JsonbDateFormatter.getDefault();
-        }
-
-        return model.getCustomization().getDateTimeFormatter();
+        return new SimpleDateFormat(formatter.getFormat(), ProcessingContext.getJsonbContext().getLocale(formatter.getLocale()));
     }
 
 
     @Override
     protected Date deserialize(String jsonValue, Unmarshaller unmarshaller, Type rtType) {
 
-        final JsonbDateFormatter dateFormatter = getDateFormatter();
+        final JsonbDateFormatter dateFormatter = ProcessingContext.getJsonbContext().getComponentMatcher().getDateFormatter(model);
         if(JsonbDateFormat.TIME_IN_MILLIS.equals(dateFormatter.getFormat())) {
             return new Date(Long.parseLong(jsonValue));
         }

@@ -13,6 +13,7 @@
 
 package org.eclipse.persistence.json.bind.internal.serializer;
 
+import org.eclipse.persistence.json.bind.internal.ProcessingContext;
 import org.eclipse.persistence.json.bind.internal.Unmarshaller;
 import org.eclipse.persistence.json.bind.model.JsonBindingModel;
 
@@ -31,27 +32,20 @@ import java.util.Locale;
 
 public abstract class AbstractDateTimeDeserializer<T extends TemporalAccessor> extends AbstractValueTypeDeserializer<T> {
 
+
     public AbstractDateTimeDeserializer(Class<T> clazz, JsonBindingModel model) {
         super(clazz, model);
     }
 
     @Override
     public T deserialize(String jsonValue, Unmarshaller unmarshaller, Type rtType) {
-        final JsonbDateFormatter formatter = getDateFormatter();
+        final JsonbDateFormatter formatter = ProcessingContext.getJsonbContext().getComponentMatcher().getDateFormatter(model);
         if (JsonbDateFormat.TIME_IN_MILLIS.equals(formatter.getFormat())) {
             return fromInstant(Instant.ofEpochMilli(Long.parseLong(jsonValue)));
         } else if (formatter.getDateTimeFormatter() != null) {
             return parseWithFormatter(jsonValue, formatter.getDateTimeFormatter());
         }
-        return parseDefault(jsonValue, formatter.getLocale());
-    }
-
-    private JsonbDateFormatter getDateFormatter() {
-        if (model == null || model.getCustomization() == null) {
-            return JsonbDateFormatter.getDefault();
-        }
-
-        return model.getCustomization().getDateTimeFormatter();
+        return parseDefault(jsonValue, ProcessingContext.getJsonbContext().getLocale(formatter.getLocale()));
     }
 
     /**

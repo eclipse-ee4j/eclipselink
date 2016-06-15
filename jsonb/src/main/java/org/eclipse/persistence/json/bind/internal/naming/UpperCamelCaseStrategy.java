@@ -6,34 +6,31 @@
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
- * <p>
+ *
  * Contributors:
  * Roman Grigoriadi
  ******************************************************************************/
 
 package org.eclipse.persistence.json.bind.internal.naming;
 
+import javax.json.bind.config.PropertyNamingStrategy;
+import java.util.Objects;
+
 /**
- * Interface for property naming conversion implementations.
- * TODO subject to change, default javax.json.bind.config.PropertyNamingStrategy does not have reverse conversion method.
+ * Transforms first letter to upper case.
  *
  * @author Roman Grigoriadi
  */
-public interface PropertyNamingStrategy {
+public class UpperCamelCaseStrategy implements PropertyNamingStrategy {
 
-    /**
-     * Convert from model property name to json name.
-     *
-     * @param modelPropertyName name of a class property, customized or default, not null
-     * @return name of a property to marshall into json
-     */
-    String toJsonPropertyName(String modelPropertyName);
+    @Override
+    public String translateName(String propertyName) {
+        Objects.requireNonNull(propertyName);
+        final char first = Character.toUpperCase(propertyName.charAt(0));
+        if (propertyName.length() == 1) {
+            return String.valueOf(first);
+        }
+        return first + propertyName.substring(1, propertyName.length());
+    }
 
-    /**
-     * Converts from json property name to class property name
-     *
-     * @param jsonPropertyName property name as it appesars in json
-     * @return name of a class property
-     */
-    String toModelPropertyName(String jsonPropertyName);
 }

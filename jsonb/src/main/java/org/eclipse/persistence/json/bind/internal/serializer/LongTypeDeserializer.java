@@ -21,7 +21,7 @@ import java.lang.reflect.Type;
 /**
  * @author David Král
  */
-public class LongTypeDeserializer extends AbstractValueTypeDeserializer<Long> {
+public class LongTypeDeserializer extends AbstractNumberDeserializer<Long> {
 
     public LongTypeDeserializer(JsonBindingModel model) {
         super(Long.class, model);
@@ -30,6 +30,7 @@ public class LongTypeDeserializer extends AbstractValueTypeDeserializer<Long> {
 
     @Override
     protected Long deserialize(String jsonValue, Unmarshaller unmarshaller, Type rtType) {
-        return Long.parseLong(jsonValue);
+        return deserializeForamtted(jsonValue, true).map(num->Long.parseLong(num.toString()))
+                .orElseGet(()->Long.parseLong(jsonValue));
     }
 }

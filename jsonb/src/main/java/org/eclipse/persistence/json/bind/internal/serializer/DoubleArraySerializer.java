@@ -13,7 +13,6 @@
 
 package org.eclipse.persistence.json.bind.internal.serializer;
 
-import javax.json.bind.serializer.JsonbSerializer;
 import javax.json.bind.serializer.SerializationContext;
 import javax.json.stream.JsonGenerator;
 
@@ -30,9 +29,7 @@ public class DoubleArraySerializer extends AbstractArraySerializer<double[]> {
     @Override
     protected void serializeInternal(double[] arr, JsonGenerator generator, SerializationContext ctx) {
         for (double obj : arr) {
-            final JsonbSerializer<?> serializer = DefaultSerializers.getInstance()
-                    .findValueSerializerProvider(double.class).get().provideSerializer(containerModel);
-            serializerCaptor(serializer, obj, generator, ctx);
+            generator.write(obj);
         }
     }
 }

@@ -33,7 +33,7 @@ import java.util.stream.Stream;
  * <p>With a Dog and Cat types which extend Animal, adapter can be configured like this:</p>
  *
  * <pre>
- * class AnimalAdapter extends PolymorphismAdapter<Animal> {}
+ * class AnimalAdapter extends PolymorphismAdapter&lt;Animal&gt; {}
  * JsonbConfig config ...
  * config.withAdapters(new AnimalAdapter(Dog.class, Cat.class));
  * </pre>

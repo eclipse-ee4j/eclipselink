@@ -20,9 +20,10 @@ import java.lang.reflect.Type;
 import java.math.BigDecimal;
 
 /**
+ * Deserialize bigdecimal.
  * @author David Král
  */
-public class BigDecimalTypeDeserializer extends AbstractValueTypeDeserializer<BigDecimal> {
+public class BigDecimalTypeDeserializer extends AbstractNumberDeserializer<BigDecimal> {
 
     BigDecimalTypeDeserializer(JsonBindingModel model) {
         super(BigDecimal.class, model);
@@ -30,6 +31,7 @@ public class BigDecimalTypeDeserializer extends AbstractValueTypeDeserializer<Bi
 
     @Override
     public BigDecimal deserialize(String jsonValue, Unmarshaller unmarshaller, Type rtType) {
-        return new BigDecimal(jsonValue);
+        return deserializeForamtted(jsonValue, false).map(num->new BigDecimal(num.toString()))
+                .orElseGet(()->new BigDecimal(jsonValue));
     }
 }

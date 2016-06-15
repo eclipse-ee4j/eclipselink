@@ -29,6 +29,7 @@ import org.junit.Test;
 import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;
 import javax.json.bind.JsonbConfig;
+import javax.json.bind.annotation.JsonbDateFormat;
 import javax.json.bind.config.PropertyVisibilityStrategy;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -236,7 +237,7 @@ public class DatesTest {
     }
 
     @Test
-    public void testMarshalLocalDateTime() {
+    public void testLocalDateTime() {
         final LocalDateTime dateTime = LocalDateTime.of(2015, 2, 16, 13, 21);
         LocalDateTimePojo pojo = new LocalDateTimePojo(dateTime);
 
@@ -247,6 +248,38 @@ public class DatesTest {
         assertEquals(dateTime, result.defaultFormatted);
         assertEquals(dateTime, result.millisFormatted);
         assertEquals(dateTime, result.customLocalDate);
+    }
+
+    @Test
+    public void testLocalDateTimeWithoutConfig() {
+        final LocalDateTime dateTime = LocalDateTime.of(2015, 2, 16, 13, 21);
+        ScalarValueWrapper<LocalDateTime> pojo = new ScalarValueWrapper<>();
+        pojo.setValue(dateTime);
+
+        String expected = "{\"value\":\"2015-02-16T13:21:00\"}";
+        assertEquals(expected, jsonb.toJson(pojo));
+
+        ScalarValueWrapper<LocalDateTime> result = jsonb.fromJson(expected, new ScalarValueWrapper<LocalDateTime>() {}.getClass());
+        assertEquals(dateTime, result.getValue());
+    }
+
+    @Test
+    public void testDifferentConfigsLocalDateTime() {
+        final LocalDateTime dateTime = LocalDateTime.of(2015, 2, 16, 13, 21);
+        ScalarValueWrapper<LocalDateTime> pojo = new ScalarValueWrapper<>();
+        pojo.setValue(dateTime);
+
+        String expected = "{\"value\":\"2015-02-16T13:21:00\"}";
+        assertEquals(expected, jsonb.toJson(pojo));
+
+        Jsonb jsonb1 = JsonbBuilder.create(new JsonbConfig().withDateFormat(JsonbDateFormat.TIME_IN_MILLIS, Locale.FRENCH));
+        assertEquals("{\"value\":\"1424089260000\"}", jsonb1.toJson(pojo));
+
+        ScalarValueWrapper<LocalDateTime> result = jsonb.fromJson(expected, new ScalarValueWrapper<LocalDateTime>() {}.getClass());
+        assertEquals(dateTime, result.getValue());
+
+        result = jsonb1.fromJson("{\"value\":\"1424089260000\"}", new ScalarValueWrapper<LocalDateTime>() {}.getClass());
+        assertEquals(dateTime, result.getValue());
     }
 
     @Test

@@ -15,7 +15,6 @@ package org.eclipse.persistence.json.bind.internal.serializer;
 
 import javax.json.bind.annotation.JsonbDateFormat;
 import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 
 /**
  * Formatter wrapper for different types of dates.
@@ -32,16 +31,26 @@ public class JsonbDateFormatter {
 
     private final String format;
 
-    private final Locale locale;
+    private final String locale;
+
+    /**
+     * Construct with cached {@link DateTimeFormatter}, format and locale.
+     * @param dateTimeFormatter
+     */
+    public JsonbDateFormatter(DateTimeFormatter dateTimeFormatter, String format, String locale) {
+        this.dateTimeFormatter = dateTimeFormatter;
+        this.format = format;
+        this.locale = locale;
+    }
 
     /**
      * Construct with cached {@link DateTimeFormatter}.
      * @param dateTimeFormatter
      */
-    public JsonbDateFormatter(DateTimeFormatter dateTimeFormatter, String format, Locale locale) {
+    public JsonbDateFormatter(DateTimeFormatter dateTimeFormatter) {
         this.dateTimeFormatter = dateTimeFormatter;
-        this.format = format;
-        this.locale = locale;
+        this.format = null;
+        this.locale = null;
     }
 
     /**
@@ -49,7 +58,7 @@ public class JsonbDateFormatter {
      * @param format formatter format
      * @param locale locale
      */
-    public JsonbDateFormatter(String format, Locale locale) {
+    public JsonbDateFormatter(String format, String locale) {
         this.format = format;
         this.locale = locale;
         this.dateTimeFormatter = null;
@@ -77,7 +86,7 @@ public class JsonbDateFormatter {
      * Locale to use with formatter.
      * @return locale
      */
-    public Locale getLocale() {
+    public String getLocale() {
         return locale;
     }
 
@@ -87,6 +96,6 @@ public class JsonbDateFormatter {
      * @return default date formatter
      */
     public static JsonbDateFormatter getDefault() {
-        return new JsonbDateFormatter(JsonbDateFormat.DEFAULT_FORMAT, Locale.getDefault());
+        return new JsonbDateFormatter(JsonbDateFormat.DEFAULT_FORMAT, JsonbDateFormat.DEFAULT_LOCALE);
     }
 }

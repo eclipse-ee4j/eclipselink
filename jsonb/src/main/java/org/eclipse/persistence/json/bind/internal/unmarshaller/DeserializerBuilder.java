@@ -29,6 +29,7 @@ import org.eclipse.persistence.json.bind.model.TypeWrapper;
 
 import javax.json.JsonStructure;
 import javax.json.bind.JsonbException;
+import javax.json.bind.config.BinaryDataStrategy;
 import javax.json.bind.serializer.JsonbDeserializer;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Type;
@@ -80,6 +81,17 @@ public class DeserializerBuilder extends AbstractSerializerBuilder<DeserializerB
             return ReflectionUtils.getRawType(getRuntimeType());
         });
         rawType = rawTypeOptional.orElse(rawType);
+
+        //In case of Base64 json value would be string and recognition by JsonValueType would not work
+        if (isByteArray(rawType)) {
+            String strategy = ProcessingContext.getJsonbContext().getBinaryDataStrategy();
+            switch (strategy) {
+                case BinaryDataStrategy.BYTE:
+                    return new ByteArrayDeserializer(this);
+                default:
+                    return new ByteArrayBase64Deserializer(getModel());
+            }
+        }
 
         //Third deserializer is a supported value type that serializes to JSON_VALUE
         if (isJsonValueType()) {
@@ -197,4 +209,7 @@ public class DeserializerBuilder extends AbstractSerializerBuilder<DeserializerB
         }
     }
 
+    private boolean isByteArray(Class<?> rawType) {
+        return rawType.isArray() && rawType.getComponentType() == Byte.TYPE;
+    }
 }

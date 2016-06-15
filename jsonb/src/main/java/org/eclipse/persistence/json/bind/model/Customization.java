@@ -17,8 +17,7 @@ import org.eclipse.persistence.json.bind.internal.adapter.AdapterBinding;
 import org.eclipse.persistence.json.bind.internal.adapter.DeserializerBinding;
 import org.eclipse.persistence.json.bind.internal.adapter.SerializerBinding;
 import org.eclipse.persistence.json.bind.internal.serializer.JsonbDateFormatter;
-
-import java.text.NumberFormat;
+import org.eclipse.persistence.json.bind.internal.serializer.JsonbNumberFormatter;
 
 /**
  * Customization configuration for class or field.
@@ -40,7 +39,7 @@ public abstract class Customization {
 
     private final JsonbDateFormatter dateTimeFormatter;
 
-    private final NumberFormat numberFormat;
+    private final JsonbNumberFormatter numberFormat;
 
 
     /**
@@ -88,7 +87,7 @@ public abstract class Customization {
      * Number format for formatting numbers.
      * @return number format
      */
-    public NumberFormat getNumberFormat() {
+    public JsonbNumberFormatter getNumberFormat() {
         return numberFormat;
     }
 

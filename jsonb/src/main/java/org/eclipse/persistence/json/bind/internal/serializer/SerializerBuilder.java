@@ -23,6 +23,7 @@ import org.eclipse.persistence.json.bind.model.SerializerBindingModel;
 
 import javax.json.JsonObject;
 import javax.json.JsonValue;
+import javax.json.bind.config.BinaryDataStrategy;
 import javax.json.bind.serializer.JsonbSerializer;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Type;
@@ -61,6 +62,16 @@ public class SerializerBuilder extends AbstractSerializerBuilder<SerializerBuild
             return new AdaptedObjectSerializer<>(this, adapterInfoOptional.get());
         }
 
+        if (isByteArray(objectClass)) {
+            String strategy = ProcessingContext.getJsonbContext().getBinaryDataStrategy();
+            switch (strategy) {
+                case BinaryDataStrategy.BYTE:
+                    return new ByteArraySerializer(this);
+                default:
+                    return new ByteArrayBase64Serializer(byte[].class, getModel());
+            }
+        }
+
         final Optional<AbstractValueTypeSerializer<?>> supportedTypeSerializer = getSupportedTypeSerializer(objectClass);
         if (supportedTypeSerializer.isPresent()) {
             return supportedTypeSerializer.get();
@@ -88,6 +99,10 @@ public class SerializerBuilder extends AbstractSerializerBuilder<SerializerBuild
             return new ObjectSerializer<>(this);
         }
 
+    }
+
+    private boolean isByteArray(Class<?> rawType) {
+        return rawType.isArray() && rawType.getComponentType() == Byte.TYPE;
     }
 
     /**

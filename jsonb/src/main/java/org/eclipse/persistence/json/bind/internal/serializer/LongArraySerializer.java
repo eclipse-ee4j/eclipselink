@@ -13,7 +13,6 @@
 
 package org.eclipse.persistence.json.bind.internal.serializer;
 
-import javax.json.bind.serializer.JsonbSerializer;
 import javax.json.bind.serializer.SerializationContext;
 import javax.json.stream.JsonGenerator;
 
@@ -30,9 +29,7 @@ public class LongArraySerializer extends AbstractArraySerializer<long[]> {
     @Override
     protected void serializeInternal(long[] arr, JsonGenerator generator, SerializationContext ctx) {
         for (long obj : arr) {
-            final JsonbSerializer<?> serializer = DefaultSerializers.getInstance()
-                    .findValueSerializerProvider(long.class).get().provideSerializer(containerModel);
-            serializerCaptor(serializer, obj, generator, ctx);
+            generator.write(obj);
         }
     }
 }

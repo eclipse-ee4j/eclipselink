@@ -19,9 +19,10 @@ import org.eclipse.persistence.json.bind.model.JsonBindingModel;
 import java.lang.reflect.Type;
 
 /**
+ * Deserialize {@link Integer}
  * @author Roman Grigoriadi
  */
-public class IntegerTypeDeserializer extends AbstractValueTypeDeserializer<Integer> {
+public class IntegerTypeDeserializer extends AbstractNumberDeserializer<Integer> {
 
     public IntegerTypeDeserializer(JsonBindingModel model) {
         super(Integer.class, model);
@@ -29,6 +30,7 @@ public class IntegerTypeDeserializer extends AbstractValueTypeDeserializer<Integ
 
     @Override
     protected Integer deserialize(String jsonValue, Unmarshaller unmarshaller, Type rtType) {
-        return Integer.parseInt(jsonValue);
+        return deserializeForamtted(jsonValue, true).map(num -> Integer.parseInt(num.toString()))
+        .orElseGet(()->Integer.parseInt(jsonValue));
     }
 }

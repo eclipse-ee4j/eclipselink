@@ -13,7 +13,11 @@
 
 package org.eclipse.persistence.json.bind.customization;
 
-import org.eclipse.persistence.json.bind.customization.model.*;
+import org.eclipse.persistence.json.bind.customization.model.JsonbNillableClassSecondLevel;
+import org.eclipse.persistence.json.bind.customization.model.JsonbNillableOverriddenWithJsonbProperty;
+import org.eclipse.persistence.json.bind.customization.model.JsonbNillableOverridesClass;
+import org.eclipse.persistence.json.bind.customization.model.JsonbNillableOverridesInterface;
+import org.eclipse.persistence.json.bind.customization.model.JsonbNillableValue;
 import org.eclipse.persistence.json.bind.customization.model.packagelevelannotations.JsonbNillablePackageLevel;
 import org.eclipse.persistence.json.bind.customization.model.packagelevelannotations.PackageLevelOverridenWithClassLevel;
 import org.junit.Before;
@@ -21,9 +25,8 @@ import org.junit.Test;
 
 import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;
-import javax.json.bind.JsonbException;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Tests a {@link javax.json.bind.annotation.JsonbNillable} annotation.
@@ -69,7 +72,7 @@ public class JsonbNillableTest {
     @Test
     public void testNillableInheritFromInterface() throws Exception {
         JsonbNillableClassSecondLevel pojo = new JsonbNillableClassSecondLevel();
-        assertEquals("{\"classNillable\":null,\"subclassNillable\":null}", jsonb.toJson(pojo));
+        assertEquals("{\"classNillable\":null}", jsonb.toJson(pojo));
     }
 
     @Test
@@ -81,20 +84,4 @@ public class JsonbNillableTest {
         assertEquals("{\"overridesNillableInParent\":null}", jsonb.toJson(overridesClass));
     }
 
-    /**
-     * Tested class implements different interfaces both has JsonbNillable annotations
-     */
-    @Test
-    public void testNillableConflict() throws Exception {
-        JsonbNillableClassConflict pojo = new JsonbNillableClassConflict();
-        try {
-            jsonb.toJson(pojo);
-            fail();
-        } catch (JsonbException e) {
-            assertTrue(e.getMessage().startsWith("Duplicate mapping found for interface javax.json.bind.annotation.JsonbNillable"));
-            assertTrue(e.getMessage().contains("JsonbNillableInterfaceBaseTwo"));
-            assertTrue(e.getMessage().contains("JsonbNillableInterfaceBase"));
-        }
-
-    }
 }

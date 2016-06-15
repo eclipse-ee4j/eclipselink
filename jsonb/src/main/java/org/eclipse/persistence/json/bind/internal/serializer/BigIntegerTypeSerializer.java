@@ -22,19 +22,19 @@ import java.math.BigInteger;
  * Serialize {@link BigInteger}
  * @author David Král
  */
-public class BigIntegerTypeSerializer extends AbstractValueTypeSerializer<BigInteger> {
+public class BigIntegerTypeSerializer extends AbstractNumberSerializer<BigInteger> {
 
     public BigIntegerTypeSerializer(SerializerBindingModel model) {
         super(BigInteger.class, model);
     }
 
     @Override
-    protected void serialize(BigInteger obj, JsonGenerator generator, String key) {
+    protected void serializeNonFormatted(BigInteger obj, JsonGenerator generator, String key) {
         generator.write(key, obj);
     }
 
     @Override
-    protected void serialize(BigInteger obj, JsonGenerator generator) {
+    protected void serializeNonFormatted(BigInteger obj, JsonGenerator generator) {
         generator.write(obj);
     }
 }

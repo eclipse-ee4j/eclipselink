@@ -21,7 +21,7 @@ import java.lang.reflect.Type;
 /**
  * @author David Král
  */
-public class FloatTypeDeserializer extends AbstractValueTypeDeserializer<Float> {
+public class FloatTypeDeserializer extends AbstractNumberDeserializer<Float> {
 
     public FloatTypeDeserializer(JsonBindingModel model) {
         super(Float.class, model);
@@ -37,6 +37,7 @@ public class FloatTypeDeserializer extends AbstractValueTypeDeserializer<Float> 
      */
     @Override
     protected Float deserialize(String jsonValue, Unmarshaller unmarshaller, Type rtType) {
-        return Float.parseFloat(jsonValue);
+        return deserializeForamtted(jsonValue, false).map(num->Float.parseFloat(num.toString()))
+                .orElseGet(()->Float.parseFloat(jsonValue));
     }
 }

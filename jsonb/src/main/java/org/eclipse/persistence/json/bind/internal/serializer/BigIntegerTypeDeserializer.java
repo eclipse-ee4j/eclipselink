@@ -23,7 +23,7 @@ import java.math.BigInteger;
  * Deserialize {@link BigInteger}.
  * @author David Král
  */
-public class BigIntegerTypeDeserializer extends AbstractValueTypeDeserializer<BigInteger> {
+public class BigIntegerTypeDeserializer extends AbstractNumberDeserializer<BigInteger> {
 
     public BigIntegerTypeDeserializer(JsonBindingModel model) {
         super(BigInteger.class, model);
@@ -31,6 +31,7 @@ public class BigIntegerTypeDeserializer extends AbstractValueTypeDeserializer<Bi
 
     @Override
     public BigInteger deserialize(String jsonValue, Unmarshaller unmarshaller, Type rtType) {
-        return new BigInteger(jsonValue);
+        return deserializeForamtted(jsonValue, true).map(num->new BigInteger(num.toString()))
+                .orElseGet(()->new BigInteger(jsonValue));
     }
 }

@@ -20,19 +20,19 @@ import javax.json.stream.JsonGenerator;
 /**
  * @author David Král
  */
-public class ByteTypeSerializer extends AbstractValueTypeSerializer<Byte> {
+public class ByteTypeSerializer extends AbstractNumberSerializer<Byte> {
 
     public ByteTypeSerializer(SerializerBindingModel model) {
         super(Byte.class, model);
     }
 
     @Override
-    protected void serialize(Byte obj, JsonGenerator generator, String key) {
+    protected void serializeNonFormatted(Byte obj, JsonGenerator generator, String key) {
         generator.write(key, obj);
     }
 
     @Override
-    protected void serialize(Byte obj, JsonGenerator generator) {
+    protected void serializeNonFormatted(Byte obj, JsonGenerator generator) {
         generator.write(obj);
     }
 }

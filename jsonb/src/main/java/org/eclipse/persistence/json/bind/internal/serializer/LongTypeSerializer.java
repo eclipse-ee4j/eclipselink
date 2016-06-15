@@ -20,19 +20,19 @@ import javax.json.stream.JsonGenerator;
 /**
  * @author David Král
  */
-public class LongTypeSerializer extends AbstractValueTypeSerializer<Long> {
+public class LongTypeSerializer extends AbstractNumberSerializer<Long> {
 
     public LongTypeSerializer(SerializerBindingModel model) {
         super(Long.class, model);
     }
 
     @Override
-    protected void serialize(Long obj, JsonGenerator generator, String key) {
+    protected void serializeNonFormatted(Long obj, JsonGenerator generator, String key) {
         generator.write(key, obj);
     }
 
     @Override
-    protected void serialize(Long obj, JsonGenerator generator) {
+    protected void serializeNonFormatted(Long obj, JsonGenerator generator) {
         generator.write(obj);
     }
 }

@@ -17,6 +17,7 @@ import org.eclipse.persistence.json.bind.defaultmapping.modifiers.model.FieldMod
 import org.eclipse.persistence.json.bind.defaultmapping.modifiers.model.MethodModifiersClass;
 import org.eclipse.persistence.json.bind.internal.cdi.DefaultConstructorCreator;
 import org.eclipse.persistence.json.bind.model.ClassModel;
+import org.eclipse.persistence.json.bind.model.JsonbAnnotatedElement;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -38,6 +39,8 @@ public class ClassParserTest {
 
     private JsonbContext jsonbContext;
 
+    private AnnotationIntrospector introspector = AnnotationIntrospector.getInstance();
+
     @Before
     public void before() {
         classParser = new ClassParser();
@@ -50,8 +53,9 @@ public class ClassParserTest {
         new JsonbContextCommand<Void>() {
             @Override
             protected Void doInProcessingContext() {
-                ClassModel model = new ClassModel(FieldModifiersClass.class);
-                classParser.parseProperties(model);
+                final JsonbAnnotatedElement<Class<?>> clsElement = introspector.collectAnnotations(FieldModifiersClass.class);
+                ClassModel model = new ClassModel(FieldModifiersClass.class, introspector.introspectCustomization(clsElement));
+                classParser.parseProperties(model, clsElement);
                 assertTrue(model.getPropertyModel("finalString").isReadable());
                 assertFalse(model.getPropertyModel("finalString").isWritable());
                 assertFalse(model.getPropertyModel("staticString").isReadable());
@@ -69,8 +73,9 @@ public class ClassParserTest {
         new JsonbContextCommand<Void>() {
             @Override
             protected Void doInProcessingContext() {
-                ClassModel model = new ClassModel(MethodModifiersClass.class);
-                classParser.parseProperties(model);
+                final JsonbAnnotatedElement<Class<?>> clsElement = introspector.collectAnnotations(MethodModifiersClass.class);
+                ClassModel model = new ClassModel(FieldModifiersClass.class, introspector.introspectCustomization(clsElement));
+                classParser.parseProperties(model, clsElement);
                 assertFalse(model.getPropertyModel("publicFieldWithPrivateMethods").isReadable());
                 assertFalse(model.getPropertyModel("publicFieldWithPrivateMethods").isWritable());
                 assertTrue(model.getPropertyModel("publicFieldWithoutMethods").isReadable());

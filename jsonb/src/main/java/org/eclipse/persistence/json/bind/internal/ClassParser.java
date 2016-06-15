@@ -13,10 +13,12 @@
 package org.eclipse.persistence.json.bind.internal;
 
 import org.eclipse.persistence.json.bind.model.ClassModel;
+import org.eclipse.persistence.json.bind.model.JsonbAnnotatedElement;
 import org.eclipse.persistence.json.bind.model.Property;
 import org.eclipse.persistence.json.bind.model.PropertyModel;
 
 import java.beans.Introspector;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -42,13 +44,13 @@ class ClassParser {
      *
      * @return model of a class
      */
-    public void parseProperties(ClassModel classModel) {
+    public void parseProperties(ClassModel classModel, JsonbAnnotatedElement<Class<?>> classElement) {
 
         final Map<String, Property> classProperties = new HashMap<>();
 
-        parseFields(classModel, classProperties);
+        parseFields(classElement, classProperties);
 
-        parseMethods(classModel, classProperties);
+        parseClassAndInterfaceMethods(classElement, classProperties);
 
         classProperties.values().stream().forEach((property)->{
             PropertyModel propertyModel = new PropertyModel(classModel, property);
@@ -57,21 +59,52 @@ class ClassParser {
 
     }
 
-    private void parseMethods(ClassModel classModel, Map<String, Property> classProperties) {
-        for (Method method : classModel.getType().getDeclaredMethods()) {
-            String name = method.getName();
-            if (!name.startsWith(GET_PREFIX) && !name.startsWith(SET_PREFIX) && !name.startsWith(IS_PREFIX)) {
+    private void parseClassAndInterfaceMethods(JsonbAnnotatedElement<Class<?>> classElement, Map<String, Property> classProperties) {
+        Class<?> concreteClass = classElement.getElement();
+        parseMethods(concreteClass, classElement, classProperties);
+        for (Class<?> ifc : AnnotationIntrospector.getInstance().collectInterfaces(concreteClass)) {
+            parseIfaceMethodAnnotations(ifc, classProperties);
+        }
+    }
+
+    private void parseIfaceMethodAnnotations(Class<?> ifc, Map<String, Property> classProperties) {
+        for(Method method : ifc.getDeclaredMethods()) {
+            final String methodName = method.getName();
+            if (!isPropertyMethod(methodName)) {
                 continue;
             }
-            final String propertyName = Introspector.decapitalize(name.substring(name.startsWith(IS_PREFIX) ? 2 : 3, name.length()));
+            String propertyName = toPropertyMethod(methodName);
+            final Property property = classProperties.get(propertyName);
+            if (property == null) {
+                //May happen for classes which both extend a class with some method and implement interface with same method.
+                continue;
+            }
+            JsonbAnnotatedElement<Method> methodElement = isGetter(methodName) ?
+                    property.getGetterElement() : property.getSetterElement();
+            //Only push iface annotations if not overridden on impl classes
+            for (Annotation ann : method.getDeclaredAnnotations()) {
+                if (methodElement.getAnnotation(ann.annotationType()) == null) {
+                    methodElement.putAnnotation(ann);
+                }
+            }
+        }
+    }
+
+    private void parseMethods(Class<?> clazz, JsonbAnnotatedElement<Class<?>> classElement, Map<String, Property> classProperties) {
+        for (Method method : clazz.getDeclaredMethods()) {
+            String name = method.getName();
+            if (!isPropertyMethod(name)) {
+                continue;
+            }
+            final String propertyName = toPropertyMethod(name);
 
             Property property = classProperties.get(propertyName);
             if (property == null) {
-                property= new Property(propertyName, classModel);
+                property= new Property(propertyName, classElement);
                 classProperties.put(propertyName, property);
             }
 
-            if (name.startsWith(SET_PREFIX)) {
+            if (isSetter(name)) {
                 property.setSetter(method);
             } else {
                 property.setGetter(method);
@@ -79,13 +112,29 @@ class ClassParser {
         }
     }
 
-    private void parseFields(ClassModel classModel, Map<String, Property> classProperties) {
-        for (Field field : classModel.getType().getDeclaredFields()) {
+    private boolean isGetter(String methodName) {
+        return methodName.startsWith(GET_PREFIX) || methodName.startsWith(IS_PREFIX);
+    }
+
+    private boolean isSetter(String methodName) {
+        return methodName.startsWith(SET_PREFIX);
+    }
+
+    private String toPropertyMethod(String name) {
+        return Introspector.decapitalize(name.substring(name.startsWith(IS_PREFIX) ? 2 : 3, name.length()));
+    }
+
+    private boolean isPropertyMethod(String name) {
+        return name.startsWith(GET_PREFIX) || name.startsWith(SET_PREFIX) || name.startsWith(IS_PREFIX);
+    }
+
+    private void parseFields(JsonbAnnotatedElement<Class<?>> classElement, Map<String, Property> classProperties) {
+        for (Field field : classElement.getElement().getDeclaredFields()) {
             final String name = field.getName();
             if (field.getName().startsWith(GENERATED_PREFIX)) {
                 continue;
             }
-            final Property property = new Property(name, classModel);
+            final Property property = new Property(name, classElement);
             property.setField(field);
             classProperties.put(name, property);
         }

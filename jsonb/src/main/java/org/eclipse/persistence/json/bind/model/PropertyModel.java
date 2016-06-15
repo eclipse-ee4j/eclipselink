@@ -13,9 +13,11 @@
 package org.eclipse.persistence.json.bind.model;
 
 import org.eclipse.persistence.json.bind.internal.AnnotationIntrospector;
+import org.eclipse.persistence.json.bind.internal.ProcessingContext;
 
 import java.lang.reflect.Type;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * A model for class property.
@@ -77,6 +79,7 @@ public class PropertyModel implements SerializerBindingModel, JsonBindingModel, 
         builder.setSerializerBinding(introspector.getSerializerBinding(property));
         builder.setDeserializerBinding(introspector.getDeserializerBinding(property));
         builder.setDateFormatter(introspector.getJsonbDateFormat(property));
+        builder.setNumberFormat(introspector.getJsonbNumberFormat(property));
         return builder.buildPropertyCustomization();
     }
 
@@ -192,11 +195,22 @@ public class PropertyModel implements SerializerBindingModel, JsonBindingModel, 
 
     @Override
     public String getJsonWriteName() {
-        return getCustomization().getJsonWriteName();
+        return getWriteName();
     }
 
     @Override
     public Context getContext() {
         return Context.JSON_OBJECT;
+    }
+
+
+    public String getReadName() {
+        final Optional<String> jsonReadName = Optional.ofNullable(customization.getJsonReadName());
+        return jsonReadName.orElseGet(() -> ProcessingContext.getJsonbContext().getPropertyNamingStrategy().translateName(getPropertyName()));
+    }
+
+    public String getWriteName() {
+        final Optional<String> jsonReadName = Optional.ofNullable(customization.getJsonWriteName());
+        return jsonReadName.orElseGet(() -> ProcessingContext.getJsonbContext().getPropertyNamingStrategy().translateName(getPropertyName()));
     }
 }

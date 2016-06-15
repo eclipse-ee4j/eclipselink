@@ -12,8 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.json.bind.model;
 
-import org.eclipse.persistence.json.bind.internal.AnnotationIntrospector;
 import org.eclipse.persistence.json.bind.internal.ProcessingContext;
+import org.eclipse.persistence.json.bind.internal.naming.CaseInsensitiveStrategy;
 
 import javax.json.bind.JsonbException;
 import java.util.Collections;
@@ -50,18 +50,9 @@ public class ClassModel {
      * Create instance of class model.
      * @param clazz class to model onto
      */
-    public ClassModel(Class<?> clazz) {
+    public ClassModel(Class<?> clazz, ClassCustomization customization) {
         this.clazz = clazz;
-        this.classCustomization = introspectCustomization();
-    }
-
-    private ClassCustomization introspectCustomization() {
-        final AnnotationIntrospector introspector = AnnotationIntrospector.getInstance();
-        final CustomizationBuilder builder = new CustomizationBuilder();
-        builder.setNillable(introspector.isClassNillable(clazz));
-        builder.setDateFormatter(introspector.getJsonbDateFormat(clazz));
-        builder.setCreator(introspector.getCreator(clazz));
-        return builder.buildClassCustomization();
+        this.classCustomization = customization;
     }
 
     /**
@@ -80,13 +71,25 @@ public class ClassModel {
             return result;
         }
         for (PropertyModel propertyModel : properties.values()) {
-            if (jsonReadName.equals(propertyModel.getCustomization().getJsonReadName())) {
+            if (equalsReadName(jsonReadName, propertyModel)) {
                 return propertyModel;
             }
         }
         final ClassModel parent =
                 ProcessingContext.getMappingContext().getClassModel(classModel.getType().getSuperclass());
         return parent == null ? null : searchProperty(parent, jsonReadName);
+    }
+
+    /**
+     * Check if name is equal according to property strategy. In case of {@link CaseInsensitiveStrategy} ignore case.
+     * User can provide own strategy implementation, cast to custom interface is not an option.
+     */
+    private boolean equalsReadName(String jsonName, PropertyModel propertyModel) {
+        final String propertyReadName = propertyModel.getReadName();
+        if (ProcessingContext.getJsonbContext().getPropertyNamingStrategy() instanceof CaseInsensitiveStrategy) {
+            return jsonName.equalsIgnoreCase(propertyReadName);
+        }
+        return jsonName.equalsIgnoreCase(propertyReadName);
     }
 
     public Customization getCustomization() {
@@ -112,8 +115,8 @@ public class ClassModel {
     public void addProperty(PropertyModel propertyModel) {
         Objects.requireNonNull(propertyModel);
         for (PropertyModel existing : properties.values()) {
-            if (propertyModel.getCustomization().getJsonReadName().equals(existing.getCustomization().getJsonReadName()) ||
-                    propertyModel.getCustomization().getJsonWriteName().equals(existing.getCustomization().getJsonWriteName())) {
+            if (propertyModel.getReadName().equals(existing.getReadName()) ||
+                    propertyModel.getJsonWriteName().equals(existing.getJsonWriteName())) {
                 throw new JsonbException(String.format("Property %s clashes with property %s by read or write name in class %s.",
                         propertyModel.getPropertyName(), existing.getPropertyName(), getType().getName()));
             }

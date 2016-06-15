@@ -22,19 +22,20 @@ import java.math.BigDecimal;
  * Serialize {@link BigDecimal}
  * @author David Král
  */
-public class BigDecimalTypeSerializer extends AbstractValueTypeSerializer<BigDecimal> {
+public class BigDecimalTypeSerializer extends AbstractNumberSerializer<BigDecimal> {
 
     public BigDecimalTypeSerializer(SerializerBindingModel model) {
         super(BigDecimal.class, model);
     }
 
     @Override
-    protected void serialize(BigDecimal obj, JsonGenerator generator, String key) {
+    protected void serializeNonFormatted(BigDecimal obj, JsonGenerator generator, String key) {
         generator.write(key, obj);
     }
 
     @Override
-    protected void serialize(BigDecimal obj, JsonGenerator generator) {
+    protected void serializeNonFormatted(BigDecimal obj, JsonGenerator generator) {
         generator.write(obj);
     }
+
 }

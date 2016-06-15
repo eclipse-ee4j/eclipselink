@@ -38,35 +38,35 @@ public class VariableTypeInheritanceSearch {
      * <pre>
      *
      * Example 1: typevar is resolved
-     * {@code
      *
-     * class GenericClass<T> {
+     *
+     * class GenericClass &lt;T&gt; {
      *     private T genericField;
      * }
-     * class ConcreteClass extends SomeTypeVarClass<MyPojo> {
+     * class ConcreteClass extends SomeTypeVarClass&lt;MyPojo&gt; {
      *     //...
      * }
-     * }
-     * In above case when ConcreteClass type is passed as runtime type and <T> as type variable, T is resolved to MyPojo.
+     *
+     * In above case when ConcreteClass type is passed as runtime type and &lt;T&gt; as type variable, T is resolved to MyPojo.
      * </pre>
      *
      *
      * <pre>
      * Example 2: typevar is resolved to another propagated typevar
-     * {@code
      *
-     * class WrapperGenericClass<X> {
-     *     private GenericClass<X> propagatedGenericField
+     *
+     * class WrapperGenericClass&lt;X&gt; {
+     *     private GenericClass&lt;X&gt; propagatedGenericField
      * }
      *
-     * class AnotherClass extends WrapperGenericClass<MyPojo> {
-     * }
+     * class AnotherClass extends WrapperGenericClass&lt;MyPojo&gt; {
      * }
      *
-     * In second case when GenericClass {@link ParameterizedType} is passed as runtime type and <T> as type variable,
-     * T is resolved to propagated <X> by WrapperGenericClass.
      *
-     * Resolution on <X> must be performed thereafter with AnotherClass runtime type.
+     * In second case when GenericClass {@link ParameterizedType} is passed as runtime type and &lt;T&gt; as type variable,
+     * T is resolved to propagated &lt;X&gt; by WrapperGenericClass.
+     *
+     * Resolution on &lt;X&gt; must be performed thereafter with AnotherClass runtime type.
      * </pre>
      *
      * @param typeToSearch runtime type to search for typevar in, not null

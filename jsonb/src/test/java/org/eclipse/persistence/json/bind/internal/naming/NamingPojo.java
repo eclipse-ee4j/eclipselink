@@ -11,21 +11,23 @@
  * Roman Grigoriadi
  ******************************************************************************/
 
-package org.eclipse.persistence.json.bind.customization.model;
+package org.eclipse.persistence.json.bind.internal.naming;
 
 /**
- * Conflicting class, inherits JsonbNillable annotation with different values.
  * @author Roman Grigoriadi
  */
-public class JsonbNillableClassConflict implements JsonbNillableInterfaceBaseOne, JsonbNillableInterfaceBaseTwo {
+public class NamingPojo {
 
-    private String nillableField;
-
-    public String getNillableField() {
-        return nillableField;
+    public NamingPojo() {
     }
 
-    public void setNillableField(String nillableField) {
-        this.nillableField = nillableField;
+    public NamingPojo(String upperCasedProperty, String _startingWithUnderscoreProperty, String CAPS_UNDERSCORE_PROPERTY) {
+        this.upperCasedProperty = upperCasedProperty;
+        this._startingWithUnderscoreProperty = _startingWithUnderscoreProperty;
+        this.CAPS_UNDERSCORE_PROPERTY = CAPS_UNDERSCORE_PROPERTY;
     }
+
+    public String upperCasedProperty;
+    public String _startingWithUnderscoreProperty;
+    public String CAPS_UNDERSCORE_PROPERTY;
 }

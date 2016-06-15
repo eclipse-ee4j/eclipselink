@@ -44,7 +44,7 @@ public class JsonBinding implements Jsonb {
 
     JsonBinding(JsonBindingBuilder builder) {
         this.jsonbContext = new JsonbContext(new MappingContext(), builder.getConfig(), JsonbComponentInstanceCreatorFactory.getComponentInstanceCreator(),
-                builder.getProvider().orElse(JsonProvider.provider()));
+                builder.getProvider().orElseGet(()->JsonProvider.provider()));
     }
 
     private <T> T deserialize(final Type type, final JsonParser parser, final Unmarshaller unmarshaller) {

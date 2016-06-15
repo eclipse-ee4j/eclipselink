@@ -13,32 +13,20 @@
 
 package org.eclipse.persistence.json.bind.internal.naming;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 /**
+ * Lower case with underscores
+ *
+ * <pre>
+ *     myPropertyName -&gt; my_property_name
+ * </pre>
  * @author Roman Grigoriadi
  */
-public class LowerCaseWithUnderscoresStrategy implements PropertyNamingStrategy {
+public class LowerCaseWithUnderscoresStrategy extends LowerCaseStrategy {
 
-    private static final String CAMEL_CASE_REGEX = "([^_])([A-Z])";
-    private static final String LOWER_CASE_UNDERSCORE = "([a-z])_([a-z])";
-
-    private static final Pattern LOWER_CASE_UNDERSCORE_PATTERN = Pattern.compile(LOWER_CASE_UNDERSCORE);
+    public static final Character UNDERSCORE = '_';
 
     @Override
-    public String toJsonPropertyName(String modelPropertyName) {
-        return modelPropertyName.replaceAll(CAMEL_CASE_REGEX, "$1_$2").toLowerCase();
-    }
-
-    @Override
-    public String toModelPropertyName(String jsonPropertyName) {
-        final StringBuffer result = new StringBuffer();
-        final Matcher m = LOWER_CASE_UNDERSCORE_PATTERN.matcher(jsonPropertyName);
-        while (m.find()) {
-            m.appendReplacement(result, m.group(1).concat(m.group(2).toUpperCase()));
-        }
-        m.appendTail(result);
-        return result.toString();
+    protected char getSerarator() {
+        return UNDERSCORE;
     }
 }

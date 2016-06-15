@@ -36,18 +36,18 @@ public class PropertyCustomization extends Customization {
     }
 
     /**
-     * Name as appears in JSON for reading property.
+     * Name if specified for property setter with {@link javax.json.bind.annotation.JsonbProperty}.
      * @return read name
      */
-    public String getJsonReadName() {
+    String getJsonReadName() {
         return jsonReadName;
     }
 
     /**
-     * Name as should be written to JSON for marshalling.
+     * Name if specified for property getter with {@link javax.json.bind.annotation.JsonbProperty}.
      * @return write name
      */
-    public String getJsonWriteName() {
+    String getJsonWriteName() {
         return jsonWriteName;
     }
 

@@ -1,12 +1,15 @@
 apply plugin: 'java'
-apply plugin: 'idea'
 apply plugin: "maven"
+apply plugin: 'signing'
+apply plugin: 'idea'
 
-group = "org.eclipse.persistence.json.bind"
+
+group = "org.eclipse.persistence"
 version = "1.0-SNAPSHOT"
 
 jar {
-    baseName = 'jsonb-ri'
+    name = "jsonb-ri"
+    archivesBaseName = "jsonb-ri"
     version =  '1.0-SNAPSHOT'
 }
 
@@ -32,9 +35,6 @@ repositories {
     mavenCentral()
     maven {
         url "https://maven.java.net/content/repositories/snapshots/"
-    }
-    maven {
-        url "https://maven.java.net/content/repositories/releases/"
     }
 }
 
@@ -75,5 +75,73 @@ idea {
     module {
         downloadJavadoc = true
         downloadSources = true
+    }
+}
+
+/*task noErrorJavadoc(type: Javadoc) {
+    failOnError = false
+}*/
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}
+
+/*signing {
+    sign configurations.archives
+}*/
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+//            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: uName, password: uPwd)
+            }
+
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: uName, password: uPwd)
+            }
+
+            pom.project {
+                name 'jsonb-ri'
+                packaging 'jar'
+                // optionally artifactId can be defined here
+                description 'Reference implementation of JSR-367'
+//                url 'http://www.example.com/example-application'
+
+                scm {
+                    connection 'scm:git://git.eclipse.org/gitroot/eclipselink/eclipselink.runtime.git'
+                    developerConnection 'scm:ssh://git.eclipse.org/gitroot/eclipselink/eclipselink.runtime.git'
+                    url 'http://git.eclipse.org/c/eclipselink/eclipselink.runtime.git'
+                }
+
+                licenses {
+                    license {
+                        name 'Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0'
+                        url 'http://www.eclipse.org/legal/epl-v10.html'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'rgrigoriadi'
+                        name 'Roman Grigoriadi'
+                        email 'roman.grigoriadi@oracle.com'
+                    }
+                }
+            }
+        }
     }
 }

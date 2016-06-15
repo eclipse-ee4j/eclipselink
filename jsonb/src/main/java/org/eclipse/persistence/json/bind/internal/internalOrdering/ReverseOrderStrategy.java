@@ -14,8 +14,6 @@ package org.eclipse.persistence.json.bind.internal.internalOrdering;
 
 import org.eclipse.persistence.json.bind.model.PropertyModel;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -29,7 +27,7 @@ public class ReverseOrderStrategy implements PropOrderStrategy {
 
     @Override
     public List<PropertyModel> sortProperties(List<PropertyModel> properties) {
-        return properties.stream().sorted((object1, object2) -> object2.getCustomization().getJsonWriteName().compareTo(object1.getCustomization().getJsonWriteName())).collect(toList());
+        return properties.stream().sorted((object1, object2) -> object2.getJsonWriteName().compareTo(object1.getJsonWriteName())).collect(toList());
     }
 
 }

@@ -20,7 +20,7 @@ import javax.json.stream.JsonGenerator;
 /**
  * @author David Král
  */
-public class DoubleTypeSerializer extends AbstractValueTypeSerializer<Double> {
+public class DoubleTypeSerializer extends AbstractNumberSerializer<Double> {
 
 
     public DoubleTypeSerializer(SerializerBindingModel model) {
@@ -29,12 +29,12 @@ public class DoubleTypeSerializer extends AbstractValueTypeSerializer<Double> {
 
 
     @Override
-    protected void serialize(Double obj, JsonGenerator generator, String key) {
+    protected void serializeNonFormatted(Double obj, JsonGenerator generator, String key) {
         generator.write(key, obj);
     }
 
     @Override
-    protected void serialize(Double obj, JsonGenerator generator) {
+    protected void serializeNonFormatted(Double obj, JsonGenerator generator) {
         generator.write(obj);
     }
 }

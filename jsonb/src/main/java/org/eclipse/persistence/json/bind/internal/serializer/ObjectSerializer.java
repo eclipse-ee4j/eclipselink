@@ -99,7 +99,7 @@ public class ObjectSerializer<T> extends AbstractContainerSerializer<T> {
         final Object propertyValue = propertyModel.getValue(object);
         if (propertyValue == null || isEmptyOptional(propertyValue)) {
             if (propertyModel.getCustomization().isNillable()) {
-                generator.writeNull(propertyModel.getCustomization().getJsonWriteName());
+                generator.writeNull(propertyModel.getJsonWriteName());
             }
             return;
         }

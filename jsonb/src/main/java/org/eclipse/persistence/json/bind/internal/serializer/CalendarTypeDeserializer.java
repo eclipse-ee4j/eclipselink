@@ -13,6 +13,8 @@
 
 package org.eclipse.persistence.json.bind.internal.serializer;
 
+import org.eclipse.persistence.json.bind.internal.JsonbContext;
+import org.eclipse.persistence.json.bind.internal.ProcessingContext;
 import org.eclipse.persistence.json.bind.internal.Unmarshaller;
 import org.eclipse.persistence.json.bind.model.JsonBindingModel;
 
@@ -36,6 +38,7 @@ import java.util.Locale;
 public class CalendarTypeDeserializer extends AbstractValueTypeDeserializer<Calendar> {
 
     private final Calendar calendarTemplate;
+
 
     public CalendarTypeDeserializer(JsonBindingModel model) {
         super(Calendar.class, model);
@@ -69,17 +72,10 @@ public class CalendarTypeDeserializer extends AbstractValueTypeDeserializer<Cale
         return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
     }
 
-    private JsonbDateFormatter getDateFormatter() {
-        if (model == null || model.getCustomization() == null) {
-            return JsonbDateFormatter.getDefault();
-        }
-
-        return model.getCustomization().getDateTimeFormatter();
-    }
-
     @Override
     protected Calendar deserialize(String jsonValue, Unmarshaller unmarshaller, Type rtType) {
-        final JsonbDateFormatter formatter = getDateFormatter();
+        final JsonbContext jsonbContext = ProcessingContext.getJsonbContext();
+        final JsonbDateFormatter formatter = jsonbContext.getComponentMatcher().getDateFormatter(model);
         Calendar result = (Calendar) calendarTemplate.clone();
         final String format = formatter.getFormat();
         if (JsonbDateFormat.TIME_IN_MILLIS.equals(format)) {
@@ -87,7 +83,7 @@ public class CalendarTypeDeserializer extends AbstractValueTypeDeserializer<Cale
             return result;
         }
 
-        Locale locale = formatter.getLocale();
+        Locale locale = jsonbContext.getLocale(formatter.getLocale());
         if (JsonbDateFormat.DEFAULT_FORMAT.equals(format)) {
             final boolean timed = jsonValue.contains("T");
             if (timed) {

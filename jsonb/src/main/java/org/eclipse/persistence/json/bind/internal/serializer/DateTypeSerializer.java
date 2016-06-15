@@ -13,6 +13,7 @@
 
 package org.eclipse.persistence.json.bind.internal.serializer;
 
+import org.eclipse.persistence.json.bind.internal.ProcessingContext;
 import org.eclipse.persistence.json.bind.model.SerializerBindingModel;
 import org.eclipse.persistence.json.bind.model.PropertyModel;
 
@@ -28,6 +29,7 @@ import java.util.Date;
  */
 public class DateTypeSerializer extends AbstractValueTypeSerializer<Date> {
 
+
     public DateTypeSerializer(SerializerBindingModel model) {
         super(Date.class, model);
     }
@@ -41,26 +43,18 @@ public class DateTypeSerializer extends AbstractValueTypeSerializer<Date> {
 
     private DateFormat getDateFormat(JsonbDateFormatter formatter) {
         if (JsonbDateFormat.DEFAULT_FORMAT.equals(formatter.getFormat())) {
-            return new SimpleDateFormat(JsonbDateFormatter.ISO_8601_DATE_TIME_FORMAT, formatter.getLocale());
+            return new SimpleDateFormat(JsonbDateFormatter.ISO_8601_DATE_TIME_FORMAT, ProcessingContext.getJsonbContext().getLocale(formatter.getLocale()));
         }
-        return new SimpleDateFormat(formatter.getFormat(), formatter.getLocale());
-    }
-
-    private JsonbDateFormatter getDateFormatter() {
-        if (model == null || model.getCustomization() == null) {
-            return JsonbDateFormatter.getDefault();
-        }
-
-        return model.getCustomization().getDateTimeFormatter();
+        return new SimpleDateFormat(formatter.getFormat(), ProcessingContext.getJsonbContext().getLocale(formatter.getLocale()));
     }
 
     @Override
     public void serialize(Date obj, JsonGenerator generator, SerializationContext ctx) {
+        final JsonbDateFormatter formatter = ProcessingContext.getJsonbContext().getComponentMatcher().getDateFormatter(model);
         if (model instanceof PropertyModel) {
-            generator.write(((PropertyModel)model).getPropertyName(), toJson(obj,
-                    getDateFormatter()));
+            generator.write(((PropertyModel)model).getPropertyName(), toJson(obj, formatter));
         } else {
-            generator.write(toJson(obj, getDateFormatter()));
+            generator.write(toJson(obj, formatter));
         }
     }
 

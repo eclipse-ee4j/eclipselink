@@ -14,7 +14,6 @@ package org.eclipse.persistence.json.bind.internal.internalOrdering;
 
 import org.eclipse.persistence.json.bind.model.PropertyModel;
 
-import java.util.Comparator;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -28,7 +27,7 @@ public class LexicographicalOrderStrategy implements PropOrderStrategy {
 
     @Override
     public List<PropertyModel> sortProperties(List<PropertyModel> properties) {
-        return properties.stream().sorted((object1, object2) -> object1.getCustomization().getJsonWriteName().compareTo(object2.getCustomization().getJsonWriteName())).collect(toList());
+        return properties.stream().sorted((object1, object2) -> object1.getJsonWriteName().compareTo(object2.getJsonWriteName())).collect(toList());
     }
 
 }

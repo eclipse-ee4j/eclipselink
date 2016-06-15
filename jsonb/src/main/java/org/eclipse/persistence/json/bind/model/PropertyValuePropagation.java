@@ -120,7 +120,7 @@ public abstract class PropertyValuePropagation {
             return false;
         }
         return isVisible(strategy -> strategy.isVisible(field), field.getDeclaringClass())
-                .orElse(Modifier.isPublic(field.getModifiers()));
+                .orElseGet(()->Modifier.isPublic(field.getModifiers()));
     }
 
     private boolean isVisible(Method method) {
@@ -128,7 +128,7 @@ public abstract class PropertyValuePropagation {
             return false;
         }
         return isVisible(strategy -> strategy.isVisible(method), method.getDeclaringClass())
-                .orElse(Modifier.isPublic(method.getModifiers()));
+                .orElseGet(()->Modifier.isPublic(method.getModifiers()));
     }
 
     /**
@@ -143,7 +143,7 @@ public abstract class PropertyValuePropagation {
         final Optional<PropertyVisibilityStrategy> classLevelStrategy =
                 AnnotationIntrospector.getInstance().getPropertyVisibilityStrategy(declaringClass);
         Optional<PropertyVisibilityStrategy> strategy =
-                Optional.ofNullable(classLevelStrategy.orElse(ProcessingContext.getJsonbContext().getPropertyVisibilityStrategy()));
+                Optional.ofNullable(classLevelStrategy.orElseGet(()->ProcessingContext.getJsonbContext().getPropertyVisibilityStrategy()));
 
         return strategy.map(visibilityCheckFunction);
     }

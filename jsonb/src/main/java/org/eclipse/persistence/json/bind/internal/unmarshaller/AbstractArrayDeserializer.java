@@ -70,7 +70,8 @@ public abstract class AbstractArrayDeserializer<T> extends AbstractContainerDese
 
     @Override
     protected void deserializeNext(JsonParser parser, Unmarshaller context) {
-        final JsonbDeserializer<?> deserializer = newUnmarshallerItemBuilder().withType(componentClass).build();
+        final JsonbDeserializer<?> deserializer = newUnmarshallerItemBuilder().withType(componentClass)
+                .withModel(model).build();
         appendResult(deserializer.deserialize(parser, context, componentClass));
     }
 

@@ -21,7 +21,7 @@ import java.lang.reflect.Type;
 /**
  * @author David Král
  */
-public class ShortTypeDeserializer extends AbstractValueTypeDeserializer<Short> {
+public class ShortTypeDeserializer extends AbstractNumberDeserializer<Short> {
 
     public ShortTypeDeserializer(JsonBindingModel model) {
         super(Short.class, model);
@@ -29,6 +29,7 @@ public class ShortTypeDeserializer extends AbstractValueTypeDeserializer<Short> 
 
     @Override
     protected Short deserialize(String jsonValue, Unmarshaller unmarshaller, Type rtType) {
-        return Short.parseShort(jsonValue);
+        return deserializeForamtted(jsonValue, true).map(num -> Short.parseShort(num.toString()))
+                .orElseGet(() -> Short.parseShort(jsonValue));
     }
 }

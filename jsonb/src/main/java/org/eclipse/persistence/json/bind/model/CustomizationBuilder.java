@@ -17,8 +17,7 @@ import org.eclipse.persistence.json.bind.internal.adapter.AdapterBinding;
 import org.eclipse.persistence.json.bind.internal.adapter.DeserializerBinding;
 import org.eclipse.persistence.json.bind.internal.adapter.SerializerBinding;
 import org.eclipse.persistence.json.bind.internal.serializer.JsonbDateFormatter;
-
-import java.text.NumberFormat;
+import org.eclipse.persistence.json.bind.internal.serializer.JsonbNumberFormatter;
 
 /**
  * Builder for ensuring immutable state of {@link Customization} objects.
@@ -43,7 +42,7 @@ public class CustomizationBuilder {
 
     private JsonbDateFormatter dateFormatter;
 
-    private NumberFormat numberFormat;
+    private JsonbNumberFormatter numberFormat;
 
     private JsonbCreator creator;
 
@@ -188,18 +187,18 @@ public class CustomizationBuilder {
     }
 
     /**
-     * Number format for formatting numbers
+     * Number formatter for formatting numbers
      * @return number format
      */
-    public NumberFormat getNumberFormat() {
+    public JsonbNumberFormatter getNumberFormat() {
         return numberFormat;
     }
 
     /**
-     * Number format for formatting numbers.
+     * Number formatter for formatting numbers.
      * @param numberFormat number format
      */
-    public void setNumberFormat(NumberFormat numberFormat) {
+    public void setNumberFormat(JsonbNumberFormatter numberFormat) {
         this.numberFormat = numberFormat;
     }
 
@@ -213,7 +212,6 @@ public class CustomizationBuilder {
 
     /**
      * Custom constructor or method for user instantiation.
-     * @return creator
      */
     public void setCreator(JsonbCreator creator) {
         this.creator = creator;

@@ -21,7 +21,7 @@ import java.lang.reflect.Type;
 /**
  * @author David Král
  */
-public class ByteTypeDeserializer extends AbstractValueTypeDeserializer<Byte> {
+public class ByteTypeDeserializer extends AbstractNumberDeserializer<Byte> {
 
     public ByteTypeDeserializer(JsonBindingModel model) {
         super(Byte.class, model);
@@ -29,6 +29,7 @@ public class ByteTypeDeserializer extends AbstractValueTypeDeserializer<Byte> {
 
     @Override
     protected Byte deserialize(String value, Unmarshaller unmarshaller, Type rtType) {
-        return Byte.parseByte(value);
+        return deserializeForamtted(value, true).map(num->Byte.parseByte(num.toString()))
+                .orElseGet(()->Byte.parseByte(value));
     }
 }

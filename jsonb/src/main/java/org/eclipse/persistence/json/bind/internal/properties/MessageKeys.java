@@ -66,6 +66,9 @@ public enum MessageKeys {
     MULTIPLE_JSONB_CREATORS("multipleJsonbCreators"),
     INTERNAL_ERROR("internalError"),
     DESERIALIZE_VALUE_ERROR("deserializeValueError"),
+    PARSING_NUMBER("parsingNumber"),
+    UNKNOWN_BINARY_DATA_STRATEGY("unknownBinaryDataStrategy"),
+    PROPERTY_NAMING_STRATEGY_INVALID("invalidPropertyNamingStrategy")
     ;
 
     /** Message bundle key. */

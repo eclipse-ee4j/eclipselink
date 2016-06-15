@@ -18,6 +18,7 @@ import org.eclipse.persistence.json.bind.internal.adapter.AdapterBinding;
 import org.eclipse.persistence.json.bind.internal.adapter.ComponentBindings;
 import org.eclipse.persistence.json.bind.internal.adapter.DeserializerBinding;
 import org.eclipse.persistence.json.bind.internal.adapter.SerializerBinding;
+import org.eclipse.persistence.json.bind.internal.serializer.JsonbDateFormatter;
 import org.eclipse.persistence.json.bind.model.JsonBindingModel;
 import org.eclipse.persistence.json.bind.model.PropertyModel;
 import org.eclipse.persistence.json.bind.model.TypeWrapper;
@@ -61,16 +62,16 @@ public class ComponentMatcher {
      * @param context context
      */
     void init(JsonbContext context) {
-        final JsonbSerializer<?>[] serializers = (JsonbSerializer<?>[])context.getConfig().getProperty(JsonbConfig.SERIALIZERS).orElse(new JsonbSerializer<?>[]{});
+        final JsonbSerializer<?>[] serializers = (JsonbSerializer<?>[])context.getConfig().getProperty(JsonbConfig.SERIALIZERS).orElseGet(()->new JsonbSerializer<?>[]{});
         for (JsonbSerializer serializer : serializers) {
             introspectSerialzierBinding(serializer.getClass(), () -> serializer);
         }
-        final JsonbDeserializer<?>[] deserializers = (JsonbDeserializer<?>[])context.getConfig().getProperty(JsonbConfig.DESERIALIZERS).orElse(new JsonbDeserializer<?>[]{});
+        final JsonbDeserializer<?>[] deserializers = (JsonbDeserializer<?>[])context.getConfig().getProperty(JsonbConfig.DESERIALIZERS).orElseGet(()->new JsonbDeserializer<?>[]{});
         for (JsonbDeserializer deserializer : deserializers) {
             introspectDeserializerBinding(deserializer.getClass(), () -> deserializer);
         }
 
-        final JsonbAdapter<?, ?>[] adapters = (JsonbAdapter<?, ?>[]) context.getConfig().getProperty(JsonbConfig.ADAPTERS).orElse(new JsonbAdapter<?, ?>[]{});
+        final JsonbAdapter<?, ?>[] adapters = (JsonbAdapter<?, ?>[]) context.getConfig().getProperty(JsonbConfig.ADAPTERS).orElseGet(()->new JsonbAdapter<?, ?>[]{});
         for (JsonbAdapter<?, ?> adapter : adapters) {
             introspectAdapterBinding(adapter.getClass(), () -> adapter);
         }
@@ -102,7 +103,6 @@ public class ComponentMatcher {
      * Lookup serializer binding for a given property runtime type.
      * @param propertyRuntimeType runtime type of a property
      * @param propertyModel model of a property
-     * @param <T> Type which is serializer bound to
      * @return serializer optional
      */
     @SuppressWarnings("unchecked")
@@ -270,5 +270,17 @@ public class ComponentMatcher {
         } else {
             return adapterTypeArg;
         }
+    }
+
+    /**
+     * Resolves date formatter either from model or global config.
+     * @param model model of processed value (field or collection item)
+     * @return formatter
+     */
+    public JsonbDateFormatter getDateFormatter(JsonBindingModel model) {
+        if (model == null || model.getCustomization() == null || model.getCustomization().getDateTimeFormatter() == null) {
+            return ProcessingContext.getJsonbContext().getConfigDateFormatter();
+        }
+        return model.getCustomization().getDateTimeFormatter();
     }
 }

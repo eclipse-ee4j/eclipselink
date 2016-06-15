@@ -12,7 +12,9 @@
  ******************************************************************************/
 package org.eclipse.persistence.json.bind.internal;
 
+import org.eclipse.persistence.json.bind.model.ClassCustomization;
 import org.eclipse.persistence.json.bind.model.ClassModel;
+import org.eclipse.persistence.json.bind.model.JsonbAnnotatedElement;
 
 import javax.json.JsonValue;
 import java.util.Collection;
@@ -47,6 +49,7 @@ public class MappingContext {
      * @param clazz clazz to search by or parse, not null.
      */
     public ClassModel getOrCreateClassModel(Class<?> clazz) {
+        final AnnotationIntrospector introspector = AnnotationIntrospector.getInstance();
         ClassModel classModel = classes.get(clazz);
         if (classModel != null) {
             return classModel;
@@ -59,8 +62,10 @@ public class MappingContext {
         while (!newClassModels.empty()) {
             Class toParse = newClassModels.pop();
             classes.computeIfAbsent(toParse, aClass -> {
-                final ClassModel newClassModel = new ClassModel(aClass);
-                classParser.parseProperties(newClassModel);
+                final JsonbAnnotatedElement<Class<?>> clsElement = introspector.collectAnnotations(aClass);
+                final ClassCustomization customization = introspector.introspectCustomization(clsElement);
+                final ClassModel newClassModel = new ClassModel(aClass, customization);
+                classParser.parseProperties(newClassModel, clsElement);
                 return  newClassModel;
             });
         }

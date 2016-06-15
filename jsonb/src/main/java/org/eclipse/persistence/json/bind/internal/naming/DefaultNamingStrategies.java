@@ -13,6 +13,7 @@
 
 package org.eclipse.persistence.json.bind.internal.naming;
 
+import javax.json.bind.config.PropertyNamingStrategy;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,7 +32,12 @@ public class DefaultNamingStrategies {
 
     static {
         Map<String, PropertyNamingStrategy> collector = new HashMap<>();
-        collector.put(javax.json.bind.config.PropertyNamingStrategy.LOWER_CASE_WITH_UNDERSCORES, new LowerCaseWithUnderscoresStrategy());
+        collector.put(PropertyNamingStrategy.LOWER_CASE_WITH_UNDERSCORES, new LowerCaseWithUnderscoresStrategy());
+        collector.put(PropertyNamingStrategy.LOWER_CASE_WITH_DASHES, new LowerCaseWithDashesStrategy());
+        collector.put(PropertyNamingStrategy.UPPER_CAMEL_CASE, new UpperCamelCaseStrategy());
+        collector.put(PropertyNamingStrategy.UPPER_CAMEL_CASE_WITH_SPACES, new UpperCamelCaseWithSpacesStrategy());
+        collector.put(PropertyNamingStrategy.IDENTITY, new IdentityStrategy());
+        collector.put(PropertyNamingStrategy.CASE_INSENSITIVE, new CaseInsensitiveStrategy());
         strategies = Collections.unmodifiableMap(collector);
     }
 

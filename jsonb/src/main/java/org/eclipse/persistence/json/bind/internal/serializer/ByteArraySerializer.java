@@ -13,12 +13,12 @@
 
 package org.eclipse.persistence.json.bind.internal.serializer;
 
-import javax.json.bind.serializer.JsonbSerializer;
 import javax.json.bind.serializer.SerializationContext;
 import javax.json.stream.JsonGenerator;
 
 /**
- * Serializer for arrays of bytes.
+ * Serializes byte array as JSON array of ints.
+ *
  * @author Roman Grigoriadi
  */
 public class ByteArraySerializer extends AbstractArraySerializer<byte[]> {
@@ -28,11 +28,10 @@ public class ByteArraySerializer extends AbstractArraySerializer<byte[]> {
     }
 
     @Override
-    protected void serializeInternal(byte[] arr, JsonGenerator generator, SerializationContext ctx) {
-        for (byte obj : arr) {
-            final JsonbSerializer<?> serializer = DefaultSerializers.getInstance()
-                    .findValueSerializerProvider(byte.class).get().provideSerializer(containerModel);
-            serializerCaptor(serializer, obj, generator, ctx);
+    protected void serializeInternal(byte[] obj, JsonGenerator generator, SerializationContext ctx) {
+        for (byte b : obj) {
+            generator.write(b);
         }
     }
+
 }

@@ -20,19 +20,19 @@ import javax.json.stream.JsonGenerator;
 /**
  * @author David Král
  */
-public class ShortTypeSerializer extends AbstractValueTypeSerializer<Short> {
+public class ShortTypeSerializer extends AbstractNumberSerializer<Short> {
 
     public ShortTypeSerializer(SerializerBindingModel model) {
         super(Short.class, model);
     }
 
     @Override
-    protected void serialize(Short obj, JsonGenerator generator, String key) {
+    protected void serializeNonFormatted(Short obj, JsonGenerator generator, String key) {
         generator.write(key, obj);
     }
 
     @Override
-    protected void serialize(Short obj, JsonGenerator generator) {
+    protected void serializeNonFormatted(Short obj, JsonGenerator generator) {
         generator.write(obj);
     }
 }

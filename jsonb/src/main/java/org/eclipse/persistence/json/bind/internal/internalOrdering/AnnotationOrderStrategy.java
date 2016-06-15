@@ -15,7 +15,6 @@ package org.eclipse.persistence.json.bind.internal.internalOrdering;
 import org.eclipse.persistence.json.bind.model.PropertyModel;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,7 +35,7 @@ public class AnnotationOrderStrategy implements PropOrderStrategy {
     public List<PropertyModel> sortProperties(List<PropertyModel> properties) {
         List<PropertyModel> filteredAndSorted = new ArrayList<>();
         for (String fieldName : orderedPropertyNames) {
-            filteredAndSorted.addAll(properties.stream().filter(propertyModel -> propertyModel.getCustomization().getJsonWriteName().equals(fieldName)).collect(Collectors.toList()));
+            filteredAndSorted.addAll(properties.stream().filter(propertyModel -> propertyModel.getJsonWriteName().equals(fieldName)).collect(Collectors.toList()));
         }
         return filteredAndSorted;
     }

@@ -68,7 +68,7 @@ public class Marshaller extends ProcessingContext implements SerializationContex
         new JsonbContextCommand<Void>() {
             @Override
             protected Void doInProcessingContext() {
-                final SerializerContainerModel model = new SerializerContainerModel(runtimeType.orElse(object.getClass()), new DefaultCustomization(), SerializerBindingModel.Context.ROOT, null);
+                final SerializerContainerModel model = new SerializerContainerModel(runtimeType.orElseGet(()->object.getClass()), new DefaultCustomization(), SerializerBindingModel.Context.ROOT, null);
                 serializeRoot(object, jsonGenerator, model);
                 jsonGenerator.close();
                 return null;
@@ -94,7 +94,7 @@ public class Marshaller extends ProcessingContext implements SerializationContex
     @SuppressWarnings("unchecked")
     public <T> void serializeRoot(T root, JsonGenerator generator, SerializerBindingModel model) {
         final JsonbSerializer<T> rootSerializer = (JsonbSerializer<T>) new SerializerBuilder().withObjectClass(root.getClass())
-                .withType(runtimeType.orElse(root.getClass())).withModel(model).withWrapper(current).build();
+                .withType(runtimeType.orElseGet(()->root.getClass())).withModel(model).withWrapper(current).build();
         rootSerializer.serialize(root, generator, this);
     }
 

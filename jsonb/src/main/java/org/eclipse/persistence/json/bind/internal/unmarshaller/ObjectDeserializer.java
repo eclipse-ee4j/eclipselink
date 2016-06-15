@@ -35,11 +35,35 @@ import java.util.logging.Logger;
  */
 class ObjectDeserializer<T> extends AbstractContainerDeserializer<T> {
 
+    /**
+     * Last property model cache to avoid lookup by jsonKey on every access.
+     */
+    private static class LastPropertyModel {
+
+        private final String jsonKeyName;
+        private final PropertyModel propertyModel;
+
+        public LastPropertyModel(String jsonKeyName, PropertyModel propertyModel) {
+            this.jsonKeyName = jsonKeyName;
+            this.propertyModel = propertyModel;
+        }
+
+        public String getJsonKeyName() {
+            return jsonKeyName;
+        }
+
+        public PropertyModel getPropertyModel() {
+            return propertyModel;
+        }
+    }
+
     private static final Logger log = Logger.getLogger(ObjectDeserializer.class.getName());
 
     private Map<String, Object> values = new HashMap<>();
 
     private T instance;
+
+    private LastPropertyModel lastPropertyModel;
 
     /**
      * Creates instance of an item.
@@ -127,6 +151,11 @@ class ObjectDeserializer<T> extends AbstractContainerDeserializer<T> {
 
     @Override
     protected PropertyModel getModel() {
-        return getClassModel().findPropertyModelByJsonReadName(parserContext.getLastKeyName());
+        final String lastKeyName = parserContext.getLastKeyName();
+        if (lastPropertyModel != null && lastPropertyModel.getJsonKeyName().equals(lastKeyName)) {
+            return lastPropertyModel.getPropertyModel();
+        }
+        lastPropertyModel = new LastPropertyModel(lastKeyName, getClassModel().findPropertyModelByJsonReadName(lastKeyName));
+        return lastPropertyModel.getPropertyModel();
     }
 }
