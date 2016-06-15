@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -22,6 +22,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
              * EACH RESOURCE STRING, MUST HAVE "requestId: {0}" AS FIRST PARAMETER in RESOURCE STRING.
              *
              */
+            { "jpars_invalid_jndi_name", "requestId: {0}. A call is being made to a session bean with JNDI Name: [{1}].  That JNDI Name is invalid." },
             { "jpars_could_not_find_session_bean", "requestId: {0}. A call is being made to a session bean with JNDI Name: [{1}].  That bean can not be found." },
             { "jpars_could_not_find_persistence_context", "requestId: {0}. A JPA-RS call is requesting persistence context: [{1}].  That persistence context is not found." },
             { "jpars_could_not_find_class_in_persistence_unit", "requestId: {0}. Type: [{1}] cannot be found in persistence unit: [{2}]." },
