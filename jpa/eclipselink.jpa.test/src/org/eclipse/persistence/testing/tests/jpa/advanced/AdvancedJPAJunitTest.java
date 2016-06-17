@@ -268,6 +268,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
 
         suite.addTest(new AdvancedJPAJunitTest("testEmployeeToProjectWithBatchFetchTypeInReverseIteration"));
         suite.addTest(new AdvancedJPAJunitTest("testEmployeeToProjectWithBatchFetchTypeInCustomIteration"));
+        suite.addTest(new AdvancedJPAJunitTest("testEmployeeToProjectWithBatchFetchTypeInRandomIteration"));
 
         if (!isJPA10()) {
             // These tests use JPA 2.0 entity manager API
@@ -3591,6 +3592,69 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
                         for (Project project : employee.getProjects()) {
                             count++;
                         }
+                    }
+                }
+                Assert.assertEquals("Project objects received are not as many as expected", 2000, count);
+            } catch (ArrayIndexOutOfBoundsException x) {
+                Assert.fail(Helper.printStackTraceToString(x));
+            }
+        } finally {
+            // Clean up
+            beginTransaction(em);
+            for (Employee employee : employeesToRemove) {
+                employee = em.merge(employee);
+                for (Project project : employee.getProjects()) {
+                    em.remove(em.merge(project));
+                }
+                em.remove(employee);
+            }
+            commitTransaction(em);
+            closeEntityManager(em);
+        }
+    }
+
+    /**
+     * Bug 412056
+     * Test batch fetch with size one less than results in random order
+     */
+    public void testEmployeeToProjectWithBatchFetchTypeInRandomIteration() {
+        final String lastName = "testRandomEmployeeToProject";
+
+        // Set up
+        Set<Employee> employeesToRemove = new HashSet<>();
+        EntityManager em = createEntityManager();
+        for (int i = 0; i < 100; i++) {
+            beginTransaction(em);
+            Employee employee = new Employee();
+            employee.setLastName(lastName);
+            employeesToRemove.add(employee);
+            em.persist(employee);
+            for (int j = 0; j < 20; j++) {
+                Project project = new Project();
+                employee.addProject(project);
+                em.persist(project);
+            }
+            commitTransaction(em);
+        }
+
+        JpaEntityManager jpaEntityManager = (JpaEntityManager) em.getDelegate();
+        jpaEntityManager.getUnitOfWork().getIdentityMapAccessor().initializeAllIdentityMaps();
+        try {
+            Expression exp = new ExpressionBuilder(Employee.class).get("lastName").equal(lastName);
+            EJBQueryImpl query = (EJBQueryImpl) jpaEntityManager.createQuery(exp, Employee.class);
+            ((ReadAllQuery) query.getDatabaseQuery()).addBatchReadAttribute("projects");
+            ((ReadAllQuery) query.getDatabaseQuery()).setBatchFetchType(BatchFetchType.IN);
+            ((ReadAllQuery) query.getDatabaseQuery()).setBatchFetchSize(99);
+            List<Employee> employees = query.getResultList();
+
+            // Trigger the bug
+            Collections.shuffle(employees);
+
+            int count = 0;
+            try {
+                for (Employee employee : employees) {
+                    for (Project project : employee.getProjects()) {
+                        count++;
                     }
                 }
                 Assert.assertEquals("Project objects received are not as many as expected", 2000, count);
