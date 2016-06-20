@@ -67,9 +67,11 @@ import java.util.List;
 import java.util.Vector;
 
 import org.eclipse.persistence.annotations.BatchFetch;
+import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.JoinFetch;
+import org.eclipse.persistence.annotations.JoinFetchType;
 import org.eclipse.persistence.annotations.Noncacheable;
 import org.eclipse.persistence.annotations.PrivateOwned;
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -153,11 +155,17 @@ public abstract class RelationshipAccessor extends MappingAccessor {
         // Set the join fetch if one is present.
         if (isAnnotationPresent(JoinFetch.class)) {
             m_joinFetch = getAnnotation(JoinFetch.class).getAttributeString("value");
+            if (m_joinFetch == null) {
+                m_joinFetch = JoinFetchType.INNER.name();
+            }
         }
 
         // Set the batch fetch if one is present.
         if (isAnnotationPresent(BatchFetch.class)) {
             m_batchFetch = new BatchFetchMetadata(getAnnotation(BatchFetch.class), this);
+            if (m_batchFetch.getType() == null) {
+                m_batchFetch.setType(BatchFetchType.JOIN.name());
+            }
         }
 
         // Set the join columns if some are present.
