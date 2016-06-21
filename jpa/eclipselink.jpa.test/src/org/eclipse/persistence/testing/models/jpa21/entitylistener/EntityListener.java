@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -14,37 +14,31 @@ package org.eclipse.persistence.testing.models.jpa21.entitylistener;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.ejb.EJB;
 import javax.persistence.PostPersist;
 import javax.persistence.PrePersist;
 
-import org.eclipse.persistence.testing.models.jpa21.sessionbean.InjectedBean;
+public class EntityListener extends AbstractEntityListener<EntityListenerHolder> {
 
-public class EntityListener {
-
-    public static boolean INJECTED_RETURN_VALUE = false;
-    public static int POST_CONSTRUCT_CALLS = 0;
-    public static int PRE_DESTROY_CALLS = 0;
-    
-    @EJB
-    protected InjectedBean injected;
-    
+    @Override
     @PrePersist
-    public void prePersist(Object object) {
+    public void prePersist(EntityListenerHolder object) {
         INJECTED_RETURN_VALUE = injected.isCalled();
     }
-    
+
+    @Override
     @PostPersist
-    public void postPersist(Object object){
+    public void postPersist(EntityListenerHolder object) {
     }
-    
+
+    @Override
     @PreDestroy
-    public void preDestroy(){
+    public void preDestroy() {
         PRE_DESTROY_CALLS++;
     }
-    
+
+    @Override
     @PostConstruct
-    public void postConstruct(){
+    public void postConstruct() {
         POST_CONSTRUCT_CALLS++;
     }
 }

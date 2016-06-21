@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -442,35 +442,38 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
         // 2 - Set any annotation defined methods second. We should only add
         // add them if they were not overridden in XML.
         for (Method method : methods) {
-            MetadataMethod metadataMethod = getMetadataClass(method.getDeclaringClass().getName(), false).getMethod(method.getName(), method.getParameterTypes());
-            // Metadata method can be null when dealing with jdk methods: equals, notify, toString, wait etc.. 
-            if (metadataMethod != null) {
-                if (metadataMethod.isAnnotationPresent(JPA_POST_LOAD, classAccessor) && m_postLoad == null) {
-                    setPostLoad(method);
-                }
-                
-                if (metadataMethod.isAnnotationPresent(JPA_POST_PERSIST, classAccessor) && m_postPersist == null) {
-                    setPostPersist(method);
-                }
-                
-                if (metadataMethod.isAnnotationPresent(JPA_POST_REMOVE, classAccessor) && m_postRemove == null) {
-                    setPostRemove(method);
-                }
-                
-                if (metadataMethod.isAnnotationPresent(JPA_POST_UPDATE, classAccessor) && m_postUpdate == null) {
-                    setPostUpdate(method);
-                }
-                
-                if (metadataMethod.isAnnotationPresent(JPA_PRE_PERSIST, classAccessor) && m_prePersist == null) {
-                    setPrePersist(method);
-                }
-                
-                if (metadataMethod.isAnnotationPresent(JPA_PRE_REMOVE, classAccessor) && m_preRemove == null) {
-                    setPreRemove(method);
-                }
-                
-                if (metadataMethod.isAnnotationPresent(JPA_PRE_UPDATE, classAccessor) && m_preUpdate == null) {
-                    setPreUpdate(method);
+            // Bug 495587 - Ignoring bridge methods
+            if (!method.isBridge()) {
+                MetadataMethod metadataMethod = getMetadataClass(method.getDeclaringClass().getName(), false).getMethod(method.getName(), method.getParameterTypes());
+                // Metadata method can be null when dealing with jdk methods: equals, notify, toString, wait etc..
+                if (metadataMethod != null) {
+                    if (metadataMethod.isAnnotationPresent(JPA_POST_LOAD, classAccessor) && m_postLoad == null) {
+                        setPostLoad(method);
+                    }
+
+                    if (metadataMethod.isAnnotationPresent(JPA_POST_PERSIST, classAccessor) && m_postPersist == null) {
+                        setPostPersist(method);
+                    }
+
+                    if (metadataMethod.isAnnotationPresent(JPA_POST_REMOVE, classAccessor) && m_postRemove == null) {
+                        setPostRemove(method);
+                    }
+
+                    if (metadataMethod.isAnnotationPresent(JPA_POST_UPDATE, classAccessor) && m_postUpdate == null) {
+                        setPostUpdate(method);
+                    }
+
+                    if (metadataMethod.isAnnotationPresent(JPA_PRE_PERSIST, classAccessor) && m_prePersist == null) {
+                        setPrePersist(method);
+                    }
+
+                    if (metadataMethod.isAnnotationPresent(JPA_PRE_REMOVE, classAccessor) && m_preRemove == null) {
+                        setPreRemove(method);
+                    }
+
+                    if (metadataMethod.isAnnotationPresent(JPA_PRE_UPDATE, classAccessor) && m_preUpdate == null) {
+                        setPreUpdate(method);
+                    }
                 }
             }
         }
