@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -521,14 +521,14 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * Extract the value from the batch optimized query, this should be supported by most query types.
      */
     public Object extractResultFromBatchQuery(ReadQuery batchQuery, CacheKey parentCacheKey, AbstractRecord sourceRow, AbstractSession session, ObjectLevelReadQuery originalQuery) throws QueryException {
-        Map<Object, Object> batchedObjects = null;
+        Map<Object, Object> batchedObjects;
         Object result = null;
         Object sourceKey = extractBatchKeyFromRow(sourceRow, session);
         if (sourceKey == null) {
             // If the foreign key was null, then just return null.
             return null;
         }
-        Object cachedObject = checkCacheForBatchKey(sourceRow, sourceKey, batchedObjects, batchQuery, originalQuery, session);
+        Object cachedObject = checkCacheForBatchKey(sourceRow, sourceKey, null, batchQuery, originalQuery, session);
         if (cachedObject != null) {
             // If the object is already in the cache, then just return it.
             return cachedObject;
@@ -539,7 +539,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             batchedObjects = batchQuery.getBatchObjects();
             BatchFetchPolicy originalPolicy = originalQuery.getBatchFetchPolicy();
             if (batchedObjects == null) {
-                batchedObjects = new Hashtable();
+                batchedObjects = new Hashtable<>();
                 batchQuery.setBatchObjects(batchedObjects);
             } else {
                 result = batchedObjects.get(sourceKey);
@@ -551,101 +551,94 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
                 }
             }
             // In case of IN the batch including this row may not have been executed yet.
-            if (result == null) {
-                AbstractRecord translationRow = originalQuery.getTranslationRow();
-                if (translationRow == null) {
-                    translationRow = new DatabaseRecord();
+            AbstractRecord translationRow = originalQuery.getTranslationRow();
+            if (translationRow == null) {
+                translationRow = new DatabaseRecord();
+            }
+            // Execute query and index resulting object sets by key.
+            if (originalPolicy.isIN()) {
+                // Need to extract all foreign key values from all parent rows for IN parameter.
+                List<AbstractRecord> parentRows = originalPolicy.getDataResults(this);
+                // Execute queries by batch if too many rows.
+                int rowsSize = parentRows.size();
+                int size = Math.min(rowsSize, originalPolicy.getSize());
+                if (size == 0) {
+                    return null;
                 }
-                // Execute query and index resulting object sets by key.
-                if (originalPolicy.isIN()) {
-                    // Need to extract all foreign key values from all parent rows for IN parameter.
-                    List<AbstractRecord> parentRows = originalPolicy.getDataResults(this);
-                    // Execute queries by batch if too many rows.
-                    int rowsSize = parentRows.size();
-                    int size = Math.min(rowsSize, originalPolicy.getSize());
-                    if (size == 0) {
-                        return null;
+                int startIndex = 0;
+                if (size != rowsSize) {
+                    // If only fetching a page, need to make sure the row we want is in the page.
+                    startIndex = parentRows.indexOf(sourceRow);
+                }
+                List foreignKeyValues = new ArrayList(size);
+                Set foreignKeys = new HashSet(size);
+                int index = 0;
+                int offset = startIndex;
+                for (int count = 0; count < size; count++) {
+                    if (index >= rowsSize) {
+                        // Processed all rows, done.
+                        break;
+                    } else if ((offset + index) >= rowsSize) {
+                        // If passed the end, go back to start.
+                        offset = index * -1;
                     }
-                    int startIndex = 0;
-                    if (size != rowsSize) {
-                        // If only fetching a page, need to make sure the row we want is in the page.
-                        startIndex = parentRows.indexOf(sourceRow);
-                    }
-                    List foreignKeyValues = new ArrayList(size);
-                    Set foreignKeys = new HashSet(size);
-                    int index = 0;
-                    int offset = startIndex;
-                    for (int count = 0; count < size; count++) {
-                        if (index >= rowsSize) {
-                            // Processed all rows, done.
-                            break;
-                        } else if ((offset + index) >= rowsSize) {
-                            // If passed the end, go back to start.
-                            offset = index * -1;
-                        }
-                        AbstractRecord row = parentRows.get(offset + index);
-                        // Handle duplicate rows in the ComplexQueryResult being replaced with null, as a
-                        // result of duplicate filtering being true for constructing the ComplexQueryResult
-                        if (row != null) {
-                            Object foreignKey = extractBatchKeyFromRow(row, session);
-                            if (foreignKey == null) {
-                                // Ignore null foreign keys.
+                    AbstractRecord row = parentRows.get(offset + index);
+                    // Handle duplicate rows in the ComplexQueryResult being replaced with null, as a
+                    // result of duplicate filtering being true for constructing the ComplexQueryResult
+                    if (row != null) {
+                        Object foreignKey = extractBatchKeyFromRow(row, session);
+                        if (foreignKey == null) {
+                            // Ignore null foreign keys.
+                            count--;
+                        } else {
+                            cachedObject = checkCacheForBatchKey(row, foreignKey, batchedObjects, batchQuery, originalQuery, session);
+                            if (cachedObject != null) {
+                                // Avoid fetching things a cache hit occurs for.
                                 count--;
                             } else {
-                                cachedObject = checkCacheForBatchKey(row, foreignKey, batchedObjects, batchQuery, originalQuery, session);
-                                if (cachedObject != null) {
-                                    // Avoid fetching things a cache hit occurs for.
-                                    count--;                                
+                                // Ensure the same id is not selected twice.
+                                if (foreignKeys.contains(foreignKey)) {
+                                    count--;
                                 } else {
-                                    // Ensure the same id is not selected twice.
-                                    if (foreignKeys.contains(foreignKey)) {
-                                        count--;
-                                    } else {
-                                        Object[] key = ((CacheId)foreignKey).getPrimaryKey();
-                                        Object foreignKeyValue = key[0];
-                                        // Support composite keys using nested IN.
-                                        if (key.length > 1) {
-                                            foreignKeyValue = Arrays.asList(key);
-                                        }
-                                        foreignKeyValues.add(foreignKeyValue);
-                                        foreignKeys.add(foreignKey);
+                                    Object[] key = ((CacheId)foreignKey).getPrimaryKey();
+                                    Object foreignKeyValue = key[0];
+                                    // Support composite keys using nested IN.
+                                    if (key.length > 1) {
+                                        foreignKeyValue = Arrays.asList(key);
                                     }
+                                    foreignKeyValues.add(foreignKeyValue);
+                                    foreignKeys.add(foreignKey);
                                 }
                             }
                         }
-                        index++;
                     }
-                    // Need to compute remaining rows, this is tricky because a page in the middle could have been processed.
-                    List<AbstractRecord> remainingParentRows = null;
-                    if (startIndex == 0) {
-                        // Tail
-                        remainingParentRows = new ArrayList(parentRows.subList(index, rowsSize));
-                    } else if (startIndex == offset) {
-                        // Head and tail.
-                        remainingParentRows = new ArrayList(parentRows.subList(0, startIndex - 1));
-                        remainingParentRows.addAll(parentRows.subList(index, rowsSize));
-                    } else {
-                        // Middle
-                        // Check if empty,
-                        if ((offset + index) >= (startIndex - 1)) {
-                            remainingParentRows = new ArrayList(0);
-                        } else {
-                            remainingParentRows = new ArrayList(parentRows.subList(offset + index, startIndex - 1));
-                        }
-                    }
-                    originalPolicy.setDataResults(this, remainingParentRows);
-                    translationRow = translationRow.clone();
-                    translationRow.put(QUERY_BATCH_PARAMETER, foreignKeyValues);
-                    // Register each id as null, in case it has no relationship.
-                    for (Object foreignKey : foreignKeys) {
-                        batchedObjects.put(foreignKey, Helper.NULL_VALUE);
-                    }
-                } else if (batchQuery.isReadAllQuery() && ((ReadAllQuery)batchQuery).getBatchFetchPolicy().isIN()) {
-                    throw QueryException.originalQueryMustUseBatchIN(this, originalQuery);
+                    index++;
                 }
-                executeBatchQuery(batchQuery, parentCacheKey, batchedObjects, session, translationRow);
-                batchQuery.setSession(null);
+                // Need to compute remaining rows, this is tricky because a page in the middle could have been processed.
+                List<AbstractRecord> remainingParentRows = null;
+                if (startIndex == 0) {
+                    // Tail
+                    remainingParentRows = new ArrayList<>(parentRows.subList(index, rowsSize));
+                } else if (startIndex == offset) {
+                    // Head and tail.
+                    remainingParentRows = new ArrayList<>(parentRows.subList(0, startIndex));
+                    remainingParentRows.addAll(parentRows.subList(startIndex + index, rowsSize));
+                } else {
+                    // Middle
+                    remainingParentRows = new ArrayList<>(parentRows.subList(offset + index, startIndex));
+                }
+                originalPolicy.setDataResults(this, remainingParentRows);
+                translationRow = translationRow.clone();
+                translationRow.put(QUERY_BATCH_PARAMETER, foreignKeyValues);
+                // Register each id as null, in case it has no relationship.
+                for (Object foreignKey : foreignKeys) {
+                    batchedObjects.put(foreignKey, Helper.NULL_VALUE);
+                }
+            } else if (batchQuery.isReadAllQuery() && ((ReadAllQuery)batchQuery).getBatchFetchPolicy().isIN()) {
+                throw QueryException.originalQueryMustUseBatchIN(this, originalQuery);
             }
+            executeBatchQuery(batchQuery, parentCacheKey, batchedObjects, session, translationRow);
+            batchQuery.setSession(null);
         }
         result = batchedObjects.get(sourceKey);
         if (result == Helper.NULL_VALUE) {
