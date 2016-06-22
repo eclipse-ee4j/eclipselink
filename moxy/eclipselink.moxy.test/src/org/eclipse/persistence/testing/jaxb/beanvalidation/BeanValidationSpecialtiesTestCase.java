@@ -32,7 +32,6 @@ import javax.validation.metadata.BeanDescriptor;
 import javax.validation.metadata.ConstraintDescriptor;
 
 import org.eclipse.persistence.exceptions.BeanValidationException;
-import org.eclipse.persistence.jaxb.BeanValidationHelper;
 import org.eclipse.persistence.jaxb.ConstraintViolationWrapper;
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
@@ -104,36 +103,36 @@ public class BeanValidationSpecialtiesTestCase extends junit.framework.TestCase 
         }
     }
 
-    /**
-     * Tests that we do not skip validation on classes that do not have any bean validation annotations on fields or
-     * methods but have some on constructors.
-     */
-    public void testConstructorAnnotations() throws Exception {
-        JAXBContext context = (JAXBContext)JAXBContextFactory.createContext(new Class[]{ConstructorAnnotatedEmployee.class}, null);
-        JAXBMarshaller marshaller = context.createMarshaller();
-
-        ConstructorAnnotatedEmployee employee = new ConstructorAnnotatedEmployee(null);
-
-        try {
-            marshaller.marshal(employee, new StringWriter());
-        } catch (BeanValidationException ignored) {
-        }
-
-        // Ok, HV is not picking up constraints on constructor. But that does not mean anything. Our job is to ensure
-        // that we correctly identify that the class is constrained and pass the object to the underlying BV impl.
-        BeanValidationHelper beanValidationHelper = context.getBeanValidationHelper();
-        assertTrue(beanValidationHelper.getConstraintsMap().containsKey(ConstructorAnnotatedEmployee.class));
-
-        // This will not detect the constraints violation on constructor (on HV 5.1), although it should.
-//        Set<? extends ConstraintViolation<?>> violations = marshaller.getConstraintViolations();
+//    /**
+//     * Tests that we do not skip validation on classes that do not have any bean validation annotations on fields or
+//     * methods but have some on constructors.
+//     */
+//    public void testConstructorAnnotations() throws Exception {
+//        JAXBContext context = (JAXBContext)JAXBContextFactory.createContext(new Class[]{ConstructorAnnotatedEmployee.class}, null);
+//        JAXBMarshaller marshaller = context.createMarshaller();
 //
-//        assertFalse(violations.isEmpty());
+//        ConstructorAnnotatedEmployee employee = new ConstructorAnnotatedEmployee(null);
 //
-//        // For all, i.e. one constraintViolations.
-//        for (ConstraintViolation constraintViolation : violations) {
-//            assertEquals(NOT_NULL_MESSAGE, constraintViolation.getMessageTemplate());
+//        try {
+//            marshaller.marshal(employee, new StringWriter());
+//        } catch (BeanValidationException ignored) {
 //        }
-    }
+//
+//        // Ok, HV is not picking up constraints on constructor. But that does not mean anything. Our job is to ensure
+//        // that we correctly identify that the class is constrained and pass the object to the underlying BV impl.
+//        BeanValidationHelper beanValidationHelper = context.getBeanValidationHelper();
+//        assertTrue(beanValidationHelper.getConstraintsMap().containsKey(ConstructorAnnotatedEmployee.class));
+//
+//        // This will not detect the constraints violation on constructor (on HV 5.1), although it should.
+////        Set<? extends ConstraintViolation<?>> violations = marshaller.getConstraintViolations();
+////
+////        assertFalse(violations.isEmpty());
+////
+////        // For all, i.e. one constraintViolations.
+////        for (ConstraintViolation constraintViolation : violations) {
+////            assertEquals(NOT_NULL_MESSAGE, constraintViolation.getMessageTemplate());
+////        }
+//    }
 
     /**
      * Tests {@link org.eclipse.persistence.jaxb.JAXBContextProperties#BEAN_VALIDATION_NO_OPTIMISATION} property.
