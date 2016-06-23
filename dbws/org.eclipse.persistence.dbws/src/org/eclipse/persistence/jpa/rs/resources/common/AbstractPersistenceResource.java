@@ -15,9 +15,7 @@ package org.eclipse.persistence.jpa.rs.resources.common;
 
 import java.io.InputStream;
 import java.lang.reflect.Method;
-import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -143,20 +141,13 @@ public abstract class AbstractPersistenceResource extends AbstractResource {
     }
 
     private boolean isValid(String jndiName) {
-        URL url;
-        try {
-            url = new URL(jndiName);
-        } catch (MalformedURLException e) {
-            return true;
+        String protocol = null;
+        int colon = jndiName.indexOf(':');
+        int slash = jndiName.indexOf('/');
+        if (colon > 0 && (slash == -1 || colon < slash)) {
+            protocol = jndiName.substring(0, colon);
         }
-
-        String protocol = url.getProtocol();
-        if (protocol == null || protocol.isEmpty() || protocol.equalsIgnoreCase("java")) {
-            return true;
-        }
-
-        String host = url.getHost();
-        return host == null || host.isEmpty();
+        return protocol == null || protocol.isEmpty() || protocol.equalsIgnoreCase("java") || protocol.equalsIgnoreCase("ejb");
     }
 
     private SessionBeanCall unmarshallSessionBeanCall(InputStream data) throws JAXBException {
