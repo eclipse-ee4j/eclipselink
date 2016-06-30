@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000, 2015 INRIA, France Telecom
+ * Copyright (c) 2000-2011 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,30 +32,31 @@ package org.eclipse.persistence.internal.libraries.asm.tree;
 import java.util.Map;
 
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
+import org.eclipse.persistence.internal.libraries.asm.Type;
 
 /**
  * A node that represents a type instruction. A type instruction is an
  * instruction that takes a type descriptor as parameter.
- *
+ * 
  * @author Eric Bruneton
  */
 public class TypeInsnNode extends AbstractInsnNode {
 
     /**
      * The operand of this instruction. This operand is an internal name (see
-     * {@link org.eclipse.persistence.internal.libraries.asm.Type}).
+     * {@link Type}).
      */
     public String desc;
 
     /**
      * Constructs a new {@link TypeInsnNode}.
-     *
+     * 
      * @param opcode
      *            the opcode of the type instruction to be constructed. This
      *            opcode must be NEW, ANEWARRAY, CHECKCAST or INSTANCEOF.
      * @param desc
      *            the operand of the instruction to be constructed. This operand
-     *            is an internal name (see {@link org.eclipse.persistence.internal.libraries.asm.Type}).
+     *            is an internal name (see {@link Type}).
      */
     public TypeInsnNode(final int opcode, final String desc) {
         super(opcode);
@@ -64,7 +65,7 @@ public class TypeInsnNode extends AbstractInsnNode {
 
     /**
      * Sets the opcode of this instruction.
-     *
+     * 
      * @param opcode
      *            the new instruction opcode. This opcode must be NEW,
      *            ANEWARRAY, CHECKCAST or INSTANCEOF.

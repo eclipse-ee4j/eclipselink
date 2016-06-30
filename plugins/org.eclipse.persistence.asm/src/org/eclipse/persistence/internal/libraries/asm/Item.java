@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000, 2015 INRIA, France Telecom
+ * Copyright (c) 2000-2011 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,11 +29,10 @@
  */
 package org.eclipse.persistence.internal.libraries.asm;
 
-
 /**
  * A constant pool item. Constant pool items can be created with the 'newXXX'
  * methods in the {@link ClassWriter} class.
- *
+ * 
  * @author Eric Bruneton
  */
 final class Item {
@@ -53,11 +52,11 @@ final class Item {
      * {@link ClassWriter#NAME_TYPE}, {@link ClassWriter#FIELD},
      * {@link ClassWriter#METH}, {@link ClassWriter#IMETH},
      * {@link ClassWriter#MTYPE}, {@link ClassWriter#INDY}.
-     *
+     * 
      * MethodHandle constant 9 variations are stored using a range of 9 values
      * from {@link ClassWriter#HANDLE_BASE} + 1 to
      * {@link ClassWriter#HANDLE_BASE} + 9.
-     *
+     * 
      * Special Item types are used for Items that are stored in the ClassWriter
      * {@link ClassWriter#typeTable}, instead of the constant pool, in order to
      * avoid clashes with normal constant pool items in the ClassWriter constant
@@ -115,7 +114,7 @@ final class Item {
     /**
      * Constructs an uninitialized {@link Item} for constant pool element at
      * given position.
-     *
+     * 
      * @param index
      *            index of the item to be constructed.
      */
@@ -125,7 +124,7 @@ final class Item {
 
     /**
      * Constructs a copy of the given item.
-     *
+     * 
      * @param index
      *            index of the item to be constructed.
      * @param i
@@ -144,7 +143,7 @@ final class Item {
 
     /**
      * Sets this item to an integer item.
-     *
+     * 
      * @param intVal
      *            the value of this item.
      */
@@ -156,7 +155,7 @@ final class Item {
 
     /**
      * Sets this item to a long item.
-     *
+     * 
      * @param longVal
      *            the value of this item.
      */
@@ -168,7 +167,7 @@ final class Item {
 
     /**
      * Sets this item to a float item.
-     *
+     * 
      * @param floatVal
      *            the value of this item.
      */
@@ -180,7 +179,7 @@ final class Item {
 
     /**
      * Sets this item to a double item.
-     *
+     * 
      * @param doubleVal
      *            the value of this item.
      */
@@ -192,7 +191,7 @@ final class Item {
 
     /**
      * Sets this item to an item that do not hold a primitive value.
-     *
+     * 
      * @param type
      *            the type of this item.
      * @param strVal1
@@ -202,6 +201,7 @@ final class Item {
      * @param strVal3
      *            third part of the value of this item.
      */
+    @SuppressWarnings("fallthrough")
     void set(final int type, final String strVal1, final String strVal2,
             final String strVal3) {
         this.type = type;
@@ -209,9 +209,10 @@ final class Item {
         this.strVal2 = strVal2;
         this.strVal3 = strVal3;
         switch (type) {
+        case ClassWriter.CLASS:
+            this.intVal = 0;     // intVal of a class must be zero, see visitInnerClass
         case ClassWriter.UTF8:
         case ClassWriter.STR:
-        case ClassWriter.CLASS:
         case ClassWriter.MTYPE:
         case ClassWriter.TYPE_NORMAL:
             hashCode = 0x7FFFFFFF & (type + strVal1.hashCode());
@@ -233,7 +234,7 @@ final class Item {
 
     /**
      * Sets the item to an InvokeDynamic item.
-     *
+     * 
      * @param name
      *            invokedynamic's name.
      * @param desc
@@ -252,7 +253,7 @@ final class Item {
 
     /**
      * Sets the item to a BootstrapMethod item.
-     *
+     * 
      * @param position
      *            position in byte in the class attribute BootrapMethods.
      * @param hashCode
@@ -269,7 +270,7 @@ final class Item {
     /**
      * Indicates if the given item is equal to this one. <i>This method assumes
      * that the two items have the same {@link #type}</i>.
-     *
+     * 
      * @param i
      *            the item to be compared to this one. Both items must have the
      *            same {@link #type}.

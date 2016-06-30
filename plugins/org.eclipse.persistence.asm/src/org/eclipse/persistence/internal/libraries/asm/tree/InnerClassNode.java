@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000, 2015 INRIA, France Telecom
+ * Copyright (c) 2000-2011 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,23 +30,24 @@
 package org.eclipse.persistence.internal.libraries.asm.tree;
 
 import org.eclipse.persistence.internal.libraries.asm.ClassVisitor;
+import org.eclipse.persistence.internal.libraries.asm.Type;
 
 /**
  * A node that represents an inner class.
- *
+ * 
  * @author Eric Bruneton
  */
 public class InnerClassNode {
 
     /**
      * The internal name of an inner class (see
-     * {@link org.eclipse.persistence.internal.libraries.asm.Type#getInternalName() getInternalName}).
+     * {@link Type#getInternalName() getInternalName}).
      */
     public String name;
 
     /**
      * The internal name of the class to which the inner class belongs (see
-     * {@link org.eclipse.persistence.internal.libraries.asm.Type#getInternalName() getInternalName}). May be
+     * {@link Type#getInternalName() getInternalName}). May be
      * <tt>null</tt>.
      */
     public String outerName;
@@ -65,14 +66,14 @@ public class InnerClassNode {
 
     /**
      * Constructs a new {@link InnerClassNode}.
-     *
+     * 
      * @param name
      *            the internal name of an inner class (see
-     *            {@link org.eclipse.persistence.internal.libraries.asm.Type#getInternalName()
+     *            {@link Type#getInternalName()
      *            getInternalName}).
      * @param outerName
      *            the internal name of the class to which the inner class
-     *            belongs (see {@link org.eclipse.persistence.internal.libraries.asm.Type#getInternalName()
+     *            belongs (see {@link Type#getInternalName()
      *            getInternalName}). May be <tt>null</tt>.
      * @param innerName
      *            the (simple) name of the inner class inside its enclosing
@@ -91,7 +92,7 @@ public class InnerClassNode {
 
     /**
      * Makes the given class visitor visit this inner class.
-     *
+     * 
      * @param cv
      *            a class visitor.
      */

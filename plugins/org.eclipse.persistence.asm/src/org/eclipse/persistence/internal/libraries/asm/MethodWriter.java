@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000, 2015 INRIA, France Telecom
+ * Copyright (c) 2000-2011 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,12 +29,11 @@
  */
 package org.eclipse.persistence.internal.libraries.asm;
 
-
 /**
  * A {@link MethodVisitor} that generates methods in bytecode form. Each visit
  * method of this class appends the bytecode corresponding to the visited
  * instruction to a byte vector, in the order these methods are called.
- *
+ * 
  * @author Eric Bruneton
  * @author Eugene Kuleshov
  */
@@ -97,7 +96,7 @@ class MethodWriter extends MethodVisitor {
      * Indicates that the stack map frames must be recomputed from scratch. In
      * this case the maximum stack size and number of local variables is also
      * recomputed from scratch.
-     *
+     * 
      * @see #compute
      */
     private static final int FRAMES = 0;
@@ -105,14 +104,14 @@ class MethodWriter extends MethodVisitor {
     /**
      * Indicates that the maximum stack size and number of local variables must
      * be automatically computed.
-     *
+     * 
      * @see #compute
      */
     private static final int MAXS = 1;
 
     /**
      * Indicates that nothing must be automatically computed.
-     *
+     * 
      * @see #compute
      */
     private static final int NOTHING = 2;
@@ -264,7 +263,7 @@ class MethodWriter extends MethodVisitor {
 
     /**
      * The last frame that was written in the StackMapTable attribute.
-     *
+     * 
      * @see #frame
      */
     private int[] previousFrame;
@@ -379,7 +378,7 @@ class MethodWriter extends MethodVisitor {
 
     /**
      * Indicates what must be automatically computed.
-     *
+     * 
      * @see #FRAMES
      * @see #MAXS
      * @see #NOTHING
@@ -429,7 +428,7 @@ class MethodWriter extends MethodVisitor {
 
     /**
      * Constructs a new {@link MethodWriter}.
-     *
+     * 
      * @param cw
      *            the class writer in which the method must be added.
      * @param access
@@ -1658,7 +1657,7 @@ class MethodWriter extends MethodVisitor {
 
     /**
      * Adds a successor to the {@link #currentBlock currentBlock} block.
-     *
+     * 
      * @param info
      *            information about the control flow edge to be added.
      * @param successor
@@ -1698,7 +1697,7 @@ class MethodWriter extends MethodVisitor {
 
     /**
      * Visits a frame that has been computed from scratch.
-     *
+     * 
      * @param f
      *            the frame that must be visited.
      */
@@ -1814,7 +1813,7 @@ class MethodWriter extends MethodVisitor {
 
     /**
      * Starts the visit of a stack map frame.
-     *
+     * 
      * @param offset
      *            the offset of the instruction to which the frame corresponds.
      * @param nLocal
@@ -1943,7 +1942,7 @@ class MethodWriter extends MethodVisitor {
      * StackMapTableAttribute. This method converts types from the format used
      * in {@link Label} to the format used in StackMapTable attributes. In
      * particular, it converts type table indexes to constant pool indexes.
-     *
+     * 
      * @param start
      *            index of the first type in {@link #frame} to write.
      * @param end
@@ -1967,43 +1966,43 @@ class MethodWriter extends MethodVisitor {
                     stackMap.putByte(v);
                 }
             } else {
-                StringBuffer buf = new StringBuffer();
+                StringBuilder sb = new StringBuilder();
                 d >>= 28;
                 while (d-- > 0) {
-                    buf.append('[');
+                    sb.append('[');
                 }
                 if ((t & Frame.BASE_KIND) == Frame.OBJECT) {
-                    buf.append('L');
-                    buf.append(cw.typeTable[t & Frame.BASE_VALUE].strVal1);
-                    buf.append(';');
+                    sb.append('L');
+                    sb.append(cw.typeTable[t & Frame.BASE_VALUE].strVal1);
+                    sb.append(';');
                 } else {
                     switch (t & 0xF) {
                     case 1:
-                        buf.append('I');
+                        sb.append('I');
                         break;
                     case 2:
-                        buf.append('F');
+                        sb.append('F');
                         break;
                     case 3:
-                        buf.append('D');
+                        sb.append('D');
                         break;
                     case 9:
-                        buf.append('Z');
+                        sb.append('Z');
                         break;
                     case 10:
-                        buf.append('B');
+                        sb.append('B');
                         break;
                     case 11:
-                        buf.append('C');
+                        sb.append('C');
                         break;
                     case 12:
-                        buf.append('S');
+                        sb.append('S');
                         break;
                     default:
-                        buf.append('J');
+                        sb.append('J');
                     }
                 }
-                stackMap.putByte(7).putShort(cw.newClass(buf.toString()));
+                stackMap.putByte(7).putShort(cw.newClass(sb.toString()));
             }
         }
     }
@@ -2024,7 +2023,7 @@ class MethodWriter extends MethodVisitor {
 
     /**
      * Returns the size of the bytecode of this method.
-     *
+     * 
      * @return the size of the bytecode of this method.
      */
     final int getSize() {
@@ -2033,7 +2032,7 @@ class MethodWriter extends MethodVisitor {
         }
         int size = 8;
         if (code.length > 0) {
-            if (code.length > 65536) {
+            if (code.length > 65535) {
                 throw new RuntimeException("Method code too large!");
             }
             cw.newUTF8("Code");
@@ -2134,7 +2133,7 @@ class MethodWriter extends MethodVisitor {
 
     /**
      * Puts the bytecode of this method in the given byte vector.
-     *
+     * 
      * @param out
      *            the byte vector into which the bytecode of this method must be
      *            copied.
@@ -2380,17 +2379,17 @@ class MethodWriter extends MethodVisitor {
          * so on. The first step of the algorithm consists in finding all the
          * instructions that need to be resized, without modifying the code.
          * This is done by the following "fix point" algorithm:
-         *
+         * 
          * Parse the code to find the jump instructions whose offset will need
          * more than 2 bytes to be stored (the future offset is computed from
          * the current offset and from the number of bytes that will be inserted
          * or removed between the source and target instructions). For each such
          * instruction, adds an entry in (a copy of) the indexes and sizes
          * arrays (if this has not already been done in a previous iteration!).
-         *
+         * 
          * If at least one entry has been added during the previous step, go
          * back to the beginning, otherwise stop.
-         *
+         * 
          * In fact the real algorithm is complicated by the fact that the size
          * of TABLESWITCH and LOOKUPSWITCH instructions depends on their
          * position in the bytecode (because of padding). In order to ensure the
@@ -2707,11 +2706,13 @@ class MethodWriter extends MethodVisitor {
                 l = l.successor;
             }
             // Update the offsets in the uninitialized types
-            for (i = 0; i < cw.typeTable.length; ++i) {
-                Item item = cw.typeTable[i];
-                if (item != null && item.type == ClassWriter.TYPE_UNINIT) {
-                    item.intVal = getNewOffset(allIndexes, allSizes, 0,
-                            item.intVal);
+            if (cw.typeTable != null) {
+                for (i = 0; i < cw.typeTable.length; ++i) {
+                    Item item = cw.typeTable[i];
+                    if (item != null && item.type == ClassWriter.TYPE_UNINIT) {
+                        item.intVal = getNewOffset(allIndexes, allSizes, 0,
+                                item.intVal);
+                    }
                 }
             }
             // The stack map frames are not serialized yet, so we don't need
@@ -2789,7 +2790,7 @@ class MethodWriter extends MethodVisitor {
 
     /**
      * Reads an unsigned short value in the given byte array.
-     *
+     * 
      * @param b
      *            a byte array.
      * @param index
@@ -2802,7 +2803,7 @@ class MethodWriter extends MethodVisitor {
 
     /**
      * Reads a signed short value in the given byte array.
-     *
+     * 
      * @param b
      *            a byte array.
      * @param index
@@ -2815,7 +2816,7 @@ class MethodWriter extends MethodVisitor {
 
     /**
      * Reads a signed int value in the given byte array.
-     *
+     * 
      * @param b
      *            a byte array.
      * @param index
@@ -2829,7 +2830,7 @@ class MethodWriter extends MethodVisitor {
 
     /**
      * Writes a short value in the given byte array.
-     *
+     * 
      * @param b
      *            a byte array.
      * @param index
@@ -2848,7 +2849,7 @@ class MethodWriter extends MethodVisitor {
      * Note: it is possible to have several entries for the same instruction in
      * the <tt>indexes</tt> and <tt>sizes</tt>: two entries (index=a,size=b) and
      * (index=a,size=b') are equivalent to a single entry (index=a,size=b+b').
-     *
+     * 
      * @param indexes
      *            current positions of the instructions to be resized. Each
      *            instruction must be designated by the index of its <i>last</i>
@@ -2886,7 +2887,7 @@ class MethodWriter extends MethodVisitor {
 
     /**
      * Updates the offset of the given label.
-     *
+     * 
      * @param indexes
      *            current positions of the instructions to be resized. Each
      *            instruction must be designated by the index of its <i>last</i>

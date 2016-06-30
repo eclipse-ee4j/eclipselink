@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000, 2015 INRIA, France Telecom
+ * Copyright (c) 2000-2011 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,7 +36,7 @@ import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 
 /**
  * A node that represents an IINC instruction.
- *
+ * 
  * @author Eric Bruneton
  */
 public class IincInsnNode extends AbstractInsnNode {
@@ -53,7 +53,7 @@ public class IincInsnNode extends AbstractInsnNode {
 
     /**
      * Constructs a new {@link IincInsnNode}.
-     *
+     * 
      * @param var
      *            index of the local variable to be incremented.
      * @param incr

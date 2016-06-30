@@ -35,13 +35,13 @@ Provides an implementation for optional class, field and method attributes.
 
 By default ASM strips optional attributes, in order to keep them in
 the bytecode that is being readed you should pass an array of required attribute
-instances to {@link org.eclipse.persistence.internal.libraries.asm.ClassReader#accept(org.eclipse.persistence.internal.libraries.asm.ClassVisitor, org.eclipse.persistence.internal.libraries.asm.Attribute[], boolean) ClassReader.accept()} method.
+instances to {@link org.objectweb.asm.ClassReader#accept(org.objectweb.asm.ClassVisitor, org.objectweb.asm.Attribute[], boolean) ClassReader.accept()} method.
 In order to add custom attributes to the manually constructed bytecode concrete
-subclasses of the {@link org.eclipse.persistence.internal.libraries.asm.Attribute Attribute} can be passed to
+subclasses of the {@link org.objectweb.asm.Attribute Attribute} can be passed to
 the visitAttribute methods of the
-{@link org.eclipse.persistence.internal.libraries.asm.ClassVisitor ClassVisitor},
-{@link org.eclipse.persistence.internal.libraries.asm.FieldVisitor FieldVisitor} and
-{@link org.eclipse.persistence.internal.libraries.asm.MethodVisitor MethodVisitor} interfaces.
+{@link org.objectweb.asm.ClassVisitor ClassVisitor},
+{@link org.objectweb.asm.FieldVisitor FieldVisitor} and
+{@link org.objectweb.asm.MethodVisitor MethodVisitor} interfaces.
 
 @since ASM 1.4.1
 </body>

@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000, 2015 INRIA, France Telecom
+ * Copyright (c) 2000-2011 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,25 +39,25 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.eclipse.persistence.internal.libraries.asm.ClassVisitor;
+import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 import org.eclipse.persistence.internal.libraries.asm.FieldVisitor;
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
-import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 
 /**
  * A {@link ClassVisitor} that adds a serial version unique identifier to a
  * class if missing. Here is typical usage of this class:
- *
+ * 
  * <pre>
  *   ClassWriter cw = new ClassWriter(...);
  *   ClassVisitor sv = new SerialVersionUIDAdder(cw);
  *   ClassVisitor ca = new MyClassAdapter(sv);
  *   new ClassReader(orginalClass).accept(ca, false);
  * </pre>
- *
+ * 
  * The SVUID algorithm can be found <a href=
  * "http://java.sun.com/j2se/1.4.2/docs/guide/serialization/spec/class.html"
  * >http://java.sun.com/j2se/1.4.2/docs/guide/serialization/spec/class.html</a>:
- *
+ * 
  * <pre>
  * The serialVersionUID is computed using the signature of a stream of bytes
  * that reflect the class definition. The National Institute of Standards and
@@ -66,9 +66,9 @@ import org.eclipse.persistence.internal.libraries.asm.Opcodes;
  * 64-bit hash. A java.lang.DataOutputStream is used to convert primitive data
  * types to a sequence of bytes. The values input to the stream are defined by
  * the Java Virtual Machine (VM) specification for classes.
- *
+ * 
  * The sequence of items in the stream is as follows:
- *
+ * 
  * 1. The class name written using UTF encoding.
  * 2. The class modifiers written as a 32-bit integer.
  * 3. The name of each interface sorted by name written using UTF encoding.
@@ -92,12 +92,12 @@ import org.eclipse.persistence.internal.libraries.asm.Opcodes;
  * 3. The descriptor of the method in UTF encoding.
  * 8. The SHA-1 algorithm is executed on the stream of bytes produced by
  * DataOutputStream and produces five 32-bit values sha[0..4].
- *
+ * 
  * 9. The hash value is assembled from the first and second 32-bit values of
  * the SHA-1 message digest. If the result of the message digest, the five
  * 32-bit words H0 H1 H2 H3 H4, is in an array of five int values named
  * sha, the hash value would be computed as follows:
- *
+ * 
  * long hash = ((sha[0] &gt;&gt;&gt; 24) &amp; 0xFF) |
  * ((sha[0] &gt;&gt;&gt; 16) &amp; 0xFF) &lt;&lt; 8 |
  * ((sha[0] &gt;&gt;&gt; 8) &amp; 0xFF) &lt;&lt; 16 |
@@ -107,7 +107,7 @@ import org.eclipse.persistence.internal.libraries.asm.Opcodes;
  * ((sha[1] &gt;&gt;&gt; 8) &amp; 0xFF) &lt;&lt; 48 |
  * ((sha[1] &gt;&gt;&gt; 0) &amp; 0xFF) &lt;&lt; 56;
  * </pre>
- *
+ * 
  * @author Rajendra Inamdar, Vishal Vishnoi
  */
 public class SerialVersionUIDAdder extends ClassVisitor {
@@ -162,7 +162,7 @@ public class SerialVersionUIDAdder extends ClassVisitor {
      * Creates a new {@link SerialVersionUIDAdder}. <i>Subclasses must not use
      * this constructor</i>. Instead, they must use the
      * {@link #SerialVersionUIDAdder(int, ClassVisitor)} version.
-     *
+     * 
      * @param cv
      *            a {@link ClassVisitor} to which this visitor will delegate
      *            calls.
@@ -178,7 +178,7 @@ public class SerialVersionUIDAdder extends ClassVisitor {
 
     /**
      * Creates a new {@link SerialVersionUIDAdder}.
-     *
+     * 
      * @param api
      *            the ASM API version implemented by this visitor. Must be one
      *            of {@link Opcodes#ASM4} or {@link Opcodes#ASM5}.
@@ -205,7 +205,7 @@ public class SerialVersionUIDAdder extends ClassVisitor {
     public void visit(final int version, final int access, final String name,
             final String signature, final String superName,
             final String[] interfaces) {
-        computeSVUID = (access & Opcodes.ACC_INTERFACE) == 0;
+        computeSVUID = (access & Opcodes.ACC_ENUM) == 0;
 
         if (computeSVUID) {
             this.name = name;
@@ -328,7 +328,7 @@ public class SerialVersionUIDAdder extends ClassVisitor {
     /**
      * Returns true if the class already has a SVUID field. The result of this
      * method is only valid when visitEnd is or has been called.
-     *
+     * 
      * @return true if the class already has a SVUID field.
      */
     public boolean hasSVUID() {
@@ -337,8 +337,7 @@ public class SerialVersionUIDAdder extends ClassVisitor {
 
     protected void addSVUID(long svuid) {
         FieldVisitor fv = super.visitField(Opcodes.ACC_FINAL
-                + Opcodes.ACC_STATIC, "serialVersionUID", "J", null, new Long(
-                svuid));
+                + Opcodes.ACC_STATIC, "serialVersionUID", "J", null, svuid);
         if (fv != null) {
             fv.visitEnd();
         }
@@ -346,7 +345,7 @@ public class SerialVersionUIDAdder extends ClassVisitor {
 
     /**
      * Computes and returns the value of SVUID.
-     *
+     * 
      * @return Returns the serial version UID
      * @throws IOException
      *             if an I/O error occurs
@@ -368,6 +367,11 @@ public class SerialVersionUIDAdder extends ClassVisitor {
             /*
              * 2. The class modifiers written as a 32-bit integer.
              */
+            int access = this.access;
+            if ((access & Opcodes.ACC_INTERFACE) != 0) {
+                access = (svuidMethods.size() > 0) ? (access | Opcodes.ACC_ABSTRACT)
+                        : (access & ~Opcodes.ACC_ABSTRACT);
+            }
             dos.writeInt(access
                     & (Opcodes.ACC_PUBLIC | Opcodes.ACC_FINAL
                             | Opcodes.ACC_INTERFACE | Opcodes.ACC_ABSTRACT));
@@ -384,11 +388,11 @@ public class SerialVersionUIDAdder extends ClassVisitor {
             /*
              * 4. For each field of the class sorted by field name (except
              * private static and private transient fields):
-             *
+             * 
              * 1. The name of the field in UTF encoding. 2. The modifiers of the
              * field written as a 32-bit integer. 3. The descriptor of the field
              * in UTF encoding
-             *
+             * 
              * Note that field signatures are not dot separated. Method and
              * constructor signatures are dot separated. Go figure...
              */
@@ -438,7 +442,7 @@ public class SerialVersionUIDAdder extends ClassVisitor {
              * digest, the five 32-bit words H0 H1 H2 H3 H4, is in an array of
              * five int values named sha, the hash value would be computed as
              * follows:
-             *
+             * 
              * long hash = ((sha[0] >>> 24) & 0xFF) | ((sha[0] >>> 16) & 0xFF)
              * << 8 | ((sha[0] >>> 8) & 0xFF) << 16 | ((sha[0] >>> 0) & 0xFF) <<
              * 24 | ((sha[1] >>> 24) & 0xFF) << 32 | ((sha[1] >>> 16) & 0xFF) <<
@@ -460,7 +464,7 @@ public class SerialVersionUIDAdder extends ClassVisitor {
 
     /**
      * Returns the SHA-1 message digest of the given value.
-     *
+     * 
      * @param value
      *            the value whose SHA message digest must be computed.
      * @return the SHA-1 message digest of the given value.
@@ -475,7 +479,7 @@ public class SerialVersionUIDAdder extends ClassVisitor {
 
     /**
      * Sorts the items in the collection and writes it to the data output stream
-     *
+     * 
      * @param itemCollection
      *            collection of items
      * @param dos

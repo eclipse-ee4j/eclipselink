@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000, 2015 INRIA, France Telecom
+ * Copyright (c) 2000-2011 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,12 +31,13 @@ package org.eclipse.persistence.internal.libraries.asm.tree;
 
 import java.util.Map;
 
-import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
+import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
+import org.eclipse.persistence.internal.libraries.asm.Type;
 
 /**
  * A node that represents an LDC instruction.
- *
+ * 
  * @author Eric Bruneton
  */
 public class LdcInsnNode extends AbstractInsnNode {
@@ -44,13 +45,13 @@ public class LdcInsnNode extends AbstractInsnNode {
     /**
      * The constant to be loaded on the stack. This parameter must be a non null
      * {@link Integer}, a {@link Float}, a {@link Long}, a {@link Double}, a
-     * {@link String} or a {@link org.eclipse.persistence.internal.libraries.asm.Type}.
+     * {@link String} or a {@link Type}.
      */
     public Object cst;
 
     /**
      * Constructs a new {@link LdcInsnNode}.
-     *
+     * 
      * @param cst
      *            the constant to be loaded on the stack. This parameter must be
      *            a non null {@link Integer}, a {@link Float}, a {@link Long}, a

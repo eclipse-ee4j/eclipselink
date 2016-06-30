@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000, 2015 INRIA, France Telecom
+ * Copyright (c) 2000-2011 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,8 +34,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
+import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
 
 /**
  * A node that represents a stack map frame. These nodes are pseudo instruction
@@ -48,7 +48,7 @@ import org.eclipse.persistence.internal.libraries.asm.Opcodes;
  * <br>
  * (*) this is mandatory only for classes whose version is greater than or equal
  * to {@link Opcodes#V1_6 V1_6}.
- *
+ * 
  * @author Eric Bruneton
  */
 public class FrameNode extends AbstractInsnNode {
@@ -83,7 +83,7 @@ public class FrameNode extends AbstractInsnNode {
 
     /**
      * Constructs a new {@link FrameNode}.
-     *
+     * 
      * @param type
      *            the type of this frame. Must be {@link Opcodes#F_NEW} for
      *            expanded frames, or {@link Opcodes#F_FULL},
@@ -136,7 +136,7 @@ public class FrameNode extends AbstractInsnNode {
 
     /**
      * Makes the given visitor visit this stack map frame.
-     *
+     * 
      * @param mv
      *            a method visitor.
      */

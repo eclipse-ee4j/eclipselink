@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000, 2015 INRIA, France Telecom
+ * Copyright (c) 2000-2011 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,10 +29,9 @@
  */
 package org.eclipse.persistence.internal.libraries.asm;
 
-
 /**
  * An edge in the control flow graph of a method body. See {@link Label Label}.
- *
+ * 
  * @author Eric Bruneton
  */
 class Edge {

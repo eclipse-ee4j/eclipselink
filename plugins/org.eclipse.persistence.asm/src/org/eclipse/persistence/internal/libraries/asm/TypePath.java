@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000, 2015 INRIA, France Telecom
+ * Copyright (c) 2000-2013 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,11 +30,10 @@
 
 package org.eclipse.persistence.internal.libraries.asm;
 
-
 /**
  * The path to a type argument, wildcard bound, array element type, or static
  * inner type within an enclosing type.
- *
+ * 
  * @author Eric Bruneton
  */
 public class TypePath {
@@ -75,7 +74,7 @@ public class TypePath {
 
     /**
      * Creates a new type path.
-     *
+     * 
      * @param b
      *            the byte array containing the type path in Java class file
      *            format.
@@ -89,7 +88,7 @@ public class TypePath {
 
     /**
      * Returns the length of this path.
-     *
+     * 
      * @return the length of this path.
      */
     public int getLength() {
@@ -98,7 +97,7 @@ public class TypePath {
 
     /**
      * Returns the value of the given step of this path.
-     *
+     * 
      * @param index
      *            an index between 0 and {@link #getLength()}, exclusive.
      * @return {@link #ARRAY_ELEMENT ARRAY_ELEMENT}, {@link #INNER_TYPE
@@ -113,7 +112,7 @@ public class TypePath {
      * Returns the index of the type argument that the given step is stepping
      * into. This method should only be used for steps whose value is
      * {@link #TYPE_ARGUMENT TYPE_ARGUMENT}.
-     *
+     * 
      * @param index
      *            an index between 0 and {@link #getLength()}, exclusive.
      * @return the index of the type argument that the given step is stepping
@@ -126,7 +125,7 @@ public class TypePath {
     /**
      * Converts a type path in string form, in the format used by
      * {@link #toString()}, into a TypePath object.
-     *
+     * 
      * @param typePath
      *            a type path in string form, in the format used by
      *            {@link #toString()}. May be null or empty.
@@ -153,6 +152,9 @@ public class TypePath {
                     typeArg = typeArg * 10 + c - '0';
                     i += 1;
                 }
+                if (i < n && typePath.charAt(i) == ';') {
+                    i += 1;
+                }
                 out.put11(TYPE_ARGUMENT, typeArg);
             }
         }
@@ -165,7 +167,7 @@ public class TypePath {
      * ARRAY_ELEMENT} steps are represented with '[', {@link #INNER_TYPE
      * INNER_TYPE} steps with '.', {@link #WILDCARD_BOUND WILDCARD_BOUND} steps
      * with '*' and {@link #TYPE_ARGUMENT TYPE_ARGUMENT} steps with their type
-     * argument index in decimal form.
+     * argument index in decimal form followed by ';'.
      */
     @Override
     public String toString() {
@@ -183,7 +185,7 @@ public class TypePath {
                 result.append('*');
                 break;
             case TYPE_ARGUMENT:
-                result.append(getStepArgument(i));
+                result.append(getStepArgument(i)).append(';');
                 break;
             default:
                 result.append('_');

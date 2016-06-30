@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000, 2015 INRIA, France Telecom
+ * Copyright (c) 2000-2011 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,11 +33,11 @@ import java.io.PrintWriter;
 
 import org.eclipse.persistence.internal.libraries.asm.AnnotationVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Attribute;
+import org.eclipse.persistence.internal.libraries.asm.Opcodes;
+import org.eclipse.persistence.internal.libraries.asm.TypePath;
 import org.eclipse.persistence.internal.libraries.asm.ClassVisitor;
 import org.eclipse.persistence.internal.libraries.asm.FieldVisitor;
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
-import org.eclipse.persistence.internal.libraries.asm.Opcodes;
-import org.eclipse.persistence.internal.libraries.asm.TypePath;
 
 /**
  * A {@link ClassVisitor} that prints the classes it visits with a
@@ -48,36 +48,36 @@ import org.eclipse.persistence.internal.libraries.asm.TypePath;
  * The trace printed when visiting the <tt>Hello</tt> class is the following:
  * <p>
  * <blockquote>
- *
+ * 
  * <pre>
  * // class version 49.0 (49) // access flags 0x21 public class Hello {
- *
+ * 
  * // compiled from: Hello.java
- *
+ * 
  * // access flags 0x1 public &lt;init&gt; ()V ALOAD 0 INVOKESPECIAL
  * java/lang/Object &lt;init&gt; ()V RETURN MAXSTACK = 1 MAXLOCALS = 1
- *
+ * 
  * // access flags 0x9 public static main ([Ljava/lang/String;)V GETSTATIC
  * java/lang/System out Ljava/io/PrintStream; LDC &quot;hello&quot;
  * INVOKEVIRTUAL java/io/PrintStream println (Ljava/lang/String;)V RETURN
  * MAXSTACK = 2 MAXLOCALS = 1 }
  * </pre>
- *
+ * 
  * </blockquote> where <tt>Hello</tt> is defined by:
  * <p>
  * <blockquote>
- *
+ * 
  * <pre>
  * public class Hello {
- *
+ * 
  *     public static void main(String[] args) {
  *         System.out.println(&quot;hello&quot;);
  *     }
  * }
  * </pre>
- *
+ * 
  * </blockquote>
- *
+ * 
  * @author Eric Bruneton
  * @author Eugene Kuleshov
  */
@@ -95,7 +95,7 @@ public final class TraceClassVisitor extends ClassVisitor {
 
     /**
      * Constructs a new {@link TraceClassVisitor}.
-     *
+     * 
      * @param pw
      *            the print writer to be used to print the class.
      */
@@ -105,7 +105,7 @@ public final class TraceClassVisitor extends ClassVisitor {
 
     /**
      * Constructs a new {@link TraceClassVisitor}.
-     *
+     * 
      * @param cv
      *            the {@link ClassVisitor} to which this visitor delegates
      *            calls. May be <tt>null</tt>.
@@ -118,7 +118,7 @@ public final class TraceClassVisitor extends ClassVisitor {
 
     /**
      * Constructs a new {@link TraceClassVisitor}.
-     *
+     * 
      * @param cv
      *            the {@link ClassVisitor} to which this visitor delegates
      *            calls. May be <tt>null</tt>.
@@ -159,7 +159,7 @@ public final class TraceClassVisitor extends ClassVisitor {
 
     @Override
     public AnnotationVisitor visitAnnotation(final String desc,
-            final boolean visible) {
+                                             final boolean visible) {
         Printer p = this.p.visitClassAnnotation(desc, visible);
         AnnotationVisitor av = cv == null ? null : cv.visitAnnotation(desc,
                 visible);
@@ -168,7 +168,7 @@ public final class TraceClassVisitor extends ClassVisitor {
 
     @Override
     public AnnotationVisitor visitTypeAnnotation(int typeRef,
-            TypePath typePath, String desc, boolean visible) {
+                                                 TypePath typePath, String desc, boolean visible) {
         Printer p = this.p.visitClassTypeAnnotation(typeRef, typePath, desc,
                 visible);
         AnnotationVisitor av = cv == null ? null : cv.visitTypeAnnotation(

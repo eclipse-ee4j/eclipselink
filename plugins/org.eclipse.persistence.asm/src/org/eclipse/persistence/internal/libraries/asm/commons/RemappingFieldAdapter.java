@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000, 2015 INRIA, France Telecom
+ * Copyright (c) 2000-2011 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,15 +31,17 @@
 package org.eclipse.persistence.internal.libraries.asm.commons;
 
 import org.eclipse.persistence.internal.libraries.asm.AnnotationVisitor;
-import org.eclipse.persistence.internal.libraries.asm.FieldVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 import org.eclipse.persistence.internal.libraries.asm.TypePath;
+import org.eclipse.persistence.internal.libraries.asm.FieldVisitor;
 
 /**
  * A {@link FieldVisitor} adapter for type remapping.
- *
+ * 
+ * @deprecated use {@link FieldRemapper} instead.
  * @author Eugene Kuleshov
  */
+@Deprecated
 public class RemappingFieldAdapter extends FieldVisitor {
 
     private final Remapper remapper;
@@ -63,7 +65,7 @@ public class RemappingFieldAdapter extends FieldVisitor {
 
     @Override
     public AnnotationVisitor visitTypeAnnotation(int typeRef,
-            TypePath typePath, String desc, boolean visible) {
+                                                 TypePath typePath, String desc, boolean visible) {
         AnnotationVisitor av = super.visitTypeAnnotation(typeRef, typePath,
                 remapper.mapDesc(desc), visible);
         return av == null ? null : new RemappingAnnotationAdapter(av, remapper);

@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000, 2015 INRIA, France Telecom
+ * Copyright (c) 2000-2011 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,17 +33,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.persistence.internal.libraries.asm.*;
 import org.eclipse.persistence.internal.libraries.asm.AnnotationVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Attribute;
-import org.eclipse.persistence.internal.libraries.asm.ClassVisitor;
-import org.eclipse.persistence.internal.libraries.asm.FieldVisitor;
-import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
-import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 import org.eclipse.persistence.internal.libraries.asm.TypePath;
 
 /**
  * A node that represents a class.
- *
+ * 
  * @author Eric Bruneton
  */
 public class ClassNode extends ClassVisitor {
@@ -54,14 +51,14 @@ public class ClassNode extends ClassVisitor {
     public int version;
 
     /**
-     * The class's access flags (see {@link org.eclipse.persistence.internal.libraries.asm.Opcodes}). This
+     * The class's access flags (see {@link Opcodes}). This
      * field also indicates if the class is deprecated.
      */
     public int access;
 
     /**
      * The internal name of the class (see
-     * {@link org.eclipse.persistence.internal.libraries.asm.Type#getInternalName() getInternalName}).
+     * {@link Type#getInternalName() getInternalName}).
      */
     public String name;
 
@@ -72,7 +69,7 @@ public class ClassNode extends ClassVisitor {
 
     /**
      * The internal of name of the super class (see
-     * {@link org.eclipse.persistence.internal.libraries.asm.Type#getInternalName() getInternalName}). For
+     * {@link Type#getInternalName() getInternalName}). For
      * interfaces, the super class is {@link Object}. May be <tt>null</tt>, but
      * only for the {@link Object} class.
      */
@@ -80,7 +77,7 @@ public class ClassNode extends ClassVisitor {
 
     /**
      * The internal names of the class's interfaces (see
-     * {@link org.eclipse.persistence.internal.libraries.asm.Type#getInternalName() getInternalName}). This
+     * {@link Type#getInternalName() getInternalName}). This
      * list is a list of {@link String} objects.
      */
     public List<String> interfaces;
@@ -118,8 +115,8 @@ public class ClassNode extends ClassVisitor {
     /**
      * The runtime visible annotations of this class. This list is a list of
      * {@link AnnotationNode} objects. May be <tt>null</tt>.
-     *
-     * @associates org.eclipse.persistence.internal.libraries.asm.tree.AnnotationNode
+     * 
+     * @associates org.objectweb.asm.tree.AnnotationNode
      * @label visible
      */
     public List<AnnotationNode> visibleAnnotations;
@@ -127,8 +124,8 @@ public class ClassNode extends ClassVisitor {
     /**
      * The runtime invisible annotations of this class. This list is a list of
      * {@link AnnotationNode} objects. May be <tt>null</tt>.
-     *
-     * @associates org.eclipse.persistence.internal.libraries.asm.tree.AnnotationNode
+     * 
+     * @associates org.objectweb.asm.tree.AnnotationNode
      * @label invisible
      */
     public List<AnnotationNode> invisibleAnnotations;
@@ -136,8 +133,8 @@ public class ClassNode extends ClassVisitor {
     /**
      * The runtime visible type annotations of this class. This list is a list
      * of {@link TypeAnnotationNode} objects. May be <tt>null</tt>.
-     *
-     * @associates org.eclipse.persistence.internal.libraries.asm.tree.TypeAnnotationNode
+     * 
+     * @associates org.objectweb.asm.tree.TypeAnnotationNode
      * @label visible
      */
     public List<TypeAnnotationNode> visibleTypeAnnotations;
@@ -145,8 +142,8 @@ public class ClassNode extends ClassVisitor {
     /**
      * The runtime invisible type annotations of this class. This list is a list
      * of {@link TypeAnnotationNode} objects. May be <tt>null</tt>.
-     *
-     * @associates org.eclipse.persistence.internal.libraries.asm.tree.TypeAnnotationNode
+     * 
+     * @associates org.objectweb.asm.tree.TypeAnnotationNode
      * @label invisible
      */
     public List<TypeAnnotationNode> invisibleTypeAnnotations;
@@ -154,32 +151,32 @@ public class ClassNode extends ClassVisitor {
     /**
      * The non standard attributes of this class. This list is a list of
      * {@link Attribute} objects. May be <tt>null</tt>.
-     *
-     * @associates org.eclipse.persistence.internal.libraries.asm.Attribute
+     * 
+     * @associates org.objectweb.asm.Attribute
      */
     public List<Attribute> attrs;
 
     /**
      * Informations about the inner classes of this class. This list is a list
      * of {@link InnerClassNode} objects.
-     *
-     * @associates org.eclipse.persistence.internal.libraries.asm.tree.InnerClassNode
+     * 
+     * @associates org.objectweb.asm.tree.InnerClassNode
      */
     public List<InnerClassNode> innerClasses;
 
     /**
      * The fields of this class. This list is a list of {@link FieldNode}
      * objects.
-     *
-     * @associates org.eclipse.persistence.internal.libraries.asm.tree.FieldNode
+     * 
+     * @associates org.objectweb.asm.tree.FieldNode
      */
     public List<FieldNode> fields;
 
     /**
      * The methods of this class. This list is a list of {@link MethodNode}
      * objects.
-     *
-     * @associates org.eclipse.persistence.internal.libraries.asm.tree.MethodNode
+     * 
+     * @associates org.objectweb.asm.tree.MethodNode
      */
     public List<MethodNode> methods;
 
@@ -187,7 +184,7 @@ public class ClassNode extends ClassVisitor {
      * Constructs a new {@link ClassNode}. <i>Subclasses must not use this
      * constructor</i>. Instead, they must use the {@link #ClassNode(int)}
      * version.
-     *
+     * 
      * @throws IllegalStateException
      *             If a subclass calls this constructor.
      */
@@ -200,7 +197,7 @@ public class ClassNode extends ClassVisitor {
 
     /**
      * Constructs a new {@link ClassNode}.
-     *
+     * 
      * @param api
      *            the ASM API version implemented by this visitor. Must be one
      *            of {@link Opcodes#ASM4} or {@link Opcodes#ASM5}.
@@ -247,7 +244,7 @@ public class ClassNode extends ClassVisitor {
 
     @Override
     public AnnotationVisitor visitAnnotation(final String desc,
-            final boolean visible) {
+                                             final boolean visible) {
         AnnotationNode an = new AnnotationNode(desc);
         if (visible) {
             if (visibleAnnotations == null) {
@@ -265,7 +262,7 @@ public class ClassNode extends ClassVisitor {
 
     @Override
     public AnnotationVisitor visitTypeAnnotation(int typeRef,
-            TypePath typePath, String desc, boolean visible) {
+                                                 TypePath typePath, String desc, boolean visible) {
         TypeAnnotationNode an = new TypeAnnotationNode(typeRef, typePath, desc);
         if (visible) {
             if (visibleTypeAnnotations == null) {
@@ -299,7 +296,7 @@ public class ClassNode extends ClassVisitor {
 
     @Override
     public FieldVisitor visitField(final int access, final String name,
-            final String desc, final String signature, final Object value) {
+                                   final String desc, final String signature, final Object value) {
         FieldNode fn = new FieldNode(access, name, desc, signature, value);
         fields.add(fn);
         return fn;
@@ -327,7 +324,7 @@ public class ClassNode extends ClassVisitor {
      * This methods checks that this node, and all its nodes recursively, do not
      * contain elements that were introduced in more recent versions of the ASM
      * API than the given version.
-     *
+     * 
      * @param api
      *            an ASM API version. Must be one of {@link Opcodes#ASM4} or
      *            {@link Opcodes#ASM5}.
@@ -353,7 +350,7 @@ public class ClassNode extends ClassVisitor {
 
     /**
      * Makes the given class visitor visit this class.
-     *
+     * 
      * @param cv
      *            a class visitor.
      */

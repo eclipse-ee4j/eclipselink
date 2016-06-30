@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000, 2015 INRIA, France Telecom
+ * Copyright (c) 2000-2011 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,11 +33,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.persistence.internal.libraries.asm.AnnotationVisitor;
+import org.eclipse.persistence.internal.libraries.asm.Type;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 
 /**
  * A node that represents an annotationn.
- *
+ * 
  * @author Eric Bruneton
  */
 public class AnnotationNode extends AnnotationVisitor {
@@ -52,7 +53,7 @@ public class AnnotationNode extends AnnotationVisitor {
      * as two consecutive elements in the list. The name is a {@link String},
      * and the value may be a {@link Byte}, {@link Boolean}, {@link Character},
      * {@link Short}, {@link Integer}, {@link Long}, {@link Float},
-     * {@link Double}, {@link String} or {@link org.eclipse.persistence.internal.libraries.asm.Type}, or an
+     * {@link Double}, {@link String} or {@link Type}, or an
      * two elements String array (for enumeration values), a
      * {@link AnnotationNode}, or a {@link List} of values of one of the
      * preceding types. The list may be <tt>null</tt> if there is no name value
@@ -64,7 +65,7 @@ public class AnnotationNode extends AnnotationVisitor {
      * Constructs a new {@link AnnotationNode}. <i>Subclasses must not use this
      * constructor</i>. Instead, they must use the
      * {@link #AnnotationNode(int, String)} version.
-     *
+     * 
      * @param desc
      *            the class descriptor of the annotation class.
      * @throws IllegalStateException
@@ -79,7 +80,7 @@ public class AnnotationNode extends AnnotationVisitor {
 
     /**
      * Constructs a new {@link AnnotationNode}.
-     *
+     * 
      * @param api
      *            the ASM API version implemented by this visitor. Must be one
      *            of {@link Opcodes#ASM4} or {@link Opcodes#ASM5}.
@@ -93,7 +94,7 @@ public class AnnotationNode extends AnnotationVisitor {
 
     /**
      * Constructs a new {@link AnnotationNode} to visit an array value.
-     *
+     * 
      * @param values
      *            where the visited values must be stored.
      */
@@ -169,7 +170,7 @@ public class AnnotationNode extends AnnotationVisitor {
      * version. This methods checks that this node, and all its nodes
      * recursively, do not contain elements that were introduced in more recent
      * versions of the ASM API than the given version.
-     *
+     * 
      * @param api
      *            an ASM API version. Must be one of {@link Opcodes#ASM4} or
      *            {@link Opcodes#ASM5}.
@@ -180,7 +181,7 @@ public class AnnotationNode extends AnnotationVisitor {
 
     /**
      * Makes the given visitor visit this annotation.
-     *
+     * 
      * @param av
      *            an annotation visitor. Maybe <tt>null</tt>.
      */
@@ -199,7 +200,7 @@ public class AnnotationNode extends AnnotationVisitor {
 
     /**
      * Makes the given visitor visit a given annotation value.
-     *
+     * 
      * @param av
      *            an annotation visitor. Maybe <tt>null</tt>.
      * @param name
@@ -218,11 +219,13 @@ public class AnnotationNode extends AnnotationVisitor {
                 an.accept(av.visitAnnotation(name, an.desc));
             } else if (value instanceof List) {
                 AnnotationVisitor v = av.visitArray(name);
-                List<?> array = (List<?>) value;
-                for (int j = 0; j < array.size(); ++j) {
-                    accept(v, null, array.get(j));
+                if (v != null) {
+                    List<?> array = (List<?>) value;
+                    for (int j = 0; j < array.size(); ++j) {
+                        accept(v, null, array.get(j));
+                    }
+                    v.visitEnd();
                 }
-                v.visitEnd();
             } else {
                 av.visit(name, value);
             }

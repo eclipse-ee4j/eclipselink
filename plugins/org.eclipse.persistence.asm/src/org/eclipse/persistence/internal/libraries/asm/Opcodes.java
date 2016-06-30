@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000, 2015 INRIA, France Telecom
+ * Copyright (c) 2000-2011 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,6 @@
  */
 package org.eclipse.persistence.internal.libraries.asm;
 
-
 /**
  * Defines the JVM opcodes, access flags and array type codes. This interface
  * does not define all the JVM opcodes because some opcodes are automatically
@@ -38,7 +37,7 @@ package org.eclipse.persistence.internal.libraries.asm;
  * opcodes are therefore not defined in this interface. Likewise for LDC,
  * automatically replaced by LDC_W or LDC2_W when necessary, WIDE, GOTO_W and
  * JSR_W.
- *
+ * 
  * @author Eric Bruneton
  * @author Eugene Kuleshov
  */

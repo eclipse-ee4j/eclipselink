@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000, 2015 INRIA, France Telecom
+ * Copyright (c) 2000-2011 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,17 +30,17 @@
 package org.eclipse.persistence.internal.libraries.asm.util;
 
 import org.eclipse.persistence.internal.libraries.asm.AnnotationVisitor;
+import org.eclipse.persistence.internal.libraries.asm.TypePath;
 import org.eclipse.persistence.internal.libraries.asm.Attribute;
 import org.eclipse.persistence.internal.libraries.asm.Handle;
 import org.eclipse.persistence.internal.libraries.asm.Label;
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
-import org.eclipse.persistence.internal.libraries.asm.TypePath;
 
 /**
  * A {@link MethodVisitor} that prints the methods it visits with a
  * {@link Printer}.
- *
+ * 
  * @author Eric Bruneton
  */
 public final class TraceMethodVisitor extends MethodVisitor {
@@ -64,7 +64,7 @@ public final class TraceMethodVisitor extends MethodVisitor {
 
     @Override
     public AnnotationVisitor visitAnnotation(final String desc,
-            final boolean visible) {
+                                             final boolean visible) {
         Printer p = this.p.visitMethodAnnotation(desc, visible);
         AnnotationVisitor av = mv == null ? null : mv.visitAnnotation(desc,
                 visible);
@@ -73,7 +73,7 @@ public final class TraceMethodVisitor extends MethodVisitor {
 
     @Override
     public AnnotationVisitor visitTypeAnnotation(int typeRef,
-            TypePath typePath, String desc, boolean visible) {
+                                                 TypePath typePath, String desc, boolean visible) {
         Printer p = this.p.visitMethodTypeAnnotation(typeRef, typePath, desc,
                 visible);
         AnnotationVisitor av = mv == null ? null : mv.visitTypeAnnotation(

@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000, 2015 INRIA, France Telecom
+ * Copyright (c) 2000-2011 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,13 +30,13 @@
 package org.eclipse.persistence.internal.libraries.asm.commons;
 
 import org.eclipse.persistence.internal.libraries.asm.Handle;
+import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 import org.eclipse.persistence.internal.libraries.asm.Label;
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
-import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 
 /**
  * A {@link MethodVisitor} that can be used to approximate method size.
- *
+ * 
  * @author Eugene Kuleshov
  */
 public class CodeSizeEvaluator extends MethodVisitor implements Opcodes {

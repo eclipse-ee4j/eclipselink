@@ -1,6 +1,6 @@
 /***
  * ASM XML Adapter
- * Copyright (c) 2004, 2015 Eugene Kuleshov
+ * Copyright (c) 2004-2011, Eugene Kuleshov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,14 +39,14 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.helpers.AttributesImpl;
 
 /**
- * A {@link org.eclipse.persistence.internal.libraries.asm.ClassVisitor ClassVisitor} that generates SAX 2.0
+ * A {@link ClassVisitor ClassVisitor} that generates SAX 2.0
  * events from the visited class. It can feed any kind of
  * {@link org.xml.sax.ContentHandler ContentHandler}, e.g. XML serializer, XSLT
  * or XQuery engines.
- *
- * @see org.eclipse.persistence.internal.libraries.asm.xml.Processor
- * @see org.eclipse.persistence.internal.libraries.asm.xml.ASMContentHandler
- *
+ * 
+ * @see Processor
+ * @see ASMContentHandler
+ * 
  * @author Eugene Kuleshov
  */
 public final class SAXClassAdapter extends ClassVisitor {
@@ -72,7 +72,7 @@ public final class SAXClassAdapter extends ClassVisitor {
 
     /**
      * Constructs a new {@link SAXClassAdapter SAXClassAdapter} object.
-     *
+     * 
      * @param h
      *            content handler that will be used to send SAX 2.0 events.
      * @param singleDocument
@@ -119,7 +119,7 @@ public final class SAXClassAdapter extends ClassVisitor {
 
     @Override
     public AnnotationVisitor visitAnnotation(final String desc,
-            final boolean visible) {
+                                             final boolean visible) {
         return new SAXAnnotationAdapter(sa, "annotation", visible ? 1 : -1,
                 null, desc);
     }
@@ -135,7 +135,7 @@ public final class SAXClassAdapter extends ClassVisitor {
     public void visit(final int version, final int access, final String name,
             final String signature, final String superName,
             final String[] interfaces) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         appendAccess(access | ACCESS_CLASS, sb);
 
         AttributesImpl att = new AttributesImpl();
@@ -170,7 +170,7 @@ public final class SAXClassAdapter extends ClassVisitor {
     @Override
     public FieldVisitor visitField(final int access, final String name,
             final String desc, final String signature, final Object value) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         appendAccess(access | ACCESS_FIELD, sb);
 
         AttributesImpl att = new AttributesImpl();
@@ -191,7 +191,7 @@ public final class SAXClassAdapter extends ClassVisitor {
     @Override
     public MethodVisitor visitMethod(final int access, final String name,
             final String desc, final String signature, final String[] exceptions) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         appendAccess(access, sb);
 
         AttributesImpl att = new AttributesImpl();
@@ -219,7 +219,7 @@ public final class SAXClassAdapter extends ClassVisitor {
     @Override
     public final void visitInnerClass(final String name,
             final String outerName, final String innerName, final int access) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         appendAccess(access | ACCESS_INNER, sb);
 
         AttributesImpl att = new AttributesImpl();
@@ -245,7 +245,7 @@ public final class SAXClassAdapter extends ClassVisitor {
     }
 
     static final String encode(final String s) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
             if (c == '\\') {
@@ -267,7 +267,7 @@ public final class SAXClassAdapter extends ClassVisitor {
         return sb.toString();
     }
 
-    static void appendAccess(final int access, final StringBuffer sb) {
+    static void appendAccess(final int access, final StringBuilder sb) {
         if ((access & Opcodes.ACC_PUBLIC) != 0) {
             sb.append("public ");
         }

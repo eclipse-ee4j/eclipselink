@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000, 2015 INRIA, France Telecom
+ * Copyright (c) 2000-2011 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,16 +33,16 @@ import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 
 /**
  * A signature visitor that generates signatures in string format.
- *
+ * 
  * @author Thomas Hallgren
  * @author Eric Bruneton
  */
 public class SignatureWriter extends SignatureVisitor {
 
     /**
-     * Buffer used to construct the signature.
+     * Builder used to construct the signature.
      */
-    private final StringBuffer buf = new StringBuffer();
+    private final StringBuilder buf = new StringBuilder();
 
     /**
      * Indicates if the signature contains formal type parameters.
@@ -193,7 +193,7 @@ public class SignatureWriter extends SignatureVisitor {
 
     /**
      * Returns the signature that was built by this signature writer.
-     *
+     * 
      * @return the signature that was built by this signature writer.
      */
     @Override

@@ -1,6 +1,6 @@
 /**
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000, 2015 INRIA, France Telecom
+ * Copyright (c) 2000-2011 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,19 +31,20 @@ package org.eclipse.persistence.internal.libraries.asm.util;
 
 import java.util.Map;
 
+import org.eclipse.persistence.internal.libraries.asm.Attribute;
 import org.eclipse.persistence.internal.libraries.asm.Label;
 
 /**
- * An {@link org.eclipse.persistence.internal.libraries.asm.Attribute Attribute} that can print the ASM code
+ * An {@link Attribute Attribute} that can print the ASM code
  * to create an equivalent attribute.
- *
+ * 
  * @author Eugene Kuleshov
  */
 public interface ASMifiable {
 
     /**
      * Prints the ASM code to create an attribute equal to this attribute.
-     *
+     * 
      * @param buf
      *            a buffer used for printing Java code.
      * @param varName

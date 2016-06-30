@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000, 2015 INRIA, France Telecom
+ * Copyright (c) 2000-2011 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,11 +29,12 @@
  */
 package org.eclipse.persistence.internal.libraries.asm.tree;
 
+import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
 
 /**
  * A node that represents a parameter access and name.
- *
+ * 
  * @author Remi Forax
  */
 public class ParameterNode {
@@ -43,7 +44,7 @@ public class ParameterNode {
     public String name;
 
     /**
-     * The parameter's access flags (see {@link org.eclipse.persistence.internal.libraries.asm.Opcodes}).
+     * The parameter's access flags (see {@link Opcodes}).
      * Valid values are <tt>ACC_FINAL</tt>, <tt>ACC_SYNTHETIC</tt> and
      * <tt>ACC_MANDATED</tt>.
      */
@@ -51,11 +52,11 @@ public class ParameterNode {
 
     /**
      * Constructs a new {@link ParameterNode}.
-     *
+     * 
      * @param access
      *            The parameter's access flags. Valid values are
      *            <tt>ACC_FINAL</tt>, <tt>ACC_SYNTHETIC</tt> or/and
-     *            <tt>ACC_MANDATED</tt> (see {@link org.eclipse.persistence.internal.libraries.asm.Opcodes}).
+     *            <tt>ACC_MANDATED</tt> (see {@link Opcodes}).
      * @param name
      *            the parameter's name.
      */
@@ -66,7 +67,7 @@ public class ParameterNode {
 
     /**
      * Makes the given visitor visit this parameter declaration.
-     *
+     * 
      * @param mv
      *            a method visitor.
      */

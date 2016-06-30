@@ -1,6 +1,6 @@
 /***
  * ASM XML Adapter
- * Copyright (c) 2004, 2015 Eugene Kuleshov
+ * Copyright (c) 2004-2011, Eugene Kuleshov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,22 +33,22 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.persistence.internal.libraries.asm.AnnotationVisitor;
+import org.eclipse.persistence.internal.libraries.asm.TypePath;
+import org.eclipse.persistence.internal.libraries.asm.util.Printer;
 import org.eclipse.persistence.internal.libraries.asm.Handle;
 import org.eclipse.persistence.internal.libraries.asm.Label;
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 import org.eclipse.persistence.internal.libraries.asm.Type;
-import org.eclipse.persistence.internal.libraries.asm.TypePath;
-import org.eclipse.persistence.internal.libraries.asm.util.Printer;
 import org.xml.sax.helpers.AttributesImpl;
 
 /**
  * A {@link MethodVisitor} that generates SAX 2.0 events from the visited
  * method.
- *
- * @see org.eclipse.persistence.internal.libraries.asm.xml.SAXClassAdapter
- * @see org.eclipse.persistence.internal.libraries.asm.xml.Processor
- *
+ * 
+ * @see SAXClassAdapter
+ * @see Processor
+ * 
  * @author Eugene Kuleshov
  */
 public final class SAXCodeAdapter extends MethodVisitor {
@@ -64,7 +64,7 @@ public final class SAXCodeAdapter extends MethodVisitor {
 
     /**
      * Constructs a new {@link SAXCodeAdapter SAXCodeAdapter} object.
-     *
+     * 
      * @param sa
      *            content handler that will be used to send SAX 2.0 events.
      */
@@ -81,7 +81,7 @@ public final class SAXCodeAdapter extends MethodVisitor {
         if (name != null) {
             attrs.addAttribute("", "name", "name", "", name);
         }
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         SAXClassAdapter.appendAccess(access, sb);
         attrs.addAttribute("", "access", "access", "", sb.toString());
         sa.addElement("parameter", attrs);
@@ -356,7 +356,7 @@ public final class SAXCodeAdapter extends MethodVisitor {
 
     @Override
     public AnnotationVisitor visitTypeAnnotation(int typeRef,
-            TypePath typePath, String desc, boolean visible) {
+                                                 TypePath typePath, String desc, boolean visible) {
         return new SAXAnnotationAdapter(sa, "typeAnnotation", visible ? 1 : -1,
                 null, desc, typeRef, typePath);
     }

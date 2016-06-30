@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000, 2015 INRIA, France Telecom
+ * Copyright (c) 2000-2011 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,10 +29,9 @@
  */
 package org.eclipse.persistence.internal.libraries.asm;
 
-
 /**
  * A non standard class, field, method or code attribute.
- *
+ * 
  * @author Eric Bruneton
  * @author Eugene Kuleshov
  */
@@ -55,7 +54,7 @@ public class Attribute {
 
     /**
      * Constructs a new empty attribute.
-     *
+     * 
      * @param type
      *            the type of the attribute.
      */
@@ -66,7 +65,7 @@ public class Attribute {
     /**
      * Returns <tt>true</tt> if this type of attribute is unknown. The default
      * implementation of this method always returns <tt>true</tt>.
-     *
+     * 
      * @return <tt>true</tt> if this type of attribute is unknown.
      */
     public boolean isUnknown() {
@@ -75,7 +74,7 @@ public class Attribute {
 
     /**
      * Returns <tt>true</tt> if this type of attribute is a code attribute.
-     *
+     * 
      * @return <tt>true</tt> if this type of attribute is a code attribute.
      */
     public boolean isCodeAttribute() {
@@ -84,7 +83,7 @@ public class Attribute {
 
     /**
      * Returns the labels corresponding to this attribute.
-     *
+     * 
      * @return the labels corresponding to this attribute, or <tt>null</tt> if
      *         this attribute is not a code attribute that contains labels.
      */
@@ -97,7 +96,7 @@ public class Attribute {
      * <i>new</i> {@link Attribute} object, of type {@link #type type},
      * corresponding to the <tt>len</tt> bytes starting at the given offset, in
      * the given class reader.
-     *
+     * 
      * @param cr
      *            the class that contains the attribute to be read.
      * @param off
@@ -134,7 +133,7 @@ public class Attribute {
 
     /**
      * Returns the byte array form of this attribute.
-     *
+     * 
      * @param cw
      *            the class to which this attribute must be added. This
      *            parameter can be used to add to the constant pool of this
@@ -167,7 +166,7 @@ public class Attribute {
 
     /**
      * Returns the length of the attribute list that begins with this attribute.
-     *
+     * 
      * @return the length of the attribute list that begins with this attribute.
      */
     final int getCount() {
@@ -182,7 +181,7 @@ public class Attribute {
 
     /**
      * Returns the size of all the attributes in this attribute list.
-     *
+     * 
      * @param cw
      *            the class writer to be used to convert the attributes into
      *            byte arrays, with the {@link #write write} method.
@@ -220,7 +219,7 @@ public class Attribute {
     /**
      * Writes all the attributes of this attribute list in the given byte
      * vector.
-     *
+     * 
      * @param cw
      *            the class writer to be used to convert the attributes into
      *            byte arrays, with the {@link #write write} method.

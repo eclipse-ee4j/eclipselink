@@ -1,6 +1,6 @@
 /***
  * ASM XML Adapter
- * Copyright (c) 2004, 2015 Eugene Kuleshov
+ * Copyright (c) 2004-2011, Eugene Kuleshov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,7 @@ import org.xml.sax.SAXException;
 
 /**
  * SAXAdapter
- *
+ * 
  * @author Eugene Kuleshov
  */
 public class SAXAdapter {

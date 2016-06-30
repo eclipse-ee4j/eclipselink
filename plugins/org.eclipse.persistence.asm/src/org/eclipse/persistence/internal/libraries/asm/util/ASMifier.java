@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000, 2015 INRIA, France Telecom
+ * Copyright (c) 2000-2011 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,7 @@ import org.eclipse.persistence.internal.libraries.asm.TypePath;
 
 /**
  * A {@link Printer} that prints the ASM code to generate the classes if visits.
- *
+ * 
  * @author Eric Bruneton
  */
 public class ASMifier extends Printer {
@@ -84,7 +84,7 @@ public class ASMifier extends Printer {
      * Constructs a new {@link ASMifier}. <i>Subclasses must not use this
      * constructor</i>. Instead, they must use the
      * {@link #ASMifier(int, String, int)} version.
-     *
+     * 
      * @throws IllegalStateException
      *             If a subclass calls this constructor.
      */
@@ -97,7 +97,7 @@ public class ASMifier extends Printer {
 
     /**
      * Constructs a new {@link ASMifier}.
-     *
+     * 
      * @param api
      *            the ASM API version implemented by this class. Must be one of
      *            {@link Opcodes#ASM4} or {@link Opcodes#ASM5}.
@@ -118,10 +118,10 @@ public class ASMifier extends Printer {
      * output.
      * <p>
      * Usage: ASMifier [-debug] &lt;binary class name or class file name&gt;
-     *
+     * 
      * @param args
      *            the command line arguments.
-     *
+     * 
      * @throws Exception
      *             if the class cannot be found, or if an IO exception occurs.
      */
@@ -176,8 +176,7 @@ public class ASMifier extends Printer {
             simpleName = name.substring(n + 1);
         }
         text.add("import java.util.*;\n");
-        text.add("import org.eclipse.persistence.internal.libraries.asm.*;\n");
-        text.add("import org.eclipse.persistence.internal.libraries.asm.attrs.*;\n");
+        text.add("import org.objectweb.asm.*;\n");
         text.add("public class " + simpleName + "Dump implements Opcodes {\n\n");
         text.add("public static byte[] dump () throws Exception {\n\n");
         text.add("ClassWriter cw = new ClassWriter(0);\n");
@@ -269,7 +268,7 @@ public class ASMifier extends Printer {
 
     @Override
     public ASMifier visitClassTypeAnnotation(final int typeRef,
-            final TypePath typePath, final String desc, final boolean visible) {
+                                             final TypePath typePath, final String desc, final boolean visible) {
         return visitTypeAnnotation(typeRef, typePath, desc, visible);
     }
 
@@ -828,7 +827,11 @@ public class ASMifier extends Printer {
         buf.append("{\n").append("av0 = ").append(name)
                 .append(".visitLocalVariableAnnotation(");
         buf.append(typeRef);
-        buf.append(", TypePath.fromString(\"").append(typePath).append("\"), ");
+        if (typePath == null) {
+            buf.append(", null, ");
+        } else {
+            buf.append(", TypePath.fromString(\"").append(typePath).append("\"), ");
+        }
         buf.append("new Label[] {");
         for (int i = 0; i < start.length; ++i) {
             buf.append(i == 0 ? " " : ", ");
@@ -906,7 +909,11 @@ public class ASMifier extends Printer {
         buf.append("{\n").append("av0 = ").append(name).append(".")
                 .append(method).append("(");
         buf.append(typeRef);
-        buf.append(", TypePath.fromString(\"").append(typePath).append("\"), ");
+        if (typePath == null) {
+            buf.append(", null, ");
+        } else {
+            buf.append(", TypePath.fromString(\"").append(typePath).append("\"), ");
+        }
         appendConstant(desc);
         buf.append(", ").append(visible).append(");\n");
         text.add(buf.toString());
@@ -942,7 +949,7 @@ public class ASMifier extends Printer {
     /**
      * Appends a string representation of the given access modifiers to
      * {@link #buf buf}.
-     *
+     * 
      * @param access
      *            some access modifiers.
      */
@@ -1092,7 +1099,7 @@ public class ASMifier extends Printer {
     /**
      * Appends a string representation of the given constant to the given
      * buffer.
-     *
+     * 
      * @param cst
      *            an {@link Integer}, {@link Float}, {@link Long},
      *            {@link Double} or {@link String} object. May be <tt>null</tt>.
@@ -1104,7 +1111,7 @@ public class ASMifier extends Printer {
     /**
      * Appends a string representation of the given constant to the given
      * buffer.
-     *
+     * 
      * @param buf
      *            a string buffer.
      * @param cst
@@ -1255,7 +1262,7 @@ public class ASMifier extends Printer {
      * Appends a declaration of the given label to {@link #buf buf}. This
      * declaration is of the form "Label lXXX = new Label();". Does nothing if
      * the given label has already been declared.
-     *
+     * 
      * @param l
      *            a label.
      */
@@ -1275,7 +1282,7 @@ public class ASMifier extends Printer {
      * Appends the name of the given label to {@link #buf buf}. The given label
      * <i>must</i> already have a name. One way to ensure this is to always call
      * {@link #declareLabel declared} before calling this method.
-     *
+     * 
      * @param l
      *            a label.
      */

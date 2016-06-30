@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000, 2015 INRIA, France Telecom
+ * Copyright (c) 2000-2011 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,19 +32,20 @@ package org.eclipse.persistence.internal.libraries.asm.tree;
 import java.util.Map;
 
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
+import org.eclipse.persistence.internal.libraries.asm.Type;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 
 /**
  * A node that represents a method instruction. A method instruction is an
  * instruction that invokes a method.
- *
+ * 
  * @author Eric Bruneton
  */
 public class MethodInsnNode extends AbstractInsnNode {
 
     /**
      * The internal name of the method's owner class (see
-     * {@link org.eclipse.persistence.internal.libraries.asm.Type#getInternalName() getInternalName}).
+     * {@link Type#getInternalName() getInternalName}).
      */
     public String owner;
 
@@ -54,7 +55,7 @@ public class MethodInsnNode extends AbstractInsnNode {
     public String name;
 
     /**
-     * The method's descriptor (see {@link org.eclipse.persistence.internal.libraries.asm.Type}).
+     * The method's descriptor (see {@link Type}).
      */
     public String desc;
 
@@ -65,19 +66,19 @@ public class MethodInsnNode extends AbstractInsnNode {
 
     /**
      * Constructs a new {@link MethodInsnNode}.
-     *
+     * 
      * @param opcode
      *            the opcode of the type instruction to be constructed. This
      *            opcode must be INVOKEVIRTUAL, INVOKESPECIAL, INVOKESTATIC or
      *            INVOKEINTERFACE.
      * @param owner
      *            the internal name of the method's owner class (see
-     *            {@link org.eclipse.persistence.internal.libraries.asm.Type#getInternalName()
+     *            {@link Type#getInternalName()
      *            getInternalName}).
      * @param name
      *            the method's name.
      * @param desc
-     *            the method's descriptor (see {@link org.eclipse.persistence.internal.libraries.asm.Type}).
+     *            the method's descriptor (see {@link Type}).
      */
     @Deprecated
     public MethodInsnNode(final int opcode, final String owner,
@@ -87,19 +88,19 @@ public class MethodInsnNode extends AbstractInsnNode {
 
     /**
      * Constructs a new {@link MethodInsnNode}.
-     *
+     * 
      * @param opcode
      *            the opcode of the type instruction to be constructed. This
      *            opcode must be INVOKEVIRTUAL, INVOKESPECIAL, INVOKESTATIC or
      *            INVOKEINTERFACE.
      * @param owner
      *            the internal name of the method's owner class (see
-     *            {@link org.eclipse.persistence.internal.libraries.asm.Type#getInternalName()
+     *            {@link Type#getInternalName()
      *            getInternalName}).
      * @param name
      *            the method's name.
      * @param desc
-     *            the method's descriptor (see {@link org.eclipse.persistence.internal.libraries.asm.Type}).
+     *            the method's descriptor (see {@link Type}).
      * @param itf
      *            if the method's owner class is an interface.
      */
@@ -114,7 +115,7 @@ public class MethodInsnNode extends AbstractInsnNode {
 
     /**
      * Sets the opcode of this instruction.
-     *
+     * 
      * @param opcode
      *            the new instruction opcode. This opcode must be INVOKEVIRTUAL,
      *            INVOKESPECIAL, INVOKESTATIC or INVOKEINTERFACE.
@@ -131,6 +132,7 @@ public class MethodInsnNode extends AbstractInsnNode {
     @Override
     public void accept(final MethodVisitor mv) {
         mv.visitMethodInsn(opcode, owner, name, desc, itf);
+        acceptAnnotations(mv);
     }
 
     @Override
