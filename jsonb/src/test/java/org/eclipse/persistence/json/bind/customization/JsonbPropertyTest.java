@@ -13,18 +13,16 @@
 
 package org.eclipse.persistence.json.bind.customization;
 
-import org.eclipse.persistence.json.bind.customization.model.*;
+import org.eclipse.persistence.json.bind.customization.model.JsonbPropertyName;
+import org.eclipse.persistence.json.bind.customization.model.JsonbPropertyNameCollision;
+import org.eclipse.persistence.json.bind.customization.model.JsonbPropertyNillable;
 import org.junit.Before;
 import org.junit.Test;
 
 import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;
-import javax.json.bind.JsonbConfig;
-import javax.json.bind.config.PropertyOrderStrategy;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 /**
  * Tests parsing of {@link javax.json.bind.annotation.JsonbProperty} test.
@@ -80,49 +78,6 @@ public class JsonbPropertyTest {
     public void testPropertyNillable() {
         JsonbPropertyNillable pojo = new JsonbPropertyNillable();
         assertEquals("{\"nullField\":null}", jsonb.toJson(pojo));
-    }
-
-    @Test
-    public void testPropertySorting() {
-        FieldOrder fieldOrder = new FieldOrder();
-        Jsonb jsonb = JsonbBuilder.create(new JsonbConfig().withPropertyOrderStrategy(PropertyOrderStrategy.LEXICOGRAPHICAL));
-        String expectedLexicographical = "{\"aField\":\"aValue\",\"bField\":\"bValue\",\"cField\":\"cValue\",\"dField\":\"dValue\"}";
-        assertEquals(expectedLexicographical, jsonb.toJson(fieldOrder));
-
-        jsonb = JsonbBuilder.create(new JsonbConfig().withPropertyOrderStrategy(PropertyOrderStrategy.REVERSE));
-        String expectedReverse = "{\"dField\":\"dValue\",\"cField\":\"cValue\",\"bField\":\"bValue\",\"aField\":\"aValue\"}";
-        assertEquals(expectedReverse, jsonb.toJson(fieldOrder));
-    }
-
-    @Test
-    public void testPropertyCustomOrder() {
-        FieldCustomOrder fieldCustomOrder = new FieldCustomOrder();
-        Jsonb jsonb = JsonbBuilder.create(new JsonbConfig().withPropertyOrderStrategy(PropertyOrderStrategy.LEXICOGRAPHICAL));
-        String expectedCustomOrder = "{\"aField\":\"aValue\",\"cField\":\"cValue\",\"dField\":\"dValue\",\"bField\":\"bValue\"}";
-        assertEquals(expectedCustomOrder, jsonb.toJson(fieldCustomOrder));
-
-        FieldCustomOrderWrapper fieldCustomOrderWrapper = new FieldCustomOrderWrapper();
-        String expectedOrder = "{\"fieldCustomOrder\":{\"aField\":\"aValue\",\"cField\":\"cValue\",\"dField\":\"dValue\",\"bField\":\"bValue\"},\"intField\":1,\"stringField\":\"stringValue\"}";
-        assertEquals(expectedOrder, jsonb.toJson(fieldCustomOrderWrapper));
-    }
-
-    @Test
-    public void testPropertySetCustomOrder() {
-        FieldSpecificOrder fieldSpecificOrder = new FieldSpecificOrder();
-        String expectedSpecific = "{\"aField\":\"aValue\",\"dField\":\"dValue\"}";
-        assertEquals(expectedSpecific, jsonb.toJson(fieldSpecificOrder));
-    }
-
-    @Test
-    public void testPropertySortingWithNamingAnnotation() {
-        FieldOrderNameAnnotation fieldOrderNameAnnotation = new FieldOrderNameAnnotation();
-        Jsonb jsonb = JsonbBuilder.create(new JsonbConfig().withPropertyOrderStrategy(PropertyOrderStrategy.LEXICOGRAPHICAL));
-        String expectedLexicographical = "{\"bField\":\"bValue\",\"cField\":\"cValue\",\"dField\":\"dValue\",\"zField\":\"aValue\"}";
-        assertEquals(expectedLexicographical, jsonb.toJson(fieldOrderNameAnnotation));
-
-        jsonb = JsonbBuilder.create(new JsonbConfig().withPropertyOrderStrategy(PropertyOrderStrategy.REVERSE));
-        String expectedReverse = "{\"zField\":\"aValue\",\"dField\":\"dValue\",\"cField\":\"cValue\",\"bField\":\"bValue\"}";
-        assertEquals(expectedReverse, jsonb.toJson(fieldOrderNameAnnotation));
     }
 
 }

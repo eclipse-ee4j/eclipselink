@@ -23,11 +23,21 @@ public class JsonbTransientValue {
     @JsonbTransient
     private String transientProperty;
 
+    private String property;
+
     public String getTransientProperty() {
         return transientProperty;
     }
 
     public void setTransientProperty(String transientProperty) {
         this.transientProperty = transientProperty;
+    }
+
+    public String getProperty() {
+        return property;
+    }
+
+    public void setProperty(String property) {
+        this.property = property;
     }
 }

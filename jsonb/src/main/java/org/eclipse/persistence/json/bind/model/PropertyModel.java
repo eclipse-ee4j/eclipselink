@@ -210,7 +210,7 @@ public class PropertyModel implements SerializerBindingModel, JsonBindingModel, 
     }
 
     public String getWriteName() {
-        final Optional<String> jsonReadName = Optional.ofNullable(customization.getJsonWriteName());
-        return jsonReadName.orElseGet(() -> ProcessingContext.getJsonbContext().getPropertyNamingStrategy().translateName(getPropertyName()));
+        final Optional<String> jsonWriteName = Optional.ofNullable(customization.getJsonWriteName());
+        return jsonWriteName.orElseGet(() -> ProcessingContext.getJsonbContext().getPropertyNamingStrategy().translateName(getPropertyName()));
     }
 }

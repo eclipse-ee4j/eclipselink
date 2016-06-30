@@ -23,9 +23,7 @@ import javax.json.bind.JsonbBuilder;
 import javax.json.bind.JsonbException;
 import javax.json.bind.annotation.JsonbProperty;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 /**
  * @author Roman Grigoriadi
@@ -43,8 +41,9 @@ public class JsonbTransientTest {
     public void testJsonbTransientProperty() {
         JsonbTransientValue pojo = new JsonbTransientValue();
         pojo.setTransientProperty("TRANSIENT");
+        pojo.setProperty("non transient");
 
-        assertEquals("{}", jsonb.toJson(pojo));
+        assertEquals("{\"property\":\"non transient\"}", jsonb.toJson(pojo));
     }
 
     @Test
