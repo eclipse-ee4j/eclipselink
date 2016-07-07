@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2013, 2015 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 2013, 2016 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -34,6 +34,7 @@ public class JPARSErrorCodes {
     public static final int PAGINATION_PARAMETER_USED_FOR_NOT_PAGEABLE_RESOURCE = 61016;
     public static final int FIELDS_FILTERING_BOTH_PARAMETERS_PRESENT = 61017;
     public static final int INVALID_PARAMETER = 61018;
+    public static final int JNDI_NAME_IS_INVALID = 61019;
 
     //
     public static final int AN_EXCEPTION_OCCURRED = 61999;

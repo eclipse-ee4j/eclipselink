@@ -1,14 +1,14 @@
 /****************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2016 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *      tware - 
+ *      tware -
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.logging.i18n;
 
@@ -18,10 +18,11 @@ public class LoggingLocalizationResource extends ListResourceBundle {
 
     static final Object[][] contents = {
             /*
-             * 
+             *
              * EACH RESOURCE STRING, MUST HAVE "requestId: {0}" AS FIRST PARAMETER in RESOURCE STRING.
-             *  
+             *
              */
+            { "jpars_invalid_jndi_name", "requestId: {0}. A call is being made to a session bean with JNDI Name: [{1}].  That JNDI Name is invalid." },
             { "jpars_could_not_find_session_bean", "requestId: {0}. A call is being made to a session bean with JNDI Name: [{1}].  That bean can not be found." },
             { "jpars_could_not_find_persistence_context", "requestId: {0}. A JPA-RS call is requesting persistence context: [{1}].  That persistence context is not found." },
             { "jpars_could_not_find_class_in_persistence_unit", "requestId: {0}. Type: [{1}] cannot be found in persistence unit: [{2}]." },
@@ -54,9 +55,9 @@ public class LoggingLocalizationResource extends ListResourceBundle {
             { "no_orderby_clause_for_paging", "requestId: {0}. No OrderBy clause is defined for query:[{1}]. As a result, no guarantee exists that paging will work deterministically." }
 
             /*
-             * 
+             *
              * EACH RESOURCE STRING, MUST HAVE "requestId: {0}" AS FIRST PARAMETER in RESOURCE STRING.
-             *  
+             *
              */
     };
 
