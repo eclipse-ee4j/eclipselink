@@ -23,6 +23,7 @@
       <module fileurl="file://$PROJECT_DIR$/moxy/eclipselink.moxy.test/moxy.test.iml" filepath="$PROJECT_DIR$/moxy/eclipselink.moxy.test/moxy.test.iml" group="root/moxy" />
       <module fileurl="file://$PROJECT_DIR$/foundation/org.eclipse.persistence.nosql/nosql.iml" filepath="$PROJECT_DIR$/foundation/org.eclipse.persistence.nosql/nosql.iml" group="root/foundation" />
       <module fileurl="file://$PROJECT_DIR$/foundation/org.eclipse.persistence.oracle/oracle.iml" filepath="$PROJECT_DIR$/foundation/org.eclipse.persistence.oracle/oracle.iml" group="root/foundation" />
+      <module fileurl="file://$PROJECT_DIR$/foundation/eclipselink.extension.oracle.spatial.test/oracle.spatial.test.iml" filepath="$PROJECT_DIR$/foundation/eclipselink.extension.oracle.spatial.test/oracle.spatial.test.iml" group="root/foundation" />
       <module fileurl="file://$PROJECT_DIR$/foundation/eclipselink.extension.oracle.test/oracle.test.iml" filepath="$PROJECT_DIR$/foundation/eclipselink.extension.oracle.test/oracle.test.iml" group="root/foundation" />
       <module fileurl="file://$PROJECT_DIR$/performance/eclipselink.perf.test/perf.test.iml" filepath="$PROJECT_DIR$/performance/eclipselink.perf.test/perf.test.iml" group="root/performance" />
       <module fileurl="file://$PROJECT_DIR$/root.iml" filepath="$PROJECT_DIR$/root.iml" group="root" />

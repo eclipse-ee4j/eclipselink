@@ -1,5 +1,5 @@
 <!--/*******************************************************************************
-* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -219,10 +219,6 @@
                                               else="${extensions.depend.dir}/${aqapi.jar}">
             <available file="${oracle.extensions.depend.dir}/${aqapi.jar}"/>
         </condition>
-        <condition property="file.sdoapi.jar" value="${oracle.extensions.depend.dir}/${sdoapi.jar}"
-                                              else="${extensions.depend.dir}/${sdoapi.jar}">
-            <available file="${oracle.extensions.depend.dir}/${sdoapi.jar}"/>
-        </condition>
         <condition property="file.xdb.jar" value="${oracle.extensions.depend.dir}/${xdb.jar}"
                                            else="${extensions.depend.dir}/${xdb.jar}">
             <available file="${oracle.extensions.depend.dir}/${xdb.jar}"/>
@@ -256,9 +252,6 @@
         <condition property="is.aqapi.jar">
             <available file="${file.aqapi.jar}"/>
         </condition>
-        <condition property="is.sdoapi.jar">
-            <available file="${file.sdoapi.jar}"/>
-        </condition>
         <condition property="is.xdb.jar">
             <available file="${file.xdb.jar}"/>
         </condition>
@@ -281,7 +274,6 @@
                 <isset property="is.orai18n.jar"/>
                 <isset property="is.orai18n-mapping.jar"/>
                 <isset property="is.aqapi.jar"/>
-                <isset property="is.sdoapi.jar"/>
                 <isset property="is.xdb.jar"/>
                 <isset property="is.xmlparser.jar"/>
                 <isset property="is.ucp.jar"/>
@@ -301,9 +293,6 @@
         </condition>
         <condition property="msg.orai18n-mapping.jar" value=" + ${file.orai18n-mapping.jar} library found" else=" - ${orai18n-mapping.jar} library missing">
             <isset property="is.orai18n-mapping.jar"/>
-        </condition>
-        <condition property="msg.sdoapi.jar"    value=" + ${file.sdoapi.jar} library found"    else=" - ${sdoapi.jar} library missing">
-            <isset property="is.sdoapi.jar"/>
         </condition>
         <condition property="msg.aqapi.jar"     value=" + ${file.aqapi.jar} library found"     else=" - ${aqapi.jar} library missing">
             <isset property="is.aqapi.jar"/>
@@ -346,7 +335,6 @@
         <echo message="${msg.orai18n.jar}"/>
         <echo message="${msg.orai18n-mapping.jar}"/>
         <echo message="${msg.aqapi.jar}"/>
-        <echo message="${msg.sdoapi.jar}"/>
         <echo message="${msg.xdb.jar}"/>
         <echo message="${msg.xmlparser.jar}"/>
         <echo message="${msg.ucp.jar}"/>
@@ -368,7 +356,6 @@
         <echo message="${msg.orai18n-mapping.jar}"/>
         <echo message="${msg.aqapi.jar}"/>
         <echo message="${msg.ojdbc.jar}"/>
-        <echo message="${msg.sdoapi.jar}"/>
         <echo message="${msg.xdb.jar}"/>
         <echo message="${msg.xmlparser.jar}"/>
         <echo message="${msg.ucp.jar}"/>
@@ -412,7 +399,7 @@
 
     <!-- Compiles Oracle components, tests and extensions (excluding utilities). -->
     <target name="build-oracle"      depends="build-oracle-test"/> <!-- added for backward compatibility -->
-    <target name="build-oracle-test" depends="build-oracle-extension-test, build-oracle-nosql-extension-test"/>
+    <target name="build-oracle-test" depends="build-oracle-extension-test, build-oracle-spatial-extension-test, build-oracle-nosql-extension-test"/>
     <!-- Compiles Oracle components, tests and extensions (excluding utilities) if dependencies are available. -->
     <target name="build-oracle-if-dependencies" depends="oracle.jdbc.dependencies" if="oracle.jdbc.dependencies.available">
         <antcall target="build-oracle-test"/>
@@ -527,7 +514,7 @@
     </target>
 
     <target name="clean-oracle"      depends="clean-oracle-test"/>
-    <target name="clean-oracle-test" depends="clean-oracle-extension-test, clean-oracle-nosql-extension-test"/>
+    <target name="clean-oracle-test" depends="clean-oracle-extension-test, clean-oracle-spatial-extension-test, clean-oracle-nosql-extension-test"/>
     <!-- Compiles Oracle components, tests and extensions (excluding utilities) if dependencies are available. -->
     <target name="clean-oracle-if-dependencies" depends="oracle.dependencies" if="oracle.dependencies.available">
         <antcall target="clean-oracle-test"/>
@@ -535,6 +522,10 @@
 
     <target name="clean-oracle-extension-test">
         <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle.test}" target="clean"/>
+    </target>
+
+    <target name="clean-oracle-spatial-extension-test">
+        <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle.spatial.test}" target="clean"/>
     </target>
 
     <target name="clean-oracle-nosql-extension-test">
@@ -695,6 +686,11 @@
     <target name="build-oracle-extension-test" depends="check-oracle-dependencies">
         <ant antfile="antbuild.xml" dir="${eclipselink.core.test}"             target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle.test}" target="build"/>
+    </target>
+
+    <target name="build-oracle-spatial-extension-test" depends="check-oracle-dependencies">
+        <ant antfile="antbuild.xml" dir="${eclipselink.core.test}"             target="build"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle.spatial.test}" target="build"/>
     </target>
 
     <target name="build-oracle-nosql-extension-test" depends="check-oracle-dependencies">
@@ -1059,6 +1055,7 @@
                 <include name="buildsystem/*custom*jar"/>
                 <include name="${eclipselink.core.test}/**"/>
                 <include name="${eclipselink.core.base}/eclipselink.extension.oracle.test/**"/>
+                <include name="${eclipselink.core.base}/eclipselink.extension.oracle.spatial.test/**"/>
                 <include name="${eclipselink.core.base}/eclipselink.extension.nosql.test/**"/>
                 <include name="${eclipselink.core.base}/eclipselink.extension.oracle.nosql.test/**"/>
                 <include name="${eclipselink.jpa.test}/**"/>
@@ -1575,6 +1572,10 @@
         <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle.test}"        target="test-oracle"/>
         <!-- ant antfile="antbuild.xml" dir="${eclipselink.dbws.test.oracle}"         target="test-oracle"/ -->
         <!-- ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder.test.oracle}" target="test-oracle"/ -->
+    </target>
+    <!-- Run Oracle Spatial Tests -->
+    <target name="test-oracle-spatial" description="run all oracle specific spatial tests">
+        <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle.spatial.test}"        target="test-oracle-spatial"/>
     </target>
     <!-- Run nosql Tests -->
     <target name="test-nosql" description="run all nosql specific tests">

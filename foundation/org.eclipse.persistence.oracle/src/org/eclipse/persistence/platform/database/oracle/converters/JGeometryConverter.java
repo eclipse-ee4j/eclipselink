@@ -12,13 +12,13 @@
  ******************************************************************************/
 package org.eclipse.persistence.platform.database.oracle.converters;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Struct;
 
 import org.eclipse.persistence.platform.database.converters.StructConverter;
-
-import oracle.spatial.geometry.JGeometry;
 
 /**
  * PUBLIC:
@@ -29,8 +29,26 @@ import oracle.spatial.geometry.JGeometry;
  * the Classpath
  */
 public class JGeometryConverter implements StructConverter {
-    public static final String JGEOMETRY_DB_TYPE = "MDSYS.SDO_GEOMETRY";
-    public static final Class JGEOMETRY_CLASS = JGeometry.class;
+    private final static String JGEOMETRY_DB_TYPE = "MDSYS.SDO_GEOMETRY";
+    private final Class JGEOMETRY_CLASS;
+    private final MethodHandle loadJSMethod;
+    private final MethodHandle storeJSMethod;
+
+    public JGeometryConverter() {
+        try {
+            JGEOMETRY_CLASS = Class.forName("oracle.spatial.geometry.JGeometry");
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
+        MethodHandles.Lookup lookup = MethodHandles.lookup();
+        try {
+            loadJSMethod = lookup.unreflect(JGEOMETRY_CLASS.getMethod("loadJS", Struct.class));
+            storeJSMethod = lookup.unreflect(JGEOMETRY_CLASS.getMethod("storeJS", JGEOMETRY_CLASS, Connection.class));
+        } catch (IllegalAccessException|NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @Override
     public String getStructName() {
@@ -47,7 +65,11 @@ public class JGeometryConverter implements StructConverter {
         if (struct == null){
             return null;
         }
-        return JGeometry.loadJS(struct);
+        try {
+            return loadJSMethod.invokeWithArguments(struct);
+        } catch (Throwable throwable) {
+            throw new SQLException(throwable);
+        }
     }
 
     @Override
@@ -55,6 +77,10 @@ public class JGeometryConverter implements StructConverter {
         if (geometry == null){
             return null;
         }
-        return JGeometry.storeJS((JGeometry) geometry, connection);
+        try {
+            return (Struct) storeJSMethod.invokeWithArguments(JGEOMETRY_CLASS.cast(geometry), connection);
+        } catch (Throwable throwable) {
+            throw new SQLException(throwable);
+        }
     }
 }

@@ -20,12 +20,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class OracleTestModel extends TestModel {
+public class OracleSpatialTestModel extends TestModel {
     protected List testList;
 
-    public OracleTestModel() {
-        setName("OracleTestModel");
-        setDescription("This model runs all of the Oracle specific tests.");
+    public OracleSpatialTestModel() {
+        setName("OracleSpatialTestModel");
+        setDescription("This model runs all of the Oracle specific spatial tests.");
         addTests();
     }
 
@@ -35,28 +35,10 @@ public class OracleTestModel extends TestModel {
         }
         List tests = new ArrayList();
 
-        tests.add("org.eclipse.persistence.testing.tests.conversion.ConversionManagerOracleTestModel");
-        tests.add("org.eclipse.persistence.testing.tests.distributedservers.rcm.jms.JMSRCMDistributedServersModel");
-        tests.add("org.eclipse.persistence.testing.tests.dbchangenotification.DbChangeNotificationTestModel");
-        tests.add("org.eclipse.persistence.testing.tests.lob.LOBTestModel");
-        tests.add("org.eclipse.persistence.testing.tests.lob.LOBSessionBrokerTestModel");
-        tests.add("org.eclipse.persistence.testing.tests.nchar.NcharTestModel");
-        tests.add("org.eclipse.persistence.testing.tests.queries.oracle.OracleSpecificTestModel");
-        tests.add("org.eclipse.persistence.testing.tests.proxyauthentication.thin.ProxyAuthenticationCustomizerTestModel");
-        tests.add("org.eclipse.persistence.testing.tests.types.OracleTIMESTAMPTypeTestModelWithAccessors");
-        tests.add("org.eclipse.persistence.testing.tests.types.OracleTIMESTAMPTypeTestModelWithOutAccessors");
-        tests.add("org.eclipse.persistence.testing.tests.unwrappedconnection.UnwrapConnectionNchartTestModel");
-        tests.add("org.eclipse.persistence.testing.tests.unwrappedconnection.UnwrapConnectionLOBTestModel");
-        tests.add("org.eclipse.persistence.testing.tests.unwrappedconnection.UnwrapConnectionNativeBatchWritingTestModel");
-        tests.add("org.eclipse.persistence.testing.tests.unwrappedconnection.UnwrapConnectionTypeTestModel");
-        tests.add("org.eclipse.persistence.testing.tests.unwrappedconnection.UnwrapConnectionTypeWithoutAccessorsTestModel");
-        tests.add("org.eclipse.persistence.testing.tests.unwrappedconnection.UnwrapConnectionCustomSQLTestModel");
-        tests.add("org.eclipse.persistence.testing.tests.unwrappedconnection.UnwrapConnectionInsuranceObjectRelationalTestModel");
+        tests.add("org.eclipse.persistence.testing.tests.spatial.jgeometry.SimpleJGeometryTestModel");
+        tests.add("org.eclipse.persistence.testing.tests.spatial.jgeometry.wrapped.WrappedJGeometryTestModel");
         tests.add("org.eclipse.persistence.testing.tests.unwrappedconnection.UnwrapConnectionJGeometryTestModel");
         tests.add("org.eclipse.persistence.testing.tests.unwrappedconnection.UnwrapConnectionJGeometryWrappedTestModel");
-
-        tests.add("org.eclipse.persistence.testing.tests.flashback.FlashbackTestModel");
-        tests.add("org.eclipse.persistence.testing.tests.returning.ReturningPolicyTestModel");
 
         for (int index = 0; index < tests.size(); ++index) {
             try {
@@ -83,8 +65,8 @@ public class OracleTestModel extends TestModel {
         return buildOracleTestModel();
     }
 
-    public static OracleTestModel buildOracleTestModel() {
-        OracleTestModel model = new OracleTestModel();
+    public static OracleSpatialTestModel buildOracleTestModel() {
+        OracleSpatialTestModel model = new OracleSpatialTestModel();
         return model;
     }
 }

@@ -13,24 +13,19 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests;
 
-import junit.framework.TestSuite;
 import junit.framework.Test;
+import junit.framework.TestSuite;
+import org.eclipse.persistence.testing.tests.jpa.jgeometry.SpatialJPQLTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.structconverter.StructConverterTestSuite;
 
-import org.eclipse.persistence.testing.tests.jpa.customfeatures.CustomFeaturesJUnitTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.dcn.DCNTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.proxyauthentication.ProxyAuthenticationTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.timestamptz.TimeStampTZJUnitTestSuite;
-
-public class OracleJPATestSuite extends TestSuite{
+public class OracleJPASpatialTestSuite extends TestSuite{
 
     public static Test suite() {
         TestSuite fullSuite = new TestSuite();
-        fullSuite.setName("OracleJPATestSuite");
+        fullSuite.setName("OracleJPASpatialTestSuite");
 
-        fullSuite.addTest(ProxyAuthenticationTestSuite.suite());
-        fullSuite.addTest(CustomFeaturesJUnitTestSuite.suite());
-        fullSuite.addTest(TimeStampTZJUnitTestSuite.suite());
-        fullSuite.addTest(DCNTestSuite.suite());
+        fullSuite.addTest(StructConverterTestSuite.suite());
+        fullSuite.addTest(SpatialJPQLTestSuite.suite());
         return fullSuite;
     }
 }

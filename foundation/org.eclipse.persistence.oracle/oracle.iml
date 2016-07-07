@@ -40,15 +40,6 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$EXTENSION_ORACLE_LIB_EXTERNAL$/sdoapi.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
           <root url="jar://$EXTENSION_ORACLE_LIB_EXTERNAL$/xdb.jar!/" />
         </CLASSES>
         <JAVADOC />
@@ -66,4 +57,3 @@
     </orderEntry>
   </component>
 </module>
-

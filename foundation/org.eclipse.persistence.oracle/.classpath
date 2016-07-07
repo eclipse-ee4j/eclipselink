@@ -5,7 +5,6 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
         <classpathentry kind="var" path="EXTENSION_LIB_EXTERNAL/dms.jar"/>
         <classpathentry kind="var" path="EXTENSION_LIB_EXTERNAL/ojdbc7.jar"/>
-        <classpathentry kind="var" path="EXTENSION_LIB_EXTERNAL/sdoapi.jar"/>
         <classpathentry kind="var" path="EXTENSION_LIB_EXTERNAL/ucp.jar"/>
         <classpathentry kind="var" path="EXTENSION_LIB_EXTERNAL/xdb.jar"/>
         <classpathentry kind="var" path="EXTENSION_LIB_EXTERNAL/xmlparserv2.jar"/>
