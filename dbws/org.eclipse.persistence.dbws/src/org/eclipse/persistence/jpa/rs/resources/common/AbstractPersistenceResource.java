@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,6 +12,23 @@
  *      Dmitry Kornilov - JPARS 2.0 related changes
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.resources.common;
+
+import java.io.InputStream;
+import java.lang.reflect.Method;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.Link;
@@ -30,21 +47,6 @@ import org.eclipse.persistence.jpa.rs.util.HrefHelper;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
 import org.eclipse.persistence.jpa.rs.util.list.LinkList;
-
-import javax.naming.InitialContext;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.stream.StreamSource;
-import java.io.InputStream;
-import java.lang.reflect.Method;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Base class for persistent unit resources.
@@ -89,6 +91,11 @@ public abstract class AbstractPersistenceResource extends AbstractResource {
             SessionBeanCall call = unmarshallSessionBeanCall(is);
 
             String jndiName = call.getJndiName();
+            if (!isValid(jndiName)) {
+                JPARSLogger.error("jpars_invalid_jndi_name", new Object[] { jndiName });
+                throw JPARSException.jndiNamePassedIsInvalid(jndiName);
+            }
+
             javax.naming.Context ctx = new InitialContext();
             Object ans = ctx.lookup(jndiName);
             if (ans == null) {
@@ -127,10 +134,20 @@ public abstract class AbstractPersistenceResource extends AbstractResource {
             Method method = ans.getClass().getMethod(call.getMethodName(), parameters);
             Object returnValue = method.invoke(ans, args);
             return Response.ok(new StreamingOutputMarshaller(null, returnValue, headers.getAcceptableMediaTypes())).build();
-        } catch (Exception e) {
+        } catch (JAXBException | NamingException | ReflectiveOperationException | RuntimeException e) {
             JPARSLogger.exception("exception_in_callSessionBeanInternal", new Object[]{version, headers.getMediaType(), uriInfo.getRequestUri().toASCIIString()}, e);
             throw JPARSException.exceptionOccurred(e);
         }
+    }
+
+    private boolean isValid(String jndiName) {
+        String protocol = null;
+        int colon = jndiName.indexOf(':');
+        int slash = jndiName.indexOf('/');
+        if (colon > 0 && (slash == -1 || colon < slash)) {
+            protocol = jndiName.substring(0, colon);
+        }
+        return protocol == null || protocol.isEmpty() || protocol.equalsIgnoreCase("java") || protocol.equalsIgnoreCase("ejb");
     }
 
     private SessionBeanCall unmarshallSessionBeanCall(InputStream data) throws JAXBException {

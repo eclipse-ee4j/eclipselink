@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2013, 2016 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -333,6 +333,24 @@ public class JPARSException extends EclipseLinkException {
         JPARSException exception = new JPARSException(msg);
         exception.setErrorCode(JPARSErrorCodes.OBJECT_REFERRED_BY_LINK_DOES_NOT_EXIST);
         exception.setHttpStatusCode(Status.NOT_FOUND);
+
+        return exception;
+    }
+
+    /**
+     * Session bean lookup is invalid.
+     *
+     * @param jndiName
+     *            the jndi name
+     * @return the JPARS exception
+     */
+    public static JPARSException jndiNamePassedIsInvalid(String jndiName) {
+        Object[] args = { jndiName };
+
+        String msg = ExceptionMessageGenerator.buildMessage(JPARSException.class, JPARSErrorCodes.JNDI_NAME_IS_INVALID, args);
+        JPARSException exception = new JPARSException(msg);
+        exception.setErrorCode(JPARSErrorCodes.JNDI_NAME_IS_INVALID);
+        exception.setHttpStatusCode(Status.FORBIDDEN);
 
         return exception;
     }
