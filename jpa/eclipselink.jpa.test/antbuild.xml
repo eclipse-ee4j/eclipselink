@@ -659,10 +659,28 @@
                failonerror="true">
             <include name="${MODEL_PATH}/**/*.java"/>
             <!-- compilerarg value="-Xlint:unchecked" compiler="javac1.7"/ -->
-            <compilerarg value="-Aeclipselink.persistencexml=${PERSISTENCE_XML_PATH}" compiler="javac1.7"/>
+            <compilerarg value="-Aeclipselink.persistencexml=${PERSISTENCE_XML_PATH}"/>
             <!-- compilerarg value="-Aeclipselink.canonicalmodel.prefix=_" compiler="javac1.7"/ -->
            <classpath refid="${COMPILE_PATH_REF}"/>
         </javac>
+    </target>
+
+    <target name="prepare-modelgen-xml" depends="set-server-properties">
+        <copy todir="${jpatest.build.location}/${classes.dir}">
+            <fileset dir="${jpatest.build.location}/${resource.dir}" includes="eclipselink-inheritance-model/server/persistence.xml"/>
+        </copy>
+        <replace file="${jpatest.build.location}/${classes.dir}/eclipselink-inheritance-model/server/persistence.xml"
+                 token='@transaction-type@' value="RESOURCE_LOCAL"/>
+        <replace file="${jpatest.build.location}/${classes.dir}/eclipselink-inheritance-model/server/persistence.xml"
+                 token='@datasource-type@' value="jta-data-source"/>
+        <replace file="${jpatest.build.location}/${classes.dir}/eclipselink-inheritance-model/server/persistence.xml"
+                 token='@data-source-name@' value="${DS_NAME}"/>
+        <replace file="${jpatest.build.location}/${classes.dir}/eclipselink-inheritance-model/server/persistence.xml"
+                 token='@server-weaving@' value="${server.weaving}"/>
+        <replace file="${jpatest.build.location}/${classes.dir}/eclipselink-inheritance-model/server/persistence.xml"
+                 token='@database-platform@' value="${db.platform}"/>
+        <replace file="${jpatest.build.location}/${classes.dir}/eclipselink-inheritance-model/server/persistence.xml"
+                 token='@server-platform@' value="${server.platform}"/>
     </target>
 
     <!-- Compiles all tests. -->
@@ -670,7 +688,7 @@
             depends="init, config-classpath,
                      compile-with-modelgen, compile-standard, compile-jpa21-standard, compile-jpa22-standard, compile-springplatform, compile-criteria, compile-fullregression"/>
 
-    <target name="compile-with-modelgen">
+    <target name="compile-with-modelgen" depends="prepare-modelgen-xml">
         <!-- ModelGen debug code: should never fail, but in production even if it would we don't want to stop so commented out -->
         <!-- fail message="'${jpatest.2.common.plugins.dir}/${modelgen.jar}' not found." unless="modelgen.jar.exist"/ -->
         <copy todir="${jpatest.build.location}/${classes.dir}">
@@ -1657,7 +1675,7 @@
             <pathelement path="${extensions.depend.dir}/${javax.validation.jar}"/>
         </path>
         <path id="run.bean.validation.dynamic.classpath">
-            <path refid="run.bean.validation.classpath"/>            
+            <path refid="run.bean.validation.classpath"/>
             <pathelement path="${jpatest.basedir}/${eclipselink.beanvalidation.dynamic.model}.jar"/>
         </path>
         <path id="run.jpa21.classpath">
@@ -3444,7 +3462,7 @@
     <target name="server-build" depends="prepare-non-jta-ds-servertest,prepare-server-sessionbeans,server-build-jpa20-client-jar,server-build-jpa20-ejb-jar,server-build-ear,server-build-ear-jpars,server-build-ear-grid,server-build-ear-kryo"/>
 
     <target name="server-build-jpa21" depends="prepare-non-jta-ds-servertest,prepare-server-sessionbeans,server-build-jpa21-client-jar,server-build-jpa21-ejb-jar,server-build-ear,server-build-ear-jpars"/>
-    
+
     <target name="server-build-jpa22" depends="prepare-non-jta-ds-servertest,prepare-server-sessionbeans,server-build-jpa22-client-jar,server-build-jpa22-ejb-jar,server-build-ear,server-build-ear-jpars"/>
 
     <target name="server-build-composite-advanced" depends="prepare-non-jta-ds-servertest,prepare-server-sessionbeans,server-build-jpa20-client-jar,server-build-ejb-composite-advanced-jar,server-build-composite-advanced-ear"/>
