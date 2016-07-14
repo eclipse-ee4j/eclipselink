@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -17,6 +17,7 @@ import java.util.ListResourceBundle;
 public class LoggingLocalizationResource extends ListResourceBundle {
 
     static final Object[][] contents = {
+        { "jpars_invalid_jndi_name", "requestId: {0}. A call is being made to a session bean with JNDI Name: [{1}].  That JNDI Name is invalid." },
         { "jpars_could_not_find_session_bean", "A call is being made to a session bean with JNDI Name: [{0}].  That bean can not be found."},
         { "jpars_could_not_find_persistence_context", "A JPA-RS call is requesting persistence context: [{0}].  That persistence context is not found."},
         { "jpars_could_not_find_class_in_persistence_unit", "Type: [{0}] cannot be found in persistence unit: [{1}]."},
