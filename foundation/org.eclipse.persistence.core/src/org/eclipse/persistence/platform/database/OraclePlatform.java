@@ -32,6 +32,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -975,6 +976,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
                     Vector fields = new Vector();
                     statement.enableFieldAliasesCaching();
                     String queryString = printOmittingForUpdate(statement, printer, fields);
+                    duplicateCallParameters(call);
                     call.setFields(fields);
 
                     /* Prints a query similar to the below:
@@ -1037,6 +1039,17 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         }
         call.setIgnoreFirstRowSetting(true);
         call.setIgnoreMaxResultsSetting(true);
+    }
+
+    @SuppressWarnings("unchecked")
+    // Bug #453208 - Duplicate call parameters since the query is performed twice
+    private void duplicateCallParameters(DatabaseCall call) {
+        ArrayList newParameterList = new ArrayList(call.getParameters());
+        newParameterList.addAll(call.getParameters());
+        call.setParameters(newParameterList);
+        ArrayList<Integer> newParameterTypesList = new ArrayList(call.getParameterTypes());
+        newParameterTypesList.addAll(call.getParameterTypes());
+        call.setParameterTypes(newParameterTypesList);
     }
 
     @SuppressWarnings("unchecked")
