@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 
 package org.eclipse.persistence.testing.tests.jpa.jpql;
 
@@ -29,6 +29,7 @@ import javax.persistence.PessimisticLockException;
 import javax.persistence.Query;
 import javax.persistence.EntityManager;
 import javax.persistence.RollbackException;
+import javax.persistence.TypedQuery;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -167,7 +168,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         }
         return suite;
     }
-    
+
     /**
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
@@ -189,15 +190,15 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         new RelationshipsTableManager().replaceTables(session);
         //populate the relationships model and persist as well
         new RelationshipsExamples().buildExamples(session);
-        
+
         new InheritanceTableCreator().replaceTables(session);
         InheritancePopulator inheritancePopulator = new InheritancePopulator();
         inheritancePopulator.buildExamples();
-        
+
         //Persist the examples in the database
         inheritancePopulator.persistExample(session);
     }
-    
+
     /**
      * Test that a cache hit will occur on a primary key query.
      */
@@ -206,7 +207,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         beginTransaction(em);
         QuerySQLTracker counter = null;
         try {
-            // Load an employee into the cache.  
+            // Load an employee into the cache.
             Query query = em.createQuery("Select employee from Employee employee");
             List result = query.getResultList();
             Employee employee = (Employee)result.get(0);
@@ -233,7 +234,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         }
     }
 
-    
+
     /**
      * Test using the hint hint.
      */
@@ -246,7 +247,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         QuerySQLTracker counter = null;
         try {
             counter = new QuerySQLTracker(getServerSession());
-            
+
             Query query = em.createNamedQuery("findAllAddressesByPostalCode");
             query.setParameter("postalcode", "K2H8C2");
             query.getResultList();
@@ -270,7 +271,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         beginTransaction(em);
         QuerySQLTracker counter = null;
         try {
-            // Load an employee into the cache.  
+            // Load an employee into the cache.
             Query query = em.createQuery("Select employee from Employee employee");
             List result = query.getResultList();
             Employee employee = (Employee)result.get(0);
@@ -308,7 +309,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         beginTransaction(em);
         QuerySQLTracker counter = null;
         try {
-            // Load an employee into the cache.  
+            // Load an employee into the cache.
             Query query = em.createQuery("Select employee from Employee employee");
             List result = query.getResultList();
             Employee employee = (Employee)result.get(0);
@@ -318,7 +319,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             clearCache();
             em = createEntityManager();
             beginTransaction(em);
-            
+
             // Count SQL.
             counter = new QuerySQLTracker(getServerSession());
             // Query by primary key.
@@ -378,7 +379,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             }
         }
     }
-    
+
     /**
      * Test cursored queries.
      */
@@ -396,7 +397,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             cursor.nextElement();
             cursor.size();
             cursor.close();
-            
+
             // Test cursor result API.
             JpaQuery jpaQuery = (JpaQuery)((EntityManager)em.getDelegate()).createQuery("Select employee from Employee employee");
             jpaQuery.setHint(QueryHints.CURSOR, true);
@@ -404,7 +405,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             cursor.nextElement();
             cursor.size();
             cursor.close();
-            
+
             // Test scrollable cursor.
             jpaQuery = (JpaQuery)((EntityManager)em.getDelegate()).createQuery("Select employee from Employee employee");
             jpaQuery.setHint(QueryHints.SCROLLABLE_CURSOR, true);
@@ -418,7 +419,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             ScrollableCursor scrollableCursor = (ScrollableCursor)jpaQuery.getResultCursor();
             scrollableCursor.next();
             scrollableCursor.close();
-            
+
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
@@ -432,7 +433,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
-            // Load an employee into the cache.  
+            // Load an employee into the cache.
             Query query = em.createQuery("Select employee from Employee employee");
             List result = query.getResultList();
             Employee employee = (Employee)result.get(0);
@@ -450,7 +451,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             if ((arrayResult.length != 3) || (arrayResult[0] != employee) || (arrayResult[1] != employee.getAddress()) || (!arrayResult[2].equals(employee.getId()))) {
                 fail("Array result not correct: " + arrayResult);
             }
-            
+
             // Test single object, as an array.
             query = em.createQuery("Select employee.id from Employee employee where employee.id = :id and employee.firstName = :firstName");
             query.setHint(QueryHints.RESULT_TYPE, ResultType.Array);
@@ -465,7 +466,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             if ((arrayResult.length != 1) || (!arrayResult[0].equals(employee.getId()))) {
                 fail("Array result not correct: " + arrayResult);
             }
-            
+
             // Test multi object, as a Map.
             query = em.createQuery("Select employee, employee.address, employee.id from Employee employee where employee.id = :id and employee.firstName = :firstName");
             query.setHint(QueryHints.RESULT_TYPE, ResultType.Map);
@@ -480,7 +481,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             if ((mapResult.size() != 3) ||(mapResult.get("employee") != employee) || (mapResult.get("address") != employee.getAddress()) || (!mapResult.get("id").equals(employee.getId()))) {
                 fail("Map result not correct: " + mapResult);
             }
-            
+
             // Test single object, as a Map.
             query = em.createQuery("Select employee.id from Employee employee where employee.id = :id and employee.firstName = :firstName");
             query.setHint(QueryHints.RESULT_TYPE, ResultType.Map);
@@ -495,7 +496,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             if ((mapResult.size() != 1) || (!mapResult.get("id").equals(employee.getId()))) {
                 fail("Map result not correct: " + mapResult);
             }
-            
+
             // Test single object, as an array.
             query = em.createQuery("Select employee from Employee employee where employee.id = :id and employee.firstName = :firstName");
             query.setHint(QueryHints.QUERY_TYPE, QueryType.Report);
@@ -506,7 +507,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             if (arrayResult[0] != employee) {
                 fail("Array result not correct: " + arrayResult);
             }
-            
+
             // Test single object, as value.
             query = em.createQuery("Select employee.id from Employee employee where employee.id = :id and employee.firstName = :firstName");
             query.setParameter("id", employee.getId());
@@ -520,7 +521,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             if (! valueResult.equals(employee.getId())) {
                 fail("Value result not correct: " + valueResult);
             }
-            
+
             // Test multi object, as value.
             query = em.createQuery("Select employee.id, employee.firstName from Employee employee where employee.id = :id and employee.firstName = :firstName");
             query.setHint(QueryHints.RESULT_TYPE, ResultType.Value);
@@ -530,7 +531,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             if (! valueResult.equals(employee.getId())) {
                 fail("Value result not correct: " + valueResult);
             }
-            
+
             // Test single object, as attribute.
             query = em.createQuery("Select employee.id from Employee employee where employee.id = :id and employee.firstName = :firstName");
             query.setHint(QueryHints.RESULT_TYPE, ResultType.Attribute);
@@ -557,7 +558,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
-            // Load an employee into the cache.  
+            // Load an employee into the cache.
             Query query = em.createNativeQuery("Select * from CMP3_EMPLOYEE employee", Employee.class);
             List result = query.getResultList();
             Employee employee = (Employee)result.get(0);
@@ -575,7 +576,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             if ((arrayResult.length != 2) || (!arrayResult[0].equals(employee.getFirstName())) && (!arrayResult[1].equals(employee.getId()))) {
                 fail("Array result not correct: " + arrayResult);
             }
-            
+
             // Test single object, as an array.
             query = em.createNativeQuery("Select employee.EMP_ID from CMP3_EMPLOYEE employee where employee.EMP_ID = ? and employee.F_NAME = ?");
             query.setHint(QueryHints.RESULT_TYPE, ResultType.Array);
@@ -590,7 +591,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             if ((arrayResult.length != 1) || (!new Integer(((Number)arrayResult[0]).intValue()).equals(employee.getId()))) {
                 fail("Array result not correct: " + arrayResult);
             }
-            
+
             // Test multi object, as a Map.
             query = em.createNativeQuery("Select employee.F_NAME, employee.EMP_ID from CMP3_EMPLOYEE employee where employee.EMP_ID = ? and employee.F_NAME = ?");
             query.setHint(QueryHints.RESULT_TYPE, ResultType.Map);
@@ -605,7 +606,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             if ((mapResult.size() != 2) || (!mapResult.get("F_NAME").equals(employee.getFirstName())) || (!(new Integer(((Number)mapResult.get("EMP_ID")).intValue())).equals(employee.getId()))) {
                 fail("Map result not correct: " + mapResult);
             }
-            
+
             // Test single object, as a Map.
             query = em.createNativeQuery("Select employee.EMP_ID from CMP3_EMPLOYEE employee where employee.EMP_ID = ? and employee.F_NAME = ?");
             query.setHint(QueryHints.RESULT_TYPE, ResultType.Map);
@@ -620,7 +621,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             if ((mapResult.size() != 1) || (!(new Integer(((Number)mapResult.get("EMP_ID")).intValue())).equals(employee.getId()))) {
                 fail("Map result not correct: " + mapResult);
             }
-            
+
             // Test single object, as value.
             query = em.createNativeQuery("Select employee.EMP_ID from CMP3_EMPLOYEE employee where employee.EMP_ID = ? and employee.F_NAME = ?");
             query.setParameter(1, employee.getId());
@@ -647,7 +648,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         beginTransaction(em);
         QuerySQLTracker counter = null;
         try {
-            // Load an employee into the cache.  
+            // Load an employee into the cache.
             Query query = em.createQuery("Select employee from Employee employee");
             List result = query.getResultList();
             Employee employee = (Employee)result.get(0);
@@ -679,9 +680,9 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
     public void testNativeQueryTransactions() {
         Employee emp = (Employee)getServerSession().readObject(Employee.class);
         if (emp == null) {
-        	fail("Test problem: no Employees in the db, nothing to update");
+            fail("Test problem: no Employees in the db, nothing to update");
         }
-    	EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
             em.setFlushMode(FlushModeType.COMMIT);
@@ -695,7 +696,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             if (query.getResultList().size() == 0) {
                 fail("Native query did not commit transaction.");
             } else {
-            	// clean up - bring back the original name
+                // clean up - bring back the original name
                 em.setFlushMode(FlushModeType.COMMIT);
                 query = em.createNativeQuery("Update CMP3_EMPLOYEE set F_NAME = '"+emp.getFirstName()+"' where EMP_ID = " + emp.getId());
                 query.executeUpdate();
@@ -717,7 +718,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         beginTransaction(em);
         QuerySQLTracker counter = null;
         try {
-            // Load an employee into the cache.  
+            // Load an employee into the cache.
             Query query = em.createQuery("Select employee from Employee employee");
             List result = query.getResultList();
             Employee employee = (Employee)result.get(result.size() - 1);
@@ -751,7 +752,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         beginTransaction(em);
         QuerySQLTracker counter = null;
         try {
-            // Load an employee into the cache.  
+            // Load an employee into the cache.
             Query query = em.createQuery("Select employee from Employee employee");
             List result = query.getResultList();
             Employee employee = (Employee)result.get(result.size() - 1);
@@ -774,7 +775,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             }
         }
     }
-    
+
     /**
      * Test that a cache hit will occur on a query when the object is not in the unit of work/em.
      */
@@ -783,7 +784,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         beginTransaction(em);
         QuerySQLTracker counter = null;
         try {
-            // Load an employee into the cache.  
+            // Load an employee into the cache.
             Query query = em.createQuery("Select employee from Employee employee");
             List result = query.getResultList();
             Employee employee = (Employee)result.get(result.size() - 1);
@@ -826,7 +827,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     /**
      * Test the query cache.
      */
@@ -835,7 +836,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         beginTransaction(em);
         QuerySQLTracker counter = null;
         try {
-            // Load an employee into the cache.  
+            // Load an employee into the cache.
             JpaQuery jpaQuery = (JpaQuery)((EntityManager)em.getDelegate()).createNamedQuery("CachedAllEmployees");
             List result = jpaQuery.getResultList();
             ReadQuery readQuery = (ReadQuery)jpaQuery.getDatabaseQuery();
@@ -851,7 +852,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             if (((TimeToLiveCacheInvalidationPolicy)readQuery.getQueryResultsCachePolicy().getCacheInvalidationPolicy()).getTimeToLive() != 50000) {
                 fail("Query cache invalidation time not set.");
             }
-            
+
             jpaQuery = (JpaQuery)((EntityManager)em.getDelegate()).createNamedQuery("CachedTimeOfDayAllEmployees");
             readQuery = (ReadQuery)jpaQuery.getDatabaseQuery();
             if (readQuery.getQueryResultsCachePolicy() == null) {
@@ -946,22 +947,22 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             }
         }
     }
-       
+
     public void testQueryREADLock(){
         // Cannot create parallel entity managers in the server.
         if (isOnServer()) {
             return;
         }
-        
+
         // Load an employee into the cache.
         EntityManager em = createEntityManager();
         List result = em.createQuery("Select employee from Employee employee").getResultList();
         Employee employee = (Employee) result.get(0);
         Exception optimisticLockException = null;
-       
+
         try {
             beginTransaction(em);
-            
+
             // Query by primary key.
             Query query = em.createQuery("Select employee from Employee employee where employee.id = :id and employee.firstName = :firstName");
             query.setLockMode(LockModeType.READ);
@@ -970,9 +971,9 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             query.setParameter("firstName", employee.getFirstName());
             Employee queryResult = (Employee) query.getSingleResult();
             queryResult.toString();
-            
+
             EntityManager em2 = createEntityManager();
-            
+
             try {
                 beginTransaction(em2);
                 Employee employee2 = em2.find(Employee.class, employee.getId());
@@ -984,7 +985,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             } finally {
                 closeEntityManager(em2);
             }
-        
+
             try {
                 em.flush();
             } catch (PersistenceException exception) {
@@ -994,21 +995,21 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                     throw exception;
                 }
             }
-            
+
             rollbackTransaction(em);
         } catch (RuntimeException ex) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            
+
             throw ex;
         } finally {
             closeEntityManager(em);
         }
-        
+
         assertFalse("Proper exception not thrown when Query with LockModeType.READ is used.", optimisticLockException == null);
     }
-    
+
     public void testQueryWRITELock(){
         // Cannot create parallel transactions.
         if (isOnServer()) {
@@ -1020,10 +1021,10 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         List result = em.createQuery("Select employee from Employee employee").getResultList();
         Employee employee = (Employee) result.get(0);
         Exception optimisticLockException = null;
-        
+
         try {
             beginTransaction(em);
-            
+
             // Query by primary key.
             Query query = em.createQuery("Select employee from Employee employee where employee.id = :id and employee.firstName = :firstName");
             query.setLockMode(LockModeType.WRITE);
@@ -1031,12 +1032,12 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             query.setParameter("id", employee.getId());
             query.setParameter("firstName", employee.getFirstName());
             Employee queryResult = (Employee) query.getSingleResult();
-        
+
             EntityManager em2 = createEntityManager();
-            
+
             try {
                 beginTransaction(em2);
-                
+
                 Employee employee2 = em2.find(Employee.class, queryResult.getId());
                 employee2.setFirstName("Write");
                 commitTransaction(em2);
@@ -1045,7 +1046,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                 closeEntityManager(em2);
                 throw ex;
             }
-            
+
             commitTransaction(em);
         } catch (RollbackException exception) {
             if (exception.getCause() instanceof OptimisticLockException){
@@ -1055,15 +1056,15 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             if (isTransactionActive(em)) {
                 rollbackTransaction(em);
             }
-            
+
             closeEntityManager(em);
-            
+
             throw ex;
         }
 
         assertFalse("Proper exception not thrown when Query with LockModeType.WRITE is used.", optimisticLockException == null);
     }
-    
+
     public void testQueryOPTIMISTICLock(){
         // Cannot create parallel entity managers in the server.
         if (! isOnServer()) {
@@ -1072,10 +1073,10 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             List result = em.createQuery("Select employee from Employee employee").getResultList();
             Employee employee = (Employee) result.get(0);
             Exception optimisticLockException = null;
-           
+
             try {
                 beginTransaction(em);
-                
+
                 // Query by primary key.
                 Query query = em.createQuery("Select employee from Employee employee where employee.id = :id and employee.firstName = :firstName");
                 query.setLockMode(LockModeType.OPTIMISTIC);
@@ -1084,9 +1085,9 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                 query.setParameter("firstName", employee.getFirstName());
                 Employee queryResult = (Employee) query.getSingleResult();
                 queryResult.toString();
-            
+
                 EntityManager em2 = createEntityManager();
-                
+
                 try {
                     beginTransaction(em2);
                     Employee employee2 = em2.find(Employee.class, employee.getId());
@@ -1098,7 +1099,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                 } finally {
                     closeEntityManager(em2);
                 }
-            
+
                 try {
                     em.flush();
                 } catch (PersistenceException exception) {
@@ -1108,22 +1109,22 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                         throw exception;
                     }
                 }
-                
+
                 rollbackTransaction(em);
             } catch (RuntimeException ex) {
                 if (isTransactionActive(em)){
                     rollbackTransaction(em);
                 }
-                
+
                 throw ex;
             } finally {
                 closeEntityManager(em);
             }
-            
+
             assertFalse("Proper exception not thrown when Query with LockModeType.READ is used.", optimisticLockException == null);
         }
     }
-    
+
     public void testQueryOPTIMISTIC_FORCE_INCREMENTLock(){
         // Cannot create parallel transactions.
         if (! isOnServer()) {
@@ -1132,10 +1133,10 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             List result = em.createQuery("Select employee from Employee employee").getResultList();
             Employee employee = (Employee) result.get(0);
             Exception optimisticLockException = null;
-            
+
             try {
                 beginTransaction(em);
-                
+
                 // Query by primary key.
                 Query query = em.createQuery("Select employee from Employee employee where employee.id = :id and employee.firstName = :firstName");
                 query.setLockMode(LockModeType.OPTIMISTIC_FORCE_INCREMENT);
@@ -1143,12 +1144,12 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                 query.setParameter("id", employee.getId());
                 query.setParameter("firstName", employee.getFirstName());
                 Employee queryResult = (Employee) query.getSingleResult();
-            
+
                 EntityManager em2 = createEntityManager();
-                
+
                 try {
                     beginTransaction(em2);
-                    
+
                     Employee employee2 = em2.find(Employee.class, queryResult.getId());
                     employee2.setFirstName("OptimisticForceIncrement");
                     commitTransaction(em2);
@@ -1157,7 +1158,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                     closeEntityManager(em2);
                     throw ex;
                 }
-                
+
                 commitTransaction(em);
             } catch (RollbackException exception) {
                 if (exception.getCause() instanceof OptimisticLockException){
@@ -1167,16 +1168,16 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                 if (isTransactionActive(em)) {
                     rollbackTransaction(em);
                 }
-                
+
                 closeEntityManager(em);
-                
+
                 throw ex;
             }
-    
+
             assertFalse("Proper exception not thrown when Query with LockModeType.WRITE is used.", optimisticLockException == null);
         }
     }
-    
+
     public void testQueryPESSIMISTIC_READLock() {
         if ((JUnitTestCase.getServerSession()).getPlatform().isHANA()) {
             // HANA currently doesn't support pessimistic locking with queries on multiple tables
@@ -1187,15 +1188,15 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         if (! isOnServer() && isSelectForUpateSupported()) {
             EntityManager em = createEntityManager();
             PessimisticLockException pessimisticLockException = null;
-        
+
             try {
                 beginTransaction(em);
-            
+
                 EntityManager em2 = createEntityManager();
                 try {
                     beginTransaction(em2);
 
-                    List employees2 = em2.createQuery("Select employee from Employee employee").getResultList(); // 
+                    List employees2 = em2.createQuery("Select employee from Employee employee").getResultList(); //
                     Employee employee2 = (Employee) employees2.get(0);
 
                     // Find all the departments and lock them.
@@ -1203,34 +1204,34 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                     Employee employee = (Employee) employees.get(0);
                     employee.setFirstName("New Pessimistic Employee");
 
-                
+
                     HashMap properties = new HashMap();
                     properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 0);
                     em2.lock(employee2, LockModeType.PESSIMISTIC_READ, properties);
                     employee2.setFirstName("Invalid Lock Employee");
-                    
+
                     commitTransaction(em2);
                 } catch (javax.persistence.PessimisticLockException ex) {
                     pessimisticLockException = ex;
                 } finally {
                     closeEntityManagerAndTransaction(em2);
                 }
-                
+
                 commitTransaction(em);
             } catch (RuntimeException ex) {
                 if (isTransactionActive(em)) {
                     rollbackTransaction(em);
                 }
-                
+
                 throw ex;
             } finally {
                 closeEntityManager(em);
             }
-        
+
             assertFalse("Proper exception not thrown when Query with LockModeType.PESSIMISTIC is used.", pessimisticLockException == null);
         }
     }
-    
+
     public void testQueryPESSIMISTIC_WRITELock() {
         if ((JUnitTestCase.getServerSession()).getPlatform().isHANA()) {
             // HANA currently doesn't support pessimistic locking with queries on multiple tables
@@ -1241,15 +1242,15 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         if (! isOnServer() && isSelectForUpateSupported()) {
             EntityManager em = createEntityManager();
             Exception pessimisticLockException = null;
-        
+
             try {
                 beginTransaction(em);
-                
+
                 EntityManager em2 = createEntityManager();
                 try {
                     beginTransaction(em2);
 
-                    List employees2 = em2.createQuery("Select employee from Employee employee").getResultList(); // 
+                    List employees2 = em2.createQuery("Select employee from Employee employee").getResultList(); //
                     Employee employee2 = (Employee) employees2.get(0);
 
                     // Find all the departments and lock them.
@@ -1257,34 +1258,34 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                     Employee employee = (Employee) employees.get(0);
                     employee.setFirstName("New Pessimistic Employee");
 
-                
+
                     HashMap properties = new HashMap();
                     properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 0);
                     em2.lock(employee2, LockModeType.PESSIMISTIC_READ, properties);
                     employee2.setFirstName("Invalid Lock Employee");
-                    
+
                     commitTransaction(em2);
                 } catch (javax.persistence.PessimisticLockException ex) {
                     pessimisticLockException = ex;
                 } finally {
                     closeEntityManagerAndTransaction(em2);
                 }
-                
+
                 commitTransaction(em);
             } catch (RuntimeException ex) {
                 if (isTransactionActive(em)) {
                     rollbackTransaction(em);
                 }
-                
+
                 throw ex;
             } finally {
                 closeEntityManager(em);
             }
-        
+
             assertFalse("Proper exception not thrown when Query with LockModeType.PESSIMISTIC is used.", pessimisticLockException == null);
         }
     }
-    
+
     public void testQueryPESSIMISTIC_FORCE_INCREMENTLock() {
         if ((JUnitTestCase.getServerSession()).getPlatform().isHANA()) {
             // HANA currently doesn't support pessimistic locking with queries on multiple tables
@@ -1294,10 +1295,10 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         if (isSelectForUpateSupported()) {
             Employee employee = null;
             Integer version1;
-            
+
             EntityManager em = createEntityManager();
             beginTransaction(em);
-            
+
             try {
                 employee = new Employee();
                 employee.setFirstName("Guillaume");
@@ -1311,9 +1312,9 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                 closeEntityManager(em);
                 throw ex;
             }
-            
+
             version1 = employee.getVersion();
-            
+
             try {
                 beginTransaction(em);
                 Query query = em.createQuery("Select employee from Employee employee where employee.id = :id and employee.firstName = :firstName").setLockMode(LockModeType.PESSIMISTIC_FORCE_INCREMENT);
@@ -1323,7 +1324,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                 Employee queryResult = (Employee) query.getSingleResult();
                 queryResult.setLastName("Auger");
                 commitTransaction(em);
-                
+
                 employee = em.find(Employee.class, employee.getId());
                 assertTrue("The version was not updated on the pessimistic lock.", version1.intValue() < employee.getVersion().intValue());
             } catch (RuntimeException ex) {
@@ -1332,7 +1333,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                 }
                 closeEntityManager(em);
                 throw ex;
-            } 
+            }
 
             //Verify if the entity has been updated correctly by using PESSIMISTIC_FORCE_INCREMENT as PESSIMISTIC_WRITE
             try {
@@ -1342,23 +1343,23 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                 query.setParameter("firstName", employee.getFirstName());
                 Employee queryResult = (Employee) query.getSingleResult();
                 rollbackTransaction(em);
-                
+
                 assertTrue("The last name is not updated by using PESSIMISTIC_FORCE_INCREMENT.", queryResult.getLastName().equals("Auger"));
             } catch (RuntimeException ex) {
                 if (isTransactionActive(em)) {
                     rollbackTransaction(em);
                 }
-                
+
                 throw ex;
             } finally {
                 closeEntityManager(em);
             }
         }
     }
-    
+
     public void testQueryPESSIMISTIC_READ_TIMEOUTLock() {
         ServerSession session = JUnitTestCase.getServerSession();
-        
+
         // Cannot create parallel entity managers in the server.
         // Lock timeout only supported on Oracle.
         if (! isOnServer() && session.getPlatform().isOracle()) {
@@ -1366,10 +1367,10 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             List result = em.createQuery("Select employee from Employee employee").getResultList();
             Employee employee = (Employee) result.get(0);
             Exception lockTimeOutException = null;
-           
+
             try {
                 beginTransaction(em);
-                
+
                 // Query by primary key.
                 Query query = em.createQuery("Select employee from Employee employee where employee.id = :id and employee.firstName = :firstName");
                 query.setLockMode(LockModeType.PESSIMISTIC_READ);
@@ -1378,12 +1379,12 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                 query.setParameter("firstName", employee.getFirstName());
                 Employee queryResult = (Employee) query.getSingleResult();
                 queryResult.toString();
-            
+
                 EntityManager em2 = createEntityManager();
-            
+
                 try {
                     beginTransaction(em2);
-                
+
                     // Query by primary key.
                     Query query2 = em2.createQuery("Select employee from Employee employee where employee.id = :id and employee.firstName = :firstName");
                     query2.setLockMode(LockModeType.PESSIMISTIC_READ);
@@ -1399,29 +1400,29 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                         lockTimeOutException = ex;
                     } else {
                         throw ex;
-                    } 
+                    }
                 } finally {
                     closeEntityManagerAndTransaction(em2);
                 }
-                
+
                 commitTransaction(em);
             } catch (RuntimeException ex) {
                 if (isTransactionActive(em)) {
                     rollbackTransaction(em);
                 }
-                
+
                 throw ex;
             } finally {
                 closeEntityManager(em);
             }
-        
+
             assertFalse("Proper exception not thrown when Query with LockModeType.PESSIMISTIC is used.", lockTimeOutException == null);
         }
     }
-    
+
     public void testQueryPESSIMISTIC_WRITE_TIMEOUTLock() {
         ServerSession session = JUnitTestCase.getServerSession();
-        
+
         // Cannot create parallel entity managers in the server.
         // Lock timeout only supported on Oracle.
         if (! isOnServer() && session.getPlatform().isOracle()) {
@@ -1429,10 +1430,10 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             List result = em.createQuery("Select employee from Employee employee").getResultList();
             Employee employee = (Employee) result.get(0);
             Exception lockTimeOutException = null;
-           
+
             try {
                 beginTransaction(em);
-                
+
                 // Query by primary key.
                 Query query = em.createQuery("Select employee from Employee employee where employee.id = :id and employee.firstName = :firstName");
                 query.setLockMode(LockModeType.PESSIMISTIC_WRITE);
@@ -1441,12 +1442,12 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                 query.setParameter("firstName", employee.getFirstName());
                 Employee queryResult = (Employee) query.getSingleResult();
                 queryResult.toString();
-            
+
                 EntityManager em2 = createEntityManager();
-            
+
                 try {
                     beginTransaction(em2);
-                
+
                     // Query by primary key.
                     Query query2 = em2.createQuery("Select employee from Employee employee where employee.id = :id and employee.firstName = :firstName");
                     query2.setLockMode(LockModeType.PESSIMISTIC_WRITE);
@@ -1462,22 +1463,22 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                         lockTimeOutException = ex;
                     } else {
                         throw ex;
-                    } 
+                    }
                 } finally {
                     closeEntityManagerAndTransaction(em2);
                 }
-                
+
                 commitTransaction(em);
             } catch (RuntimeException ex) {
                 if (isTransactionActive(em)) {
                     rollbackTransaction(em);
                 }
-                
+
                 throw ex;
             } finally {
                 closeEntityManager(em);
             }
-        
+
             assertFalse("Proper exception not thrown when Query with LockModeType.PESSIMISTIC is used.", lockTimeOutException == null);
         }
     }
@@ -1492,15 +1493,15 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         if (! isOnServer() && isSelectForUpateSupported()) {
             EntityManager em = createEntityManager();
             Exception pessimisticLockException = null;
-        
+
             try {
                 beginTransaction(em);
-            
+
                 EntityManager em2 = createEntityManager();
-                
+
                 try {
                     beginTransaction(em2);
-                    
+
                     List employees2 = em2.createQuery("Select employee from Employee employee").getResultList();
                     Employee employee2 = (Employee) employees2.get(0);
 
@@ -1508,7 +1509,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                     List employees = em.createQuery("Select employee from Employee employee").setLockMode(LockModeType.PESSIMISTIC_WRITE).getResultList();
                     Employee employee = (Employee) employees.get(0);
                     employee.setSalary(90000);
-            
+
                     HashMap properties = new HashMap();
                     properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 0);
                     em2.lock(employee2, LockModeType.PESSIMISTIC_WRITE, properties);
@@ -1519,18 +1520,18 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                 } finally {
                     closeEntityManagerAndTransaction(em2);
                 }
-                
+
                 commitTransaction(em);
             } catch (RuntimeException ex) {
                 if (isTransactionActive(em)) {
                     rollbackTransaction(em);
                 }
-                
+
                 throw ex;
             } finally {
                 closeEntityManager(em);
             }
-        
+
             assertFalse("Proper exception not thrown when Query with LockModeType.PESSIMISTIC is used.", pessimisticLockException == null);
         }
     }
@@ -1539,10 +1540,10 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         if (isSelectForUpateNoWaitSupported()){
             Employee employee = null;
             Integer version1;
-            
+
             EntityManager em = createEntityManager();
             beginTransaction(em);
-            
+
             try {
                 employee = new Employee();
                 employee.setFirstName("Version Change");
@@ -1553,13 +1554,13 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                 if (isTransactionActive(em)) {
                     rollbackTransaction(em);
                 }
-             
+
                 closeEntityManager(em);
                 throw ex;
             }
-            
+
             version1 = employee.getVersion();
-            
+
             try {
                 beginTransaction(em);
                 Query query = em.createQuery("Select employee from Employee employee where employee.id = :id and employee.firstName = :firstName").setLockMode(LockModeType.PESSIMISTIC_READ);
@@ -1612,10 +1613,10 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         if (isSelectForUpateNoWaitSupported()) {
             Employee employee = null;
             Integer version1;
-            
+
             EntityManager em = createEntityManager();
             beginTransaction(em);
-            
+
             try {
                 employee = new Employee();
                 employee.setFirstName("Version Change");
@@ -1626,13 +1627,13 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                 if (isTransactionActive(em)) {
                     rollbackTransaction(em);
                 }
-             
+
                 closeEntityManager(em);
                 throw ex;
             }
-            
+
             version1 = employee.getVersion();
-            
+
             try {
                 beginTransaction(em);
                 Query query = em.createQuery("Select employee from Employee employee where employee.id = :id and employee.firstName = :firstName").setLockMode(LockModeType.PESSIMISTIC_WRITE);
@@ -1658,7 +1659,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                 }
                 closeEntityManager(em);
             }
-            
+
         }
     }
 
@@ -2208,7 +2209,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             }
         }
     }
-    
+
     /**
      * Test join fetching of maps.
      */
@@ -2249,7 +2250,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             }
         }
     }
-    
+
     /**
      * Test batch fetching using first/max results.
      */
@@ -2311,8 +2312,8 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             List<Employee> results = query.getResultList();
             int nExpectedStatements = 3;
             if (usesSOP()) {
-            	// In SOP case there are no sql to read PhoneNumbers - they are read from sopObject instead.
-            	nExpectedStatements = 1;
+                // In SOP case there are no sql to read PhoneNumbers - they are read from sopObject instead.
+                nExpectedStatements = 1;
             }
             if (isWeavingEnabled() && counter.getSqlStatements().size() != nExpectedStatements) {
                 fail("Should have been " + nExpectedStatements + " query but was: " + counter.getSqlStatements().size());
@@ -2340,7 +2341,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             }
         }
     }
-    
+
     /**
      * Test batch fetching using read object query.
      */
@@ -2375,7 +2376,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             }
         }
     }
-    
+
     /**
      * Test batch fetching with outer joins.
      */
@@ -2413,7 +2414,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             }
         }
     }
-    
+
     /**
      * Test batch fetching on inheritance.
      */
@@ -2599,7 +2600,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         beginTransaction(em);
         QuerySQLTracker counter = null;
         try {
-            // Load an employee into the cache.  
+            // Load an employee into the cache.
             Query query = em.createQuery("Select employee from Employee employee");
             List result = query.getResultList();
             Employee employee = (Employee)result.get(result.size() - 1);
@@ -2635,7 +2636,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         Employee employee = null;
         String lastName = null;
         try {
-            // Load an employee into the cache.  
+            // Load an employee into the cache.
             Query query = em.createQuery("Select employee from Employee employee where employee.lastName = 'Chanley'");
             List result = query.getResultList();
             employee = (Employee)result.get(0);
@@ -2688,7 +2689,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             }
             if (counter.getSqlStatements().size() > 0) {
                 fail("Cache hit do not occur: " + counter.getSqlStatements());
-            }            
+            }
         } finally {
             if (counter != null) {
                 counter.remove();
@@ -2710,14 +2711,12 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
     }
 
     public void testQueryPESSIMISTICLockWithLimit() throws InterruptedException {
-        if (getDatabaseSession().getPlatform().isOracle()) {
-            return;
-        }
         clearCache();
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
-            Query query = em.createQuery("Select e from Employee e");
+            TypedQuery<Employee> query = em.createQuery("Select e from Employee e where e.lastName != :lastName", Employee.class);
+            query.setParameter("lastName", "Chanley");
             query.setHint(QueryHints.PESSIMISTIC_LOCK, PessimisticLock.Lock);
             query.setFirstResult(5);
             query.setMaxResults(2);
@@ -2737,14 +2736,14 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                         public void run() {
                         try {
                             beginTransaction(em2);
-                            Query query2 = em2.createQuery("select e from Employee e where e.id = :id");
+                            TypedQuery<Employee> query2 = em2.createQuery("select e from Employee e where e.id = :id", Employee.class);
                             query2.setParameter("id", e.getId());
                             query2.setHint(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 5);
-                            Employee emp = (Employee) query2.getSingleResult(); // might wait for lock to be released
+                            Employee emp = query2.getSingleResult(); // might wait for lock to be released
                             emp.setFirstName("Trouba");
                             commitTransaction(em2); // might wait for lock to be released
                         } catch (javax.persistence.RollbackException ex) {
-                            if (ex.getMessage().indexOf("org.eclipse.persistence.exceptions.DatabaseException") == -1) {
+                            if (!ex.getMessage().contains("org.eclipse.persistence.exceptions.DatabaseException")) {
                                 ex.printStackTrace();
                                 fail("it's not the right exception:" + ex);
                             }
@@ -2764,14 +2763,6 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                     rollbackTransaction(em2);
                 }
                 closeEntityManager(em2);
-            }
-        // Oracle platform will throw UnsupportedOperationException when executing query with pessimistic locking
-        // and minimal query row limit.
-        } catch (PersistenceException e) {
-            // Let this test pass with UnsupportedOperationException on Oracle platform.
-            if (!getPlatform().isOracle() || !(e.getCause() instanceof QueryException)
-                    || !(e.getCause().getCause() instanceof UnsupportedOperationException)) {
-                throw e;
             }
         } finally {
             if (isTransactionActive(em)) {

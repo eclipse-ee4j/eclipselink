@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.expressions;
 
 import java.io.*;
@@ -40,12 +40,12 @@ public class ExpressionSQLPrinter {
      * is used to print all the primitive types.
      */
     protected AbstractSession session;
-    
+
     /**
      * Stores the current platform to access platform specific functions.
      */
     protected DatabasePlatform platform;
-    
+
     /**
      * Stores the call being created.
      */
@@ -146,6 +146,25 @@ public class ExpressionSQLPrinter {
         }
     }
 
+    public void printField(DatabaseField field, DatabaseTable tableAlias) {
+        if (field == null) {
+            return;
+        }
+
+        try {
+            // Print the field using either short or long notation i.e. owner + table name.
+            if (shouldPrintQualifiedNames()) {
+                getWriter().write(tableAlias.getQualifiedNameDelimited(platform));
+                getWriter().write(".");
+                getWriter().write(field.getNameDelimited(platform));
+            } else {
+                getWriter().write(field.getNameDelimited(platform));
+            }
+        } catch (IOException exception) {
+            throw ValidationException.fileError(exception);
+        }
+    }
+
     public void printParameter(ParameterExpression expression) {
         try {
             getCall().appendTranslationParameter(getWriter(), expression, getPlatform(), getTranslationRow());
@@ -182,7 +201,7 @@ public class ExpressionSQLPrinter {
             session.getPlatform().appendLiteralToCall(getCall(), getWriter(), null);
         }
     }
-    
+
     public void printString(String value) {
         try {
             getWriter().write(value);
@@ -215,7 +234,7 @@ public class ExpressionSQLPrinter {
             throw ValidationException.fileError(exception);
         }
     }
-    
+
     /*
      * Same as printValuelist, but allows for collections containing expressions recursively
      */

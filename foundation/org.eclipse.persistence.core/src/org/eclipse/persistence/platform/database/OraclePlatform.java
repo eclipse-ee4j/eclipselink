@@ -1,38 +1,41 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     Markus Karg - bug fix for log operator
- *     09/09/2011-2.3.1 Guy Pelletier 
+ *     09/09/2011-2.3.1 Guy Pelletier
  *       - 356197: Add new VPD type to MultitenantType
- *     09/14/2011-2.3.1 Guy Pelletier 
+ *     09/14/2011-2.3.1 Guy Pelletier
  *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
- *     02/04/2013-2.5 Guy Pelletier 
+ *     02/04/2013-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support
- *     02/19/2015 - Rick Curtis  
+ *     02/19/2015 - Rick Curtis
  *       - 458877 : Add national character support
  *     02/23/2015-2.6 Dalia Abo Sheasha
  *       - 460607: Change DatabasePlatform StoredProcedureTerminationToken to be configurable
- *****************************************************************************/  
+ *****************************************************************************/
 package org.eclipse.persistence.platform.database;
 
 import java.io.CharArrayWriter;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Vector;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -46,6 +49,7 @@ import org.eclipse.persistence.internal.expressions.RelationExpression;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
@@ -53,6 +57,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.DataModifyQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
+import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.queries.ValueReadQuery;
 
@@ -69,26 +74,32 @@ import org.eclipse.persistence.queries.ValueReadQuery;
 public class OraclePlatform extends org.eclipse.persistence.platform.database.DatabasePlatform {
     protected static DataModifyQuery vpdSetIdentifierQuery;
     protected static DataModifyQuery vpdClearIdentifierQuery;
-    
-    /** 
+
+    /**
+     *  Whether a FOR UPDATE clause should be printed at the end of the query
+     */
+    protected boolean shouldPrintForUpdateClause;
+
+    /**
      * Advanced attribute indicating whether identity is supported,
      * see comment to setSupportsIdentity method.
-     */ 
+     */
     protected boolean supportsIdentity;
 
     public OraclePlatform(){
-    	super();
-    	this.pingSQL = "SELECT 1 FROM DUAL";
-    	this.storedProcedureTerminationToken = "";
+        super();
+        this.pingSQL = "SELECT 1 FROM DUAL";
+        this.storedProcedureTerminationToken = "";
+        this.shouldPrintForUpdateClause = true;
     }
-    
+
     @Override
     public void initializeConnectionData(Connection connection) throws SQLException {
         DatabaseMetaData dmd = connection.getMetaData();
         // Tested with 11.1.0.6
         this.driverSupportsNationalCharacterVarying = Helper.compareVersions(dmd.getDriverVersion(), "11.1") >= 0;
     }
-    
+
     /*
      * Used for stored procedure definitions.
      */
@@ -215,9 +226,9 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         fieldTypeMapping.put(Byte[].class, new FieldTypeDefinition("BLOB", false));
         fieldTypeMapping.put(Character[].class, new FieldTypeDefinition("CLOB", false));
         fieldTypeMapping.put(byte[].class, new FieldTypeDefinition("BLOB", false));
-        fieldTypeMapping.put(char[].class, new FieldTypeDefinition("CLOB", false)); 
+        fieldTypeMapping.put(char[].class, new FieldTypeDefinition("CLOB", false));
         fieldTypeMapping.put(java.sql.Blob.class, new FieldTypeDefinition("BLOB", false));
-        fieldTypeMapping.put(java.sql.Clob.class, new FieldTypeDefinition("CLOB", false));         
+        fieldTypeMapping.put(java.sql.Clob.class, new FieldTypeDefinition("CLOB", false));
 
         fieldTypeMapping.put(java.sql.Date.class, new FieldTypeDefinition("DATE", false));
         fieldTypeMapping.put(java.sql.Time.class, new FieldTypeDefinition("TIMESTAMP", false));
@@ -231,7 +242,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
 
     /**
      * Build the hint string used for first rows.
-     * 
+     *
      * Allows it to be overridden
      * @param max
      * @return
@@ -239,7 +250,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     protected String buildFirstRowsHint(int max){
         return HINT_START + HINT_END;
     }
-    
+
     /**
      * INTERNAL:
      * Returns null unless the platform supports call with returning
@@ -300,9 +311,9 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      * INTERNAL:
      * Clears both implicit and explicit caches of OracleConnection on Oracle9Platform, noop here.
      */
-    public void clearOracleConnectionCache(Connection conn) {    
+    public void clearOracleConnectionCache(Connection conn) {
     }
-    
+
     /**
      * INTERNAL:
      * Used for stored function calls.
@@ -319,7 +330,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     public String getDeclareBeginString() {
         return "DECLARE ";
     }
-    
+
     /**
      * Used for batch writing and sp defs.
      */
@@ -343,7 +354,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     public String getBatchRowCountDeclareString() {
         return "DECLARE EL_COUNTER NUMBER := 0; ";
     }
-    
+
     /**
      * Oracle does not return the row count from PLSQL anon blocks,
      * so an output parameter is required for this.
@@ -360,7 +371,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     public String getBatchRowCountReturnString() {
         return "? := EL_COUNTER; ";
     }
-    
+
     /**
      * Return the drop schema definition. Subclasses should override as needed.
      */
@@ -368,7 +379,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     public String getDropDatabaseSchemaString(String schema) {
         return "DROP SCHEMA " + schema + " RESTRICT";
     }
-    
+
     /**
      * Used for batch writing for row count return.
      */
@@ -376,7 +387,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     public String getBatchRowCountAssignString() {
         return "EL_COUNTER := EL_COUNTER + SQL%ROWCOUNT; ";
     }
-    
+
     /**
      * INTERNAL:
      * returns the maximum number of characters that can be used in a field
@@ -410,7 +421,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         }
         return session.executeSelectingCall(new SQLCall(query));
     }
-    
+
     /**
      * Used for sp calls.
      */
@@ -424,7 +435,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      */
     @Override
     public String getProcedureCallHeader() {
-        return useJDBCStoredProcedureSyntax() ? "{CALL " : "BEGIN ";  
+        return useJDBCStoredProcedureSyntax() ? "{CALL " : "BEGIN ";
     }
 
     /**
@@ -434,7 +445,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     public String getProcedureCallTail() {
         return useJDBCStoredProcedureSyntax() ? "}" : "; END;";
     }
-    
+
     /**
      * Allows DROP TABLE to cascade dropping of any dependent constraints if the database supports this option.
      */
@@ -447,7 +458,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     public String getSelectForUpdateString() {
         return " FOR UPDATE";
     }
-    
+
     @Override
     public String getSelectForUpdateWaitString(Integer waitTimeout) {
         return " FOR UPDATE WAIT " + waitTimeout.intValue();
@@ -485,7 +496,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         }
         return timestampQuery;
     }
-    
+
     /**
      * INTERNAL:
      * Return an Oracle defined VPD clear identifier query.
@@ -495,10 +506,10 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         if (vpdClearIdentifierQuery == null) {
             vpdClearIdentifierQuery = new DataModifyQuery("CALL DBMS_SESSION.CLEAR_IDENTIFIER()");
         }
-    
+
         return vpdClearIdentifierQuery;
     }
-    
+
     /**
      * INTERNAL:
      * Return an Oracle defined VPD identifier function. Used for DDL generation.
@@ -508,7 +519,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         String functionName = tableName + "_ident_func";
         return "CREATE OR REPLACE FUNCTION " + functionName + " (p_schema in VARCHAR2 default NULL, p_object in VARCHAR2 default NULL) RETURN VARCHAR2 AS BEGIN return '" + tenantFieldName + " = sys_context(''userenv'', ''client_identifier'')'; END;";
     }
-    
+
     /**
      * INTERNAL:
      * Return an Oracle defined VPD identifier policy. Used for DDL generation.
@@ -520,7 +531,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         String policyName = tableName + "_todo_list_policy";
         return "\nCALL DBMS_RLS.ADD_POLICY ('" + schemaName + "', '" + tableName + "', '" + policyName + "', '" + schemaName + "', '" + functionName +"', 'select, update, delete')\n";
     }
-    
+
     /**
      * INTERNAL:
      * Return an Oracle defined VPD identifier policy deletion. Used for DDL generation.
@@ -531,7 +542,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         String policyName = tableName + "_todo_list_policy";
         return "\nCALL DBMS_RLS.DROP_POLICY ('" + schemaName + "', '" + tableName + "', '" + policyName + "')";
     }
-    
+
     /**
      * INTERNAL:
      * Return an Oracle defined VPD set identifier query.
@@ -541,10 +552,10 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         if (vpdSetIdentifierQuery == null) {
             vpdSetIdentifierQuery = new DataModifyQuery("CALL DBMS_SESSION.SET_IDENTIFIER(#" + vpdIdentifier + ")");
         }
-        
+
         return vpdSetIdentifierQuery;
     }
-    
+
     /**
      * INTERNAL:
      * Get a timestamp value from a result set.
@@ -583,7 +594,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         addOperator(regexpOperator());
         addOperator(exceptOperator());
     }
-    
+
     /**
      * INTERNAL:
      * Create the EXCEPT operator, MINUS in Oracle.
@@ -776,7 +787,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         }
     }
 
-    /** 
+    /**
      * Return the current date and time from the server.
      */
     public String serverTimestampString() {
@@ -792,7 +803,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     public boolean shouldPrintStoredProcedureArgumentNameInCall() {
         return ! useJDBCStoredProcedureSyntax();
     }
-    
+
     /**
      * JDBC defines and outer join syntax, many drivers do not support this. So we normally avoid it.
      */
@@ -810,7 +821,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     public boolean supportsAutoConversionToNumericForArithmeticOperations() {
         return true;
     }
-    
+
     /**
      * INTERNAL:
      * Indicates whether the platform supports sequence objects.
@@ -835,7 +846,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      * ADVANCED:
      * Oracle db doesn't support identity.
      * However it's possible to get identity-like behavior
-     * using sequence in an insert trigger - that's the only 
+     * using sequence in an insert trigger - that's the only
      * case when supportsIdentity should be set to true:
      * in this case all the sequences that have shouldAcquireValueAfterInsert
      * set to true will keep this setting (it would've been reversed in case
@@ -858,7 +869,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     public boolean supportsStoredFunctions() {
         return true;
     }
-    
+
     /**
      * Oracle db supports VPD.
      */
@@ -905,7 +916,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     public Connection unwrapOracleConnection(Connection connection) {
         return connection;
     }
-    
+
     /**
      * Return true if JDBC syntax should be used for stored procedure calls.
      */
@@ -913,10 +924,10 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         if (useJDBCStoredProcedureSyntax == null) {
             useJDBCStoredProcedureSyntax = this.driverName != null && this.driverName.equals("Oracle");
         }
-        
+
         return useJDBCStoredProcedureSyntax;
     }
-    
+
     //Oracle Rownum support
     protected String SELECT = "SELECT * FROM (SELECT ";
     protected String HINT_START = "/*+ FIRST_ROWS";
@@ -925,58 +936,166 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     protected String END_FROM = ") a ";
     protected String MAX_ROW = "WHERE ROWNUM <= ";
     protected String MIN_ROW = ") WHERE rnum > ";
-    
+    // Bug #453208
+    protected String LOCK_START_PREFIX = " AND (";
+    protected String LOCK_START_SUFFIX = ") IN (";
+    protected String LOCK_END = ") FOR UPDATE";
+    protected String SELECT_ID_PREFIX = "SELECT ";
+    protected String SELECT_ID_SUFFIX = " FROM (SELECT ";
+    protected String FROM_ID = ", ROWNUM rnum  FROM (";
+    protected String END_FROM_ID = ") ";
+    protected String ORDER_BY_ID = " ORDER BY ";
+
     /**
      * INTERNAL:
      * Print the SQL representation of the statement on a stream, storing the fields
      * in the DatabaseCall.  This implementation works MaxRows and FirstResult into the SQL using
-     * Oracle's ROWNUM to filter values if shouldUseRownumFiltering is true.  
+     * Oracle's ROWNUM to filter values if shouldUseRownumFiltering is true.
      */
     @Override
-    public void printSQLSelectStatement(DatabaseCall call, ExpressionSQLPrinter printer, SQLSelectStatement statement){
+    public void printSQLSelectStatement(DatabaseCall call, ExpressionSQLPrinter printer, SQLSelectStatement statement) {
         int max = 0;
         int firstRow = 0;
 
-        if (statement.getQuery()!=null){
-            max = statement.getQuery().getMaxRows();
-            firstRow = statement.getQuery().getFirstResult();
+        ReadQuery query = statement.getQuery();
+        if (query != null) {
+            max = query.getMaxRows();
+            firstRow = query.getFirstResult();
         }
-        
-        if ( !(this.shouldUseRownumFiltering()) || ( !(max>0) && !(firstRow>0) ) ){
-            super.printSQLSelectStatement(call, printer,statement);
+
+        if (!(this.shouldUseRownumFiltering()) || (!(max > 0) && !(firstRow > 0))) {
+            super.printSQLSelectStatement(call, printer, statement);
             return;
-        } else if ( max > 0 ){
+        } else {
             statement.setUseUniqueFieldAliases(true);
-            printer.printString(SELECT);
-            printer.printString(buildFirstRowsHint(max));
-            printer.printString(FROM);
-            
-            call.setFields(statement.printSQL(printer));
-            printer.printString(END_FROM);
-            printer.printString(MAX_ROW);
-            printer.printParameter(DatabaseCall.MAXROW_FIELD);
-            printer.printString(MIN_ROW);
-            printer.printParameter(DatabaseCall.FIRSTRESULT_FIELD);
-        } else {// firstRow>0
-            statement.setUseUniqueFieldAliases(true);
-            printer.printString(SELECT);
-            printer.printString(FROM);
-            
-            call.setFields(statement.printSQL(printer));
-            printer.printString(END_FROM);
-            printer.printString(MIN_ROW);
-            printer.printParameter(DatabaseCall.FIRSTRESULT_FIELD);
-        }
-        // Pessimistic locking with query row limits does not work on Oracle DB.
-        if (statement.getQuery().isObjectBuildingQuery()) {
-            int lockMode = ((ObjectBuildingQuery)statement.getQuery()).getLockMode();
-            if (lockMode == ObjectBuildingQuery.LOCK || lockMode == ObjectBuildingQuery.LOCK_NOWAIT) {
-                throw new UnsupportedOperationException(
-                        ExceptionLocalization.buildMessage("ora_pessimistic_locking_with_rownum"));
+            // Bug #453208 - Pessimistic locking with query row limits does not work on Oracle DB.
+            if (query.isObjectBuildingQuery() && (((ObjectBuildingQuery) query).getLockMode() == ObjectBuildingQuery.LOCK
+                    || ((ObjectBuildingQuery) query).getLockMode() == ObjectBuildingQuery.LOCK_NOWAIT)) {
+                if (query.isReadAllQuery() || query.isReadObjectQuery()) {
+                    // Workaround can exist for this specific case
+                    Vector fields = new Vector();
+                    statement.enableFieldAliasesCaching();
+                    String queryString = printOmittingForUpdate(statement, printer, fields);
+                    duplicateCallParameters(call);
+                    call.setFields(fields);
+
+                    /* Prints a query similar to the below:
+                     *
+                     * SELECT t1.EMP_ID AS a1, ...
+                     * FROM CMP3_EMPLOYEE t1
+                     * WHERE ...
+                     *   AND (t1.EMP_ID) IN (
+                     *     SELECT a1 FROM (
+                     *       SELECT a1, ROWNUM rnum FROM (
+                     *         SELECT t1.EMP_ID AS a1, ...
+                     *         FROM CMP3_EMPLOYEE t1
+                     *         WHERE ...)
+                     *       WHERE ROWNUM <= ?)
+                     *     WHERE rnum > ?)
+                     * FOR UPDATE; */
+                    printer.printString(queryString);
+                    printLockStartWithPrimaryKeyFields(statement, printer);
+                    String primaryKeyFields = getPrimaryKeyAliases(statement);
+                    printer.printString(SELECT_ID_PREFIX);
+                    printer.printString(primaryKeyFields);
+                    printer.printString(SELECT_ID_SUFFIX);
+                    printer.printString(buildFirstRowsHint(max));
+                    printer.printString(primaryKeyFields);
+                    printer.printString(FROM_ID);
+                    printer.printString(queryString);
+                    printer.printString(ORDER_BY_ID);
+                    printer.printString(primaryKeyFields);
+                    printer.printString(END_FROM_ID);
+                    printer.printString(MAX_ROW);
+                    printer.printParameter(DatabaseCall.MAXROW_FIELD);
+                    printer.printString(MIN_ROW);
+                    printer.printParameter(DatabaseCall.FIRSTRESULT_FIELD);
+                    printer.printString(LOCK_END);
+                } else {
+                    throw new UnsupportedOperationException(ExceptionLocalization.buildMessage("ora_pessimistic_locking_with_rownum"));
+                }
+            } else {
+                if (max > 0) {
+                    printer.printString(SELECT);
+                    printer.printString(buildFirstRowsHint(max));
+                    printer.printString(FROM);
+
+                    call.setFields(statement.printSQL(printer));
+                    printer.printString(END_FROM);
+                    printer.printString(MAX_ROW);
+                    printer.printParameter(DatabaseCall.MAXROW_FIELD);
+                    printer.printString(MIN_ROW);
+                    printer.printParameter(DatabaseCall.FIRSTRESULT_FIELD);
+                } else {// firstRow>0
+                    printer.printString(SELECT);
+                    printer.printString(FROM);
+
+                    call.setFields(statement.printSQL(printer));
+                    printer.printString(END_FROM);
+                    printer.printString(MIN_ROW);
+                    printer.printParameter(DatabaseCall.FIRSTRESULT_FIELD);
+                }
             }
         }
         call.setIgnoreFirstRowSetting(true);
         call.setIgnoreMaxResultsSetting(true);
+    }
+
+    @SuppressWarnings("unchecked")
+    // Bug #453208 - Duplicate call parameters since the query is performed twice
+    private void duplicateCallParameters(DatabaseCall call) {
+        ArrayList newParameterList = new ArrayList(call.getParameters());
+        newParameterList.addAll(call.getParameters());
+        call.setParameters(newParameterList);
+        ArrayList<Integer> newParameterTypesList = new ArrayList(call.getParameterTypes());
+        newParameterTypesList.addAll(call.getParameterTypes());
+        call.setParameterTypes(newParameterTypesList);
+    }
+
+    @SuppressWarnings("unchecked")
+    private String printOmittingForUpdate(SQLSelectStatement statement, ExpressionSQLPrinter printer, Vector fields) {
+        boolean originalShouldPrintForUpdate = this.shouldPrintForUpdateClause;
+        Writer originalWriter = printer.getWriter();
+
+        this.shouldPrintForUpdateClause = false;
+        printer.setWriter(new StringWriter());
+
+        fields.addAll(statement.printSQL(printer));
+        String query = printer.getWriter().toString();
+
+        this.shouldPrintForUpdateClause = originalShouldPrintForUpdate;
+        printer.setWriter(originalWriter);
+
+        return query;
+    }
+
+    private void printLockStartWithPrimaryKeyFields(SQLSelectStatement statement, ExpressionSQLPrinter printer) {
+        printer.printString(LOCK_START_PREFIX);
+
+        Iterator<DatabaseField> iterator = statement.getQuery().getDescriptor().getPrimaryKeyFields().iterator();
+        while (iterator.hasNext()) {
+            DatabaseField field = iterator.next();
+            DatabaseTable alias = statement.getExpressionBuilder().aliasForTable(field.getTable());
+            printer.printField(field, alias);
+
+            if(iterator.hasNext()) {
+                printer.printString(",");
+            }
+        }
+
+        printer.printString(LOCK_START_SUFFIX);
+    }
+
+    private String getPrimaryKeyAliases(SQLSelectStatement statement) {
+        StringBuilder builder = new StringBuilder();
+        Iterator<DatabaseField> iterator = statement.getQuery().getDescriptor().getPrimaryKeyFields().iterator();
+        while (iterator.hasNext()) {
+            builder.append(statement.getAliasFor(iterator.next()));
+            if(iterator.hasNext()) {
+                builder.append(',');
+            }
+        }
+        return builder.toString();
     }
 
     /**
@@ -997,7 +1116,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     public boolean isForUpdateCompatibleWithDistinct() {
         return false;
     }
-    
+
     /**
      * INTERNAL:
      * Indicates whether SELECT DISTINCT lob FROM ... (where lob is BLOB or CLOB) is allowed by the platform (Oracle doesn't allow this).
@@ -1006,7 +1125,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     public boolean isLobCompatibleWithDistinct() {
         return false;
     }
-    
+
     /**
      * Return true if the given exception occurred as a result of a lock
      * time out exception (WAIT clause).
@@ -1015,7 +1134,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     public boolean isLockTimeoutException(DatabaseException e) {
         return (e.getInternalException() instanceof java.sql.SQLException && ((java.sql.SQLException) e.getInternalException()).getErrorCode() == 30006);
     }
-    
+
     /**
      * INTERNAL:
      * A call to this method will perform a platform based check on the connection and exception
@@ -1041,6 +1160,11 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
             }
         }
         return super.wasFailureCommunicationBased(exception, connection, sessionForProfile);
+    }
+
+    @Override
+    public boolean shouldPrintForUpdateClause() {
+        return shouldPrintForUpdateClause;
     }
 
 }

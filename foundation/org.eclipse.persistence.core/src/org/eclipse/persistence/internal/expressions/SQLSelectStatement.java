@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -16,21 +16,59 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.expressions;
 
-import java.io.*;
-import java.util.*;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.history.*;
-import org.eclipse.persistence.internal.databaseaccess.*;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.history.*;
-import org.eclipse.persistence.mappings.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-
 import static org.eclipse.persistence.queries.ReadAllQuery.Direction.CHILD_TO_PARENT;
-import static org.eclipse.persistence.queries.ReadAllQuery.Direction.PARENT_TO_CHILD;
+
+import java.io.CharArrayWriter;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.Vector;
+
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.expressions.ExpressionOperator;
+import org.eclipse.persistence.history.AsOfClause;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
+import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
+import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.FunctionField;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
+import org.eclipse.persistence.internal.history.DecoratedDatabaseTable;
+import org.eclipse.persistence.internal.history.UniversalAsOfClause;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.AggregateCollectionMapping;
+import org.eclipse.persistence.mappings.AggregateObjectMapping;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.DirectCollectionMapping;
+import org.eclipse.persistence.mappings.ManyToManyMapping;
+import org.eclipse.persistence.mappings.ObjectReferenceMapping;
+import org.eclipse.persistence.mappings.OneToManyMapping;
+import org.eclipse.persistence.mappings.OneToOneMapping;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.queries.ReadQuery;
+import org.eclipse.persistence.queries.SQLCall;
 
 /**
  * <p><b>Purpose</b>: Print SELECT statement.
@@ -48,10 +86,10 @@ public class SQLSelectStatement extends SQLStatement {
     protected boolean useUniqueFieldAliases;
     /** Counter to generate unique alias names */
     protected int fieldCounter=0;
-    
+
     /** Fields being selected (can include expressions). */
     protected Vector fields;
-    
+
     /** Fields not being selected (can include expressions). */
     protected List<Object> nonSelectFields;
 
@@ -60,13 +98,13 @@ public class SQLSelectStatement extends SQLStatement {
 
     /** Used for "Select Distinct" option. */
     protected short distinctState;
-    
+
     /** Order by clause for read all queries. */
     protected List<Expression> orderByExpressions;
 
     /** Group by clause for report queries. */
     protected List<Expression> groupByExpressions;
-    
+
     /** Union clause. */
     protected List<Expression> unionExpressions;
 
@@ -97,9 +135,13 @@ public class SQLSelectStatement extends SQLStatement {
 
     /** Used for subselects. */
     protected SQLSelectStatement parentStatement;
-    
+
     /** It is used by subselect to re-normalize joins */
     protected Map<Expression, Expression> optimizedClonedExpressions;
+
+    /** Used for caching the field alias written to the query */
+    protected Map<DatabaseField, String> fieldAliases;
+    protected boolean shouldCacheFieldAliases;
 
     public SQLSelectStatement() {
         this.fields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
@@ -183,14 +225,14 @@ public class SQLSelectStatement extends SQLStatement {
             } else {
                 targetTable = outerExpression.getMapping().getReferenceDescriptor().getTables().get(0);
             }
-            // Grab the source table from the mapping not just the first table 
+            // Grab the source table from the mapping not just the first table
             // from the descriptor. In an joined inheritance hierarchy, the
             // fk used in the outer join may be from a subclasses's table .
             DatabaseTable sourceTable;
             if (outerExpression.getMapping().isObjectReferenceMapping() && ((ObjectReferenceMapping) outerExpression.getMapping()).isForeignKeyRelationship()) {
                 sourceTable = (outerExpression.getMapping().getFields().get(0)).getTable();
             } else {
-                sourceTable = ((ObjectExpression)outerExpression.getBaseExpression()).getDescriptor().getTables().get(0);    
+                sourceTable = ((ObjectExpression)outerExpression.getBaseExpression()).getDescriptor().getTables().get(0);
             }
 
             DatabaseTable sourceAlias = outerExpression.getBaseExpression().aliasForTable(sourceTable);
@@ -255,16 +297,16 @@ public class SQLSelectStatement extends SQLStatement {
         boolean requiresEscape = false; // Checks if the JDBC closing escape syntax is needed.
 
         boolean usesHistory = (getBuilder() != null) && getBuilder().hasAsOfClause();
-        
+
         int nSize = getOuterJoinExpressionsHolders().size();
         for (OuterJoinExpressionHolder holder : getOuterJoinExpressionsHolders()) {
             holder.process(usesHistory);
         }
-        
+
         if(nSize > 1) {
             sortOuterJoinExpressionHolders(getOuterJoinExpressionsHolders());
         }
-        
+
         for (OuterJoinExpressionHolder holder : outerJoinExpressionHolders) {
             ObjectExpression outerExpression = holder.joinExpression;
             boolean isOuterJoin = (outerExpression ==  null) || outerExpression.shouldUseOuterJoin();
@@ -309,12 +351,12 @@ public class SQLSelectStatement extends SQLStatement {
                             // Append the join clause,
                             // If this is a direct collection, join to direct table.
                             Expression onExpression = holder.outerJoinedMappingCriteria;
-        
+
                             DatabaseTable newAlias = onExpression.aliasForTable(targetTable);
                             if (isOuterJoin) {
                                 writer.write(" LEFT OUTER JOIN ");
                             } else {
-                                writer.write(" JOIN ");                                
+                                writer.write(" JOIN ");
                             }
                             targetTable.printSQL(printer);
                             writer.write(" ");
@@ -333,7 +375,7 @@ public class SQLSelectStatement extends SQLStatement {
                             if (isOuterJoin) {
                                 writer.write(" LEFT OUTER JOIN ");
                             } else {
-                                writer.write(" JOIN ");                                
+                                writer.write(" JOIN ");
                             }
                             if (hasAdditionalJoinExpressions && platform.supportsNestingOuterJoins()) {
                                 writer.write("(");
@@ -396,13 +438,13 @@ public class SQLSelectStatement extends SQLStatement {
                             relationToKeyJoin = (Expression)indexToExpressionMap.get(Integer.valueOf(3));
                         }
 
-                        if ((outerExpression !=  null) && outerExpression.shouldUseOuterJoin()) {
+                        if (outerExpression.shouldUseOuterJoin()) {
                             writer.write(" LEFT OUTER JOIN ");
                         } else {
                             writer.write(" JOIN ");
                         }
                         if (platform.supportsNestingOuterJoins()) {
-                            writer.write("(");                            
+                            writer.write("(");
                         }
                         relationTable.printSQL(printer);
                         writer.write(" ");
@@ -414,9 +456,9 @@ public class SQLSelectStatement extends SQLStatement {
                         relationAlias.printSQL(printer);
                         printForUpdateClauseOnJoin(relationAlias, printer, shouldPrintUpdateClauseForAllTables, aliasesOfTablesToBeLocked, platform);
                         if (!platform.supportsNestingOuterJoins()) {
-                            printOnClause(sourceToRelationJoin.and(additionalOnExpression), printer, platform);                            
+                            printOnClause(sourceToRelationJoin.and(additionalOnExpression), printer, platform);
                         }
-                        
+
                         if (isMapKeyObject) {
                             // Append join to map key.
                             if (isOuterJoin && !session.getPlatform().supportsANSIInnerJoinSyntax()) {
@@ -433,7 +475,7 @@ public class SQLSelectStatement extends SQLStatement {
                             mapKeyAlias.printSQL(printer);
                             printForUpdateClauseOnJoin(mapKeyAlias, printer, shouldPrintUpdateClauseForAllTables, aliasesOfTablesToBeLocked, platform);
                             printOnClause(relationToKeyJoin.and(additionalOnExpression), printer, platform);
-                            
+
                             if (holder.mapKeyHolder.hasAdditionalJoinExpressions()) {
                                 holder.mapKeyHolder.printAdditionalJoins(printer, outerJoinedAliases, aliasesOfTablesToBeLocked, shouldPrintUpdateClauseForAllTables);
                             }
@@ -457,7 +499,7 @@ public class SQLSelectStatement extends SQLStatement {
                         targetAlias.printSQL(printer);
                         printForUpdateClauseOnJoin(targetAlias, printer, shouldPrintUpdateClauseForAllTables, aliasesOfTablesToBeLocked, platform);
                         printOnClause(relationToTargetJoin, printer, platform);
-                        
+
                         if (hasAdditionalJoinExpressions) {
                             holder.printAdditionalJoins(printer, outerJoinedAliases, aliasesOfTablesToBeLocked, shouldPrintUpdateClauseForAllTables);
                         }
@@ -474,7 +516,7 @@ public class SQLSelectStatement extends SQLStatement {
             writer.write("}");
         }
     }
-    
+
     /**
      * Print the outer join ON clause.
      * Some databases do not allow brackets.
@@ -487,7 +529,7 @@ public class SQLSelectStatement extends SQLStatement {
             onClause.printSQL(printer);
         }
     }
-    
+
     /**
      * Print the FOR UPDATE clause after each join if required.
      */
@@ -584,7 +626,7 @@ public class SQLSelectStatement extends SQLStatement {
         Vector newFields = new Vector();
         // to avoid printing a comma before the first field
         printer.setIsFirstElementPrinted(false);
-        for (Expression expression : getGroupByExpressions()) {            
+        for (Expression expression : getGroupByExpressions()) {
       //      if (expression.isObjectExpression() && ((ObjectExpression)expression).getDescriptor() != null){
                 //in the case where the user is grouping by an entity we need to change this to the PKs
 //               for (String field : ((ObjectExpression)expression).getDescriptor().getPrimaryKeyFieldNames()){
@@ -649,7 +691,7 @@ public class SQLSelectStatement extends SQLStatement {
             }
 
             if ((foreignKeys != null) && !foreignKeys.isEmpty()) {
-                //get the source and target fields. 
+                //get the source and target fields.
                 Iterator sourceKeys = foreignKeys.keySet().iterator();
 
                 //for each source field, get the target field and create the link. If there's
@@ -761,6 +803,7 @@ public class SQLSelectStatement extends SQLStatement {
         currentAliasNumber = getCurrentAliasNumber();
 
         ExpressionIterator iterator = new ExpressionIterator() {
+            @Override
             public void iterate(Expression each) {
                 currentAliasNumber = each.assignTableAliasesStartingAt(currentAliasNumber);
             }
@@ -806,6 +849,7 @@ public class SQLSelectStatement extends SQLStatement {
     /**
      * Print the SQL representation of the statement on a stream.
      */
+    @Override
     public DatabaseCall buildCall(AbstractSession session) {
         return buildCall(session, null);
     }
@@ -816,6 +860,7 @@ public class SQLSelectStatement extends SQLStatement {
      */
     public void computeDistinct() {
         ExpressionIterator iterator = new ExpressionIterator() {
+            @Override
             public void iterate(Expression expression) {
                 if (expression.isQueryKeyExpression() && ((QueryKeyExpression)expression).shouldQueryToManyRelationship()) {
                     // Aggregate should only use distinct as specified by the user.
@@ -834,30 +879,30 @@ public class SQLSelectStatement extends SQLStatement {
     public boolean isSubSelect() {
         return (getParentStatement() != null);
     }
-    
+
     /**
      * INTERNAL:
-     * It is used by subqueries to avoid duplicate joins. 
+     * It is used by subqueries to avoid duplicate joins.
      */
     public Map<Expression, Expression> getOptimizedClonedExpressions() {
         // Lazily Initialized only to be used by subqueries.
         if (optimizedClonedExpressions == null) {
             optimizedClonedExpressions = new IdentityHashMap<Expression, Expression>();
         }
-        
+
         return optimizedClonedExpressions;
     }
-    
+
     /**
      * INTERNAL:
-     * It is used by subqueries to avoid duplicate joins. 
+     * It is used by subqueries to avoid duplicate joins.
      */
     public void addOptimizedClonedExpressions(Expression originalKey, Expression optimizedValue) {
         // Lazily Initialized only to be used by subqueries.
         if (optimizedClonedExpressions == null) {
             optimizedClonedExpressions = new IdentityHashMap<Expression, Expression>();
         }
-        
+
         optimizedClonedExpressions.put(originalKey, optimizedValue);
     }
 
@@ -870,6 +915,7 @@ public class SQLSelectStatement extends SQLStatement {
         // This iterator will pull all the table aliases out of an expression, and
         // put them in a map.
         ExpressionIterator iterator = new ExpressionIterator() {
+            @Override
             public void iterate(Expression each) {
                 TableAliasLookup aliases = each.getTableAliases();
 
@@ -1048,7 +1094,7 @@ public class SQLSelectStatement extends SQLStatement {
     public Expression getHavingExpression() {
         return havingExpression;
     }
-    
+
     /**
      * INTERNAL:
      * Query held as it may store properties needed to generate the SQL
@@ -1088,7 +1134,7 @@ public class SQLSelectStatement extends SQLStatement {
     public ReadAllQuery.Direction getDirection() {
         return direction;
     }
-    
+
     /**
      * INTERNAL:
      * Return the next value of fieldCounter
@@ -1103,7 +1149,7 @@ public class SQLSelectStatement extends SQLStatement {
     public List<Object> getNonSelectFields() {
         return nonSelectFields;
     }
-    
+
     /**
      * INTERNAL:
      * Return the order expressions for the query.
@@ -1142,7 +1188,7 @@ public class SQLSelectStatement extends SQLStatement {
 
     /**
      * INTERNAL:
-     * Used by ExpressionBuilder and QueryKeyExpression normalization to create a standard outerjoin.  
+     * Used by ExpressionBuilder and QueryKeyExpression normalization to create a standard outerjoin.
      * @param joinExpression - expression resulting in the outerjoin. Null if it is for inheritance reading of subclasses
      * @param outerJoinedMappingCriteria - used for querykey mapping expressions
      * @param outerJoinedAdditionalJoinCriteria - additional tables/expressions to join.  Usually for multitableInheritance join expressions
@@ -1162,7 +1208,7 @@ public class SQLSelectStatement extends SQLStatement {
 
     /**
      * INTERNAL:
-     * used by TREAT to add in a join from the parent table to the child tables when 
+     * used by TREAT to add in a join from the parent table to the child tables when
      * the parent expression did not add an outer join of its own
      */
     public Integer addOuterJoinExpressionsHolders(Map<DatabaseTable, Expression> outerJoinedAdditionalJoinCriteria, ClassDescriptor descriptor) {
@@ -1171,6 +1217,7 @@ public class SQLSelectStatement extends SQLStatement {
         int index = outerJoinExpressionHolders.size();
         OuterJoinExpressionHolder holder = new OuterJoinExpressionHolder(this, null, null,
                 outerJoinedAdditionalJoinCriteria, descriptor) {
+            @Override
             protected void process(boolean usesHistory, boolean isMapKeyHolder) {
                 sourceTable = descriptor.getTables().get(0);
                 int count = 0;
@@ -1237,11 +1284,11 @@ public class SQLSelectStatement extends SQLStatement {
     public List<DatabaseTable> getTables() {
         return tables;
     }
-    
+
     /**
      * INTERNAL:
      *  Return True if unique field aliases will be generated of the form
-     *     "fieldname AS fieldnameX", False otherwise.  
+     *     "fieldname AS fieldnameX", False otherwise.
      */
     public boolean getUseUniqueFieldAliases(){
         return this.useUniqueFieldAliases;
@@ -1286,7 +1333,7 @@ public class SQLSelectStatement extends SQLStatement {
     public boolean hasUnionExpressions() {
         return (unionExpressions != null) && (!unionExpressions.isEmpty());
     }
-    
+
     public boolean hasNonSelectFields() {
         return (nonSelectFields != null) && (!nonSelectFields.isEmpty());
     }
@@ -1392,12 +1439,12 @@ public class SQLSelectStatement extends SQLStatement {
         if (hasNonSelectFields()) {
             rebuildAndAddExpressions(getNonSelectFields(), allExpressions, builder, clonedExpressions);
         }
-        
+
         // Process group by expressions.
         if (hasGroupByExpressions()) {
             rebuildAndAddExpressions(getGroupByExpressions(), allExpressions, builder, clonedExpressions);
         }
-        
+
         // Process union expressions.
         if (hasUnionExpressions()) {
             rebuildAndAddExpressions(getUnionExpressions(), allExpressions, builder, clonedExpressions);
@@ -1493,7 +1540,7 @@ public class SQLSelectStatement extends SQLStatement {
                         dontUseDistinct();
                         break;
                     }
-                } else if (field instanceof Expression) {                        
+                } else if (field instanceof Expression) {
                     if (Helper.hasLob(((Expression)field).getSelectionFields(this.query))) {
                         dontUseDistinct();
                         break;
@@ -1529,7 +1576,7 @@ public class SQLSelectStatement extends SQLStatement {
                     allExpressions.add(criteria);
                 }
 
-                Map map = (Map)holder.outerJoinedAdditionalJoinCriteria;
+                Map map = holder.outerJoinedAdditionalJoinCriteria;
                 if (map != null) {
                     Iterator it = map.values().iterator();
                     while(it.hasNext()) {
@@ -1585,7 +1632,7 @@ public class SQLSelectStatement extends SQLStatement {
     public void normalizeForView(AbstractSession theSession, ClassDescriptor theDescriptor, Map clonedExpressions) {
         ExpressionBuilder builder;
 
-        // bug 3878553 - alias all view selects. 
+        // bug 3878553 - alias all view selects.
         setRequiresAliases(true);
 
         if (getWhereClause() != null) {
@@ -1649,14 +1696,14 @@ public class SQLSelectStatement extends SQLStatement {
                             if (asc) {
                                 mappingOrderBy = mappingOrderBy.ascending();
                             } else {
-                                mappingOrderBy = mappingOrderBy.descending();                                    
+                                mappingOrderBy = mappingOrderBy.descending();
                             }
                         }
                         if (nullsFirst != null) {
                             if (nullsFirst) {
                                 mappingOrderBy = mappingOrderBy.nullsFirst();
                             } else {
-                                mappingOrderBy = mappingOrderBy.nullsLast();                                    
+                                mappingOrderBy = mappingOrderBy.nullsLast();
                             }
                         }
                         newOrderBys.add(mappingOrderBy);
@@ -1670,7 +1717,7 @@ public class SQLSelectStatement extends SQLStatement {
         }
         this.orderByExpressions = newOrderBys;
     }
-    
+
     /**
      * Print the SQL representation of the statement on a stream.
      */
@@ -1683,7 +1730,7 @@ public class SQLSelectStatement extends SQLStatement {
                 // Ensure union order using brackets.
                 int size = getUnionExpressions().size();
                 for (int index = 0; index < size; index++) {
-                    printer.printString("(");                    
+                    printer.printString("(");
                 }
             }
             printer.printString("SELECT ");
@@ -1759,7 +1806,7 @@ public class SQLSelectStatement extends SQLStatement {
             }
         }
     }
-    
+
     /**
      * Rebuild the expression if required.
      */
@@ -1772,7 +1819,7 @@ public class SQLSelectStatement extends SQLStatement {
             if (clonedExpressions.get(originalBuilder) != null) {
                 expression = expression.copiedVersionFrom(clonedExpressions);
                 //if there is no builder or it is a copy of the base builder then rebuild otherwise it is a parallel expression not joined
-            } 
+            }
             if (originalBuilder.wasQueryClassSetInternally()) {
                 // Possibly the expression was built with the wrong builder.
                 expression = expression.rebuildOn(primaryBuilder);
@@ -1802,7 +1849,7 @@ public class SQLSelectStatement extends SQLStatement {
                     if (clonedExpressions.get(originalBuilder) != null) {
                         expression = expression.copiedVersionFrom(clonedExpressions);
                         //if there is no builder or it is a copy of the base builder then rebuild otherwise it is a parallel expression not joined
-                    } 
+                    }
                     if (originalBuilder.wasQueryClassSetInternally()) {
                         // Possibly the expression was built with the wrong builder.
                         expression = expression.rebuildOn(primaryBuilder);
@@ -1857,7 +1904,8 @@ public class SQLSelectStatement extends SQLStatement {
     public void resetDistinct() {
         setDistinctState(ObjectLevelReadQuery.UNCOMPUTED_DISTINCT);
     }
-    
+
+    @Override
     public void setBuilder(ExpressionBuilder builder){
         this.builder = builder;
     }
@@ -1969,7 +2017,7 @@ public class SQLSelectStatement extends SQLStatement {
     public void setParentStatement(SQLSelectStatement parentStatement) {
         this.parentStatement = parentStatement;
     }
-    
+
     /**
      * Query held as it may store properties needed to generate the SQL
      */
@@ -1988,12 +2036,12 @@ public class SQLSelectStatement extends SQLStatement {
     public void setTables(List<DatabaseTable> theTables) {
         tables = theTables;
     }
-    
+
     /**
      * INTERNAL:
      *  If set unique field aliases will be generated of the form
      *     "fieldname AS fieldnameX"
-     *  Where fieldname is the column name and X is an incremental value 
+     *  Where fieldname is the column name and X is an incremental value
      *  ensuring uniqueness
      */
     public void setUseUniqueFieldAliases(boolean useUniqueFieldAliases){
@@ -2048,9 +2096,31 @@ public class SQLSelectStatement extends SQLStatement {
             printer.printString(field.getNameDelimited(printer.getPlatform()));
         }
         if (this.getUseUniqueFieldAliases()){
-            printer.printString(" AS "+ generatedAlias(field.getNameDelimited(printer.getPlatform())));
+            String alias = generatedAlias(field.getNameDelimited(printer.getPlatform()));
+            if (shouldCacheFieldAliases()) {
+                fieldAliases.put(field, alias);
+            }
+            printer.printString(" AS " + alias);
         }
     }
+
+    private boolean shouldCacheFieldAliases() {
+        return shouldCacheFieldAliases;
+    }
+
+    public void enableFieldAliasesCaching() {
+        fieldAliases = new HashMap<>();
+        shouldCacheFieldAliases = true;
+    }
+
+    public String getAliasFor(DatabaseField field) {
+        if (shouldCacheFieldAliases()) {
+            return fieldAliases.get(field);
+        } else {
+            return "";
+        }
+    }
+
     /**
     * Returns a generated alias based on the column name.  If the new alias will be too long
     * The alias is automatically truncated
@@ -2092,7 +2162,7 @@ public class SQLSelectStatement extends SQLStatement {
      * INTERNAL:
      * The method searches for expressions that join two tables each in a given expression.
      * Given expression and tablesInOrder and an empty SortedMap (TreeMap with no Comparator), this method
-     *   populates the map with expressions corresponding to two tables 
+     *   populates the map with expressions corresponding to two tables
      *     keyed by an index (in tablesInOrder) of the table with the highest (of two) index;
      *   returns all the participating in at least one of the expressions.
      * Example:
@@ -2100,17 +2170,17 @@ public class SQLSelectStatement extends SQLStatement {
      *     (employee.emp_id = proj_emp.emp_id) and (proj_emp.proj_id = project.proj_id)
      *   tablesInOrder:
      *     employee, proj_emp, project
-     *     
+     *
      *   results:
-     *     map: 
+     *     map:
      *          1 -> (employee.emp_id = proj_emp.emp_id)
      *          2 -> (proj_emp.proj_id = project.proj_id)
      *     returned SortedSet: {0, 1, 2}.
-     *     
+     *
      *     Note that tablesInOrder must contain all tables used by expression
      */
     public static SortedSet mapTableIndexToExpression(Expression expression, TreeMap map, List<DatabaseTable> tablesInOrder) {
-        // glassfish issue 2440: 
+        // glassfish issue 2440:
         // - Use DataExpression.getAliasedField instead of getField. This
         // allows to distinguish source and target tables in case of a self
         // referencing relationship.
@@ -2124,12 +2194,12 @@ public class SQLSelectStatement extends SQLStatement {
             }
             return tables;
         }
-            
+
         // Bug 279784 - Incomplete OUTER JOIN based on JoinTable.
         // Save a copy of the original map to accommodate cases with more than one joined field, such as:
         // (employee.emp_id1 = proj_emp.emp_id1).and((employee.emp_id2 = proj_emp.emp_id2).and((proj_emp.proj_id1 = project.proj_id1).and(proj_emp.proj_id2 = project.proj_id2)))
         // Never adding (always overriding) cached expression (the code before the fix) resulted in the first child (employee.emp_id1 = proj_emp.emp_id1) being overridden and lost.
-        // Always adding to the cached in the map expression would result in (proj_emp.proj_id1 = project.proj_id1).and(proj_emp.proj_id2 = project.proj_id2)) added twice. 
+        // Always adding to the cached in the map expression would result in (proj_emp.proj_id1 = project.proj_id1).and(proj_emp.proj_id2 = project.proj_id2)) added twice.
         TreeMap originalMap = (TreeMap)map.clone();
         if(expression instanceof CompoundExpression) {
             CompoundExpression ce = (CompoundExpression)expression;
@@ -2142,7 +2212,7 @@ public class SQLSelectStatement extends SQLStatement {
                 tables.addAll(mapTableIndexToExpression((Expression)it.next(), map, tablesInOrder));
             }
         }
-        
+
         if(tables.size() == 2) {
             Object last = tables.last();
             Expression cachedExpression = (Expression)originalMap.get(last);
@@ -2152,7 +2222,7 @@ public class SQLSelectStatement extends SQLStatement {
                 map.put(last, cachedExpression.and(expression));
             }
         }
-        
+
         return tables;
     }
 
@@ -2160,19 +2230,19 @@ public class SQLSelectStatement extends SQLStatement {
      * INTERNAL:
      * The method searches for expressions that join two tables each in a given expression.
      * Given expression and tablesInOrder, this method
-     *   returns the map with expressions corresponding to two tables 
+     *   returns the map with expressions corresponding to two tables
      *     keyed by tables (from tablesInOrder) with the highest (of two) index;
      * Example:
      *   expression (joining Employee to Project through m-m mapping "projects"):
      *     (employee.emp_id = proj_emp.emp_id) and (proj_emp.proj_id = project.proj_id)
      *   tablesInOrder:
      *     employee, proj_emp, project
-     *     
+     *
      *   results:
-     *     returned map: 
+     *     returned map:
      *          proj_emp -> (employee.emp_id = proj_emp.emp_id)
      *          project -> (proj_emp.proj_id = project.proj_id)
-     *     
+     *
      *     Note that tablesInOrder must contain all tables used by expression
      */
     public static Map mapTableToExpression(Expression expression, Vector tablesInOrder) {
@@ -2189,7 +2259,7 @@ public class SQLSelectStatement extends SQLStatement {
     }
 
     // Outer join support methods / classes
-        
+
     /*
      * Sort the holder list.
      * The sorting of holders is done to make sure that
@@ -2197,42 +2267,42 @@ public class SQLSelectStatement extends SQLStatement {
      * and target of another holder the "target" holder is listed
      * before the "source" holder(s).
      * Denoting a holder as a pair of source alias and target alias, that means:
-     * 
+     *
      * {t0, t1}, {t1, t2}, {t1, t3} or {t0, t1}, {t1, t3}, {t1, t2} is ok;
      * but
-     * {t1, t2}, {t0, t1}, {t1, t3} or {t1, t2}, {t1, t3}, {t0, t1} should be reordered. 
-     * 
+     * {t1, t2}, {t0, t1}, {t1, t3} or {t1, t2}, {t1, t3}, {t0, t1} should be reordered.
+     *
      * To achieve this goal the method assigns an integer index to each table alias
      * used by holders (for instance t0 -> 0; t1 -> 1; t2 -> 2; t3 -> 3).
-     * 
+     *
      * Each holder assigned a list of integers corresponding to a sequence of aliases
      * that starts with the one, which no holder uses as its target alias,
      * possibly continues several times from source alias to target alias for some other holder (if exists),
      * and ends with the holder's target alias.
-     * 
+     *
      * {t0, t1} -> {0, 1};
      * {t1, t2} -> {0, 1, 2}
      * {t1, t3} -> {0, 1, 3}
-     * 
+     *
      * Sorting of holders uses comparison of these lists (see OuterJoinExpressionHolder.compareTo):
-     * 
+     *
      * {0, 1} < {0, 1, 2} < {0, 1, 3}
      * Therefore the holders will be ordered:
      * {t0, t1}, {t1, t2}, {t1, t3}
-     * 
+     *
      * More complex example:
      * {t0, t1}, {t1, t2}, {t2, t7}, {t7, t10}, {t1, t3}, {t4, t5}, {t5, t8}, {t8, t9}, {t5, t11}, {t4, t12}
-     * 
+     *
      * A holder may have additional target table(s):
-     * Examples: 
-     * secondary SALARY table in Employee class; 
+     * Examples:
+     * secondary SALARY table in Employee class;
      * LPROJECT table in LargeProject class (primary PROJECT table is inherited from Project class).
      * In that case each additional target alias should have an entry in targetAliasToHolders
      * so that the holder that uses the additional table as a source could be placed in correct order.
      * For instance:
      * holder1 has target alias t1 and additional target alias t2:
      * if the latter is ignored then holder2 = {t2, t3} could be placed ahead of holder1.
-     * 
+     *
      */
     protected void sortOuterJoinExpressionHolders(List<OuterJoinExpressionHolder> holders) {
         Map<DatabaseTable, OuterJoinExpressionHolder> targetAliasToHolders = new HashMap();
