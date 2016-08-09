@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -17,6 +17,8 @@
  *       - 356197: Add new VPD type to MultitenantType
  *     11/10/2011-2.4 Guy Pelletier 
  *       - 357474: Address primaryKey option from tenant discriminator column
+ *     08/07/2016-2.6 Dalia Abo Sheasha 
+ *       - 499335: Multiple embeddable fields can't reference same object
  ******************************************************************************/  
 package org.eclipse.persistence.internal.descriptors;
 
@@ -2866,7 +2868,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
      */
     public ObjectChangeSet createObjectChangeSet(Object clone, UnitOfWorkChangeSet uowChangeSet, boolean isNew, boolean assignPrimaryKeyIfExisting, AbstractSession session) {
         ObjectChangeSet changes = (ObjectChangeSet)uowChangeSet.getObjectChangeSetForClone(clone);
-        if (changes == null) {
+        if (changes == null || changes.getDescriptor() != this.descriptor) {
             if (this.descriptor.isAggregateDescriptor()) {
                 changes = new AggregateObjectChangeSet(CacheId.EMPTY, this.descriptor, clone, uowChangeSet, isNew);
             } else {
