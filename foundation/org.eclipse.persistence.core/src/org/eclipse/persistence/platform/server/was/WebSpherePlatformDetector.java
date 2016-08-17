@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 IBM Corporation. All rights reserved.
+ * Copyright (c) 2016 IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -10,6 +10,8 @@
  * Contributors:
  *     01/05/2015 Rick Curtis
  *       - 455683: Automatically detect target server
+ *     08/26/2016 Will Dazey
+ *       - 499869: Update WAS server detection
  ******************************************************************************/
 package org.eclipse.persistence.platform.server.was;
 
@@ -22,6 +24,7 @@ import org.eclipse.persistence.platform.server.ServerPlatformDetector;
 
 public class WebSpherePlatformDetector implements ServerPlatformDetector {
     private static final String[] LIBERTY_PROPS = new String[] { "server.config.dir", "server.output.dir" };
+    private static final String LIBERTY_PROFILE_INFO_INT = "com.ibm.websphere.config.mbeans.FeatureListMBean";
     private static final String FULL_PROFILE_WAS_DIR_CLS = "com.ibm.websphere.product.WASDirectory";
 
     @Override
@@ -68,12 +71,7 @@ public class WebSpherePlatformDetector implements ServerPlatformDetector {
      * @return true if running Liberty, false otherwise.
      */
     private Boolean isLibertyInternal() {
-        for (String prop : LIBERTY_PROPS) {
-            if (System.getProperty(prop) == null) {
-                return Boolean.FALSE;
-            }
-        }
-        return Boolean.TRUE;
+       return checkProperties(LIBERTY_PROPS) || checkClassLoader(LIBERTY_PROFILE_INFO_INT);
     }
 
     /**
@@ -83,17 +81,26 @@ public class WebSpherePlatformDetector implements ServerPlatformDetector {
      * @return true if running full profile, false otherwise.
      */
     private Boolean isFullProfileInternal() {
-        try {
-            ClassLoader loader = WebSpherePlatformDetector.class.getClassLoader();
-            Class<?> cls = loader.loadClass(FULL_PROFILE_WAS_DIR_CLS);
-            Object instance = cls.newInstance();
-            if (instance != null) {
-                return Boolean.TRUE;
-            }
-        } catch (Throwable t) {
-        }
-
-        return Boolean.FALSE;
+        return checkClassLoader(FULL_PROFILE_WAS_DIR_CLS);
     }
 
+    private Boolean checkProperties(String [] props) {
+        for (String prop : props) {
+            if (System.getProperty(prop) == null) {
+                return Boolean.FALSE;
+            }
+        }
+        return Boolean.TRUE;
+    }
+
+    private Boolean checkClassLoader(String className) {
+        try {
+            ClassLoader loader = WebSpherePlatformDetector.class.getClassLoader();
+            Class<?> cls = loader.loadClass(LIBERTY_PROFILE_INFO_INT);
+            if (cls != null) {
+                return Boolean.TRUE;
+            }
+        } catch (Throwable t) { }
+        return Boolean.FALSE;
+    }
 }
