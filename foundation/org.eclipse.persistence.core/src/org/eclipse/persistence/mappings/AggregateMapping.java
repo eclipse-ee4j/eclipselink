@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -13,6 +13,8 @@
  *       - 354678: Temp classloader is still being used during metadata processing
  *     09 Jan 2013-2.5 Gordon Yorke
  *       - 397772: JPA 2.1 Entity Graph Support
+ *     08/07/2016-2.7 Dalia Abo Sheasha
+ *       - 499335: Multiple embeddable fields can't reference same object
  ******************************************************************************/
 package org.eclipse.persistence.mappings;
 
@@ -984,7 +986,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
                 UnitOfWorkChangeSet uowChangeSet = (UnitOfWorkChangeSet)objectChangeSet.getUOWChangeSet();
                 //force comparison change detection to build changeset.
                 ObjectChangeSet aggregateChangeSet = (ObjectChangeSet)uowChangeSet.getObjectChangeSetForClone(newValue);
-                if (aggregateChangeSet != null) {
+                if (aggregateChangeSet != null && aggregateChangeSet.getDescriptor() == referenceDescriptor) {
                     aggregateChangeSet.clear(true); // old differences must be thrown away because difference is between old value and new value
                 }
                 //make sure the listener is initialized

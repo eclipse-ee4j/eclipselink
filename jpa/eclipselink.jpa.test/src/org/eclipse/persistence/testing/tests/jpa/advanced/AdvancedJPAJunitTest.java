@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -23,6 +23,8 @@
  *       - 328114: @AttributeOverride does not work with nested embeddables having attributes of the same name
  *     11/01/2010-2.2 Guy Pelletier
  *       - 322916: getParameter on Query throws NPE
+ *     08/07/2016-2.7 Dalia Abo Sheasha
+ *       - 499335: Multiple embeddable fields can't reference same object
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
@@ -1470,6 +1472,24 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             beginTransaction(em);
             em.merge(productReRead);
             commitTransaction(em);
+
+            Product productReRead2 = em.find(Product.class, product.getId());
+            productReRead2.setName("OREO");
+            productReRead2.setCountryCode("USA");
+            String oreoCodeNumber = "762-230-051";
+            BarCode barcode = new BarCode(oreoCodeNumber, "USA");
+            productReRead2.setBarCode1(barcode);
+            productReRead2.setBarCode2(barcode);
+
+            beginTransaction(em);
+            em.merge(productReRead2);
+            commitTransaction(em);
+
+            Product oreoProduct = em.find(Product.class, product.getId());
+            BarCode oreoBarCode1 = oreoProduct.getBarCode1();
+            BarCode oreoBarCode2 = oreoProduct.getBarCode2();
+            assertEquals(oreoCodeNumber, oreoBarCode1.getCodeNumber());
+            assertEquals(oreoCodeNumber, oreoBarCode2.getCodeNumber());
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
