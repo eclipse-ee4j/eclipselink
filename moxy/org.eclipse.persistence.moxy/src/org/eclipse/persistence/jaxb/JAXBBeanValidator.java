@@ -450,8 +450,8 @@ class JAXBBeanValidator {
     private void printValidatorInfo() {
         if (!context.getHasLoggedValidatorInfo().getAndSet(true)) {
             CodeSource validationImplJar = getValidatorCodeSource();
-            if (logger.isLoggable(Level.INFO)) {
-                logger.info("EclipseLink is using " + validationImplJar + " as BeanValidation implementation.");
+            if (logger.isLoggable(Level.FINE)) {
+                logger.fine("EclipseLink is using " + validationImplJar + " as BeanValidation implementation.");
             }
         }
     }
