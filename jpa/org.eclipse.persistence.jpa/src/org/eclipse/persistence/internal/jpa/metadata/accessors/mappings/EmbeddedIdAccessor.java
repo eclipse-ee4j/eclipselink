@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -43,6 +43,8 @@
  *       - 331386: NPE when mapping chain of 2 multi-column relationships using JPA 2.0 and @EmbeddedId composite PK-FK
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     08/24/2016-2.6 Will Dazey  
+ *       - 500145: Nested Embeddables with matching attribute names overwrite
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -108,15 +110,13 @@ public class EmbeddedIdAccessor extends EmbeddedAccessor {
        // Update our primary key field with the attribute override field.
        // The super class will ensure the correct field is on the metadata
        // column.
-       m_idFields.put(mappingAccessor.getAttributeName(), overrideField);
+       m_idFields.put(overrideName, overrideField);
     }
     
     /**
      * INTERNAL:
      */
-    protected void addIdFieldFromAccessor(MappingAccessor accessor) {
-        String attributeName = accessor.getAttributeName();
-        
+    protected void addIdFieldFromAccessor(String attributeName, MappingAccessor accessor) {
         if (m_idFields.containsKey(attributeName)) {
             // It may be in our id fields map already if an attribute override 
             // was specified on the embedded mapping. Make sure the existing id 
@@ -132,15 +132,16 @@ public class EmbeddedIdAccessor extends EmbeddedAccessor {
     /**
      * INTERNAL:
      */
-    protected void addIdFieldsFromAccessors(Collection<MappingAccessor> accessors) {
+    protected void addIdFieldsFromAccessors(String parentAttribute, Collection<MappingAccessor> accessors) {
         // Go through all our mappings, the fields from those mappings will
         // make up the composite primary key.
         for (MappingAccessor accessor : accessors) {
+            String attributeName = (parentAttribute == null) ? accessor.getAttributeName() : parentAttribute + "." + accessor.getAttributeName();
             if (accessor.isBasic()) {
-                addIdFieldFromAccessor(accessor);
+                addIdFieldFromAccessor(attributeName, accessor);
             } else if (accessor.isDerivedIdClass() || accessor.isEmbedded()) {
                 // Recursively bury down on the embedded or derived id class accessors.
-                addIdFieldsFromAccessors(accessor.getReferenceAccessors());
+                addIdFieldsFromAccessors(attributeName, accessor.getReferenceAccessors());
             } else {
                 // EmbeddedId is solely a JPA feature, so we will not allow 
                 // the expansion of attributes for those types of Embeddable 
@@ -183,8 +184,8 @@ public class EmbeddedIdAccessor extends EmbeddedAccessor {
         } else {
             // Go through all our mappings, the fields from those mappings will
             // make up the composite primary key.
-            addIdFieldsFromAccessors(getReferenceAccessors());
-        
+            addIdFieldsFromAccessors(null, getReferenceAccessors());
+            
             // Flag this id accessor as a JPA id mapping.
             getMapping().setIsJPAId();                
             
@@ -197,7 +198,7 @@ public class EmbeddedIdAccessor extends EmbeddedAccessor {
                 
                 // Set the PK class.
                 owningDescriptor.setPKClass(getReferenceClass());
-                    
+                
                 // Store the embeddedId attribute name.
                 owningDescriptor.setEmbeddedIdAccessor(this);
                 
@@ -212,7 +213,6 @@ public class EmbeddedIdAccessor extends EmbeddedAccessor {
                         if (clone.getTableName().equals("")) {
                             clone.setTable(owningDescriptor.getPrimaryTable());
                         }
-                    
                         owningDescriptor.addPrimaryKeyField(clone, m_idAccessors.get(clone));
                     }
                 }
