@@ -11,8 +11,6 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     Marcel Valovy - 2.6 - added ci unmarshalling & BV in JAXB
  *     Dmitry Kornilov - 2.6.1 - BeanValidationHelper refactoring
- *     02/17/2016-2.6 Dalia Abo Sheasha
- *       - 487889: Fix EclipseLink Bean Validation optimization
  ******************************************************************************/
 package org.eclipse.persistence.jaxb;
 
@@ -182,14 +180,19 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     private boolean initializedXMLInputFactory = false;
     private JAXBMarshaller jsonSchemaMarshaller;
 
+    private static volatile BeanValidationHelper beanValidationHelper;
+    private static volatile Boolean beanValidationPresent;
+
     protected JAXBContext() {
         super();
         contextState = new JAXBContextState();
+        initBeanValidation();
     }
 
     protected JAXBContext(JAXBContextInput contextInput) throws javax.xml.bind.JAXBException {
         this.contextInput = contextInput;
         this.contextState = contextInput.createContextState();
+        initBeanValidation();
     }
 
     /**
@@ -198,6 +201,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      */
     public JAXBContext(XMLContext context) {
         contextState = new JAXBContextState(context);
+        initBeanValidation();
     }
 
     /**
@@ -206,6 +210,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      */
     public JAXBContext(XMLContext context, Generator generator, Type[] boundTypes) {
         contextState = new JAXBContextState(context, generator, boundTypes, null);
+        initBeanValidation();
     }
 
     /**
@@ -214,6 +219,31 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      */
     public JAXBContext(XMLContext context, Generator generator, TypeMappingInfo[] boundTypes) {
         contextState = new JAXBContextState(context, generator, boundTypes, null);
+        initBeanValidation();
+    }
+
+    /**
+     * Initializes bean validation if javax.validation.api bundle is on the class path.
+     */
+    private void initBeanValidation() {
+        if (beanValidationPresent == null) {
+            beanValidationPresent = BeanValidationChecker.isBeanValidationPresent();
+        }
+        if (beanValidationPresent && beanValidationHelper == null) {
+            synchronized (JAXBContext.class) {
+                if (beanValidationHelper == null) {
+                    // Bean validation is optional
+                    beanValidationHelper = new BeanValidationHelper();
+                }
+            }
+        }
+    }
+
+    /**
+     * Returns BeanValidationHelper. Can return null if bean validation jar is not on class path.
+     */
+    public BeanValidationHelper getBeanValidationHelper() {
+        return beanValidationHelper;
     }
 
     public XMLInputFactory getXMLInputFactory() {

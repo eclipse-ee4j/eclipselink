@@ -14,6 +14,7 @@ package org.eclipse.persistence.testing.jaxb.beanvalidation;
 
 import org.eclipse.persistence.exceptions.BeanValidationException;
 import org.eclipse.persistence.jaxb.ConstraintViolationWrapper;
+import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBMarshaller;
 import org.eclipse.persistence.testing.jaxb.beanvalidation.special.ExternallyConstrainedEmployee;
@@ -23,6 +24,7 @@ import org.junit.Before;
 
 import javax.validation.Validation;
 import java.io.StringWriter;
+import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.Set;
 
@@ -134,6 +136,21 @@ public class ValidationXMLTestCase extends junit.framework.TestCase {
     public void setUp() throws Exception {
         classLoader = new ValidationClassLoader(currentThread.getContextClassLoader());
         currentThread.setContextClassLoader(classLoader);
+        resetBeanValidation();
+    }
+
+    private void resetBeanValidation() throws Exception {
+        Field beanValidationHelper = JAXBContext.class.getDeclaredField("beanValidationHelper");
+        Field beanValidationPresent = JAXBContext.class.getDeclaredField("beanValidationPresent");
+
+        beanValidationHelper.setAccessible(true);
+        beanValidationPresent.setAccessible(true);
+
+        beanValidationHelper.set(JAXBContext.class, null);
+        beanValidationPresent.set(JAXBContext.class, null);
+
+        beanValidationHelper.setAccessible(false);
+        beanValidationPresent.setAccessible(false);
     }
 
     @After
