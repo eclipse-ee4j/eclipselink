@@ -9,8 +9,6 @@
  *
  * Contributors:
  *     Marcel Valovy - 2.6 - initial implementation
- *     02/17/2016-2.6 Dalia Abo Sheasha
- *       - 487889: Fix EclipseLink Bean Validation optimization
  ******************************************************************************/
 package org.eclipse.persistence.jaxb;
 
@@ -115,8 +113,6 @@ class JAXBBeanValidator {
      */
     private boolean stopSearchingForValidator;
 
-    private static boolean buildingFactory;
-
     /**
      * This field will usually be {@code null}. However, user may pass his own instance of
      * {@link javax.validation.ValidatorFactory} to
@@ -173,7 +169,7 @@ class JAXBBeanValidator {
     /**
      * PUBLIC:
      *
-     * First, check if validation has been turned off before.
+     * First, if validation has not been turned off before, check if passed value is constrained.
      *
      * Second, depending on Bean Validation Mode, either returns false or tries to initialize Validator:
      *  - AUTO tries to initialize Validator:
@@ -185,8 +181,7 @@ class JAXBBeanValidator {
      * BeanValidationMode is fetched from (un)marshaller upon each call.
      * If change in mode is detected, the internal state of the JAXBBeanValidator will be switched.
      *
-     * Third, checks if passed value has any constraints using the Validator. If there are no constraints,
-     * returns false since there is no need to validate.
+     * Third, analyses the value and determines whether validation may be skipped.
      *
      * @param beanValidationMode Bean validation mode - allowed values AUTO, CALLBACK, NONE.
      * @param value validated object. It is passed because validation on some objects may be skipped, 
@@ -209,19 +204,17 @@ class JAXBBeanValidator {
 
         this.noOptimisation = noOptimisation;
 
+        if (!isConstrainedObject(value)) return false;
+
         /* Mode or validator factory was changed externally (or it's the first time this method is called). */
-        if (!buildingFactory) {
-            if (this.beanValidationMode != beanValidationMode || this.validatorFactory != preferredValidatorFactory) {
-                this.beanValidationMode = beanValidationMode;
-                this.validatorFactory = (ValidatorFactory) preferredValidatorFactory;
-                changeInternalState();
-            }
+        if (this.beanValidationMode != beanValidationMode || this.validatorFactory != preferredValidatorFactory) {
+            this.beanValidationMode = beanValidationMode;
+            this.validatorFactory = (ValidatorFactory)preferredValidatorFactory;
+            changeInternalState();
         }
 
-        /* If the changeInternalState() call detects that the beanValidationMode is NONE or it fails
-         * to initialize the Validator, we will return false.
-         * Otherwise, we will use the Validator to check if there are constraints on the value. */
-        return canValidate && isConstrainedObject(value);
+        /* Is Validation implementation ready to validate. */
+        return canValidate;
     }
 
     /**
@@ -257,12 +250,9 @@ class JAXBBeanValidator {
             return !(value instanceof XmlBindings);
         }
 
-        if (validator == null) {
-            return false;
-        } else {
-            /* Ensure that the class has constraints. If not, skip validation & speed things up. */
-            return validator.getConstraintsForClass(value.getClass()).isBeanConstrained();
-        }
+        /* Ensure that the class contains BV annotations. If not, skip validation & speed things up.
+         * note: This also effectively skips XmlBindings. */
+        return context.getBeanValidationHelper().isConstrained(value.getClass());
     }
 
     /**
@@ -345,9 +335,7 @@ class JAXBBeanValidator {
     private boolean initValidator() throws BeanValidationException {
         if (validator == null && !stopSearchingForValidator){
             try {
-                buildingFactory = true;
                 ValidatorFactory factory = getValidatorFactory();
-                buildingFactory = false;
                 validator = factory.getValidator();
                 printValidatorInfo();
             } catch (ValidationException ve) {

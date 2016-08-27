@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2016 Sun Microsystems, Inc, IBM Corporation. All rights reserved.
+ * Copyright (c) 2009, 2015 Sun Microsystems, Inc, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -10,8 +10,6 @@
  * Contributors:
  *     08/20/2014-2.5 Rick Curtis
  *       - 441890: Cache Validator instances.
- *     02/17/2016-2.6 Dalia Abo Sheasha
- *       - 487889: Fix EclipseLink Bean Validation optimization
  *     Marcel Valovy - 2.6 - skip validation of objects that are not constrained.
  ******************************************************************************/
 
@@ -100,11 +98,10 @@ public class BeanValidationListener extends DescriptorEventAdapter {
 
     private void validateOnCallbackEvent(DescriptorEvent event, String callbackEventName, Class[] validationGroup) {
         Object source = event.getSource();
-        Validator validator = getValidator(event);
         boolean noOptimization = "true".equalsIgnoreCase((String) event.getSession().getProperty(PersistenceUnitProperties.BEAN_VALIDATION_NO_OPTIMISATION));
-        boolean shouldValidate = noOptimization || validator.getConstraintsForClass(source.getClass()).isBeanConstrained();
+        boolean shouldValidate = noOptimization || beanValidationHelper.isConstrained(source.getClass());
         if (shouldValidate) {
-            Set<ConstraintViolation<Object>> constraintViolations = validator.validate(source, validationGroup);
+            Set<ConstraintViolation<Object>> constraintViolations = getValidator(event).validate(source, validationGroup);
             if (constraintViolations.size() > 0) {
                 // There were errors while call to validate above.
                 // Throw a ConstrainViolationException as required by the spec.
