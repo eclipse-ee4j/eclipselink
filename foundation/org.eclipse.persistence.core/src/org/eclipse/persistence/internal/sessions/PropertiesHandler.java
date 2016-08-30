@@ -20,6 +20,8 @@
  *       - 478331 : Added support for defining local or server as the default locale for obtaining timestamps
  *     03/15/2016 - Jody Grassel
  *       - 489794: Add support for WebSphere EJBEmbeddable platform.
+ *     08/29/2016 Jody Grassel
+ *       - 500441: Eclipselink core has System.getProperty() calls that are not potentially executed under doPriv()
  ******************************************************************************/  
 package org.eclipse.persistence.internal.sessions;
 
@@ -45,6 +47,7 @@ import org.eclipse.persistence.config.TargetDatabase;
 import org.eclipse.persistence.config.TargetServer;
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 
@@ -236,9 +239,20 @@ public class PropertiesHandler {
             this.defaultValue = defaultValue;
         }
 
-        static String getPropertyValueFromMap(String name, Map m, boolean useSystemAsDefault) {
+        static String getPropertyValueFromMap(final String name, Map m, boolean useSystemAsDefault) {
             String value = (String)m.get(name);
-            return value == null && useSystemAsDefault ? System.getProperty(name) : value;
+            if (value == null && useSystemAsDefault) {
+                value = PrivilegedAccessHelper.shouldUsePrivilegedAccess() ?
+                        AccessController.doPrivileged(new PrivilegedAction<String>() {
+                            @Override
+                            public String run() {
+                                return System.getProperty(name);
+                            }
+                        }) 
+                        : System.getProperty(name);
+            }
+            
+            return value;
         }
     
         // Collect all entries corresponding to the prefix name.

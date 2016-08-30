@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -11,10 +11,14 @@
  *     dclarke, mnorman - Dynamic Persistence
  *       http://wiki.eclipse.org/EclipseLink/Development/Dynamic 
  *       (https://bugs.eclipse.org/bugs/show_bug.cgi?id=200045)
- *
+ *     08/29/2016 Jody Grassel
+ *       - 500441: Eclipselink core has System.getProperty() calls that are not potentially executed under doPriv()
+ *    
  ******************************************************************************/
 package org.eclipse.persistence.dynamic;
 
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 //javase imports
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,6 +29,7 @@ import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.exceptions.DynamicException;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.sessions.Session;
 
 /**
@@ -209,7 +214,14 @@ public class DynamicClassLoader extends ClassLoader {
             try {
                 byte[] bytes = writer.writeClass(this, className);
                 if (bytes != null) {
-                    String outputPath = System.getProperty(SystemProperties.WEAVING_OUTPUT_PATH, "");
+                    String outputPath = PrivilegedAccessHelper.shouldUsePrivilegedAccess() ?
+                            AccessController.doPrivileged(new PrivilegedAction<String>() {
+                                @Override
+                                public String run() {
+                                    return System.getProperty(SystemProperties.WEAVING_OUTPUT_PATH, "");
+                                }
+                            }) 
+                            : System.getProperty(SystemProperties.WEAVING_OUTPUT_PATH, "");
 
                     if (!outputPath.equals("")) {
                         Helper.outputClassFile(className, bytes, outputPath);

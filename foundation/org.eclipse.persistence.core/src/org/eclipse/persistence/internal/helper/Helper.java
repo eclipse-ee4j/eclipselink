@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -14,6 +14,8 @@
  *        - 323043: application.xml module ordering may cause weaving not to occur causing an NPE.
  *                       warn if expected "_persistence_*_vh" method not found
  *                       instead of throwing NPE during deploy validation.
+ *     08/29/2016 Jody Grassel
+ *       - 500441: Eclipselink core has System.getProperty() calls that are not potentially executed under doPriv()
  ******************************************************************************/
 package org.eclipse.persistence.internal.helper;
 
@@ -34,6 +36,7 @@ import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -87,7 +90,7 @@ public class Helper extends CoreHelper implements Serializable {
     // Changed static initialization to lazy initialization for bug 2756643
 
     /** Store CR string, for some reason \n is not platform independent. */
-    protected static String CR = null;
+    protected final static String CR;
 
     /** formatting strings for indenting */
     public static String SPACE = " ";
@@ -133,6 +136,18 @@ public class Helper extends CoreHelper implements Serializable {
 
     private static String defaultStartDatabaseDelimiter = null;
     private static String defaultEndDatabaseDelimiter = null;
+    
+    static {
+        // bug 2756643
+        CR = PrivilegedAccessHelper.shouldUsePrivilegedAccess() ?
+                AccessController.doPrivileged(new PrivilegedAction<String>() {
+                    @Override
+                    public String run() {
+                        return System.getProperty("line.separator");
+                    }
+                }) 
+                : System.getProperty("line.separator");
+    }
     
     /**
      * Return if JDBC date access should be optimized.
@@ -794,11 +809,7 @@ public class Helper extends CoreHelper implements Serializable {
      * Return a string containing the platform-appropriate
      * characters for carriage return.
      */
-    public static String cr() {
-        // bug 2756643
-        if (CR == null) {
-            CR = System.getProperty("line.separator");
-        }
+    public static String cr() {       
         return CR;
     }
 
@@ -808,7 +819,15 @@ public class Helper extends CoreHelper implements Serializable {
     public static String currentWorkingDirectory() {
         // bug 2756643
         if (CURRENT_WORKING_DIRECTORY == null) {
-            CURRENT_WORKING_DIRECTORY = System.getProperty("user.dir");
+            CURRENT_WORKING_DIRECTORY = PrivilegedAccessHelper.shouldUsePrivilegedAccess() ?
+                    AccessController.doPrivileged(new PrivilegedAction<String>() {
+                        @Override
+                        public String run() {
+                            return System.getProperty("user.dir");
+                        }
+                    }) 
+                    : System.getProperty("user.dir");
+                    
         }
         return CURRENT_WORKING_DIRECTORY;
     }
@@ -819,7 +838,14 @@ public class Helper extends CoreHelper implements Serializable {
     public static String tempDirectory() {
         // Bug 2756643
         if (TEMP_DIRECTORY == null) {
-            TEMP_DIRECTORY = System.getProperty("java.io.tmpdir");
+            TEMP_DIRECTORY = PrivilegedAccessHelper.shouldUsePrivilegedAccess() ?
+                    AccessController.doPrivileged(new PrivilegedAction<String>() {
+                        @Override
+                        public String run() {
+                            return System.getProperty("java.io.tmpdir");
+                        }
+                    }) 
+                    : System.getProperty("java.io.tmpdir");
         }
         return TEMP_DIRECTORY;
     }
@@ -908,12 +934,12 @@ public class Helper extends CoreHelper implements Serializable {
      */
     public static boolean doesFileExist(String fileName) {
         FileReader reader = null;
-    	try {
-    		reader = new FileReader(fileName);
+        try {
+            reader = new FileReader(fileName);
         } catch (FileNotFoundException fnfException) {
             return false;
         } finally {
-		Helper.close(reader);
+        Helper.close(reader);
         }
 
         return true;
@@ -952,7 +978,14 @@ public class Helper extends CoreHelper implements Serializable {
     public static String fileSeparator() {
         //Bug 2756643
         if (FILE_SEPARATOR == null) {
-            FILE_SEPARATOR = System.getProperty("file.separator");
+            FILE_SEPARATOR = PrivilegedAccessHelper.shouldUsePrivilegedAccess() ?
+                    AccessController.doPrivileged(new PrivilegedAction<String>() {
+                        @Override
+                        public String run() {
+                            return System.getProperty("file.separator");
+                        }
+                    }) 
+                    : System.getProperty("file.separator");
         }
         return FILE_SEPARATOR;
     }
@@ -1214,9 +1247,16 @@ public class Helper extends CoreHelper implements Serializable {
             if (!file.exists()) {
                 file.createNewFile();
             } else {
-                if (!System.getProperty(
-                        SystemProperties.WEAVING_SHOULD_OVERWRITE, "false")
-                        .equalsIgnoreCase("true")) {
+                String weavingShouldOverwriteProp = PrivilegedAccessHelper.shouldUsePrivilegedAccess() ?
+                        AccessController.doPrivileged(new PrivilegedAction<String>() {
+                            @Override
+                            public String run() {
+                                return System.getProperty(SystemProperties.WEAVING_SHOULD_OVERWRITE, "false");
+                            }
+                        }) 
+                        : System.getProperty(SystemProperties.WEAVING_SHOULD_OVERWRITE, "false");
+                        
+                if (!weavingShouldOverwriteProp.equalsIgnoreCase("true")) {
                     AbstractSessionLog.getLog().log(SessionLog.WARNING,
                             SessionLog.WEAVER, "weaver_not_overwriting",
                             className);
@@ -1243,7 +1283,14 @@ public class Helper extends CoreHelper implements Serializable {
     public static String pathSeparator() {
         // Bug 2756643
         if (PATH_SEPARATOR == null) {
-            PATH_SEPARATOR = System.getProperty("path.separator");
+            PATH_SEPARATOR = PrivilegedAccessHelper.shouldUsePrivilegedAccess() ?
+                    AccessController.doPrivileged(new PrivilegedAction<String>() {
+                        @Override
+                        public String run() {
+                            return System.getProperty("path.separator");
+                        }
+                    }) 
+                    : System.getProperty("path.separator");
         }
         return PATH_SEPARATOR;
     }
@@ -1650,7 +1697,7 @@ public class Helper extends CoreHelper implements Serializable {
     public static String printCalendar(Calendar calendar, boolean useLocalTime) {
         String millisString;
 
-        //	String zeros = "000000000";
+        //    String zeros = "000000000";
         if (calendar.get(Calendar.MILLISECOND) == 0) {
             millisString = "0";
         } else {
@@ -2062,7 +2109,7 @@ public class Helper extends CoreHelper implements Serializable {
      * i.e. year is from 0, month is 0-11, date is 1-31, time is 0-23/59.
      */
     @SuppressWarnings("deprecation")
-	public static java.sql.Timestamp timestampFromYearMonthDateHourMinuteSecondNanos(int year, int month, int date, int hour, int minute, int second, int nanos) {
+    public static java.sql.Timestamp timestampFromYearMonthDateHourMinuteSecondNanos(int year, int month, int date, int hour, int minute, int second, int nanos) {
         // This was not converted to use Calendar for the conversion because calendars do not take nanos.
         // but it should be, and then just call setNanos.
         return new java.sql.Timestamp(year - 1900, month, date, hour, minute, second, nanos);

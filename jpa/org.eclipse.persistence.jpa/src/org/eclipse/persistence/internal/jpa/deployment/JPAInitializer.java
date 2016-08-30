@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -11,11 +11,15 @@
  *     tware, ssmith = 1.0 - Generic JPA deployment (OSGI, EE, SE)
  *     11/04/2014 - Rick Curtis  
  *       - 450010 : Add java se test bucket
+ *     08/29/2016 Jody Grassel
+ *       - 500441: Eclipselink core has System.getProperty() calls that are not potentially executed under doPriv()
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.deployment;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -32,6 +36,7 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider;
 import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.jpa.Archive;
 import org.eclipse.persistence.jpa.PersistenceProvider;
 import org.eclipse.persistence.logging.AbstractSessionLog;
@@ -68,7 +73,14 @@ public abstract class JPAInitializer {
      * Initialize the logging file if it is specified by the system property.
      */
     public static void initializeTopLinkLoggingFile() {        
-        String loggingFile = System.getProperty(PersistenceUnitProperties.LOGGING_FILE);
+        String loggingFile = PrivilegedAccessHelper.shouldUsePrivilegedAccess() ?
+                AccessController.doPrivileged(new PrivilegedAction<String>() {
+                    @Override
+                    public String run() {
+                        return System.getProperty(PersistenceUnitProperties.LOGGING_FILE);
+                    }
+                }) 
+                : System.getProperty(PersistenceUnitProperties.LOGGING_FILE);
         try {
             if (loggingFile != null) {
                 AbstractSessionLog.getLog().setWriter(new FileWriter(loggingFile));

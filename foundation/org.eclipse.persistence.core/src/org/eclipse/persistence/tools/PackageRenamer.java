@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -9,11 +9,18 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     08/29/2016 Jody Grassel
+ *       - 500441: Eclipselink core has System.getProperty() calls that are not potentially executed under doPriv()
  ******************************************************************************/
 package org.eclipse.persistence.tools;
 
 import java.util.*;
+
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+
 import java.io.*;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 
 /**
  * This class performs package renaming. It demonstrates the following:
@@ -59,7 +66,19 @@ public class PackageRenamer {
     BufferedReader reader = null;
     String[] UNSUPPORTED_EXTENSIONS = { "jar", "zip", "ear", "war", "dll", "class", "exe" };
     int BUFSIZ = 1024 * 4;
-    String CR = System.getProperty("line.separator");
+    final static String CR;
+    
+    static {
+        // bug 2756643
+        CR = PrivilegedAccessHelper.shouldUsePrivilegedAccess() ?
+                AccessController.doPrivileged(new PrivilegedAction<String>() {
+                    @Override
+                    public String run() {
+                        return System.getProperty("line.separator");
+                    }
+                }) 
+                : System.getProperty("line.separator");
+    }
 
     /**
     * The constructor of a PackageRenamer class.
@@ -267,7 +286,14 @@ public class PackageRenamer {
     }
 
     public static String getDefaultPropertiesFileName() {
-        String currentDirectory = System.getProperty("user.dir");
+        String currentDirectory = PrivilegedAccessHelper.shouldUsePrivilegedAccess() ?
+                AccessController.doPrivileged(new PrivilegedAction<String>() {
+                    @Override
+                    public String run() {
+                        return System.getProperty("user.dir");
+                    }
+                }) 
+                : System.getProperty("user.dir");
         return currentDirectory + File.separator + "packageRename.properties";
     }
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,18 +9,23 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     08/29/2016 Jody Grassel
+ *       - 500441: Eclipselink core has System.getProperty() calls that are not potentially executed under doPriv()
  ******************************************************************************/  
 package org.eclipse.persistence.logging;
 
 import java.util.Date;
 import java.text.DateFormat;
 import java.io.*;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.localization.LoggingLocalization;
 import org.eclipse.persistence.internal.localization.TraceLocalization;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.exceptions.ValidationException;
 
@@ -158,7 +163,14 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * This is based on the System property "eclipselink.logging.level", or INFO if not set.
      */
     public static int getDefaultLoggingLevel() {
-        String logLevel = System.getProperty(PersistenceUnitProperties.LOGGING_LEVEL);
+        String logLevel = PrivilegedAccessHelper.shouldUsePrivilegedAccess() ?
+                AccessController.doPrivileged(new PrivilegedAction<String>() {
+                    @Override
+                    public String run() {
+                        return System.getProperty(PersistenceUnitProperties.LOGGING_LEVEL);
+                    }
+                }) 
+                : System.getProperty(PersistenceUnitProperties.LOGGING_LEVEL);
         return translateStringToLoggingLevel(logLevel);
     }
     
@@ -352,7 +364,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * @param message the string message - this should not be a bundle key
      */
     public void log(int level, String message) {
-    	// Warning: do not use this function to pass in bundle keys as they will not get transformed into string messages
+        // Warning: do not use this function to pass in bundle keys as they will not get transformed into string messages
         if (!shouldLog(level)) {
             return;
         }

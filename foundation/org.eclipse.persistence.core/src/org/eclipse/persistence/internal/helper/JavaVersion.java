@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -9,11 +9,17 @@
  *
  * Contributors:
  *     Tomas Kraus, Peter Benedikovic - initial API and implementation
+ *     08/29/2016 Jody Grassel
+ *       - 500441: Eclipselink core has System.getProperty() calls that are not potentially executed under doPriv()
  ******************************************************************************/
 package org.eclipse.persistence.internal.helper;
 
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 
 /**
  * Java VM version storage class. Used for version numbers retrieved from
@@ -51,7 +57,14 @@ public final class JavaVersion {
      * @return Java VM version {@see String} from JDK system property.
      */
     public static String vmVersionString() {
-        return System.getProperty(VM_VERSION_PROPERTY);
+        return PrivilegedAccessHelper.shouldUsePrivilegedAccess() ?
+                AccessController.doPrivileged(new PrivilegedAction<String>() {
+                    @Override
+                    public String run() {
+                        return System.getProperty(VM_VERSION_PROPERTY);
+                    }
+                }) 
+                : System.getProperty(VM_VERSION_PROPERTY);
     }
 
     /**

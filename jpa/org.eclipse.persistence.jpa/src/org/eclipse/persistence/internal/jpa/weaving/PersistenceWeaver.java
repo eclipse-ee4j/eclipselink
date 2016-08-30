@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -11,11 +11,15 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     19/04/2014-2.6 Lukas Jungmann
  *       - 429992: JavaSE 8/ASM 5.0.1 support (EclipseLink silently ignores Entity classes with lambda expressions)
+ *     08/29/2016 Jody Grassel
+ *       - 500441: Eclipselink core has System.getProperty() calls that are not potentially executed under doPriv()
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.weaving;
 
 // J2SE imports
 import java.lang.instrument.IllegalClassFormatException;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.security.ProtectionDomain;
 import java.util.Map;
 
@@ -27,6 +31,7 @@ import org.eclipse.persistence.internal.libraries.asm.ClassReader;
 import org.eclipse.persistence.internal.libraries.asm.ClassVisitor;
 import org.eclipse.persistence.internal.libraries.asm.ClassWriter;
 import org.eclipse.persistence.internal.libraries.asm.commons.SerialVersionUIDAdder;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.Session;
@@ -87,7 +92,14 @@ public class PersistenceWeaver implements ClassTransformer {
                 ((AbstractSession)session).log(SessionLog.FINEST, SessionLog.WEAVER, "begin_weaving_class", className);
                 ClassReader classReader = new ClassReader(classfileBuffer);
                 ClassWriter classWriter = null;
-                String introspectForHierarchy = System.getProperty(SystemProperties.WEAVING_REFLECTIVE_INTROSPECTION, null);
+                String introspectForHierarchy = PrivilegedAccessHelper.shouldUsePrivilegedAccess() ?
+                        AccessController.doPrivileged(new PrivilegedAction<String>() {
+                            @Override
+                            public String run() {
+                                return System.getProperty(SystemProperties.WEAVING_REFLECTIVE_INTROSPECTION, null);
+                            }
+                        }) 
+                        : System.getProperty(SystemProperties.WEAVING_REFLECTIVE_INTROSPECTION, null);
                 if (introspectForHierarchy != null){
                     classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
                 } else {
@@ -103,7 +115,14 @@ public class PersistenceWeaver implements ClassTransformer {
                 if (classWeaver.weaved) {
                     byte[] bytes = classWriter.toByteArray();
                     
-                    String outputPath = System.getProperty(SystemProperties.WEAVING_OUTPUT_PATH, "");
+                    String outputPath = PrivilegedAccessHelper.shouldUsePrivilegedAccess() ?
+                            AccessController.doPrivileged(new PrivilegedAction<String>() {
+                                @Override
+                                public String run() {
+                                    return System.getProperty(SystemProperties.WEAVING_OUTPUT_PATH, "");
+                                }
+                            }) 
+                            : System.getProperty(SystemProperties.WEAVING_OUTPUT_PATH, "");
     
                     if (!outputPath.equals("")) {
                         Helper.outputClassFile(className, bytes, outputPath);
