@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2016 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -9,15 +9,20 @@
  *
  * Contributors:
  *     08/01/2012-2.5 Chris Delahunt - Bug 371950 - Metadata caching
+ *     08/29/2016 Jody Grassel
+ *       - 500441: Eclipselink core has System.getProperty() calls that are not potentially executed under doPriv()
  ******************************************************************************/
 package org.eclipse.persistence.jpa.metadata;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Map;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.Project;
 
@@ -98,13 +103,20 @@ public class FileBasedProjectCache implements ProjectCache {
      * @param log
      * @return
      */
-    public Object getConfigPropertyLogDebug(String propertyName, Map properties, SessionLog log) {
+    public Object getConfigPropertyLogDebug(final String propertyName, Map properties, SessionLog log) {
         Object value = null;
         if (properties != null) {
             value = properties.get(propertyName);
         }
         if (value == null) {
-            value = System.getProperty(propertyName);
+            value = PrivilegedAccessHelper.shouldUsePrivilegedAccess() ?
+                    AccessController.doPrivileged(new PrivilegedAction<String>() {
+                        @Override
+                        public String run() {
+                            return System.getProperty(propertyName);
+                        }
+                    })
+                    : System.getProperty(propertyName);
         }
         if ((value != null) && (log !=  null)) {
             log.log(SessionLog.FINEST, SessionLog.PROPERTIES, "property_value_specified", new Object[]{propertyName, value});

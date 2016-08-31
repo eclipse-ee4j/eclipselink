@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2015  SAP. All rights reserved.
+ * Copyright (c) 2009, 2016 SAP, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -9,12 +9,18 @@
  *
  * Contributors:
  *     SAP - initial implementation
+ *     08/29/2016 Jody Grassel
+ *       - 500441: Eclipselink core has System.getProperty() calls that are not potentially executed under doPriv()
  ******************************************************************************/
 package org.eclipse.persistence.platform.server.sap;
+
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 
 import javax.persistence.spi.PersistenceUnitInfo;
 
 import org.eclipse.persistence.internal.helper.JPAClassLoaderHolder;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.platform.server.ServerPlatformBase;
 import org.eclipse.persistence.sessions.DatabaseSession;
@@ -52,7 +58,14 @@ public class SAPNetWeaver_7_1_Platform extends ServerPlatformBase {
 
     @Override
     public String getServerNameAndVersion() {
-        String version = System.getProperty("SAP_J2EE_Engine_Version");
+        String version = PrivilegedAccessHelper.shouldUsePrivilegedAccess() ?
+                AccessController.doPrivileged(new PrivilegedAction<String>() {
+                    @Override
+                    public String run() {
+                        return System.getProperty("SAP_J2EE_Engine_Version");
+                    }
+                })
+                : System.getProperty("SAP_J2EE_Engine_Version");
         if (version != null) {
             return version;
         }

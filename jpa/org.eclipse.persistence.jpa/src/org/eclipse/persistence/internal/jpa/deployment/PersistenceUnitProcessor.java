@@ -13,6 +13,8 @@
  *       - 374688: JPA 2.1 Converter support
  *     07/08/2014-2.5 Jody Grassel (IBM Corporation)
  *       - 439163: JSE Bootstrapping does not handle "wsjar" URLs referencing war-contained resources
+ *     08/29/2016 Jody Grassel
+ *       - 500441: Eclipselink core has System.getProperty() calls that are not potentially executed under doPriv()
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.deployment;
 
@@ -32,6 +34,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -294,7 +297,15 @@ public class PersistenceUnitProcessor {
     public static Set<Archive> findPersistenceArchives(ClassLoader loader){
         // allow alternate persistence location to be specified via system property.  This will allow persistence units
         // with alternate persistence xml locations to be weaved
-        String descriptorLocation = System.getProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML, PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML_DEFAULT);
+        String descriptorLocation = PrivilegedAccessHelper.shouldUsePrivilegedAccess() ?
+                AccessController.doPrivileged(new PrivilegedAction<String>() {
+                    @Override
+                    public String run() {
+                        return System.getProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML, PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML_DEFAULT);
+                    }
+                })
+                : System.getProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML, PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML_DEFAULT);
+
         return findPersistenceArchives(loader, descriptorLocation);
     }
 
@@ -393,7 +404,14 @@ public class PersistenceUnitProcessor {
     public static Set<SEPersistenceUnitInfo> getPersistenceUnits(ClassLoader loader, Map m, List<URL> jarFileUrls) {
         String descriptorPath = (String) m.get(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML);
         if(descriptorPath == null) {
-            descriptorPath = System.getProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML, PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML_DEFAULT);
+            descriptorPath = PrivilegedAccessHelper.shouldUsePrivilegedAccess() ?
+                    AccessController.doPrivileged(new PrivilegedAction<String>() {
+                        @Override
+                        public String run() {
+                            return System.getProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML, PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML_DEFAULT);
+                        }
+                    })
+                    : System.getProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML, PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML_DEFAULT);
         }
         Set<Archive> archives = findPersistenceArchives(loader, descriptorPath, jarFileUrls);
         Set<SEPersistenceUnitInfo> puInfos = new HashSet();
@@ -416,7 +434,14 @@ public class PersistenceUnitProcessor {
         }
 
         ArchiveFactory factory = null;
-        String factoryClassName = System.getProperty(SystemProperties.ARCHIVE_FACTORY, null);
+        String factoryClassName = PrivilegedAccessHelper.shouldUsePrivilegedAccess() ?
+                AccessController.doPrivileged(new PrivilegedAction<String>() {
+                    @Override
+                    public String run() {
+                        return System.getProperty(SystemProperties.ARCHIVE_FACTORY, null);
+                    }
+                })
+                : System.getProperty(SystemProperties.ARCHIVE_FACTORY, null);
 
         if (factoryClassName == null) {
             return new ArchiveFactoryImpl();

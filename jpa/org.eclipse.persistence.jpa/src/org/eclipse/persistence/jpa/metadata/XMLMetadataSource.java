@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -10,6 +10,8 @@
  * Contributors:
  *     05/05/2011-2.3 Chris Delahunt
  *       - 344837: Extensibility - Metadata Repository
+ *     08/29/2016 Jody Grassel
+ *       - 500441: Eclipselink core has System.getProperty() calls that are not potentially executed under doPriv()
  ******************************************************************************/
 package org.eclipse.persistence.jpa.metadata;
 
@@ -18,12 +20,15 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappingsReader;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
@@ -200,13 +205,20 @@ public class XMLMetadataSource extends MetadataSourceAdapter {
      * @param log
      * @return
      */
-    public Object getConfigPropertyLogDebug(String propertyName, Map properties, SessionLog log) {
+    public Object getConfigPropertyLogDebug(final String propertyName, Map properties, SessionLog log) {
         Object value = null;
         if (properties != null) {
             value = properties.get(propertyName);
         }
         if (value == null) {
-            value = System.getProperty(propertyName);
+            value = PrivilegedAccessHelper.shouldUsePrivilegedAccess() ?
+                    AccessController.doPrivileged(new PrivilegedAction<String>() {
+                        @Override
+                        public String run() {
+                            return System.getProperty(propertyName);
+                        }
+                    })
+                    : System.getProperty(propertyName);
         }
         if ((value != null) && (log !=  null)) {
             log.log(SessionLog.FINEST, SessionLog.PROPERTIES, "property_value_specified", new Object[]{propertyName, value});

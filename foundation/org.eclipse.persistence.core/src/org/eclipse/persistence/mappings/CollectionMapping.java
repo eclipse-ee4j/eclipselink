@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -21,11 +21,14 @@
  *       - 374377: OrderBy with ElementCollection doesn't work
  *     14/05/2012-2.4 Guy Pelletier
  *       - 376603: Provide for table per tenant support for multitenant applications
+ *     08/29/2016 Jody Grassel
+ *       - 500441: Eclipselink core has System.getProperty() calls that are not potentially executed under doPriv()
  ******************************************************************************/
 package org.eclipse.persistence.mappings;
 
 import java.beans.PropertyChangeListener;
-
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.*;
 
 import org.eclipse.persistence.annotations.OrderCorrectionType;
@@ -42,6 +45,7 @@ import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.indirection.*;
 import org.eclipse.persistence.internal.queries.*;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.remote.*;
 import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.queries.*;
@@ -333,7 +337,14 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * ObjectBuilder.
      */
     public Expression buildExpression(Object queryObject, QueryByExamplePolicy policy, Expression expressionBuilder, Map processedObjects, AbstractSession session) {
-        String bypassProperty = System.getProperty(SystemProperties.DO_NOT_PROCESS_XTOMANY_FOR_QBE);
+        String bypassProperty = PrivilegedAccessHelper.shouldUsePrivilegedAccess() ?
+                AccessController.doPrivileged(new PrivilegedAction<String>() {
+                    @Override
+                    public String run() {
+                        return System.getProperty(SystemProperties.DO_NOT_PROCESS_XTOMANY_FOR_QBE);
+                    }
+                })
+                : System.getProperty(SystemProperties.DO_NOT_PROCESS_XTOMANY_FOR_QBE);
         if (this.getContainerPolicy().isMapPolicy() ||  (bypassProperty != null && bypassProperty.toLowerCase().equals("true")) ){
             // not supported
             return super.buildExpression(queryObject, policy, expressionBuilder, processedObjects, session);
