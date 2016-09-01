@@ -16,9 +16,7 @@ package org.eclipse.persistence.internal.jpa.querydef;
 
 import java.lang.reflect.Constructor;
 import java.security.AccessController;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaQuery;
@@ -61,7 +59,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
     protected SelectionImpl<?> selection;
     protected List<Order> orderBy;
 
-    protected List<FromImpl> joins;
+    protected Set<FromImpl> joins;
 
     public CriteriaQueryImpl(Metamodel metamodel, ResultType queryResult, Class result, CriteriaBuilderImpl queryBuilder) {
         super(metamodel, queryResult, queryBuilder, result);
@@ -447,7 +445,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
     @Override
     public void addJoin(FromImpl from) {
         if (this.joins == null) {
-            this.joins = new ArrayList<FromImpl>();
+            this.joins = new HashSet<FromImpl>();
         }
         this.joins.add(from);
     }
