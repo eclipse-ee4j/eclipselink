@@ -9,7 +9,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.oracle.nosql
 Bundle-Vendor: Eclipse.org - EclipseLink Project
 Fragment-Host: org.eclipse.persistence.core;bundle-version="2.4.0"
-Bundle-Version: 2.6.4.qualifier
+Bundle-Version: 2.6.5.qualifier
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.eclipse.persistence.oracle.nosql
 Import-Package: oracle.AQ;resolution:=optional,

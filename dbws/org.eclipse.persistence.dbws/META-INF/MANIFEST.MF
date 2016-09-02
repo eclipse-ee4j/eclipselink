@@ -1,36 +1,36 @@
 Manifest-Version: 1.0
-Export-Package: org.eclipse.persistence.dbws;version="2.6.4",
- org.eclipse.persistence.internal.dbws;version="2.6.4",
- org.eclipse.persistence.internal.xr;version="2.6.4",
- org.eclipse.persistence.internal.xr.sxf;version="2.6.4",
- org.eclipse.persistence.jpa.rs;version="2.6.4",
- org.eclipse.persistence.jpa.rs.annotations;version="2.6.4",
- org.eclipse.persistence.jpa.rs.eventlistener;version="2.6.4",
- org.eclipse.persistence.jpa.rs.exceptions;version="2.6.4",
- org.eclipse.persistence.jpa.rs.features;version="2.6.4",
- org.eclipse.persistence.jpa.rs.features.core.selflinks;version="2.6.4",
- org.eclipse.persistence.jpa.rs.features.fieldsfiltering;version="2.6.4",
- org.eclipse.persistence.jpa.rs.features.paging;version="2.6.4",
- org.eclipse.persistence.jpa.rs.logging;version="2.6.4",
- org.eclipse.persistence.jpa.rs.logging.i18n;version="2.6.4",
- org.eclipse.persistence.jpa.rs.resources;version="2.6.4",
- org.eclipse.persistence.jpa.rs.resources.unversioned;version="2.6.4",
- org.eclipse.persistence.jpa.rs.resources.common;version="2.6.4",
- org.eclipse.persistence.jpa.rs.util;version="2.6.4",
- org.eclipse.persistence.jpa.rs.util.list;version="2.6.4",
- org.eclipse.persistence.jpa.rs.util.metadatasources;version="2.6.4",
- org.eclipse.persistence.jpa.rs.util.xmladapters;version="2.6.4"
+Export-Package: org.eclipse.persistence.dbws;version="2.6.5",
+ org.eclipse.persistence.internal.dbws;version="2.6.5",
+ org.eclipse.persistence.internal.xr;version="2.6.5",
+ org.eclipse.persistence.internal.xr.sxf;version="2.6.5",
+ org.eclipse.persistence.jpa.rs;version="2.6.5",
+ org.eclipse.persistence.jpa.rs.annotations;version="2.6.5",
+ org.eclipse.persistence.jpa.rs.eventlistener;version="2.6.5",
+ org.eclipse.persistence.jpa.rs.exceptions;version="2.6.5",
+ org.eclipse.persistence.jpa.rs.features;version="2.6.5",
+ org.eclipse.persistence.jpa.rs.features.core.selflinks;version="2.6.5",
+ org.eclipse.persistence.jpa.rs.features.fieldsfiltering;version="2.6.5",
+ org.eclipse.persistence.jpa.rs.features.paging;version="2.6.5",
+ org.eclipse.persistence.jpa.rs.logging;version="2.6.5",
+ org.eclipse.persistence.jpa.rs.logging.i18n;version="2.6.5",
+ org.eclipse.persistence.jpa.rs.resources;version="2.6.5",
+ org.eclipse.persistence.jpa.rs.resources.unversioned;version="2.6.5",
+ org.eclipse.persistence.jpa.rs.resources.common;version="2.6.5",
+ org.eclipse.persistence.jpa.rs.util;version="2.6.5",
+ org.eclipse.persistence.jpa.rs.util.list;version="2.6.5",
+ org.eclipse.persistence.jpa.rs.util.metadatasources;version="2.6.5",
+ org.eclipse.persistence.jpa.rs.util.xmladapters;version="2.6.5"
 Bundle-ClassPath: .
 Bundle-Name: EclipseLink DBWS
 Created-By: 1.6.0_21 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.dbws
-Require-Bundle: org.eclipse.persistence.core;bundle-version="2.6.4",
+Require-Bundle: org.eclipse.persistence.core;bundle-version="2.6.5",
  org.eclipse.persistence.asm;bundle-version="5.0.1",
- org.eclipse.persistence.jpa;bundle-version="2.6.4",
- org.eclipse.persistence.moxy;bundle-version="2.6.4"
+ org.eclipse.persistence.jpa;bundle-version="2.6.5",
+ org.eclipse.persistence.moxy;bundle-version="2.6.5"
 Bundle-Vendor: Eclipse.org - EclipseLink Project
-Bundle-Version: 2.6.4.qualifier
+Bundle-Version: 2.6.5.qualifier
 Bundle-ManifestVersion: 2
 Import-Package: javax.activation;resolution:=optional,
  javax.naming;resolution:=optional,
