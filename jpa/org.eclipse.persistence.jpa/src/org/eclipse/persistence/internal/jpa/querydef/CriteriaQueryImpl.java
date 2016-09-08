@@ -445,7 +445,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
     @Override
     public void addJoin(FromImpl from) {
         if (this.joins == null) {
-            this.joins = new HashSet<FromImpl>();
+            this.joins = new LinkedHashSet<FromImpl>();
         }
         this.joins.add(from);
     }
