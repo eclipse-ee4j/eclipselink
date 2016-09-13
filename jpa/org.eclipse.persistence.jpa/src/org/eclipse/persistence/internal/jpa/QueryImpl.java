@@ -351,7 +351,12 @@ public class QueryImpl {
                 }
                 if (this.databaseQuery.isReadQuery()){
                     this.maxResults = ((ReadQuery)this.databaseQuery).getInternalMax();
-                    this.firstResultIndex = ((ReadQuery)this.databaseQuery).getFirstResult();
+                    // Bug 501272
+                    // Do not reset a Query's uninitialized first result index, unless the parameter is greater than 0 (default for ReadQuery).
+                    int queryFirstResult = ((ReadQuery)this.databaseQuery).getFirstResult();
+                    if ((this.firstResultIndex != UNDEFINED) || (this.firstResultIndex == UNDEFINED && queryFirstResult > 0)) {
+                        this.firstResultIndex = queryFirstResult;
+                    }
                 }
             } else {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("unable_to_find_named_query", new Object[] { this.queryName }));
