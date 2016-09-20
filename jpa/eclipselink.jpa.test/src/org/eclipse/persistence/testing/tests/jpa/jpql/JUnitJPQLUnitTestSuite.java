@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -31,11 +31,14 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.queries.ReportQueryResult;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
+import org.eclipse.persistence.testing.framework.QuerySQLTracker;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber;
+import org.eclipse.persistence.testing.models.jpa.advanced.Room;
+import org.eclipse.persistence.testing.models.jpa.advanced.SimpleRoom;
 import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyA;
 import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyC;
 
@@ -102,6 +105,7 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
     if (!isJPA10()) {
         // JPA 2.0 Tests
         suite.addTest(new JUnitJPQLUnitTestSuite("testResetFirstResultOnQuery"));
+        suite.addTest(new JUnitJPQLUnitTestSuite("testSelectNewJPQLQueryWithQueryResultsCache"));
     }
     
     return suite;
@@ -611,4 +615,68 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
    		 rollbackTransaction(em);
    	 }
     }
+
+    /**
+     * Bug 501272
+     * Test a JPQL query with 'select new' syntax with a named query and query results
+     * cache enabled. Tests if any SQL is generated & correct results after initial query.
+     * @see SimpleRoom
+     */
+    public void testSelectNewJPQLQueryWithQueryResultsCache() {
+        EntityManager em = createEntityManager();
+        QuerySQLTracker tracker = null;
+        
+        // create test data and clear cache
+        beginTransaction(em);
+        Room testRoom = new Room();
+        final int width = 10;
+        final int length = 8;
+        testRoom.setWidth(width);
+        testRoom.setLength(length);
+        testRoom.setHeight(12); // completeness
+        em.persist(testRoom);
+        commitTransaction(em);
+        clearCache();
+        
+        em = createEntityManager();
+        
+        try {
+            int numberOfExecutions = 6;
+            for (int i = 0; i < numberOfExecutions; i++) {
+                // Uses JPQL 'SELECT NEW' syntax, copying results into the provided Entity constructor 
+                Query query = em.createNamedQuery("room.findSimpleRoomByWidthLength");
+                query.setParameter("width", width);
+                query.setParameter("length", length);
+                SimpleRoom simpleRoom = (SimpleRoom)query.getSingleResult();
+                
+                assertNotNull("Returned Entity should be non-null", simpleRoom);
+                assertEquals("width must be the same", simpleRoom.getWidth(), width);
+                assertEquals("length must be the same", simpleRoom.getLength(), length);
+                
+                // create Query SQL tracker after first run, no more SQL should be executed
+                if (tracker == null) {
+                    tracker = new QuerySQLTracker(getServerSession());
+                }
+            }
+            
+            // SQL should not have been executed after the creation of the QuerySQLTracker, 
+            // as the query results cache is enabled for this named query
+            assertEquals("More SQL queries executed than expected", 0, tracker.getSqlStatements().size());
+        } finally {
+            if (tracker != null) {
+                tracker.remove();
+            }
+            // remove test data if it exists
+            if (testRoom != null ) {
+                Room existingRoom = em.find(Room.class, testRoom.getId());
+                if (existingRoom != null) {
+                    beginTransaction(em);
+                    em.remove(em.find(Room.class, testRoom.getId()));
+                    commitTransaction(em);
+                }
+            }
+            closeEntityManager(em);
+        }
+    }
+
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -21,11 +21,26 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.QueryHint;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.eclipse.persistence.config.QueryHints;
+
 @Entity
 @Table(name="CMP3_ROOM")
+@NamedQueries({
+    //Bug 501272
+    @NamedQuery(
+        name = "room.findSimpleRoomByWidthLength",
+        query = "SELECT NEW org.eclipse.persistence.testing.models.jpa.advanced.SimpleRoom(r.id, r.width, r.length) " +
+                "FROM Room r WHERE r.width = :width AND r.length = :length",
+        hints = {
+                @QueryHint(name = QueryHints.QUERY_RESULTS_CACHE, value = "true"),
+        })
+})
 public class Room implements Serializable, Cloneable {
     @Id
     private int id;
