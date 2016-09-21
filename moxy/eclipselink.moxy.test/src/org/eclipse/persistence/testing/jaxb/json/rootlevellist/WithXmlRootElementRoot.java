@@ -12,12 +12,15 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.json.rootlevellist;
 
+import java.util.UUID;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="root")
 public class WithXmlRootElementRoot {//implements Comparable<WithXmlRootElementRoot>{
 
     private String name;
+    private UUID uuid;
 
     public String getName() {
         return name;
@@ -25,6 +28,14 @@ public class WithXmlRootElementRoot {//implements Comparable<WithXmlRootElementR
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
     }
 
     @Override
@@ -35,8 +46,13 @@ public class WithXmlRootElementRoot {//implements Comparable<WithXmlRootElementR
         WithXmlRootElementRoot test = (WithXmlRootElementRoot) o;
         if(null == name) {
             return null == test.getName();
+        } else if (!name.equals(test.getName())){
+            return false;
+        }
+        if(null == uuid) {
+            return null == test.getUuid();
         } else {
-            return name.equals(test.getName());
+            return uuid.equals(test.getUuid());
         }
     }
 /*

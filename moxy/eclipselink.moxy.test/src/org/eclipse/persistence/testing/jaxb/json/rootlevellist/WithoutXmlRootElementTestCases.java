@@ -16,6 +16,7 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
@@ -46,6 +47,7 @@ public class WithoutXmlRootElementTestCases extends JSONMarshalUnmarshalTestCase
 
         WithoutXmlRootElementRoot foo = new WithoutXmlRootElementRoot();
         foo.setName("FOO");
+        foo.setUuid(UUID.fromString("8ae03765-ee01-4a81-a0de-a2497a10739f"));
         list.add(foo);
 
         WithoutXmlRootElementRoot bar = new WithoutXmlRootElementRoot();

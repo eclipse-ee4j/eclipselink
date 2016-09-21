@@ -15,6 +15,7 @@ package org.eclipse.persistence.testing.jaxb.json.rootlevellist;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import javax.xml.transform.stream.StreamSource;
 
@@ -37,6 +38,7 @@ public class WithXmlRootElementTestCases extends JSONMarshalUnmarshalTestCases {
 
         WithXmlRootElementRoot foo = new WithXmlRootElementRoot();
         foo.setName("FOO");
+        foo.setUuid(UUID.fromString("8ae03765-ee01-4a81-a0de-a2497a10739f"));
         list.add(foo);
 
         WithXmlRootElementRoot bar = new WithXmlRootElementRoot();

@@ -16,6 +16,7 @@ import java.io.StringReader;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.xml.transform.stream.StreamSource;
 
@@ -37,6 +38,7 @@ public class WithXmlRootElementSetTestCases extends JSONMarshalUnmarshalTestCase
 
         WithXmlRootElementRoot foo = new WithXmlRootElementRoot();
         foo.setName("FOO");
+        foo.setUuid(UUID.fromString("8ae03765-ee01-4a81-a0de-a2497a10739f"));
         set.add(foo);
 
         WithXmlRootElementRoot bar = new WithXmlRootElementRoot();

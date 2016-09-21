@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
+import java.util.UUID;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
@@ -192,6 +193,8 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
             return convertObjectToDuration(sourceObject);
         } else if ((javaClass == CoreClassConstants.FILE) && (sourceObject instanceof String)) {
             return convertStringToFile((String) sourceObject);
+        } else if ((javaClass == Constants.UUID) && (sourceObject instanceof String)) {
+            return UUID.fromString((String) sourceObject);
         } else {
             try {
                 return super.convertObject(sourceObject, javaClass);

@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.UUID;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
@@ -46,6 +47,7 @@ public class WithXmlRootElementJAXBElementNoRootTestCases extends JSONMarshalUnm
 
         WithXmlRootElementRoot foo = new WithXmlRootElementRoot();
         foo.setName("FOO");
+        foo.setUuid(UUID.fromString("8ae03765-ee01-4a81-a0de-a2497a10739f"));
         JAXBElement<WithXmlRootElementRoot> jbe1 = new JAXBElement<WithXmlRootElementRoot>(new QName("roottest1"), WithXmlRootElementRoot.class, foo);
         list.add(jbe1);
 
@@ -64,6 +66,7 @@ public class WithXmlRootElementJAXBElementNoRootTestCases extends JSONMarshalUnm
 
         WithXmlRootElementRoot foo = new WithXmlRootElementRoot();
         foo.setName("FOO");
+        foo.setUuid(UUID.fromString("8ae03765-ee01-4a81-a0de-a2497a10739f"));
         list.add(foo);
 
         WithXmlRootElementRoot bar = new WithXmlRootElementRoot();

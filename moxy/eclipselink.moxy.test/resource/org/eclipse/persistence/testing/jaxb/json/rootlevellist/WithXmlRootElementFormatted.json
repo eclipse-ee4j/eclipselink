@@ -1,6 +1,7 @@
 [ {
    "root" : {
-      "name" : "FOO"
+      "name" : "FOO",
+      "uuid" : "8ae03765-ee01-4a81-a0de-a2497a10739f"
    }
 }, {
    "root" : {

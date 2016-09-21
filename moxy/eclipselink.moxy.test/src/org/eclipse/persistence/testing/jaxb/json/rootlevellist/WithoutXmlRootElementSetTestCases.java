@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
@@ -48,6 +49,7 @@ public class WithoutXmlRootElementSetTestCases extends JSONMarshalUnmarshalTestC
 
         WithoutXmlRootElementRoot foo = new WithoutXmlRootElementRoot();
         foo.setName("FOO");
+        foo.setUuid(UUID.fromString("8ae03765-ee01-4a81-a0de-a2497a10739f"));
         set.add(foo);
 
         WithoutXmlRootElementRoot bar = new WithoutXmlRootElementRoot();
