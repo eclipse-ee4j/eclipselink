@@ -740,6 +740,8 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "dbPlatformHelper_detectedVendorPlatform", "Detected database platform: {0}"},
         { "dbPlatformHelper_regExprDbPlatform", "Database platform: {1}, regular expression: {0}"},
         { "dbPlatformHelper_patternSyntaxException", "Exception while using regular expression: {0}" },
+        { "platform_ora_init_id_seq", "Init Oracle identity sequence {0} -> {1} for table {2}"},
+        { "platform_ora_remove_id_seq", "Remove Oracle identity sequence {0} -> {1} for table {2}"},
         { "unknown_query_hint", "query {0}: unknown query hint {1} will be ignored"},
         { "query_hint", "query {0}: query hint {1}; value {2}"},
         { "property_value_specified", "property={0}; value={1}"},

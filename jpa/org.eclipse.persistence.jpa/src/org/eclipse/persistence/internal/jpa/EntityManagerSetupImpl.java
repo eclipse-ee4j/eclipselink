@@ -72,6 +72,8 @@
  *       - 480787 : Wrap several privileged method calls with a doPrivileged block
  *     12/03/2015-2.6 Dalia Abo Sheasha
  *       - 483582: Add the javax.persistence.sharedCache.mode property
+ *     09/29/2016-2.7 Tomas Kraus
+ *       - 426852: @GeneratedValue(strategy=GenerationType.IDENTITY) support in Oracle 12c
  *****************************************************************************/
 package org.eclipse.persistence.internal.jpa;
 
@@ -802,6 +804,8 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                             writeDDL(deployProperties, getDatabaseSession(deployProperties), classLoaderToUse);
                         }
                     }
+                    // Initialize platform specific identity sequences.
+                    session.getDatasourcePlatform().initIdentitySequences(getDatabaseSession(), MetadataProject.DEFAULT_IDENTITY_GENERATOR);
                     updateTunerPostDeploy(deployProperties, classLoaderToUse);
                     this.deployLock.release();
                     isLockAcquired = false;
