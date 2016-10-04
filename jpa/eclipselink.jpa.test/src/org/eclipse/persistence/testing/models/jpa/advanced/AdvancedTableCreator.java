@@ -116,6 +116,8 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildBILL_LINETable());
         addTableDefinition(buildBILL_LINEITEMTable());
         addTableDefinition(buildBILL_ACTIONTable());
+        addTableDefinition(buildORD_ENTITYATable());
+        addTableDefinition(buildORD_ENTITYZTable());
     }
 
     public TableDefinition buildADDRESSTable() {
@@ -3266,6 +3268,87 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fk_FK_JPA_BILL_ACTION_BILLLINE_ID.addSourceField("BILLLINE_ID");
         fk_FK_JPA_BILL_ACTION_BILLLINE_ID.addTargetField("ID");
         table.addForeignKeyConstraint(fk_FK_JPA_BILL_ACTION_BILLLINE_ID);
+        
+        return table;
+    }
+    
+    public TableDefinition buildORD_ENTITYATable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("ORD_ENTITY_A");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(19);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+        
+        FieldDefinition fieldDESCRIPTION = new FieldDefinition();
+        fieldDESCRIPTION.setName("DESCRIPTION");
+        fieldDESCRIPTION.setTypeName("VARCHAR");
+        fieldDESCRIPTION.setSize(255);
+        fieldDESCRIPTION.setIsPrimaryKey(false);
+        fieldDESCRIPTION.setIsIdentity(false);
+        fieldDESCRIPTION.setUnique(false);
+        fieldDESCRIPTION.setShouldAllowNull(false);
+        table.addField(fieldDESCRIPTION);
+        
+        FieldDefinition fieldENTITYZ_ID = new FieldDefinition();
+        fieldENTITYZ_ID.setName("ENTITYZ_ID");
+        fieldENTITYZ_ID.setTypeName("NUMBER");
+        fieldENTITYZ_ID.setSize(19);
+        fieldENTITYZ_ID.setIsPrimaryKey(false);
+        fieldENTITYZ_ID.setIsIdentity(false);
+        fieldENTITYZ_ID.setUnique(false);
+        fieldENTITYZ_ID.setShouldAllowNull(true);
+        table.addField(fieldENTITYZ_ID);
+        
+        FieldDefinition fieldENTITYA_ORDER = new FieldDefinition();
+        fieldENTITYA_ORDER.setName("ENTITYA_ORDER");
+        fieldENTITYA_ORDER.setTypeName("NUMBER");
+        fieldENTITYA_ORDER.setSize(19);
+        fieldENTITYA_ORDER.setIsPrimaryKey(false);
+        fieldENTITYA_ORDER.setIsIdentity(false);
+        fieldENTITYA_ORDER.setUnique(false);
+        fieldENTITYA_ORDER.setShouldAllowNull(true);
+        table.addField(fieldENTITYA_ORDER);
+        
+        ForeignKeyConstraint fk_FK_ORD_ENTITYA_ORD_ENTITYZ = new ForeignKeyConstraint();
+        fk_FK_ORD_ENTITYA_ORD_ENTITYZ.setName("FK_ORD_ENTITYA_ORD_ENTITYZ");
+        fk_FK_ORD_ENTITYA_ORD_ENTITYZ.addSourceField("ENTITYZ_ID");
+        fk_FK_ORD_ENTITYA_ORD_ENTITYZ.setTargetTable("ORD_ENTITY_Z");
+        fk_FK_ORD_ENTITYA_ORD_ENTITYZ.addTargetField("ID");
+        table.addForeignKeyConstraint(fk_FK_ORD_ENTITYA_ORD_ENTITYZ);
+        
+        return table;
+    }
+    
+    public TableDefinition buildORD_ENTITYZTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("ORD_ENTITY_Z");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(19);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+        
+        FieldDefinition fieldDESCRIPTION = new FieldDefinition();
+        fieldDESCRIPTION.setName("DESCRIPTION");
+        fieldDESCRIPTION.setTypeName("VARCHAR");
+        fieldDESCRIPTION.setSize(255);
+        fieldDESCRIPTION.setIsPrimaryKey(false);
+        fieldDESCRIPTION.setIsIdentity(false);
+        fieldDESCRIPTION.setUnique(false);
+        fieldDESCRIPTION.setShouldAllowNull(false);
+        table.addField(fieldDESCRIPTION);
         
         return table;
     }

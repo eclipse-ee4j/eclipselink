@@ -462,7 +462,13 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
                     // We are merging the unit of work into the original.
                     attributeValue = getObjectForMerge(mergeManager, targetSession, getId(), descriptor);
                     if (attributeValue == null){
-                        attributeValue = ((UnitOfWorkImpl)mergeManager.getSession()).getOriginalVersionOfObjectOrNull(getUnitOfWorkClone(), this, descriptor, targetSession);
+                        // Bug 502085
+                        UnitOfWorkImpl uow = (UnitOfWorkImpl)mergeManager.getSession();
+                        if (this.isNew()) {
+                            attributeValue = uow.getOriginalVersionOfObject(getUnitOfWorkClone());
+                        } else {
+                            attributeValue = uow.getOriginalVersionOfObjectOrNull(getUnitOfWorkClone(), this, descriptor, targetSession);
+                        }
                     }
                 } else {
                     // We are merging something else within the unit of work.

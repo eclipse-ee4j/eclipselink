@@ -35,6 +35,7 @@ import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.Vector;
 
@@ -128,6 +129,8 @@ import org.eclipse.persistence.testing.models.jpa.advanced.Jigsaw;
 import org.eclipse.persistence.testing.models.jpa.advanced.JigsawPiece;
 import org.eclipse.persistence.testing.models.jpa.advanced.LargeProject;
 import org.eclipse.persistence.testing.models.jpa.advanced.Loot;
+import org.eclipse.persistence.testing.models.jpa.advanced.OrderedEntityA;
+import org.eclipse.persistence.testing.models.jpa.advanced.OrderedEntityZ;
 import org.eclipse.persistence.testing.models.jpa.advanced.Oyster;
 import org.eclipse.persistence.testing.models.jpa.advanced.Pearl;
 import org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber;
@@ -280,6 +283,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             
             suite.addTest(new AdvancedJPAJunitTest("testHistoryRelationshipQueryInitialization"));
             suite.addTest(new AdvancedJPAJunitTest("testQueryJoinBasicCollectionTableUsingQueryResultsCache"));
+            suite.addTest(new AdvancedJPAJunitTest("testNullValueInCollectionWithOrderColumn"));
         }
         
         return suite;
@@ -3657,6 +3661,96 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
                 }
                 em.remove(employee);
             }
+            commitTransaction(em);
+            closeEntityManager(em);
+        }
+    }
+
+    /**
+     * Bug 502085 - @OneToMany with @OrderColumn contains a null element after specific scenario
+     * 
+     */
+    public void testNullValueInCollectionWithOrderColumn() {
+        // Create test data
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        OrderedEntityA newEntityA1 = new OrderedEntityA(1L, "Entity-A1");
+        OrderedEntityA newEntityA2 = null; // save for later
+        OrderedEntityZ newEntityZ1 = new OrderedEntityZ(1L, "Entity-Z1");
+        OrderedEntityZ newEntityZ2 = new OrderedEntityZ(2L, "Entity-Z2");
+        newEntityZ1.addEntityA(newEntityA1);
+        
+        em.persist(newEntityA1);
+        em.persist(newEntityZ1);
+        em.persist(newEntityZ2);
+        
+        commitTransaction(em);
+        closeEntityManager(em);
+        
+        try {
+            // Test
+            em = createEntityManager();
+            beginTransaction(em);
+            
+            // load Entity Z2 for unrelated modification within same EM
+            OrderedEntityZ entityZ2 = em.createQuery("SELECT z FROM OrderedEntityZ z WHERE z.id = 2", OrderedEntityZ.class).getSingleResult();
+            entityZ2.setDescription("Entity-Z2-MODIFIED"); // make a change
+            em.persist(entityZ2); // important to persist modification first
+            
+            // load Entity Z1 for modification
+            OrderedEntityZ entityZ1 = em.createQuery("SELECT z FROM OrderedEntityZ z WHERE z.id = 1", OrderedEntityZ.class).getSingleResult();
+            
+            // Remove A1 from collection, add A2 to collection, persist
+            entityZ1.removeEntityA(entityZ1.getEntityAs().get(0));
+            newEntityA2 = new OrderedEntityA(2L, "Entity-A2");
+            entityZ1.addEntityA(newEntityA2);
+            
+            em.persist(newEntityA2);
+            
+            commitTransaction(em);
+            closeEntityManager(em);
+            
+            // Verify
+            em = createEntityManager();
+            
+            entityZ1 = em.createQuery("SELECT z FROM OrderedEntityZ z WHERE z.id = 1", OrderedEntityZ.class).getSingleResult();
+            List<OrderedEntityA> entityAList = entityZ1.getEntityAs();
+            
+            // validate that Entity Z1's collection is size 1 and contains a valid Entity A2 with correct description
+            assertEquals("invalid collection size", 1, entityAList.size());
+            OrderedEntityA firstEntityA = entityAList.get(0);
+            assertNotNull("null value in collection", firstEntityA);
+            assertEquals("wrong description in entity", newEntityA2.getDescription(), firstEntityA.getDescription());
+            
+            closeEntityManager(em);
+        } finally {
+            if (em != null && em.isOpen()) {
+                closeEntityManager(em);
+            }
+            // clean up
+            em = createEntityManager();
+            beginTransaction(em);
+            
+            newEntityA1 = em.find(OrderedEntityA.class, newEntityA1.getId());
+            if (newEntityA1 != null) {
+                em.remove(newEntityA1);
+            }
+            if (newEntityA2 != null) {
+                newEntityA2 = em.find(OrderedEntityA.class, newEntityA2.getId());
+                if (newEntityA2 != null) {
+                    em.remove(newEntityA2);
+                }
+            }
+            newEntityZ1 = em.find(OrderedEntityZ.class, newEntityZ1.getId());
+            if (newEntityZ1 != null) {
+                em.remove(newEntityZ1);
+            }
+            newEntityZ2 = em.find(OrderedEntityZ.class, newEntityZ2.getId());
+            if (newEntityZ2 != null) {
+                em.remove(newEntityZ2);
+            }
+            
             commitTransaction(em);
             closeEntityManager(em);
         }
