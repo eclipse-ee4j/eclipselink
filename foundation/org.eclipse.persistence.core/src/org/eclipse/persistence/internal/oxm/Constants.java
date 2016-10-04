@@ -15,8 +15,6 @@
 package org.eclipse.persistence.internal.oxm;
 
 import java.nio.charset.Charset;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 
 import javax.xml.namespace.QName;
 
@@ -30,7 +28,7 @@ public class Constants {
     public static final String BOOLEAN_STRING_TRUE = "true";
     public static final String CDATA = "CDATA";
     public static final char COLON = ':';
-    private static final String CR;
+    private static String CR;
     public static final String DEFAULT_XML_ENCODING = "UTF-8";
     public static final Charset DEFAULT_CHARSET = Charset.forName(DEFAULT_XML_ENCODING);
     public static final char DOT = '.';
@@ -153,18 +151,6 @@ public class Constants {
     public static final QName SWA_REF_QNAME = new QName(REF_URL, SWA_REF);
     public static final QName EXPECTED_CONTENT_TYPES_QNAME = new QName(XML_MIME_URL, EXPECTED_CONTENT_TYPES);
 
-    static {
-        // bug 2756643
-        CR = PrivilegedAccessHelper.shouldUsePrivilegedAccess() ?
-                AccessController.doPrivileged(new PrivilegedAction<String>() {
-                    @Override
-                    public String run() {
-                        return System.getProperty("line.separator");
-                    }
-                })
-                : System.getProperty("line.separator");
-    }
-
     public static final MediaType APPLICATION_JSON = new MediaType() {
 
         @Override
@@ -198,6 +184,9 @@ public class Constants {
      * characters for carriage return.
      */
     public static String cr() {
+        if (CR == null) {
+            CR = PrivilegedAccessHelper.getSystemProperty("line.separator");
+        }
         return CR;
     }
 

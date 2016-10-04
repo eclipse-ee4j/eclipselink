@@ -21,7 +21,6 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
 import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,6 +28,7 @@ import java.util.Properties;
 
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappingsReader;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedGetSystemProperty;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
@@ -211,14 +211,11 @@ public class XMLMetadataSource extends MetadataSourceAdapter {
             value = properties.get(propertyName);
         }
         if (value == null) {
-            value = PrivilegedAccessHelper.shouldUsePrivilegedAccess() ?
-                    AccessController.doPrivileged(new PrivilegedAction<String>() {
-                        @Override
-                        public String run() {
-                            return System.getProperty(propertyName);
-                        }
-                    })
-                    : System.getProperty(propertyName);
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                value = AccessController.doPrivileged(new PrivilegedGetSystemProperty(propertyName));
+            } else {
+                value = System.getProperty(propertyName);
+            }
         }
         if ((value != null) && (log !=  null)) {
             log.log(SessionLog.FINEST, SessionLog.PROPERTIES, "property_value_specified", new Object[]{propertyName, value});

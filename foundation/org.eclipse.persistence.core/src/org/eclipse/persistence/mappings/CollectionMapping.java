@@ -27,8 +27,6 @@
 package org.eclipse.persistence.mappings;
 
 import java.beans.PropertyChangeListener;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.*;
 
 import org.eclipse.persistence.annotations.OrderCorrectionType;
@@ -337,14 +335,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * ObjectBuilder.
      */
     public Expression buildExpression(Object queryObject, QueryByExamplePolicy policy, Expression expressionBuilder, Map processedObjects, AbstractSession session) {
-        String bypassProperty = PrivilegedAccessHelper.shouldUsePrivilegedAccess() ?
-                AccessController.doPrivileged(new PrivilegedAction<String>() {
-                    @Override
-                    public String run() {
-                        return System.getProperty(SystemProperties.DO_NOT_PROCESS_XTOMANY_FOR_QBE);
-                    }
-                })
-                : System.getProperty(SystemProperties.DO_NOT_PROCESS_XTOMANY_FOR_QBE);
+        String bypassProperty = PrivilegedAccessHelper.getSystemProperty(SystemProperties.DO_NOT_PROCESS_XTOMANY_FOR_QBE);
         if (this.getContainerPolicy().isMapPolicy() ||  (bypassProperty != null && bypassProperty.toLowerCase().equals("true")) ){
             // not supported
             return super.buildExpression(queryObject, policy, expressionBuilder, processedObjects, session);

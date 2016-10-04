@@ -18,7 +18,6 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.security.AccessController;
 import java.text.DateFormat;
 import java.util.Date;
 
@@ -28,7 +27,6 @@ import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.localization.LoggingLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedGetSystemProperty;
 import org.eclipse.persistence.sessions.Session;
 
 /**
@@ -164,10 +162,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * @return The system default log level property value or {@code null} if no such property is set.
      */
     private static String getDefaultLoggingLevelProperty() {
-        return PrivilegedAccessHelper.shouldUsePrivilegedAccess()
-                ? AccessController.doPrivileged(
-                        new PrivilegedGetSystemProperty(PersistenceUnitProperties.LOGGING_LEVEL))
-                : System.getProperty(PersistenceUnitProperties.LOGGING_LEVEL);
+        return PrivilegedAccessHelper.getSystemProperty(PersistenceUnitProperties.LOGGING_LEVEL);
     }
 
     /**

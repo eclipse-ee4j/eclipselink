@@ -14,27 +14,12 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.core.helper;
 
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 
 public class CoreHelper {
 
     /** Store CR string, for some reason \n is not platform independent. */
-    protected final static String CR;
-
-    static {
-        // bug 2756643
-        CR = PrivilegedAccessHelper.shouldUsePrivilegedAccess() ?
-                AccessController.doPrivileged(new PrivilegedAction<String>() {
-                    @Override
-                    public String run() {
-                        return System.getProperty("line.separator");
-                    }
-                })
-                : System.getProperty("line.separator");
-    }
+    protected static String CR = null;
 
     /**
      * Return a string containing the platform-appropriate
@@ -42,6 +27,9 @@ public class CoreHelper {
      */
     public static String cr() {
         // bug 2756643
+        if (CR == null) {
+            CR = PrivilegedAccessHelper.getSystemProperty("line.separator");
+        }
         return CR;
     }
 

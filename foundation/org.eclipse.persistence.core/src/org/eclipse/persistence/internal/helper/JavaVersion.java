@@ -12,12 +12,10 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.helper;
 
-import java.security.AccessController;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedGetSystemProperty;
 
 /**
  * Java version storage class. Used for version numbers retrieved from
@@ -54,10 +52,7 @@ public final class JavaVersion {
      * @return Java specification version {@see String} from JDK system property.
      */
     public static String vmVersionString() {
-        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-            return AccessController.doPrivileged(new PrivilegedGetSystemProperty(VM_VERSION_PROPERTY));
-        }
-        return System.getProperty(VM_VERSION_PROPERTY);
+        return PrivilegedAccessHelper.getSystemProperty(VM_VERSION_PROPERTY);
     }
 
     /**

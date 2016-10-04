@@ -14,8 +14,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.exceptions.i18n;
 
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -33,18 +31,7 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
  * @author: Rick Barkhouse
  */
 public class ExceptionMessageGenerator {
-    private final static String CR;
-
-    static {
-        CR = PrivilegedAccessHelper.shouldUsePrivilegedAccess() ?
-                AccessController.doPrivileged(new PrivilegedAction<String>() {
-                    @Override
-                    public String run() {
-                        return System.getProperty("line.separator");
-                    }
-                })
-                : System.getProperty("line.separator");
-    }
+    private final static String CR = PrivilegedAccessHelper.getSystemProperty("line.separator");
 
     /**
      * Return the loader for loading the resource bundles.

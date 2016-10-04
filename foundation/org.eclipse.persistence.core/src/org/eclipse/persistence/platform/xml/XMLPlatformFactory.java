@@ -15,7 +15,6 @@
 package org.eclipse.persistence.platform.xml;
 
 import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
 
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -57,14 +56,7 @@ public class XMLPlatformFactory {
             return xmlPlatformClass;
         }
 
-        String newXMLPlatformClassName = PrivilegedAccessHelper.shouldUsePrivilegedAccess() ?
-                AccessController.doPrivileged(new PrivilegedAction<String>() {
-                    @Override
-                    public String run() {
-                        return System.getProperty(XML_PLATFORM_PROPERTY);
-                    }
-                })
-                : System.getProperty(XML_PLATFORM_PROPERTY);
+        String newXMLPlatformClassName = PrivilegedAccessHelper.getSystemProperty(XML_PLATFORM_PROPERTY);
         if (null == newXMLPlatformClassName) {
             newXMLPlatformClassName = JAXP_PLATFORM_CLASS_NAME;
         }

@@ -15,8 +15,6 @@
 package org.eclipse.persistence.tools.profiler;
 
 import java.io.StringWriter;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -44,15 +42,7 @@ public class QueryMonitor {
     public static boolean shouldMonitor() {
         if (shouldMonitor == null) {
             shouldMonitor = Boolean.FALSE;
-            String property = PrivilegedAccessHelper.shouldUsePrivilegedAccess() ?
-                    AccessController.doPrivileged(new PrivilegedAction<String>() {
-                        @Override
-                        public String run() {
-                            return System.getProperty("org.eclipse.persistence.querymonitor");
-                        }
-                    })
-                    : System.getProperty("org.eclipse.persistence.querymonitor");
-
+            String property = PrivilegedAccessHelper.getSystemProperty("org.eclipse.persistence.querymonitor");
             if ((property != null) && (property.toUpperCase().equals("TRUE"))) {
                 shouldMonitor = Boolean.TRUE;
             }

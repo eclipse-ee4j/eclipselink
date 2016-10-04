@@ -42,7 +42,7 @@ public class ConcurrencyManager implements Serializable {
 
     public static final Map<Thread, DeferredLockManager> deferredLockManagers = initializeDeferredLockManagers();
 
-    protected static boolean shouldTrackStack = getPropertyRecordStackOnLock() != null;
+    protected static boolean shouldTrackStack = PrivilegedAccessHelper.getSystemProperty(SystemProperties.RECORD_STACK_ON_LOCK) != null;
 
     protected int numberOfReaders;
     protected int depth;

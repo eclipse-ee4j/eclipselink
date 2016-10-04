@@ -18,11 +18,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
 import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.Map;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedGetSystemProperty;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.Project;
 
@@ -109,14 +109,11 @@ public class FileBasedProjectCache implements ProjectCache {
             value = properties.get(propertyName);
         }
         if (value == null) {
-            value = PrivilegedAccessHelper.shouldUsePrivilegedAccess() ?
-                    AccessController.doPrivileged(new PrivilegedAction<String>() {
-                        @Override
-                        public String run() {
-                            return System.getProperty(propertyName);
-                        }
-                    })
-                    : System.getProperty(propertyName);
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                value = AccessController.doPrivileged(new PrivilegedGetSystemProperty(propertyName));
+            } else {
+                value = System.getProperty(propertyName);
+            }
         }
         if ((value != null) && (log !=  null)) {
             log.log(SessionLog.FINEST, SessionLog.PROPERTIES, "property_value_specified", new Object[]{propertyName, value});

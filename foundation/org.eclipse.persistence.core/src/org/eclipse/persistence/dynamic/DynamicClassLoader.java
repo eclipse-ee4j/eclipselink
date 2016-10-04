@@ -17,8 +17,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.dynamic;
 
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 //javase imports
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -214,14 +212,7 @@ public class DynamicClassLoader extends ClassLoader {
             try {
                 byte[] bytes = writer.writeClass(this, className);
                 if (bytes != null) {
-                    String outputPath = PrivilegedAccessHelper.shouldUsePrivilegedAccess() ?
-                            AccessController.doPrivileged(new PrivilegedAction<String>() {
-                                @Override
-                                public String run() {
-                                    return System.getProperty(SystemProperties.WEAVING_OUTPUT_PATH, "");
-                                }
-                            })
-                            : System.getProperty(SystemProperties.WEAVING_OUTPUT_PATH, "");
+                    String outputPath = PrivilegedAccessHelper.getSystemProperty(SystemProperties.WEAVING_OUTPUT_PATH, "");
 
                     if (!outputPath.equals("")) {
                         Helper.outputClassFile(className, bytes, outputPath);

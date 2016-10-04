@@ -26,12 +26,19 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
+import org.eclipse.persistence.platform.server.ServerPlatformBase;
+import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 
 /**
  * INTERNAL:
@@ -50,6 +57,20 @@ public class PrivilegedAccessHelper {
     private static boolean defaultUseDoPrivilegedValue = false;
     private static boolean shouldCheckPrivilegedAccess = true;
     private static boolean shouldUsePrivilegedAccess = false;
+
+    private final static String[] legalProperties = { "file.separator", "java.io.tmpdir", "java.version", "line.separator", "path.separator", "user.dir",
+            "org.eclipse.persistence.fetchgroupmonitor", "org.eclipse.persistence.querymonitor", "SAP_J2EE_Engine_Version",
+            PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML, PersistenceUnitProperties.JAVASE_DB_INTERACTION, 
+            PersistenceUnitProperties.LOGGING_FILE, PersistenceUnitProperties.LOGGING_LEVEL,
+            SystemProperties.ARCHIVE_FACTORY, SystemProperties.DO_NOT_PROCESS_XTOMANY_FOR_QBE, SystemProperties.RECORD_STACK_ON_LOCK,
+            SystemProperties.WEAVING_OUTPUT_PATH, SystemProperties.WEAVING_SHOULD_OVERWRITE, SystemProperties.WEAVING_REFLECTIVE_INTROSPECTION,
+            SystemProperties.DO_NOT_PROCESS_XTOMANY_FOR_QBE,
+            ServerPlatformBase.JMX_REGISTER_RUN_MBEAN_PROPERTY, ServerPlatformBase.JMX_REGISTER_DEV_MBEAN_PROPERTY,
+            XMLPlatformFactory.XML_PLATFORM_PROPERTY};
+    private final static Set<String> legalPropertiesSet = Collections.unmodifiableSet(new HashSet(Arrays.asList(legalProperties)));
+
+    private final static String[] exemptedProperties = { "line.separator" };
+    private final static Set<String> exemptedPropertiesSet = Collections.unmodifiableSet(new HashSet(Arrays.asList(exemptedProperties)));
 
     private static Map<String, Class> primitiveClasses;
 
@@ -360,10 +381,21 @@ public class PrivilegedAccessHelper {
      *         or {@code false} otherwise.
      */
     private static boolean isIllegalProperty(final String key) {
-        return key == null || !(key.startsWith("eclipselink.") || "line.separator".equals(key)
+        return key == null || !(legalPropertiesSet.contains(key) || key.startsWith("eclipselink.")
                 || key.startsWith("javax.persistence.") || key.startsWith("org.eclipse.persistence.")
-                || key.startsWith("persistence.") || key.startsWith("javax.xml.")
-                || PersistenceUnitProperties.JAVASE_DB_INTERACTION.equals(key));
+                || key.startsWith("persistence.") || key.startsWith("javax.xml."));
+    }    
+
+    /**
+     * Vet certain System properties as "safe" enough to override defaultUseDoPrivilegedValue setting.  Reserved
+     * for properties that must be read before the application server runtime environment is known.  Consider
+     * security implications very carefully before adding new system property names to this list.
+     * @param key The name of the {@link System} property.
+     * @return Value of {@code true} if {@code getSystemProperty} is allowed defaultUseDoPrivilegedValue override
+     *         or {@code false} otherwise.
+     */
+    private static boolean isExemptedProperty(final String key) {
+        return key != null && exemptedPropertiesSet.contains(key);
     }
 
     /**
@@ -379,7 +411,7 @@ public class PrivilegedAccessHelper {
             throw new IllegalArgumentException(
                     ExceptionLocalization.buildMessage("unexpect_argument", new Object[] {key}));
         }
-        if (shouldUsePrivilegedAccess()) {
+        if (isExemptedProperty(key) || shouldUsePrivilegedAccess()) {
             return AccessController.doPrivileged(new PrivilegedGetSystemProperty(key));
         } else {
             return System.getProperty(key);
@@ -400,7 +432,7 @@ public class PrivilegedAccessHelper {
             throw new IllegalArgumentException(
                     ExceptionLocalization.buildMessage("unexpect_argument", new Object[] {key}));
         }
-        if (shouldUsePrivilegedAccess()) {
+        if (isExemptedProperty(key) || shouldUsePrivilegedAccess()) {
             return AccessController.doPrivileged(new PrivilegedGetSystemProperty(key, def));
         } else {
             return System.getProperty(key, def);

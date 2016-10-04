@@ -18,8 +18,6 @@ package org.eclipse.persistence.internal.jpa.deployment;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -71,14 +69,7 @@ public abstract class JPAInitializer {
      * Initialize the logging file if it is specified by the system property.
      */
     public static void initializeTopLinkLoggingFile() {
-        String loggingFile = PrivilegedAccessHelper.shouldUsePrivilegedAccess() ?
-                AccessController.doPrivileged(new PrivilegedAction<String>() {
-                    @Override
-                    public String run() {
-                        return System.getProperty(PersistenceUnitProperties.LOGGING_FILE);
-                    }
-                })
-                : System.getProperty(PersistenceUnitProperties.LOGGING_FILE);
+        String loggingFile = PrivilegedAccessHelper.getSystemProperty(PersistenceUnitProperties.LOGGING_FILE);
         try {
             if (loggingFile != null) {
                 AbstractSessionLog.getLog().setWriter(new FileWriter(loggingFile));

@@ -48,6 +48,7 @@ import org.eclipse.persistence.config.TargetServer;
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedGetSystemProperty;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 
@@ -242,14 +243,11 @@ public class PropertiesHandler {
         static String getPropertyValueFromMap(String name, Map m, boolean useSystemAsDefault) {
             String value = (String)m.get(name);
             if (value == null && useSystemAsDefault) {
-                value = PrivilegedAccessHelper.shouldUsePrivilegedAccess() ?
-                        AccessController.doPrivileged(new PrivilegedAction<String>() {
-                            @Override
-                            public String run() {
-                                return System.getProperty(name);
-                            }
-                        })
-                        : System.getProperty(name);
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                    value = AccessController.doPrivileged(new PrivilegedGetSystemProperty(name));
+                } else {
+                    value = System.getProperty(name);
+                }
             }
 
             return value;
