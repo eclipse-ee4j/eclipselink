@@ -18,8 +18,6 @@ package org.eclipse.persistence.internal.jpa.weaving;
 
 // J2SE imports
 import java.lang.instrument.IllegalClassFormatException;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.security.ProtectionDomain;
 import java.util.Map;
 
@@ -92,14 +90,7 @@ public class PersistenceWeaver implements ClassTransformer {
                 ((AbstractSession)session).log(SessionLog.FINEST, SessionLog.WEAVER, "begin_weaving_class", className);
                 ClassReader classReader = new ClassReader(classfileBuffer);
                 ClassWriter classWriter = null;
-                String introspectForHierarchy = PrivilegedAccessHelper.shouldUsePrivilegedAccess() ?
-                        AccessController.doPrivileged(new PrivilegedAction<String>() {
-                            @Override
-                            public String run() {
-                                return System.getProperty(SystemProperties.WEAVING_REFLECTIVE_INTROSPECTION, null);
-                            }
-                        }) 
-                        : System.getProperty(SystemProperties.WEAVING_REFLECTIVE_INTROSPECTION, null);
+                String introspectForHierarchy = PrivilegedAccessHelper.getSystemProperty(SystemProperties.WEAVING_REFLECTIVE_INTROSPECTION, null);
                 if (introspectForHierarchy != null){
                     classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
                 } else {
@@ -114,17 +105,8 @@ public class PersistenceWeaver implements ClassTransformer {
                 }
                 if (classWeaver.weaved) {
                     byte[] bytes = classWriter.toByteArray();
-                    
-                    String outputPath = PrivilegedAccessHelper.shouldUsePrivilegedAccess() ?
-                            AccessController.doPrivileged(new PrivilegedAction<String>() {
-                                @Override
-                                public String run() {
-                                    return System.getProperty(SystemProperties.WEAVING_OUTPUT_PATH, "");
-                                }
-                            }) 
-                            : System.getProperty(SystemProperties.WEAVING_OUTPUT_PATH, "");
-    
-                    if (!outputPath.equals("")) {
+                    String outputPath = PrivilegedAccessHelper.getSystemProperty(SystemProperties.WEAVING_OUTPUT_PATH, "");
+                        if (!outputPath.equals("")) {
                         Helper.outputClassFile(className, bytes, outputPath);
                     }
                     if (classWeaver.weavedPersistenceEntity) {

@@ -17,8 +17,6 @@ package org.eclipse.persistence.logging;
 import java.util.Date;
 import java.text.DateFormat;
 import java.io.*;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
@@ -163,14 +161,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * This is based on the System property "eclipselink.logging.level", or INFO if not set.
      */
     public static int getDefaultLoggingLevel() {
-        String logLevel = PrivilegedAccessHelper.shouldUsePrivilegedAccess() ?
-                AccessController.doPrivileged(new PrivilegedAction<String>() {
-                    @Override
-                    public String run() {
-                        return System.getProperty(PersistenceUnitProperties.LOGGING_LEVEL);
-                    }
-                }) 
-                : System.getProperty(PersistenceUnitProperties.LOGGING_LEVEL);
+        String logLevel = PrivilegedAccessHelper.getSystemProperty(PersistenceUnitProperties.LOGGING_LEVEL);
         return translateStringToLoggingLevel(logLevel);
     }
     

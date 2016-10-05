@@ -14,8 +14,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.tools.profiler;
 
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.*;
 
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -38,14 +36,7 @@ public class FetchGroupMonitor {
     public static boolean shouldMonitor() {
         if (shouldMonitor == null) {
             shouldMonitor = Boolean.FALSE;
-            String property = PrivilegedAccessHelper.shouldUsePrivilegedAccess() ?
-                    AccessController.doPrivileged(new PrivilegedAction<String>() {
-                        @Override
-                        public String run() {
-                            return System.getProperty("org.eclipse.persistence.fetchgroupmonitor");
-                        }
-                    }) 
-                    : System.getProperty("org.eclipse.persistence.fetchgroupmonitor");
+            String property = PrivilegedAccessHelper.getSystemProperty("org.eclipse.persistence.fetchgroupmonitor");
             if ((property != null) && (property.toUpperCase().equals("TRUE"))) {
                 shouldMonitor = Boolean.TRUE;                
             }

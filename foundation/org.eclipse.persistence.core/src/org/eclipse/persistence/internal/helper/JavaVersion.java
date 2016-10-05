@@ -14,8 +14,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.helper;
 
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -57,14 +55,7 @@ public final class JavaVersion {
      * @return Java VM version {@see String} from JDK system property.
      */
     public static String vmVersionString() {
-        return PrivilegedAccessHelper.shouldUsePrivilegedAccess() ?
-                AccessController.doPrivileged(new PrivilegedAction<String>() {
-                    @Override
-                    public String run() {
-                        return System.getProperty(VM_VERSION_PROPERTY);
-                    }
-                }) 
-                : System.getProperty(VM_VERSION_PROPERTY);
+        return PrivilegedAccessHelper.getSystemProperty(VM_VERSION_PROPERTY);
     }
 
     /**

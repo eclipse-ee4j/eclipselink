@@ -15,8 +15,6 @@
 package org.eclipse.persistence.internal.helper;
 
 import java.io.*;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -48,16 +46,9 @@ public class ConcurrencyManager implements Serializable {
     protected volatile transient Thread activeThread;
     public static Map<Thread, DeferredLockManager> deferredLockManagers = initializeDeferredLockManagers();
     protected boolean lockedByMergeManager;
-    
-    protected static boolean shouldTrackStack = PrivilegedAccessHelper.shouldUsePrivilegedAccess() ?
-            (AccessController.doPrivileged(new PrivilegedAction<String>() {
-                @Override
-                public String run() {
-                    return System.getProperty(SystemProperties.RECORD_STACK_ON_LOCK);
-                }
-            }) != null) 
-            : (System.getProperty(SystemProperties.RECORD_STACK_ON_LOCK) != null);
-            
+
+    protected static boolean shouldTrackStack = PrivilegedAccessHelper.getSystemProperty(SystemProperties.RECORD_STACK_ON_LOCK) != null;
+
     protected Exception stack;
 
     /**

@@ -22,7 +22,6 @@
 package org.eclipse.persistence.platform.server;
 
 import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
 import java.sql.SQLException;
 import java.util.concurrent.ExecutorService;
@@ -154,14 +153,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
         this.databaseSession = newDatabaseSession;
         this.setIsCMP(false);
         // Enable users to disable or enable (default) MBean registration
-        String shouldRegisterRuntimeBeanProperty = PrivilegedAccessHelper.shouldUsePrivilegedAccess() ?
-                AccessController.doPrivileged(new PrivilegedAction<String>() {
-                    @Override
-                    public String run() {
-                        return System.getProperty(JMX_REGISTER_RUN_MBEAN_PROPERTY);
-                    }
-                }) 
-                : System.getProperty(JMX_REGISTER_RUN_MBEAN_PROPERTY);
+        String shouldRegisterRuntimeBeanProperty = PrivilegedAccessHelper.getSystemProperty(JMX_REGISTER_RUN_MBEAN_PROPERTY);
         if(null != shouldRegisterRuntimeBeanProperty) {
             if(shouldRegisterRuntimeBeanProperty.toLowerCase().indexOf("false") > -1) {
                 shouldRegisterRuntimeBean = false;
@@ -170,14 +162,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
                 shouldRegisterRuntimeBean = true;
             }
         }
-        String shouldRegisterDevelopmentBeanProperty = PrivilegedAccessHelper.shouldUsePrivilegedAccess() ?
-                AccessController.doPrivileged(new PrivilegedAction<String>() {
-                    @Override
-                    public String run() {
-                        return System.getProperty(JMX_REGISTER_DEV_MBEAN_PROPERTY);
-                    }
-                }) 
-                : System.getProperty(JMX_REGISTER_DEV_MBEAN_PROPERTY);
+        String shouldRegisterDevelopmentBeanProperty = PrivilegedAccessHelper.getSystemProperty(JMX_REGISTER_DEV_MBEAN_PROPERTY);
         if(null != shouldRegisterDevelopmentBeanProperty) {
             if(shouldRegisterDevelopmentBeanProperty.toLowerCase().indexOf("false") > -1) {
                 shouldRegisterDevelopmentBean = false;

@@ -36,7 +36,6 @@ import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -90,7 +89,7 @@ public class Helper extends CoreHelper implements Serializable {
     // Changed static initialization to lazy initialization for bug 2756643
 
     /** Store CR string, for some reason \n is not platform independent. */
-    protected final static String CR;
+    protected static String CR;
 
     /** formatting strings for indenting */
     public static String SPACE = " ";
@@ -136,19 +135,7 @@ public class Helper extends CoreHelper implements Serializable {
 
     private static String defaultStartDatabaseDelimiter = null;
     private static String defaultEndDatabaseDelimiter = null;
-    
-    static {
-        // bug 2756643
-        CR = PrivilegedAccessHelper.shouldUsePrivilegedAccess() ?
-                AccessController.doPrivileged(new PrivilegedAction<String>() {
-                    @Override
-                    public String run() {
-                        return System.getProperty("line.separator");
-                    }
-                }) 
-                : System.getProperty("line.separator");
-    }
-    
+
     /**
      * Return if JDBC date access should be optimized.
      */
@@ -809,7 +796,10 @@ public class Helper extends CoreHelper implements Serializable {
      * Return a string containing the platform-appropriate
      * characters for carriage return.
      */
-    public static String cr() {       
+    public static String cr() {
+        if(CR == null) {
+            CR = PrivilegedAccessHelper.getSystemProperty("line.separator");
+        }
         return CR;
     }
 
@@ -819,15 +809,7 @@ public class Helper extends CoreHelper implements Serializable {
     public static String currentWorkingDirectory() {
         // bug 2756643
         if (CURRENT_WORKING_DIRECTORY == null) {
-            CURRENT_WORKING_DIRECTORY = PrivilegedAccessHelper.shouldUsePrivilegedAccess() ?
-                    AccessController.doPrivileged(new PrivilegedAction<String>() {
-                        @Override
-                        public String run() {
-                            return System.getProperty("user.dir");
-                        }
-                    }) 
-                    : System.getProperty("user.dir");
-                    
+            CURRENT_WORKING_DIRECTORY = PrivilegedAccessHelper.getSystemProperty("user.dir");
         }
         return CURRENT_WORKING_DIRECTORY;
     }
@@ -838,14 +820,7 @@ public class Helper extends CoreHelper implements Serializable {
     public static String tempDirectory() {
         // Bug 2756643
         if (TEMP_DIRECTORY == null) {
-            TEMP_DIRECTORY = PrivilegedAccessHelper.shouldUsePrivilegedAccess() ?
-                    AccessController.doPrivileged(new PrivilegedAction<String>() {
-                        @Override
-                        public String run() {
-                            return System.getProperty("java.io.tmpdir");
-                        }
-                    }) 
-                    : System.getProperty("java.io.tmpdir");
+            TEMP_DIRECTORY = PrivilegedAccessHelper.getSystemProperty("java.io.tmpdir");
         }
         return TEMP_DIRECTORY;
     }
@@ -978,14 +953,7 @@ public class Helper extends CoreHelper implements Serializable {
     public static String fileSeparator() {
         //Bug 2756643
         if (FILE_SEPARATOR == null) {
-            FILE_SEPARATOR = PrivilegedAccessHelper.shouldUsePrivilegedAccess() ?
-                    AccessController.doPrivileged(new PrivilegedAction<String>() {
-                        @Override
-                        public String run() {
-                            return System.getProperty("file.separator");
-                        }
-                    }) 
-                    : System.getProperty("file.separator");
+            FILE_SEPARATOR = PrivilegedAccessHelper.getSystemProperty("file.separator");
         }
         return FILE_SEPARATOR;
     }
@@ -1247,16 +1215,7 @@ public class Helper extends CoreHelper implements Serializable {
             if (!file.exists()) {
                 file.createNewFile();
             } else {
-                String weavingShouldOverwriteProp = PrivilegedAccessHelper.shouldUsePrivilegedAccess() ?
-                        AccessController.doPrivileged(new PrivilegedAction<String>() {
-                            @Override
-                            public String run() {
-                                return System.getProperty(SystemProperties.WEAVING_SHOULD_OVERWRITE, "false");
-                            }
-                        }) 
-                        : System.getProperty(SystemProperties.WEAVING_SHOULD_OVERWRITE, "false");
-                        
-                if (!weavingShouldOverwriteProp.equalsIgnoreCase("true")) {
+                if (!PrivilegedAccessHelper.getSystemProperty(SystemProperties.WEAVING_SHOULD_OVERWRITE, "false").equalsIgnoreCase("true")) {
                     AbstractSessionLog.getLog().log(SessionLog.WARNING,
                             SessionLog.WEAVER, "weaver_not_overwriting",
                             className);
@@ -1283,14 +1242,7 @@ public class Helper extends CoreHelper implements Serializable {
     public static String pathSeparator() {
         // Bug 2756643
         if (PATH_SEPARATOR == null) {
-            PATH_SEPARATOR = PrivilegedAccessHelper.shouldUsePrivilegedAccess() ?
-                    AccessController.doPrivileged(new PrivilegedAction<String>() {
-                        @Override
-                        public String run() {
-                            return System.getProperty("path.separator");
-                        }
-                    }) 
-                    : System.getProperty("path.separator");
+            PATH_SEPARATOR = PrivilegedAccessHelper.getSystemProperty("path.separator");
         }
         return PATH_SEPARATOR;
     }

@@ -14,9 +14,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.platform.server.sap;
 
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-
 import javax.persistence.spi.PersistenceUnitInfo;
 
 import org.eclipse.persistence.internal.helper.JPAClassLoaderHolder;
@@ -58,14 +55,7 @@ public class SAPNetWeaver_7_1_Platform extends ServerPlatformBase {
 
     @Override
     public String getServerNameAndVersion() {
-        String version = PrivilegedAccessHelper.shouldUsePrivilegedAccess() ?
-				AccessController.doPrivileged(new PrivilegedAction<String>() {
-					@Override
-					public String run() {
-						return System.getProperty("SAP_J2EE_Engine_Version");
-					}
-				}) 
-				: System.getProperty("SAP_J2EE_Engine_Version");
+        String version = PrivilegedAccessHelper.getSystemProperty("SAP_J2EE_Engine_Version");
         if (version != null) {
             return version;
         }

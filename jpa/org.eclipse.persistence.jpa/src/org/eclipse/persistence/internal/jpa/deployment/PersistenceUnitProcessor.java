@@ -23,7 +23,6 @@ import java.net.URISyntaxException;
 import java.net.JarURLConnection;
 import java.net.MalformedURLException;
 import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
 import java.util.Enumeration;
 import java.io.IOException;
@@ -294,15 +293,7 @@ public class PersistenceUnitProcessor {
     public static Set<Archive> findPersistenceArchives(ClassLoader loader){
         // allow alternate persistence location to be specified via system property.  This will allow persistence units
         // with alternate persistence xml locations to be weaved
-        String descriptorLocation = PrivilegedAccessHelper.shouldUsePrivilegedAccess() ?
-                AccessController.doPrivileged(new PrivilegedAction<String>() {
-                    @Override
-                    public String run() {
-                        return System.getProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML, PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML_DEFAULT);
-                    }
-                }) 
-                : System.getProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML, PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML_DEFAULT);
-                
+        String descriptorLocation = PrivilegedAccessHelper.getSystemProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML, PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML_DEFAULT);
         return findPersistenceArchives(loader, descriptorLocation);
     }
     
@@ -401,14 +392,7 @@ public class PersistenceUnitProcessor {
     public static Set<SEPersistenceUnitInfo> getPersistenceUnits(ClassLoader loader, Map m, List<URL> jarFileUrls) {
         String descriptorPath = (String) m.get(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML);
         if(descriptorPath == null) {
-            descriptorPath = PrivilegedAccessHelper.shouldUsePrivilegedAccess() ?
-                    AccessController.doPrivileged(new PrivilegedAction<String>() {
-                        @Override
-                        public String run() {
-                            return System.getProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML, PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML_DEFAULT);
-                        }
-                    }) 
-                    : System.getProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML, PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML_DEFAULT);
+            descriptorPath = PrivilegedAccessHelper.getSystemProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML, PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML_DEFAULT);
         }
         Set<Archive> archives = findPersistenceArchives(loader, descriptorPath, jarFileUrls);
         Set<SEPersistenceUnitInfo> puInfos = new HashSet();
@@ -431,15 +415,7 @@ public class PersistenceUnitProcessor {
         }
         
         ArchiveFactory factory = null;
-        String factoryClassName = PrivilegedAccessHelper.shouldUsePrivilegedAccess() ?
-                AccessController.doPrivileged(new PrivilegedAction<String>() {
-                    @Override
-                    public String run() {
-                        return System.getProperty(SystemProperties.ARCHIVE_FACTORY, null);
-                    }
-                }) 
-                : System.getProperty(SystemProperties.ARCHIVE_FACTORY, null);
-        
+        String factoryClassName = PrivilegedAccessHelper.getSystemProperty(SystemProperties.ARCHIVE_FACTORY, null);
         if (factoryClassName == null) {
             return new ArchiveFactoryImpl();
         } else {
