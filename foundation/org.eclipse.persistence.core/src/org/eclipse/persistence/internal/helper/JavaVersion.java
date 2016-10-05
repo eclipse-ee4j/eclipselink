@@ -32,7 +32,7 @@ public final class JavaVersion {
     public static final char PATCH_SEPARATOR = '_';
 
     /** Java VM version system property name. */
-    private static final String VM_VERSION_PROPERTY = "java.specification.version";
+    public static final String VM_VERSION_PROPERTY = "java.specification.version";
 
     /**
      * Java specification version output regular expression pattern.
