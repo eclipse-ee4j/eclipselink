@@ -13,7 +13,7 @@
 
 package org.eclipse.persistence.json.bind.internal.serializer;
 
-import org.eclipse.persistence.json.bind.model.SerializerBindingModel;
+import org.eclipse.persistence.json.bind.model.JsonBindingModel;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -26,7 +26,7 @@ import java.util.Locale;
  */
 public class LocalDateTimeTypeSerializer extends AbstractDateTimeSerializer<LocalDateTime> {
 
-    public LocalDateTimeTypeSerializer(SerializerBindingModel model) {
+    public LocalDateTimeTypeSerializer(JsonBindingModel model) {
         super(LocalDateTime.class, model);
     }
 

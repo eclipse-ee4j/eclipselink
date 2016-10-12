@@ -18,11 +18,12 @@ import org.eclipse.persistence.json.bind.model.ClassModel;
 import org.eclipse.persistence.json.bind.model.JsonBindingModel;
 
 import java.lang.reflect.Type;
+import java.util.Objects;
 
 /**
  * @author Roman Grigoriadi
  */
-public class AbstractSerializerBuilder<T extends AbstractSerializerBuilder, B extends JsonBindingModel> {
+public class AbstractSerializerBuilder<T extends AbstractSerializerBuilder> {
     /**
      * Not null with an exception of a root item.
      */
@@ -30,7 +31,7 @@ public class AbstractSerializerBuilder<T extends AbstractSerializerBuilder, B ex
     /**
      * Model of jsonb binding.
      */
-    protected B model;
+    protected JsonBindingModel model;
     /**
      * In case of unknown object genericType.
      * Null for embedded objects such as collections, or known conversion types.
@@ -45,6 +46,18 @@ public class AbstractSerializerBuilder<T extends AbstractSerializerBuilder, B ex
      * In case of root, or embedded objects such as collections.
      */
     protected Type genericType;
+
+    protected final JsonbContext jsonbContext;
+
+    /**
+     * Crate builder.
+     *
+     * @param jsonbContext not null
+     */
+    public AbstractSerializerBuilder(JsonbContext jsonbContext) {
+        Objects.requireNonNull(jsonbContext);
+        this.jsonbContext = jsonbContext;
+    }
 
     /**
      * Wrapper item for this item.
@@ -61,7 +74,7 @@ public class AbstractSerializerBuilder<T extends AbstractSerializerBuilder, B ex
      * @param model model of a field, not null
      * @return builder instance for call chaining
      */
-    public T withModel(B model) {
+    public T withModel(JsonBindingModel model) {
         this.model = model;
         return (T) this;
     }
@@ -73,9 +86,9 @@ public class AbstractSerializerBuilder<T extends AbstractSerializerBuilder, B ex
      * @return Class model
      */
     protected ClassModel getClassModel(Class<?> rawType) {
-        ClassModel classModel = ProcessingContext.getMappingContext().getClassModel(rawType);
+        ClassModel classModel = jsonbContext.getMappingContext().getClassModel(rawType);
         if (classModel == null) {
-            classModel = ProcessingContext.getMappingContext().getOrCreateClassModel(rawType);
+            classModel = jsonbContext.getMappingContext().getOrCreateClassModel(rawType);
         }
         return classModel;
     }
@@ -92,7 +105,7 @@ public class AbstractSerializerBuilder<T extends AbstractSerializerBuilder, B ex
      * Model of a for underlying instance. In case model is present, instance type is inferred from it.
      * @return model of a field
      */
-    public B getModel() {
+    public JsonBindingModel getModel() {
         return model;
     }
 
@@ -117,18 +130,21 @@ public class AbstractSerializerBuilder<T extends AbstractSerializerBuilder, B ex
     /**
      * Type for underlying instance to be created from.
      * In case of type variable or wildcard, will be resolved recursively from parent items.
+     *
      * @param type type of instance not null
      * @return builder instance for call chaining
      */
     public T withType(Type type) {
-        this.genericType = unwrapAnonymous(type);
+        this.genericType = type;
         return (T) this;
     }
 
-    private Type unwrapAnonymous(Type type) {
-        if (type instanceof Class<?> && ((Class)type).isAnonymousClass()) {
-            return ((Class) type).getGenericSuperclass();
-        }
-        return type;
+    /**
+     * Jsonb runtime context.
+     *
+     * @return jsonb context
+     */
+    public JsonbContext getJsonbContext() {
+        return jsonbContext;
     }
 }

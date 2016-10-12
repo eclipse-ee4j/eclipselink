@@ -69,7 +69,7 @@ public class JsonbPropertyTest {
             clashCommand.run();
             fail();
         } catch (Exception e) {
-            assertTrue(e.getMessage().startsWith("Property pojoNameCollision clashes with property pojoName"));
+            assertTrue(e.getMessage().startsWith("Property pojoName clashes with property pojoNameCollision"));
         }
     }
 

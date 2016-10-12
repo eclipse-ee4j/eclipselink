@@ -13,15 +13,15 @@
 
 package org.eclipse.persistence.json.bind.internal.serializer;
 
+import org.eclipse.persistence.json.bind.internal.Marshaller;
 import org.eclipse.persistence.json.bind.internal.adapter.AdapterBinding;
 import org.eclipse.persistence.json.bind.internal.properties.MessageKeys;
 import org.eclipse.persistence.json.bind.internal.properties.Messages;
 import org.eclipse.persistence.json.bind.internal.unmarshaller.CurrentItem;
-import org.eclipse.persistence.json.bind.internal.unmarshaller.DefaultCustomization;
 import org.eclipse.persistence.json.bind.model.ClassModel;
 import org.eclipse.persistence.json.bind.model.Customization;
 import org.eclipse.persistence.json.bind.model.JsonBindingModel;
-import org.eclipse.persistence.json.bind.model.SerializerBindingModel;
+import org.eclipse.persistence.json.bind.model.JsonContext;
 
 import javax.json.bind.JsonbException;
 import javax.json.bind.adapter.JsonbAdapter;
@@ -37,29 +37,29 @@ import java.lang.reflect.Type;
  */
 public class AdaptedObjectSerializer<T, A> implements CurrentItem<T>, JsonbSerializer<T> {
 
-    private final static class AdaptedObjectSerializerModel implements SerializerBindingModel {
+    private final static class AdaptedObjectSerializerModel implements JsonBindingModel {
 
-        private final SerializerBindingModel wrapperSerializerModel;
+        private final JsonBindingModel wrapperSerializerModel;
 
         private final Type adaptedType;
 
-        public AdaptedObjectSerializerModel(SerializerBindingModel wrapperSerializerModel, Type adaptedType) {
+        public AdaptedObjectSerializerModel(JsonBindingModel wrapperSerializerModel, Type adaptedType) {
             this.wrapperSerializerModel = wrapperSerializerModel;
             this.adaptedType = adaptedType;
         }
 
         @Override
-        public String getJsonWriteName() {
-            return wrapperSerializerModel.getJsonWriteName();
+        public String getWriteName() {
+            return wrapperSerializerModel.getWriteName();
         }
 
         /**
          * Array context if root.
          */
         @Override
-        public Context getContext() {
+        public JsonContext getContext() {
             return wrapperSerializerModel != null ?
-                    wrapperSerializerModel.getContext() : Context.JSON_ARRAY;
+                    wrapperSerializerModel.getContext() : JsonContext.JSON_ARRAY;
         }
 
         /**
@@ -68,7 +68,7 @@ public class AdaptedObjectSerializer<T, A> implements CurrentItem<T>, JsonbSeria
         @Override
         public Customization getCustomization() {
             return wrapperSerializerModel != null ?
-            wrapperSerializerModel.getCustomization() : new DefaultCustomization();
+            wrapperSerializerModel.getCustomization() : null;
         }
 
 
@@ -78,12 +78,12 @@ public class AdaptedObjectSerializer<T, A> implements CurrentItem<T>, JsonbSeria
         }
     }
 
-    private final SerializerBindingModel model;
+    private final JsonBindingModel model;
 
     private final AdapterBinding adapterInfo;
 
-    public AdaptedObjectSerializer(SerializerBuilder builder, AdapterBinding  adapter) {
-        this.model = new AdaptedObjectSerializerModel(builder.getModel(), adapter.getToType());
+    public AdaptedObjectSerializer(JsonBindingModel model, AdapterBinding  adapter) {
+        this.model = new AdaptedObjectSerializerModel(model, adapter.getToType());
         this.adapterInfo = adapter;
     }
 
@@ -92,12 +92,22 @@ public class AdaptedObjectSerializer<T, A> implements CurrentItem<T>, JsonbSeria
         try {
             final JsonbAdapter<T, A> adapter = (JsonbAdapter<T, A>) adapterInfo.getAdapter();
             A adapted = adapter.adaptToJson(obj);
-            final JsonbSerializer<A> serializer = (JsonbSerializer<A>) new SerializerBuilder().withObjectClass(adapted.getClass()).withModel(model).withWrapper(this).build();
+            final JsonbSerializer<A> serializer = resolveSerializer((Marshaller) ctx, adapted);
             serializer.serialize(adapted, generator, ctx);
         } catch (Exception e) {
             throw new JsonbException(Messages.getMessage(MessageKeys.ADAPTER_EXCEPTION, adapterInfo.getBindingType(), adapterInfo.getToType(), adapterInfo.getAdapter().getClass()), e);
         }
     }
+
+    @SuppressWarnings("unchekced")
+    private JsonbSerializer<A> resolveSerializer(Marshaller ctx, A adapted) {
+        final ContainerSerializerProvider cached = ctx.getMappingContext().getSerializerProvider(adapted.getClass());
+        if (cached != null) {
+            return (JsonbSerializer<A>) cached.provideSerializer(this, adapted.getClass(), null, model);
+        }
+        return (JsonbSerializer<A>) new SerializerBuilder(ctx.getJsonbContext()).withObjectClass(adapted.getClass()).withModel(model).withWrapper(this).build();
+    }
+
 
     /**
      * Class model containing property for this item.

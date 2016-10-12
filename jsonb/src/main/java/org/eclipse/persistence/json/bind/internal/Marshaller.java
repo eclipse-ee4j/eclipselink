@@ -12,18 +12,20 @@
  ******************************************************************************/
 package org.eclipse.persistence.json.bind.internal;
 
+import org.eclipse.persistence.json.bind.internal.serializer.ContainerSerializerProvider;
 import org.eclipse.persistence.json.bind.internal.serializer.SerializerBuilder;
-import org.eclipse.persistence.json.bind.internal.serializer.SerializerContainerModel;
-import org.eclipse.persistence.json.bind.internal.unmarshaller.CurrentItem;
-import org.eclipse.persistence.json.bind.internal.unmarshaller.DefaultCustomization;
-import org.eclipse.persistence.json.bind.model.SerializerBindingModel;
+import org.eclipse.persistence.json.bind.internal.unmarshaller.ContainerModel;
+import org.eclipse.persistence.json.bind.model.JsonBindingModel;
+import org.eclipse.persistence.json.bind.model.JsonContext;
 
+import javax.json.bind.JsonbException;
 import javax.json.bind.serializer.JsonbSerializer;
 import javax.json.bind.serializer.SerializationContext;
+import javax.json.stream.JsonGenerationException;
 import javax.json.stream.JsonGenerator;
 import java.lang.reflect.Type;
 import java.util.Objects;
-import java.util.Optional;
+import java.util.logging.Logger;
 
 /**
  * JSONB marshaller. Created each time marshalling operation called.
@@ -33,9 +35,9 @@ import java.util.Optional;
  */
 public class Marshaller extends ProcessingContext implements SerializationContext {
 
-    private Optional<Type> runtimeType;
+    private static final Logger logger = Logger.getLogger(Marshaller.class.getName());
 
-    private CurrentItem<?> current;
+    private Type runtimeType;
 
     /**
      * Creates Marshaller for generation to String.
@@ -45,7 +47,7 @@ public class Marshaller extends ProcessingContext implements SerializationContex
      */
     public Marshaller(JsonbContext jsonbContext, Type rootRuntimeType) {
         super(jsonbContext);
-        this.runtimeType = Optional.of(rootRuntimeType);
+        this.runtimeType = rootRuntimeType;
     }
 
     /**
@@ -55,7 +57,7 @@ public class Marshaller extends ProcessingContext implements SerializationContex
      */
     public Marshaller(JsonbContext jsonbContext) {
         super(jsonbContext);
-        this.runtimeType = Optional.empty();
+        this.runtimeType = null;
     }
 
     /**
@@ -65,40 +67,50 @@ public class Marshaller extends ProcessingContext implements SerializationContex
      * @param jsonGenerator generator to use
      */
     public void marshall(Object object, JsonGenerator jsonGenerator) {
-        new JsonbContextCommand<Void>() {
-            @Override
-            protected Void doInProcessingContext() {
-                final SerializerContainerModel model = new SerializerContainerModel(runtimeType.orElseGet(()->object.getClass()), new DefaultCustomization(), SerializerBindingModel.Context.ROOT, null);
-                serializeRoot(object, jsonGenerator, model);
+        try {
+            //TODO remove default customization
+            final ContainerModel model = new ContainerModel(runtimeType != null ? runtimeType : object.getClass(), null, JsonContext.ROOT, null);
+            serializeRoot(object, jsonGenerator, model);
+        } catch (JsonbException e) {
+            logger.severe(e.getMessage());
+            throw e;
+        } finally {
+            try {
                 jsonGenerator.close();
-                return null;
-    }
-        }.execute(this);
+            } catch (JsonGenerationException jge) {
+                logger.severe(jge.getMessage());
+            }
+        }
     }
 
             @Override
     public <T> void serialize(String key, T object, JsonGenerator generator) {
         Objects.requireNonNull(key);
         Objects.requireNonNull(object);
-        final SerializerContainerModel model = new SerializerContainerModel(object.getClass(), new DefaultCustomization(), ((SerializerBindingModel) current.getWrapperModel()).getContext(), key);
+        final ContainerModel model = new ContainerModel(object.getClass(), null, JsonContext.JSON_OBJECT, key);
         serializeRoot(object, generator, model);
     }
 
     @Override
     public <T> void serialize(T object, JsonGenerator generator) {
         Objects.requireNonNull(object);
-        final SerializerContainerModel model = new SerializerContainerModel(object.getClass(), new DefaultCustomization(), ((SerializerBindingModel) current.getWrapperModel()).getContext(), null);
+        final ContainerModel model = new ContainerModel(object.getClass(), null, JsonContext.JSON_ARRAY, null);
         serializeRoot(object, generator, model);
     }
 
     @SuppressWarnings("unchecked")
-    public <T> void serializeRoot(T root, JsonGenerator generator, SerializerBindingModel model) {
-        final JsonbSerializer<T> rootSerializer = (JsonbSerializer<T>) new SerializerBuilder().withObjectClass(root.getClass())
-                .withType(runtimeType.orElseGet(()->root.getClass())).withModel(model).withWrapper(current).build();
+    public <T> void serializeRoot(T root, JsonGenerator generator, JsonBindingModel model) {
+        final JsonbSerializer<T> rootSerializer = (JsonbSerializer<T>) getRootSerializer(root.getClass(), model);
         rootSerializer.serialize(root, generator, this);
     }
 
-    public void setCurrent(CurrentItem<?> serializer) {
-        this.current = serializer;
+    private JsonbSerializer<?> getRootSerializer(Class<?> rootClazz, JsonBindingModel model) {
+        final ContainerSerializerProvider serializerProvider = getMappingContext().getSerializerProvider(rootClazz);
+        if (serializerProvider != null) {
+            return serializerProvider.provideSerializer(null, runtimeType, getMappingContext().getClassModel(rootClazz), model);
+        }
+        return new SerializerBuilder(jsonbContext).withObjectClass(rootClazz)
+                .withType(model.getType()).withModel(model).build();
     }
+
 }

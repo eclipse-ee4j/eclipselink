@@ -14,7 +14,7 @@ package org.eclipse.persistence.json.bind.internal;
 
 import org.eclipse.persistence.json.bind.internal.properties.MessageKeys;
 import org.eclipse.persistence.json.bind.internal.properties.Messages;
-import org.eclipse.persistence.json.bind.internal.unmarshaller.AbstractDeserializer;
+import org.eclipse.persistence.json.bind.internal.unmarshaller.AbstractItem;
 import org.eclipse.persistence.json.bind.internal.unmarshaller.EmbeddedItem;
 import org.eclipse.persistence.json.bind.internal.unmarshaller.ResolvedParameterizedType;
 
@@ -76,7 +76,7 @@ public class ReflectionUtils {
 
     /**
      * Get a raw type of any type.
-     * If type is a {@link TypeVariable} recursively search {@link AbstractDeserializer} for resolution of typevar.
+     * If type is a {@link TypeVariable} recursively search {@link AbstractItem} for resolution of typevar.
      * If type is a {@link WildcardType} find most specific upper / lower bound, which can be used. If most specific
      * bound is a {@link TypeVariable}, perform typevar resolution.
      *
@@ -96,7 +96,7 @@ public class ReflectionUtils {
 
     /**
      * Resolve a type by item.
-     * If type is a {@link TypeVariable} recursively search {@link AbstractDeserializer} for resolution of typevar.
+     * If type is a {@link TypeVariable} recursively search {@link AbstractItem} for resolution of typevar.
      * If type is a {@link WildcardType} find most specific upper / lower bound, which can be used. If most specific
      * bound is a {@link TypeVariable}, perform typevar resolution.
      *
@@ -221,6 +221,25 @@ public class ReflectionUtils {
         }
         //TODO messages
         throw new JsonbException(String.format("Type: %s does not implement a parametrized type interface", parameterizedInterface));
+    }
+
+    /**
+     * Check if type needs resolution. If type is a class or a parametrized type with all type arguments as classes
+     * than it is considered resolved. If any of types is type variable or wildcard type is not resolved.
+     *
+     * @param type type to check.
+     * @return true if resolved
+     */
+    public static boolean isResolvedType(Type type) {
+        if (type instanceof ParameterizedType) {
+            for(Type typeArg : ((ParameterizedType)type).getActualTypeArguments()) {
+                if (!isResolvedType(typeArg)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return type instanceof Class<?>;
     }
 
     private static ParameterizedType findParameterizedSuperclass(Type type) {

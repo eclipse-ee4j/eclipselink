@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.json.bind.defaultmapping.typeConvertors;
 
+import org.eclipse.persistence.json.bind.TestTypeToken;
 import org.eclipse.persistence.json.bind.defaultmapping.generics.model.ScalarValueWrapper;
 import org.eclipse.persistence.json.bind.defaultmapping.typeConvertors.model.ByteArrayWrapper;
 import org.eclipse.persistence.json.bind.internal.JsonBindingBuilder;
@@ -39,7 +40,7 @@ public class DefaultSerializersTest {
     public void testCharacter() {
         final String json = "{\"value\":\"\uFFFF\"}";
         assertEquals(json, jsonb.toJson(new ScalarValueWrapper<>('\uFFFF')));
-        ScalarValueWrapper<Character> result = jsonb.fromJson(json, new ScalarValueWrapper<Character>() {}.getClass());
+        ScalarValueWrapper<Character> result = jsonb.fromJson(json, new TestTypeToken<ScalarValueWrapper<Character>>(){}.getType());
         assertEquals((Character)'\uFFFF', result.getValue());
     }
 

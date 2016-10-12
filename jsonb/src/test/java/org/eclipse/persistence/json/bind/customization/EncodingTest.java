@@ -13,6 +13,7 @@
 
 package org.eclipse.persistence.json.bind.customization;
 
+import org.eclipse.persistence.json.bind.TestTypeToken;
 import org.junit.Test;
 
 import javax.json.bind.Jsonb;
@@ -89,7 +90,7 @@ public class EncodingTest {
         String json = diacriticsToJsonArray(input);
         logger.finest("JSON for unmarshaller: "+json);
         InputStream bis = new ByteArrayInputStream(json.getBytes(encoding));
-        ArrayList<String> result = jsonb.fromJson(bis, new ArrayList<String>() {}.getClass());
+        ArrayList<String> result = jsonb.fromJson(bis, new TestTypeToken<ArrayList<String>>(){}.getType());
         assertArrayEquals(input, result.toArray(new String[result.size()]));
     }
 

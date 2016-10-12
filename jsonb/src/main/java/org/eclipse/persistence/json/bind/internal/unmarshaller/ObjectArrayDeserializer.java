@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.json.bind.internal.unmarshaller;
 
+import org.eclipse.persistence.json.bind.internal.Unmarshaller;
+
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +40,7 @@ public class ObjectArrayDeserializer<T> extends AbstractArrayDeserializer<T[]> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public T[] getInstance() {
+    public T[] getInstance(Unmarshaller unmarshaller) {
         if (arrayInstance == null || arrayInstance.length != items.size()) {
             arrayInstance = (T[]) Array.newInstance(componentClass, items.size());
         }

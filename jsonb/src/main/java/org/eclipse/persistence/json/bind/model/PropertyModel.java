@@ -13,8 +13,17 @@
 package org.eclipse.persistence.json.bind.model;
 
 import org.eclipse.persistence.json.bind.internal.AnnotationIntrospector;
-import org.eclipse.persistence.json.bind.internal.ProcessingContext;
+import org.eclipse.persistence.json.bind.internal.JsonbContext;
+import org.eclipse.persistence.json.bind.internal.ReflectionUtils;
+import org.eclipse.persistence.json.bind.internal.adapter.AdapterBinding;
+import org.eclipse.persistence.json.bind.internal.adapter.SerializerBinding;
+import org.eclipse.persistence.json.bind.internal.serializer.AdaptedObjectSerializer;
+import org.eclipse.persistence.json.bind.internal.serializer.DefaultSerializers;
+import org.eclipse.persistence.json.bind.internal.serializer.SerializerProviderWrapper;
+import org.eclipse.persistence.json.bind.internal.serializer.UserSerializerSerializer;
 
+import javax.json.bind.config.PropertyNamingStrategy;
+import javax.json.bind.serializer.JsonbSerializer;
 import java.lang.reflect.Type;
 import java.util.Objects;
 import java.util.Optional;
@@ -26,12 +35,22 @@ import java.util.Optional;
  * @author Dmitry Kornilov
  * @author Roman Grigoriadi
  */
-public class PropertyModel implements SerializerBindingModel, JsonBindingModel, Comparable<PropertyModel> {
+public class PropertyModel implements JsonBindingModel, Comparable<PropertyModel> {
 
     /**
-     * Field propertyName as in class.
+     * Field propertyName as in class by java bean convention.
      */
     private final String propertyName;
+
+    /**
+     * Calculated name to be used when reading json document.
+     */
+    private final String readName;
+
+    /**
+     * Calculated name to be used when writing json document.
+     */
+    private final String writeName;
 
     /**
      * Field propertyType.
@@ -50,21 +69,75 @@ public class PropertyModel implements SerializerBindingModel, JsonBindingModel, 
 
     private final PropertyValuePropagation propagation;
 
+    private final JsonbSerializer<?> propertySerializer;
+
+    /**
+     * Flag to cache serializer. If type is not resolved (TypeVariable or ParameterizedType containing TypeVariables)
+     * Serializer / Adapter caching is not possible.
+     */
+    private final boolean resolvedType;
+
     /**
      * Creates instance.
      * @param classModel classModel of declaring class.
      * @param property javabean like property to model.
      */
-    public PropertyModel(ClassModel classModel, Property property) {
+    public PropertyModel(ClassModel classModel, Property property, JsonbContext jsonbContext) {
         this.classModel = classModel;
         this.propertyName = property.getName();
         this.propertyType = property.getPropertyType();
-        this.propagation = PropertyValuePropagation.createInstance(property);
-        this.customization = introspectCustomization(property);
+        this.propagation = PropertyValuePropagation.createInstance(property, jsonbContext);
+        this.customization = introspectCustomization(property, jsonbContext);
+        this.readName = calculateReadWriteName(customization.getJsonReadName(), jsonbContext.getPropertyNamingStrategy());
+        this.writeName = calculateReadWriteName(customization.getJsonWriteName(), jsonbContext.getPropertyNamingStrategy());
+        this.propertySerializer = resolveCachedSerializer();
+        this.resolvedType = ReflectionUtils.isResolvedType(propertyType);
     }
 
-    private PropertyCustomization introspectCustomization(Property property) {
-        final AnnotationIntrospector introspector = AnnotationIntrospector.getInstance();
+
+    /**
+     * Try to cache serializer for this bean property. Only if type cannot be changed during runtime.
+     *
+     * @return serializer instance to be cached
+     */
+    private JsonbSerializer<?> resolveCachedSerializer() {
+        if (!ReflectionUtils.isResolvedType(propertyType)) {
+            return null;
+        }
+        if (customization.getAdapterBinding() != null) {
+            return new AdaptedObjectSerializer<>(this, customization.getAdapterBinding());
+        }
+        if (customization.getSerializerBinding() != null) {
+            return new UserSerializerSerializer<>(this, customization.getSerializerBinding().getJsonbSerializer());
+        }
+
+        final Class<?> propertyRawType = ReflectionUtils.getRawType(propertyType);
+        final Optional<SerializerProviderWrapper> valueSerializerProvider = DefaultSerializers.getInstance().findValueSerializerProvider(propertyRawType);
+        if (valueSerializerProvider.isPresent()) {
+            return valueSerializerProvider.get().getSerializerProvider().provideSerializer(this);
+        }
+
+        return null;
+    }
+
+    private AdapterBinding getUserAdapterBinding(Property property, JsonbContext jsonbContext) {
+        final AdapterBinding adapterBinding = jsonbContext.getAnnotationIntrospector().getAdapterBinding(property);
+        if (adapterBinding != null) {
+            return adapterBinding;
+        }
+        return jsonbContext.getComponentMatcher().getAdapterBinding(propertyType, null).orElse(null);
+    }
+
+    private SerializerBinding<?> getUserSerializerBinding(Property property, JsonbContext jsonbContext) {
+        final SerializerBinding serializerBinding = jsonbContext.getAnnotationIntrospector().getSerializerBinding(property);
+        if (serializerBinding != null) {
+            return serializerBinding;
+        }
+        return jsonbContext.getComponentMatcher().getSerialzierBinding(propertyType, null).orElse(null);
+    }
+
+    private PropertyCustomization introspectCustomization(Property property, JsonbContext jsonbContext) {
+        final AnnotationIntrospector introspector = jsonbContext.getAnnotationIntrospector();
         final CustomizationBuilder builder = new CustomizationBuilder();
         //drop all other annotations for transient properties
         if (introspector.isTransient(property)) {
@@ -75,8 +148,8 @@ public class PropertyModel implements SerializerBindingModel, JsonBindingModel, 
         builder.setJsonWriteName(introspector.getJsonbPropertyJsonWriteName(property));
         builder.setNillable(classModel.getClassCustomization().isNillable()
                 || introspector.isPropertyNillable(property));
-        builder.setAdapterInfo(introspector.getAdapterBinding(property));
-        builder.setSerializerBinding(introspector.getSerializerBinding(property));
+        builder.setAdapterInfo(getUserAdapterBinding(property, jsonbContext));
+        builder.setSerializerBinding(getUserSerializerBinding(property, jsonbContext));
         builder.setDeserializerBinding(introspector.getDeserializerBinding(property));
         builder.setDateFormatter(introspector.getJsonbDateFormat(property));
         builder.setNumberFormat(introspector.getJsonbNumberFormat(property));
@@ -192,25 +265,30 @@ public class PropertyModel implements SerializerBindingModel, JsonBindingModel, 
         return Objects.hash(propertyName);
     }
 
-
     @Override
-    public String getJsonWriteName() {
-        return getWriteName();
+    public JsonContext getContext() {
+        return JsonContext.JSON_OBJECT;
     }
-
-    @Override
-    public Context getContext() {
-        return Context.JSON_OBJECT;
-    }
-
 
     public String getReadName() {
-        final Optional<String> jsonReadName = Optional.ofNullable(customization.getJsonReadName());
-        return jsonReadName.orElseGet(() -> ProcessingContext.getJsonbContext().getPropertyNamingStrategy().translateName(getPropertyName()));
+        return readName;
     }
 
+    @Override
     public String getWriteName() {
-        final Optional<String> jsonWriteName = Optional.ofNullable(customization.getJsonWriteName());
-        return jsonWriteName.orElseGet(() -> ProcessingContext.getJsonbContext().getPropertyNamingStrategy().translateName(getPropertyName()));
+        return writeName;
+    }
+
+    public JsonbSerializer<?> getPropertySerializer() {
+        return propertySerializer;
+    }
+
+    /**
+     * If customized by JsonbPropertyAnnotation, than is used, otherwise use strategy to translate.
+     * Since this is cached for performance reasons strategy has to be consistent
+     * with calculated values for same input.
+     */
+    private String calculateReadWriteName(String readWriteName, PropertyNamingStrategy strategy) {
+        return readWriteName != null ? readWriteName : strategy.translateName(propertyName);
     }
 }

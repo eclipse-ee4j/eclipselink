@@ -15,7 +15,7 @@ package org.eclipse.persistence.json.bind.internal.serializer;
 
 import org.eclipse.persistence.json.bind.internal.properties.MessageKeys;
 import org.eclipse.persistence.json.bind.internal.properties.Messages;
-import org.eclipse.persistence.json.bind.model.SerializerBindingModel;
+import org.eclipse.persistence.json.bind.model.JsonBindingModel;
 
 import javax.json.bind.JsonbException;
 import java.time.Instant;
@@ -29,7 +29,7 @@ import java.util.Locale;
 public class LocalTimeTypeSerializer extends AbstractDateTimeSerializer<LocalTime> {
 
 
-    public LocalTimeTypeSerializer(SerializerBindingModel model) {
+    public LocalTimeTypeSerializer(JsonBindingModel model) {
         super(LocalTime.class, model);
     }
 

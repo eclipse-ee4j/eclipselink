@@ -14,21 +14,21 @@
 package org.eclipse.persistence.json.bind.internal;
 
 import org.eclipse.persistence.json.bind.internal.serializer.SerializerBuilder;
-import org.eclipse.persistence.json.bind.internal.unmarshaller.AbstractDeserializer;
-import org.eclipse.persistence.json.bind.model.SerializerBindingModel;
+import org.eclipse.persistence.json.bind.internal.unmarshaller.AbstractItem;
+import org.eclipse.persistence.json.bind.internal.unmarshaller.CurrentItem;
+import org.eclipse.persistence.json.bind.model.ClassModel;
+import org.eclipse.persistence.json.bind.model.JsonBindingModel;
+import org.eclipse.persistence.json.bind.model.JsonContext;
 
 import javax.json.bind.serializer.JsonbSerializer;
 import javax.json.bind.serializer.SerializationContext;
 import javax.json.stream.JsonGenerator;
-import java.util.Optional;
-import java.util.OptionalDouble;
-import java.util.OptionalInt;
-import java.util.OptionalLong;
+import java.lang.reflect.Type;
 
 /**
  * @author Roman Grigoriadi
  */
-public abstract class AbstractContainerSerializer<T> extends AbstractDeserializer<T> implements JsonbSerializer<T> {
+public abstract class AbstractContainerSerializer<T> extends AbstractItem<T> implements JsonbSerializer<T> {
     /**
      * Create instance of current item with its builder.
      *
@@ -38,18 +38,19 @@ public abstract class AbstractContainerSerializer<T> extends AbstractDeserialize
         super(builder);
     }
 
+    public AbstractContainerSerializer(CurrentItem<?> wrapper, Type runtimeType, ClassModel classModel, JsonBindingModel wrapperModel) {
+        super(wrapper, runtimeType, classModel, wrapperModel);
+    }
+
     @Override
     public final void serialize(T obj, JsonGenerator generator, SerializationContext ctx) {
-        Marshaller marshaller = (Marshaller) ctx;
-        marshaller.setCurrent(this);
-        if (((SerializerBindingModel) getWrapperModel()).getContext() == SerializerBindingModel.Context.JSON_OBJECT) {
-            writeStart(((SerializerBindingModel) getWrapperModel()).getJsonWriteName(), generator);
+        if (getWrapperModel().getContext() == JsonContext.JSON_OBJECT) {
+            writeStart(getWrapperModel().getWriteName(), generator);
         } else {
             writeStart(generator);
         }
         serializeInternal(obj, generator, ctx);
-        generator.writeEnd();
-        marshaller.setCurrent(getWrapper());
+        writeEnd(generator);
     }
 
     protected abstract void serializeInternal(T obj, JsonGenerator generator, SerializationContext ctx);
@@ -60,22 +61,17 @@ public abstract class AbstractContainerSerializer<T> extends AbstractDeserialize
     protected abstract void writeStart(JsonGenerator generator);
 
     /**
+     * Writes end for object or array.
+     */
+    protected void writeEnd(JsonGenerator generator) {
+        generator.writeEnd();
+    }
+
+    /**
      * Write start object or start array with key.
      * @param key json key name
      */
     protected abstract void writeStart(String key, JsonGenerator generator);
-
-    /**
-     * True if object is instance of Optional and is empty.
-     * @param value value to check
-     * @return true if optional and empty
-     */
-    protected boolean isEmptyOptional(Object value) {
-        return value instanceof Optional<?> && !((Optional<?>) value).isPresent()
-                || value instanceof OptionalInt && !((OptionalInt) value).isPresent()
-                || value instanceof OptionalLong && !((OptionalLong) value).isPresent()
-                || value instanceof OptionalDouble && !((OptionalDouble) value).isPresent();
-    }
 
     protected <X> void serializerCaptor(JsonbSerializer<?> serializer, X object, JsonGenerator generator, SerializationContext ctx) {
         ((JsonbSerializer<X>) serializer).serialize(object, generator, ctx);

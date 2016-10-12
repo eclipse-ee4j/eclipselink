@@ -13,8 +13,9 @@
 
 package org.eclipse.persistence.json.bind.internal.serializer;
 
-import org.eclipse.persistence.json.bind.internal.ProcessingContext;
-import org.eclipse.persistence.json.bind.model.SerializerBindingModel;
+import org.eclipse.persistence.json.bind.internal.JsonbContext;
+import org.eclipse.persistence.json.bind.internal.Marshaller;
+import org.eclipse.persistence.json.bind.model.JsonBindingModel;
 
 import javax.json.stream.JsonGenerator;
 import java.text.DecimalFormat;
@@ -28,13 +29,13 @@ import java.util.function.Consumer;
  */
 public abstract class AbstractNumberSerializer<T extends Number> extends AbstractValueTypeSerializer<T> {
 
-    public AbstractNumberSerializer(Class<T> clazz, SerializerBindingModel model) {
-        super(clazz, model);
+    public AbstractNumberSerializer(Class<T> clazz, JsonBindingModel model) {
+        super(model);
     }
 
     @Override
-    protected final void serialize(T obj, JsonGenerator generator, String key) {
-        if (!serializeFormatted(obj, formatted -> generator.write(key, formatted))) {
+    protected final void serialize(T obj, JsonGenerator generator, String key, Marshaller marshaller) {
+        if (!serializeFormatted(obj, formatted -> generator.write(key, formatted), marshaller.getJsonbContext())) {
             serializeNonFormatted(obj, generator, key);
         }
     }
@@ -49,8 +50,8 @@ public abstract class AbstractNumberSerializer<T extends Number> extends Abstrac
 
 
     @Override
-    protected void serialize(T obj, JsonGenerator generator) {
-        if (!serializeFormatted(obj, generator::write)) {
+    protected void serialize(T obj, JsonGenerator generator, Marshaller marshaller) {
+        if (!serializeFormatted(obj, generator::write, marshaller.getJsonbContext())) {
             serializeNonFormatted(obj, generator);
         }
     }
@@ -62,11 +63,11 @@ public abstract class AbstractNumberSerializer<T extends Number> extends Abstrac
      */
     protected abstract void serializeNonFormatted(T obj, JsonGenerator generator);
 
-    private boolean serializeFormatted(T obj, Consumer<String> formattedConsumer) {
+    private boolean serializeFormatted(T obj, Consumer<String> formattedConsumer, JsonbContext jsonbContext) {
         final JsonbNumberFormatter numberFormat = model.getCustomization().getNumberFormat();
         if (numberFormat != null) {
             //TODO perf consider synchronizing on format instance or per thread cache.
-            final NumberFormat format = NumberFormat.getInstance(ProcessingContext.getJsonbContext().getLocale(numberFormat.getLocale()));
+            final NumberFormat format = NumberFormat.getInstance(jsonbContext.getLocale(numberFormat.getLocale()));
             ((DecimalFormat)format).applyPattern(numberFormat.getFormat());
             formattedConsumer.accept(format.format(obj));
             return true;

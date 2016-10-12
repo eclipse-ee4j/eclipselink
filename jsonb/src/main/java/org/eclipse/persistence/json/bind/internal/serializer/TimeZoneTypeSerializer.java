@@ -13,7 +13,8 @@
 
 package org.eclipse.persistence.json.bind.internal.serializer;
 
-import org.eclipse.persistence.json.bind.model.SerializerBindingModel;
+import org.eclipse.persistence.json.bind.internal.Marshaller;
+import org.eclipse.persistence.json.bind.model.JsonBindingModel;
 
 import javax.json.stream.JsonGenerator;
 import java.util.TimeZone;
@@ -23,17 +24,17 @@ import java.util.TimeZone;
  */
 public class TimeZoneTypeSerializer extends AbstractValueTypeSerializer<TimeZone> {
 
-    public TimeZoneTypeSerializer(SerializerBindingModel model) {
-        super(TimeZone.class, model);
+    public TimeZoneTypeSerializer(JsonBindingModel model) {
+        super(model);
     }
 
     @Override
-    protected void serialize(TimeZone obj, JsonGenerator generator, String key) {
+    protected void serialize(TimeZone obj, JsonGenerator generator, String key, Marshaller marshaller) {
         generator.write(key, obj.getID());
     }
 
     @Override
-    protected void serialize(TimeZone obj, JsonGenerator generator) {
+    protected void serialize(TimeZone obj, JsonGenerator generator, Marshaller marshaller) {
         generator.write(obj.getID());
     }
 }

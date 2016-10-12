@@ -13,6 +13,8 @@
 
 package org.eclipse.persistence.json.bind.internal.unmarshaller;
 
+import org.eclipse.persistence.json.bind.internal.Unmarshaller;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +37,7 @@ public class ByteArrayDeserializer extends AbstractArrayDeserializer<byte[]> {
     }
 
     @Override
-    public byte[] getInstance() {
+    public byte[] getInstance(Unmarshaller unmarshaller) {
         final int size = items.size();
         final byte[] byteArray = new byte[size];
         for(int i=0; i<size; i++) {

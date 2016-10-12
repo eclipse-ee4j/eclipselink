@@ -24,6 +24,8 @@ public class AnnotatedWithSerializerTypeSerializerOverride implements JsonbSeria
 
     @Override
     public void serialize(AnnotatedWithSerializerType obj, JsonGenerator generator, SerializationContext ctx) {
+        generator.writeStartObject();
         generator.write("valueField", "overridden value");
+        generator.writeEnd();
     }
 }

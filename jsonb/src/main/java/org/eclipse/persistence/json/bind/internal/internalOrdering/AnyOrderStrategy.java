@@ -14,6 +14,9 @@ package org.eclipse.persistence.json.bind.internal.internalOrdering;
 
 import org.eclipse.persistence.json.bind.model.PropertyModel;
 
+import javax.json.bind.config.PropertyNamingStrategy;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 
@@ -22,11 +25,11 @@ import java.util.List;
  *
  * @author David Kral
  */
-public class AnyOrderStrategy implements PropOrderStrategy {
+public class AnyOrderStrategy extends PropOrderStrategy {
 
     @Override
-    public List<PropertyModel> sortProperties(List<PropertyModel> properties) {
-        return properties;
+    public List<PropertyModel> sortProperties(Collection<PropertyModel> properties) {
+        return new ArrayList<>(properties);
     }
 
 }

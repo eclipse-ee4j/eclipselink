@@ -107,7 +107,7 @@ public abstract class AbstractJsonpDeserializer<T extends JsonValue> extends Abs
     @Override
     protected void deserializeNext(JsonParser parser, Unmarshaller context) {
         Class<?> type = parserContext.getLastEvent() == JsonParser.Event.START_OBJECT ? JsonObject.class : JsonArray.class;
-        final JsonbDeserializer<?> deserializer = newUnmarshallerItemBuilder().withType(type).build();
+        final JsonbDeserializer<?> deserializer = newUnmarshallerItemBuilder(context.getJsonbContext()).withType(type).build();
         appendResult(deserializer.deserialize(parser, context, type));
     }
 

@@ -13,7 +13,7 @@
 
 package org.eclipse.persistence.json.bind.internal.serializer;
 
-import org.eclipse.persistence.json.bind.model.SerializerBindingModel;
+import org.eclipse.persistence.json.bind.model.JsonBindingModel;
 
 import javax.json.stream.JsonGenerator;
 
@@ -22,7 +22,7 @@ import javax.json.stream.JsonGenerator;
  */
 public class ByteTypeSerializer extends AbstractNumberSerializer<Byte> {
 
-    public ByteTypeSerializer(SerializerBindingModel model) {
+    public ByteTypeSerializer(JsonBindingModel model) {
         super(Byte.class, model);
     }
 

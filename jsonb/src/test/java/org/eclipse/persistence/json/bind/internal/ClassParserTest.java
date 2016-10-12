@@ -39,60 +39,48 @@ public class ClassParserTest {
 
     private JsonbContext jsonbContext;
 
-    private AnnotationIntrospector introspector = AnnotationIntrospector.getInstance();
+    private AnnotationIntrospector introspector;
 
     @Before
     public void before() {
-        classParser = new ClassParser();
-        jsonbContext = new JsonbContext(new MappingContext(), new JsonbConfig(),
-                new DefaultConstructorCreator(), JsonProvider.provider());
+        jsonbContext = new JsonbContext(new JsonbConfig(), JsonProvider.provider());
+        classParser = new ClassParser(jsonbContext);
+        introspector = new AnnotationIntrospector(jsonbContext);
     }
 
     @Test
     public void testDefaultMappingFieldModifiers() {
-        new JsonbContextCommand<Void>() {
-            @Override
-            protected Void doInProcessingContext() {
-                final JsonbAnnotatedElement<Class<?>> clsElement = introspector.collectAnnotations(FieldModifiersClass.class);
-                ClassModel model = new ClassModel(FieldModifiersClass.class, introspector.introspectCustomization(clsElement));
-                classParser.parseProperties(model, clsElement);
-                assertTrue(model.getPropertyModel("finalString").isReadable());
-                assertFalse(model.getPropertyModel("finalString").isWritable());
-                assertFalse(model.getPropertyModel("staticString").isReadable());
-                assertFalse(model.getPropertyModel("staticString").isWritable());
-                assertFalse(model.getPropertyModel("transientString").isReadable());
-                assertFalse(model.getPropertyModel("transientString").isWritable());
-                return null;
-            }
-        }.execute(new Marshaller(jsonbContext));
+        final JsonbAnnotatedElement<Class<?>> clsElement = introspector.collectAnnotations(FieldModifiersClass.class);
+        ClassModel model = new ClassModel(FieldModifiersClass.class, introspector.introspectCustomization(clsElement), null, null);
+        classParser.parseProperties(model, clsElement);
+        assertTrue(model.getPropertyModel("finalString").isReadable());
+        assertFalse(model.getPropertyModel("finalString").isWritable());
+        assertFalse(model.getPropertyModel("staticString").isReadable());
+        assertFalse(model.getPropertyModel("staticString").isWritable());
+        assertFalse(model.getPropertyModel("transientString").isReadable());
+        assertFalse(model.getPropertyModel("transientString").isWritable());
 
     }
 
     @Test
     public void testDefaultMappingMethodModifiers() {
-        new JsonbContextCommand<Void>() {
-            @Override
-            protected Void doInProcessingContext() {
-                final JsonbAnnotatedElement<Class<?>> clsElement = introspector.collectAnnotations(MethodModifiersClass.class);
-                ClassModel model = new ClassModel(FieldModifiersClass.class, introspector.introspectCustomization(clsElement));
-                classParser.parseProperties(model, clsElement);
-                assertFalse(model.getPropertyModel("publicFieldWithPrivateMethods").isReadable());
-                assertFalse(model.getPropertyModel("publicFieldWithPrivateMethods").isWritable());
-                assertTrue(model.getPropertyModel("publicFieldWithoutMethods").isReadable());
-                assertTrue(model.getPropertyModel("publicFieldWithoutMethods").isWritable());
-                assertTrue(model.getPropertyModel("getterWithoutFieldValue").isReadable());
-                assertTrue(model.getPropertyModel("getterWithoutFieldValue").isWritable());
+        final JsonbAnnotatedElement<Class<?>> clsElement = introspector.collectAnnotations(MethodModifiersClass.class);
+        ClassModel model = new ClassModel(FieldModifiersClass.class, introspector.introspectCustomization(clsElement), null, null);
+        classParser.parseProperties(model, clsElement);
+        assertFalse(model.getPropertyModel("publicFieldWithPrivateMethods").isReadable());
+        assertFalse(model.getPropertyModel("publicFieldWithPrivateMethods").isWritable());
+        assertTrue(model.getPropertyModel("publicFieldWithoutMethods").isReadable());
+        assertTrue(model.getPropertyModel("publicFieldWithoutMethods").isWritable());
+        assertTrue(model.getPropertyModel("getterWithoutFieldValue").isReadable());
+        assertTrue(model.getPropertyModel("getterWithoutFieldValue").isWritable());
 
 
-                MethodModifiersClass object = new MethodModifiersClass();
-                final AtomicReference<String> accepted = new AtomicReference<>();
-                Consumer<String> withoutFieldConsumer = accepted::set;
-                object.setSetterWithoutFieldConsumer(withoutFieldConsumer);
-                model.getPropertyModel("getterWithoutFieldValue").setValue(object, "ACCEPTED_VALUE");
-                assertEquals("ACCEPTED_VALUE", accepted.get());
-                return null;
-            }
-        }.execute(new Marshaller(jsonbContext));
+        MethodModifiersClass object = new MethodModifiersClass();
+        final AtomicReference<String> accepted = new AtomicReference<>();
+        Consumer<String> withoutFieldConsumer = accepted::set;
+        object.setSetterWithoutFieldConsumer(withoutFieldConsumer);
+        model.getPropertyModel("getterWithoutFieldValue").setValue(object, "ACCEPTED_VALUE");
+        assertEquals("ACCEPTED_VALUE", accepted.get());
     }
 
 }

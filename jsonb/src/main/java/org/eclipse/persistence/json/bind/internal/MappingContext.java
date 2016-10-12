@@ -12,22 +12,21 @@
  ******************************************************************************/
 package org.eclipse.persistence.json.bind.internal;
 
+import org.eclipse.persistence.json.bind.internal.serializer.ContainerSerializerProvider;
+import org.eclipse.persistence.json.bind.internal.serializer.ISerializerProvider;
 import org.eclipse.persistence.json.bind.model.ClassCustomization;
 import org.eclipse.persistence.json.bind.model.ClassModel;
 import org.eclipse.persistence.json.bind.model.JsonbAnnotatedElement;
 
-import javax.json.JsonValue;
-import java.util.Collection;
 import java.util.Iterator;
-import java.util.Map;
+import java.util.Objects;
 import java.util.Stack;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 /**
  * JSONB mappingContext. Created once per {@link javax.json.bind.Jsonb} instance. Represents a global scope.
  * Holds internal model.
- *
- * TODO make mapping context be shared cache between threads working with same payload classes
  *
  * Thread safe
  *
@@ -35,12 +34,48 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Roman Grigoriadi
  */
 public class MappingContext {
-    private final ConcurrentHashMap<Class<?>, ClassModel> classes = new ConcurrentHashMap<>();
-    private final ClassParser classParser = new ClassParser();
-    private static final Class<?>[] supportedTypes;
 
-    static {
-        supportedTypes = new Class[]{Collection.class, Map.class, JsonValue.class};
+    private static class ParseClassModelFunction implements Function<Class, ClassModel> {
+
+        private ClassModel parentClassModel;
+
+        private ClassParser classParser;
+
+        private JsonbContext jsonbContext;
+
+        public ParseClassModelFunction(ClassModel parentClassModel, ClassParser classParser, JsonbContext jsonbContext) {
+            this.parentClassModel = parentClassModel;
+            this.classParser = classParser;
+            this.jsonbContext = jsonbContext;
+        }
+
+        @Override
+        public ClassModel apply(Class aClass) {
+            final JsonbAnnotatedElement<Class<?>> clsElement = jsonbContext.getAnnotationIntrospector().collectAnnotations(aClass);
+            final ClassCustomization customization = jsonbContext.getAnnotationIntrospector().introspectCustomization(clsElement);
+            final ClassModel newClassModel = new ClassModel(aClass, customization, parentClassModel, jsonbContext.getPropertyNamingStrategy());
+            classParser.parseProperties(newClassModel, clsElement);
+            return newClassModel;
+        }
+
+    }
+    private final JsonbContext jsonbContext;
+
+    private final ConcurrentHashMap<Class<?>, ClassModel> classes = new ConcurrentHashMap<>();
+
+    private final ConcurrentHashMap<Class<?>, ContainerSerializerProvider> serializers = new ConcurrentHashMap<>();
+
+    private final ClassParser classParser;
+
+    /**
+     * Create mapping context which is scoped to jsonb runtime.
+     *
+     * @param jsonbContext required
+     */
+    public MappingContext(JsonbContext jsonbContext) {
+        Objects.requireNonNull(jsonbContext);
+        this.jsonbContext = jsonbContext;
+        this.classParser = new ClassParser(jsonbContext);
     }
 
     /**
@@ -49,7 +84,6 @@ public class MappingContext {
      * @param clazz clazz to search by or parse, not null.
      */
     public ClassModel getOrCreateClassModel(Class<?> clazz) {
-        final AnnotationIntrospector introspector = AnnotationIntrospector.getInstance();
         ClassModel classModel = classes.get(clazz);
         if (classModel != null) {
             return classModel;
@@ -59,15 +93,10 @@ public class MappingContext {
             newClassModels.push(classToParse);
         }
 
+        ClassModel parentClassModel = null;
         while (!newClassModels.empty()) {
             Class toParse = newClassModels.pop();
-            classes.computeIfAbsent(toParse, aClass -> {
-                final JsonbAnnotatedElement<Class<?>> clsElement = introspector.collectAnnotations(aClass);
-                final ClassCustomization customization = introspector.introspectCustomization(clsElement);
-                final ClassModel newClassModel = new ClassModel(aClass, customization);
-                classParser.parseProperties(newClassModel, clsElement);
-                return  newClassModel;
-            });
+            parentClassModel = classes.computeIfAbsent(toParse, new ParseClassModelFunction(parentClassModel, classParser, jsonbContext));
         }
         return classes.get(clazz);
     }
@@ -104,6 +133,14 @@ public class MappingContext {
      */
     public ClassModel getClassModel(Class<?> clazz) {
         return classes.get(clazz);
+    }
+
+    public ContainerSerializerProvider getSerializerProvider(Class<?> clazz) {
+        return serializers.get(clazz);
+    }
+
+    public void addSerializerProvider(Class<?> clazz, ContainerSerializerProvider serializerProvider) {
+        serializers.putIfAbsent(clazz, serializerProvider);
     }
 
 }

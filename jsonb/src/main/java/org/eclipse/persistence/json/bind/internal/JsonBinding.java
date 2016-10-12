@@ -30,8 +30,10 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.reflect.Type;
 import java.nio.charset.Charset;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Implementation of Jsonb interface.
@@ -43,17 +45,11 @@ public class JsonBinding implements Jsonb {
     private final JsonbContext jsonbContext;
 
     JsonBinding(JsonBindingBuilder builder) {
-        this.jsonbContext = new JsonbContext(new MappingContext(), builder.getConfig(), JsonbComponentInstanceCreatorFactory.getComponentInstanceCreator(),
-                builder.getProvider().orElseGet(()->JsonProvider.provider()));
+        this.jsonbContext = new JsonbContext(builder.getConfig(), builder.getProvider().orElseGet(JsonProvider::provider));
     }
 
     private <T> T deserialize(final Type type, final JsonParser parser, final Unmarshaller unmarshaller) {
-        return new JsonbContextCommand<T>() {
-            @Override
-            protected T doInProcessingContext() {
-                return unmarshaller.deserialize(type, parser);
-            }
-        }.execute(unmarshaller);
+        return unmarshaller.deserialize(type, parser);
     }
 
     @Override
@@ -132,7 +128,10 @@ public class JsonBinding implements Jsonb {
 
     private JsonGenerator writerGenerator(Writer writer) {
         Map<String, ?> factoryProperties = createJsonpProperties(jsonbContext.getConfig());
-        return new IJsonJsonGeneratorDecorator(jsonbContext.getJsonProvider().createGeneratorFactory(factoryProperties).createGenerator(writer));
+        if (factoryProperties.isEmpty()) {
+            return jsonbContext.getJsonProvider().createGenerator(writer);
+        }
+        return jsonbContext.getJsonProvider().createGeneratorFactory(factoryProperties).createGenerator(writer);
     }
 
     @Override
@@ -150,7 +149,7 @@ public class JsonBinding implements Jsonb {
     private JsonGenerator streamGenerator(OutputStream stream) {
         Map<String, ?> factoryProperties = createJsonpProperties(jsonbContext.getConfig());
         final String encoding = (String) jsonbContext.getConfig().getProperty(JsonbConfig.ENCODING).orElse("UTF-8");
-        return new IJsonJsonGeneratorDecorator(jsonbContext.getJsonProvider().createGeneratorFactory(factoryProperties).createGenerator(stream, Charset.forName(encoding)));
+        return jsonbContext.getJsonProvider().createGeneratorFactory(factoryProperties).createGenerator(stream, Charset.forName(encoding));
     }
 
     @Override
@@ -165,16 +164,19 @@ public class JsonBinding implements Jsonb {
      * @return properties for JSONP generator / parser
      */
     protected Map<String, ?> createJsonpProperties(JsonbConfig jsonbConfig) {
-        final Map<String, Object> factoryProperties = new HashMap<>();
         //JSONP 1.0 actually ignores the value, just checks the key is present. Only set if JsonbConfig.FORMATTING is true.
-        jsonbConfig.getProperty(JsonbConfig.FORMATTING).ifPresent(value->{
+        final Optional<Object> property = jsonbConfig.getProperty(JsonbConfig.FORMATTING);
+        final Map<String, Object> factoryProperties = new HashMap<>();
+        if (property.isPresent()) {
+            final Object value = property.get();
             if (!(value instanceof Boolean)) {
                 throw new JsonbException(Messages.getMessage(MessageKeys.JSONB_CONFIG_FORMATTING_ILLEGAL_VALUE));
             }
             if ((Boolean) value) {
                 factoryProperties.put(JsonGenerator.PRETTY_PRINTING, Boolean.TRUE);
             }
-        });
+            return factoryProperties;
+        }
         return factoryProperties;
     }
 }

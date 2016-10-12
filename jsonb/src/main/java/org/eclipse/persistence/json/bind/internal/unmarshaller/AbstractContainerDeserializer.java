@@ -13,6 +13,7 @@
 
 package org.eclipse.persistence.json.bind.internal.unmarshaller;
 
+import org.eclipse.persistence.json.bind.internal.JsonbContext;
 import org.eclipse.persistence.json.bind.internal.JsonbParser;
 import org.eclipse.persistence.json.bind.internal.JsonbRiParser;
 import org.eclipse.persistence.json.bind.internal.ReflectionUtils;
@@ -30,7 +31,7 @@ import java.lang.reflect.Type;
 /**
  * @author Roman Grigoriadi
  */
-public abstract class AbstractContainerDeserializer<T> extends AbstractDeserializer<T> implements JsonbDeserializer<T> {
+public abstract class AbstractContainerDeserializer<T> extends AbstractItem<T> implements JsonbDeserializer<T> {
 
     protected JsonbRiParser.LevelContext parserContext;
 
@@ -54,10 +55,10 @@ public abstract class AbstractContainerDeserializer<T> extends AbstractDeseriali
         ctx.setCurrent(this);
         deserializeInternal((JsonbParser) parser, ctx);
         ctx.setCurrent(getWrapper());
-        return getInstance();
+        return getInstance((Unmarshaller) context);
     }
 
-    protected abstract T getInstance();
+    protected abstract T getInstance(Unmarshaller unmarshaller);
 
 
     protected void deserializeInternal(JsonbParser parser, Unmarshaller context) {
@@ -107,13 +108,13 @@ public abstract class AbstractContainerDeserializer<T> extends AbstractDeseriali
     protected abstract JsonBindingModel getModel();
 
 
-    protected DeserializerBuilder newUnmarshallerItemBuilder() {
-        return new DeserializerBuilder().withWrapper(this).withJsonValueType(JsonValueType.of(parserContext.getLastEvent()));
+    protected DeserializerBuilder newUnmarshallerItemBuilder(JsonbContext ctx) {
+        return new DeserializerBuilder(ctx).withWrapper(this).withJsonValueType(JsonValueType.of(parserContext.getLastEvent()));
     }
 
-    protected JsonbDeserializer<?> newCollectionOrMapItem(Type valueType) {
+    protected JsonbDeserializer<?> newCollectionOrMapItem(Type valueType, JsonbContext ctx) {
         Type actualValueType = ReflectionUtils.resolveType(this, valueType);
-        return newUnmarshallerItemBuilder().withType(actualValueType).withModel(getModel()).build();
+        return newUnmarshallerItemBuilder(ctx).withType(actualValueType).withModel(getModel()).build();
     }
 
     /**

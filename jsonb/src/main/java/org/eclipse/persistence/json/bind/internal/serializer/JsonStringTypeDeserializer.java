@@ -33,7 +33,7 @@ public class JsonStringTypeDeserializer extends AbstractValueTypeDeserializer<Js
 
     @Override
     protected JsonString deserialize(String jsonValue, Unmarshaller unmarshaller, Type rtType) {
-        final JsonBuilderFactory factory = ProcessingContext.getJsonbContext().getJsonProvider().createBuilderFactory(null);
+        final JsonBuilderFactory factory = unmarshaller.getJsonbContext().getJsonProvider().createBuilderFactory(null);
         final JsonObject jsonObject = factory.createObjectBuilder()
                 .add("json", jsonValue)
                 .build();

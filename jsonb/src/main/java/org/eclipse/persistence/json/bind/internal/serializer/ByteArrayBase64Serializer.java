@@ -13,10 +13,10 @@
 
 package org.eclipse.persistence.json.bind.internal.serializer;
 
-import org.eclipse.persistence.json.bind.internal.ProcessingContext;
+import org.eclipse.persistence.json.bind.internal.Marshaller;
 import org.eclipse.persistence.json.bind.internal.properties.MessageKeys;
 import org.eclipse.persistence.json.bind.internal.properties.Messages;
-import org.eclipse.persistence.json.bind.model.SerializerBindingModel;
+import org.eclipse.persistence.json.bind.model.JsonBindingModel;
 
 import javax.json.bind.JsonbException;
 import javax.json.bind.config.BinaryDataStrategy;
@@ -36,29 +36,29 @@ public class ByteArrayBase64Serializer extends AbstractValueTypeSerializer<byte[
      * @param clazz clazz to work with
      * @param model
      */
-    public ByteArrayBase64Serializer(Class<byte[]> clazz, SerializerBindingModel model) {
-        super(clazz, model);
+    public ByteArrayBase64Serializer(Class<byte[]> clazz, JsonBindingModel model) {
+        super(model);
     }
 
     @Override
-    protected void serialize(byte[] obj, JsonGenerator generator, String key) {
-        generator.write(key, getEncoder().encodeToString(obj));
+    protected void serialize(byte[] obj, JsonGenerator generator, String key, Marshaller marshaller) {
+        generator.write(key, getEncoder(marshaller.getJsonbContext().getBinaryDataStrategy()).encodeToString(obj));
     }
 
     @Override
-    protected void serialize(byte[] obj, JsonGenerator generator) {
-        generator.write(getEncoder().encodeToString(obj));
+    protected void serialize(byte[] obj, JsonGenerator generator, Marshaller marshaller) {
+        generator.write(getEncoder(marshaller.getJsonbContext().getBinaryDataStrategy()).encodeToString(obj));
     }
 
-    private Base64.Encoder getEncoder() {
-        final String strategy = ProcessingContext.getJsonbContext().getBinaryDataStrategy();
+    private Base64.Encoder getEncoder(String strategy) {
         switch (strategy) {
             case BinaryDataStrategy.BASE_64:
                 return Base64.getEncoder();
             case BinaryDataStrategy.BASE_64_URL:
                 return Base64.getUrlEncoder();
             default:
-                throw new JsonbException(Messages.getMessage(MessageKeys.INTERNAL_ERROR, "Invalid strategy: " + strategy));
+                throw new JsonbException(Messages.getMessage(MessageKeys.INTERNAL_ERROR,
+                        "Invalid strategy: " + strategy));
         }
     }
 

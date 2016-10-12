@@ -22,6 +22,8 @@ public class ClassCustomization extends Customization {
 
     private final JsonbCreator creator;
 
+    private String[] propertyOrder;
+
     /**
      * Copies properties from builder an creates immutable instance.
      *
@@ -30,9 +32,34 @@ public class ClassCustomization extends Customization {
     ClassCustomization(CustomizationBuilder builder) {
         super(builder);
         this.creator = builder.getCreator();
+        this.propertyOrder = builder.getPropertyOrder();
+    }
+
+    /**
+     * Copy constructor.
+     *
+     * @param other other customizaton instance
+     */
+    public ClassCustomization(ClassCustomization other) {
+        super(other);
+        this.creator = other.getCreator();
+        this.propertyOrder = other.getPropertyOrder();
     }
 
     public JsonbCreator getCreator() {
         return creator;
+    }
+
+    /**
+     * Names of properties to sort with.
+     *
+     * @return sorted names of properties
+     */
+    public String[] getPropertyOrder() {
+        return propertyOrder;
+    }
+
+    public void setPropertyOrder(String[] propertyOrder) {
+        this.propertyOrder = propertyOrder;
     }
 }

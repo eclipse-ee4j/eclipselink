@@ -13,7 +13,7 @@
 
 package org.eclipse.persistence.json.bind.internal.serializer;
 
-import org.eclipse.persistence.json.bind.model.SerializerBindingModel;
+import org.eclipse.persistence.json.bind.model.JsonBindingModel;
 
 import javax.json.stream.JsonGenerator;
 import java.math.BigInteger;
@@ -24,7 +24,7 @@ import java.math.BigInteger;
  */
 public class BigIntegerTypeSerializer extends AbstractNumberSerializer<BigInteger> {
 
-    public BigIntegerTypeSerializer(SerializerBindingModel model) {
+    public BigIntegerTypeSerializer(JsonBindingModel model) {
         super(BigInteger.class, model);
     }
 

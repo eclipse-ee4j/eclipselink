@@ -54,7 +54,7 @@ public class MapDeserializer<T extends Map<?,?>> extends AbstractContainerDeseri
                 : Object.class;
 
         this.instance = createInstance();
-        this.model = new ContainerModel(mapValueRuntimeType, resolveContainerModelCustomization(mapValueRuntimeType));
+        this.model = new ContainerModel(mapValueRuntimeType, resolveContainerModelCustomization(mapValueRuntimeType, builder.getJsonbContext()));
     }
 
     @SuppressWarnings("unchecked")
@@ -69,7 +69,7 @@ public class MapDeserializer<T extends Map<?,?>> extends AbstractContainerDeseri
     }
 
     @Override
-    public T getInstance() {
+    public T getInstance(Unmarshaller unmarshaller) {
         return instance;
     }
 
@@ -80,12 +80,12 @@ public class MapDeserializer<T extends Map<?,?>> extends AbstractContainerDeseri
 
     @SuppressWarnings("unchecked")
     private <V> void appendCaptor(String key, V value) {
-        ((Map<String, V>) getInstance()).put(key, value);
+        ((Map<String, V>) getInstance(null)).put(key, value);
     }
 
     @Override
     protected void deserializeNext(JsonParser parser, Unmarshaller context) {
-        final JsonbDeserializer<?> deserializer = newCollectionOrMapItem(mapValueRuntimeType);
+        final JsonbDeserializer<?> deserializer = newCollectionOrMapItem(mapValueRuntimeType, context.getJsonbContext());
         appendResult(deserializer.deserialize(parser, context, mapValueRuntimeType));
     }
 

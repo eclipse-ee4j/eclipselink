@@ -25,9 +25,11 @@ public class CrateSerializer implements JsonbSerializer<Crate> {
 
     @Override
     public void serialize(Crate obj, JsonGenerator generator, SerializationContext ctx) {
+        generator.writeStartObject();
         generator.write("crateStr", "REPLACED crate str");
         ctx.serialize("crateInner", obj.crateInner, generator);
         ctx.serialize("crateInnerList", obj.crateInnerList, generator);
         generator.write("crateBigDec", new BigDecimal("54321"));
+        generator.writeEnd();
     }
 }

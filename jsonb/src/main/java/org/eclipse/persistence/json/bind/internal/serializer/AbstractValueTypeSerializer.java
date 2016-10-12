@@ -13,7 +13,9 @@
 
 package org.eclipse.persistence.json.bind.internal.serializer;
 
-import org.eclipse.persistence.json.bind.model.SerializerBindingModel;
+import org.eclipse.persistence.json.bind.internal.Marshaller;
+import org.eclipse.persistence.json.bind.model.JsonBindingModel;
+import org.eclipse.persistence.json.bind.model.JsonContext;
 
 import javax.json.bind.serializer.JsonbSerializer;
 import javax.json.bind.serializer.SerializationContext;
@@ -25,17 +27,13 @@ import javax.json.stream.JsonGenerator;
  */
 public abstract class AbstractValueTypeSerializer<T> implements JsonbSerializer<T> {
 
-    private final Class<T> clazz;
-
-    protected final SerializerBindingModel model;
+    protected final JsonBindingModel model;
 
     /**
      * New instance.
-     * @param clazz clazz to work with
      * @param model
      */
-    public AbstractValueTypeSerializer(Class<T> clazz, SerializerBindingModel model) {
-        this.clazz = clazz;
+    public AbstractValueTypeSerializer(JsonBindingModel model) {
         this.model = model;
     }
 
@@ -48,14 +46,15 @@ public abstract class AbstractValueTypeSerializer<T> implements JsonbSerializer<
      */
     @Override
     public void serialize(T obj, JsonGenerator generator, SerializationContext ctx) {
-        if (model.getContext() == SerializerBindingModel.Context.JSON_OBJECT) {
-            serialize(obj, generator, model.getJsonWriteName());
+        Marshaller marshaller = (Marshaller) ctx;
+        if (model.getContext() == JsonContext.JSON_OBJECT) {
+            serialize(obj, generator, model.getWriteName(), marshaller);
         } else {
-            serialize(obj, generator);
+            serialize(obj, generator, marshaller);
         }
     }
 
-    protected abstract void serialize(T obj, JsonGenerator generator, String key);
+    protected abstract void serialize(T obj, JsonGenerator generator, String key, Marshaller marshaller);
 
-    protected abstract void serialize(T obj, JsonGenerator generator);
+    protected abstract void serialize(T obj, JsonGenerator generator, Marshaller marshaller);
 }

@@ -21,8 +21,6 @@ package org.eclipse.persistence.json.bind.internal;
  */
 public abstract class ProcessingContext {
 
-    private static final ThreadLocal<ProcessingContext> instances = new ThreadLocal<>();
-
     protected static final String NULL = "null";
 
 
@@ -36,42 +34,19 @@ public abstract class ProcessingContext {
         this.jsonbContext = jsonbContext;
     }
 
-
-    static void setInstance(ProcessingContext context) {
-        if (instances.get() != null) {
-            throw new IllegalStateException("JsonbContext already set!");
-        }
-        instances.set(context);
-    }
-
-    static void removeInstance() {
-        if (instances.get() == null) {
-            throw new IllegalStateException("JsonbContext is not set!");
-        }
-        instances.remove();
-    }
-
-    /**
-     * Instance of processing context.
-     * @return instance
-     */
-    public static ProcessingContext getInstance() {
-        return instances.get();
-    }
-
     /**
      * Jsonb context.
      * @return jsonb context
      */
-    public static JsonbContext getJsonbContext() {
-        return getInstance().jsonbContext;
+    public JsonbContext getJsonbContext() {
+        return jsonbContext;
     }
 
     /**
      * Mapping context.
      * @return mapping context
      */
-    public static MappingContext getMappingContext() {
+    public MappingContext getMappingContext() {
         return getJsonbContext().getMappingContext();
     }
 

@@ -13,6 +13,7 @@
 
 package org.eclipse.persistence.json.bind.defaultmapping.inheritance;
 
+import org.eclipse.persistence.json.bind.TestTypeToken;
 import org.eclipse.persistence.json.bind.defaultmapping.generics.model.GenericTestClass;
 import org.eclipse.persistence.json.bind.defaultmapping.generics.model.PropagatedGenericClass;
 import org.eclipse.persistence.json.bind.defaultmapping.inheritance.model.SecondLevel;
@@ -25,6 +26,7 @@ import org.junit.Test;
 
 import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -75,7 +77,7 @@ public class InheritanceTest {
         String json = "{\"inZero\":\"IN_ZERO\",\"inFirstLevel\":255,\"inZeroOverriddenInFirst\":\"IN_ZERO_OVERRIDDEN_IN_FIRST\",\"inSecondLevel\":10}";
         assertEquals(json, jsonb.toJson(secondLevelGeneric));
 
-        SecondLevelGeneric<Number, Short, String> result = jsonb.fromJson(json, new SecondLevelGeneric<Number, Short, String>() {}.getClass());
+        SecondLevelGeneric<Number, Short, String> result = jsonb.fromJson(json, new TestTypeToken<SecondLevelGeneric<Number, Short, String>>(){}.getType());
         assertEquals(BigDecimal.TEN, result.getInSecondLevel());
         assertEquals(Short.valueOf("255"), result.getInFirstLevel());
         assertEquals("IN_ZERO_OVERRIDDEN_IN_FIRST", result.getInZeroOverriddenInFirst());
@@ -167,8 +169,7 @@ public class InheritanceTest {
 
         String json = "{\"inZero\":\"IN_ZERO\",\"inFirstLevel\":{\"genericList\":[{\"field1\":[\"third\",\"fourth\"],\"field2\":0}],\"genericTestClass\":{\"field1\":\"FIRST_LEVEL_GENERIC_STRING\",\"field2\":11}},\"inZeroOverriddenInFirst\":\"STRING_IN_ZERO_OVERRIDDEN_IN_FIRST\",\"inSecondLevel\":{\"genericList\":[{\"field1\":[\"first\",\"second\"],\"field2\":10}],\"genericTestClass\":{\"field1\":\"SECOND_LEVEL_GENERIC_STRING\",\"field2\":1}}}";
 
-        final Class<? extends SecondLevelGeneric<PropagatedGenericClass<String, BigDecimal>, ExtendsPropagatedGenericClass<String, BigDecimal>, String>> runtimeType = new SecondLevelGeneric<PropagatedGenericClass<String, BigDecimal>, ExtendsPropagatedGenericClass<String, BigDecimal>, String>() {
-        }.getClass();
+        final Type runtimeType = new TestTypeToken<SecondLevelGeneric<PropagatedGenericClass<String, BigDecimal>, ExtendsPropagatedGenericClass<String, BigDecimal>, String>>(){}.getType();
         assertEquals(json, jsonb.toJson(secondLevelGeneric, runtimeType));
         SecondLevelGeneric<PropagatedGenericClass<String, BigDecimal>, ExtendsPropagatedGenericClass<String, BigDecimal>, String> result =
                 jsonb.fromJson(json, runtimeType);
@@ -200,7 +201,7 @@ public class InheritanceTest {
         String json = "{\"anotherGenericValue\":255,\"genericValue\":\"GENERIC_VALUE\"}";
         assertEquals(json, jsonb.toJson(implementsGenericInterfaces));
 
-        ImplementsGenericInterfaces<String, Integer> result = jsonb.fromJson(json, new ImplementsGenericInterfaces<String, Integer>() {}.getClass());
+        ImplementsGenericInterfaces<String, Integer> result = jsonb.fromJson(json, new TestTypeToken<ImplementsGenericInterfaces<String, Integer>>(){}.getType());
         assertEquals("GENERIC_VALUE", result.getGenericValue());
         assertEquals(Integer.valueOf(255), result.getAnotherGenericValue());
     }

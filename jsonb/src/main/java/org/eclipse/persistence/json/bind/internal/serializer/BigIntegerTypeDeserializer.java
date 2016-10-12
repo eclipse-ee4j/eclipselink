@@ -31,7 +31,7 @@ public class BigIntegerTypeDeserializer extends AbstractNumberDeserializer<BigIn
 
     @Override
     public BigInteger deserialize(String jsonValue, Unmarshaller unmarshaller, Type rtType) {
-        return deserializeForamtted(jsonValue, true).map(num->new BigInteger(num.toString()))
+        return deserializeForamtted(jsonValue, true, unmarshaller.getJsonbContext()).map(num->new BigInteger(num.toString()))
                 .orElseGet(()->new BigInteger(jsonValue));
     }
 }

@@ -13,7 +13,8 @@
 
 package org.eclipse.persistence.json.bind.internal.serializer;
 
-import org.eclipse.persistence.json.bind.model.SerializerBindingModel;
+import org.eclipse.persistence.json.bind.internal.Marshaller;
+import org.eclipse.persistence.json.bind.model.JsonBindingModel;
 
 import javax.json.stream.JsonGenerator;
 import java.util.OptionalInt;
@@ -23,24 +24,24 @@ import java.util.OptionalInt;
  */
 public class OptionalIntTypeSerializer extends AbstractValueTypeSerializer<OptionalInt> {
 
-    public OptionalIntTypeSerializer(SerializerBindingModel model) {
-        super(OptionalInt.class, model);
+    public OptionalIntTypeSerializer(JsonBindingModel model) {
+        super(model);
     }
 
     @Override
-    protected void serialize(OptionalInt obj, JsonGenerator generator, String key) {
+    protected void serialize(OptionalInt obj, JsonGenerator generator, String key, Marshaller marshaller) {
         if (obj.isPresent()) {
             generator.write(key, obj.getAsInt());
-        } else {
+        } else if (model.getCustomization().isNillable()) {
             generator.writeNull(key);
         }
     }
 
     @Override
-    protected void serialize(OptionalInt obj, JsonGenerator generator) {
+    protected void serialize(OptionalInt obj, JsonGenerator generator, Marshaller marshaller) {
         if (obj.isPresent()) {
             generator.write(obj.getAsInt());
-        } else {
+        } else if (model.getCustomization().isNillable()) {
             generator.writeNull();
         }
     }

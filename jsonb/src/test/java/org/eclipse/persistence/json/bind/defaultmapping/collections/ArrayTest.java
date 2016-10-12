@@ -15,6 +15,7 @@ package org.eclipse.persistence.json.bind.defaultmapping.collections;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.eclipse.persistence.json.bind.TestTypeToken;
 
 import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;
@@ -82,7 +83,7 @@ public class ArrayTest {
 
         String expected = "[[\"first\",\"second\"],[\"first\",\"second\"]]";
         assertEquals(expected, jsonb.toJson(listOfArrays));
-        List<String[]> result = jsonb.fromJson(expected, new ArrayList<String[]>() {}.getClass().getGenericSuperclass());
+        List<String[]> result = jsonb.fromJson(expected, new TestTypeToken<ArrayList<String[]>>(){}.getType());
         assertEquals("first", result.get(0)[0]);
         assertEquals("second", result.get(0)[1]);
         assertEquals("first", result.get(1)[0]);
@@ -133,7 +134,7 @@ public class ArrayTest {
         arrayValueMap.put("first", strings);
         String expected = "{\"first\":[\"zero\",\"one\"]}";
         assertEquals(expected, jsonb.toJson(arrayValueMap));
-        Map<String, String[]> result = jsonb.fromJson(expected, new HashMap<String, String[]>() {}.getClass());
+        Map<String, String[]> result = jsonb.fromJson(expected, new TestTypeToken<HashMap<String, String[]>>(){}.getType());
         assertEquals("zero", result.get("first")[0]);
         assertEquals("one", result.get("first")[1]);
     }

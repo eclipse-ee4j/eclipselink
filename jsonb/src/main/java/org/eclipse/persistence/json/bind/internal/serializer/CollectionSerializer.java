@@ -14,8 +14,12 @@
 package org.eclipse.persistence.json.bind.internal.serializer;
 
 import org.eclipse.persistence.json.bind.internal.AbstractContainerSerializer;
+import org.eclipse.persistence.json.bind.internal.Marshaller;
 import org.eclipse.persistence.json.bind.internal.ReflectionUtils;
-import org.eclipse.persistence.json.bind.model.SerializerBindingModel;
+import org.eclipse.persistence.json.bind.internal.unmarshaller.ContainerModel;
+import org.eclipse.persistence.json.bind.internal.unmarshaller.EmbeddedItem;
+import org.eclipse.persistence.json.bind.model.JsonBindingModel;
+import org.eclipse.persistence.json.bind.model.JsonContext;
 
 import javax.json.bind.serializer.JsonbSerializer;
 import javax.json.bind.serializer.SerializationContext;
@@ -29,9 +33,9 @@ import java.util.Collection;
  *
  * @author Roman Grigoriadi
  */
-public class CollectionSerializer<T extends Collection> extends AbstractContainerSerializer<T> {
+public class CollectionSerializer<T extends Collection> extends AbstractContainerSerializer<T> implements EmbeddedItem {
 
-    private final SerializerBindingModel containerModel;
+    private final JsonBindingModel containerModel;
 
     private final Type collectionValueType;
 
@@ -40,20 +44,20 @@ public class CollectionSerializer<T extends Collection> extends AbstractContaine
         collectionValueType = getRuntimeType() instanceof ParameterizedType ?
                 ReflectionUtils.resolveType(this, ((ParameterizedType) getRuntimeType()).getActualTypeArguments()[0])
                 : Object.class;
-        containerModel = new SerializerContainerModel(collectionValueType, resolveContainerModelCustomization(collectionValueType),
-                SerializerBindingModel.Context.JSON_ARRAY, null);
+        containerModel = new ContainerModel(collectionValueType, resolveContainerModelCustomization(collectionValueType, builder.getJsonbContext()),
+                JsonContext.JSON_ARRAY);
     }
 
     @Override
     protected void serializeInternal(T collection, JsonGenerator generator, SerializationContext ctx) {
-        collection.stream().forEach((item) -> {
-            if (item == null || isEmptyOptional(item)) {
+        for (Object item : collection) {
+            if (item == null) {
                 generator.writeNull();
-                return;
+                continue;
             }
-            final JsonbSerializer<?> serializer = new SerializerBuilder().withObjectClass(item.getClass()).withWrapper(this).withModel(containerModel).build();
+            final JsonbSerializer<?> serializer = new SerializerBuilder(((Marshaller)ctx).getJsonbContext()).withObjectClass(item.getClass()).withWrapper(this).withModel(containerModel).build();
             serializerCaptor(serializer, item, generator, ctx);
-        });
+        }
     }
 
     @Override

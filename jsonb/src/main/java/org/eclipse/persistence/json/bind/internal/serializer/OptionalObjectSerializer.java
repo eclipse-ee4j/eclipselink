@@ -13,10 +13,12 @@
 
 package org.eclipse.persistence.json.bind.internal.serializer;
 
+import org.eclipse.persistence.json.bind.internal.JsonbContext;
+import org.eclipse.persistence.json.bind.internal.ProcessingContext;
 import org.eclipse.persistence.json.bind.internal.unmarshaller.CurrentItem;
 import org.eclipse.persistence.json.bind.model.ClassModel;
 import org.eclipse.persistence.json.bind.model.JsonBindingModel;
-import org.eclipse.persistence.json.bind.model.SerializerBindingModel;
+import org.eclipse.persistence.json.bind.model.JsonContext;
 
 import javax.json.bind.serializer.JsonbSerializer;
 import javax.json.bind.serializer.SerializationContext;
@@ -33,7 +35,7 @@ import java.util.Optional;
 public class OptionalObjectSerializer<T extends Optional<?>> implements CurrentItem<T>, JsonbSerializer<T> {
 
 
-    private final SerializerBindingModel wrapperModel;
+    private final JsonBindingModel wrapperModel;
 
     private final CurrentItem<?> wrapper;
 
@@ -74,16 +76,20 @@ public class OptionalObjectSerializer<T extends Optional<?>> implements CurrentI
 
     @Override
     public void serialize(T obj, JsonGenerator generator, SerializationContext ctx) {
+        JsonbContext jsonbContext = ((ProcessingContext) ctx).getJsonbContext();
         if (obj == null || !obj.isPresent()) {
-            if (wrapperModel.getContext() == SerializerBindingModel.Context.JSON_OBJECT) {
-                generator.writeNull(wrapperModel.getJsonWriteName());
+            if (!wrapperModel.getCustomization().isNillable()) {
+                return;
+            }
+            if (wrapperModel.getContext() == JsonContext.JSON_OBJECT) {
+                generator.writeNull(wrapperModel.getWriteName());
             } else {
                 generator.writeNull();
             }
             return;
         }
         Object optionalValue = obj.get();
-        final JsonbSerializer<?> serializer = new SerializerBuilder().withObjectClass(optionalValue.getClass())
+        final JsonbSerializer<?> serializer = new SerializerBuilder(jsonbContext).withObjectClass(optionalValue.getClass())
                 .withType(optionalValueType).withWrapper(wrapper).withModel(wrapperModel).build();
         serialCaptor(serializer, optionalValue, generator, ctx);
     }

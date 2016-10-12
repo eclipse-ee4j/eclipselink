@@ -15,6 +15,7 @@ package org.eclipse.persistence.json.bind.serializers.model;
 
 import javax.json.bind.serializer.SerializationContext;
 import javax.json.stream.JsonGenerator;
+import java.math.BigDecimal;
 
 /**
  * @author Roman Grigoriadi
@@ -23,8 +24,12 @@ public class CrateSerializerWithConversion extends CrateSerializer {
 
     @Override
     public void serialize(Crate obj, JsonGenerator generator, SerializationContext ctx) {
-        super.serialize(obj, generator, ctx);
-        //TODO fix / uncomment after keyname argument will be added to JsonbSerializer
-//        ctx.serialize("date-converted", obj.date, generator);
+        generator.writeStartObject();
+        generator.write("crateStr", "REPLACED crate str");
+        ctx.serialize("crateInner", obj.crateInner, generator);
+        ctx.serialize("crateInnerList", obj.crateInnerList, generator);
+        generator.write("crateBigDec", new BigDecimal("54321"));
+        ctx.serialize("date-converted", obj.date, generator);
+        generator.writeEnd();
     }
 }

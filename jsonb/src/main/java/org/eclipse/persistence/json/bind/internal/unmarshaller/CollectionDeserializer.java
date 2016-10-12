@@ -57,7 +57,7 @@ class CollectionDeserializer<T extends Collection<?>> extends AbstractContainerD
                 : Object.class;
 
         instance = createInstance();
-        this.containerModel = new ContainerModel(collectionValueType, resolveContainerModelCustomization(collectionValueType));
+        this.containerModel = new ContainerModel(collectionValueType, resolveContainerModelCustomization(collectionValueType, builder.getJsonbContext()));
     }
 
     @Override
@@ -88,9 +88,10 @@ class CollectionDeserializer<T extends Collection<?>> extends AbstractContainerD
      * Instance of an item. Unmarshalling sets values to such instance.
      *
      * @return instance
+     * @param unmarshaller
      */
     @Override
-    public T getInstance() {
+    public T getInstance(Unmarshaller unmarshaller) {
         return instance;
     }
 
@@ -114,7 +115,7 @@ class CollectionDeserializer<T extends Collection<?>> extends AbstractContainerD
      */
     @Override
     protected void deserializeNext(JsonParser parser, Unmarshaller context) {
-        final JsonbDeserializer<?> deserializer = newCollectionOrMapItem(collectionValueType);
+        final JsonbDeserializer<?> deserializer = newCollectionOrMapItem(collectionValueType, context.getJsonbContext());
         appendResult(deserializer.deserialize(parser, context, collectionValueType));
     }
 

@@ -13,7 +13,8 @@
 
 package org.eclipse.persistence.json.bind.internal.serializer;
 
-import org.eclipse.persistence.json.bind.model.SerializerBindingModel;
+import org.eclipse.persistence.json.bind.internal.Marshaller;
+import org.eclipse.persistence.json.bind.model.JsonBindingModel;
 
 import javax.json.stream.JsonGenerator;
 import java.time.Period;
@@ -23,17 +24,17 @@ import java.time.Period;
  */
 public class PeriodTypeSerializer extends AbstractValueTypeSerializer<Period> {
 
-    public PeriodTypeSerializer(SerializerBindingModel model) {
-        super(Period.class, model);
+    public PeriodTypeSerializer(JsonBindingModel model) {
+        super(model);
     }
 
     @Override
-    protected void serialize(Period obj, JsonGenerator generator, String key) {
+    protected void serialize(Period obj, JsonGenerator generator, String key, Marshaller marshaller) {
         generator.write(key, obj.toString());
     }
 
     @Override
-    protected void serialize(Period obj, JsonGenerator generator) {
+    protected void serialize(Period obj, JsonGenerator generator, Marshaller marshaller) {
         generator.write(obj.toString());
     }
 }

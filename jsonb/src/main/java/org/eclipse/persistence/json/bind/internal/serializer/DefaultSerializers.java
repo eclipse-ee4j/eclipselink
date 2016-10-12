@@ -52,60 +52,61 @@ public class DefaultSerializers {
 
     private static final DefaultSerializers instance = new DefaultSerializers();
 
-    private final Map<Class<?>, SerializerProvider> serializers;
+    private final Map<Class<?>, SerializerProviderWrapper> serializers;
 
-    private final SerializerProvider enumProvider;
+    private final SerializerProviderWrapper enumProvider;
 
     private DefaultSerializers() {
         this.serializers = initSerializers();
-        enumProvider = new SerializerProvider(EnumTypeSerializer.class, EnumTypeDeserializer.class);
+        enumProvider = new SerializerProviderWrapper(EnumTypeSerializer::new, EnumTypeDeserializer::new);
     }
 
-    private Map<Class<?>, SerializerProvider> initSerializers() {
-        final Map<Class<?>, SerializerProvider> serializers = new HashMap<>();
-        serializers.put(Boolean.class, new SerializerProvider(BooleanTypeSerializer.class, BooleanTypeDeserializer.class));
-        serializers.put(Boolean.TYPE, new SerializerProvider(BooleanTypeSerializer.class, BooleanTypeDeserializer.class));
-        serializers.put(Byte.class, new SerializerProvider(ByteTypeSerializer.class, ByteTypeDeserializer.class));
-        serializers.put(Byte.TYPE, new SerializerProvider(ByteTypeSerializer.class, ByteTypeDeserializer.class));
-        serializers.put(Calendar.class, new SerializerProvider(CalendarTypeSerializer.class, CalendarTypeDeserializer.class));
-        serializers.put(GregorianCalendar.class, new SerializerProvider(CalendarTypeSerializer.class, CalendarTypeDeserializer.class));
-        serializers.put(Character.class, new SerializerProvider(CharacterTypeSerializer.class, CharacterTypeDeserializer.class));
-        serializers.put(Character.TYPE, new SerializerProvider(CharacterTypeSerializer.class, CharacterTypeDeserializer.class));
-        serializers.put(Date.class, new SerializerProvider(DateTypeSerializer.class, DateTypeDeserializer.class));
-        serializers.put(Double.class, new SerializerProvider(DoubleTypeSerializer.class, DoubleTypeDeserializer.class));
-        serializers.put(Double.TYPE, new SerializerProvider(DoubleTypeSerializer.class, DoubleTypeDeserializer.class));
-        serializers.put(Float.class, new SerializerProvider(FloatTypeSerializer.class, FloatTypeDeserializer.class));
-        serializers.put(Float.TYPE, new SerializerProvider(FloatTypeSerializer.class, FloatTypeDeserializer.class));
-        serializers.put(Instant.class, new SerializerProvider(InstantTypeSerializer.class, InstantTypeDeserializer.class));
-        serializers.put(Integer.class, new SerializerProvider(IntegerTypeSerializer.class, IntegerTypeDeserializer.class));
-        serializers.put(Integer.TYPE, new SerializerProvider(IntegerTypeSerializer.class, IntegerTypeDeserializer.class));
-        serializers.put(JsonNumber.class, new SerializerProvider(JsonValueSerializer.class, JsonNumberTypeDeserializer.class));
-        serializers.put(JsonString.class, new SerializerProvider(JsonValueSerializer.class, JsonStringTypeDeserializer.class));
-        serializers.put(JsonValue.class, new SerializerProvider(JsonValueSerializer.class, JsonValueDeserializer.class));
-        serializers.put(LocalDateTime.class, new SerializerProvider(LocalDateTimeTypeSerializer.class, LocalDateTimeTypeDeserializer.class));
-        serializers.put(LocalDate.class, new SerializerProvider(LocalDateTypeSerializer.class, LocalDateTypeDeserializer.class));
-        serializers.put(LocalTime.class, new SerializerProvider(LocalTimeTypeSerializer.class, LocalTimeTypeDeserializer.class));
-        serializers.put(Long.class, new SerializerProvider(LongTypeSerializer.class, LongTypeDeserializer.class));
-        serializers.put(Long.TYPE, new SerializerProvider(LongTypeSerializer.class, LongTypeDeserializer.class));
-        serializers.put(Number.class, new SerializerProvider(NumberTypeSerializer.class, NumberTypeDeserializer.class));
-        serializers.put(OffsetDateTime.class, new SerializerProvider(OffsetDateTimeTypeSerializer.class, OffsetDateTimeTypeDeserializer.class));
-        serializers.put(OffsetTime.class, new SerializerProvider(OffsetTimeTypeSerializer.class, OffsetTimeTypeDeserializer.class));
-        serializers.put(OptionalDouble.class, new SerializerProvider(OptionalDoubleTypeSerializer.class, OptionalDoubleTypeDeserializer.class));
-        serializers.put(OptionalInt.class, new SerializerProvider(OptionalIntTypeSerializer.class, OptionalIntTypeDeserializer.class));
-        serializers.put(OptionalLong.class, new SerializerProvider(OptionalLongTypeSerializer.class, OptionalLongTypeDeserializer.class));
-        serializers.put(Short.class, new SerializerProvider(ShortTypeSerializer.class, ShortTypeDeserializer.class));
-        serializers.put(Short.TYPE, new SerializerProvider(ShortTypeSerializer.class, ShortTypeDeserializer.class));
-        serializers.put(String.class, new SerializerProvider(StringTypeSerializer.class, StringTypeDeserializer.class));
-        serializers.put(TimeZone.class, new SerializerProvider(TimeZoneTypeSerializer.class, TimeZoneTypeDeserializer.class));
-        serializers.put(URI.class, new SerializerProvider(URITypeSerializer.class, URITypeDeserializer.class));
-        serializers.put(URL.class, new SerializerProvider(URLTypeSerializer.class, URLTypeDeserializer.class));
-        serializers.put(ZonedDateTime.class, new SerializerProvider(ZonedDateTimeTypeSerializer.class, ZonedDateTimeTypeDeserializer.class));
-        serializers.put(Duration.class, new SerializerProvider(DurationTypeSerializer.class, DurationTypeDeserializer.class));
-        serializers.put(Period.class, new SerializerProvider(PeriodTypeSerializer.class, PeriodTypeDeserializer.class));
-        serializers.put(ZoneId.class, new SerializerProvider(ZoneIdTypeSerializer.class, ZoneIdTypeDeserializer.class));
-        serializers.put(BigInteger.class, new SerializerProvider(BigIntegerTypeSerializer.class, BigIntegerTypeDeserializer.class));
-        serializers.put(BigDecimal.class, new SerializerProvider(BigDecimalTypeSerializer.class, BigDecimalTypeDeserializer.class));
-        serializers.put(ZoneOffset.class, new SerializerProvider(ZoneOffsetTypeSerializer.class, ZoneOffsetTypeDeserializer.class));
+    private Map<Class<?>, SerializerProviderWrapper> initSerializers() {
+        final Map<Class<?>, SerializerProviderWrapper> serializers = new HashMap<>();
+
+        serializers.put(Boolean.class, new SerializerProviderWrapper(BooleanTypeSerializer::new, BooleanTypeDeserializer::new));
+        serializers.put(Boolean.TYPE, new SerializerProviderWrapper(BooleanTypeSerializer::new, BooleanTypeDeserializer::new));
+        serializers.put(Byte.class, new SerializerProviderWrapper(ByteTypeSerializer::new, ByteTypeDeserializer::new));
+        serializers.put(Byte.TYPE, new SerializerProviderWrapper(ByteTypeSerializer::new, ByteTypeDeserializer::new));
+        serializers.put(Calendar.class, new SerializerProviderWrapper(CalendarTypeSerializer::new, CalendarTypeDeserializer::new));
+        serializers.put(GregorianCalendar.class, new SerializerProviderWrapper(CalendarTypeSerializer::new, CalendarTypeDeserializer::new));
+        serializers.put(Character.class, new SerializerProviderWrapper(CharacterTypeSerializer::new, CharacterTypeDeserializer::new));
+        serializers.put(Character.TYPE, new SerializerProviderWrapper(CharacterTypeSerializer::new, CharacterTypeDeserializer::new));
+        serializers.put(Date.class, new SerializerProviderWrapper(DateTypeSerializer::new, DateTypeDeserializer::new));
+        serializers.put(Double.class, new SerializerProviderWrapper(DoubleTypeSerializer::new, DoubleTypeDeserializer::new));
+        serializers.put(Double.TYPE, new SerializerProviderWrapper(DoubleTypeSerializer::new, DoubleTypeDeserializer::new));
+        serializers.put(Float.class, new SerializerProviderWrapper(FloatTypeSerializer::new, FloatTypeDeserializer::new));
+        serializers.put(Float.TYPE, new SerializerProviderWrapper(FloatTypeSerializer::new, FloatTypeDeserializer::new));
+        serializers.put(Instant.class, new SerializerProviderWrapper(InstantTypeSerializer::new, InstantTypeDeserializer::new));
+        serializers.put(Integer.class, new SerializerProviderWrapper(IntegerTypeSerializer::new, IntegerTypeDeserializer::new));
+        serializers.put(Integer.TYPE, new SerializerProviderWrapper(IntegerTypeSerializer::new, IntegerTypeDeserializer::new));
+        serializers.put(JsonNumber.class, new SerializerProviderWrapper(JsonValueSerializer::new, JsonNumberTypeDeserializer::new));
+        serializers.put(JsonString.class, new SerializerProviderWrapper(JsonValueSerializer::new, JsonStringTypeDeserializer::new));
+        serializers.put(JsonValue.class, new SerializerProviderWrapper(JsonValueSerializer::new, JsonValueDeserializer::new));
+        serializers.put(LocalDateTime.class, new SerializerProviderWrapper(LocalDateTimeTypeSerializer::new, LocalDateTimeTypeDeserializer::new));
+        serializers.put(LocalDate.class, new SerializerProviderWrapper(LocalDateTypeSerializer::new, LocalDateTypeDeserializer::new));
+        serializers.put(LocalTime.class, new SerializerProviderWrapper(LocalTimeTypeSerializer::new, LocalTimeTypeDeserializer::new));
+        serializers.put(Long.class, new SerializerProviderWrapper(LongTypeSerializer::new, LongTypeDeserializer::new));
+        serializers.put(Long.TYPE, new SerializerProviderWrapper(LongTypeSerializer::new, LongTypeDeserializer::new));
+        serializers.put(Number.class, new SerializerProviderWrapper(NumberTypeSerializer::new, NumberTypeDeserializer::new));
+        serializers.put(OffsetDateTime.class, new SerializerProviderWrapper(OffsetDateTimeTypeSerializer::new, OffsetDateTimeTypeDeserializer::new));
+        serializers.put(OffsetTime.class, new SerializerProviderWrapper(OffsetTimeTypeSerializer::new, OffsetTimeTypeDeserializer::new));
+        serializers.put(OptionalDouble.class, new SerializerProviderWrapper(OptionalDoubleTypeSerializer::new, OptionalDoubleTypeDeserializer::new));
+        serializers.put(OptionalInt.class, new SerializerProviderWrapper(OptionalIntTypeSerializer::new, OptionalIntTypeDeserializer::new));
+        serializers.put(OptionalLong.class, new SerializerProviderWrapper(OptionalLongTypeSerializer::new, OptionalLongTypeDeserializer::new));
+        serializers.put(Short.class, new SerializerProviderWrapper(ShortTypeSerializer::new, ShortTypeDeserializer::new));
+        serializers.put(Short.TYPE, new SerializerProviderWrapper(ShortTypeSerializer::new, ShortTypeDeserializer::new));
+        serializers.put(String.class, new SerializerProviderWrapper(StringTypeSerializer::new, StringTypeDeserializer::new));
+        serializers.put(TimeZone.class, new SerializerProviderWrapper(TimeZoneTypeSerializer::new, TimeZoneTypeDeserializer::new));
+        serializers.put(URI.class, new SerializerProviderWrapper(URITypeSerializer::new, URITypeDeserializer::new));
+        serializers.put(URL.class, new SerializerProviderWrapper(URLTypeSerializer::new, URLTypeDeserializer::new));
+        serializers.put(ZonedDateTime.class, new SerializerProviderWrapper(ZonedDateTimeTypeSerializer::new, ZonedDateTimeTypeDeserializer::new));
+        serializers.put(Duration.class, new SerializerProviderWrapper(DurationTypeSerializer::new, DurationTypeDeserializer::new));
+        serializers.put(Period.class, new SerializerProviderWrapper(PeriodTypeSerializer::new, PeriodTypeDeserializer::new));
+        serializers.put(ZoneId.class, new SerializerProviderWrapper(ZoneIdTypeSerializer::new, ZoneIdTypeDeserializer::new));
+        serializers.put(BigInteger.class, new SerializerProviderWrapper(BigIntegerTypeSerializer::new, BigIntegerTypeDeserializer::new));
+        serializers.put(BigDecimal.class, new SerializerProviderWrapper(BigDecimalTypeSerializer::new, BigDecimalTypeDeserializer::new));
+        serializers.put(ZoneOffset.class, new SerializerProviderWrapper(ZoneOffsetTypeSerializer::new, ZoneOffsetTypeDeserializer::new));
 
         return Collections.unmodifiableMap(serializers);
     }
@@ -118,10 +119,10 @@ public class DefaultSerializers {
      * @return serializer if found
      */
     @SuppressWarnings("unchecked")
-    public <T> Optional<SerializerProvider> findValueSerializerProvider(Class<T> clazz) {
+    public <T> Optional<SerializerProviderWrapper> findValueSerializerProvider(Class<T> clazz) {
         Class<?> candidate = clazz;
         do {
-            final SerializerProvider provider = serializers.get(candidate);
+            final SerializerProviderWrapper provider = serializers.get(candidate);
             if (provider != null) {
                 return Optional.of(provider);
             }
@@ -131,7 +132,7 @@ public class DefaultSerializers {
         return findByCondition(clazz);
     }
 
-    private <T> Optional<SerializerProvider> findByCondition(Class<T> clazz) {
+    private <T> Optional<SerializerProviderWrapper> findByCondition(Class<T> clazz) {
         if (clazz.isEnum()) {
             return Optional.of(enumProvider);
         } else if (JsonString.class.isAssignableFrom(clazz)) {

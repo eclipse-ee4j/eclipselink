@@ -72,14 +72,16 @@ import java.util.Set;
  */
 public class AnnotationIntrospector {
 
-    private static final AnnotationIntrospector instance = new AnnotationIntrospector();
+    private final JsonbContext jsonbContext;
 
     /**
-     * Gets a singleton instance to use
-     * @return instance
+     * Creates annotation introspecting component passing {@link JsonbContext} inside.
+     *
+     * @param jsonbContext mandatory
      */
-    public static AnnotationIntrospector getInstance() {
-        return instance;
+    public AnnotationIntrospector(JsonbContext jsonbContext) {
+        Objects.requireNonNull(jsonbContext);
+        this.jsonbContext = jsonbContext;
     }
 
     /**
@@ -175,8 +177,7 @@ public class AnnotationIntrospector {
 
     private AdapterBinding getAdapterBindingFromAnnotation(JsonbTypeAdapter adapterAnnotation, Optional<Class<?>> expectedClass) {
         final Class<? extends JsonbAdapter> adapterClass = adapterAnnotation.value();
-        final AdapterBinding adapterBinding = ProcessingContext.getJsonbContext().getComponentMatcher().introspectAdapterBinding(adapterClass,
-                () -> ProcessingContext.getJsonbContext().getComponentInstanceCreator().getOrCreateComponent(adapterClass));
+        final AdapterBinding adapterBinding = jsonbContext.getComponentMatcher().introspectAdapterBinding(adapterClass, null);
 
         if (expectedClass.isPresent() && !(ReflectionUtils.getRawType(adapterBinding.getBindingType()).equals(expectedClass.get()))) {
             throw new JsonbException(Messages.getMessage(MessageKeys.ADAPTER_INCOMPATIBLE, adapterBinding.getBindingType(), expectedClass.get()));
@@ -198,8 +199,7 @@ public class AnnotationIntrospector {
         }
 
         final Class<? extends JsonbDeserializer> deserializerClass = deserializerAnnotation.value();
-        return ProcessingContext.getJsonbContext().getComponentMatcher().introspectDeserializerBinding(deserializerClass,
-                () -> ProcessingContext.getJsonbContext().getComponentInstanceCreator().getOrCreateComponent(deserializerClass));
+        return jsonbContext.getComponentMatcher().introspectDeserializerBinding(deserializerClass, null);
     }
 
     /**
@@ -216,8 +216,7 @@ public class AnnotationIntrospector {
         }
 
         final Class<? extends JsonbSerializer> serializerClass = serializerAnnotation.value();
-        return ProcessingContext.getJsonbContext().getComponentMatcher().introspectSerialzierBinding(serializerClass,
-                () -> ProcessingContext.getJsonbContext().getComponentInstanceCreator().getOrCreateComponent(serializerClass));
+        return jsonbContext.getComponentMatcher().introspectSerialzierBinding(serializerClass, null);
 
     }
 
@@ -256,6 +255,17 @@ public class AnnotationIntrospector {
     public boolean isClassNillable(JsonbAnnotatedElement<Class<?>> clazzElement) {
         final JsonbNillable jsonbNillable = findAnnotation(clazzElement.getAnnotations(), JsonbNillable.class);
         return jsonbNillable != null && jsonbNillable.value();
+    }
+
+    /**
+     * Checks for {@link JsonbPropertyOrder} annotation.
+     *
+     * @param clazzElement class to search on
+     * @return ordered properties names or null if not found
+     */
+    public String[] getPropertyOrder(JsonbAnnotatedElement<Class<?>> clazzElement) {
+        final JsonbPropertyOrder jsonbPropertyOrder = clazzElement.getElement().getAnnotation(JsonbPropertyOrder.class);
+        return jsonbPropertyOrder != null ? jsonbPropertyOrder.value() : null;
     }
 
     /**
@@ -491,15 +501,6 @@ public class AnnotationIntrospector {
     }
 
     /**
-     * Returns JsonbPropertyOrder annotation if class has one
-     * @param clazz Class to be checked
-     * @return
-     */
-    public Optional<JsonbPropertyOrder> getJsonbPropertyOrderAnnotation(Class<?> clazz) {
-        return Optional.ofNullable(findAnnotation(clazz.getDeclaredAnnotations(), JsonbPropertyOrder.class));
-    }
-
-    /**
      * Get class interfaces recursively.
      */
     public Set<Class<?>> collectInterfaces(Class<?> cls) {
@@ -520,6 +521,7 @@ public class AnnotationIntrospector {
         builder.setDateFormatter(getJsonbDateFormat(clsElement));
         builder.setNumberFormat(getJsonbNumberFormat(clsElement));
         builder.setCreator(getCreator(clsElement.getElement()));
+        builder.setPropertyOrder(getPropertyOrder(clsElement));
         return builder.buildClassCustomization();
     }
 
@@ -530,7 +532,7 @@ public class AnnotationIntrospector {
     public JsonbAnnotatedElement<Class<?>> collectAnnotations(Class<?> clazz) {
         JsonbAnnotatedElement<Class<?>> classElement = new JsonbAnnotatedElement<>(clazz);
 
-        for (Class<?> ifc : AnnotationIntrospector.getInstance().collectInterfaces(clazz)) {
+        for (Class<?> ifc : collectInterfaces(clazz)) {
             addIfNotPresent(classElement, ifc.getDeclaredAnnotations());
         }
 

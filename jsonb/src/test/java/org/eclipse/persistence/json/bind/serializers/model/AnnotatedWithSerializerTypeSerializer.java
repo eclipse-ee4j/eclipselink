@@ -24,6 +24,8 @@ public class AnnotatedWithSerializerTypeSerializer implements JsonbSerializer<An
 
     @Override
     public void serialize(AnnotatedWithSerializerType obj, JsonGenerator generator, SerializationContext ctx) {
+        generator.writeStartObject();
         generator.write("valueField", "replaced value");
+        generator.writeEnd();
     }
 }

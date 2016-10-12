@@ -14,6 +14,7 @@
 package org.eclipse.persistence.json.bind.internal.unmarshaller;
 
 import org.eclipse.persistence.json.bind.internal.ProcessingContext;
+import org.eclipse.persistence.json.bind.internal.Unmarshaller;
 
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
@@ -36,7 +37,7 @@ public class JsonObjectDeserializer extends AbstractJsonpDeserializer<JsonObject
      */
     protected JsonObjectDeserializer(DeserializerBuilder builder) {
         super(builder);
-        objectBuilder = ProcessingContext.getJsonbContext().getJsonProvider().createObjectBuilder();
+        objectBuilder = builder.getJsonbContext().getJsonProvider().createObjectBuilder();
     }
 
     @Override
@@ -65,7 +66,7 @@ public class JsonObjectDeserializer extends AbstractJsonpDeserializer<JsonObject
     }
 
     @Override
-    public JsonObject getInstance() {
+    public JsonObject getInstance(Unmarshaller unmarshaller) {
         return objectBuilder.build();
     }
 }

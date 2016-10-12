@@ -13,7 +13,8 @@
 
 package org.eclipse.persistence.json.bind.internal.serializer;
 
-import org.eclipse.persistence.json.bind.model.SerializerBindingModel;
+import org.eclipse.persistence.json.bind.internal.Marshaller;
+import org.eclipse.persistence.json.bind.model.JsonBindingModel;
 
 import javax.json.stream.JsonGenerator;
 import java.time.Instant;
@@ -25,17 +26,17 @@ import java.time.format.DateTimeFormatter;
  */
 public class InstantTypeSerializer extends AbstractValueTypeSerializer<Instant> {
 
-    public InstantTypeSerializer(SerializerBindingModel model) {
-        super(Instant.class, model);
+    public InstantTypeSerializer(JsonBindingModel model) {
+        super(model);
     }
 
     @Override
-    protected void serialize(Instant obj, JsonGenerator generator, String key) {
+    protected void serialize(Instant obj, JsonGenerator generator, String key, Marshaller marshaller) {
         generator.write(key, formatInstant(obj));
     }
 
     @Override
-    protected void serialize(Instant obj, JsonGenerator generator) {
+    protected void serialize(Instant obj, JsonGenerator generator, Marshaller marshaller) {
         generator.write(formatInstant(obj));
     }
 

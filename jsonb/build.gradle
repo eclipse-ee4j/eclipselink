@@ -40,15 +40,15 @@ repositories {
 
 dependencies {
     compile 'javax.json.bind:javax.json.bind-api:1.0-SNAPSHOT'
-    compile 'javax.json:javax.json-api:1.0'
+    compile 'javax.json:javax.json-api:1.1.0-SNAPSHOT'
     compile 'javax.enterprise:cdi-api:1.2'
 
     if (project.hasProperty('1.1')) {
         println '1.1'
-        testRuntime 'org.glassfish:javax.json:1.1.0-SNAPSHOT'
+        testRuntime 'org.glassfish:javax.json:1.1.0'
     } else {
         println '1.0'
-        testRuntime 'org.glassfish:javax.json:1.0.4'
+        testRuntime 'org.glassfish:javax.json:1.1.0-SNAPSHOT'
     }
 
     testCompile 'junit:junit:4.12'
@@ -98,8 +98,10 @@ artifacts {
     sign configurations.archives
 }*/
 
+// use ./gradlew upload -PdeployOSS
 if (project.hasProperty("deployOSS")) {
 
+    println 'Deploying to OSS';
     uploadArchives {
         repositories {
             mavenDeployer {

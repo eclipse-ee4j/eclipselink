@@ -15,22 +15,67 @@ package org.eclipse.persistence.json.bind.internal.unmarshaller;
 
 import org.eclipse.persistence.json.bind.model.Customization;
 import org.eclipse.persistence.json.bind.model.JsonBindingModel;
+import org.eclipse.persistence.json.bind.model.JsonContext;
 
 import java.lang.reflect.Type;
 
 /**
- * Binding model for collection like types
+ * Binding model for collection like types.
+ * Model provides a value type of a collection and its customization. If for example this model
+ * is instantiated for {@code List<MyPojo>}, it will contain {@code MyPojo} value type and customization parsed
+ * from annotations of {@code MyPojo} class.
+ *
  * @author Roman Grigoriadi
  */
 public class ContainerModel implements JsonBindingModel {
+
+    private final JsonContext context;
+
+    private final String writeName;
 
     private final Type valueRuntimeType;
 
     private final Customization customization;
 
+    /**
+     * Construct model.
+     *
+     * @param valueRuntimeType collection or map value type
+     * @param customization customization parsed from value type
+     * @param context Object context used for serialization
+     * @param writeName write name used for serialization
+     */
+    public ContainerModel(Type valueRuntimeType, Customization customization, JsonContext context, String writeName) {
+        this.valueRuntimeType = valueRuntimeType;
+        this.customization = customization;
+        this.context = context;
+        this.writeName = writeName;
+    }
+    /**
+     * Construct model.
+     *
+     * @param valueRuntimeType collection or map value type
+     * @param customization customization parsed from value type
+     * @param context Object context used for serialization
+     */
+    public ContainerModel(Type valueRuntimeType, Customization customization, JsonContext context) {
+        this.valueRuntimeType = valueRuntimeType;
+        this.customization = customization;
+        this.context = context;
+        this.writeName = null;
+    }
+
+    /**
+     * Minimal constructor.
+     *
+     * @param valueRuntimeType collection or map value type
+     * @param customization customization parsed from value type
+     */
     public ContainerModel(Type valueRuntimeType, Customization customization) {
         this.valueRuntimeType = valueRuntimeType;
         this.customization = customization;
+        this.context = null;
+        this.writeName = null;
     }
 
     /**
@@ -51,6 +96,26 @@ public class ContainerModel implements JsonBindingModel {
     @Override
     public Type getType() {
         return valueRuntimeType;
+    }
+
+    /**
+     * Name of json key that will be written by marshaller.
+     *
+     * @return
+     */
+    @Override
+    public String getWriteName() {
+        return writeName;
+    }
+
+    /**
+     * Current context of json generator.
+     *
+     * @return context
+     */
+    @Override
+    public JsonContext getContext() {
+        return context;
     }
 
 }

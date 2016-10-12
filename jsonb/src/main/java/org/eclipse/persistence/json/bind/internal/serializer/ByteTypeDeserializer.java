@@ -29,7 +29,7 @@ public class ByteTypeDeserializer extends AbstractNumberDeserializer<Byte> {
 
     @Override
     protected Byte deserialize(String value, Unmarshaller unmarshaller, Type rtType) {
-        return deserializeForamtted(value, true).map(num->Byte.parseByte(num.toString()))
+        return deserializeForamtted(value, true, unmarshaller.getJsonbContext()).map(num->Byte.parseByte(num.toString()))
                 .orElseGet(()->Byte.parseByte(value));
     }
 }

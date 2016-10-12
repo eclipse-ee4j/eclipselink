@@ -13,6 +13,7 @@
 
 package org.eclipse.persistence.json.bind.defaultmapping.specific;
 
+import org.eclipse.persistence.json.bind.TestTypeToken;
 import org.junit.Test;
 
 import javax.json.bind.Jsonb;
@@ -42,10 +43,10 @@ public class JsonStreamsTest {
 
         String json = "{\"key1\":\"value1\",\"key2\":\"value2\"}";
 
-        Map<String, String> result = jsonb.fromJson(new InputStreamReader(new ByteArrayInputStream(json.getBytes(CHARSET)), Charset.forName(CHARSET)), new HashMap<String, String>(){}.getClass());
+        Map<String, String> result = jsonb.fromJson(new InputStreamReader(new ByteArrayInputStream(json.getBytes(CHARSET)), Charset.forName(CHARSET)), new TestTypeToken<HashMap<String, String>>(){}.getType());
         assertMapValues(result);
 
-        result = jsonb.fromJson(new ByteArrayInputStream(json.getBytes(CHARSET)), new HashMap<String, String>() {}.getClass());
+        result = jsonb.fromJson(new ByteArrayInputStream(json.getBytes(CHARSET)), new TestTypeToken<HashMap<String, String>>() {}.getType());
         assertMapValues(result);
     }
 

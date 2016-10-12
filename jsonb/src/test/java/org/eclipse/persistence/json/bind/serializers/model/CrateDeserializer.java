@@ -13,6 +13,8 @@
 
 package org.eclipse.persistence.json.bind.serializers.model;
 
+import org.eclipse.persistence.json.bind.TestTypeToken;
+
 import javax.json.bind.serializer.DeserializationContext;
 import javax.json.bind.serializer.JsonbDeserializer;
 import javax.json.stream.JsonParser;
@@ -39,7 +41,7 @@ public class CrateDeserializer implements JsonbDeserializer<Crate> {
             }
             if (next.equals(JsonParser.Event.KEY_NAME) && jsonParser.getString().equals("crateInnerList")) {
                 //invokes JSONB processing for a CrateInner as a root type with "shared" instance of JsonParser
-                crate.crateInnerList = ctx.deserialize(new ArrayList<CrateInner>() {}.getClass(), jsonParser);
+                crate.crateInnerList = ctx.deserialize(new TestTypeToken<ArrayList<CrateInner>>(){}.getType(), jsonParser);
                 continue;
             }
             if (next.equals(JsonParser.Event.KEY_NAME) && jsonParser.getString().equals("date")) {

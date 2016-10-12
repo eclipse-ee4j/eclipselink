@@ -13,8 +13,9 @@
 
 package org.eclipse.persistence.json.bind.internal.serializer;
 
-import org.eclipse.persistence.json.bind.internal.ProcessingContext;
-import org.eclipse.persistence.json.bind.model.SerializerBindingModel;
+import org.eclipse.persistence.json.bind.internal.JsonbContext;
+import org.eclipse.persistence.json.bind.internal.Marshaller;
+import org.eclipse.persistence.json.bind.model.JsonBindingModel;
 import org.eclipse.persistence.json.bind.model.PropertyModel;
 
 import javax.json.bind.JsonbConfig;
@@ -37,22 +38,22 @@ public class CalendarTypeSerializer extends AbstractValueTypeSerializer<Calendar
     private final Calendar calendarTemplate;
 
 
-    public CalendarTypeSerializer(SerializerBindingModel model) {
-        super(Calendar.class, model);
+    public CalendarTypeSerializer(JsonBindingModel model) {
+        super(model);
         calendarTemplate = Calendar.getInstance();
         calendarTemplate.clear();
     }
 
 
-    private String toJson(Calendar object, JsonbDateFormatter formatter) {
+    private String toJson(Calendar object, JsonbDateFormatter formatter, JsonbContext jsonbContext) {
         if (JsonbDateFormat.TIME_IN_MILLIS.equals(formatter.getFormat())) {
             return String.valueOf(object.getTime().getTime());
         }
 
-        Locale locale = ProcessingContext.getJsonbContext().getLocale(formatter.getLocale());
+        Locale locale = jsonbContext.getLocale(formatter.getLocale());
         if (JsonbDateFormat.DEFAULT_FORMAT.equals(formatter.getFormat())) {
             final Optional<Object> strictJson =
-                    ProcessingContext.getJsonbContext().getConfig().getProperty(JsonbConfig.STRICT_IJSON);
+                    jsonbContext.getConfig().getProperty(JsonbConfig.STRICT_IJSON);
 
             //Use ISO_DATE_TIME, convert to java.time first
             //TODO PERF subject to reconsider if conversion between java.time and java.util outweights threadsafe java.time formatter.
@@ -74,21 +75,22 @@ public class CalendarTypeSerializer extends AbstractValueTypeSerializer<Calendar
 
     @Override
     public void serialize(Calendar obj, JsonGenerator generator, SerializationContext ctx) {
-        final JsonbDateFormatter formatter = ProcessingContext.getJsonbContext().getComponentMatcher().getDateFormatter(model);
+        final Marshaller marshaller = (Marshaller) ctx;
+        final JsonbDateFormatter formatter = marshaller.getJsonbContext().getComponentMatcher().getDateFormatter(model);
         if (model instanceof PropertyModel) {
-            generator.write(((PropertyModel)model).getPropertyName(), toJson(obj, formatter));
+            generator.write(((PropertyModel)model).getPropertyName(), toJson(obj, formatter, marshaller.getJsonbContext()));
         } else {
-            generator.write(toJson(obj, formatter));
+            generator.write(toJson(obj, formatter, marshaller.getJsonbContext()));
         }
     }
 
     @Override
-    protected void serialize(Calendar obj, JsonGenerator generator, String key) {
+    protected void serialize(Calendar obj, JsonGenerator generator, String key, Marshaller marshaller) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    protected void serialize(Calendar obj, JsonGenerator generator) {
+    protected void serialize(Calendar obj, JsonGenerator generator, Marshaller marshaller) {
         throw new UnsupportedOperationException();
     }
 }

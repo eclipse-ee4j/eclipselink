@@ -13,7 +13,8 @@
 
 package org.eclipse.persistence.json.bind.internal.serializer;
 
-import org.eclipse.persistence.json.bind.internal.AbstractContainerSerializer;
+import org.eclipse.persistence.json.bind.model.JsonBindingModel;
+import org.eclipse.persistence.json.bind.model.JsonContext;
 
 import javax.json.bind.serializer.JsonbSerializer;
 import javax.json.bind.serializer.SerializationContext;
@@ -24,33 +25,30 @@ import javax.json.stream.JsonGenerator;
  *
  * @author Roman Grigoriadi
  */
-public class UserSerializerSerializer<T> extends AbstractContainerSerializer<T> {
+public class UserSerializerSerializer<T> implements JsonbSerializer<T> {
 
     private final JsonbSerializer<T> userSerializer;
+
+    private JsonBindingModel model;
+
     /**
      * Create instance of current item with its builder.
      *
-     * @param builder
+     * @param model model
+     * @param userSerializer user serializer
      */
-    protected UserSerializerSerializer(SerializerBuilder builder, JsonbSerializer<T> userSerializer) {
-        super(builder);
+    public UserSerializerSerializer(JsonBindingModel model, JsonbSerializer<T> userSerializer) {
+        this.model = model;
         this.userSerializer = userSerializer;
     }
 
+
     @Override
-    protected void serializeInternal(T obj, JsonGenerator generator, SerializationContext ctx) {
+    public void serialize(T obj, JsonGenerator generator, SerializationContext ctx) {
+        if (model.getContext() == JsonContext.JSON_OBJECT) {
+            generator.writeKey(model.getWriteName());
+        }
         userSerializer.serialize(obj, generator, ctx);
     }
 
-    @Override
-    protected void writeStart(JsonGenerator generator) {
-        //TODO this must be handled  by user serializer
-        generator.writeStartObject();
-    }
-
-    @Override
-    protected void writeStart(String key, JsonGenerator generator) {
-        //TODO this must be handled  by user serializer
-        generator.writeStartObject(key);
-    }
 }

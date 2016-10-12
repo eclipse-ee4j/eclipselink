@@ -34,4 +34,16 @@ public interface JsonBindingModel {
      */
     Type getType();
 
+    /**
+     * Name of json key that will be written by marshaller.
+     * @return
+     */
+    String getWriteName();
+
+    /**
+     * Current context of json generator.
+     * @return context
+     */
+    JsonContext getContext();
+
 }

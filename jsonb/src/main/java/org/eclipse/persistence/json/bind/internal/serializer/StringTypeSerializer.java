@@ -13,10 +13,11 @@
 
 package org.eclipse.persistence.json.bind.internal.serializer;
 
-import org.eclipse.persistence.json.bind.internal.ProcessingContext;
+import org.eclipse.persistence.json.bind.internal.JsonbContext;
+import org.eclipse.persistence.json.bind.internal.Marshaller;
 import org.eclipse.persistence.json.bind.internal.properties.MessageKeys;
 import org.eclipse.persistence.json.bind.internal.properties.Messages;
-import org.eclipse.persistence.json.bind.model.SerializerBindingModel;
+import org.eclipse.persistence.json.bind.model.JsonBindingModel;
 
 import javax.json.bind.JsonbConfig;
 import javax.json.bind.JsonbException;
@@ -28,12 +29,12 @@ import java.io.UnsupportedEncodingException;
  */
 public class StringTypeSerializer extends AbstractValueTypeSerializer<String> {
 
-    public StringTypeSerializer(SerializerBindingModel model) {
-        super(String.class, model);
+    public StringTypeSerializer(JsonBindingModel model) {
+        super(model);
     }
 
-    private String toJson(String object) {
-        if ((boolean) ProcessingContext.getJsonbContext().getConfig().getProperty(JsonbConfig.STRICT_IJSON).orElse(false)) {
+    private String toJson(String object, JsonbContext jsonbContext) {
+        if ((boolean) jsonbContext.getConfig().getProperty(JsonbConfig.STRICT_IJSON).orElse(false)) {
             try {
                 String newString = new String(object.getBytes("UTF-8"), "UTF-8");
                 if (!newString.equals(object)) {
@@ -47,12 +48,12 @@ public class StringTypeSerializer extends AbstractValueTypeSerializer<String> {
     }
 
     @Override
-    protected void serialize(String obj, JsonGenerator generator, String key) {
-        generator.write(key, toJson(obj));
+    protected void serialize(String obj, JsonGenerator generator, String key, Marshaller marshaller) {
+        generator.write(key, toJson(obj, marshaller.getJsonbContext()));
     }
 
     @Override
-    protected void serialize(String obj, JsonGenerator generator) {
-        generator.write(toJson(obj));
+    protected void serialize(String obj, JsonGenerator generator, Marshaller marshaller) {
+        generator.write(toJson(obj, marshaller.getJsonbContext()));
     }
 }

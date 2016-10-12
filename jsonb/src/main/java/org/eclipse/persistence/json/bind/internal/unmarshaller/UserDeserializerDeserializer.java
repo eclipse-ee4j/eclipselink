@@ -53,7 +53,7 @@ public class UserDeserializerDeserializer<T> extends AbstractContainerDeserializ
 
     @Override
     @SuppressWarnings("unchecked")
-    public T getInstance() {
+    public T getInstance(Unmarshaller unmarshaller) {
         return deserializerResult;
     }
 

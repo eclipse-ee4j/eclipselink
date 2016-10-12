@@ -46,6 +46,8 @@ public class CustomizationBuilder {
 
     private JsonbCreator creator;
 
+    private String[] propertyOrder;
+
     /**
      * Creates customization for class properties.
      * @return class property customization
@@ -215,5 +217,18 @@ public class CustomizationBuilder {
      */
     public void setCreator(JsonbCreator creator) {
         this.creator = creator;
+    }
+
+    /**
+     * Names of properties to sort with.
+     *
+     * @return sorted names of properties
+     */
+    public String[] getPropertyOrder() {
+        return propertyOrder;
+    }
+
+    public void setPropertyOrder(String[] propertyOrder) {
+        this.propertyOrder = propertyOrder;
     }
 }

@@ -29,7 +29,7 @@ public class ShortTypeDeserializer extends AbstractNumberDeserializer<Short> {
 
     @Override
     protected Short deserialize(String jsonValue, Unmarshaller unmarshaller, Type rtType) {
-        return deserializeForamtted(jsonValue, true).map(num -> Short.parseShort(num.toString()))
+        return deserializeForamtted(jsonValue, true, unmarshaller.getJsonbContext()).map(num -> Short.parseShort(num.toString()))
                 .orElseGet(() -> Short.parseShort(jsonValue));
     }
 }

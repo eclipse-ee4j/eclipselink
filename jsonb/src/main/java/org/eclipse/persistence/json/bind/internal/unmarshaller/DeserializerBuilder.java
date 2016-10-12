@@ -14,6 +14,7 @@ package org.eclipse.persistence.json.bind.internal.unmarshaller;
 
 import org.eclipse.persistence.json.bind.internal.AbstractSerializerBuilder;
 import org.eclipse.persistence.json.bind.internal.ComponentMatcher;
+import org.eclipse.persistence.json.bind.internal.JsonbContext;
 import org.eclipse.persistence.json.bind.internal.ProcessingContext;
 import org.eclipse.persistence.json.bind.internal.ReflectionUtils;
 import org.eclipse.persistence.json.bind.internal.adapter.AdapterBinding;
@@ -22,7 +23,7 @@ import org.eclipse.persistence.json.bind.internal.properties.MessageKeys;
 import org.eclipse.persistence.json.bind.internal.properties.Messages;
 import org.eclipse.persistence.json.bind.internal.serializer.AbstractValueTypeDeserializer;
 import org.eclipse.persistence.json.bind.internal.serializer.DefaultSerializers;
-import org.eclipse.persistence.json.bind.internal.serializer.SerializerProvider;
+import org.eclipse.persistence.json.bind.internal.serializer.SerializerProviderWrapper;
 import org.eclipse.persistence.json.bind.model.JsonBindingModel;
 import org.eclipse.persistence.json.bind.model.PolymorphismAdapter;
 import org.eclipse.persistence.json.bind.model.TypeWrapper;
@@ -42,12 +43,16 @@ import java.util.Optional;
  *
  * @author Roman Grigoriadi
  */
-public class DeserializerBuilder extends AbstractSerializerBuilder<DeserializerBuilder, JsonBindingModel> {
+public class DeserializerBuilder extends AbstractSerializerBuilder<DeserializerBuilder> {
 
     /**
      * Value type of json event.
      */
     private JsonValueType jsonValueType;
+
+    public DeserializerBuilder(JsonbContext jsonbContext) {
+        super(jsonbContext);
+    }
 
     public DeserializerBuilder withJsonValueType(JsonValueType valueType) {
         this.jsonValueType = valueType;
@@ -65,7 +70,7 @@ public class DeserializerBuilder extends AbstractSerializerBuilder<DeserializerB
         Class<?> rawType = ReflectionUtils.getRawType(getRuntimeType());
 
         //First check if user deserializer is registered for such type
-        final ComponentMatcher componentMatcher = ProcessingContext.getJsonbContext().getComponentMatcher();
+        final ComponentMatcher componentMatcher = jsonbContext.getComponentMatcher();
         Optional<DeserializerBinding<?>> userDeserializer =
                 componentMatcher.getDeserialzierBinding(getRuntimeType(), getModel());
         if (userDeserializer.isPresent() &&
@@ -84,7 +89,7 @@ public class DeserializerBuilder extends AbstractSerializerBuilder<DeserializerB
 
         //In case of Base64 json value would be string and recognition by JsonValueType would not work
         if (isByteArray(rawType)) {
-            String strategy = ProcessingContext.getJsonbContext().getBinaryDataStrategy();
+            String strategy = jsonbContext.getBinaryDataStrategy();
             switch (strategy) {
                 case BinaryDataStrategy.BYTE:
                     return new ByteArrayDeserializer(this);
@@ -159,9 +164,9 @@ public class DeserializerBuilder extends AbstractSerializerBuilder<DeserializerB
 
 
     private Optional<AbstractValueTypeDeserializer<?>> getSupportedTypeDeserializer(Class<?> rawType) {
-        final Optional<? extends SerializerProvider> supportedTypeDeserializerOptional = DefaultSerializers.getInstance().findValueSerializerProvider(rawType);
+        final Optional<? extends SerializerProviderWrapper> supportedTypeDeserializerOptional = DefaultSerializers.getInstance().findValueSerializerProvider(rawType);
         if (supportedTypeDeserializerOptional.isPresent()) {
-            return Optional.of(supportedTypeDeserializerOptional.get().provideDeserializer(getModel()));
+            return Optional.of(supportedTypeDeserializerOptional.get().getDeserializerProvider().provideDeserializer(getModel()));
         }
         return Optional.empty();
     }

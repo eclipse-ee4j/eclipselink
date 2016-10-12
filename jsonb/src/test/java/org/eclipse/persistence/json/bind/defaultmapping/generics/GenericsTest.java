@@ -13,6 +13,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.json.bind.defaultmapping.generics;
 
+import org.eclipse.persistence.json.bind.TestTypeToken;
 import org.eclipse.persistence.json.bind.defaultmapping.generics.model.*;
 import org.eclipse.persistence.json.bind.serializers.model.Box;
 import org.eclipse.persistence.json.bind.serializers.model.Crate;
@@ -54,7 +55,7 @@ public class GenericsTest {
         String expected = "{\"field1\":\"value1\",\"field2\":3}";
         assertEquals(expected, jsonb.toJson(genericClass));
 
-        Type type = new GenericTestClass<String, Integer>() {}.getClass();
+        Type type = new TestTypeToken<GenericTestClass<String, Integer>>(){}.getType();
         GenericTestClass<String, Integer> result = jsonb.fromJson(expected, type);
         assertEquals("value1", result.field1);
         assertEquals(Integer.valueOf(3), result.field2);
@@ -78,7 +79,7 @@ public class GenericsTest {
         String expected = "{\"field1\":\"outerValue1\",\"field2\":{\"field1\":{\"field1\":\"innerMostValue3\",\"field2\":3},\"field2\":2}}";
         assertEquals(expected, jsonb.toJson(nestedGenericField));
 
-        Type type = new GenericTestClass<String, AnotherGenericTestClass<GenericTestClass<String, Integer>, Integer>>() {}.getClass();
+        Type type = new TestTypeToken<GenericTestClass<String, AnotherGenericTestClass<GenericTestClass<String, Integer>, Integer>>>(){}.getType();
         GenericTestClass<String, AnotherGenericTestClass<GenericTestClass<String, Integer>, Integer>> result = jsonb.fromJson(expected, type);
         assertEquals("outerValue1", result.field1);
         assertEquals(Integer.valueOf(2), result.field2.field2);
@@ -99,7 +100,7 @@ public class GenericsTest {
         String expected = "{\"field1\":\"outerValue1\",\"field2\":{\"field1\":\"innerValue1\",\"field2\":5}}";
         assertEquals(expected, jsonb.toJson(nestedGenericOnSelfClass));
 
-        Type type = new GenericTestClass<String, GenericTestClass<String, Integer>>() {}.getClass();
+        Type type = new TestTypeToken<GenericTestClass<String, GenericTestClass<String, Integer>>>(){}.getType();
         GenericTestClass<String, GenericTestClass<String, Integer>> result = jsonb.fromJson(expected, type);
         assertEquals("outerValue1", result.field1);
         assertEquals("innerValue1", result.field2.field1);
@@ -116,7 +117,7 @@ public class GenericsTest {
 
         String expected = "{\"field1\":{\"subField\":\"subFieldValue\"}}";
         assertEquals(expected, jsonb.toJson(myCyclicGenericClass));
-        MyCyclicGenericClass<CyclicSubClass> result = jsonb.fromJson(expected, new MyCyclicGenericClass<CyclicSubClass>() {}.getClass());
+        MyCyclicGenericClass<CyclicSubClass> result = jsonb.fromJson(expected, new TestTypeToken<MyCyclicGenericClass<CyclicSubClass>>(){}.getType());
         assertEquals(CyclicSubClass.class, result.field1.getClass());
         assertEquals("subFieldValue", result.field1.subField);
     }
@@ -129,7 +130,7 @@ public class GenericsTest {
         integerWildCard.number = 10;
         String expected = "{\"number\":10}";
         assertEquals(expected, jsonb.toJson(integerWildCard));
-        WildCardClass<Integer> result = jsonb.fromJson(expected, new WildCardClass<Integer>() {}.getClass());
+        WildCardClass<Integer> result = jsonb.fromJson(expected, new TestTypeToken<WildCardClass<Integer>>(){}.getType());
         assertEquals(Integer.valueOf(10), result.number);
     }
 
@@ -172,7 +173,7 @@ public class GenericsTest {
         assertEquals(expected, jsonb.toJson(multipleBoundsClass, new WildcardMultipleBoundsClass<BigDecimal>(){}.getClass()));
 
 
-        WildcardMultipleBoundsClass<BigDecimal> result = jsonb.fromJson(expected, new WildcardMultipleBoundsClass<BigDecimal>(){}.getClass());
+        WildcardMultipleBoundsClass<BigDecimal> result = jsonb.fromJson(expected, new TestTypeToken<WildcardMultipleBoundsClass<BigDecimal>>(){}.getType());
         assertEquals(BigDecimal.ONE, result.wildcardField);
         assertEquals("genericTestClassField1", result.genericTestClassPropagatedWildCard.field1);
         assertEquals(BigDecimal.TEN, result.genericTestClassPropagatedWildCard.field2);
@@ -213,8 +214,8 @@ public class GenericsTest {
 
         String expected = "{\"genericList\":[{\"field1\":[1,2],\"field2\":\"GenericsInListF2\"}],\"genericTestClass\":{\"field1\":1,\"field2\":\"first\"}}";
 
-        assertEquals(expected, jsonb.toJson(propagatedGenericClass, new PropagatedGenericClass<Integer, String>() {}.getClass()));
-        PropagatedGenericClass<Integer, String> result = jsonb.fromJson(expected, new PropagatedGenericClass<Integer, String>() {}.getClass());
+        assertEquals(expected, jsonb.toJson(propagatedGenericClass, new TestTypeToken<PropagatedGenericClass<Integer, String>>(){}.getType()));
+        PropagatedGenericClass<Integer, String> result = jsonb.fromJson(expected, new TestTypeToken<PropagatedGenericClass<Integer, String>>(){}.getType());
         assertEquals(GenericTestClass.class, result.genericList.get(0).getClass());
         assertEquals(Integer.valueOf(1), result.genericList.get(0).field1.get(0));
         assertEquals(Integer.valueOf(2), result.genericList.get(0).field1.get(1));
@@ -269,7 +270,7 @@ public class GenericsTest {
         assertEquals(expected, jsonb.toJson(boundedGenericClass));
 
         BoundedGenericClass<HashSet<Integer>, Circle> result = jsonb.fromJson(expected,
-                new BoundedGenericClass<HashSet<Integer>, Circle>() {}.getClass());
+                new TestTypeToken<BoundedGenericClass<HashSet<Integer>, Circle>>(){}.getType());
         assertEquals(Circle.class, result.lowerBoundedList.get(0).getClass());
         assertEquals(Double.valueOf(2.5), ((Circle) result.lowerBoundedList.get(0)).getRadius());
 
@@ -286,7 +287,7 @@ public class GenericsTest {
         //exception incompatible types
         try {
             BoundedGenericClass<HashSet<Integer>, Circle> otherGeneric = jsonb.fromJson("{\"boundedSet\":[3],\"lowerBoundedList\":[{\"radius\":2.5}]}",
-                    new BoundedGenericClass<HashSet<Double>, Circle>() {}.getClass().getGenericSuperclass());
+                    new TestTypeToken<BoundedGenericClass<HashSet<Double>, Circle>>(){}.getType());
             HashSet<Integer> otherIntSet = otherGeneric.boundedSet;
             Integer intValue = otherIntSet.iterator().next();
             System.out.println("intValue=" + intValue);
@@ -329,8 +330,8 @@ public class GenericsTest {
         genericArrayClass.propagatedGenericArray = genericTestClass;
 
         String expected = "{\"anotherGenericArray\":[1,10],\"genericArray\":[1,10],\"propagatedGenericArray\":{\"field1\":[1,10],\"field2\":[1,10]}}";
-        assertEquals(expected, jsonb.toJson(genericArrayClass));
-        GenericArrayClass<Number, Integer> result = jsonb.fromJson(expected, new GenericArrayClass<Number, Integer>(){}.getClass());
+        assertEquals(expected, jsonb.toJson(genericArrayClass, new TestTypeToken<GenericArrayClass<Number,Integer>>(){}.getType()));
+        GenericArrayClass<Number, Integer> result = jsonb.fromJson(expected, new TestTypeToken<GenericArrayClass<Number, Integer>>(){}.getType());
         assertEquals(BigDecimal.ONE, result.genericArray[0]);
         assertEquals(BigDecimal.TEN, result.genericArray[1]);
         assertEquals(Integer.valueOf(1), result.anotherGenericArray[0]);

@@ -12,14 +12,14 @@
  ******************************************************************************/
 package org.eclipse.persistence.json.bind.model;
 
-import org.eclipse.persistence.json.bind.internal.ProcessingContext;
 import org.eclipse.persistence.json.bind.internal.naming.CaseInsensitiveStrategy;
 
-import javax.json.bind.JsonbException;
+import javax.json.bind.config.PropertyNamingStrategy;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * A model for Java class.
@@ -32,10 +32,19 @@ public class ClassModel {
 
     private final ClassCustomization classCustomization;
 
+    private final ClassModel parentClassModel;
+
     /**
-     * A list of class properties.
+     * A map of all class properties, including properties from superclasses. Used to access by name.
      */
-    private final Map<String, PropertyModel> properties = new HashMap<>();
+    private Map<String, PropertyModel> properties;
+
+    /**
+     * Sorted properties according to sorting strategy. Used for serialization property ordering.
+     */
+    private PropertyModel[] sortedProperties;
+
+    private final PropertyNamingStrategy propertyNamingStrategy;
 
     /**
      * Gets a property model by default (non customized) name
@@ -49,10 +58,15 @@ public class ClassModel {
     /**
      * Create instance of class model.
      * @param clazz class to model onto
+     * @param customization customization of the class parsed from annotations
+     * @param parentClassModel class model of parent class
+     * @param propertyNamingStrategy property naming strategy
      */
-    public ClassModel(Class<?> clazz, ClassCustomization customization) {
+    public ClassModel(Class<?> clazz, ClassCustomization customization, ClassModel parentClassModel, PropertyNamingStrategy propertyNamingStrategy) {
         this.clazz = clazz;
         this.classCustomization = customization;
+        this.parentClassModel = parentClassModel;
+        this.propertyNamingStrategy = propertyNamingStrategy;
     }
 
     /**
@@ -66,18 +80,19 @@ public class ClassModel {
     }
 
     private PropertyModel searchProperty(ClassModel classModel, String jsonReadName) {
+        //Standard javabean properties without overridden name (most of the cases)
         final PropertyModel result = classModel.getPropertyModel(jsonReadName);
-        if (result != null) {
+        if (result != null && result.getPropertyName().equals(result.getCustomization().getJsonReadName())) {
             return result;
         }
+        //Search for overridden name on setter with @JsonbProperty annotation
         for (PropertyModel propertyModel : properties.values()) {
             if (equalsReadName(jsonReadName, propertyModel)) {
                 return propertyModel;
             }
         }
-        final ClassModel parent =
-                ProcessingContext.getMappingContext().getClassModel(classModel.getType().getSuperclass());
-        return parent == null ? null : searchProperty(parent, jsonReadName);
+        //property not found
+        return null;
     }
 
     /**
@@ -86,42 +101,18 @@ public class ClassModel {
      */
     private boolean equalsReadName(String jsonName, PropertyModel propertyModel) {
         final String propertyReadName = propertyModel.getReadName();
-        if (ProcessingContext.getJsonbContext().getPropertyNamingStrategy() instanceof CaseInsensitiveStrategy) {
+        if (propertyNamingStrategy instanceof CaseInsensitiveStrategy) {
             return jsonName.equalsIgnoreCase(propertyReadName);
         }
         return jsonName.equalsIgnoreCase(propertyReadName);
     }
 
-    public Customization getCustomization() {
+    public ClassCustomization getCustomization() {
         return classCustomization;
     }
 
     public Class<?> getType() {
         return clazz;
-    }
-
-    /**
-     * Get class properties copy, combination of field and its getter / setter, javabeans alike.
-     * @return class properties.
-     */
-    public Map<String, PropertyModel> getProperties() {
-        return Collections.unmodifiableMap(properties);
-    }
-
-    /**
-     * Adds a property model to a class model. Checks if a property with same name exists.
-     * @param propertyModel initialise model of a property not null
-     */
-    public void addProperty(PropertyModel propertyModel) {
-        Objects.requireNonNull(propertyModel);
-        for (PropertyModel existing : properties.values()) {
-            if (propertyModel.getReadName().equals(existing.getReadName()) ||
-                    propertyModel.getJsonWriteName().equals(existing.getJsonWriteName())) {
-                throw new JsonbException(String.format("Property %s clashes with property %s by read or write name in class %s.",
-                        propertyModel.getPropertyName(), existing.getPropertyName(), getType().getName()));
-            }
-        }
-        properties.put(propertyModel.getPropertyName(), propertyModel);
     }
 
     /**
@@ -132,5 +123,32 @@ public class ClassModel {
         return classCustomization;
     }
 
+    /**
+     * Class model of parent class if present.
+     * @return class model of a parent
+     */
+    public ClassModel getParentClassModel() {
+        return parentClassModel;
+    }
 
+    /**
+     * Get sorted class properties copy, combination of field and its getter / setter, javabeans alike.
+     * @return sorted class properties.
+     */
+    public PropertyModel[] getSortedProperties() {
+        return sortedProperties;
+    }
+
+    public void setProperties(List<PropertyModel> parsedProperties) {
+        sortedProperties = parsedProperties.toArray(new PropertyModel[]{});
+        this.properties = parsedProperties.stream().collect(Collectors.toMap(PropertyModel::getPropertyName, (mod) -> mod));
+    }
+
+    /**
+     * Get class properties copy, combination of field and its getter / setter, javabeans alike.
+     * @return class properties.
+     */
+    public Map<String, PropertyModel> getProperties() {
+        return Collections.unmodifiableMap(properties);
+    }
 }

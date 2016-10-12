@@ -13,8 +13,7 @@
 
 package org.eclipse.persistence.json.bind.model;
 
-import org.eclipse.persistence.json.bind.internal.AnnotationIntrospector;
-import org.eclipse.persistence.json.bind.internal.ProcessingContext;
+import org.eclipse.persistence.json.bind.internal.JsonbContext;
 
 import javax.json.bind.config.PropertyVisibilityStrategy;
 import java.lang.reflect.Field;
@@ -50,22 +49,24 @@ public abstract class PropertyValuePropagation {
     /**
      * Construct a property propagation.
      * @param property provided property
+     * @param ctx
      */
-    protected PropertyValuePropagation(Property property) {
-        initReadable(property.getField(), property.getGetter());
-        initWritable(property.getField(), property.getSetter());
+    protected PropertyValuePropagation(Property property, JsonbContext ctx) {
+        initReadable(property.getField(), property.getGetter(), ctx);
+        initWritable(property.getField(), property.getSetter(), ctx);
     }
 
     /**
      * Create typed instance to use.
      * @param property property to create from
+     * @param ctx
      * @return propagation instance
      */
-    public static PropertyValuePropagation createInstance(Property property) {
-        return new MethodHandleValuePropagation(property);
+    public static PropertyValuePropagation createInstance(Property property, JsonbContext ctx) {
+        return new ReflectionPropagation(property, ctx);
     }
 
-    private void initReadable(Field field, Method getter) {
+    private void initReadable(Field field, Method getter, JsonbContext ctx) {
 
         final boolean fieldReadable = field == null || (field.getModifiers() & (Modifier.TRANSIENT | Modifier.STATIC)) == 0;
         if (!fieldReadable) {
@@ -73,7 +74,7 @@ public abstract class PropertyValuePropagation {
             return;
         }
         if (getter != null) {
-            if (!isVisible(getter)) {
+            if (!isVisible(getter, ctx)) {
                 return; //don't check field if getter is not visible
             }
             if (!Modifier.isPublic(getter.getModifiers()) || getter.getDeclaringClass().isAnonymousClass()) {
@@ -81,7 +82,7 @@ public abstract class PropertyValuePropagation {
             }
             acceptMethod(getter, OperationMode.GET);
             readable = true;
-        } else if (isVisible(field)) {
+        } else if (isVisible(field, ctx)) {
             if (!Modifier.isPublic(field.getModifiers()) || field.getDeclaringClass().isAnonymousClass()) {
                 field.setAccessible(true);
             }
@@ -90,7 +91,7 @@ public abstract class PropertyValuePropagation {
         }
     }
 
-    private void initWritable(Field field, Method setter) {
+    private void initWritable(Field field, Method setter, JsonbContext ctx) {
 
         final boolean fieldWritable = field == null || (field.getModifiers() & (Modifier.TRANSIENT | Modifier.STATIC | Modifier.FINAL)) == 0;
         if (!fieldWritable) {
@@ -98,7 +99,7 @@ public abstract class PropertyValuePropagation {
             return;
         }
         if (setter != null) {
-            if (!isVisible(setter) || setter.getDeclaringClass().isAnonymousClass()) {
+            if (!isVisible(setter, ctx) || setter.getDeclaringClass().isAnonymousClass()) {
                 return;
             }
             if (!Modifier.isPublic(setter.getModifiers())) {
@@ -106,7 +107,7 @@ public abstract class PropertyValuePropagation {
             }
             acceptMethod(setter, OperationMode.SET);
             writable = true;
-        } else if (isVisible(field) && !field.getDeclaringClass().isAnonymousClass()) {
+        } else if (isVisible(field, ctx) && !field.getDeclaringClass().isAnonymousClass()) {
             if (!Modifier.isPublic(field.getModifiers())) {
                 field.setAccessible(true);
             }
@@ -115,19 +116,19 @@ public abstract class PropertyValuePropagation {
         }
     }
 
-    private boolean isVisible(Field field) {
+    private boolean isVisible(Field field, JsonbContext ctx) {
         if (field == null) {
             return false;
         }
-        return isVisible(strategy -> strategy.isVisible(field), field.getDeclaringClass())
+        return isVisible(strategy -> strategy.isVisible(field), field.getDeclaringClass(), ctx)
                 .orElseGet(()->Modifier.isPublic(field.getModifiers()));
     }
 
-    private boolean isVisible(Method method) {
+    private boolean isVisible(Method method, JsonbContext ctx) {
         if (method == null) {
             return false;
         }
-        return isVisible(strategy -> strategy.isVisible(method), method.getDeclaringClass())
+        return isVisible(strategy -> strategy.isVisible(method), method.getDeclaringClass(), ctx)
                 .orElseGet(()->Modifier.isPublic(method.getModifiers()));
     }
 
@@ -137,13 +138,14 @@ public abstract class PropertyValuePropagation {
      *
      * @param visibilityCheckFunction function declaring visibility check
      * @param declaringClass class to lookup annotation onto
+     * @param ctx jsonb context
      * @return Optional with result of visibility check, or empty optional if no strategy is found
      */
-    private Optional<Boolean> isVisible(Function<PropertyVisibilityStrategy, Boolean> visibilityCheckFunction, Class<?> declaringClass) {
+    private Optional<Boolean> isVisible(Function<PropertyVisibilityStrategy, Boolean> visibilityCheckFunction, Class<?> declaringClass, JsonbContext ctx) {
         final Optional<PropertyVisibilityStrategy> classLevelStrategy =
-                AnnotationIntrospector.getInstance().getPropertyVisibilityStrategy(declaringClass);
+                ctx.getAnnotationIntrospector().getPropertyVisibilityStrategy(declaringClass);
         Optional<PropertyVisibilityStrategy> strategy =
-                Optional.ofNullable(classLevelStrategy.orElseGet(()->ProcessingContext.getJsonbContext().getPropertyVisibilityStrategy()));
+                Optional.ofNullable(classLevelStrategy.orElseGet(ctx::getPropertyVisibilityStrategy));
 
         return strategy.map(visibilityCheckFunction);
     }

@@ -13,7 +13,7 @@
 
 package org.eclipse.persistence.json.bind.internal.serializer;
 
-import org.eclipse.persistence.json.bind.model.SerializerBindingModel;
+import org.eclipse.persistence.json.bind.model.JsonBindingModel;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -29,7 +29,7 @@ public class OffsetDateTimeTypeSerializer extends AbstractDateTimeSerializer<Off
     private static final Logger log = Logger.getLogger(OffsetDateTimeTypeSerializer.class.getName());
 
 
-    public OffsetDateTimeTypeSerializer(SerializerBindingModel model) {
+    public OffsetDateTimeTypeSerializer(JsonBindingModel model) {
         super(OffsetDateTime.class, model);
     }
 

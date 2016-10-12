@@ -45,7 +45,7 @@ public abstract class AbstractArrayDeserializer<T> extends AbstractContainerDese
         } else {
             componentClass = ReflectionUtils.getRawType(getRuntimeType()).getComponentType();
         }
-        this.model = new ContainerModel(componentClass, resolveContainerModelCustomization(componentClass));
+        this.model = new ContainerModel(componentClass, resolveContainerModelCustomization(componentClass, builder.getJsonbContext()));
     }
 
     /**
@@ -70,7 +70,7 @@ public abstract class AbstractArrayDeserializer<T> extends AbstractContainerDese
 
     @Override
     protected void deserializeNext(JsonParser parser, Unmarshaller context) {
-        final JsonbDeserializer<?> deserializer = newUnmarshallerItemBuilder().withType(componentClass)
+        final JsonbDeserializer<?> deserializer = newUnmarshallerItemBuilder(context.getJsonbContext()).withType(componentClass)
                 .withModel(model).build();
         appendResult(deserializer.deserialize(parser, context, componentClass));
     }

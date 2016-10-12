@@ -13,6 +13,8 @@
 
 package org.eclipse.persistence.json.bind.internal.unmarshaller;
 
+import org.eclipse.persistence.json.bind.internal.Unmarshaller;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +37,7 @@ public class DoubleArrayDeserializer extends AbstractArrayDeserializer<double[]>
     }
 
     @Override
-    public double[] getInstance() {
+    public double[] getInstance(Unmarshaller unmarshaller) {
         final int size = items.size();
         final double[] doubleArray = new double[size];
         for(int i=0; i<size; i++) {

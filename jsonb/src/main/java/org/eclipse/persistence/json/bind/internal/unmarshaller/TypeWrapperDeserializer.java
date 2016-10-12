@@ -83,7 +83,7 @@ public class TypeWrapperDeserializer<T> extends ObjectDeserializer<TypeWrapper<T
 
     private void deserializeInstance(JsonParser parser, Unmarshaller context) {
         PropertyModel newPropertyModel = getClassModel().findPropertyModelByJsonReadName("instance");
-        final JsonbDeserializer<?> deserializer = newUnmarshallerItemBuilder()
+        final JsonbDeserializer<?> deserializer = newUnmarshallerItemBuilder(context.getJsonbContext())
                 .withType(concreteWrappedClass).withModel(newPropertyModel)
                 .build();
 

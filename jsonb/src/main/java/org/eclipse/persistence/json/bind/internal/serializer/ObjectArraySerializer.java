@@ -13,9 +13,12 @@
 
 package org.eclipse.persistence.json.bind.internal.serializer;
 
+import org.eclipse.persistence.json.bind.internal.Marshaller;
+
 import javax.json.bind.serializer.JsonbSerializer;
 import javax.json.bind.serializer.SerializationContext;
 import javax.json.stream.JsonGenerator;
+import java.util.Optional;
 
 /**
  * Serializer for arrays of arbitrary objects.
@@ -30,11 +33,11 @@ public class ObjectArraySerializer<T> extends AbstractArraySerializer<T[]> {
     @Override
     protected void serializeInternal(T[] arr, JsonGenerator generator, SerializationContext ctx) {
         for (T obj : arr) {
-            if (obj == null || isEmptyOptional(obj)) {
+            if (obj == null) {
                 generator.writeNull();
                 continue;
             }
-            final JsonbSerializer<?> serializer = new SerializerBuilder().withObjectClass(obj.getClass()).withWrapper(this).withModel(containerModel).build();
+            final JsonbSerializer<?> serializer = new SerializerBuilder(((Marshaller) ctx).getJsonbContext()).withObjectClass(obj.getClass()).withWrapper(this).withModel(containerModel).build();
             serializerCaptor(serializer, obj, generator, ctx);
         }
     }

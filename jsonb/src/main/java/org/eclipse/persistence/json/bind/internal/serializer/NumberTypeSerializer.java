@@ -13,7 +13,8 @@
 
 package org.eclipse.persistence.json.bind.internal.serializer;
 
-import org.eclipse.persistence.json.bind.model.SerializerBindingModel;
+import org.eclipse.persistence.json.bind.internal.Marshaller;
+import org.eclipse.persistence.json.bind.model.JsonBindingModel;
 
 import javax.json.stream.JsonGenerator;
 
@@ -22,18 +23,18 @@ import javax.json.stream.JsonGenerator;
  */
 public class NumberTypeSerializer extends AbstractValueTypeSerializer<Number> {
 
-    public NumberTypeSerializer(SerializerBindingModel model) {
-        super(Number.class, model);
+    public NumberTypeSerializer(JsonBindingModel model) {
+        super(model);
     }
 
 
     @Override
-    protected void serialize(Number obj, JsonGenerator generator, String key) {
+    protected void serialize(Number obj, JsonGenerator generator, String key, Marshaller marshaller) {
         generator.write(key, obj.doubleValue());
     }
 
     @Override
-    protected void serialize(Number obj, JsonGenerator generator) {
+    protected void serialize(Number obj, JsonGenerator generator, Marshaller marshaller) {
         generator.write(obj.doubleValue());
     }
 }

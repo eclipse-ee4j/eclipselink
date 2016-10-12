@@ -14,10 +14,11 @@
 package org.eclipse.persistence.json.bind.internal.serializer;
 
 import org.eclipse.persistence.json.bind.internal.AbstractContainerSerializer;
+import org.eclipse.persistence.json.bind.internal.Marshaller;
 import org.eclipse.persistence.json.bind.internal.ReflectionUtils;
 import org.eclipse.persistence.json.bind.internal.unmarshaller.ContainerModel;
-import org.eclipse.persistence.json.bind.model.Customization;
-import org.eclipse.persistence.json.bind.model.SerializerBindingModel;
+import org.eclipse.persistence.json.bind.internal.unmarshaller.EmbeddedItem;
+import org.eclipse.persistence.json.bind.model.JsonContext;
 
 import javax.json.bind.serializer.JsonbSerializer;
 import javax.json.bind.serializer.SerializationContext;
@@ -30,27 +31,7 @@ import java.util.Map;
  * Serializer for maps.
  * @author Roman Grigoriadi
  */
-public class MapSerializer<T extends Map> extends AbstractContainerSerializer<T> {
-
-    private static class MapEntryModel extends ContainerModel implements SerializerBindingModel {
-
-        private final String jsonKeyName;
-
-        public MapEntryModel(Type valueRuntimeType, Customization customization, String jsonKeyName) {
-            super(valueRuntimeType, customization);
-            this.jsonKeyName = jsonKeyName;
-        }
-
-        @Override
-        public String getJsonWriteName() {
-            return jsonKeyName;
-        }
-
-        @Override
-        public Context getContext() {
-            return Context.JSON_OBJECT;
-        }
-    }
+public class MapSerializer<T extends Map> extends AbstractContainerSerializer<T> implements EmbeddedItem {
 
     private Type mapValueRuntimeType;
 
@@ -63,16 +44,17 @@ public class MapSerializer<T extends Map> extends AbstractContainerSerializer<T>
 
     @Override
     protected void serializeInternal(T obj, JsonGenerator generator, SerializationContext ctx) {
+        final Marshaller marshaller = (Marshaller) ctx;
         obj.keySet().stream().forEach((key) -> {
             final String keysString = String.valueOf(key);
             final Object value = obj.get(key);
-            if (value == null || isEmptyOptional(value)) {
+            if (value == null) {
                 generator.writeNull(keysString);
                 return;
             }
-            final JsonbSerializer<?> serializer = new SerializerBuilder().withObjectClass(value.getClass())
-                    .withModel(new MapEntryModel(mapValueRuntimeType,
-                            resolveContainerModelCustomization(mapValueRuntimeType), keysString)).build();
+            final JsonbSerializer<?> serializer = new SerializerBuilder(marshaller.getJsonbContext()).withObjectClass(value.getClass())
+                    .withModel(new ContainerModel(mapValueRuntimeType,
+                            resolveContainerModelCustomization(mapValueRuntimeType, marshaller.getJsonbContext()), JsonContext.JSON_OBJECT, keysString)).build();
             serializerCaptor(serializer, value, generator, ctx);
         });
     }

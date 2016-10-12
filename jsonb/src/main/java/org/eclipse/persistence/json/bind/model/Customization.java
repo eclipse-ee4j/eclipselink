@@ -57,6 +57,21 @@ public abstract class Customization {
     }
 
     /**
+     * Copy constructor.
+     *
+     * @param other other customizaton instance
+     */
+    public Customization(Customization other) {
+        this.nillable = other.isNillable();
+        this.jsonbTransient = other.isJsonbTransient();
+        this.dateTimeFormatter = other.getDateTimeFormatter();
+        this.numberFormat = other.getNumberFormat();
+        this.adapterBinding = other.getAdapterBinding();
+        this.serializerBinding = other.getSerializerBinding();
+        this.deserializerBinding = other.getDeserializerBinding();
+    }
+
+    /**
      * Marshall null values to JSON.
      *
      * @return if true marshalling null values is active

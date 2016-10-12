@@ -52,7 +52,7 @@ public class Unmarshaller extends ProcessingContext implements DeserializationCo
 
     @SuppressWarnings("unchecked")
     private <T> T deserializeItem(Type type, JsonParser parser) {
-        final JsonbDeserializer<?> item = new DeserializerBuilder().withWrapper(current)
+        final JsonbDeserializer<?> item = new DeserializerBuilder(jsonbContext).withWrapper(current)
                 .withType(type).withJsonValueType(JsonValueType.of(getRootEvent(parser))).build();
         return (T) item.deserialize(parser, this, type);
     }

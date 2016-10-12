@@ -15,7 +15,7 @@ package org.eclipse.persistence.json.bind.internal.serializer;
 
 import org.eclipse.persistence.json.bind.internal.properties.MessageKeys;
 import org.eclipse.persistence.json.bind.internal.properties.Messages;
-import org.eclipse.persistence.json.bind.model.SerializerBindingModel;
+import org.eclipse.persistence.json.bind.model.JsonBindingModel;
 
 import javax.json.bind.JsonbException;
 import java.time.Instant;
@@ -34,7 +34,7 @@ public class OffsetTimeTypeSerializer extends AbstractDateTimeSerializer<OffsetT
     /**
      * Construct serializer.
      */
-    public OffsetTimeTypeSerializer(SerializerBindingModel model) {
+    public OffsetTimeTypeSerializer(JsonBindingModel model) {
         super(OffsetTime.class, model);
     }
 

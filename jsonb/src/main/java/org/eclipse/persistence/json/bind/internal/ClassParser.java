@@ -17,12 +17,17 @@ import org.eclipse.persistence.json.bind.model.JsonbAnnotatedElement;
 import org.eclipse.persistence.json.bind.model.Property;
 import org.eclipse.persistence.json.bind.model.PropertyModel;
 
+import javax.json.bind.JsonbException;
+import javax.json.bind.config.PropertyNamingStrategy;
 import java.beans.Introspector;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Created a class internal model.
@@ -39,6 +44,12 @@ class ClassParser {
 
     public static final String GENERATED_PREFIX = "this$";
 
+    private final JsonbContext jsonbContext;
+
+    ClassParser(JsonbContext jsonbContext) {
+        this.jsonbContext = jsonbContext;
+    }
+
     /**
      * Parse class fields and getters setters. Merge to java bean like properties.
      *
@@ -47,22 +58,37 @@ class ClassParser {
     public void parseProperties(ClassModel classModel, JsonbAnnotatedElement<Class<?>> classElement) {
 
         final Map<String, Property> classProperties = new HashMap<>();
-
         parseFields(classElement, classProperties);
-
         parseClassAndInterfaceMethods(classElement, classProperties);
 
-        classProperties.values().stream().forEach((property)->{
-            PropertyModel propertyModel = new PropertyModel(classModel, property);
-            classModel.addProperty(propertyModel);
-        });
+        final  List<PropertyModel> sortedProperties = new ArrayList<>();
+
+        final ClassModel parentClassModel = classModel.getParentClassModel();
+        if (parentClassModel != null) {
+            for (PropertyModel parentProp : parentClassModel.getSortedProperties()) {
+                //don't replace overridden properties
+                if (!classProperties.containsKey(parentProp.getPropertyName())) {
+                    sortedProperties.add(parentProp);
+                }
+            }
+        }
+
+        Map<String, PropertyModel> unsorted = new HashMap<>();
+        for (Map.Entry<String, Property> entry : classProperties.entrySet()) {
+            unsorted.put(entry.getKey(), new PropertyModel(classModel, entry.getValue(), jsonbContext));
+        }
+
+        sortedProperties.addAll(jsonbContext.getPropertyOrdering().orderProperties(unsorted, classModel));
+
+        checkPropertyNameClash(sortedProperties, classModel.getType());
+        classModel.setProperties(sortedProperties);
 
     }
 
     private void parseClassAndInterfaceMethods(JsonbAnnotatedElement<Class<?>> classElement, Map<String, Property> classProperties) {
         Class<?> concreteClass = classElement.getElement();
         parseMethods(concreteClass, classElement, classProperties);
-        for (Class<?> ifc : AnnotationIntrospector.getInstance().collectInterfaces(concreteClass)) {
+        for (Class<?> ifc : jsonbContext.getAnnotationIntrospector().collectInterfaces(concreteClass)) {
             parseIfaceMethodAnnotations(ifc, classProperties);
         }
     }
@@ -137,6 +163,21 @@ class ClassParser {
             final Property property = new Property(name, classElement);
             property.setField(field);
             classProperties.put(name, property);
+        }
+    }
+
+    private void checkPropertyNameClash(List<PropertyModel> collectedProperties, Class cls) {
+        final List<PropertyModel> checkedProperties = new ArrayList<>();
+        for (PropertyModel collectedPropertyModel : collectedProperties) {
+            for (PropertyModel checkedPropertyModel : checkedProperties) {
+
+                if (checkedPropertyModel.getReadName().equals(collectedPropertyModel.getReadName()) ||
+                        checkedPropertyModel.getWriteName().equals(collectedPropertyModel.getWriteName())) {
+                    throw new JsonbException(String.format("Property %s clashes with property %s by read or write name in class %s.",
+                            checkedPropertyModel.getPropertyName(), collectedPropertyModel.getPropertyName(), cls.getName()));
+                }
+            }
+            checkedProperties.add(collectedPropertyModel);
         }
     }
 

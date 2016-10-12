@@ -37,7 +37,7 @@ public class FloatTypeDeserializer extends AbstractNumberDeserializer<Float> {
      */
     @Override
     protected Float deserialize(String jsonValue, Unmarshaller unmarshaller, Type rtType) {
-        return deserializeForamtted(jsonValue, false).map(num->Float.parseFloat(num.toString()))
+        return deserializeForamtted(jsonValue, false, unmarshaller.getJsonbContext()).map(num->Float.parseFloat(num.toString()))
                 .orElseGet(()->Float.parseFloat(jsonValue));
     }
 }

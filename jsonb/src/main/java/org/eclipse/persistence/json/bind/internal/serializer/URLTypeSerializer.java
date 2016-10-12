@@ -14,7 +14,8 @@
 package org.eclipse.persistence.json.bind.internal.serializer;
 
 
-import org.eclipse.persistence.json.bind.model.SerializerBindingModel;
+import org.eclipse.persistence.json.bind.internal.Marshaller;
+import org.eclipse.persistence.json.bind.model.JsonBindingModel;
 
 import javax.json.stream.JsonGenerator;
 import java.net.URL;
@@ -24,17 +25,17 @@ import java.net.URL;
  */
 public class URLTypeSerializer extends AbstractValueTypeSerializer<URL> {
 
-    public URLTypeSerializer(SerializerBindingModel model) {
-        super(URL.class, model);
+    public URLTypeSerializer(JsonBindingModel model) {
+        super(model);
     }
 
     @Override
-    protected void serialize(URL obj, JsonGenerator generator, String key) {
+    protected void serialize(URL obj, JsonGenerator generator, String key, Marshaller marshaller) {
         generator.write(key, obj.toString());
     }
 
     @Override
-    protected void serialize(URL obj, JsonGenerator generator) {
+    protected void serialize(URL obj, JsonGenerator generator, Marshaller marshaller) {
         generator.write(obj.toString());
     }
 }

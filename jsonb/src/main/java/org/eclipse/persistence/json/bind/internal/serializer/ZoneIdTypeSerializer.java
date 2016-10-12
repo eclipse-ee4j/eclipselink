@@ -13,7 +13,8 @@
 
 package org.eclipse.persistence.json.bind.internal.serializer;
 
-import org.eclipse.persistence.json.bind.model.SerializerBindingModel;
+import org.eclipse.persistence.json.bind.internal.Marshaller;
+import org.eclipse.persistence.json.bind.model.JsonBindingModel;
 
 import javax.json.stream.JsonGenerator;
 import java.time.ZoneId;
@@ -23,17 +24,17 @@ import java.time.ZoneId;
  */
 public class ZoneIdTypeSerializer extends AbstractValueTypeSerializer<ZoneId> {
 
-    public ZoneIdTypeSerializer(SerializerBindingModel model) {
-        super(ZoneId.class, model);
+    public ZoneIdTypeSerializer(JsonBindingModel model) {
+        super(model);
     }
 
     @Override
-    protected void serialize(ZoneId obj, JsonGenerator generator, String key) {
+    protected void serialize(ZoneId obj, JsonGenerator generator, String key, Marshaller marshaller) {
         generator.write(key, obj.getId());
     }
 
     @Override
-    protected void serialize(ZoneId obj, JsonGenerator generator) {
+    protected void serialize(ZoneId obj, JsonGenerator generator, Marshaller marshaller) {
         generator.write(obj.getId());
     }
 }

@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.json.bind.model;
 
+import org.eclipse.persistence.json.bind.internal.JsonbContext;
 import org.eclipse.persistence.json.bind.internal.properties.MessageKeys;
 import org.eclipse.persistence.json.bind.internal.properties.Messages;
 
@@ -38,8 +39,8 @@ class MethodHandleValuePropagation extends PropertyValuePropagation {
     private MethodHandle setHandle;
 
 
-    MethodHandleValuePropagation(Property property) {
-        super(property);
+    MethodHandleValuePropagation(Property property, JsonbContext ctx) {
+        super(property, ctx);
     }
 
     @Override

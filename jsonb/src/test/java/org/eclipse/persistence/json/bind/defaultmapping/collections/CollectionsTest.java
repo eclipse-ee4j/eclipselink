@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.json.bind.defaultmapping.collections;
 
+import org.eclipse.persistence.json.bind.TestTypeToken;
 import org.eclipse.persistence.json.bind.defaultmapping.generics.model.Circle;
 import org.eclipse.persistence.json.bind.defaultmapping.generics.model.ScalarValueWrapper;
 import org.junit.Before;
@@ -96,8 +97,7 @@ public class CollectionsTest {
         }
         String expected = "[{\"0\":[{\"third\":3,\"first\":1,\"second\":2},{\"third\":3,\"first\":1,\"second\":2},{\"third\":3,\"first\":1,\"second\":2}],\"1\":[{\"third\":3,\"first\":1,\"second\":2},{\"third\":3,\"first\":1,\"second\":2},{\"third\":3,\"first\":1,\"second\":2}],\"2\":[{\"third\":3,\"first\":1,\"second\":2},{\"third\":3,\"first\":1,\"second\":2},{\"third\":3,\"first\":1,\"second\":2}]},{\"0\":[{\"third\":3,\"first\":1,\"second\":2},{\"third\":3,\"first\":1,\"second\":2},{\"third\":3,\"first\":1,\"second\":2}],\"1\":[{\"third\":3,\"first\":1,\"second\":2},{\"third\":3,\"first\":1,\"second\":2},{\"third\":3,\"first\":1,\"second\":2}],\"2\":[{\"third\":3,\"first\":1,\"second\":2},{\"third\":3,\"first\":1,\"second\":2},{\"third\":3,\"first\":1,\"second\":2}]},{\"0\":[{\"third\":3,\"first\":1,\"second\":2},{\"third\":3,\"first\":1,\"second\":2},{\"third\":3,\"first\":1,\"second\":2}],\"1\":[{\"third\":3,\"first\":1,\"second\":2},{\"third\":3,\"first\":1,\"second\":2},{\"third\":3,\"first\":1,\"second\":2}],\"2\":[{\"third\":3,\"first\":1,\"second\":2},{\"third\":3,\"first\":1,\"second\":2},{\"third\":3,\"first\":1,\"second\":2}]}]";
         assertEquals(expected, jsonb.toJson(listOfMapsOfListsOfMaps));
-        ArrayList<Map<String, List<Map<String, Integer>>>> result = jsonb.fromJson(expected, new ArrayList<Map<String, List<Map<String, Integer>>>>() {
-        }.getClass().getGenericSuperclass());
+        ArrayList<Map<String, List<Map<String, Integer>>>> result = jsonb.fromJson(expected, new TestTypeToken<ArrayList<Map<String, List<Map<String, Integer>>>>>(){}.getType());
         assertEquals(listOfMapsOfListsOfMaps, result);
     }
 
@@ -108,7 +108,7 @@ public class CollectionsTest {
         deque.add("dequeueSecond");
         String expected = "[\"dequeueFirst\",\"dequeueSecond\"]";
         assertEquals(expected, jsonb.toJson(deque));
-        Deque<String> dequeueResult = jsonb.fromJson(expected, new ArrayDeque<String>() {}.getClass().getGenericSuperclass());
+        Deque<String> dequeueResult = jsonb.fromJson(expected, new TestTypeToken<ArrayDeque<String>>(){}.getType());
         assertEquals("dequeueFirst", dequeueResult.getFirst());
         assertEquals("dequeueSecond", dequeueResult.getLast());
 
@@ -117,7 +117,7 @@ public class CollectionsTest {
         linkedHashSet.add("setSecond");
         expected = "[\"setFirst\",\"setSecond\"]";
         assertEquals(expected, jsonb.toJson(linkedHashSet));
-        LinkedHashSet<String> linkedHashSetResult = jsonb.fromJson(expected, new LinkedHashSet<String>() {}.getClass().getGenericSuperclass());
+        LinkedHashSet<String> linkedHashSetResult = jsonb.fromJson(expected, new TestTypeToken<LinkedHashSet<String>>(){}.getType());
         Iterator<String> iterator = linkedHashSetResult.iterator();
         assertEquals("setFirst", iterator.next());
         assertEquals("setSecond", iterator.next());
@@ -127,7 +127,7 @@ public class CollectionsTest {
         linkedList.add("listSecond");
         expected = "[\"listFirst\",\"listSecond\"]";
         assertEquals(expected, jsonb.toJson(linkedList));
-        LinkedList<String> linkedListResult = jsonb.fromJson(expected, new LinkedList<String>() {}.getClass().getGenericSuperclass());
+        LinkedList<String> linkedListResult = jsonb.fromJson(expected, new TestTypeToken<LinkedList<String>>(){}.getType());
         iterator = linkedListResult.iterator();
         assertEquals("listFirst", iterator.next());
         assertEquals("listSecond", iterator.next());

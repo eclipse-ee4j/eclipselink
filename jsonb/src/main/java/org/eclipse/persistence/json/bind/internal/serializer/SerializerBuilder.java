@@ -15,11 +15,10 @@ package org.eclipse.persistence.json.bind.internal.serializer;
 
 import org.eclipse.persistence.json.bind.internal.AbstractSerializerBuilder;
 import org.eclipse.persistence.json.bind.internal.ComponentMatcher;
-import org.eclipse.persistence.json.bind.internal.ProcessingContext;
+import org.eclipse.persistence.json.bind.internal.JsonbContext;
 import org.eclipse.persistence.json.bind.internal.ReflectionUtils;
 import org.eclipse.persistence.json.bind.internal.adapter.AdapterBinding;
 import org.eclipse.persistence.json.bind.internal.adapter.SerializerBinding;
-import org.eclipse.persistence.json.bind.model.SerializerBindingModel;
 
 import javax.json.JsonObject;
 import javax.json.JsonValue;
@@ -36,9 +35,13 @@ import java.util.Optional;
  *
  * @author Roman Grigoriadi
  */
-public class SerializerBuilder extends AbstractSerializerBuilder<SerializerBuilder, SerializerBindingModel> {
+public class SerializerBuilder extends AbstractSerializerBuilder<SerializerBuilder> {
 
     private Class<?> objectClass;
+
+    public SerializerBuilder(JsonbContext jsonbContext) {
+        super(jsonbContext);
+    }
 
     public SerializerBuilder withObjectClass(Class<?> objectClass) {
         this.objectClass = objectClass;
@@ -49,36 +52,40 @@ public class SerializerBuilder extends AbstractSerializerBuilder<SerializerBuild
         runtimeType = resolveRuntimeType();
 
         //First check if user deserializer is registered for such type
-        final ComponentMatcher componentMatcher = ProcessingContext.getJsonbContext().getComponentMatcher();
+        final ComponentMatcher componentMatcher = jsonbContext.getComponentMatcher();
         Optional<SerializerBinding<?>> userSerializer = componentMatcher.getSerialzierBinding(getRuntimeType(), getModel());
         if (userSerializer.isPresent() &&
                 !(wrapper instanceof UserSerializerSerializer && ReflectionUtils.getRawType(wrapper.getRuntimeType()).isAssignableFrom(objectClass))) {
-            return new UserSerializerSerializer<>(this, userSerializer.get().getJsonbSerializer());
+            return new UserSerializerSerializer<>(model, userSerializer.get().getJsonbSerializer());
         }
 
         //Second user adapter is registered.
         final Optional<AdapterBinding> adapterInfoOptional = componentMatcher.getAdapterBinding(getRuntimeType(), getModel());
         if (adapterInfoOptional.isPresent()) {
-            return new AdaptedObjectSerializer<>(this, adapterInfoOptional.get());
-        }
-
-        if (isByteArray(objectClass)) {
-            String strategy = ProcessingContext.getJsonbContext().getBinaryDataStrategy();
-            switch (strategy) {
-                case BinaryDataStrategy.BYTE:
-                    return new ByteArraySerializer(this);
-                default:
-                    return new ByteArrayBase64Serializer(byte[].class, getModel());
-            }
+            return new AdaptedObjectSerializer<>(getModel(), adapterInfoOptional.get());
         }
 
         final Optional<AbstractValueTypeSerializer<?>> supportedTypeSerializer = getSupportedTypeSerializer(objectClass);
         if (supportedTypeSerializer.isPresent()) {
             return supportedTypeSerializer.get();
         }
-        //TODO Optionals
 
-        if (JsonValue.class.isAssignableFrom(objectClass)) {
+        if (Collection.class.isAssignableFrom(objectClass)) {
+            return new CollectionSerializer<>(this);
+        } else if (Map.class.isAssignableFrom(objectClass)) {
+            return new MapSerializer<>(this);
+        } else if (isByteArray(objectClass)) {
+            String strategy = jsonbContext.getBinaryDataStrategy();
+            switch (strategy) {
+                case BinaryDataStrategy.BYTE:
+                    return new ByteArraySerializer(this);
+                default:
+                    return new ByteArrayBase64Serializer(byte[].class, getModel());
+            }
+        } else if (objectClass.isArray() || getRuntimeType() instanceof GenericArrayType) {
+            return createArrayItem(objectClass.getComponentType());
+
+        } else if (JsonValue.class.isAssignableFrom(objectClass)) {
             if(JsonObject.class.isAssignableFrom(objectClass)) {
                 return new JsonObjectSerialzier(this);
             } else {
@@ -86,16 +93,8 @@ public class SerializerBuilder extends AbstractSerializerBuilder<SerializerBuild
             }
         } else if (Optional.class.isAssignableFrom(objectClass)) {
             return new OptionalObjectSerializer<>(this);
-        } else if (Collection.class.isAssignableFrom(objectClass)) {
-            return new CollectionSerializer<>(this);
-
-        } else if (Map.class.isAssignableFrom(objectClass)) {
-            return new MapSerializer<>(this);
-
-        } else if (objectClass.isArray() || getRuntimeType() instanceof GenericArrayType) {
-            return createArrayItem(objectClass.getComponentType());
-
         } else {
+            jsonbContext.getMappingContext().addSerializerProvider(objectClass, new ObjectSerializerProvider());
             return new ObjectSerializer<>(this);
         }
 
@@ -128,9 +127,9 @@ public class SerializerBuilder extends AbstractSerializerBuilder<SerializerBuild
     }
 
     private Optional<AbstractValueTypeSerializer<?>> getSupportedTypeSerializer(Class<?> rawType) {
-        final Optional<? extends SerializerProvider> supportedTypeSerializerOptional = DefaultSerializers.getInstance().findValueSerializerProvider(rawType);
+        final Optional<? extends SerializerProviderWrapper> supportedTypeSerializerOptional = DefaultSerializers.getInstance().findValueSerializerProvider(rawType);
         if (supportedTypeSerializerOptional.isPresent()) {
-            return Optional.of(supportedTypeSerializerOptional.get().provideSerializer((SerializerBindingModel) getModel()));
+            return Optional.of(supportedTypeSerializerOptional.get().getSerializerProvider().provideSerializer(getModel()));
         }
         return Optional.empty();
     }
