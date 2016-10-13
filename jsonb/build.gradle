@@ -51,10 +51,7 @@ dependencies {
         testRuntime 'org.glassfish:javax.json:1.0.4'
     }
 
-    testCompile 'org.openjdk.jmh:jmh-core:0.9.3'
-    testCompile 'org.openjdk.jmh:jmh-generator-annprocess:0.9.3'
     testCompile 'junit:junit:4.12'
-    testCompile 'org.openjdk.jmh:jmh-core:0.9.3';
     testCompile 'org.jboss.weld:weld-core:2.3.3.Final';
     testCompile 'org.jboss.weld.se:weld-se:2.3.3.Final';
 
