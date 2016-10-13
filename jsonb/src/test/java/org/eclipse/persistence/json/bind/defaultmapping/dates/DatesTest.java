@@ -86,7 +86,9 @@ public class DatesTest {
 
     @Test
     public void testCalendar() {
-        final Calendar timeCalendar = new Calendar.Builder().setDate(2015, Calendar.APRIL, 3).setTimeOfDay(11, 11, 10).build();
+        final Calendar timeCalendar = new Calendar.Builder().setDate(2015, Calendar.APRIL, 3).setTimeOfDay(11, 11, 10)
+                .setTimeZone(TimeZone.getTimeZone("Europe/Prague"))
+                .build();
 
         CalendarPojo calendarPojo = new CalendarPojo();
         calendarPojo.customCalendar = timeCalendar;
@@ -158,7 +160,9 @@ public class DatesTest {
         assertEquals("{\"value\":\"2015-04-03\"}", jsonb.toJson(new ScalarValueWrapper<>(dateGregorianCalendar)));
 
         // marshal to ISO_DATE_TIME
-        final Calendar dateTimeGregorianCalendar = new Calendar.Builder().setDate(2015, 3, 3).build();
+        final Calendar dateTimeGregorianCalendar = new Calendar.Builder().setDate(2015, 3, 3)
+                .setTimeZone(TimeZone.getTimeZone("Europe/Prague"))
+                .build();
         assertEquals("{\"value\":\"2015-04-03T00:00:00+02:00[Europe/Prague]\"}", jsonb.toJson(new ScalarValueWrapper<>(dateTimeGregorianCalendar)));
     }
 

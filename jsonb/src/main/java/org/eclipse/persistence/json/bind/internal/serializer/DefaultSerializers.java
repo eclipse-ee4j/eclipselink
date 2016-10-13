@@ -64,6 +64,7 @@ public class DefaultSerializers {
     private Map<Class<?>, SerializerProvider> initSerializers() {
         final Map<Class<?>, SerializerProvider> serializers = new HashMap<>();
         serializers.put(Boolean.class, new SerializerProvider(BooleanTypeSerializer.class, BooleanTypeDeserializer.class));
+        serializers.put(Boolean.TYPE, new SerializerProvider(BooleanTypeSerializer.class, BooleanTypeDeserializer.class));
         serializers.put(Byte.class, new SerializerProvider(ByteTypeSerializer.class, ByteTypeDeserializer.class));
         serializers.put(Byte.TYPE, new SerializerProvider(ByteTypeSerializer.class, ByteTypeDeserializer.class));
         serializers.put(Calendar.class, new SerializerProvider(CalendarTypeSerializer.class, CalendarTypeDeserializer.class));

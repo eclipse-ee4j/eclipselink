@@ -2,7 +2,7 @@ apply plugin: 'java'
 apply plugin: "maven"
 apply plugin: 'signing'
 apply plugin: 'idea'
-
+apply plugin: 'findbugs'
 
 group = "org.eclipse.persistence"
 version = "1.0-SNAPSHOT"
@@ -144,4 +144,21 @@ if (project.hasProperty("deployOSS")) {
             }
         }
     }
+}
+
+/**
+ * Configure Findbugs plugin and make it disable on normal build process. The Findbug plugin introduces two tasks to run
+ * the inspections for the main sources or tests. To call them, we can just run following tasks directly:
+ *
+ * findbugsMain: runs the inspections for the main sources (e.g. ./gradlew findbugsMain)
+ * findbugsTest: runs the inspections for the test sources (e.g. ./gradlew findbugsTest)
+ */
+findbugs {
+    ignoreFailures = true
+    effort = "max"
+    reportLevel = "low"
+    toolVersion = "3.0.1"
+    //  Empty sourceSets prevents the findbugs to be run as part of default build life cycle, but it still works by
+    //  calling its corresponding tasks (findbugsMain and findbugsTest) directly
+    sourceSets = []
 }
