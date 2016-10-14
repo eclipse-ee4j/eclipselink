@@ -284,6 +284,10 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             suite.addTest(new AdvancedJPAJunitTest("testHistoryRelationshipQueryInitialization"));
             suite.addTest(new AdvancedJPAJunitTest("testQueryJoinBasicCollectionTableUsingQueryResultsCache"));
             suite.addTest(new AdvancedJPAJunitTest("testNullValueInCollectionWithOrderColumn"));
+            
+            // Bug 453865
+            suite.addTest(new AdvancedJPAJunitTest("testJoinWithOrderByOnElementCollectionList"));
+            suite.addTest(new AdvancedJPAJunitTest("testJoinWithOrderByOnElementCollectionMap"));
         }
         
         return suite;
@@ -3756,6 +3760,38 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         }
     }
 
+    /**
+     * Bug 453865
+     * Test joining across an @ElementCollection (List collection implementation) with an ORDER BY clause.
+     */
+    public void testJoinWithOrderByOnElementCollectionList() {
+        EntityManager em = createEntityManager();
+        try {
+            String jpql = "SELECT resp FROM Employee e JOIN e.responsibilities AS resp " +
+                    "WHERE e.lastName = 'Smith' ORDER BY resp";
+            Query query = em.createQuery(jpql, String.class);
+            List<String> results = query.getResultList();
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+    
+    /**
+     * Bug 453865
+     * Test joining across an @ElementCollection (Map collection implementation) with an ORDER BY clause.
+     */
+    public void testJoinWithOrderByOnElementCollectionMap() {
+        EntityManager em = createEntityManager();
+        try {
+            String jpql = "SELECT value(mapEntry) FROM Buyer b JOIN b.creditCards mapEntry " +
+                    "WHERE key(mapEntry) = 'VI' ORDER BY value(mapEntry)";
+            Query query = em.createQuery(jpql, Long.class);
+            List<Long> results = query.getResultList();
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+    
     protected int getVersion(EntityManager em, Dealer dealer) {
         Vector pk = new Vector(1);
         pk.add(dealer.getId());
