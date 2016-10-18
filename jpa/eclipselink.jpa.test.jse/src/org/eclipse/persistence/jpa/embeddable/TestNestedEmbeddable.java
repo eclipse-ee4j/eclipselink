@@ -10,13 +10,19 @@
  * Contributors:
  *     08/24/2016 - Will Dazey
  *       - 500145 : Nested Embeddables Test
+ *     10/19/2016 - Will Dazey
+ *       - 506168 : Nested Embeddables AttributeOverride Test
  ******************************************************************************/
 package org.eclipse.persistence.jpa.embeddable;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.jpa.embeddable.model.Address;
+import org.eclipse.persistence.jpa.embeddable.model.DeepOrderPK;
+import org.eclipse.persistence.jpa.embeddable.model.DeepOrder;
 import org.eclipse.persistence.jpa.embeddable.model.Order;
 import org.eclipse.persistence.jpa.embeddable.model.OrderPK;
 import org.eclipse.persistence.jpa.embeddable.model.Zipcode;
@@ -29,7 +35,7 @@ import org.junit.runner.RunWith;
 
 @RunWith(EmfRunner.class)
 public class TestNestedEmbeddable {
-    @Emf(createTables = DDLGen.DROP_CREATE, classes = { Order.class, OrderPK.class, Address.class, Zipcode.class })
+    @Emf(createTables = DDLGen.DROP_CREATE, classes = { DeepOrder.class, DeepOrderPK.class, Order.class, OrderPK.class, Address.class, Zipcode.class })
         private EntityManagerFactory emf;
     
     @Test
@@ -66,6 +72,33 @@ public class TestNestedEmbeddable {
             
             Assert.assertEquals(billingZip,((OrderPK)pk).getBillingAddress().getZipcode().getZip());
             Assert.assertEquals(shippingZip,((OrderPK)pk).getShippingAddress().getZipcode().getZip());
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            em.close();
+        }
+    }
+
+    @Test
+    public void testDeeperEmbeddingMappings() {
+        if (emf == null)
+            return;
+        EntityManager em = emf.createEntityManager();
+        try {
+            ClassDescriptor orderDescriptor = ((JpaEntityManager)em).getServerSession().getDescriptor(Order.class);
+            ClassDescriptor orderpkDescriptor = orderDescriptor.getMappingForAttributeName("id").getReferenceDescriptor();
+            ClassDescriptor addressDescriptor = orderpkDescriptor.getMappingForAttributeName("billingAddress").getReferenceDescriptor();
+            ClassDescriptor zipcodeDescriptor = addressDescriptor.getMappingForAttributeName("zipcode").getReferenceDescriptor();
+            Assert.assertEquals("BILL_ZIP", zipcodeDescriptor.getFields().get(0).getName());
+
+            ClassDescriptor deepOrderDescriptor = ((JpaEntityManager)em).getServerSession().getDescriptor(DeepOrder.class);
+            ClassDescriptor deepOrderpkDescriptor = deepOrderDescriptor.getMappingForAttributeName("id").getReferenceDescriptor();
+            ClassDescriptor orderpkDescriptor2 = deepOrderpkDescriptor.getMappingForAttributeName("orderpk").getReferenceDescriptor();
+            ClassDescriptor addressDescriptor2 = orderpkDescriptor2.getMappingForAttributeName("billingAddress").getReferenceDescriptor();
+            ClassDescriptor zipcodeDescriptor2 = addressDescriptor2.getMappingForAttributeName("zipcode").getReferenceDescriptor();
+            Assert.assertEquals("deepOverride", zipcodeDescriptor2.getFields().get(0).getName());
+
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
