@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -22,6 +22,8 @@
  *     06/03/2013-2.5.1 Guy Pelletier    
  *       - 402380: 3 jpa21/advanced tests failed on server with 
  *         "java.lang.NoClassDefFoundError: org/eclipse/persistence/testing/models/jpa21/advanced/enums/Gender" 
+ *     10/19/2016-2.6 Will Dazey
+ *       - 506168: Make sure nestedTranslation map is new reference when cloned
  ******************************************************************************/  
 package org.eclipse.persistence.mappings;
 
@@ -918,10 +920,14 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     @Override
     public Object clone() {
         AggregateObjectMapping mappingObject = (AggregateObjectMapping) super.clone();
-        
+
         Map<String, DatabaseField> aggregateToSourceFields = new HashMap<String, DatabaseField>();
         aggregateToSourceFields.putAll(getAggregateToSourceFields());
         mappingObject.setAggregateToSourceFields(aggregateToSourceFields);
+
+        Map<String, Object[]> nestedTranslations = new HashMap<String, Object[]>();
+        nestedTranslations.putAll(getNestedFieldTranslations());
+        mappingObject.setNestedFieldTranslations(nestedTranslations);
 
         return mappingObject;
     }
@@ -1158,6 +1164,14 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      */
     public Map<String, DatabaseField> getAggregateToSourceFields() {
         return aggregateToSourceFields;
+    }
+
+    /**
+     * INTERNAL:
+     * Return the hashtable that stores the nested field translations.
+     */
+    public Map<String, Object[]> getNestedFieldTranslations() {
+        return nestedFieldTranslations;
     }
 
     /**
@@ -1867,6 +1881,15 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      */
     public void setAggregateToSourceFields(Map<String, DatabaseField> aggregateToSource) {
         aggregateToSourceFields = aggregateToSource;
+    }
+
+    /**
+     * INTERNAL:
+     * Set the hashtable that stores a field in the source table 
+     * to a field name in a nested aggregate descriptor.
+     */
+    public void setNestedFieldTranslations(Map<String, Object[]> fieldTranslations) {
+        nestedFieldTranslations = fieldTranslations;
     }
 
     /**
