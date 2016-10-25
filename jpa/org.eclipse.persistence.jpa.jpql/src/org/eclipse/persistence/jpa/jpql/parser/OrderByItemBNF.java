@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -49,6 +49,9 @@ public final class OrderByItemBNF extends JPQLQueryBNF {
         // to parse the query so the flag has to be turned on here
         setHandleCollection(true);
 
+        // Bug 506512 - Syntax error parsing JPQL with ORDER BY clause, using parentheses
+        setHandleSubExpression(true);
+        
         setHandleAggregate(true);
         setFallbackBNFId(ID);
         setFallbackExpressionFactoryId(OrderByItemFactory.ID);
