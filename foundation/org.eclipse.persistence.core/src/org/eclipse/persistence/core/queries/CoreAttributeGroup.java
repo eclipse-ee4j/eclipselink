@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -776,18 +776,25 @@ public class CoreAttributeGroup<
         } else {
             superClassGroupItems = null;
         }
-        Collection<ATTRIBUTE_ITEM> values = this.items.values();
-        length += (values != null && values.size() > 0
-                ?  (values.size() - 1) * FIELD_SEP.length() : 0);
-        for (Iterator<ATTRIBUTE_ITEM> it = values.iterator(); it.hasNext();) {
-            length += it.next().toStringNoClassName().length();
+        Collection<ATTRIBUTE_ITEM> values = null;
+        if (this.items != null) {
+            values = this.items.values();
+            length += (values != null && values.size() > 0
+                    ?  (values.size() - 1) * FIELD_SEP.length() : 0);
+            if (values != null) {
+                for (Iterator<ATTRIBUTE_ITEM> it = values.iterator(); it.hasNext();) {
+                    length += it.next().toStringNoClassName().length();
+                }
+            }
         }
         // Build string to be returned
         StringBuilder str = new StringBuilder(length > 0 ? length : 0);
-        for (Iterator<ATTRIBUTE_ITEM> it = values.iterator(); it.hasNext();) {
-            str.append(it.next().toStringNoClassName());
-            if (it.hasNext()) {
-                str.append(FIELD_SEP);
+        if (values != null) {
+            for (Iterator<ATTRIBUTE_ITEM> it = values.iterator(); it.hasNext();) {
+                str.append(it.next().toStringNoClassName());
+                if (it.hasNext()) {
+                    str.append(FIELD_SEP);
+                }
             }
         }
         if (this.superClassGroup != null) {
