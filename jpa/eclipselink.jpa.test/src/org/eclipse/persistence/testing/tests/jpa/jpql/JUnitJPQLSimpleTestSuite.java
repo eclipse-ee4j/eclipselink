@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -191,6 +191,20 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         suite.addTest(new JUnitJPQLSimpleTestSuite("simpleQueryWithFirstUnusedEntity"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("testSimpleGroupByOrderByClauses"));
 
+        // Bug 506512 - Syntax error parsing JPQL with ORDER BY clause, using parentheses
+        suite.addTest(new JUnitJPQLSimpleTestSuite("testOrderByWithParenthesesAsc"));
+        suite.addTest(new JUnitJPQLSimpleTestSuite("testOrderByWithParenthesesDesc"));
+        suite.addTest(new JUnitJPQLSimpleTestSuite("testOrderByWithParenthesesCalculatedAsc"));
+        suite.addTest(new JUnitJPQLSimpleTestSuite("testOrderByWithParenthesesCalculatedDesc"));
+        suite.addTest(new JUnitJPQLSimpleTestSuite("testOrderByWithParenthesesCalculatedAndNormalAsc"));
+        suite.addTest(new JUnitJPQLSimpleTestSuite("testOrderByWithParenthesesCalculatedAndNormalDesc"));
+        suite.addTest(new JUnitJPQLSimpleTestSuite("testOrderByWithParenthesesCalculatedAndNormalHybrid"));
+        suite.addTest(new JUnitJPQLSimpleTestSuite("testOrderByWithParenthesesCalculatedDefault"));
+        suite.addTest(new JUnitJPQLSimpleTestSuite("testOrderByWithParenthesesDefault"));
+        suite.addTest(new JUnitJPQLSimpleTestSuite("testOrderByWithParenthesesCalculatedAndNormalDefault"));
+        suite.addTest(new JUnitJPQLSimpleTestSuite("testOrderByWithParenthesesAllAttributes"));
+        suite.addTest(new JUnitJPQLSimpleTestSuite("testOrderByWithParenthesesAllAttributesHybrid"));
+        
         return suite;
     }
 
@@ -2409,4 +2423,173 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         Query query = em.createQuery("select e.firstName from Employee e group  by e.firstName  order   by e.firstName");
         query.getResultList();
     }
+    
+    /**
+     * Test an ORDER BY with parentheses on an attribute, ascending
+     */
+    public void testOrderByWithParenthesesAsc() {
+        EntityManager em = createEntityManager();
+        try {
+            Query query = em.createQuery("SELECT e FROM Employee e ORDER BY (e.lastName) ASC");
+            List<Employee> results = query.getResultList();
+            assertFalse(results.isEmpty());
+        } finally {
+            em.close();
+        }
+    }
+    
+    /**
+     * Test an ORDER BY with parentheses on an attribute, descending
+     */
+    public void testOrderByWithParenthesesDesc() {
+        EntityManager em = createEntityManager();
+        try {
+            Query query = em.createQuery("SELECT e FROM Employee e ORDER BY (e.lastName) DESC");
+            List<Employee> results = query.getResultList();
+            assertFalse(results.isEmpty());
+        } finally {
+            em.close();
+        }
+    }
+    
+    /**
+     * Test an ORDER BY with parentheses on an attribute, no desc/asc
+     */
+    public void testOrderByWithParenthesesDefault() {
+        EntityManager em = createEntityManager();
+        try {
+            Query query = em.createQuery("SELECT e FROM Employee e ORDER BY (e.lastName)");
+            List<Employee> results = query.getResultList();
+            assertFalse(results.isEmpty());
+        } finally {
+            em.close();
+        }
+    }
+    
+    /**
+     * Test an ORDER BY with parentheses on a calculated value, ascending
+     */
+    public void testOrderByWithParenthesesCalculatedAsc() {
+        EntityManager em = createEntityManager();
+        try {
+            Query query = em.createQuery("SELECT e FROM Employee e ORDER BY (e.salary - e.version) ASC");
+            List<Employee> results = query.getResultList();
+            assertFalse(results.isEmpty());
+        } finally {
+            em.close();
+        }
+    }
+    
+    /**
+     * Test an ORDER BY with parentheses on a calculated value, descending
+     */
+    public void testOrderByWithParenthesesCalculatedDesc() {
+        EntityManager em = createEntityManager();
+        try {
+            Query query = em.createQuery("SELECT e FROM Employee e ORDER BY (e.salary - e.version) DESC");
+            List<Employee> results = query.getResultList();
+            assertFalse(results.isEmpty());
+        } finally {
+            em.close();
+        }
+    }
+    
+    /**
+     * Test an ORDER BY with parentheses on a calculated value, no asc/desc
+     */
+    public void testOrderByWithParenthesesCalculatedDefault() {
+        EntityManager em = createEntityManager();
+        try {
+            Query query = em.createQuery("SELECT e FROM Employee e ORDER BY (e.salary - e.version)");
+            List<Employee> results = query.getResultList();
+            assertFalse(results.isEmpty());
+        } finally {
+            em.close();
+        }
+    }
+    
+    /**
+     * Test an ORDER BY on an attribute, ascending, and with parentheses on a calculated value, ascending
+     */
+    public void testOrderByWithParenthesesCalculatedAndNormalAsc() {
+        EntityManager em = createEntityManager();
+        try {
+            Query query = em.createQuery("SELECT e FROM Employee e ORDER BY e.lastName ASC, (e.salary - e.version) ASC");
+            List<Employee> results = query.getResultList();
+            assertFalse(results.isEmpty());
+        } finally {
+            em.close();
+        }
+    }
+    
+    /**
+     * Test an ORDER BY on an attribute, descending, and with parentheses on a calculated value, descending
+     */
+    public void testOrderByWithParenthesesCalculatedAndNormalDesc() {
+        EntityManager em = createEntityManager();
+        try {
+            Query query = em.createQuery("SELECT e FROM Employee e ORDER BY e.lastName DESC, (e.salary - e.version) DESC");
+            List<Employee> results = query.getResultList();
+            assertFalse(results.isEmpty());
+        } finally {
+            em.close();
+        }
+    }
+    
+    /**
+     * Test an ORDER BY on an attribute, no asc/desc, and with parentheses on a calculated value, no asc/desc
+     */
+    public void testOrderByWithParenthesesCalculatedAndNormalDefault() {
+        EntityManager em = createEntityManager();
+        try {
+            Query query = em.createQuery("SELECT e FROM Employee e ORDER BY e.lastName, (e.salary - e.version)");
+            List<Employee> results = query.getResultList();
+            assertFalse(results.isEmpty());
+        } finally {
+            em.close();
+        }
+    }
+    
+    /**
+     * Test an ORDER BY on an attribute, no asc/desc, and with parentheses on a calculated value, descending
+     */
+    public void testOrderByWithParenthesesCalculatedAndNormalHybrid() {
+        EntityManager em = createEntityManager();
+        try {
+            Query query = em.createQuery("SELECT e FROM Employee e ORDER BY e.lastName, (e.salary - e.version) DESC");
+            List<Employee> results = query.getResultList();
+            assertFalse(results.isEmpty());
+        } finally {
+            em.close();
+        }
+    }
+    
+    /**
+     * Test an ORDER BY on multiple attributes with parentheses
+     */
+    public void testOrderByWithParenthesesAllAttributes() {
+        EntityManager em = createEntityManager();
+        try {
+            Query query = em.createQuery("SELECT e FROM Employee e ORDER BY (e.lastName), (e.firstName), (e.salary)");
+            List<Employee> results = query.getResultList();
+            assertFalse(results.isEmpty());
+        } finally {
+            em.close();
+        }
+    }
+    
+    /**
+     * Test an ORDER BY on multiple attributes with parentheses, mixed asc/desc
+     */
+    public void testOrderByWithParenthesesAllAttributesHybrid() {
+        EntityManager em = createEntityManager();
+        try {
+            Query query = em.createQuery("SELECT e FROM Employee e ORDER BY (e.lastName) ASC, (e.firstName), (e.salary) DESC");
+            List<Employee> results = query.getResultList();
+            assertFalse(results.isEmpty());
+        } finally {
+            em.close();
+        }
+    }
+    
 }
