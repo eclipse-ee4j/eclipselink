@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,10 +12,16 @@
  ******************************************************************************/
 package org.eclipse.persistence.jaxb.dynamic;
 
-import java.io.*;
+import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.security.PrivilegedActionException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.transform.Source;
@@ -23,15 +29,22 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.core.sessions.CoreProject;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.dynamic.*;
+import org.eclipse.persistence.dynamic.DynamicClassLoader;
+import org.eclipse.persistence.dynamic.DynamicEntity;
+import org.eclipse.persistence.dynamic.DynamicHelper;
+import org.eclipse.persistence.dynamic.DynamicType;
+import org.eclipse.persistence.dynamic.DynamicTypeBuilder;
 import org.eclipse.persistence.internal.descriptors.InstantiationPolicy;
 import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedGetContextClassLoader;
 import org.eclipse.persistence.jaxb.compiler.Generator;
 import org.eclipse.persistence.jaxb.dynamic.metadata.Metadata;
 import org.eclipse.persistence.jaxb.dynamic.metadata.OXMMetadata;
 import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.sessions.*;
+import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.factories.SessionManager;
 import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
 import org.w3c.dom.Node;
@@ -205,13 +218,32 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
             DynamicClassLoader dClassLoader = null;
 
             if (classLoader == null) {
-                classLoader = Thread.currentThread().getContextClassLoader();
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                    try {
+                        classLoader =  AccessController.doPrivileged(new PrivilegedGetContextClassLoader(Thread.currentThread()));
+                    } catch (PrivilegedActionException pae) {
+                        //should not be thrown but make sure that when it does, it's properly reported
+                        throw new RuntimeException(pae);
+                    }
+                } else {
+                    classLoader = PrivilegedAccessHelper.getContextClassLoader(Thread.currentThread());
+                }
             }
             if (classLoader instanceof DynamicClassLoader) {
                dClassLoader = (DynamicClassLoader) classLoader;
             } else {
-               ClassLoader jaxbLoader = new JaxbClassLoader(classLoader);
-               dClassLoader = new DynamicClassLoader(jaxbLoader);
+                final ClassLoader parent = classLoader;
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                    dClassLoader = AccessController.doPrivileged(new PrivilegedAction<DynamicClassLoader>() {
+                        @Override
+                        public DynamicClassLoader run() {
+                            return new DynamicClassLoader(new JaxbClassLoader(parent));
+                        }
+                    });
+                } else {
+                    ClassLoader jaxbLoader = new JaxbClassLoader(parent);
+                    dClassLoader = new DynamicClassLoader(jaxbLoader);
+                }
             }
 
             this.classLoader = dClassLoader;
@@ -304,7 +336,7 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
                 if (cause instanceof JAXBException) {
                     throw (JAXBException) cause;
                 } else if (cause instanceof org.eclipse.persistence.exceptions.JAXBException) {
-                	throw (org.eclipse.persistence.exceptions.JAXBException) cause;
+                    throw (org.eclipse.persistence.exceptions.JAXBException) cause;
                 } else {
                     throw new JAXBException(e);
                 }

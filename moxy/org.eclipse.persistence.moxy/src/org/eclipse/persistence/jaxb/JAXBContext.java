@@ -82,6 +82,8 @@ import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -913,7 +915,14 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
          * the binding layer for a Web Service provider.
          */
         private JAXBContextState createContextState(Class[] classesToBeBound, Map<String, XmlBindings> xmlBindings) throws javax.xml.bind.JAXBException {
-            JaxbClassLoader loader = new JaxbClassLoader(classLoader, classesToBeBound);
+            JaxbClassLoader loader = PrivilegedAccessHelper.shouldUsePrivilegedAccess()
+                    ? AccessController.doPrivileged(new PrivilegedAction<JaxbClassLoader>() {
+                        @Override
+                        public JaxbClassLoader run() {
+                            return new JaxbClassLoader(classLoader, classesToBeBound);
+                        }
+                    })
+                    : new JaxbClassLoader(classLoader, classesToBeBound);
             String defaultTargetNamespace = null;
             AnnotationHelper annotationHelper = null;
             boolean enableXmlAccessorFactory = false;
@@ -1101,7 +1110,15 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                 typesToBeBound = getXmlBindingsClasses(entry.getValue(), classLoader, typesToBeBound);
             }
 
-            JaxbClassLoader loader = new JaxbClassLoader(classLoader, typesToBeBound);
+            final TypeMappingInfo[] types = typesToBeBound;
+
+            JaxbClassLoader loader = PrivilegedAccessHelper.shouldUsePrivilegedAccess()
+                    ? AccessController.doPrivileged(new PrivilegedAction<JaxbClassLoader>() {
+                        public JaxbClassLoader run() {
+                            return new JaxbClassLoader(classLoader, types);
+                        }
+                    })
+                    : new JaxbClassLoader(classLoader, types);
 
             JavaModelImpl jModel;
             if (annotationHelper != null) {
