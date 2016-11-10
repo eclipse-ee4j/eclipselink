@@ -1,4 +1,4 @@
-# Copyright (c) 2014, 2015 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2016 Oracle and/or its affiliates. All rights reserved.
 # This program and the accompanying materials are made available under the
 # terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 # which accompanies this distribution.
@@ -54,7 +54,7 @@ def help_msg():
     print '        admin_user     :: Admin user name (default weblogic)'
     print '        admin_password :: Admin password (default welcome1)'
     print '        jvm_options    :: Command line options to be passed to Java VM executable'
-    print '                          (default -XX:PermSize=128m -XX:MaxPermSize=512m'
+    print '                          (default -XX:PermSize=128m
     print '                          -Dweblogic.Stdout=stdout.log -Dweblogic.Stderr=stderr.log)'
     print ''
     print '    start-partition --partition=<partition_name> [--host=<host>] [--port=<port>]'
@@ -66,7 +66,7 @@ def help_msg():
     print '        admin_user     :: Admin user name (default weblogic)'
     print '        admin_password :: Admin password (default welcome1)'
     print '        jvm_options    :: Command line options to be passed to Java VM executable'
-    print '                          (default -XX:PermSize=128m -XX:MaxPermSize=512m'
+    print '                          (default -XX:PermSize=128m
     print '                          -Dweblogic.Stdout=stdout.log -Dweblogic.Stderr=stderr.log)'
 #### Broken, do not publish
 #    print ''
@@ -535,7 +535,7 @@ def start_domain(globals, command):
     adminUser = get_admin_user(globals, command)
     adminPassword = get_admin_password(globals, command)
     jvmOptions = init_option(globals, command, 'jvm-options', \
-            '-XX:PermSize=128m -XX:MaxPermSize=512m -Dweblogic.Stdout=stdout.log -Dweblogic.Stderr=stderr.log')
+            '-XX:PermSize=128m -Dweblogic.Stdout=stdout.log -Dweblogic.Stderr=stderr.log')
     serverURL = 't3://' + host + ':' + port
     print 'Executing command start-domain'
     print '    Domain path:    ' + domain
@@ -555,7 +555,7 @@ def start_partition(globals, command):
     check_all_options(globals, command, ['partition'])
     partition = get_option(globals, command, 'partition')
     jvmOptions = init_option(globals, command, 'jvm-options', \
-            '-XX:PermSize=128m -XX:MaxPermSize=512m -Dweblogic.Stdout=stdout.log -Dweblogic.Stderr=stderr.log')
+            '-XX:PermSize=128m -Dweblogic.Stdout=stdout.log -Dweblogic.Stderr=stderr.log')
     print 'Executing command start-partition'
     print '    Partition:      ' + partition
     print '    JVM options:    ' + jvmOptions

@@ -215,7 +215,6 @@
             <classpath>
                 <path refid="wls.mt.path"/>
             </classpath>
-            <jvmarg value="-XX:MaxPermSize=256M"/>
             <arg value="${wls.mt.config.tool}"/>
             <arg value="create-domain"/>
             <arg value="--domain=${wls.mt.domain.full.path}"/>
@@ -295,7 +294,6 @@
             <classpath>
                 <path refid="wls.mt.path"/>
             </classpath>
-            <jvmarg value="-XX:MaxPermSize=256M"/>
             <arg value="${wls.mt.config.tool}"/>
             <arg value="--host=${weblogic.mt.host}"/>
             <arg value="--port=${weblogic.mt.port}"/>
@@ -313,7 +311,6 @@
             <classpath>
                 <path refid="wls.mt.path"/>
             </classpath>
-            <jvmarg value="-XX:MaxPermSize=256M"/>
             <arg value="${wls.mt.config.tool}"/>
             <arg value="--host=${weblogic.mt.host}"/>
             <arg value="--port=${weblogic.mt.port}"/>
@@ -373,7 +370,6 @@
             <classpath>
                 <path refid="wls.mt.path"/>
             </classpath>
-            <jvmarg value="-XX:MaxPermSize=256M"/>
             <arg value="${wls.mt.config.tool}"/>
             <arg value="--host=${weblogic.mt.host}"/>
             <arg value="--port=${weblogic.mt.port}"/>
@@ -408,7 +404,6 @@
                 <classpath>
                     <path refid="wls.mt.path" />
                 </classpath>
-                <jvmarg value="-XX:MaxPermSize=256M" />
                 <arg value="${wls.mt.config.tool}" />
                 <arg value="--host=${weblogic.mt.host}" />
                 <arg value="--port=${weblogic.mt.port}" />
@@ -493,7 +488,6 @@
             <classpath>
                 <path refid="wls.mt.path"/>
             </classpath>
-            <jvmarg value="-XX:MaxPermSize=256M"/>
             <arg value="${wls.mt.config.tool}"/>
             <arg value="--host=${weblogic.mt.host}"/>
             <arg value="--port=${weblogic.mt.port}"/>
@@ -515,7 +509,6 @@
             <classpath>
                 <path refid="wls.mt.path"/>
             </classpath>
-            <jvmarg value="-XX:MaxPermSize=256M"/>
             <arg value="${wls.mt.config.tool}"/>
             <arg value="--host=${weblogic.mt.host}"/>
             <arg value="--port=${weblogic.mt.port}"/>

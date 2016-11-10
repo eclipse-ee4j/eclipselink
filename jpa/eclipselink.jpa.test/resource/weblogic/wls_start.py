@@ -10,9 +10,9 @@
 #===========================================================================
 
 if Boolean.getBoolean("debugMode"):
-    prop = '-Xdebug, -Xnoagent, -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8888 -XX:PermSize=128m -XX:MaxPermSize=256m -Dweblogic.Stdout=stdout.log -Dweblogic.Stderr=stderr.log'
+    prop = '-Xdebug, -Xnoagent, -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8888 -XX:PermSize=128m -Dweblogic.Stdout=stdout.log -Dweblogic.Stderr=stderr.log'
 else:
-    prop = '-XX:PermSize=128m -XX:MaxPermSize=256m -Dweblogic.Stdout=stdout.log -Dweblogic.Stderr=stderr.log'
+    prop = '-XX:PermSize=128m -Dweblogic.Stdout=stdout.log -Dweblogic.Stderr=stderr.log'
 
 #===========================================================================
 # Start server using wlst command

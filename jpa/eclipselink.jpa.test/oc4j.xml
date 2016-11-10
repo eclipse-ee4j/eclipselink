@@ -82,7 +82,6 @@
             <jvmarg value="-Xms512m"/>
             <jvmarg value="-Xmx960m"/>
             <jvmarg value="-XX:PermSize=128m"/>
-            <jvmarg value="-XX:MaxPermSize=256m"/>
             <arg value="-config"/>
             <arg value="${oc4j.home}/j2ee/home/config/server.xml"/>
             <arg value="-userThreads"/>
