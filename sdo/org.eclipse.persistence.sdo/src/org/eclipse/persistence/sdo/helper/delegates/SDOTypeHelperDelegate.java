@@ -30,6 +30,8 @@ import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOType;
+import org.eclipse.persistence.sdo.helper.SDOClassLoader;
+import org.eclipse.persistence.sdo.helper.SDOHelperContext;
 import org.eclipse.persistence.sdo.types.SDOWrapperType;
 import org.eclipse.persistence.sdo.types.SDOXMLHelperLoadOptionsType;
 import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
@@ -215,6 +217,17 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
             SDO_LONGOBJECT_WRAPPER = new SDOWrapperType(SDOConstants.SDO_LONGOBJECT, SDOConstants.LONGOBJECT, this, XMLConstants.LONG_QNAME, SDOWrapperType.LongObjectWrapperImpl.class);
             SDO_SHORTOBJECT_WRAPPER = new SDOWrapperType(SDOConstants.SDO_SHORTOBJECT, SDOConstants.SHORTOBJECT, this, XMLConstants.SHORT_QNAME, SDOWrapperType.ShortObjectWrapperImpl.class);
         }
+    }
+
+    // Bug #506919
+    // Decouple application ClassLoader from static wrapper types
+    /**
+     * Sets the {@link SDOClassLoader} instance used by the static {@link SDOWrapperType} instances to the higher level ClassLoader.
+     */
+    public void setSDOClassLoader() {
+        HelperContext helperContext = SDO_BOOLEAN_WRAPPER.getHelperContext();
+        ((SDOXMLHelperDelegate) helperContext.getXMLHelper()).
+                    setLoader(new SDOClassLoader(SDOHelperContext.class.getClassLoader(), helperContext));
     }
 
     public void addWrappersToProject(Project project) {

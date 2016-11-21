@@ -269,6 +269,9 @@ public class SDOHelperContext implements HelperContext {
         xmlHelper = new SDOXMLHelperDelegate(this, aClassLoader);
         typeHelper = new SDOTypeHelperDelegate(this);
         xsdHelper = new SDOXSDHelperDelegate(this);
+
+        // Bug #506919
+        ((SDOTypeHelperDelegate)typeHelper).setSDOClassLoader();
     }
 
     /**
