@@ -34,7 +34,7 @@ import org.eclipse.persistence.sessions.Session;
  * <p><b>Purpose:</b>
  * Supports usage of certain Oracle JDBC specific APIs for the Oracle 12 database.<br>
  * Identity column:<br>
- * <dd>{@code GENERATED [ ALWAYS | BY DEFAULT [ ON NULL ] ] AS IDENTITY [ ( identity_options ) ]}
+ * {@code GENERATED [ ALWAYS | BY DEFAULT [ ON NULL ] ] AS IDENTITY [ ( identity_options ) ]}
  */
 public class Oracle12Platform extends Oracle11Platform {
 
@@ -61,7 +61,7 @@ public class Oracle12Platform extends Oracle11Platform {
     /**
      * INTERNAL:
      * Initialize platform specific identity sequences.
-     * @param dbSession Active database session (in connected state).
+     * @param session Active database session (in connected state).
      * @param defaultIdentityGenerator Default identity generator sequence name.
      * @since 2.7
      */
@@ -94,7 +94,7 @@ public class Oracle12Platform extends Oracle11Platform {
     /**
      * INTERNAL:
      * Remove platform specific identity sequence for specified table. Default identity sequence is restored.
-     * @param dbSession Active database session (in connected state).
+     * @param session Active database session (in connected state).
      * @param defaultIdentityGenerator Default identity generator sequence name.
      * @param tableNames Set of table names to check for identity sequence removal.
      * @since 2.7
