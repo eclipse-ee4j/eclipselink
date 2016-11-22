@@ -2434,7 +2434,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
             List<Employee> results = query.getResultList();
             assertFalse(results.isEmpty());
         } finally {
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -2448,7 +2448,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
             List<Employee> results = query.getResultList();
             assertFalse(results.isEmpty());
         } finally {
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -2462,7 +2462,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
             List<Employee> results = query.getResultList();
             assertFalse(results.isEmpty());
         } finally {
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -2476,7 +2476,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
             List<Employee> results = query.getResultList();
             assertFalse(results.isEmpty());
         } finally {
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -2490,7 +2490,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
             List<Employee> results = query.getResultList();
             assertFalse(results.isEmpty());
         } finally {
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -2504,7 +2504,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
             List<Employee> results = query.getResultList();
             assertFalse(results.isEmpty());
         } finally {
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -2518,7 +2518,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
             List<Employee> results = query.getResultList();
             assertFalse(results.isEmpty());
         } finally {
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -2532,7 +2532,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
             List<Employee> results = query.getResultList();
             assertFalse(results.isEmpty());
         } finally {
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -2546,7 +2546,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
             List<Employee> results = query.getResultList();
             assertFalse(results.isEmpty());
         } finally {
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -2560,7 +2560,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
             List<Employee> results = query.getResultList();
             assertFalse(results.isEmpty());
         } finally {
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -2574,7 +2574,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
             List<Employee> results = query.getResultList();
             assertFalse(results.isEmpty());
         } finally {
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -2588,7 +2588,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
             List<Employee> results = query.getResultList();
             assertFalse(results.isEmpty());
         } finally {
-            em.close();
+            closeEntityManager(em);
         }
     }
     
