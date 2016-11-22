@@ -914,7 +914,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
          * based on method parameters.  This method is useful when JAXB is used as
          * the binding layer for a Web Service provider.
          */
-        private JAXBContextState createContextState(Class[] classesToBeBound, Map<String, XmlBindings> xmlBindings) throws javax.xml.bind.JAXBException {
+        private JAXBContextState createContextState(final Class[] classesToBeBound, Map<String, XmlBindings> xmlBindings) throws javax.xml.bind.JAXBException {
             JaxbClassLoader loader = PrivilegedAccessHelper.shouldUsePrivilegedAccess()
                     ? AccessController.doPrivileged(new PrivilegedAction<JaxbClassLoader>() {
                         @Override

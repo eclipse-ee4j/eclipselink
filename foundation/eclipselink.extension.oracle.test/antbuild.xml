@@ -184,7 +184,7 @@
         <available file="${oracle_test.2.jpa.dir}/${classes.dir}" type="dir" property="jpa.classes.exist"/>
         <available file="${oracle_test.2.core.dir}/${classes.dir}" type="dir" property="core.classes.exist"/>
         <available file="${oracle_test.2.oracle.dir}/${classes.dir}" type="dir" property="oracle.classes.exist"/>
-        <available file="${junit.lib}" property="junit.lib.exist"/>
+        <available classname="org.junit.Test" classpath="${junit.lib}" property="junit.lib.exist"/>
         <available file="${oracle_test.2.common.plugins.dir}/${unsigned.persistence10.jar}" property="persistence.bundle.exist"/>
         <available file="${oracle_test.2.core.test.dir}/${coretest.framework.jar}" property="test.framework.exist"/>
         <available file="${oracle_test.2.core.test.dir}/${core.test.jar}" property="core.test.models.exist"/>

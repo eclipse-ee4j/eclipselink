@@ -208,7 +208,7 @@
         <available file="${nosql_test.2.core.dir}/${classes.dir}"        type="dir"  property="core.classes.exist"/>
         <available file="${nosql_test.2.nosql.dir}/${classes.dir}"       type="dir"  property="nosql.classes.exist"/>
         <available file="${nosql_test.2.base.dir}/${eclipselink.jar}"                property="eclipselink.jar.exist"/>
-        <available file="${junit.lib}"                                               property="junit.lib.exist"/>
+        <available classname="org.junit.Test" classpath="${junit.lib}"               property="junit.lib.exist"/>
         <available file="${coretest.framework.lib}"                                  property="test.framework.exist"/>
         <available file="${coretest.lib}"                                            property="core.test.exist"/>
         <available file="${jpatest.framework.lib}"                                   property="jpatest.framework.exist"/>
