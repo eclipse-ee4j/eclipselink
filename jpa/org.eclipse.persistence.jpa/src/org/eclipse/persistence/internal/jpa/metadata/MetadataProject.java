@@ -101,6 +101,8 @@
  *       - JPARS 2.0 related changes
  *     12/03/2015-2.6 Dalia Abo Sheasha
  *       - 483582: Add the javax.persistence.sharedCache.mode property
+ *     12/05/2016-2.6 Jody Grassel
+ *       - 443546: Converter autoApply does not work for primitive types
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -1007,7 +1009,51 @@ public class MetadataProject {
      * Return the converter for the auto apply class type.
      */
     public ConverterAccessor getAutoApplyConverter(MetadataClass cls) {
-        return m_autoApplyConvertAccessors.get(cls.getName());
+        ConverterAccessor ca = m_autoApplyConvertAccessors.get(cls.getName());
+        if (ca == null) {
+            String wrapperType = resolvePrimitiveWrapper(cls);
+            if (wrapperType != null) {
+                ca = m_autoApplyConvertAccessors.get(wrapperType);
+            }
+        }
+        
+        return ca;
+    }
+    
+    private String resolvePrimitiveWrapper(MetadataClass cls) {
+        String wrapperType = null;
+        
+        if (cls.isPrimitive() && !cls.isArray() && !m_autoApplyConvertAccessors.isEmpty()) {
+            // Look for Converters for the Wrapper equivalent of the primitive
+            switch (cls.getTypeName()) {
+            case "I": // int
+                wrapperType = "java.lang.Integer";
+                break;
+            case "J": // long
+                wrapperType = "java.lang.Long";
+                break;
+            case "S": // short
+                wrapperType = "java.lang.Short";
+                break;
+            case "Z": // boolean
+                wrapperType = "java.lang.Boolean";
+                break;
+            case "F": // float
+                wrapperType = "java.lang.Float";
+                break;
+            case "D": // double
+                wrapperType = "java.lang.Double";
+                break;
+            case "C": // char
+                wrapperType = "java.lang.Character";
+                break;
+            case "B": // byte
+                wrapperType = "java.lang.Byte";
+                break;
+            default: // unknown
+            }
+        }
+        return wrapperType;
     }
     
     /**
@@ -1342,7 +1388,15 @@ public class MetadataProject {
      * Return true if there is an auto-apply converter for the given cls.
      */
     public boolean hasAutoApplyConverter(MetadataClass cls) {
-        return m_autoApplyConvertAccessors.containsKey(cls.getName());
+        boolean hasCA = m_autoApplyConvertAccessors.containsKey(cls.getName());
+        if (hasCA == false) {
+            String wrapperType = resolvePrimitiveWrapper(cls);
+            if (wrapperType != null) {
+                hasCA = m_autoApplyConvertAccessors.containsKey(wrapperType);
+            }
+        }
+        
+        return hasCA;
     }
     
     /**
