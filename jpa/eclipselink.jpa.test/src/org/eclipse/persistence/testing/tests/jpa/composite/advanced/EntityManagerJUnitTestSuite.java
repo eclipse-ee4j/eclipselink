@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -23,6 +23,8 @@
  *         Try to keep one-to-one correspondence between the two in the future, too.
  *         The tests that could not (or not yet) adapted for composite persistence unit
  *         are commented out, the quick explanation why the test can't run is provided.
+ *     03/22/2016-2.6_WAS Nathan Rauh
+ *       - 489787: Add negative test for non-entity supplied to PersistenceUnitUtil.isLoaded
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.composite.advanced;
 
@@ -424,6 +426,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             tests.add("testUnWrapClass");
             tests.add("testIsLoaded");
             tests.add("testIsLoadedAttribute");
+            tests.add("testIsLoadedErrorPaths");
             tests.add("testGetIdentifier");
             tests.add("testGetHints");
             tests.add("testPESSIMISTIC_FORCE_INCREMENTLockOnNonVersionedEntity");
@@ -9408,6 +9411,15 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
     }
     
+    public void testIsLoadedErrorPaths(){
+        EntityManagerFactory emf = getEntityManagerFactory();
+        PersistenceUnitUtil util = emf.getPersistenceUnitUtil();
+        assertFalse("Should not indicate that null entity is loaded", util.isLoaded(null));
+        assertFalse("Should not indicate that null entity attribute is loaded", util.isLoaded(null, "myAttribute"));
+        assertFalse("Should not indicate that non-entity is loaded", util.isLoaded(new Object()));
+        assertFalse("Should not indicate that non-entity attribute is loaded", util.isLoaded(new Object(), "myAttribute"));
+    }
+
     public void testGetIdentifier(){
         EntityManagerFactory emf = getEntityManagerFactory();
         EntityManager em = createEntityManager();
