@@ -16,7 +16,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -119,7 +118,7 @@ public class JsonStructureReader extends XMLReaderAdapter {
             JsonReader jsonReader;
             if (null != input.getByteStream()) {
                 inputStream = input.getByteStream();
-                jsonReader = Json.createReader(new InputStreamReader(inputStream));
+                jsonReader = Json.createReader(inputStream);
             } else if (null != input.getCharacterStream()) {
                 jsonReader = Json.createReader(input.getCharacterStream());
             } else {
@@ -133,7 +132,7 @@ public class JsonStructureReader extends XMLReaderAdapter {
                         throw malformedURLException;
                     }
                 }
-                jsonReader = Json.createReader(new InputStreamReader(inputStream));
+                jsonReader = Json.createReader(inputStream);
             }
             if (jsonReader != null) {
                 JsonStructure structure = jsonReader.read();
