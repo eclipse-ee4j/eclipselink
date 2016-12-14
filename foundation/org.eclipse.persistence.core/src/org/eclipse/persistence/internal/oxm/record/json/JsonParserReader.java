@@ -38,7 +38,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -87,7 +86,7 @@ public final class JsonParserReader extends XMLReaderAdapter {
         InputStream inputStream = null;
         try {
             if (null != (inputStream = input.getByteStream())) {
-                doParsing(Json.createParser(new InputStreamReader(inputStream)));
+                doParsing(Json.createParser(inputStream));
                 return;
             }
 
@@ -101,7 +100,7 @@ public final class JsonParserReader extends XMLReaderAdapter {
                     throw malformedURLException;
                 }
             }
-            doParsing(Json.createParser(new InputStreamReader(inputStream)));
+            doParsing(Json.createParser(inputStream));
         } catch (JsonException je) {
             throw XMLMarshalException.unmarshalException(je);
         } finally {
