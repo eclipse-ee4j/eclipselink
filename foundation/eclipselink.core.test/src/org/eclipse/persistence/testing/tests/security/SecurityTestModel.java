@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -44,6 +44,7 @@ public class SecurityTestModel extends TestModel {
     addTest(getJCETestSuite());
     addTest(getValidationSecurityTestSuite());
     addTest(new DatabaseLoginWithNoEncryptorTest());
+    addTest(getSecurableBackwardsCompatibilityTestSuite());
   }
 
   public static TestSuite getJCETestSuite() {
@@ -74,6 +75,21 @@ public class SecurityTestModel extends TestModel {
         suite.addTest(new SecurityWhileInitializingCopyPolicyTest(Policy.class));//ian added
         suite.addTest(new SecurityWhileInitializingCopyPolicyTest(WorkingPolicy.class));
 
+        return suite;
+    }
+    
+    public static TestSuite getSecurableBackwardsCompatibilityTestSuite() {
+        TestSuite suite = new TestSuite();
+        suite.setName("Securable Backward Compatibility Tests");
+        suite.setDescription("Tests the backwards compatibility of the (default) Securable reference implementation");
+        
+        suite.addTest(new SecurableBackwardsCompatibilityTest("testStringDecryption_PlainText"));
+        suite.addTest(new SecurableBackwardsCompatibilityTest("testStringDecryption_DES_ECB"));
+        suite.addTest(new SecurableBackwardsCompatibilityTest("testStringDecryption_AES_CBC"));
+        suite.addTest(new SecurableBackwardsCompatibilityTest("testStringDecryption_AES_ECB"));
+        suite.addTest(new SecurableBackwardsCompatibilityTest("testNullParameterDecryption"));
+        suite.addTest(new SecurableBackwardsCompatibilityTest("testNullParameterEncryption"));
+        
         return suite;
     }
 
