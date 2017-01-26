@@ -96,7 +96,7 @@ public class WebSpherePlatformDetector implements ServerPlatformDetector {
     private Boolean checkClassLoader(String className) {
         try {
             ClassLoader loader = WebSpherePlatformDetector.class.getClassLoader();
-            Class<?> cls = loader.loadClass(LIBERTY_PROFILE_INFO_INT);
+            Class<?> cls = loader.loadClass(className);
             if (cls != null) {
                 return Boolean.TRUE;
             }
