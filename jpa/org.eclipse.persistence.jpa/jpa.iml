@@ -3,8 +3,8 @@
   <component name="EclipseModuleManager">
     <varelement var="jar://$MODULE_DIR$/../../plugins/javax.transaction_1.1.0.v201002051055.jar!/" value="MODULE_DIR/../../plugins/javax.transaction_1.1.0.v201002051055.jar" />
     <varelement var="jar://$MODULE_DIR$/../../plugins/javax.validation_1.1.0.v201304101302.jar!/" value="MODULE_DIR/../../plugins/javax.validation_1.1.0.v201304101302.jar" />
-    <varelement var="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.asm_5.0.1.v201405080102.jar!/" value="MODULE_DIR/../../plugins/org.eclipse.persistence.asm_5.0.1.v201405080102.jar" />
-    <varelement var="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.asm.source_5.0.1.v201405080102.jar!/" value="src:/MODULE_DIR/../../plugins/org.eclipse.persistence.asm.source_5.0.1.v201405080102.jar" />
+    <varelement var="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.asm_6.0.0.v201702131300.jar!/" value="MODULE_DIR/../../plugins/org.eclipse.persistence.asm_6.0.0.v201702131300.jar" />
+    <varelement var="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.asm.source_6.0.0.v201702131300.jar!/" value="src:/MODULE_DIR/../../plugins/org.eclipse.persistence.asm.source_6.0.0.v201702131300.jar" />
     <src_description expected_position="0">
       <src_folder value="file://$MODULE_DIR$/src" expected_position="0" />
       <src_folder value="file://$MODULE_DIR$/resource" expected_position="1" />
@@ -55,11 +55,11 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.asm_5.0.1.v201405080102.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.asm_6.0.0.v201702131300.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.asm.source_5.0.1.v201405080102.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.asm.source_6.0.0.v201702131300.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -74,4 +74,3 @@
     </orderEntry>
   </component>
 </module>
-

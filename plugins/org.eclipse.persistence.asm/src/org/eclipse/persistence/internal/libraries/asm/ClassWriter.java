@@ -396,6 +396,11 @@ public class ClassWriter extends ClassVisitor {
     private ByteVector sourceDebug;
 
     /**
+     * The module attribute of this class.
+     */
+    private ModuleWriter moduleWriter;
+    
+    /**
      * The constant pool item that contains the name of the enclosing class of
      * this class.
      */
@@ -606,7 +611,7 @@ public class ClassWriter extends ClassVisitor {
      *            {@link #COMPUTE_FRAMES}.
      */
     public ClassWriter(final int flags) {
-        super(Opcodes.ASM5);
+        super(Opcodes.ASM6);
         index = 1;
         pool = new ByteVector();
         items = new Item[256];
@@ -646,9 +651,9 @@ public class ClassWriter extends ClassVisitor {
      * @param flags
      *            option flags that can be used to modify the default behavior
      *            of this class. <i>These option flags do not affect methods
-     *            that are copied as is in the new class. This means that the
-     *            maximum stack size nor the stack frames will be computed for
-     *            these methods</i>. See {@link #COMPUTE_MAXS},
+     *            that are copied as is in the new class. This means that
+     *            neither the maximum stack size nor the stack frames will be
+     *            computed for these methods</i>. See {@link #COMPUTE_MAXS},
      *            {@link #COMPUTE_FRAMES}.
      */
     public ClassWriter(final ClassReader classReader, final int flags) {
@@ -693,6 +698,11 @@ public class ClassWriter extends ClassVisitor {
         }
     }
 
+    @Override
+    public final ModuleVisitor visitModule() {
+        return moduleWriter = new ModuleWriter(this); 
+    }
+    
     @Override
     public final void visitOuterClass(final String owner, final String name,
             final String desc) {
@@ -894,6 +904,11 @@ public class ClassWriter extends ClassVisitor {
             size += 8 + itanns.getSize();
             newUTF8("RuntimeInvisibleTypeAnnotations");
         }
+        if (moduleWriter != null) {
+            ++attributeCount;
+            size += 6 + moduleWriter.getSize();
+            newUTF8("Module");
+        }
         if (attrs != null) {
             attributeCount += attrs.getCount();
             size += attrs.getSize(this, null, 0, -1, -1);
@@ -941,6 +956,10 @@ public class ClassWriter extends ClassVisitor {
             out.putShort(newUTF8("SourceDebugExtension")).putInt(len);
             out.putByteArray(sourceDebug.data, 0, len);
         }
+        if (moduleWriter != null) {
+            out.putShort(newUTF8("Module"));
+            moduleWriter.put(out);
+        }
         if (enclosingMethodOwner != 0) {
             out.putShort(newUTF8("EnclosingMethod")).putInt(4);
             out.putShort(enclosingMethodOwner).putShort(enclosingMethod);
@@ -982,6 +1001,7 @@ public class ClassWriter extends ClassVisitor {
             anns = null;
             ianns = null;
             attrs = null;
+            moduleWriter = null;
             innerClassesCount = 0;
             innerClasses = null;
             bootstrapMethodsCount = 0;

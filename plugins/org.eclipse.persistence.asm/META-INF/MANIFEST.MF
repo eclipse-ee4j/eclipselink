@@ -1,41 +1,33 @@
 Manifest-Version: 1.0
-Export-Package: org.eclipse.persistence.internal.libraries.asm.signature;version="5.0.1",
- org.eclipse.persistence.internal.libraries.asm.commons;version="5.0.1";
-  uses:="org.eclipse.persistence.internal.libraries.asm,
-   org.eclipse.persistence.internal.libraries.asm.tree,
-   org.eclipse.persistence.internal.libraries.asm.signature",
- org.eclipse.persistence.internal.libraries.asm.util;version="5.0.1";
-  uses:="org.eclipse.persistence.internal.libraries.asm,
-   org.eclipse.persistence.internal.libraries.asm.tree.analysis,
-   org.eclipse.persistence.internal.libraries.asm.tree,
-   org.eclipse.persistence.internal.libraries.asm.signature",
- org.eclipse.persistence.internal.libraries.asm.tree.analysis;version="5.0.1";
-  uses:="org.eclipse.persistence.internal.libraries.asm,
-   org.eclipse.persistence.internal.libraries.asm.tree",
- org.eclipse.persistence.internal.libraries.asm;version="5.0.1",
- org.eclipse.persistence.internal.libraries.asm.xml;version="5.0.1";
-  uses:="org.xml.sax,
-   org.eclipse.persistence.internal.libraries.asm,
-   org.xml.sax.helpers,
-   org.xml.sax.ext,
-   javax.xml.transform.sax,
-   javax.xml.transform,
-   javax.xml.transform.stream,
-   org.eclipse.persistence.internal.libraries.asm.util",
- org.eclipse.persistence.internal.libraries.asm.tree;version="5.0.1";
-  uses:="org.eclipse.persistence.internal.libraries.asm"
+Export-Package: org.eclipse.persistence.internal.libraries.asm.signatu
+ re;version="6.0.0",org.eclipse.persistence.internal.libraries.asm.com
+ mons;version="6.0.0";uses:="org.eclipse.persistence.internal.librarie
+ s.asm,org.eclipse.persistence.internal.libraries.asm.tree,org.eclipse
+ .persistence.internal.libraries.asm.signature",org.eclipse.persistenc
+ e.internal.libraries.asm.util;version="6.0.0";uses:="org.eclipse.pers
+ istence.internal.libraries.asm,org.eclipse.persistence.internal.libra
+ ries.asm.tree.analysis,org.eclipse.persistence.internal.libraries.asm
+ .tree,org.eclipse.persistence.internal.libraries.asm.signature",org.e
+ clipse.persistence.internal.libraries.asm.tree.analysis;version="6.0.
+ 0";uses:="org.eclipse.persistence.internal.libraries.asm,org.eclipse.
+ persistence.internal.libraries.asm.tree",org.eclipse.persistence.inte
+ rnal.libraries.asm;version="6.0.0",org.eclipse.persistence.internal.l
+ ibraries.asm.xml;version="6.0.0";uses:="org.xml.sax,org.eclipse.persi
+ stence.internal.libraries.asm,org.xml.sax.helpers,org.xml.sax.ext,jav
+ ax.xml.transform.sax,javax.xml.transform,javax.xml.transform.stream,o
+ rg.eclipse.persistence.internal.libraries.asm.util",org.eclipse.persi
+ stence.internal.libraries.asm.tree;version="6.0.0";uses:="org.eclipse
+ .persistence.internal.libraries.asm"
 Bundle-Name: EclipseLink ASM
-Created-By: 1.6.0_21 (Sun Microsystems Inc.)
+Created-By: 1.8.0_121 (Sun Microsystems Inc.)
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.asm
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Implementation-Vendor: Eclipse.org - EclipseLink Project
 Bundle-Vendor: Eclipse.org - EclipseLink Project
-Bundle-Version: 5.0.1.qualifier
+Bundle-Version: 6.0.0.v201702131300
 Bundle-ManifestVersion: 2
-Import-Package: javax.xml.transform;resolution:=optional,
- javax.xml.transform.sax;resolution:=optional,
- javax.xml.transform.stream;resolution:=optional,
- org.xml.sax;resolution:=optional,
- org.xml.sax.ext;resolution:=optional,
- org.xml.sax.helpers;resolution:=optional
+Import-Package: javax.xml.transform;resolution:=optional,javax.xml.tra
+ nsform.sax;resolution:=optional,javax.xml.transform.stream;resolution
+ :=optional,org.xml.sax;resolution:=optional,org.xml.sax.ext;resolutio
+ n:=optional,org.xml.sax.helpers;resolution:=optional
 Bundle-SymbolicName: org.eclipse.persistence.asm

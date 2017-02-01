@@ -38,10 +38,12 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/javax.servlet_2.4.0.v200806031604.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.asm_6.0.0.v201702131300.jar!/" />
         </CLASSES>
         <JAVADOC />
-        <SOURCES />
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.asm.source_6.0.0.v201702131300.jar!/" />
+        </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library">

@@ -87,7 +87,6 @@
         It may require some configuration of the build.properties to run.
     -->
 <project name="trunk" default="build" basedir="." xmlns:jacoco="antlib:org.jacoco.ant" xmlns:sonar="antlib:org.sonar.ant">
-
     <dirname  property="trunk.build.location_temp" file="${ant.file.trunk}"/>
     <pathconvert targetos="unix" property="trunk.build.location">
         <path>

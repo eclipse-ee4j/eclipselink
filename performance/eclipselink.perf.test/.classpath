@@ -3,8 +3,8 @@
 	<classpathentry excluding="**/.svn/**" kind="src" path="src"/>
 	<classpathentry kind="src" path="resource"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
-	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm_5.0.1.v201405080102.jar" sourcepath="/ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm.source_5.0.1.v201405080102.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm_6.0.0.v201702131300.jar" sourcepath="/ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm.source_6.0.0.v201702131300.jar"/>
 	<classpathentry kind="var" path="EXTENSION_LIB_EXTERNAL/jmh-core-0.9.3.jar"/>
 	<classpathentry kind="var" path="EXTENSION_LIB_EXTERNAL/jmh-generator-annprocess-0.9.3.jar"/>
 	<classpathentry kind="var" path="EXTENSION_LIB_EXTERNAL/commons-math3-3.3.jar"/>

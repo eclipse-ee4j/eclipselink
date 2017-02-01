@@ -29,7 +29,6 @@
  */
 package org.eclipse.persistence.internal.libraries.asm.signature;
 
-
 /**
  * A type signature parser to make a signature visitor visit an existing
  * signature.

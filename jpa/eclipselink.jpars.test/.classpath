@@ -10,9 +10,11 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.dbws"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.ws.rs_1.1.1.v20101004-1200.jar" sourcepath="/ECLIPSELINK_HOME/plugins/javax.ws.rs.source_1.1.1.v20101004-1200.jar"/>
-	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/com.sun.jersey_1.8.0.201204181614.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7">
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.ws.rs_2.0.1.v201504171603.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.ejb_3.1.0.v201205171433.jar" sourcepath="/ECLIPSELINK_HOME/plugins/javax.ejb/src"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm_6.0.0.v201702131300.jar" sourcepath="/ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm.source_6.0.0.v201702131300.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.eclipse.persistence.antlr_3.2.0.v201302191141.jar" sourcepath="/ECLIPSELINK_HOME/plugins/org.eclipse.persistence.antlr.source_3.2.0.v201302191141.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8">
 		<attributes>
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>

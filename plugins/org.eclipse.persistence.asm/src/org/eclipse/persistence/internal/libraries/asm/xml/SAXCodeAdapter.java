@@ -69,7 +69,7 @@ public final class SAXCodeAdapter extends MethodVisitor {
      *            content handler that will be used to send SAX 2.0 events.
      */
     public SAXCodeAdapter(final SAXAdapter sa, final int access) {
-        super(Opcodes.ASM5);
+        super(Opcodes.ASM6);
         this.sa = sa;
         this.access = access;
         this.labelNames = new HashMap<Label, String>();

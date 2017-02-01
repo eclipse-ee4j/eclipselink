@@ -44,6 +44,7 @@ import org.eclipse.persistence.internal.libraries.asm.ClassVisitor;
 import org.eclipse.persistence.internal.libraries.asm.FieldVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Label;
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
+import org.eclipse.persistence.internal.libraries.asm.ModuleVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 import org.eclipse.persistence.internal.libraries.asm.Type;
 import org.eclipse.persistence.internal.libraries.asm.TypePath;
@@ -334,7 +335,7 @@ public class CheckClassAdapter extends ClassVisitor {
      *             If a subclass calls this constructor.
      */
     public CheckClassAdapter(final ClassVisitor cv, final boolean checkDataFlow) {
-        this(Opcodes.ASM5, cv, checkDataFlow);
+        this(Opcodes.ASM6, cv, checkDataFlow);
         if (getClass() != CheckClassAdapter.class) {
             throw new IllegalStateException();
         }
@@ -345,7 +346,7 @@ public class CheckClassAdapter extends ClassVisitor {
      * 
      * @param api
      *            the ASM API version implemented by this visitor. Must be one
-     *            of {@link Opcodes#ASM4} or {@link Opcodes#ASM5}.
+     *            of {@link Opcodes#ASM4}, {@link Opcodes#ASM5} or {@link Opcodes#ASM6}.
      * @param cv
      *            the class visitor to which this adapter must delegate calls.
      * @param checkDataFlow
@@ -378,7 +379,8 @@ public class CheckClassAdapter extends ClassVisitor {
                 + Opcodes.ACC_SUPER + Opcodes.ACC_INTERFACE
                 + Opcodes.ACC_ABSTRACT + Opcodes.ACC_SYNTHETIC
                 + Opcodes.ACC_ANNOTATION + Opcodes.ACC_ENUM
-                + Opcodes.ACC_DEPRECATED + 0x40000); // ClassWriter.ACC_SYNTHETIC_ATTRIBUTE
+                + Opcodes.ACC_DEPRECATED + Opcodes.ACC_MODULE
+                + 0x40000); // ClassWriter.ACC_SYNTHETIC_ATTRIBUTE
         if (name == null || !name.endsWith("package-info")) {
             CheckMethodAdapter.checkInternalName(name, "class name");
         }
@@ -420,6 +422,11 @@ public class CheckClassAdapter extends ClassVisitor {
         super.visitSource(file, debug);
     }
 
+    @Override
+    public ModuleVisitor visitModule() {
+        return new CheckModuleAdapter(super.visitModule());
+    }
+    
     @Override
     public void visitOuterClass(final String owner, final String name,
             final String desc) {

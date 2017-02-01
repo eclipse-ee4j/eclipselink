@@ -1,5 +1,4 @@
-<html>
-<!--
+/***
  * ASM: a very small and fast Java bytecode manipulation framework
  * Copyright (c) 2000-2011 INRIA, France Telecom
  * All rights reserved.
@@ -27,22 +26,59 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
--->
-<body>
-Provides an implementation for optional class, field and method attributes.
+ */
+package org.eclipse.persistence.internal.libraries.asm.optimizer;
 
-<p>
+import org.eclipse.persistence.internal.libraries.asm.ModuleVisitor;
+import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 
-By default ASM strips optional attributes, in order to keep them in
-the bytecode that is being readed you should pass an array of required attribute
-instances to {@link org.eclipse.persistence.internal.libraries.asm.ClassReader#accept(org.eclipse.persistence.internal.libraries.asm.ClassVisitor, org.eclipse.persistence.internal.libraries.asm.Attribute[], boolean) ClassReader.accept()} method.
-In order to add custom attributes to the manually constructed bytecode concrete
-subclasses of the {@link org.eclipse.persistence.internal.libraries.asm.Attribute Attribute} can be passed to
-the visitAttribute methods of the
-{@link org.eclipse.persistence.internal.libraries.asm.ClassVisitor ClassVisitor},
-{@link org.eclipse.persistence.internal.libraries.asm.FieldVisitor FieldVisitor} and
-{@link org.eclipse.persistence.internal.libraries.asm.MethodVisitor MethodVisitor} interfaces.
+/**
+ * A {@link ModuleVisitor} that collects the {@link Constant}s of the
+ * module declaration it visits.
+ * 
+ * @author Remi Forax
+ */
+public class ModuleConstantsCollector extends ModuleVisitor {
 
-@since ASM 1.4.1
-</body>
-</html>
+    private final ConstantPool cp;
+
+    public ModuleConstantsCollector(final ModuleVisitor mv, final ConstantPool cp) {
+        super(Opcodes.ASM6, mv);
+        this.cp = cp;
+    }
+
+    @Override
+    public void visitRequire(String module, int access) {
+        cp.newUTF8(module);
+        mv.visitRequire(module, access);
+    }
+    
+    @Override
+    public void visitExport(String packaze, String... modules) {
+        cp.newUTF8(packaze);
+        if (modules != null && modules.length > 0) {
+            for(String to: modules) {
+                cp.newUTF8(to);
+            }
+        }
+        mv.visitExport(packaze, modules);
+    }
+
+    @Override
+    public void visitUse(String service) {
+        cp.newClass(service);
+        mv.visitUse(service);
+    }
+    
+    @Override
+    public void visitProvide(String service, String impl) {
+        cp.newClass(service);
+        cp.newClass(impl);
+        mv.visitProvide(service, impl);
+    }
+    
+    @Override
+    public void visitEnd() {
+        mv.visitEnd();
+    }
+}

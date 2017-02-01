@@ -89,7 +89,7 @@ public class ASMifier extends Printer {
      *             If a subclass calls this constructor.
      */
     public ASMifier() {
-        this(Opcodes.ASM5, "cw", 0);
+        this(Opcodes.ASM6, "cw", 0);
         if (getClass() != ASMifier.class) {
             throw new IllegalStateException();
         }
@@ -100,7 +100,7 @@ public class ASMifier extends Printer {
      * 
      * @param api
      *            the ASM API version implemented by this class. Must be one of
-     *            {@link Opcodes#ASM4} or {@link Opcodes#ASM5}.
+     *            {@link Opcodes#ASM4}, {@link Opcodes#ASM5} or {@link Opcodes#ASM6}.
      * @param name
      *            the name of the visitor variable in the produced code.
      * @param id
@@ -173,11 +173,10 @@ public class ASMifier extends Printer {
         } else {
             text.add("package asm." + name.substring(0, n).replace('/', '.')
                     + ";\n");
-            simpleName = name.substring(n + 1);
+            simpleName = name.substring(n + 1).replace('-', '_');
         }
         text.add("import java.util.*;\n");
         text.add("import org.eclipse.persistence.internal.libraries.asm.*;\n");
-        text.add("import org.eclipse.persistence.internal.libraries.asm.attrs.*;\n");
         text.add("public class " + simpleName + "Dump implements Opcodes {\n\n");
         text.add("public static byte[] dump () throws Exception {\n\n");
         text.add("ClassWriter cw = new ClassWriter(0);\n");
@@ -208,6 +207,12 @@ public class ASMifier extends Printer {
             break;
         case Opcodes.V1_7:
             buf.append("V1_7");
+            break;
+        case Opcodes.V1_8:
+            buf.append("V1_8");
+            break;
+        case Opcodes.V1_9:
+            buf.append("V1_9");
             break;
         default:
             buf.append(version);
@@ -245,6 +250,14 @@ public class ASMifier extends Printer {
         appendConstant(debug);
         buf.append(");\n\n");
         text.add(buf.toString());
+    }
+    
+    @Override
+    public Printer visitModule() {
+        ASMifier a = createASMifier("mdv", 0);
+        text.add("ModuleVisitor mdv = cw.visitModule();\n");
+        text.add(a.getText());
+        return a;
     }
 
     @Override
@@ -358,6 +371,64 @@ public class ASMifier extends Printer {
     }
 
     // ------------------------------------------------------------------------
+    // Module
+    // ------------------------------------------------------------------------
+    
+    @Override
+    public void visitRequire(String module, int access) {
+        buf.setLength(0);
+        buf.append("mdv.visitRequire(");
+        appendConstant(buf, module);
+        buf.append(", ");
+        appendAccess(access);
+        buf.append(");\n");
+        text.add(buf.toString());
+    }
+    
+    @Override
+    public void visitExport(String packaze, String... modules) {
+        buf.setLength(0);
+        buf.append("mdv.visitExport(");
+        appendConstant(buf, packaze);
+        if (modules != null && modules.length > 0) {
+            buf.append(", new String[] {");
+            for (int i = 0; i < modules.length; ++i) {
+                buf.append(i == 0 ? " " : ", ");
+                appendConstant(modules[i]);
+            }
+            buf.append(" }");
+        }
+        buf.append(");\n");
+        text.add(buf.toString());
+    }
+    
+    @Override
+    public void visitUse(String service) {
+        buf.setLength(0);
+        buf.append("mdv.visitUse(");
+        appendConstant(buf, service);
+        buf.append(");\n");
+        text.add(buf.toString());
+    }
+    
+    @Override
+    public void visitProvide(String service, String impl) {
+        buf.setLength(0);
+        buf.append("mdv.visitProvide(");
+        appendConstant(buf, service);
+        buf.append(", ");
+        appendConstant(buf, impl);
+        buf.append(");\n");
+        text.add(buf.toString());
+    }
+    
+    @Override
+    public void visitModuleEnd() {
+        text.add("mdv.visitEnd();\n");
+    }
+    
+    
+    // ------------------------------------------------------------------------
     // Annotations
     // ------------------------------------------------------------------------
 
@@ -456,7 +527,7 @@ public class ASMifier extends Printer {
     // ------------------------------------------------------------------------
     // Methods
     // ------------------------------------------------------------------------
-
+    
     @Override
     public void visitParameter(String parameterName, int access) {
         buf.setLength(0);
@@ -936,7 +1007,7 @@ public class ASMifier extends Printer {
     // ------------------------------------------------------------------------
 
     protected ASMifier createASMifier(final String name, final int id) {
-        return new ASMifier(Opcodes.ASM5, name, id);
+        return new ASMifier(Opcodes.ASM6, name, id);
     }
 
     /**
@@ -1077,11 +1148,15 @@ public class ASMifier extends Printer {
             buf.append("ACC_DEPRECATED");
             first = false;
         }
-        if ((access & Opcodes.ACC_MANDATED) != 0) {
+        if ((access & (Opcodes.ACC_MANDATED|Opcodes.ACC_MODULE)) != 0) {
             if (!first) {
                 buf.append(" + ");
             }
-            buf.append("ACC_MANDATED");
+            if ((access & ACCESS_CLASS) == 0) {
+                buf.append("ACC_MANDATED");   
+            } else {
+                buf.append("ACC_MODULE");
+            }
             first = false;
         }
         if (first) {

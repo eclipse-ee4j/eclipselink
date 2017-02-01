@@ -34,6 +34,7 @@ import org.eclipse.persistence.internal.libraries.asm.AnnotationVisitor;
 import org.eclipse.persistence.internal.libraries.asm.ClassVisitor;
 import org.eclipse.persistence.internal.libraries.asm.FieldVisitor;
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
+import org.eclipse.persistence.internal.libraries.asm.ModuleVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 import org.eclipse.persistence.internal.libraries.asm.TypePath;
 
@@ -49,7 +50,7 @@ public class RemappingClassAdapter extends ClassVisitor {
     protected String className;
 
     public RemappingClassAdapter(final ClassVisitor cv, final Remapper remapper) {
-        this(Opcodes.ASM5, cv, remapper);
+        this(Opcodes.ASM6, cv, remapper);
     }
 
     protected RemappingClassAdapter(final int api, final ClassVisitor cv,
@@ -67,6 +68,11 @@ public class RemappingClassAdapter extends ClassVisitor {
                 interfaces == null ? null : remapper.mapTypes(interfaces));
     }
 
+    @Override
+    public ModuleVisitor visitModule() {
+        throw new RuntimeException("RemappingClassAdapter is deprecated, use ClassRemapper instead");
+    }
+    
     @Override
     public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
         AnnotationVisitor av = super.visitAnnotation(remapper.mapDesc(desc),

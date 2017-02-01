@@ -153,7 +153,7 @@ public class Textifier extends Printer {
      *             If a subclass calls this constructor.
      */
     public Textifier() {
-        this(Opcodes.ASM5);
+        this(Opcodes.ASM6);
         if (getClass() != Textifier.class) {
             throw new IllegalStateException();
         }
@@ -164,7 +164,7 @@ public class Textifier extends Printer {
      *
      * @param api
      *            the ASM API version implemented by this visitor. Must be one
-     *            of {@link Opcodes#ASM4} or {@link Opcodes#ASM5}.
+     *            of {@link Opcodes#ASM4}, {@link Opcodes#ASM5} or {@link Opcodes#ASM6}.
      */
     protected Textifier(final int api) {
         super(api);
@@ -242,15 +242,19 @@ public class Textifier extends Printer {
                     .append(sv.getDeclaration()).append('\n');
         }
 
-        appendAccess(access & ~Opcodes.ACC_SUPER);
+        String internalName = name;
+        appendAccess(access & ~(Opcodes.ACC_SUPER|Opcodes.ACC_MODULE));
         if ((access & Opcodes.ACC_ANNOTATION) != 0) {
             buf.append("@interface ");
         } else if ((access & Opcodes.ACC_INTERFACE) != 0) {
             buf.append("interface ");
+        } else if ((access & Opcodes.ACC_MODULE) != 0) {
+            buf.append("module ");
+            internalName = name.substring(0, name.length() - "/module-info".length());
         } else if ((access & Opcodes.ACC_ENUM) == 0) {
             buf.append("class ");
         }
-        appendDescriptor(INTERNAL_NAME, name);
+        appendDescriptor(INTERNAL_NAME, internalName);
 
         if (superName != null && !"java/lang/Object".equals(superName)) {
             buf.append(" extends ");
@@ -284,6 +288,13 @@ public class Textifier extends Printer {
             text.add(buf.toString());
         }
     }
+    
+    @Override
+    public Printer visitModule() {
+        Textifier t = createTextifier();
+        text.add(t.getText());
+        return t;
+    }
 
     @Override
     public void visitOuterClass(final String owner, final String name,
@@ -308,7 +319,7 @@ public class Textifier extends Printer {
     }
 
     @Override
-    public Printer visitClassTypeAnnotation(int typeRef, TypePath typePath,
+    public Textifier visitClassTypeAnnotation(int typeRef, TypePath typePath,
             String desc, boolean visible) {
         text.add("\n");
         return visitTypeAnnotation(typeRef, typePath, desc, visible);
@@ -453,6 +464,64 @@ public class Textifier extends Printer {
         text.add("}\n");
     }
 
+    // ------------------------------------------------------------------------
+    // Module
+    // ------------------------------------------------------------------------
+    
+    @Override
+    public void visitRequire(String require, int access) {
+        buf.setLength(0);
+        buf.append(tab).append("requires ");
+        if ((access & Opcodes.ACC_PUBLIC) != 0) {
+            buf.append("public ");
+        }
+        buf.append(require)
+           .append(";  // access flags 0x")
+           .append(Integer.toHexString(access).toUpperCase())
+           .append('\n');
+        text.add(buf.toString());
+    }
+    
+    @Override
+    public void visitExport(String export, String... tos) {
+        buf.setLength(0);
+        buf.append(tab).append("exports ").append(export);
+        if (tos != null && tos.length > 0) {
+            buf.append(" to\n");
+            for (int i = 0; i < tos.length; ++i) {
+                buf.append(tab2).append(tos[i]);
+                buf.append(i != tos.length - 1 ? ",\n": "");
+            }
+        }
+        buf.append(";\n");
+        text.add(buf.toString());
+    }
+    
+    @Override
+    public void visitUse(String use) {
+        buf.setLength(0);
+        buf.append(tab).append("uses ");
+        appendDescriptor(INTERNAL_NAME, use);
+        buf.append(";\n");
+        text.add(buf.toString());
+    }
+    
+    @Override
+    public void visitProvide(String provide, String with) {
+        buf.setLength(0);
+        buf.append(tab).append("provides ");
+        appendDescriptor(INTERNAL_NAME, provide);
+        buf.append(" with\n").append(tab2);
+        appendDescriptor(INTERNAL_NAME, with);
+        buf.append(";\n");
+        text.add(buf.toString());
+    }
+    
+    @Override
+    public void visitModuleEnd() {
+        // empty
+    }
+    
     // ------------------------------------------------------------------------
     // Annotations
     // ------------------------------------------------------------------------
@@ -643,7 +712,7 @@ public class Textifier extends Printer {
     }
 
     @Override
-    public Printer visitFieldTypeAnnotation(int typeRef, TypePath typePath,
+    public Textifier visitFieldTypeAnnotation(int typeRef, TypePath typePath,
             String desc, boolean visible) {
         return visitTypeAnnotation(typeRef, typePath, desc, visible);
     }
@@ -687,7 +756,7 @@ public class Textifier extends Printer {
     }
 
     @Override
-    public Printer visitMethodTypeAnnotation(int typeRef, TypePath typePath,
+    public Textifier visitMethodTypeAnnotation(int typeRef, TypePath typePath,
             String desc, boolean visible) {
         return visitTypeAnnotation(typeRef, typePath, desc, visible);
     }
@@ -968,7 +1037,7 @@ public class Textifier extends Printer {
     }
 
     @Override
-    public Printer visitInsnAnnotation(int typeRef, TypePath typePath,
+    public Textifier visitInsnAnnotation(int typeRef, TypePath typePath,
             String desc, boolean visible) {
         return visitTypeAnnotation(typeRef, typePath, desc, visible);
     }
@@ -990,7 +1059,7 @@ public class Textifier extends Printer {
     }
 
     @Override
-    public Printer visitTryCatchAnnotation(int typeRef, TypePath typePath,
+    public Textifier visitTryCatchAnnotation(int typeRef, TypePath typePath,
             String desc, boolean visible) {
         buf.setLength(0);
         buf.append(tab2).append("TRYCATCHBLOCK @");
@@ -1035,7 +1104,7 @@ public class Textifier extends Printer {
     }
 
     @Override
-    public Printer visitLocalVariableAnnotation(int typeRef, TypePath typePath,
+    public Textifier visitLocalVariableAnnotation(int typeRef, TypePath typePath,
             Label[] start, Label[] end, int[] index, String desc,
             boolean visible) {
         buf.setLength(0);

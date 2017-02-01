@@ -454,7 +454,7 @@ class MethodWriter extends MethodVisitor {
             final String desc, final String signature,
             final String[] exceptions, final boolean computeMaxs,
             final boolean computeFrames) {
-        super(Opcodes.ASM5);
+        super(Opcodes.ASM6);
         if (cw.firstMethod == null) {
             cw.firstMethod = this;
         } else {

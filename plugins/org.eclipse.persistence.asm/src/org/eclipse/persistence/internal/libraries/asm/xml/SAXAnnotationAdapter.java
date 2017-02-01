@@ -48,20 +48,20 @@ public final class SAXAnnotationAdapter extends AnnotationVisitor {
 
     public SAXAnnotationAdapter(final SAXAdapter sa, final String elementName,
             final int visible, final String name, final String desc) {
-        this(Opcodes.ASM5, sa, elementName, visible, desc, name, -1, -1, null,
+        this(Opcodes.ASM6, sa, elementName, visible, desc, name, -1, -1, null,
                 null, null, null);
     }
 
     public SAXAnnotationAdapter(final SAXAdapter sa, final String elementName,
             final int visible, final int parameter, final String desc) {
-        this(Opcodes.ASM5, sa, elementName, visible, desc, null, parameter, -1,
+        this(Opcodes.ASM6, sa, elementName, visible, desc, null, parameter, -1,
                 null, null, null, null);
     }
 
     public SAXAnnotationAdapter(final SAXAdapter sa, final String elementName,
             final int visible, final String name, final String desc,
             final int typeRef, final TypePath typePath) {
-        this(Opcodes.ASM5, sa, elementName, visible, desc, name, -1, typeRef,
+        this(Opcodes.ASM6, sa, elementName, visible, desc, name, -1, typeRef,
                 typePath, null, null, null);
     }
 
@@ -69,7 +69,7 @@ public final class SAXAnnotationAdapter extends AnnotationVisitor {
             final int visible, final String name, final String desc,
             int typeRef, TypePath typePath, final String[] start,
             final String[] end, final int[] index) {
-        this(Opcodes.ASM5, sa, elementName, visible, desc, name, -1, typeRef,
+        this(Opcodes.ASM6, sa, elementName, visible, desc, name, -1, typeRef,
                 typePath, start, end, index);
     }
 

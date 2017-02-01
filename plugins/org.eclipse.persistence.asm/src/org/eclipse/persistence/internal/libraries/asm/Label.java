@@ -29,7 +29,6 @@
  */
 package org.eclipse.persistence.internal.libraries.asm;
 
-
 /**
  * A label represents a position in the bytecode of a method. Labels are used
  * for jump, goto, and switch instructions, and for try catch blocks. A label

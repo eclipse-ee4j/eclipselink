@@ -40,6 +40,7 @@ import org.eclipse.persistence.internal.libraries.asm.FieldVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Handle;
 import org.eclipse.persistence.internal.libraries.asm.Label;
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
+import org.eclipse.persistence.internal.libraries.asm.ModuleVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 import org.eclipse.persistence.internal.libraries.asm.Type;
 import org.eclipse.persistence.internal.libraries.asm.TypePath;
@@ -90,6 +91,15 @@ public class ASMContentHandler extends DefaultHandler implements Opcodes {
         RULES.add(BASE + "/outerclass", new OuterClassRule());
         RULES.add(BASE + "/innerclass", new InnerClassRule());
         RULES.add(BASE + "/source", new SourceRule());
+        
+        ModuleRule moduleRule = new ModuleRule();
+        RULES.add(BASE + "/module", moduleRule);
+        RULES.add(BASE + "/module/requires", moduleRule);
+        RULES.add(BASE + "/module/exports", moduleRule);
+        RULES.add(BASE + "/module/exports/to", moduleRule);
+        RULES.add(BASE + "/module/uses", moduleRule);
+        RULES.add(BASE + "/module/provides", moduleRule);
+        
         RULES.add(BASE + "/field", new FieldRule());
 
         RULES.add(BASE + "/method", new MethodRule());
@@ -672,6 +682,9 @@ public class ASMContentHandler extends DefaultHandler implements Opcodes {
             if (s.indexOf("mandated") != -1) {
                 access |= ACC_MANDATED;
             }
+            if (s.indexOf("module") != -1) {
+                access |= ACC_MODULE;
+            }
             return access;
         }
     }
@@ -739,7 +752,56 @@ public class ASMContentHandler extends DefaultHandler implements Opcodes {
             push(cv);
         }
     }
+    
+    /**
+     * ModuleRule: module, requires, exports, restricted-to, uses and provides 
+     */
+    final class ModuleRule extends Rule {
+        @Override
+        public final void begin(final String element, final Attributes attrs)
+                throws SAXException {
+            if ("module".equals(element)) {
+                push(cv.visitModule());
+            } else if ("requires".equals(element)) {
+                ModuleVisitor mv = (ModuleVisitor) peek();
+                mv.visitRequire(attrs.getValue("module"),
+                        getAccess(attrs.getValue("access")));
+            } else if ("exports".equals(element)) {
+                // encode the name of the exported package as the first item
+                ArrayList<String> list = new ArrayList<String>();
+                list.add(attrs.getValue("name"));
+                push(list);
+            } else if ("to".equals(element)) {
+                @SuppressWarnings("unchecked")
+                ArrayList<String> list = (ArrayList<String>) peek();
+                list.add(attrs.getValue("module"));
+            }  else if ("uses".equals(element)) {
+                ModuleVisitor mv = (ModuleVisitor) peek();
+                mv.visitUse(attrs.getValue("service"));
+            }  else if ("provides".equals(element)) {
+                ModuleVisitor mv = (ModuleVisitor) peek();
+                mv.visitProvide(attrs.getValue("service"), attrs.getValue("impl"));
+            }
+        }
 
+        @Override
+        public void end(final String element) {
+            if ("exports".equals(element)) {
+                @SuppressWarnings("unchecked")
+                ArrayList<String> list = (ArrayList<String>) pop();
+                String export = list.remove(0);  // name of the exported package
+                String[] tos = null;
+                if (!list.isEmpty()) {
+                    tos = list.toArray(new String[list.size()]);
+                }
+                ModuleVisitor mv = (ModuleVisitor) peek();
+                mv.visitExport(export, tos);
+            } else if ("module".equals(element)) {
+                ((ModuleVisitor) pop()).visitEnd();
+            }
+        }
+    }
+    
     /**
      * OuterClassRule
      */
