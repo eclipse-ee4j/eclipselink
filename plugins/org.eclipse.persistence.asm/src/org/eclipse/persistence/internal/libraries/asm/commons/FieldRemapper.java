@@ -31,9 +31,9 @@
 package org.eclipse.persistence.internal.libraries.asm.commons;
 
 import org.eclipse.persistence.internal.libraries.asm.AnnotationVisitor;
+import org.eclipse.persistence.internal.libraries.asm.FieldVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 import org.eclipse.persistence.internal.libraries.asm.TypePath;
-import org.eclipse.persistence.internal.libraries.asm.FieldVisitor;
 
 /**
  * A {@link FieldVisitor} adapter for type remapping.
@@ -45,7 +45,7 @@ public class FieldRemapper extends FieldVisitor {
     private final Remapper remapper;
 
     public FieldRemapper(final FieldVisitor fv, final Remapper remapper) {
-        this(Opcodes.ASM5, fv, remapper);
+        this(Opcodes.ASM6, fv, remapper);
     }
 
     protected FieldRemapper(final int api, final FieldVisitor fv,
@@ -63,7 +63,7 @@ public class FieldRemapper extends FieldVisitor {
 
     @Override
     public AnnotationVisitor visitTypeAnnotation(int typeRef,
-                                                 TypePath typePath, String desc, boolean visible) {
+            TypePath typePath, String desc, boolean visible) {
         AnnotationVisitor av = super.visitTypeAnnotation(typeRef, typePath,
                 remapper.mapDesc(desc), visible);
         return av == null ? null : new AnnotationRemapper(av, remapper);

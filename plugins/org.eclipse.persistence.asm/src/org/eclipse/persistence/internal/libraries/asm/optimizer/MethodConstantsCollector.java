@@ -31,10 +31,10 @@ package org.eclipse.persistence.internal.libraries.asm.optimizer;
 
 import org.eclipse.persistence.internal.libraries.asm.AnnotationVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Handle;
-import org.eclipse.persistence.internal.libraries.asm.Opcodes;
-import org.eclipse.persistence.internal.libraries.asm.TypePath;
 import org.eclipse.persistence.internal.libraries.asm.Label;
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
+import org.eclipse.persistence.internal.libraries.asm.Opcodes;
+import org.eclipse.persistence.internal.libraries.asm.TypePath;
 
 /**
  * An {@link MethodVisitor} that collects the {@link Constant}s of the methods
@@ -48,7 +48,7 @@ public class MethodConstantsCollector extends MethodVisitor {
 
     public MethodConstantsCollector(final MethodVisitor mv,
             final ConstantPool cp) {
-        super(Opcodes.ASM5, mv);
+        super(Opcodes.ASM6, mv);
         this.cp = cp;
     }
 
@@ -82,7 +82,7 @@ public class MethodConstantsCollector extends MethodVisitor {
 
     @Override
     public AnnotationVisitor visitTypeAnnotation(int typeRef,
-                                                 TypePath typePath, String desc, boolean visible) {
+            TypePath typePath, String desc, boolean visible) {
         cp.newUTF8(desc);
         if (visible) {
             cp.newUTF8("RuntimeVisibleTypeAnnotations");

@@ -50,7 +50,7 @@ public class RemappingMethodAdapter extends LocalVariablesSorter {
 
     public RemappingMethodAdapter(final int access, final String desc,
             final MethodVisitor mv, final Remapper remapper) {
-        this(Opcodes.ASM5, access, desc, mv, remapper);
+        this(Opcodes.ASM6, access, desc, mv, remapper);
     }
 
     protected RemappingMethodAdapter(final int api, final int access,

@@ -30,9 +30,9 @@
 
 package org.eclipse.persistence.internal.libraries.asm.commons;
 
-import org.eclipse.persistence.internal.libraries.asm.signature.SignatureReader;
 import org.eclipse.persistence.internal.libraries.asm.Handle;
 import org.eclipse.persistence.internal.libraries.asm.Type;
+import org.eclipse.persistence.internal.libraries.asm.signature.SignatureReader;
 import org.eclipse.persistence.internal.libraries.asm.signature.SignatureVisitor;
 import org.eclipse.persistence.internal.libraries.asm.signature.SignatureWriter;
 
@@ -225,6 +225,28 @@ public abstract class Remapper {
         return name;
     }
 
+    /**
+     * Map package name to the new name. Subclasses can override.
+     * 
+     * @param name name of the package
+     * @return new name of the package
+     */
+    public String mapPackageName(String name) {
+        String fakeName = map(name + ".FakeClassName");
+        int index;
+        return fakeName == null || (index = fakeName.lastIndexOf('.')) == -1 ? name: fakeName.substring(0, index);
+    }
+    
+    /**
+     * Map module name to the new name. Subclasses can override.
+     * 
+     * @param name name of the module
+     * @return new name of the module
+     */
+    public String mapModuleName(String name) {
+        return name;
+    }
+    
     /**
      * Map type name to the new name. Subclasses can override.
      * 

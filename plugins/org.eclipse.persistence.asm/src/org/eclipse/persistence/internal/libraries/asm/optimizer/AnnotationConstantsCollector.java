@@ -45,7 +45,7 @@ public class AnnotationConstantsCollector extends AnnotationVisitor {
 
     public AnnotationConstantsCollector(final AnnotationVisitor av,
             final ConstantPool cp) {
-        super(Opcodes.ASM5, av);
+        super(Opcodes.ASM6, av);
         this.cp = cp;
     }
 

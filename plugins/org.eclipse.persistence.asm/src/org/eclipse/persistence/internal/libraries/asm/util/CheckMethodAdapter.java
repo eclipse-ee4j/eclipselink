@@ -39,9 +39,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.persistence.internal.libraries.asm.tree.analysis.Analyzer;
-import org.eclipse.persistence.internal.libraries.asm.tree.analysis.BasicValue;
-import org.eclipse.persistence.internal.libraries.asm.tree.analysis.BasicVerifier;
 import org.eclipse.persistence.internal.libraries.asm.AnnotationVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Attribute;
 import org.eclipse.persistence.internal.libraries.asm.Handle;
@@ -52,6 +49,9 @@ import org.eclipse.persistence.internal.libraries.asm.Type;
 import org.eclipse.persistence.internal.libraries.asm.TypePath;
 import org.eclipse.persistence.internal.libraries.asm.TypeReference;
 import org.eclipse.persistence.internal.libraries.asm.tree.MethodNode;
+import org.eclipse.persistence.internal.libraries.asm.tree.analysis.Analyzer;
+import org.eclipse.persistence.internal.libraries.asm.tree.analysis.BasicValue;
+import org.eclipse.persistence.internal.libraries.asm.tree.analysis.BasicVerifier;
 
 /**
  * A {@link MethodVisitor} that checks that its methods are properly used. More
@@ -60,7 +60,7 @@ import org.eclipse.persistence.internal.libraries.asm.tree.MethodNode;
  * arguments - such as the fact that the given opcode is correct for a given
  * visit method. This adapter can also perform some basic data flow checks (more
  * precisely those that can be performed without the full class hierarchy - see
- * {@link BasicVerifier}). For instance in a
+ * {@link org.eclipse.persistence.internal.libraries.asm.tree.analysis.BasicVerifier}). For instance in a
  * method whose signature is <tt>void m ()</tt>, the invalid instruction
  * IRETURN, or the invalid sequence IADD L2I will be detected if the data flow
  * checks are enabled. These checks are enabled by using the
@@ -397,7 +397,7 @@ public class CheckMethodAdapter extends MethodVisitor {
      */
     public CheckMethodAdapter(final MethodVisitor mv,
             final Map<Label, Integer> labels) {
-        this(Opcodes.ASM5, mv, labels);
+        this(Opcodes.ASM6, mv, labels);
         if (getClass() != CheckMethodAdapter.class) {
             throw new IllegalStateException();
         }
@@ -410,7 +410,8 @@ public class CheckMethodAdapter extends MethodVisitor {
      * 
      * @param api
      *            the ASM API version implemented by this CheckMethodAdapter.
-     *            Must be one of {@link Opcodes#ASM4} or {@link Opcodes#ASM5}.
+     *            Must be one of {@link Opcodes#ASM4}, {@link Opcodes#ASM5}
+     *            or {@link Opcodes#ASM6}.
      * @param mv
      *            the method visitor to which this adapter must delegate calls.
      * @param labels
@@ -483,7 +484,7 @@ public class CheckMethodAdapter extends MethodVisitor {
 
     @Override
     public AnnotationVisitor visitAnnotation(final String desc,
-                                             final boolean visible) {
+            final boolean visible) {
         checkEndMethod();
         checkDesc(desc, false);
         return new CheckAnnotationAdapter(super.visitAnnotation(desc, visible));
@@ -491,7 +492,7 @@ public class CheckMethodAdapter extends MethodVisitor {
 
     @Override
     public AnnotationVisitor visitTypeAnnotation(final int typeRef,
-                                                 final TypePath typePath, final String desc, final boolean visible) {
+            final TypePath typePath, final String desc, final boolean visible) {
         checkEndMethod();
         int sort = typeRef >>> 24;
         if (sort != TypeReference.METHOD_TYPE_PARAMETER

@@ -33,11 +33,12 @@ import java.io.PrintWriter;
 
 import org.eclipse.persistence.internal.libraries.asm.AnnotationVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Attribute;
-import org.eclipse.persistence.internal.libraries.asm.Opcodes;
-import org.eclipse.persistence.internal.libraries.asm.TypePath;
 import org.eclipse.persistence.internal.libraries.asm.ClassVisitor;
 import org.eclipse.persistence.internal.libraries.asm.FieldVisitor;
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
+import org.eclipse.persistence.internal.libraries.asm.ModuleVisitor;
+import org.eclipse.persistence.internal.libraries.asm.Opcodes;
+import org.eclipse.persistence.internal.libraries.asm.TypePath;
 
 /**
  * A {@link ClassVisitor} that prints the classes it visits with a
@@ -131,7 +132,7 @@ public final class TraceClassVisitor extends ClassVisitor {
      */
     public TraceClassVisitor(final ClassVisitor cv, final Printer p,
             final PrintWriter pw) {
-        super(Opcodes.ASM5, cv);
+        super(Opcodes.ASM6, cv);
         this.pw = pw;
         this.p = p;
     }
@@ -149,6 +150,13 @@ public final class TraceClassVisitor extends ClassVisitor {
         p.visitSource(file, debug);
         super.visitSource(file, debug);
     }
+    
+    @Override
+    public ModuleVisitor visitModule() {
+        Printer p = this.p.visitModule();
+        ModuleVisitor mv =  super.visitModule();
+        return new TraceModuleVisitor(mv, p);
+    }
 
     @Override
     public void visitOuterClass(final String owner, final String name,
@@ -159,7 +167,7 @@ public final class TraceClassVisitor extends ClassVisitor {
 
     @Override
     public AnnotationVisitor visitAnnotation(final String desc,
-                                             final boolean visible) {
+            final boolean visible) {
         Printer p = this.p.visitClassAnnotation(desc, visible);
         AnnotationVisitor av = cv == null ? null : cv.visitAnnotation(desc,
                 visible);
@@ -168,7 +176,7 @@ public final class TraceClassVisitor extends ClassVisitor {
 
     @Override
     public AnnotationVisitor visitTypeAnnotation(int typeRef,
-                                                 TypePath typePath, String desc, boolean visible) {
+            TypePath typePath, String desc, boolean visible) {
         Printer p = this.p.visitClassTypeAnnotation(typeRef, typePath, desc,
                 visible);
         AnnotationVisitor av = cv == null ? null : cv.visitTypeAnnotation(

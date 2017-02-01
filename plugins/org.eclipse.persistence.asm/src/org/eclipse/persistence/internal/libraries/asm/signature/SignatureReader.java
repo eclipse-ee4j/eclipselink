@@ -29,9 +29,6 @@
  */
 package org.eclipse.persistence.internal.libraries.asm.signature;
 
-import org.eclipse.persistence.internal.libraries.asm.ClassVisitor;
-import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
-
 /**
  * A type signature parser to make a signature visitor visit an existing
  * signature.
@@ -63,10 +60,10 @@ public class SignatureReader {
      * constructor (see {@link #SignatureReader(String) SignatureReader}). This
      * method is intended to be called on a {@link SignatureReader} that was
      * created using a <i>ClassSignature</i> (such as the <code>signature</code>
-     * parameter of the {@link ClassVisitor#visit
+     * parameter of the {@link org.eclipse.persistence.internal.libraries.asm.ClassVisitor#visit
      * ClassVisitor.visit} method) or a <i>MethodTypeSignature</i> (such as the
      * <code>signature</code> parameter of the
-     * {@link ClassVisitor#visitMethod
+     * {@link org.eclipse.persistence.internal.libraries.asm.ClassVisitor#visitMethod
      * ClassVisitor.visitMethod} method).
      * 
      * @param v
@@ -122,8 +119,8 @@ public class SignatureReader {
      * method is intended to be called on a {@link SignatureReader} that was
      * created using a <i>FieldTypeSignature</i>, such as the
      * <code>signature</code> parameter of the
-     * {@link ClassVisitor#visitField ClassVisitor.visitField}
-     * or {@link MethodVisitor#visitLocalVariable
+     * {@link org.eclipse.persistence.internal.libraries.asm.ClassVisitor#visitField ClassVisitor.visitField}
+     * or {@link org.eclipse.persistence.internal.libraries.asm.MethodVisitor#visitLocalVariable
      * MethodVisitor.visitLocalVariable} methods.
      * 
      * @param v

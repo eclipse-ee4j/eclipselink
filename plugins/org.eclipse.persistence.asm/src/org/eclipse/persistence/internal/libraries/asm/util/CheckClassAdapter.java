@@ -37,10 +37,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.persistence.internal.libraries.asm.tree.ClassNode;
-import org.eclipse.persistence.internal.libraries.asm.tree.analysis.Analyzer;
-import org.eclipse.persistence.internal.libraries.asm.tree.analysis.BasicValue;
-import org.eclipse.persistence.internal.libraries.asm.tree.analysis.SimpleVerifier;
 import org.eclipse.persistence.internal.libraries.asm.AnnotationVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Attribute;
 import org.eclipse.persistence.internal.libraries.asm.ClassReader;
@@ -48,12 +44,17 @@ import org.eclipse.persistence.internal.libraries.asm.ClassVisitor;
 import org.eclipse.persistence.internal.libraries.asm.FieldVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Label;
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
+import org.eclipse.persistence.internal.libraries.asm.ModuleVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 import org.eclipse.persistence.internal.libraries.asm.Type;
 import org.eclipse.persistence.internal.libraries.asm.TypePath;
 import org.eclipse.persistence.internal.libraries.asm.TypeReference;
+import org.eclipse.persistence.internal.libraries.asm.tree.ClassNode;
 import org.eclipse.persistence.internal.libraries.asm.tree.MethodNode;
+import org.eclipse.persistence.internal.libraries.asm.tree.analysis.Analyzer;
+import org.eclipse.persistence.internal.libraries.asm.tree.analysis.BasicValue;
 import org.eclipse.persistence.internal.libraries.asm.tree.analysis.Frame;
+import org.eclipse.persistence.internal.libraries.asm.tree.analysis.SimpleVerifier;
 
 /**
  * A {@link ClassVisitor} that checks that its methods are properly used. More
@@ -93,9 +94,9 @@ import org.eclipse.persistence.internal.libraries.asm.tree.analysis.Frame;
  * insnNumber locals : stack):
  * 
  * <pre>
- * org.objectweb.asm.tree.analysis.AnalyzerException: Error at instruction 71: Expected I, but found .
- *   at org.objectweb.asm.tree.analysis.Analyzer.analyze(Analyzer.java:289)
- *   at org.objectweb.asm.util.CheckClassAdapter.verify(CheckClassAdapter.java:135)
+ * org.eclipse.persistence.internal.libraries.asm.tree.analysis.AnalyzerException: Error at instruction 71: Expected I, but found .
+ *   at org.eclipse.persistence.internal.libraries.asm.tree.analysis.Analyzer.analyze(Analyzer.java:289)
+ *   at org.eclipse.persistence.internal.libraries.asm.util.CheckClassAdapter.verify(CheckClassAdapter.java:135)
  * ...
  * remove()V
  * 00000 LinkedBlockingQueue$Itr . . . . . . . .  :
@@ -334,7 +335,7 @@ public class CheckClassAdapter extends ClassVisitor {
      *             If a subclass calls this constructor.
      */
     public CheckClassAdapter(final ClassVisitor cv, final boolean checkDataFlow) {
-        this(Opcodes.ASM5, cv, checkDataFlow);
+        this(Opcodes.ASM6, cv, checkDataFlow);
         if (getClass() != CheckClassAdapter.class) {
             throw new IllegalStateException();
         }
@@ -345,7 +346,7 @@ public class CheckClassAdapter extends ClassVisitor {
      * 
      * @param api
      *            the ASM API version implemented by this visitor. Must be one
-     *            of {@link Opcodes#ASM4} or {@link Opcodes#ASM5}.
+     *            of {@link Opcodes#ASM4}, {@link Opcodes#ASM5} or {@link Opcodes#ASM6}.
      * @param cv
      *            the class visitor to which this adapter must delegate calls.
      * @param checkDataFlow
@@ -378,7 +379,8 @@ public class CheckClassAdapter extends ClassVisitor {
                 + Opcodes.ACC_SUPER + Opcodes.ACC_INTERFACE
                 + Opcodes.ACC_ABSTRACT + Opcodes.ACC_SYNTHETIC
                 + Opcodes.ACC_ANNOTATION + Opcodes.ACC_ENUM
-                + Opcodes.ACC_DEPRECATED + 0x40000); // ClassWriter.ACC_SYNTHETIC_ATTRIBUTE
+                + Opcodes.ACC_DEPRECATED + Opcodes.ACC_MODULE
+                + 0x40000); // ClassWriter.ACC_SYNTHETIC_ATTRIBUTE
         if (name == null || !name.endsWith("package-info")) {
             CheckMethodAdapter.checkInternalName(name, "class name");
         }
@@ -420,6 +422,11 @@ public class CheckClassAdapter extends ClassVisitor {
         super.visitSource(file, debug);
     }
 
+    @Override
+    public ModuleVisitor visitModule() {
+        return new CheckModuleAdapter(super.visitModule());
+    }
+    
     @Override
     public void visitOuterClass(final String owner, final String name,
             final String desc) {
@@ -525,7 +532,7 @@ public class CheckClassAdapter extends ClassVisitor {
 
     @Override
     public AnnotationVisitor visitAnnotation(final String desc,
-                                             final boolean visible) {
+            final boolean visible) {
         checkState();
         CheckMethodAdapter.checkDesc(desc, false);
         return new CheckAnnotationAdapter(super.visitAnnotation(desc, visible));
@@ -533,7 +540,7 @@ public class CheckClassAdapter extends ClassVisitor {
 
     @Override
     public AnnotationVisitor visitTypeAnnotation(final int typeRef,
-                                                 final TypePath typePath, final String desc, final boolean visible) {
+            final TypePath typePath, final String desc, final boolean visible) {
         checkState();
         int sort = typeRef >>> 24;
         if (sort != TypeReference.CLASS_TYPE_PARAMETER

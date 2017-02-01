@@ -29,9 +29,9 @@
  */
 package org.eclipse.persistence.internal.libraries.asm.commons;
 
-import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 import org.eclipse.persistence.internal.libraries.asm.ClassVisitor;
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
+import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 
 /**
  * A {@link ClassVisitor} that merges clinit methods into a single one.
@@ -49,7 +49,7 @@ public class StaticInitMerger extends ClassVisitor {
     private int counter;
 
     public StaticInitMerger(final String prefix, final ClassVisitor cv) {
-        this(Opcodes.ASM5, prefix, cv);
+        this(Opcodes.ASM6, prefix, cv);
     }
 
     protected StaticInitMerger(final int api, final String prefix,

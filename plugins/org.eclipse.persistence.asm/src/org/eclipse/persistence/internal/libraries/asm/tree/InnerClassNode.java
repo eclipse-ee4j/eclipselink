@@ -30,7 +30,6 @@
 package org.eclipse.persistence.internal.libraries.asm.tree;
 
 import org.eclipse.persistence.internal.libraries.asm.ClassVisitor;
-import org.eclipse.persistence.internal.libraries.asm.Type;
 
 /**
  * A node that represents an inner class.
@@ -41,13 +40,13 @@ public class InnerClassNode {
 
     /**
      * The internal name of an inner class (see
-     * {@link Type#getInternalName() getInternalName}).
+     * {@link org.eclipse.persistence.internal.libraries.asm.Type#getInternalName() getInternalName}).
      */
     public String name;
 
     /**
      * The internal name of the class to which the inner class belongs (see
-     * {@link Type#getInternalName() getInternalName}). May be
+     * {@link org.eclipse.persistence.internal.libraries.asm.Type#getInternalName() getInternalName}). May be
      * <tt>null</tt>.
      */
     public String outerName;
@@ -69,11 +68,11 @@ public class InnerClassNode {
      * 
      * @param name
      *            the internal name of an inner class (see
-     *            {@link Type#getInternalName()
+     *            {@link org.eclipse.persistence.internal.libraries.asm.Type#getInternalName()
      *            getInternalName}).
      * @param outerName
      *            the internal name of the class to which the inner class
-     *            belongs (see {@link Type#getInternalName()
+     *            belongs (see {@link org.eclipse.persistence.internal.libraries.asm.Type#getInternalName()
      *            getInternalName}). May be <tt>null</tt>.
      * @param innerName
      *            the (simple) name of the inner class inside its enclosing

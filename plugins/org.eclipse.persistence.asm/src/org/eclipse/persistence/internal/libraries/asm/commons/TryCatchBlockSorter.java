@@ -33,10 +33,10 @@ package org.eclipse.persistence.internal.libraries.asm.commons;
 import java.util.Collections;
 import java.util.Comparator;
 
+import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 import org.eclipse.persistence.internal.libraries.asm.tree.MethodNode;
 import org.eclipse.persistence.internal.libraries.asm.tree.TryCatchBlockNode;
-import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
 
 /**
  * A {@link MethodVisitor} adapter to sort the exception handlers. The handlers
@@ -57,7 +57,7 @@ public class TryCatchBlockSorter extends MethodNode {
     public TryCatchBlockSorter(final MethodVisitor mv, final int access,
             final String name, final String desc, final String signature,
             final String[] exceptions) {
-        this(Opcodes.ASM5, mv, access, name, desc, signature, exceptions);
+        this(Opcodes.ASM6, mv, access, name, desc, signature, exceptions);
     }
 
     protected TryCatchBlockSorter(final int api, final MethodVisitor mv,

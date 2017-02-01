@@ -33,7 +33,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.persistence.internal.libraries.asm.AnnotationVisitor;
-import org.eclipse.persistence.internal.libraries.asm.Type;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 
 /**
@@ -53,7 +52,7 @@ public class AnnotationNode extends AnnotationVisitor {
      * as two consecutive elements in the list. The name is a {@link String},
      * and the value may be a {@link Byte}, {@link Boolean}, {@link Character},
      * {@link Short}, {@link Integer}, {@link Long}, {@link Float},
-     * {@link Double}, {@link String} or {@link Type}, or an
+     * {@link Double}, {@link String} or {@link org.eclipse.persistence.internal.libraries.asm.Type}, or an
      * two elements String array (for enumeration values), a
      * {@link AnnotationNode}, or a {@link List} of values of one of the
      * preceding types. The list may be <tt>null</tt> if there is no name value
@@ -72,7 +71,7 @@ public class AnnotationNode extends AnnotationVisitor {
      *             If a subclass calls this constructor.
      */
     public AnnotationNode(final String desc) {
-        this(Opcodes.ASM5, desc);
+        this(Opcodes.ASM6, desc);
         if (getClass() != AnnotationNode.class) {
             throw new IllegalStateException();
         }
@@ -83,7 +82,7 @@ public class AnnotationNode extends AnnotationVisitor {
      * 
      * @param api
      *            the ASM API version implemented by this visitor. Must be one
-     *            of {@link Opcodes#ASM4} or {@link Opcodes#ASM5}.
+     *            of {@link Opcodes#ASM4}, {@link Opcodes#ASM5} or {@link Opcodes#ASM6}.
      * @param desc
      *            the class descriptor of the annotation class.
      */
@@ -99,7 +98,7 @@ public class AnnotationNode extends AnnotationVisitor {
      *            where the visited values must be stored.
      */
     AnnotationNode(final List<Object> values) {
-        super(Opcodes.ASM5);
+        super(Opcodes.ASM6);
         this.values = values;
     }
 
@@ -172,8 +171,8 @@ public class AnnotationNode extends AnnotationVisitor {
      * versions of the ASM API than the given version.
      * 
      * @param api
-     *            an ASM API version. Must be one of {@link Opcodes#ASM4} or
-     *            {@link Opcodes#ASM5}.
+     *            an ASM API version. Must be one of {@link Opcodes#ASM4},
+     *            {@link Opcodes#ASM5} or {@link Opcodes#ASM6}.
      */
     public void check(final int api) {
         // nothing to do

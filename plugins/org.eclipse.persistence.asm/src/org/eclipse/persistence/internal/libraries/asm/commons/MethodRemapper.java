@@ -47,7 +47,7 @@ public class MethodRemapper extends MethodVisitor {
     protected final Remapper remapper;
 
     public MethodRemapper(final MethodVisitor mv, final Remapper remapper) {
-        this(Opcodes.ASM5, mv, remapper);
+        this(Opcodes.ASM6, mv, remapper);
     }
 
     protected MethodRemapper(final int api, final MethodVisitor mv,
@@ -71,7 +71,7 @@ public class MethodRemapper extends MethodVisitor {
 
     @Override
     public AnnotationVisitor visitTypeAnnotation(int typeRef,
-                                                 TypePath typePath, String desc, boolean visible) {
+            TypePath typePath, String desc, boolean visible) {
         AnnotationVisitor av = super.visitTypeAnnotation(typeRef, typePath,
                 remapper.mapDesc(desc), visible);
         return av == null ? av : new AnnotationRemapper(av, remapper);

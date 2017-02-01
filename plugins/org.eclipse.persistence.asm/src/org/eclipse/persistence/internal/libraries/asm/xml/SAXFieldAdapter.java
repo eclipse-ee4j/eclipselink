@@ -45,21 +45,21 @@ public final class SAXFieldAdapter extends FieldVisitor {
     SAXAdapter sa;
 
     public SAXFieldAdapter(final SAXAdapter sa, final Attributes att) {
-        super(Opcodes.ASM5);
+        super(Opcodes.ASM6);
         this.sa = sa;
         sa.addStart("field", att);
     }
 
     @Override
     public AnnotationVisitor visitAnnotation(final String desc,
-                                             final boolean visible) {
+            final boolean visible) {
         return new SAXAnnotationAdapter(sa, "annotation", visible ? 1 : -1,
                 null, desc);
     }
 
     @Override
     public AnnotationVisitor visitTypeAnnotation(int typeRef,
-                                                 TypePath typePath, String desc, boolean visible) {
+            TypePath typePath, String desc, boolean visible) {
         return new SAXAnnotationAdapter(sa, "typeAnnotation", visible ? 1 : -1,
                 null, desc, typeRef, typePath);
     }

@@ -33,19 +33,20 @@ import org.eclipse.persistence.internal.libraries.asm.AnnotationVisitor;
 import org.eclipse.persistence.internal.libraries.asm.ClassVisitor;
 import org.eclipse.persistence.internal.libraries.asm.FieldVisitor;
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
+import org.eclipse.persistence.internal.libraries.asm.ModuleVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 import org.eclipse.persistence.internal.libraries.asm.TypePath;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.helpers.AttributesImpl;
 
 /**
- * A {@link ClassVisitor ClassVisitor} that generates SAX 2.0
+ * A {@link org.eclipse.persistence.internal.libraries.asm.ClassVisitor ClassVisitor} that generates SAX 2.0
  * events from the visited class. It can feed any kind of
  * {@link org.xml.sax.ContentHandler ContentHandler}, e.g. XML serializer, XSLT
  * or XQuery engines.
  * 
- * @see Processor
- * @see ASMContentHandler
+ * @see org.eclipse.persistence.internal.libraries.asm.xml.Processor
+ * @see org.eclipse.persistence.internal.libraries.asm.xml.ASMContentHandler
  * 
  * @author Eugene Kuleshov
  */
@@ -81,7 +82,7 @@ public final class SAXClassAdapter extends ClassVisitor {
      *            {@link ContentHandler#endDocument() endDocument()} events.
      */
     public SAXClassAdapter(final ContentHandler h, boolean singleDocument) {
-        super(Opcodes.ASM5);
+        super(Opcodes.ASM6);
         this.sa = new SAXAdapter(h);
         this.singleDocument = singleDocument;
         if (!singleDocument) {
@@ -101,6 +102,13 @@ public final class SAXClassAdapter extends ClassVisitor {
 
         sa.addElement("source", att);
     }
+    
+    @Override
+    public ModuleVisitor visitModule() {
+        AttributesImpl att = new AttributesImpl();
+        sa.addStart("module", att);
+        return new SAXModuleAdapter(sa);
+    }
 
     @Override
     public void visitOuterClass(final String owner, final String name,
@@ -119,7 +127,7 @@ public final class SAXClassAdapter extends ClassVisitor {
 
     @Override
     public AnnotationVisitor visitAnnotation(final String desc,
-                                             final boolean visible) {
+            final boolean visible) {
         return new SAXAnnotationAdapter(sa, "annotation", visible ? 1 : -1,
                 null, desc);
     }
@@ -328,8 +336,12 @@ public final class SAXClassAdapter extends ClassVisitor {
         if ((access & Opcodes.ACC_DEPRECATED) != 0) {
             sb.append("deprecated ");
         }
-        if ((access & Opcodes.ACC_MANDATED) != 0) {
-            sb.append("mandated ");
+        if ((access & (Opcodes.ACC_MANDATED|Opcodes.ACC_MODULE)) != 0) {
+            if ((access & ACCESS_CLASS) == 0) {
+                sb.append("module ");
+            } else {
+                sb.append("mandated ");
+            }
         }
     }
 }

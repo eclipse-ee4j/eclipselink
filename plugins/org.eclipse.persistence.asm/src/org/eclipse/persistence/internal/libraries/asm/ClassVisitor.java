@@ -43,7 +43,7 @@ public abstract class ClassVisitor {
 
     /**
      * The ASM API version implemented by this visitor. The value of this field
-     * must be one of {@link Opcodes#ASM4} or {@link Opcodes#ASM5}.
+     * must be one of {@link Opcodes#ASM4}, {@link Opcodes#ASM5} or {@link Opcodes#ASM6}.
      */
     protected final int api;
 
@@ -58,7 +58,7 @@ public abstract class ClassVisitor {
      * 
      * @param api
      *            the ASM API version implemented by this visitor. Must be one
-     *            of {@link Opcodes#ASM4} or {@link Opcodes#ASM5}.
+     *            of {@link Opcodes#ASM4}, {@link Opcodes#ASM5} or {@link Opcodes#ASM6}.
      */
     public ClassVisitor(final int api) {
         this(api, null);
@@ -69,13 +69,13 @@ public abstract class ClassVisitor {
      * 
      * @param api
      *            the ASM API version implemented by this visitor. Must be one
-     *            of {@link Opcodes#ASM4} or {@link Opcodes#ASM5}.
+     *            of {@link Opcodes#ASM4}, {@link Opcodes#ASM5} or {@link Opcodes#ASM6}.
      * @param cv
      *            the class visitor to which this visitor must delegate method
      *            calls. May be null.
      */
     public ClassVisitor(final int api, final ClassVisitor cv) {
-        if (api != Opcodes.ASM4 && api != Opcodes.ASM5) {
+        if (api < Opcodes.ASM4 || api > Opcodes.ASM6) {
             throw new IllegalArgumentException();
         }
         this.api = api;
@@ -129,6 +129,21 @@ public abstract class ClassVisitor {
         if (cv != null) {
             cv.visitSource(source, debug);
         }
+    }
+    
+    /**
+     * Visit the module corresponding to the class.
+     * @return a visitor to visit the module values, or <tt>null</tt> if
+     *         this visitor is not interested in visiting this module.
+     */
+    public ModuleVisitor visitModule() {
+        if (api < Opcodes.ASM6) {
+            throw new RuntimeException();
+        }
+        if (cv != null) {
+            return cv.visitModule();
+        }
+        return null;
     }
 
     /**

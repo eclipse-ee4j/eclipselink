@@ -46,8 +46,8 @@ import java.util.TreeSet;
 import org.eclipse.persistence.internal.libraries.asm.ClassReader;
 import org.eclipse.persistence.internal.libraries.asm.ClassWriter;
 import org.eclipse.persistence.internal.libraries.asm.Handle;
-import org.eclipse.persistence.internal.libraries.asm.commons.Remapper;
 import org.eclipse.persistence.internal.libraries.asm.Type;
+import org.eclipse.persistence.internal.libraries.asm.commons.Remapper;
 import org.eclipse.persistence.internal.libraries.asm.commons.SimpleRemapper;
 
 /**

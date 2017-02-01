@@ -31,11 +31,12 @@ package org.eclipse.persistence.internal.libraries.asm.optimizer;
 
 import org.eclipse.persistence.internal.libraries.asm.AnnotationVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Attribute;
-import org.eclipse.persistence.internal.libraries.asm.Opcodes;
-import org.eclipse.persistence.internal.libraries.asm.TypePath;
 import org.eclipse.persistence.internal.libraries.asm.ClassVisitor;
 import org.eclipse.persistence.internal.libraries.asm.FieldVisitor;
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
+import org.eclipse.persistence.internal.libraries.asm.ModuleVisitor;
+import org.eclipse.persistence.internal.libraries.asm.Opcodes;
+import org.eclipse.persistence.internal.libraries.asm.TypePath;
 
 /**
  * A {@link ClassVisitor} that collects the {@link Constant}s of the classes it
@@ -48,7 +49,7 @@ public class ClassConstantsCollector extends ClassVisitor {
     private final ConstantPool cp;
 
     public ClassConstantsCollector(final ClassVisitor cv, final ConstantPool cp) {
-        super(Opcodes.ASM5, cv);
+        super(Opcodes.ASM6, cv);
         this.cp = cp;
     }
 
@@ -91,6 +92,12 @@ public class ClassConstantsCollector extends ClassVisitor {
     }
 
     @Override
+    public ModuleVisitor visitModule() {
+        cp.newUTF8("Module");
+        return new ModuleConstantsCollector(cv.visitModule(), cp);
+    }
+    
+    @Override
     public void visitOuterClass(final String owner, final String name,
             final String desc) {
         cp.newUTF8("EnclosingMethod");
@@ -103,7 +110,7 @@ public class ClassConstantsCollector extends ClassVisitor {
 
     @Override
     public AnnotationVisitor visitAnnotation(final String desc,
-                                             final boolean visible) {
+            final boolean visible) {
         cp.newUTF8(desc);
         if (visible) {
             cp.newUTF8("RuntimeVisibleAnnotations");
@@ -116,7 +123,7 @@ public class ClassConstantsCollector extends ClassVisitor {
 
     @Override
     public AnnotationVisitor visitTypeAnnotation(int typeRef,
-                                                 TypePath typePath, String desc, boolean visible) {
+            TypePath typePath, String desc, boolean visible) {
         cp.newUTF8(desc);
         if (visible) {
             cp.newUTF8("RuntimeVisibleTypeAnnotations");

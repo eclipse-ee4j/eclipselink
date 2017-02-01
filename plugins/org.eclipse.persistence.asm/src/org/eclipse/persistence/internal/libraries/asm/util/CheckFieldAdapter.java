@@ -31,9 +31,9 @@ package org.eclipse.persistence.internal.libraries.asm.util;
 
 import org.eclipse.persistence.internal.libraries.asm.AnnotationVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Attribute;
+import org.eclipse.persistence.internal.libraries.asm.FieldVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 import org.eclipse.persistence.internal.libraries.asm.TypePath;
-import org.eclipse.persistence.internal.libraries.asm.FieldVisitor;
 import org.eclipse.persistence.internal.libraries.asm.TypeReference;
 
 /**
@@ -54,7 +54,7 @@ public class CheckFieldAdapter extends FieldVisitor {
      *             If a subclass calls this constructor.
      */
     public CheckFieldAdapter(final FieldVisitor fv) {
-        this(Opcodes.ASM5, fv);
+        this(Opcodes.ASM6, fv);
         if (getClass() != CheckFieldAdapter.class) {
             throw new IllegalStateException();
         }
@@ -65,7 +65,7 @@ public class CheckFieldAdapter extends FieldVisitor {
      * 
      * @param api
      *            the ASM API version implemented by this visitor. Must be one
-     *            of {@link Opcodes#ASM4} or {@link Opcodes#ASM5}.
+     *            of {@link Opcodes#ASM4}, {@link Opcodes#ASM5} or {@link Opcodes#ASM6}.
      * @param fv
      *            the field visitor to which this adapter must delegate calls.
      */
@@ -75,7 +75,7 @@ public class CheckFieldAdapter extends FieldVisitor {
 
     @Override
     public AnnotationVisitor visitAnnotation(final String desc,
-                                             final boolean visible) {
+            final boolean visible) {
         checkEnd();
         CheckMethodAdapter.checkDesc(desc, false);
         return new CheckAnnotationAdapter(super.visitAnnotation(desc, visible));
@@ -83,7 +83,7 @@ public class CheckFieldAdapter extends FieldVisitor {
 
     @Override
     public AnnotationVisitor visitTypeAnnotation(final int typeRef,
-                                                 final TypePath typePath, final String desc, final boolean visible) {
+            final TypePath typePath, final String desc, final boolean visible) {
         checkEnd();
         int sort = typeRef >>> 24;
         if (sort != TypeReference.FIELD) {

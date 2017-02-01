@@ -31,9 +31,8 @@ package org.eclipse.persistence.internal.libraries.asm.tree;
 
 import java.util.Map;
 
-import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
-import org.eclipse.persistence.internal.libraries.asm.Type;
+import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 
 /**
  * A node that represents an LDC instruction.
@@ -45,7 +44,7 @@ public class LdcInsnNode extends AbstractInsnNode {
     /**
      * The constant to be loaded on the stack. This parameter must be a non null
      * {@link Integer}, a {@link Float}, a {@link Long}, a {@link Double}, a
-     * {@link String} or a {@link Type}.
+     * {@link String} or a {@link org.eclipse.persistence.internal.libraries.asm.Type}.
      */
     public Object cst;
 

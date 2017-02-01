@@ -33,13 +33,13 @@ import java.util.HashMap;
 
 import org.eclipse.persistence.internal.libraries.asm.AnnotationVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Attribute;
-import org.eclipse.persistence.internal.libraries.asm.Opcodes;
-import org.eclipse.persistence.internal.libraries.asm.TypePath;
-import org.eclipse.persistence.internal.libraries.asm.commons.Remapper;
 import org.eclipse.persistence.internal.libraries.asm.FieldVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Label;
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
+import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 import org.eclipse.persistence.internal.libraries.asm.Type;
+import org.eclipse.persistence.internal.libraries.asm.TypePath;
+import org.eclipse.persistence.internal.libraries.asm.commons.Remapper;
 import org.eclipse.persistence.internal.libraries.asm.commons.MethodRemapper;
 
 /**
@@ -54,7 +54,7 @@ public class MethodOptimizer extends MethodRemapper implements Opcodes {
 
     public MethodOptimizer(ClassOptimizer classOptimizer, MethodVisitor mv,
             Remapper remapper) {
-        super(Opcodes.ASM5, mv, remapper);
+        super(Opcodes.ASM6, mv, remapper);
         this.classOptimizer = classOptimizer;
     }
 
@@ -81,7 +81,7 @@ public class MethodOptimizer extends MethodRemapper implements Opcodes {
 
     @Override
     public AnnotationVisitor visitTypeAnnotation(int typeRef,
-                                                 TypePath typePath, String desc, boolean visible) {
+            TypePath typePath, String desc, boolean visible) {
         return null;
     }
 

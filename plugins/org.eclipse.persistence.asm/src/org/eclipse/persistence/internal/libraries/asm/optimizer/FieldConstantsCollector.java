@@ -31,9 +31,9 @@ package org.eclipse.persistence.internal.libraries.asm.optimizer;
 
 import org.eclipse.persistence.internal.libraries.asm.AnnotationVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Attribute;
+import org.eclipse.persistence.internal.libraries.asm.FieldVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 import org.eclipse.persistence.internal.libraries.asm.TypePath;
-import org.eclipse.persistence.internal.libraries.asm.FieldVisitor;
 
 /**
  * A {@link FieldVisitor} that collects the {@link Constant}s of the fields it
@@ -46,13 +46,13 @@ public class FieldConstantsCollector extends FieldVisitor {
     private final ConstantPool cp;
 
     public FieldConstantsCollector(final FieldVisitor fv, final ConstantPool cp) {
-        super(Opcodes.ASM5, fv);
+        super(Opcodes.ASM6, fv);
         this.cp = cp;
     }
 
     @Override
     public AnnotationVisitor visitAnnotation(final String desc,
-                                             final boolean visible) {
+            final boolean visible) {
         cp.newUTF8(desc);
         if (visible) {
             cp.newUTF8("RuntimeVisibleAnnotations");
@@ -65,7 +65,7 @@ public class FieldConstantsCollector extends FieldVisitor {
 
     @Override
     public AnnotationVisitor visitTypeAnnotation(int typeRef,
-                                                 TypePath typePath, String desc, boolean visible) {
+            TypePath typePath, String desc, boolean visible) {
         cp.newUTF8(desc);
         if (visible) {
             cp.newUTF8("RuntimeVisibleTypeAnnotations");

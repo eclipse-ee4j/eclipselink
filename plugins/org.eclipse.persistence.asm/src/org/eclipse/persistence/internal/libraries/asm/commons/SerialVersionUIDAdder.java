@@ -39,9 +39,9 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.eclipse.persistence.internal.libraries.asm.ClassVisitor;
-import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 import org.eclipse.persistence.internal.libraries.asm.FieldVisitor;
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
+import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 
 /**
  * A {@link ClassVisitor} that adds a serial version unique identifier to a
@@ -170,7 +170,7 @@ public class SerialVersionUIDAdder extends ClassVisitor {
      *             If a subclass calls this constructor.
      */
     public SerialVersionUIDAdder(final ClassVisitor cv) {
-        this(Opcodes.ASM5, cv);
+        this(Opcodes.ASM6, cv);
         if (getClass() != SerialVersionUIDAdder.class) {
             throw new IllegalStateException();
         }
@@ -181,7 +181,7 @@ public class SerialVersionUIDAdder extends ClassVisitor {
      * 
      * @param api
      *            the ASM API version implemented by this visitor. Must be one
-     *            of {@link Opcodes#ASM4} or {@link Opcodes#ASM5}.
+     *            of {@link Opcodes#ASM4}, {@link Opcodes#ASM5} or {@link Opcodes#ASM6}.
      * @param cv
      *            a {@link ClassVisitor} to which this visitor will delegate
      *            calls.

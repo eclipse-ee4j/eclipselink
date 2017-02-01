@@ -16,7 +16,7 @@ Bundle-Name: EclipseLink MOXy
 Created-By: 1.6.0_21 (Sun Microsystems Inc.)
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.moxy
 Require-Bundle: org.eclipse.persistence.core;bundle-version="2.7.0";visibility:=reexport,
- org.eclipse.persistence.asm;bundle-version="5.1";resolution:=optional
+ org.eclipse.persistence.asm;bundle-version="6.0";resolution:=optional
 Bundle-Vendor: Eclipse.org - EclipseLink Project
 Bundle-Version: 2.7.0.qualifier
 Bundle-ManifestVersion: 2
@@ -63,7 +63,7 @@ Import-Package: com.sun.xml.bind;resolution:=optional,
  org.eclipse.persistence.internal.databaseaccess;version="2.7.0",
  org.eclipse.persistence.internal.descriptors;version="2.7.0",
  org.eclipse.persistence.internal.helper;version="2.7.0",
- org.eclipse.persistence.internal.libraries.asm;version="[5.0.1,6.0)";resolution:=optional,
+ org.eclipse.persistence.internal.libraries.asm;version="[5.0.1,6.1)";resolution:=optional,
  org.eclipse.persistence.internal.localization;version="2.7.0",
  org.eclipse.persistence.internal.oxm;version="2.7.0",
  org.eclipse.persistence.internal.oxm.record;version="2.7.0",

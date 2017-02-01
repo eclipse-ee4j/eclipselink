@@ -34,13 +34,13 @@ import java.util.List;
 
 import org.eclipse.persistence.internal.libraries.asm.AnnotationVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Attribute;
-import org.eclipse.persistence.internal.libraries.asm.Opcodes;
-import org.eclipse.persistence.internal.libraries.asm.TypePath;
-import org.eclipse.persistence.internal.libraries.asm.commons.Remapper;
 import org.eclipse.persistence.internal.libraries.asm.ClassVisitor;
 import org.eclipse.persistence.internal.libraries.asm.FieldVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Label;
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
+import org.eclipse.persistence.internal.libraries.asm.Opcodes;
+import org.eclipse.persistence.internal.libraries.asm.TypePath;
+import org.eclipse.persistence.internal.libraries.asm.commons.Remapper;
 import org.eclipse.persistence.internal.libraries.asm.commons.ClassRemapper;
 
 /**
@@ -60,7 +60,7 @@ public class ClassOptimizer extends ClassRemapper {
     List<String> syntheticClassFields = new ArrayList<String>();
 
     public ClassOptimizer(final ClassVisitor cv, final Remapper remapper) {
-        super(Opcodes.ASM5, cv, remapper);
+        super(Opcodes.ASM6, cv, remapper);
     }
 
     FieldVisitor syntheticFieldVisitor(final int access, final String name,
@@ -100,14 +100,14 @@ public class ClassOptimizer extends ClassRemapper {
 
     @Override
     public AnnotationVisitor visitAnnotation(final String desc,
-                                             final boolean visible) {
+            final boolean visible) {
         // remove annotations
         return null;
     }
 
     @Override
     public AnnotationVisitor visitTypeAnnotation(int typeRef,
-                                                 TypePath typePath, String desc, boolean visible) {
+            TypePath typePath, String desc, boolean visible) {
         // remove annotations
         return null;
     }
@@ -161,7 +161,7 @@ public class ClassOptimizer extends ClassRemapper {
             hasClinitMethod = true;
             MethodVisitor mv = super.visitMethod(access, name, desc, null,
                     exceptions);
-            return new MethodVisitor(Opcodes.ASM5, mv) {
+            return new MethodVisitor(Opcodes.ASM6, mv) {
                 @Override
                 public void visitCode() {
                     super.visitCode();
