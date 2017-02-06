@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     02/03/2017 - Dalia Abo Sheasha
+ *       - 509693 : EclipseLink generates inconsistent SQL statements for SubQuery
  ******************************************************************************/  
 
 package org.eclipse.persistence.testing.tests.jpa.criteria;
@@ -139,6 +141,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testSubqueryNotExistsAfterAnd"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testSubqueryNotExistsBeforeAnd"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testSubqueryExistsNested"));
+        suite.addTest(new AdvancedCriteriaQueryTestSuite("testSubqueryExistsNestedUnusedRoot"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testSubqueryExistsNestedAfterAnd"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testSubqueryExistsNestedAfterLiteralAnd"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testSubQuery"));
@@ -1180,8 +1183,62 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             CriteriaQuery<Employee> mainQuery = builder.createQuery(Employee.class);
             Subquery<Object> subQuery1 = mainQuery.subquery(Object.class);
             Subquery<Object> subQuery2 = subQuery1.subquery(Object.class);
-
+            
             Root<Employee> mainEmployee = mainQuery.from(Employee.class);
+            mainQuery.select(mainEmployee);
+            
+            Root<Project> sub1Project = subQuery1.from(Project.class);
+            Join<Employee, Project> mainEmployeeProjects = mainEmployee.join("projects");
+
+            Root<Employee> sub2Employee = subQuery2.from(Employee.class);
+            Join<Employee, Employee> sub1ProjectTeamLeader = sub1Project.join("teamLeader");
+            
+            subQuery2.where(builder.equal(sub2Employee, sub1ProjectTeamLeader));
+            subQuery1.where(builder.and(builder.exists(subQuery2), builder.equal(sub1Project, mainEmployeeProjects)));
+            mainQuery.where(builder.exists(subQuery1));
+            
+            TypedQuery<Employee> tquery = em.createQuery(mainQuery);
+            criteriaEmployees = tquery.getResultList();
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
+        compareIds(jpqlEmployees, criteriaEmployees);
+        for (Employee emp : criteriaEmployees){
+            assertTrue("Found someone without projects", !emp.getProjects().isEmpty());
+            boolean atLeastOneProjectHasLeader = false;
+            for (Project proj : emp.getProjects()) {
+                if (proj.getTeamLeader() != null) {
+                    atLeastOneProjectHasLeader = true;
+                    break;
+                }
+            }
+            assertTrue("None of employee's projects has a leader", atLeastOneProjectHasLeader);
+        }
+    }
+    
+    public void testSubqueryExistsNestedUnusedRoot() {
+        EntityManager em = createEntityManager();
+        List<Employee> jpqlEmployees;
+        List<Employee> criteriaEmployees;
+        beginTransaction(em);
+        try {
+            jpqlEmployees = em.createQuery("SELECT e FROM Employee e join e.projects ep WHERE EXISTS (SELECT p FROM Project p WHERE ep = p AND EXISTS (SELECT t FROM Employee t WHERE p.teamLeader = t))").getResultList();
+            em.clear();
+            
+            CriteriaBuilder builder = em.getCriteriaBuilder();
+            CriteriaQuery<Employee> mainQuery = builder.createQuery(Employee.class);
+            Subquery<Object> subQuery1 = mainQuery.subquery(Object.class);
+            Subquery<Object> subQuery2 = subQuery1.subquery(Object.class);
+
+            // Add an unused Root
+            mainQuery.from(Dealer.class);
+            
+            Root<Employee> mainEmployee = mainQuery.from(Employee.class);
+            
+            // Add another unused Root
+            mainQuery.from(Address.class);
+            
             mainQuery.select(mainEmployee);
             
             Root<Project> sub1Project = subQuery1.from(Project.class);
@@ -1227,7 +1284,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             CriteriaQuery<Employee> mainQuery = builder.createQuery(Employee.class);
             Subquery<Object> subQuery1 = mainQuery.subquery(Object.class);
             Subquery<Object> subQuery2 = subQuery1.subquery(Object.class);
-            
+
             Root<Employee> mainEmployee = mainQuery.from(Employee.class);
             mainQuery.select(mainEmployee);
             

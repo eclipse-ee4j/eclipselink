@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2017 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -9,7 +9,8 @@
  *
  * Contributors:
  *     Gordon Yorke - Initial development
- *
+ *     02/03/2017 - Dalia Abo Sheasha
+ *       - 509693 : EclipseLink generates inconsistent SQL statements for SubQuery
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.querydef;
 
@@ -52,6 +53,7 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
     protected Predicate havingClause;
     protected List<Expression<?>> groupBy;
     protected Set<Root<?>> roots;
+    protected org.eclipse.persistence.expressions.Expression baseExpression;
 
     protected enum ResultType{
         UNKNOWN, OBJECT_ARRAY, PARTIAL, TUPLE, ENTITY, CONSTRUCTOR, OTHER
@@ -61,7 +63,7 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
         super(metamodel, queryBuilder, resultType);
         this.roots = new HashSet<Root<?>>();
         this.queryResult = queryResult;
-
+        this.baseExpression = new ExpressionBuilder();
     }
 
     /**
@@ -157,11 +159,22 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
     }
 
     protected org.eclipse.persistence.expressions.Expression getBaseExpression() {
+        return getBaseExpression(null);
+    }
+    
+    protected org.eclipse.persistence.expressions.Expression getBaseExpression(Root root) {
         if (this.roots.isEmpty()) {
-            return new ExpressionBuilder();
-        } else {
-            return ((RootImpl)this.roots.iterator().next()).getCurrentNode();
+            baseExpression = new ExpressionBuilder();
+        } else if (this.roots.size() == 1) {
+            baseExpression = ((RootImpl) this.roots.iterator().next()).getCurrentNode();
+        } else if (root != null) {
+            for (Root r : this.roots) {
+                if (r == root) {
+                    baseExpression = ((RootImpl) r).getCurrentNode();
+                }
+            }
         }
+        return baseExpression;
     }
 
     /**

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2017 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -9,7 +9,8 @@
  *
  * Contributors:
  *     Gordon Yorke - Initial development
- *
+ *     02/03/2017 - Dalia Abo Sheasha
+ *       - 509693 : EclipseLink generates inconsistent SQL statements for SubQuery *
  ******************************************************************************/
 
 package org.eclipse.persistence.internal.jpa.querydef;
@@ -584,6 +585,12 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
             this.subQuery.setExpressionBuilder(root.getCurrentNode().getBuilder());
             this.queryType = root.getJavaType();
             this.currentNode.setBaseExpression(((CommonAbstractCriteriaImpl)this.parent).getBaseExpression());
+        }
+        // If the parent of this SubQuery is a CriteriaQuery and the CriteriaQuery has multiple roots, 
+        // assign the baseExpression based on the SubQuery's roots - Bug 509693
+        if (!this.roots.contains(root) && this.parent instanceof CriteriaQueryImpl && 
+                ((CriteriaQueryImpl) this.parent).getRoots().size() > 1) {
+                this.currentNode.setBaseExpression(((CriteriaQueryImpl) this.parent).getBaseExpression(root));
         }
         super.integrateRoot(root);
     }
