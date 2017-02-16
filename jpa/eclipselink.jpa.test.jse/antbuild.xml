@@ -68,13 +68,16 @@
     
     <target name="test-run" depends="compile, weave">
         <mkdir dir="${reports.dir}"/>
+        <property name="rmi.port" value="1099"/>
         <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
+        <property name="rmi" value="-Djava.naming.provider.url=rmi://localhost:${rmi.port} -Djava.naming.factory.initial=com.sun.jndi.rmi.registry.RegistryContextFactory"/>
         <junit printsummary="on" haltonfailure="false" failureproperty="fail" fork="yes" dir="${jse.classes.dir}" forkmode="once">
-            <jvmarg line="${additional.jvmargs}"/>
+            <jvmarg line="${additional.jvmargs} ${rmi}"/>
             <sysproperty key="javax.persistence.jdbc.url" value="${db.url}"/>
             <sysproperty key="javax.persistence.jdbc.driver" value="${db.driver}"/>
             <sysproperty key="javax.persistence.jdbc.user" value="${db.user}"/>
             <sysproperty key="javax.persistence.jdbc.password" value="${db.pwd}"/>
+            <sysproperty key="rmi.port" value="${rmi.port}"/>
             <classpath>
                 <path refid="run.jse.path" />
             </classpath>
