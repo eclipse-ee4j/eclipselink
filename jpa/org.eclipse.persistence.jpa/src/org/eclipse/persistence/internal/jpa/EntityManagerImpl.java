@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2017 IBM Corporation, Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -33,6 +33,8 @@
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     08/11/2012-2.5 Guy Pelletier  
  *       - 393867: Named queries do not work when using EM level Table Per Tenant Multitenancy.
+ *     02/27/2017-2.6_WAS Jody Grassel
+ *       - 512255: Eclipselink JPA/Auditing capablity in EE Environment fails with JNDI name parameter type
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa;
 
@@ -2447,6 +2449,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
                             jndiConnector.setDataSource(dataSource);
                         } else {
                             // dataSourceName != null
+                            jndiConnector.setDataSource(null);
                             jndiConnector.setName(dataSourceName);
                         }
                     }
