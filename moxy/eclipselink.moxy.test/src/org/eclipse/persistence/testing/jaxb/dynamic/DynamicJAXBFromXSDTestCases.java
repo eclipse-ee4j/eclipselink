@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -33,8 +33,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
-import junit.framework.TestCase;
-
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
@@ -44,9 +42,13 @@ import org.eclipse.persistence.testing.jaxb.dynamic.util.NoExtensionEntityResolv
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import junit.framework.TestCase;
+
 public class DynamicJAXBFromXSDTestCases extends TestCase {
 
     DynamicJAXBContext jaxbContext;
+    protected static final String tmpdir = System.getenv("T_WORK") == null
+            ? System.getProperty("java.io.tmpdir") : System.getenv("T_WORK");
 
     static {
         try {
@@ -908,7 +910,7 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
             blocks.add("FOOBAR");
             schema.set("blockDefault", blocks);
 
-            File f = new File("myschema.xsd");
+            File f = new File(tmpdir, "myschema.xsd");
             jaxbContext.createMarshaller().marshal(schema, f);
         } catch (JAXBException e) {
             // If running in a non-JAXB 2.2 environment, we will get this error because the required() method

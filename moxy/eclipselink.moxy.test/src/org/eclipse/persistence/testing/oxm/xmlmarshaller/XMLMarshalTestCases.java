@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,15 +12,22 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.xmlmarshaller;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileReader;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.Writer;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.stream.StreamResult;
-import junit.textui.TestRunner;
+
 import org.eclipse.persistence.exceptions.XMLMarshalException;
-import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLMarshaller;
@@ -41,11 +48,17 @@ import org.w3c.dom.Text;
 import org.xml.sax.InputSource;
 import org.xml.sax.helpers.DefaultHandler;
 
+import junit.textui.TestRunner;
+
 /**
  * Test marshalling the control object to each of the possible outputs
  * Test attempting to marshal an unmapped object and an object which can not be a root element
  */
 public class XMLMarshalTestCases extends OXTestCase {
+
+    private static final String tmpdir = System.getenv("T_WORK") == null
+            ? System.getProperty("java.io.tmpdir") : System.getenv("T_WORK");
+
     private final static int CONTROL_EMPLOYEE_ID = 123;
     private final static String CONTROL_EMAIL_ADDRESS_USER_ID = "jane.doe";
     private final static String CONTROL_EMAIL_ADDRESS_DOMAIN = "example.com";
@@ -351,7 +364,7 @@ public class XMLMarshalTestCases extends OXTestCase {
         }
 
         public void testMarshalObjectToStreamResult3() throws Exception {
-            File file = new File("output.txt");
+            File file = getOutputlog();
             StreamResult result = new StreamResult(file);
             marshaller.marshal(controlObject, result);
 
@@ -367,7 +380,7 @@ public class XMLMarshalTestCases extends OXTestCase {
         }
 
         public void testMarshalObjectToStreamResult4() throws Exception {
-            File file = new File("output.txt");
+            File file = getOutputlog();
             StreamResult result = new StreamResult(file.toURI().toURL().toString());
             marshaller.marshal(controlObject, result);
 
@@ -576,5 +589,9 @@ public class XMLMarshalTestCases extends OXTestCase {
             }
 
             assertTrue("An XMLValidation should have been caught but wasn't.", false);
+        }
+
+        private File getOutputlog() {
+            return new File(tmpdir, "output.txt");
         }
 }

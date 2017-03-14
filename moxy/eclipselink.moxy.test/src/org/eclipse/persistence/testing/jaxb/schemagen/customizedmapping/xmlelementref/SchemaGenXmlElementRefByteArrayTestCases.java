@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -26,18 +26,17 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
-import junit.framework.TestCase;
-
 import org.eclipse.persistence.jaxb.JAXBContext;
 
+import junit.framework.TestCase;
+
 public class SchemaGenXmlElementRefByteArrayTestCases  extends TestCase {
-    static String tmpdir;
+    static String tmpdir = System.getenv("T_WORK") == null ? System.getProperty("java.io.tmpdir") : System.getenv("T_WORK");
     MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
     boolean shouldGenerateSchema = true;
 
     public SchemaGenXmlElementRefByteArrayTestCases(String name) throws Exception {
         super(name);
-        tmpdir = (System.getenv("T_WORK") == null ? "" : (System.getenv("T_WORK") + "/"));
     }
 
     /**
@@ -94,7 +93,7 @@ public class SchemaGenXmlElementRefByteArrayTestCases  extends TestCase {
         }
 
         public Result createOutput(String namespaceURI, String suggestedFileName) throws IOException {
-            File schemaFile = new File(tmpdir + suggestedFileName);
+            File schemaFile = new File(tmpdir, suggestedFileName);
             schemaFiles.add(schemaFile);
             return new StreamResult(schemaFile);
         }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -65,7 +65,8 @@ import junit.framework.TestCase;
  *
  */
 public class ExternalizedMetadataTestCases extends TestCase {
-    protected static String tmpdir = (System.getenv("T_WORK") == null ? "" : (System.getenv("T_WORK") + "/"));
+    private static final String tmpdir = System.getenv("T_WORK") == null
+            ? System.getProperty("java.io.tmpdir") : System.getenv("T_WORK");
     protected static ClassLoader loader = Thread.currentThread().getContextClassLoader();
     protected static String EMPTY_NAMESPACE = "";
     protected JAXBContext jaxbContext;
@@ -707,7 +708,7 @@ public class ExternalizedMetadataTestCases extends TestCase {
                 namespaceURI = EMPTY_NAMESPACE;
             }
 
-            File schemaFile = new File(tmpdir + suggestedFileName);
+            File schemaFile = new File(tmpdir, suggestedFileName);
             schemaFiles.put(namespaceURI, schemaFile);
             return new StreamResult(schemaFile);
         }

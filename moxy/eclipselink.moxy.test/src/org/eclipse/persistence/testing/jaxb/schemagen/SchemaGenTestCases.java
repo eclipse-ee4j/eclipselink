@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -30,13 +30,14 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
-import junit.framework.TestCase;
-
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 
+import junit.framework.TestCase;
+
 public class SchemaGenTestCases extends TestCase {
-    protected static String tmpdir = (System.getenv("T_WORK") == null ? "" : (System.getenv("T_WORK") + "/"));
+    protected static String tmpdir = System.getenv("T_WORK") == null
+            ? System.getProperty("java.io.tmpdir") : System.getenv("T_WORK");
     protected static ClassLoader loader = Thread.currentThread().getContextClassLoader();
 
     /**
@@ -152,7 +153,7 @@ public class SchemaGenTestCases extends TestCase {
 
         public Result createOutput(String namespaceURI, String suggestedFileName) throws IOException {
             //return new StreamResult(System.out);
-            File schemaFile = new File(tmpdir + suggestedFileName);
+            File schemaFile = new File(tmpdir, suggestedFileName);
             schemaFiles.add(schemaFile);
             return new StreamResult(schemaFile);
         }

@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -23,8 +23,6 @@ import java.util.Vector;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import junit.framework.TestCase;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.oxm.Namespace;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
@@ -45,6 +43,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import junit.framework.TestCase;
+
 /**
  * Parent class for the schema model generation test cases.
  *
@@ -53,11 +53,11 @@ public class GenerateSchemaTestCases extends TestCase {
     protected SchemaModelGenerator sg;
     protected DocumentBuilder parser;
     protected JAXBXMLComparer comparer;
-    protected static String TMP_DIR;
+    protected static final String TMP_DIR = System.getenv("T_WORK") == null
+            ? System.getProperty("java.io.tmpdir") : System.getenv("T_WORK");
 
     public GenerateSchemaTestCases(String name) throws Exception {
         super(name);
-        TMP_DIR = (System.getenv("T_WORK") == null ? "" : (System.getenv("T_WORK") + "/"));
         sg = new SchemaModelGenerator(XMLConversionManager.getDefaultXMLManager());
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
         builderFactory.setIgnoringElementContentWhitespace(true);
@@ -100,7 +100,7 @@ public class GenerateSchemaTestCases extends TestCase {
             }
             XMLContext context = new XMLContext(p);
             XMLMarshaller marshaller = context.createMarshaller();
-            FileWriter generatedSchemaWriter = new FileWriter(new File(TMP_DIR + "generatedSchema.xsd"));
+            FileWriter generatedSchemaWriter = new FileWriter(new File(TMP_DIR, "generatedSchema.xsd"));
             marshaller.marshal(generatedSchema, generatedSchemaWriter);
         } catch (Exception ex) {
             ex.printStackTrace();

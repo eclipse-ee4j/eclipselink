@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -50,7 +50,7 @@ public class SchemaGenXMLRootElementTestCases extends SchemaGenTestCases {
             Generator gen = new Generator(new JavaModelInputImpl(jClasses, new JavaModelImpl(Thread.currentThread().getContextClassLoader())));
             gen.generateSchemaFiles(tmpdir, null);
             SchemaFactory sFact = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            Schema theSchema = sFact.newSchema(new File(tmpdir + "/schema1.xsd"));
+            Schema theSchema = sFact.newSchema(new File(tmpdir, "schema1.xsd"));
             Validator validator = theSchema.newValidator();
             StreamSource ss = new StreamSource(src);
             validator.validate(ss);
@@ -72,13 +72,12 @@ public class SchemaGenXMLRootElementTestCases extends SchemaGenTestCases {
     public void testName001Negative() throws Exception {
         boolean exception = false;
         String src = "org/eclipse/persistence/testing/jaxb/schemagen/customizedmapping/xmlrootelement/Name001n.xml";
-        String tmpdir = System.getenv("T_WORK");
         try {
             Class[] jClasses = new Class[] { Name001.class };
             Generator gen = new Generator(new JavaModelInputImpl(jClasses, new JavaModelImpl(Thread.currentThread().getContextClassLoader())));
             gen.generateSchemaFiles(tmpdir, null);
             SchemaFactory sFact = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            Schema theSchema = sFact.newSchema(new File(tmpdir + "/schema1.xsd"));
+            Schema theSchema = sFact.newSchema(new File(tmpdir, "schema1.xsd"));
             Validator validator = theSchema.newValidator();
             StreamSource ss = new StreamSource(new File(src));
             validator.validate(ss);
@@ -98,7 +97,7 @@ public class SchemaGenXMLRootElementTestCases extends SchemaGenTestCases {
             Generator gen = new Generator(new JavaModelInputImpl(jClasses, new JavaModelImpl(Thread.currentThread().getContextClassLoader())));
             gen.generateSchemaFiles(tmpdir, null);
             SchemaFactory sFact = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            Schema theSchema = sFact.newSchema(new File(tmpdir + "/schema1.xsd"));
+            Schema theSchema = sFact.newSchema(new File(tmpdir, "schema1.xsd"));
             Validator validator = theSchema.newValidator();
             StreamSource ss = new StreamSource(src);
             validator.validate(ss);
@@ -117,13 +116,12 @@ public class SchemaGenXMLRootElementTestCases extends SchemaGenTestCases {
         boolean exception = false;
         String msg = null;
         String src = "org/eclipse/persistence/testing/jaxb/schemagen/customizedmapping/xmlrootelement/Name002n.xml";
-        String tmpdir = System.getenv("T_WORK");
         try {
             Class[] jClasses = new Class[] { Name002.class };
             Generator gen = new Generator(new JavaModelInputImpl(jClasses, new JavaModelImpl(Thread.currentThread().getContextClassLoader())));
             gen.generateSchemaFiles(tmpdir, null);
             SchemaFactory sFact = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            Schema theSchema = sFact.newSchema(new File(tmpdir + "/schema1.xsd"));
+            Schema theSchema = sFact.newSchema(new File(tmpdir, "schema1.xsd"));
             Validator validator = theSchema.newValidator();
             StreamSource ss = new StreamSource(new File(src));
             validator.validate(ss);
@@ -144,7 +142,7 @@ public class SchemaGenXMLRootElementTestCases extends SchemaGenTestCases {
             Generator gen = new Generator(new JavaModelInputImpl(jClasses, new JavaModelImpl(Thread.currentThread().getContextClassLoader())));
             gen.generateSchemaFiles(tmpdir, null);
             SchemaFactory sFact = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            Schema theSchema = sFact.newSchema(new File(tmpdir + "/schema2.xsd"));
+            Schema theSchema = sFact.newSchema(new File(tmpdir, "schema2.xsd"));
             Validator validator = theSchema.newValidator();
             StreamSource ss = new StreamSource(src);
             validator.validate(ss);
@@ -163,13 +161,12 @@ public class SchemaGenXMLRootElementTestCases extends SchemaGenTestCases {
         boolean exception = false;
         String msg = null;
         String src = "org/eclipse/persistence/testing/jaxb/schemagen/customizedmapping/xmlrootelement/NameSpace001n.xml";
-        String tmpdir = System.getenv("T_WORK");
         try {
             Class[] jClasses = new Class[] { NameSpace001.class };
             Generator gen = new Generator(new JavaModelInputImpl(jClasses, new JavaModelImpl(Thread.currentThread().getContextClassLoader())));
             gen.generateSchemaFiles(tmpdir, null);
             SchemaFactory sFact = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            Schema theSchema = sFact.newSchema(new File(tmpdir + "/schema2.xsd"));
+            Schema theSchema = sFact.newSchema(new File(tmpdir, "schema2.xsd"));
             Validator validator = theSchema.newValidator();
             StreamSource ss = new StreamSource(new File(src));
             validator.validate(ss);
