@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -33,8 +33,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
-import junit.framework.TestCase;
-
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
@@ -44,9 +42,13 @@ import org.eclipse.persistence.testing.jaxb.dynamic.util.NoExtensionEntityResolv
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import junit.framework.TestCase;
+
 public class DynamicJAXBFromXSDTestCases extends TestCase {
 
     DynamicJAXBContext jaxbContext;
+    protected static final String tmpdir = System.getenv("T_WORK") == null
+            ? System.getProperty("java.io.tmpdir") : (System.getenv("T_WORK") + "/");
 
     static {
         try {
@@ -218,7 +220,7 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
 
         Document marshalDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
         JAXBElement<DynamicEntity> jbe = new JAXBElement<DynamicEntity>(new QName("root"), DynamicEntity.class, person);
-        
+
         jaxbContext.createMarshaller().marshal(jbe, marshalDoc);
 
         // Nothing to really test, XmlSeeAlso isn't represented in an instance doc.
@@ -248,7 +250,7 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
         DynamicEntity person = jaxbContext.newDynamicEntity(PACKAGE + "." + PERSON);
         assertNotNull("Could not create Dynamic Entity.", person);
 
-        
+
         person.set("email", "bdobbs@subgenius.com");
         person.set("lastName", "Dobbs");
         person.set("id", 678);
@@ -256,7 +258,7 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
         person.set("firstName", "Bob");
 
         JAXBElement jbe = new JAXBElement(new QName("person"), DynamicEntity.class, person);
-        
+
         Document marshalDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
         jaxbContext.createMarshaller().marshal(jbe, marshalDoc);
 
@@ -684,7 +686,7 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
         Document marshalDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
         JAXBElement jbe = new JAXBElement(new QName("individuo"), DynamicEntity.class, person);
         jaxbContext.createMarshaller().marshal(jbe, marshalDoc);
-        
+
 
         Node node = marshalDoc.getChildNodes().item(0);
 
@@ -890,25 +892,25 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
         try {
             InputStream inputStream = ClassLoader.getSystemResourceAsStream(XMLSCHEMASCHEMA);
             jaxbContext = DynamicJAXBContextFactory.createContextFromXSD(inputStream, null, null, null);
-    
+
             DynamicEntity schema = jaxbContext.newDynamicEntity("org.w3._2001.xmlschema.Schema");
             schema.set("targetNamespace", "myNamespace");
             Object QUALIFIED = jaxbContext.getEnumConstant("org.w3._2001.xmlschema.FormChoice", "QUALIFIED");
             schema.set("attributeFormDefault", QUALIFIED);
-    
+
             DynamicEntity complexType = jaxbContext.newDynamicEntity("org.w3._2001.xmlschema.TopLevelComplexType");
             complexType.set("name", "myComplexType");
-    
+
             List<DynamicEntity> complexTypes = new ArrayList<DynamicEntity>(1);
             complexTypes.add(complexType);
-    
+
             schema.set("simpleTypeOrComplexTypeOrGroup", complexTypes);
-    
+
             List<Object> blocks = new ArrayList<Object>();
             blocks.add("FOOBAR");
             schema.set("blockDefault", blocks);
-    
-            File f = new File("myschema.xsd");
+
+            File f = new File(tmpdir, "myschema.xsd");
             jaxbContext.createMarshaller().marshal(schema, f);
         } catch (JAXBException e) {
             // If running in a non-JAXB 2.2 environment, we will get this error because the required() method

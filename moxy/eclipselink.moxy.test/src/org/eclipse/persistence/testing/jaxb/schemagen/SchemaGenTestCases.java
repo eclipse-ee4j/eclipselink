@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -30,27 +30,28 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
-import junit.framework.TestCase;
-
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 
+import junit.framework.TestCase;
+
 public class SchemaGenTestCases extends TestCase {
-    protected static String tmpdir = (System.getenv("T_WORK") == null ? "" : (System.getenv("T_WORK") + "/"));
+    protected static String tmpdir = System.getenv("T_WORK") == null
+            ? System.getProperty("java.io.tmpdir") : (System.getenv("T_WORK") + "/");
     protected static ClassLoader loader = Thread.currentThread().getContextClassLoader();
 
     /**
      * This is the preferred (and only) constructor.
-     * 
+     *
      * @param name
      */
     public SchemaGenTestCases(String name) {
         super(name);
     }
-    
+
     /**
      * Generate one or more schemas from deployment xml.
-     * 
+     *
      * @param contextPath
      * @param outputResolver
      * @param additionalGlobalElements
@@ -67,7 +68,7 @@ public class SchemaGenTestCases extends TestCase {
 
     /**
      * Generate one or more schemas from an array of Classes.
-     * 
+     *
      * @param classesToBeBound
      * @param outputResolver
      * @param additionalGlobalElements
@@ -84,7 +85,7 @@ public class SchemaGenTestCases extends TestCase {
 
     /**
      * Generate one or more schemas from an array of Types.
-     * 
+     *
      * @param typesToBeBound
      * @param outputResolver
      * @param additionalGlobalElements
@@ -98,20 +99,20 @@ public class SchemaGenTestCases extends TestCase {
             e.printStackTrace();
         }
     }
-    
+
     /**
      * Validates a given instance doc against the generated schema.
-     * 
+     *
      * @param src instance document to be validated
      * @param outputResolver contains one or more schemas to validate against
      */
     protected String validateAgainstSchema(String src, MySchemaOutputResolver outputResolver) {
         return validateAgainstSchema(src, 0, outputResolver);
     }
-    
+
     /**
      * Validates a given instance doc against the generated schema.
-     * 
+     *
      * @param src
      * @param schemaIndex index in output resolver's list of generated schemas
      * @param outputResolver contains one or more schemas to validate against
@@ -145,11 +146,11 @@ public class SchemaGenTestCases extends TestCase {
     protected class MySchemaOutputResolver extends SchemaOutputResolver {
         // keep a list of processed schemas for the validation phase of the test(s)
         public List<File> schemaFiles;
-        
+
         public MySchemaOutputResolver() {
             schemaFiles = new ArrayList<File>();
         }
-        
+
         public Result createOutput(String namespaceURI, String suggestedFileName) throws IOException {
             //return new StreamResult(System.out);
             File schemaFile = new File(tmpdir + suggestedFileName);

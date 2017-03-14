@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,8 +12,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.schemagen.imports.url;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -26,21 +24,21 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
 
-import junit.framework.TestCase;
-
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.testing.jaxb.JAXBXMLComparer;
 import org.eclipse.persistence.testing.jaxb.schemagen.imports.url.a.Employee;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
+import junit.framework.TestCase;
+
 public class SchemaGenImportURLTestCases extends TestCase {
-    private static final String CONTROL_SCHEMA = "org/eclipse/persistence/testing/jaxb/schemagen/imports/url/employee.xsd";
-    
+    private static final String CONTROL_SCHEMA = "/org/eclipse/persistence/testing/jaxb/schemagen/imports/url/employee.xsd";
+
     public SchemaGenImportURLTestCases(String name) throws Exception {
         super(name);
     }
-    
+
     public String getName() {
         return "JAXB SchemaGen: Import URL: " + super.getName();
     }
@@ -57,7 +55,7 @@ public class SchemaGenImportURLTestCases extends TestCase {
         InputSource testSchemaInputSource = new InputSource(new StringReader(sor.getSchema()));
         Document testSchemaDocument = db.parse(testSchemaInputSource);
 
-        InputStream controlSchemaInputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(CONTROL_SCHEMA);
+        InputStream controlSchemaInputStream = SchemaGenImportURLTestCases.class.getResourceAsStream(CONTROL_SCHEMA);
         Document controlSchemaDocument = db.parse(controlSchemaInputStream);
 
         JAXBXMLComparer xmlComparer = new JAXBXMLComparer();
