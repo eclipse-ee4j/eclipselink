@@ -57,7 +57,7 @@ public class SchemaGenImportTestCases extends TestCase {
     private static final String BAR_SCHEMA = PACKAGE_RESOURCE + "bar.xsd";
 
     private static final String tmpdir = System.getenv("T_WORK") == null
-            ? System.getProperty("java.io.tmpdir") : (System.getenv("T_WORK") + "/");
+            ? System.getProperty("java.io.tmpdir") : System.getenv("T_WORK");
 
     public SchemaGenImportTestCases(String name) throws Exception {
         super(name);

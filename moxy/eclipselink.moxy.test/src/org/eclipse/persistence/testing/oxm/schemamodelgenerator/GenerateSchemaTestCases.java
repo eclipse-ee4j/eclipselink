@@ -54,7 +54,7 @@ public class GenerateSchemaTestCases extends TestCase {
     protected DocumentBuilder parser;
     protected JAXBXMLComparer comparer;
     protected static final String TMP_DIR = System.getenv("T_WORK") == null
-            ? System.getProperty("java.io.tmpdir") : (System.getenv("T_WORK") + "/");
+            ? System.getProperty("java.io.tmpdir") : System.getenv("T_WORK");
 
     public GenerateSchemaTestCases(String name) throws Exception {
         super(name);
@@ -100,7 +100,7 @@ public class GenerateSchemaTestCases extends TestCase {
             }
             XMLContext context = new XMLContext(p);
             XMLMarshaller marshaller = context.createMarshaller();
-            FileWriter generatedSchemaWriter = new FileWriter(new File(TMP_DIR + "generatedSchema.xsd"));
+            FileWriter generatedSchemaWriter = new FileWriter(new File(TMP_DIR, "generatedSchema.xsd"));
             marshaller.marshal(generatedSchema, generatedSchemaWriter);
         } catch (Exception ex) {
             ex.printStackTrace();

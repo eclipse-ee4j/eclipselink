@@ -66,7 +66,7 @@ import junit.framework.TestCase;
  */
 public class ExternalizedMetadataTestCases extends TestCase {
     private static final String tmpdir = System.getenv("T_WORK") == null
-            ? System.getProperty("java.io.tmpdir") : (System.getenv("T_WORK") + "/");
+            ? System.getProperty("java.io.tmpdir") : System.getenv("T_WORK");
     protected static ClassLoader loader = Thread.currentThread().getContextClassLoader();
     protected static String EMPTY_NAMESPACE = "";
     protected JAXBContext jaxbContext;
@@ -683,7 +683,7 @@ public class ExternalizedMetadataTestCases extends TestCase {
                 namespaceURI = EMPTY_NAMESPACE;
             }
 
-            File schemaFile = new File(tmpdir + suggestedFileName);
+            File schemaFile = new File(tmpdir, suggestedFileName);
             schemaFiles.put(namespaceURI, schemaFile);
             return new StreamResult(schemaFile);
         }

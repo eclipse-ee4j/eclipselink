@@ -44,7 +44,7 @@ public class SchemaGenXMLTypeTestCases extends SchemaGenTestCases {
         boolean exception = false;
         String msg = null;
         InputStream src = null;
-        File newXsd = new File(tmpdir + "/schema1.xsd");
+        File newXsd = new File(tmpdir, "schema1.xsd");
         if (newXsd.exists() && newXsd.isFile() && newXsd.delete()) {
             System.err.println("removed existing: " + newXsd.getAbsolutePath());
         }
@@ -77,7 +77,7 @@ public class SchemaGenXMLTypeTestCases extends SchemaGenTestCases {
     public void testBaseType001cNegative() throws Exception {
         boolean exception = false;
         String src = "org/eclipse/persistence/testing/jaxb/schemagen/customizedmapping/xmltype/BaseType001n.xml";
-        File newXsd = new File(tmpdir + "/schema0.xsd");
+        File newXsd = new File(tmpdir, "schema0.xsd");
         if (newXsd.exists() && newXsd.isFile() && newXsd.delete()) {
             System.err.println("removed existing: " + newXsd.getAbsolutePath());
         }

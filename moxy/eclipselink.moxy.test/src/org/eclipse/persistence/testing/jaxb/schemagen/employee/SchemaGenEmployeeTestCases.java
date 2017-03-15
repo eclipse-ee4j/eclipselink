@@ -44,7 +44,7 @@ import junit.framework.TestCase;
 public class SchemaGenEmployeeTestCases extends TestCase {
 
     private static final String tmpdir = System.getenv("T_WORK") == null
-            ? System.getProperty("java.io.tmpdir") : (System.getenv("T_WORK") + "/");
+            ? System.getProperty("java.io.tmpdir") : System.getenv("T_WORK");
 
     public SchemaGenEmployeeTestCases(String name) throws Exception {
         super(name);
@@ -55,7 +55,7 @@ public class SchemaGenEmployeeTestCases extends TestCase {
         String msg = null;
         InputStream employeeXml = null;
 
-        File newXsd = new File(tmpdir + "/schema1.xsd");
+        File newXsd = new File(tmpdir, "schema1.xsd");
         if (newXsd.exists() && newXsd.isFile() && newXsd.delete()) {
             System.err.println("removed existing: " + newXsd.getAbsolutePath());
         }
@@ -116,7 +116,7 @@ public class SchemaGenEmployeeTestCases extends TestCase {
         String src = "org/eclipse/persistence/testing/jaxb/schemagen/employee/employee_missing_required_element.xml";
         String msg = "";
 
-        File newXsd = new File(tmpdir + "/schema1.xsd");
+        File newXsd = new File(tmpdir, "/schema1.xsd");
         if (newXsd.exists() && newXsd.isFile() && newXsd.delete()) {
             System.err.println("removed existing: " + newXsd.getAbsolutePath());
         }
@@ -151,7 +151,7 @@ public class SchemaGenEmployeeTestCases extends TestCase {
         String src = "org/eclipse/persistence/testing/jaxb/schemagen/employee/employee_missing_required_attribute.xml";
         String msg = "";
 
-        File newXsd = new File(tmpdir + "/schema1.xsd");
+        File newXsd = new File(tmpdir, "schema1.xsd");
         if (newXsd.exists() && newXsd.isFile() && newXsd.delete()) {
             System.err.println("removed existing: " + newXsd.getAbsolutePath());
         }
@@ -181,7 +181,7 @@ public class SchemaGenEmployeeTestCases extends TestCase {
         String msg = null;
         String src = "org/eclipse/persistence/testing/jaxb/schemagen/employee/valid_inheritance.xml";
 
-        File newXsd = new File(tmpdir + "/schema1.xsd");
+        File newXsd = new File(tmpdir, "schema1.xsd");
         if (newXsd.exists() && newXsd.isFile() && newXsd.delete()) {
             System.err.println("removed existing: " + newXsd.getAbsolutePath());
         }
@@ -211,7 +211,7 @@ public class SchemaGenEmployeeTestCases extends TestCase {
         String msg = null;
         String src = "org/eclipse/persistence/testing/jaxb/schemagen/employee/invalid_inheritance.xml";
 
-        File newXsd = new File(tmpdir + "/schema1.xsd");
+        File newXsd = new File(tmpdir, "schema1.xsd");
         if (newXsd.exists() && newXsd.isFile() && newXsd.delete()) {
             System.err.println("removed existing: " + newXsd.getAbsolutePath());
         }
@@ -239,7 +239,7 @@ public class SchemaGenEmployeeTestCases extends TestCase {
     public void xtestAbstractSuperclassMarshal() throws Exception {
         boolean exception = false;
         String msg = null;
-        String src = "/output.xml";
+        String src = "output.xml";
         MyTestSubType testObj = new MyTestSubType();
         testObj.subTypeInt = 66;
 
@@ -247,7 +247,7 @@ public class SchemaGenEmployeeTestCases extends TestCase {
             Class[] jClasses = new Class[] { MyAbstractTestType.class, MyTestSubType.class };
             JAXBContext jCtx = (JAXBContext) JAXBContextFactory.createContext(jClasses, null);
             Marshaller marshaller = jCtx.createMarshaller();
-            FileWriter fw = new FileWriter(tmpdir + src);
+            FileWriter fw = new FileWriter(new File(tmpdir, src));
             marshaller.marshal(testObj, fw);
         } catch (Exception ex) {
             exception = true;

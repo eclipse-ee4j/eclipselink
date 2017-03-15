@@ -37,7 +37,7 @@ import junit.framework.TestCase;
 
 public class SchemaGenTestCases extends TestCase {
     protected static String tmpdir = System.getenv("T_WORK") == null
-            ? System.getProperty("java.io.tmpdir") : (System.getenv("T_WORK") + "/");
+            ? System.getProperty("java.io.tmpdir") : System.getenv("T_WORK");
     protected static ClassLoader loader = Thread.currentThread().getContextClassLoader();
 
     /**
@@ -153,7 +153,7 @@ public class SchemaGenTestCases extends TestCase {
 
         public Result createOutput(String namespaceURI, String suggestedFileName) throws IOException {
             //return new StreamResult(System.out);
-            File schemaFile = new File(tmpdir + suggestedFileName);
+            File schemaFile = new File(tmpdir, suggestedFileName);
             schemaFiles.add(schemaFile);
             return new StreamResult(schemaFile);
         }

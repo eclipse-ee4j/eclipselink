@@ -48,7 +48,7 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
 
     DynamicJAXBContext jaxbContext;
     protected static final String tmpdir = System.getenv("T_WORK") == null
-            ? System.getProperty("java.io.tmpdir") : (System.getenv("T_WORK") + "/");
+            ? System.getProperty("java.io.tmpdir") : System.getenv("T_WORK");
 
     static {
         try {
