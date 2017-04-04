@@ -52,7 +52,7 @@
     <target name="clean" description="Clean the build">
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${classes.dir}"/>
-            <fileset dir="." file="${sig-compare.jar}"/>
+            <fileset file="${sig-compare.jar}"/>
         </delete>
     </target>
 
