@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -9,6 +9,9 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *
+ *     04/11/2017-2.6 Will Dazey  
+ *       - 512386: Add constructor initialization with CONCAT test
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.jpql;
 
@@ -3588,6 +3591,8 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         query = em.createQuery("Select new org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLComplexTestSuite.EmployeeDetail(UPPER(e.firstName), e.lastName) from Employee e");
         query.getResultList();
         query = em.createQuery("Select new org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLComplexTestSuite.EmployeeDetail(MAX(e.firstName), MAX(e.lastName)) from Employee e");
+        query.getResultList();
+        query = em.createQuery("Select new org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLComplexTestSuite.EmployeeDetail(CONCAT(e.firstName, '_', e.lastName), e.lastName) from Employee e");
         query.getResultList();
         query = em.createQuery("Select 1 from Employee e");
         query.getResultList();

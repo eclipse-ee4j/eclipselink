@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -10,6 +10,8 @@
  * Contributors:
  *     Oracle - initial API and implementation
  *
+ *     04/11/2017-2.6 Will Dazey
+ *       - 512386: Concat expression return type Boolean -> String
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.jpql;
 
@@ -806,7 +808,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
         queryExpression = newExpression;
 
         // Set the expression type
-        type[0] = Boolean.class;
+       type[0] = String.class;
     }
 
     /**
