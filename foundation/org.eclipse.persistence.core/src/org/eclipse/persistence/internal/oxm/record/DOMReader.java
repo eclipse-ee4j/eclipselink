@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -48,7 +48,7 @@ import org.xml.sax.ext.Locator2;
  *  <li>Report lexical events to the lexical handler if it's provided</li>
  *  <li>Listen for callbacks from the Mapping-Level framework to handle caching nodes for document preservation</li>
  *  </ul>
- *  
+ *
  */
 public class DOMReader extends XMLReaderAdapter {
 
@@ -90,24 +90,24 @@ public class DOMReader extends XMLReaderAdapter {
         processParentNamespaces(rootNode);
         startDocument();
         setupLocator(rootNode.getOwnerDocument());
-              
+
         reportElementEvents(rootNode, newURI, newName);
-        
-        
+
+
         endDocument();
     }
-    
+
     public void parse (Node node) throws SAXException {
         parse(node, null, null);
     }
 
     /**
      * Process namespace declarations on parent elements if not the root.
-     * For each parent node from current to root push each onto a stack, 
-     * then pop each off, calling startPrefixMapping for each XMLNS 
-     * attribute.  Using a stack ensures that the parent nodes are 
+     * For each parent node from current to root push each onto a stack,
+     * then pop each off, calling startPrefixMapping for each XMLNS
+     * attribute.  Using a stack ensures that the parent nodes are
      * processed top down.
-     * 
+     *
      * @param element
      */
     protected void processParentNamespaces(Element element) throws SAXException {
@@ -121,7 +121,7 @@ public class DOMReader extends XMLReaderAdapter {
         while (parent != null && parent.getNodeType() != Node.DOCUMENT_NODE) {
             parentElements.add(parent);
             parent = parent.getParentNode();
-        }        
+        }
         // Pop off each node and call startPrefixMapping for each XMLNS attribute
         for (Iterator stackIt = parentElements.iterator(); stackIt.hasNext(); ) {
             NamedNodeMap attrs = parentElements.remove(parentElements.size() - 1).getAttributes();
@@ -147,7 +147,7 @@ public class DOMReader extends XMLReaderAdapter {
         String lname = null;
 
         if(newName == null){
-            // Handle null local name           
+            // Handle null local name
             lname = elem.getLocalName();
             if (lname == null) {
                 // If local name is null, use the node name
@@ -163,7 +163,7 @@ public class DOMReader extends XMLReaderAdapter {
             }
         } else {
             namespaceUri = newUri;
-            lname = newName;            
+            lname = newName;
             qname = newName;
             if(namespaceUri != null && isNamespaceAware()){
                 NamespaceResolver tmpNR = new NamespaceResolver();
@@ -172,34 +172,34 @@ public class DOMReader extends XMLReaderAdapter {
                  String prefix = tmpNR.resolveNamespaceURI(namespaceUri);
                  if(prefix == null || prefix.length() == 0){
                      String defaultNamespace = elem.getAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE);
-            
+
                      if(defaultNamespace == null){
-                         prefix = tmpNR.generatePrefix();    
+                         prefix = tmpNR.generatePrefix();
                          contentHandler.startPrefixMapping(prefix, namespaceUri);
                      }else if(defaultNamespace != namespaceUri){
                          prefix = tmpNR.generatePrefix();
                          contentHandler.startPrefixMapping(prefix, namespaceUri);
                      }else{
                          prefix = Constants.EMPTY_STRING;
-                     }      
-                 }                 
-                 
+                     }
+                 }
+
                  if(prefix != null && prefix.length() >0){
-                    qname = prefix + Constants.COLON + qname;      
+                    qname = prefix + Constants.COLON + qname;
                  }
             }
-           
+
         }
-        
-      
-        
+
+
+
         contentHandler.startElement(namespaceUri, lname, qname, attributes);
-       
+
         handleChildNodes(elem.getChildNodes());
         contentHandler.endElement(namespaceUri, lname, qname);
         endPrefixMappings(elem);
     }
- 
+
     protected IndexedAttributeList buildAttributeList(Element elem) throws SAXException {
         IndexedAttributeList attributes = new IndexedAttributeList();
         NamedNodeMap attrs = elem.getAttributes();
@@ -264,13 +264,13 @@ public class DOMReader extends XMLReaderAdapter {
     }
 
     protected void handleXsiTypeAttribute(Attr attr) throws SAXException {
-        
+
     }
 
     /**
-     * Handle prefixed attribute - may need to declare the namespace 
+     * Handle prefixed attribute - may need to declare the namespace
      * URI locally.
-     * 
+     *
      */
     protected void handlePrefixedAttribute(Element elem) throws SAXException {
         // DO NOTHING
@@ -322,7 +322,7 @@ public class DOMReader extends XMLReaderAdapter {
     }
 
     /**
-     * An EclipseLink specific callback into the Reader. This allows Objects to be 
+     * An EclipseLink specific callback into the Reader. This allows Objects to be
      * associated with the XML Nodes they came from.
      */
     @Override
@@ -356,14 +356,8 @@ public class DOMReader extends XMLReaderAdapter {
     protected void setupLocator(Document doc) {
         LocatorImpl locator = new LocatorImpl();
         try {
-            Method getEncoding = PrivilegedAccessHelper.getMethod(doc.getClass(), "getXmlEncoding", new Class[]{}, true);
-            Method getVersion = PrivilegedAccessHelper.getMethod(doc.getClass(), "getXmlVersion", new Class[]{}, true);
-            
-            String encoding = (String)PrivilegedAccessHelper.invokeMethod(getEncoding, doc, new Object[]{});
-            String version = (String)PrivilegedAccessHelper.invokeMethod(getVersion, doc, new Object[]{});
-            
-            locator.setEncoding(encoding);
-            locator.setXMLVersion(version);
+            locator.setEncoding(doc.getXmlEncoding());
+            locator.setXMLVersion(doc.getXmlVersion());
         } catch(Exception ex) {
             //if unable to invoke these methods, just return and don't invoke
             return;
