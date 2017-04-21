@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -356,14 +356,8 @@ public class DOMReader extends XMLReaderAdapter {
     protected void setupLocator(Document doc) {
         LocatorImpl locator = new LocatorImpl();
         try {
-            Method getEncoding = PrivilegedAccessHelper.getMethod(doc.getClass(), "getXmlEncoding", new Class[]{}, true);
-            Method getVersion = PrivilegedAccessHelper.getMethod(doc.getClass(), "getXmlVersion", new Class[]{}, true);
-
-            String encoding = (String)PrivilegedAccessHelper.invokeMethod(getEncoding, doc, new Object[]{});
-            String version = (String)PrivilegedAccessHelper.invokeMethod(getVersion, doc, new Object[]{});
-
-            locator.setEncoding(encoding);
-            locator.setXMLVersion(version);
+            locator.setEncoding(doc.getXmlEncoding());
+            locator.setXMLVersion(doc.getXmlVersion());
         } catch(Exception ex) {
             //if unable to invoke these methods, just return and don't invoke
             return;

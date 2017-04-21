@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -368,10 +368,8 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
             String xmlVersion = "1.0";
 
             try {
-                Method getEncoding = PrivilegedAccessHelper.getMethod(xmlRow.getDocument().getClass(), "getXmlEncoding", new Class[] {}, true);
-                Method getVersion = PrivilegedAccessHelper.getMethod(xmlRow.getDocument().getClass(), "getXmlVersion", new Class[] {}, true);
-                xmlEncoding = (String) PrivilegedAccessHelper.invokeMethod(getEncoding, xmlRow.getDocument(), new Object[] {});
-                xmlVersion = (String) PrivilegedAccessHelper.invokeMethod(getVersion, xmlRow.getDocument(), new Object[] {});
+                xmlEncoding = xmlRow.getDocument().getXmlEncoding() != null ? xmlRow.getDocument().getXmlEncoding() : xmlEncoding;
+                xmlVersion = xmlRow.getDocument().getXmlVersion() != null ? xmlRow.getDocument().getXmlVersion() : xmlVersion;
             } catch (Exception ex) {
                 //if the methods aren't available, then just use the default values
             }
