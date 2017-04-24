@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2017 IBM Corporation, Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -13,6 +13,8 @@
  *       - 389090: JPA 2.1 DDL Generation Support
  *     01/11/2013-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support
+ *     04/24/2017-2.6 Jody Grassel
+ *       - 515712: ServerSession numberOfNonPooledConnectionsUsed can become invalid when Exception is thrown connecting accessor
  ******************************************************************************/
 package org.eclipse.persistence.sessions.server;
 
@@ -277,9 +279,22 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
                     this.numberOfNonPooledConnectionsUsed++;
                 }
             }
+            try {
             Accessor accessor = clientSession.getLogin().buildAccessor();
             clientSession.connect(accessor);
             clientSession.addWriteConnection(ServerSession.NOT_POOLED, accessor);
+            } catch (DatabaseException dbe) {
+                // A DatabaseException was thrown, undo the numberOfNonPooledConnectionsUsed counter increment otherwise
+                // the counter will be out of synch with the actual number of connections.
+                if (this.maxNumberOfNonPooledConnections != NO_MAX) {
+                    synchronized (this) {
+                        this.numberOfNonPooledConnectionsUsed--;
+                        notify();
+                    }
+                }
+                throw dbe;
+            }
+            
         }
     }
 
@@ -810,17 +825,20 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
                         accessor.getPool().releaseConnection(accessor);
                     } catch (Exception ignore) {}
                 } else {
+                    try {
                     if (!accessor.usesExternalConnectionPooling()) {
                         clientSession.disconnect(accessor);
                     } else {
                         accessor.closeConnection();
                     }
+                    } finally {
                     if (this.maxNumberOfNonPooledConnections != NO_MAX) {
                         synchronized (this) {
                             this.numberOfNonPooledConnectionsUsed--;
                             notify();
                         }
                     }
+                }
                 }
                 accessors.remove();
             }
