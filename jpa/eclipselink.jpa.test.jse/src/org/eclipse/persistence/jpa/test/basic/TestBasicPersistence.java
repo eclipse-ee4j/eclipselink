@@ -330,21 +330,23 @@ public class TestBasicPersistence {
             EntityTransaction et = em.getTransaction();
          
             try {
-                et.begin();
-                
                 Person p = new Person();
                 Dog d = new Dog("Bingo");
                 p.setDog(d);
                 d.setOwner(p);
 
+                et.begin();
+                final int nonPooledConnectionsBeforePersist = ss.getNumberOfNonPooledConnectionsUsed();
+                System.out.println("nonPooledConnectionsBeforePersist = " + nonPooledConnectionsBeforePersist);
+                
                 em.persist(p);
                 em.persist(d);
                 em.persist(new XmlFish());
                 
-                DriverWrapper.breakNewConnections();
                 final int nonPooledConnectionsBeforeFlush = ss.getNumberOfNonPooledConnectionsUsed();
                 System.out.println("nonPooledConnectionsBeforeFlush = " + nonPooledConnectionsBeforeFlush);
                 try {
+                    DriverWrapper.breakNewConnections(); // .breakDriver(); // would be ideal, but results in bug #515961
                     em.flush();
                     Assert.fail("No PersistenceException was thrown.");
                 } catch (PersistenceException pe) {
@@ -357,7 +359,13 @@ public class TestBasicPersistence {
                 System.out.println("nonPooledConnectionsAfterFlush = " + nonPooledConnectionsAfterFlush);
                 Assert.assertEquals("nonPooledConnectionsBeforeFlush == nonPooledConnectionsAfterFlush", nonPooledConnectionsBeforeFlush, nonPooledConnectionsAfterFlush);
                 
+                try {
                 et.rollback();
+                } catch (Throwable t) {
+                    // Some databases such as mysql may see the Connection as still set to autocommit=true, and
+                    // the DriverWrapper was set to make new connections broken, but the real Connection is
+                    // still established, but being "Broken" prevents the Connection from being set autocommit=false.
+                }
                 
                 final int nonPooledConnectionsAfterRollback = ss.getNumberOfNonPooledConnectionsUsed();
                 System.out.println("nonPooledConnectionsAfterRollback = " + nonPooledConnectionsAfterRollback);
