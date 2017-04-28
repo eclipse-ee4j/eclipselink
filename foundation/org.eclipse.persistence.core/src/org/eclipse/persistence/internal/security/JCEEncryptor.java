@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -18,6 +18,7 @@ import java.io.ObjectInputStream;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
+import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
@@ -123,7 +124,12 @@ public class JCEEncryptor implements Securable {
                     // JCE 1.2.1 couldn't decrypt it, assume clear text
                     password = encryptedPswd;
                 } catch (Exception h) {
-                    throw ValidationException.errorDecryptingPassword(h);
+                    if (h.getCause() instanceof IllegalBlockSizeException) {
+                        // JCE couldn't decrypt it, assume clear text
+                        password = encryptedPswd;
+                    } else {
+                        throw ValidationException.errorDecryptingPassword(h);
+                    }
                 } finally {
                     if (oisDes != null) {
                         try {
