@@ -105,7 +105,7 @@ public class JCEEncryptor implements Securable {
             bytePassword = Helper.buildBytesFromHexString(encryptedPswd);
             // try AES/CBC first
             password = new String(decryptCipherAES_CBC.doFinal(bytePassword), "UTF-8");
-        } catch (ConversionException ce) {
+        } catch (ConversionException | IllegalBlockSizeException ce) {
             // buildBytesFromHexString failed, assume clear text
             password = encryptedPswd;
         } catch (Exception e) {
