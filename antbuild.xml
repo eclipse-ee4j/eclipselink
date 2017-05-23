@@ -1675,7 +1675,7 @@
     </target>
     <!-- run JSE tests -->
     <target name="test-jpa-jse" description="run the JPA JSE tests">
-        <ant antfile="antbuild.xml" dir="${eclipselink.jpa.test.jse}" target="test-no-report"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.jpa.test.jse}" target="test"/>
     </target>
 
     <target name="init-coverage">
