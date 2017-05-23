@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 IBM Corporation. All rights reserved.
+ * Copyright (c) 2017 IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,6 +12,8 @@
  *       - 471487: Added test for QueryHints.JDBC_TIMEOUT that checks the executed sql statement
  *     09/03/2015 - Will Dazey
  *       - 456067 : Added tests to check query timeout units
+ *     01/31/2017-2.6 Will Dazey
+ *       - 511426: Adding test to check QueryHints.SCROLLABLE_CURSOR
  ******************************************************************************/
 package org.eclipse.persistence.jpa.test.query;
 
@@ -28,6 +30,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 
+import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.config.SessionCustomizer;
@@ -36,6 +39,7 @@ import org.eclipse.persistence.jpa.test.framework.Emf;
 import org.eclipse.persistence.jpa.test.framework.EmfRunner;
 import org.eclipse.persistence.jpa.test.framework.PUPropertiesProvider;
 import org.eclipse.persistence.jpa.test.framework.Property;
+import org.eclipse.persistence.queries.ScrollableCursor;
 import org.eclipse.persistence.sessions.Connector;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.Session;
@@ -141,6 +145,51 @@ public class TestQueryHints implements PUPropertiesProvider {
                 queryTimeoutSecondsDouble += 1;
             }
             Assert.assertEquals((int)queryTimeoutSecondsDouble, TestQueryHints.setTimeout);
+            em.getTransaction().rollback();
+        } catch (Exception e) {
+            Assert.fail(e.getLocalizedMessage());
+        } finally {
+            if (em != null) {
+                em.close();
+            }
+        }
+    }
+
+    /**
+     * Test that setting the Query Hint: QueryHints.SCROLLABLE_CURSOR on a NamedQuery
+     * does not cause subsequent Queries, created using the same name, to throw exception.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testMultipleNamedQueryWithScrollableCursor() throws Exception {
+        EntityManager em = null;
+        try {
+            em = emf.createEntityManager();
+            em.getTransaction().begin();
+
+            /*
+             * First create a NamedQuery and return the result list
+             */
+            Query query1 = em.createNamedQuery("Employee.findAll");
+            query1.getResultList();
+
+            /*
+             * Next, create the same NamedQuery, but add the QueryHints.SCROLLABLE_CURSOR hint
+             * and return the ScrollableCursor
+             */
+            Query query2 = em.createNamedQuery("Employee.findAll");
+            query2.setHint(QueryHints.SCROLLABLE_CURSOR, HintValues.TRUE);
+            ScrollableCursor cursor = ((ScrollableCursor) query2.getSingleResult());
+            cursor.close();
+
+            /*
+             * Finally, attempt to create a third NamedQuery, but return a result list
+             * without adding a hint to this Query
+             */
+            Query query3 = em.createNamedQuery("Employee.findAll");
+            query3.getResultList();
+
             em.getTransaction().rollback();
         } catch (Exception e) {
             Assert.fail(e.getLocalizedMessage());
