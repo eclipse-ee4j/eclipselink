@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -13,6 +13,8 @@
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     08/24/2012-2.5 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     01/31/2017-2.6 Will Dazey
+ *       - 511426: Adding cloning support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.queries;
 
@@ -71,6 +73,22 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
     public void addCall(DatasourceCall call) {
         getCalls().addElement(call);
         call.setQuery(getQuery());
+    }
+
+    /**
+     * Clone the DatasourceCall and Vector<DatasourceCall>.
+     */
+    public DatabaseQueryMechanism clone(DatabaseQuery queryClone) {
+        DatasourceCallQueryMechanism clone = (DatasourceCallQueryMechanism)super.clone(queryClone);
+        if(this.call != null) {
+            DatasourceCall callclone = (DatasourceCall)this.call.clone();
+            clone.setCall(callclone);
+        }
+        if(this.calls != null) {
+            Vector callsclone = (Vector)this.calls.clone();
+            clone.setCalls(callsclone);
+        }
+        return clone;
     }
 
     /**
