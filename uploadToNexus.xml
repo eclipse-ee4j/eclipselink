@@ -178,7 +178,7 @@
         <property name="antlr.criteria"       value="[3.0.0,4.0.0)"/>
         <property name="antlr.name"           value="EclipseLink ANTLR"/>
         <property name="asm.prefix"           value="org.eclipse.persistence.asm"/>
-        <property name="asm.criteria"         value="[3.0.0,6.0.0)"/>
+        <property name="asm.criteria"         value="[5.0.0,9.0.0)"/>
         <property name="asm.name"             value="EclipseLink ASM"/>
         <property name="oracleddl.prefix"     value="org.eclipse.persistence.oracleddlparser"/>
         <property name="oracleddl.criteria"   value="[1.0.0,9.0.0)"/>
