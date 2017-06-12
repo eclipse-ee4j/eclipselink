@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     02/08/2012-2.4 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     06/12/2017-2.7 Lukas Jungmann
+ *       - 518155: [jpa22] add support for repeatable annotations
  ******************************************************************************/
 package org.eclipse.persistence.annotations;
 
@@ -19,6 +21,8 @@ import java.lang.annotation.Target;
 
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Repeatable;
 
 import javax.persistence.QueryHint;
 
@@ -35,6 +39,7 @@ import javax.persistence.QueryHint;
  */
 @Target({TYPE})
 @Retention(RUNTIME)
+@Repeatable(NamedStoredProcedureQueries.class)
 public @interface NamedStoredProcedureQuery {
     /**
      * (Required) Unique name that references this stored procedure query.

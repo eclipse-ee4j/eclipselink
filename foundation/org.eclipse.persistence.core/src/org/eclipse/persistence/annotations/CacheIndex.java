@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation
+ *     06/12/2017-2.7 Lukas Jungmann
+ *       - 518155: [jpa22] add support for repeatable annotations
  ******************************************************************************/
 package org.eclipse.persistence.annotations;
 
@@ -19,6 +21,8 @@ import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Repeatable;
 
 /**
  * Allow a cache index to be define.
@@ -35,6 +39,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  */
 @Target({METHOD, FIELD, TYPE})
 @Retention(RUNTIME)
+@Repeatable(CacheIndexes.class)
 public @interface CacheIndex {
     /**
      * Specify the set of columns to define the index on.

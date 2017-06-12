@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -72,6 +72,8 @@
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  *     11/29/2012-2.5 Guy Pelletier
  *       - 395406: Fix nightly static weave test errors
+ *     06/12/2017-2.7 Lukas Jungmann
+ *       - 518155: [jpa22] add support for repeatable annotations
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -98,6 +100,7 @@ import org.eclipse.persistence.annotations.OptimisticLocking;
 import org.eclipse.persistence.annotations.ReadOnly;
 import org.eclipse.persistence.annotations.SerializedObject;
 import org.eclipse.persistence.annotations.UuidGenerator;
+import org.eclipse.persistence.annotations.UuidGenerators;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
@@ -154,9 +157,11 @@ import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JP
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_NAMED_STORED_PROCEDURE_QUERIES;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_NAMED_STORED_PROCEDURE_QUERY;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_SEQUENCE_GENERATOR;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_SEQUENCE_GENERATORS;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_SQL_RESULT_SET_MAPPING;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_SQL_RESULT_SET_MAPPINGS;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_TABLE_GENERATOR;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_TABLE_GENERATORS;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_TRANSIENT;
 
 /**
@@ -1521,6 +1526,14 @@ public class MappedSuperclassAccessor extends ClassAccessor {
             getProject().addSequenceGenerator(m_sequenceGenerator, getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema());
         }
 
+        MetadataAnnotation sequenceGenerators = getAnnotation(JPA_SEQUENCE_GENERATORS);
+        if (sequenceGenerators != null) {
+            for (Object sequenceGenerator : sequenceGenerators.getAttributeArray("value")) {
+                // Ask the common processor to process what we found.
+                getProject().addSequenceGenerator(new SequenceGeneratorMetadata((MetadataAnnotation) sequenceGenerator, this), getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema());
+            }
+        }
+
         if (isAnnotationPresent(JPA_SEQUENCE_GENERATOR)) {
             // Ask the common processor to process what we found.
             getProject().addSequenceGenerator(new SequenceGeneratorMetadata(getAnnotation(JPA_SEQUENCE_GENERATOR), this), getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema());
@@ -1585,6 +1598,14 @@ public class MappedSuperclassAccessor extends ClassAccessor {
             getProject().addTableGenerator(m_tableGenerator, getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema());
         }
 
+        MetadataAnnotation tableGenerators = getAnnotation(JPA_TABLE_GENERATORS);
+        if (tableGenerators != null) {
+            for (Object tableGenerator : tableGenerators.getAttributeArray("value")) {
+                // Ask the common processor to process what we found.
+                getProject().addTableGenerator(new TableGeneratorMetadata((MetadataAnnotation) tableGenerator, this), getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema());
+            }
+        }
+
         if (isAnnotationPresent(JPA_TABLE_GENERATOR)) {
             getProject().addTableGenerator(new TableGeneratorMetadata(getAnnotation(JPA_TABLE_GENERATOR), this), getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema());
         }
@@ -1599,6 +1620,14 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         // Process the xml defined table generator first.
         if (m_uuidGenerator != null) {
             getProject().addUuidGenerator(m_uuidGenerator);
+        }
+
+        MetadataAnnotation uuidGenerators = getAnnotation(UuidGenerators.class);
+        if (uuidGenerators != null) {
+            for (Object uuidGenerator : uuidGenerators.getAttributeArray("value")) {
+                // Ask the common processor to process what we found.
+                getProject().addUuidGenerator(new UuidGeneratorMetadata((MetadataAnnotation) uuidGenerator, this));
+            }
         }
 
         if (isAnnotationPresent(UuidGenerator.class)) {

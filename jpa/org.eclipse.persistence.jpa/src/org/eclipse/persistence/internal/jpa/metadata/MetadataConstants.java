@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -16,6 +16,8 @@
  *       - 374688: JPA 2.1 Converter support
  *     02/20/2013-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+ *     06/12/2017-2.7 Lukas Jungmann
+ *       - 518155: [jpa22] add support for repeatable annotations
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -111,11 +113,13 @@ public class MetadataConstants {
     public static final String JPA_SECONDARY_TABLE = "javax.persistence.SecondaryTable";
     public static final String JPA_SECONDARY_TABLES = "javax.persistence.SecondaryTables";
     public static final String JPA_SEQUENCE_GENERATOR = "javax.persistence.SequenceGenerator";
+    public static final String JPA_SEQUENCE_GENERATORS = "javax.persistence.SequenceGenerators";
     public static final String JPA_SQL_RESULT_SET_MAPPING = "javax.persistence.SqlResultSetMapping";
     public static final String JPA_SQL_RESULT_SET_MAPPINGS = "javax.persistence.SqlResultSetMappings";
     public static final String JPA_STORED_PROCEDURE_PARAMETER = "javax.persistence.StoredProcedureParameter";
     public static final String JPA_TABLE = "javax.persistence.Table";
     public static final String JPA_TABLE_GENERATOR = "javax.persistence.TableGenerator";
+    public static final String JPA_TABLE_GENERATORS = "javax.persistence.TableGenerators";
     public static final String JPA_TEMPORAL = "javax.persistence.Temporal";
     public static final String JPA_TRANSIENT = "javax.persistence.Transient";
     public static final String JPA_UNIQUE_CONSTRAINT = "javax.persistence.UniqueConstraint";
