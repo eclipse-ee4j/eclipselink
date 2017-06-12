@@ -298,7 +298,7 @@
             <pathelement path="${junit.lib}"/>
         </path>
         <path id="oracle_test.public.dependency.path">
-            <pathelement path="${oracle_test.2.jpa.plugins.dir}/${persistence21.jar}"/>
+            <pathelement path="${oracle_test.2.jpa.plugins.dir}/${persistence22.jar}"/>
             <fileset dir="${oracle_test.2.common.plugins.dir}" includes="${eclipselink.core.depend}"/>
         </path>
     </target>

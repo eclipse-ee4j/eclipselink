@@ -90,7 +90,7 @@
         <property name="implementation.vendor" value="${specification.vendor}"/>
 
         <!-- dependency properties -->
-        <property name="persistence.lib"    value="${modelgen.2.jpa.plugins.dir}/${persistence21.jar}"/>
+        <property name="persistence.lib"    value="${modelgen.2.jpa.plugins.dir}/${persistence22.jar}"/>
         <property name="core.lib"             value="${modelgen.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
         <property name="jpa.lib"              value="${modelgen.2.common.plugins.dir}/org.eclipse.persistence.jpa_${version.string}.jar"/>
 
