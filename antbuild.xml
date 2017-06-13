@@ -1,5 +1,5 @@
 <!--/*******************************************************************************
-* Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -829,7 +829,7 @@
             <fileset
                 dir="${eclipselink.util.jaxb}/${classes.dir}"
                 includes="**/*.class,"/>
-            <!-- JPA 2.0/2.1 concurrent dev solution: New classes from javax.persistence 2.0 & 2.1 -->
+            <!-- JPA 2.0/2.2 concurrent dev solution: New classes from javax.persistence 2.0 & 2.2 -->
             <fileset
                 dir="${build.dir}/javax.persistence/${classes.dir}"
                 includes="
@@ -867,6 +867,8 @@
                     javax/persistence/Expression.class,
                     javax/persistence/QueryDefinition.class,
                     javax/persistence/SelectItem.class,
+                    javax/persistence/SequenceGenerators.class,
+                    javax/persistence/TableGenerators.class,
                     javax/persistence/criteria/CriteriaBuilder.class,
                     javax/persistence/TypedQuery.class,
                     javax/persistence/ValidationMode.class,
@@ -997,7 +999,7 @@
                 <exclude name="javax.inject*"/>
                 <exclude name="*dynamic*.jar"/>
             </zipfileset>
-            <zipfileset dir="${eclipselink.jpa.plugins}/" includes="javax.persistence*_2.1*.jar" excludes="*preview*.jar"/>
+            <zipfileset dir="${eclipselink.jpa.plugins}/" includes="javax.persistence*_2.2*.jar" excludes="*preview*.jar"/>
             <zipfileset dir="${eclipselink.sdo.plugins}/" includes="commonj.sdo*2.1.1*.jar"/>
             <zipfileset dir="${eclipselink.util.plugins}/">
                 <include name="javax.wsdl*.jar"/>
