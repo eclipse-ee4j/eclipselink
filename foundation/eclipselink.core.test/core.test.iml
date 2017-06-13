@@ -3,8 +3,8 @@
   <component name="EclipseModuleManager">
     <varelement var="jar://$MODULE_DIR$/../../plugins/javax.transaction_1.1.0.v201002051055.jar!/" value="MODULE_DIR/../../plugins/javax.transaction_1.1.0.v201002051055.jar" />
     <varelement var="file://$MODULE_DIR$/../../plugins/javax.transaction/src" value="src:/MODULE_DIR/../../plugins/javax.transaction/src" />
-    <varelement var="jar://$MODULE_DIR$/../../jpa/plugins/javax.persistence_2.1.1.v201509150925.jar!/" value="MODULE_DIR/../../jpa/plugins/javax.persistence_2.1.1.v201509150925.jar" />
-    <varelement var="jar://$MODULE_DIR$/../../jpa/plugins/javax.persistence.source_2.1.1.v201509150925.jar!/" value="src:/MODULE_DIR/../../jpa/plugins/javax.persistence.source_2.1.1.v201509150925.jar" />
+    <varelement var="jar://$MODULE_DIR$/../../jpa/plugins/javax.persistence_2.2.0.v201706121819.jar!/" value="MODULE_DIR/../../jpa/plugins/javax.persistence_2.2.0.v201706121819.jar" />
+    <varelement var="jar://$MODULE_DIR$/../../jpa/plugins/javax.persistence.source_2.2.0.v201706121819.jar!/" value="src:/MODULE_DIR/../../jpa/plugins/javax.persistence.source_2.2.0.v201706121819.jar" />
     <src_description expected_position="2">
       <src_folder value="file://$MODULE_DIR$/" expected_position="2" />
       <src_folder value="file://$MODULE_DIR$/src" expected_position="3" />
@@ -43,11 +43,11 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../jpa/plugins/javax.persistence_2.1.1.v201509150925.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../jpa/plugins/javax.persistence_2.2.0.v201706121819.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/../../jpa/plugins/javax.persistence.source_2.1.1.v201509150925.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../jpa/plugins/javax.persistence.source_2.2.0.v201706121819.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>

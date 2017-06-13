@@ -25,7 +25,7 @@
     <property name="jse.eclipselink.jar" value="${jse.el.root}/eclipselink.jar"/>
     <property name="javax.transaction" value="${jse.el.plugins.dir}/javax.transaction_1.1.0.v201002051055.jar"/>
     <property name="javax.validation" value="${jse.el.plugins.dir}/javax.validation_1.1.0.v201304101302.jar"/>
-    <property name="javax.persistence" value="${jse.jpa.plugins.dir}/javax.persistence_2.1.1.v201509150925.jar"/>
+    <property name="javax.persistence" value="${jse.jpa.plugins.dir}/javax.persistence_2.2.0.v201706121819.jar"/>
    
     <property file="${user.home}/build.properties"/>
     <property file="./antbuild.properties" />
