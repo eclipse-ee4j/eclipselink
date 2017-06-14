@@ -28,6 +28,7 @@
     <property name="javax.persistence" value="${jse.jpa.plugins.dir}/javax.persistence_2.2.0.v201706121819.jar"/>
    
     <property file="${user.home}/build.properties"/>
+    <property file="${test.properties}" />
     <property file="./antbuild.properties" />
     <property file="./test.properties" />
 
