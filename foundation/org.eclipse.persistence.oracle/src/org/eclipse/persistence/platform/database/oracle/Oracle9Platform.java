@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -320,6 +320,12 @@ public class Oracle9Platform extends Oracle8Platform {
         fieldTypes.put(ORACLE_SQL_TIMESTAMP, new FieldTypeDefinition("TIMESTAMP", false));
         fieldTypes.put(ORACLE_SQL_TIMESTAMPTZ, new FieldTypeDefinition("TIMESTAMP WITH TIME ZONE", false));
         fieldTypes.put(ORACLE_SQL_TIMESTAMPLTZ, new FieldTypeDefinition("TIMESTAMP WITH LOCAL TIME ZONE", false));
+
+        fieldTypes.put(java.time.LocalDate.class, new FieldTypeDefinition("DATE"));
+        fieldTypes.put(java.time.LocalDateTime.class, new FieldTypeDefinition("TIMESTAMP"));
+        fieldTypes.put(java.time.LocalTime.class, new FieldTypeDefinition("TIMESTAMP"));
+        fieldTypes.put(java.time.OffsetDateTime.class, new FieldTypeDefinition("TIMESTAMP")); //TIMESTAMP WITH TIME ZONE ???
+        fieldTypes.put(java.time.OffsetTime.class, new FieldTypeDefinition("TIMESTAMP")); //TIMESTAMP WITH TIME ZONE ???
         return fieldTypes;
     }
 
@@ -345,6 +351,7 @@ public class Oracle9Platform extends Oracle8Platform {
         classTypeMapping.put("TIMESTAMP", ORACLE_SQL_TIMESTAMP);
         classTypeMapping.put("TIMESTAMP WITH TIME ZONE", ORACLE_SQL_TIMESTAMPTZ);
         classTypeMapping.put("TIMESTAMP WITH LOCAL TIME ZONE", ORACLE_SQL_TIMESTAMPLTZ);
+        classTypeMapping.put("DATE", java.sql.Timestamp.class);
         return classTypeMapping;
     }
 

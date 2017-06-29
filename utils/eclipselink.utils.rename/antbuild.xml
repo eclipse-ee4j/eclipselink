@@ -51,7 +51,7 @@
     <target name="clean" description="Clean the build">
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${classes.dir}"/>
-            <fileset dir="." file="${package-rename.jar}"/>
+            <fileset file="${package-rename.jar}"/>
         </delete>
     </target>
 

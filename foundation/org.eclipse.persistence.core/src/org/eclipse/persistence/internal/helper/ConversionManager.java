@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -110,6 +110,16 @@ public class ConversionManager extends CoreConversionManager implements Serializ
                 return convertObjectToTime(sourceObject);
             } else if (javaClass == ClassConstants.TIMESTAMP) {
                 return convertObjectToTimestamp(sourceObject);
+            } else if (javaClass == ClassConstants.TIME_LDATE) {
+                return convertObjectToLocalDate(sourceObject);
+            } else if (javaClass == ClassConstants.TIME_LDATETIME) {
+                return convertObjectToLocalDateTime(sourceObject);
+            } else if (javaClass == ClassConstants.TIME_LTIME) {
+                return convertObjectToLocalTime(sourceObject);
+            } else if (javaClass == ClassConstants.TIME_ODATETIME) {
+                return convertObjectToOffsetDateTime(sourceObject);
+            } else if (javaClass == ClassConstants.TIME_OTIME) {
+                return convertObjectToOffsetTime(sourceObject);
             } else if ((javaClass == ClassConstants.CALENDAR) || (javaClass == ClassConstants.GREGORIAN_CALENDAR)) {
                 return convertObjectToCalendar(sourceObject);
             } else if ((javaClass == ClassConstants.CHAR) || (javaClass == ClassConstants.PCHAR && !(sourceObject instanceof Character))) {
@@ -730,7 +740,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
     /**
      * INTERNAL:
      * Build a valid instance of java.sql.Timestamp from the given source object.
-     * @param sourceObject    Valid obejct of class java.sql.Timestamp, String, java.util.Date, or Long
+     * @param sourceObject    Valid object of class java.sql.Timestamp, String, java.util.Date, or Long
      */
     protected java.sql.Timestamp convertObjectToTimestamp(Object sourceObject) throws ConversionException {
         java.sql.Timestamp timestamp = null;
@@ -751,6 +761,214 @@ public class ConversionManager extends CoreConversionManager implements Serializ
             throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.TIMESTAMP);
         }
         return timestamp;
+    }
+
+    /**
+     * INTERNAL: Build a valid instance of java.time.LocalDate from the given
+     * source object.
+     *
+     * @param sourceObject
+     *            Valid object of class java.sql.Timestamp, String,
+     *            java.util.Date, or Long
+     */
+    protected java.time.LocalDate convertObjectToLocalDate(Object sourceObject) throws ConversionException {
+        java.time.LocalDate localDate = null;
+
+        if (sourceObject instanceof java.time.LocalDate) {
+            return (java.time.LocalDate) sourceObject;
+        }
+
+        if (sourceObject instanceof String) {
+            localDate = java.time.LocalDate.parse(((String) sourceObject).replace(' ', 'T'), Helper.getDefaultDateTimeFormatter());
+        } else if (sourceObject instanceof java.sql.Date) {
+            localDate = ((java.sql.Date) sourceObject).toLocalDate();
+        } else if (sourceObject instanceof java.sql.Timestamp) {
+            localDate = ((java.sql.Timestamp) sourceObject).toLocalDateTime().toLocalDate();
+        } else if (sourceObject instanceof java.util.Date) {
+            // handles sql.Time
+            java.util.Date date = (java.util.Date) sourceObject;
+            localDate = java.time.LocalDate.ofEpochDay(date.toInstant().getEpochSecond());
+        } else if (sourceObject instanceof Calendar) {
+            Calendar cal = (Calendar) sourceObject;
+            localDate = java.time.LocalDate.of(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
+        } else if (sourceObject instanceof Long) {
+            localDate = java.time.LocalDate.ofEpochDay((Long) sourceObject);
+        } else {
+            throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.TIME_LDATE);
+        }
+
+        return localDate;
+    }
+
+    /**
+     * INTERNAL: Build a valid instance of java.time.LocalTime from the given
+     * source object.
+     *
+     * @param sourceObject
+     *            Valid object of class java.sql.Timestamp, String,
+     *            java.util.Date, or Long
+     */
+    protected java.time.LocalTime convertObjectToLocalTime(Object sourceObject) throws ConversionException {
+        java.time.LocalTime localTime = null;
+
+        if (sourceObject instanceof java.time.LocalTime) {
+            return (java.time.LocalTime) sourceObject;
+        }
+
+        if (sourceObject instanceof String) {
+            localTime = java.time.LocalTime.parse(((String) sourceObject).replace(' ', 'T'), Helper.getDefaultDateTimeFormatter());
+        } else if (sourceObject instanceof java.sql.Timestamp) {
+            localTime = ((java.sql.Timestamp) sourceObject).toLocalDateTime().toLocalTime();
+        } else if (sourceObject instanceof java.sql.Time) {
+            localTime = ((java.sql.Time) sourceObject).toLocalTime();
+        } else if (sourceObject instanceof java.util.Date) {
+            // handles sql.Date
+            Calendar cal = Helper.allocateCalendar();
+            cal.setTime((java.util.Date) sourceObject);
+            localTime = java.time.LocalTime.of(
+                    cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND));
+            Helper.releaseCalendar(cal);
+        } else if (sourceObject instanceof Calendar) {
+            Calendar cal = (Calendar) sourceObject;
+            localTime = java.time.LocalTime.of(
+                    cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND));
+        } else if (sourceObject instanceof Long) {
+            localTime = java.time.LocalTime.ofSecondOfDay((Long) sourceObject);
+        } else {
+            throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.TIME_LTIME);
+        }
+
+        return localTime;
+    }
+
+    /**
+     * INTERNAL: Build a valid instance of java.time.LocalDateTime from the given
+     * source object.
+     *
+     * @param sourceObject
+     *            Valid object of class java.sql.Timestamp, String,
+     *            java.util.Date, or Long
+     */
+    protected java.time.LocalDateTime convertObjectToLocalDateTime(Object sourceObject) throws ConversionException {
+        java.time.LocalDateTime localDateTime = null;
+
+        if (sourceObject instanceof java.time.LocalDateTime) {
+            return (java.time.LocalDateTime) sourceObject;
+        }
+
+        if (sourceObject instanceof String) {
+            localDateTime = java.time.LocalDateTime.parse(((String) sourceObject).replace(' ', 'T'), Helper.getDefaultDateTimeFormatter());
+        } else if (sourceObject instanceof java.sql.Timestamp) {
+            localDateTime = ((java.sql.Timestamp) sourceObject).toLocalDateTime();
+        } else if (sourceObject instanceof java.util.Date) {
+            // handles sql.Time, sql.Date
+            Calendar cal = Helper.allocateCalendar();
+            cal.setTime((java.util.Date) sourceObject);
+            localDateTime = java.time.LocalDateTime.of(
+                    cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH),
+                    cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND));
+            Helper.releaseCalendar(cal);
+        } else if (sourceObject instanceof Calendar) {
+            Calendar cal = (Calendar) sourceObject;
+            localDateTime = java.time.LocalDateTime.of(
+                    cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH),
+                    cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND));
+        } else if (sourceObject instanceof Long) {
+            localDateTime = java.time.LocalDateTime.ofInstant(
+                    java.time.Instant.ofEpochSecond((Long) sourceObject), java.time.ZoneId.systemDefault());
+        } else {
+            throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.TIME_LDATETIME);
+        }
+
+        return localDateTime;
+    }
+
+    /**
+     * INTERNAL: Build a valid instance of java.time.OffsetDateTime from the given
+     * source object.
+     *
+     * @param sourceObject
+     *            Valid object of class java.sql.Timestamp, String,
+     *            java.util.Date, or Long
+     */
+    protected java.time.OffsetDateTime convertObjectToOffsetDateTime(Object sourceObject) throws ConversionException {
+        java.time.OffsetDateTime offsetDateTime = null;
+
+        if (sourceObject instanceof java.time.OffsetDateTime) {
+            return (java.time.OffsetDateTime) sourceObject;
+        }
+
+        if (sourceObject instanceof String) {
+            java.time.LocalDateTime ldt = java.time.LocalDateTime.parse(((String) sourceObject).replace(' ', 'T'), Helper.getDefaultDateTimeFormatter());
+            return ldt.atZone(java.time.ZoneId.systemDefault()).toOffsetDateTime();
+        } else if (sourceObject instanceof java.util.Date) {
+            // handles sql.Time, sql.Date, sql.Timestamp
+            Calendar cal = Helper.allocateCalendar();
+            cal.setTime((java.util.Date) sourceObject);
+            offsetDateTime = java.time.OffsetDateTime.of(
+                    cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH),
+                    cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND) * 1000000,
+                    java.time.ZoneOffset.ofTotalSeconds((cal.get(Calendar.ZONE_OFFSET) + cal.get(Calendar.DST_OFFSET)) / 1000));
+            Helper.releaseCalendar(cal);
+        } else if (sourceObject instanceof Calendar) {
+            Calendar cal = (Calendar) sourceObject;
+            offsetDateTime = java.time.OffsetDateTime.of(
+                    cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH),
+                    cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND  * 1000000),
+                    java.time.ZoneOffset.ofTotalSeconds((cal.get(Calendar.ZONE_OFFSET) + cal.get(Calendar.DST_OFFSET)) / 1000));
+        } else if (sourceObject instanceof Long) {
+            offsetDateTime = java.time.OffsetDateTime.ofInstant(
+                    java.time.Instant.ofEpochSecond((Long) sourceObject), java.time.ZoneId.systemDefault());
+        } else {
+            throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.TIME_ODATETIME);
+        }
+
+        return offsetDateTime;
+    }
+
+    /**
+     * INTERNAL: Build a valid instance of java.time.OffsetTime from the given
+     * source object.
+     *
+     * @param sourceObject
+     *            Valid object of class java.sql.Timestamp, String,
+     *            java.util.Date, or Long
+     */
+    protected java.time.OffsetTime convertObjectToOffsetTime(Object sourceObject) throws ConversionException {
+        java.time.OffsetTime offsetTime = null;
+
+        if (sourceObject instanceof java.time.OffsetTime) {
+            return (java.time.OffsetTime) sourceObject;
+        }
+
+        if (sourceObject instanceof String) {
+            try {
+                offsetTime = java.time.OffsetTime.parse(((String) sourceObject).replace(' ', 'T'), Helper.getDefaultDateTimeFormatter());
+            } catch (Exception e) {
+                java.time.LocalTime localTime = java.time.LocalTime.parse(((String) sourceObject).replace(' ', 'T'), Helper.getDefaultDateTimeFormatter());
+                offsetTime = java.time.OffsetTime.of(localTime, java.time.OffsetDateTime.now().getOffset());
+            }
+        } else if (sourceObject instanceof java.util.Date) {
+            // handles sql.Time, sql.Date, sql.Timestamp
+            Calendar cal = Helper.allocateCalendar();
+            cal.setTime((java.util.Date) sourceObject);
+            offsetTime = java.time.OffsetTime.of(
+                    cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND),
+                    java.time.ZoneOffset.ofTotalSeconds((cal.get(Calendar.ZONE_OFFSET) + cal.get(Calendar.DST_OFFSET)) / 1000));
+            Helper.releaseCalendar(cal);
+        } else if (sourceObject instanceof Calendar) {
+            Calendar cal = (Calendar) sourceObject;
+            offsetTime = java.time.OffsetTime.of(
+                    cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND),
+                    java.time.ZoneOffset.ofTotalSeconds((cal.get(Calendar.ZONE_OFFSET) + cal.get(Calendar.DST_OFFSET)) / 1000));
+        } else if (sourceObject instanceof Long) {
+            offsetTime = java.time.OffsetTime.ofInstant(
+                    java.time.Instant.ofEpochSecond((Long) sourceObject), java.time.ZoneId.systemDefault());
+        } else {
+            throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.TIME_OTIME);
+        }
+
+        return offsetTime;
     }
 
     /**

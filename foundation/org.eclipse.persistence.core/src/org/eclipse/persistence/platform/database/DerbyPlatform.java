@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2005, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright 2005, 2017 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -290,6 +290,12 @@ public class DerbyPlatform extends DB2Platform {
         fieldTypeMapping.put(java.sql.Date.class, new FieldTypeDefinition("DATE", false));
         fieldTypeMapping.put(java.sql.Time.class, new FieldTypeDefinition("TIME", false));
         fieldTypeMapping.put(java.sql.Timestamp.class, new FieldTypeDefinition("TIMESTAMP", false));
+
+        fieldTypeMapping.put(java.time.LocalDate.class, new FieldTypeDefinition("DATE"));
+        fieldTypeMapping.put(java.time.LocalDateTime.class, new FieldTypeDefinition("TIMESTAMP"));
+        fieldTypeMapping.put(java.time.LocalTime.class, new FieldTypeDefinition("TIMESTAMP"));
+        fieldTypeMapping.put(java.time.OffsetDateTime.class, new FieldTypeDefinition("TIMESTAMP"));
+        fieldTypeMapping.put(java.time.OffsetTime.class, new FieldTypeDefinition("TIMESTAMP"));
 
         return fieldTypeMapping;
     }

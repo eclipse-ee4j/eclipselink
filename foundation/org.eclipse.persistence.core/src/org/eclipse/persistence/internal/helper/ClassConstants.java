@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -127,6 +127,11 @@ public class ClassConstants extends CoreClassConstants {
     public static final Class TIME = java.sql.Time.class;
     public static final Class TIMESTAMP = java.sql.Timestamp.class;
     public static final Class UTILDATE = java.util.Date.class;
+    public static final Class TIME_LDATE = java.time.LocalDate.class;
+    public static final Class TIME_LTIME = java.time.LocalTime.class;
+    public static final Class TIME_LDATETIME = java.time.LocalDateTime.class;
+    public static final Class TIME_ODATETIME = java.time.OffsetDateTime.class;
+    public static final Class TIME_OTIME = java.time.OffsetTime.class;
     public static final Class QNAME = QName.class;
     public static final Class XML_GREGORIAN_CALENDAR = XMLGregorianCalendar.class;
     public static final Class DURATION = Duration.class;

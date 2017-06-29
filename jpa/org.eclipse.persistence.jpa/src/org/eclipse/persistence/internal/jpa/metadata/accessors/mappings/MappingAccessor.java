@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -1361,6 +1361,14 @@ public abstract class MappingAccessor extends MetadataAccessor {
             cls.extendsClass(java.util.Calendar.class);
     }
 
+    protected boolean isTimeClass(MetadataClass cls) {
+        return cls.extendsClass(java.time.LocalDateTime.class) ||
+            cls.extendsClass(java.time.LocalDate.class) ||
+            cls.extendsClass(java.time.LocalTime.class) ||
+            cls.extendsClass(java.time.OffsetDateTime.class) ||
+            cls.extendsClass(java.time.OffsetTime.class);
+    }
+
     /**
      * INTERNAL:
      * Return true if this accessor has been processed. If there is a mapping
@@ -1421,6 +1429,10 @@ public abstract class MappingAccessor extends MetadataAccessor {
         }
 
         if (TemporalMetadata.isValidTemporalType(cls)) {
+            return false;
+        }
+
+        if (isTimeClass(cls)) {
             return false;
         }
 

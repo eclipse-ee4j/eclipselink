@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -29,6 +29,7 @@ import java.io.Writer;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Hashtable;
@@ -201,7 +202,54 @@ public class MySQLPlatform extends DatabasePlatform {
         }
         fieldTypeMapping.put(java.sql.Timestamp.class, fd);
 
+        fieldTypeMapping.put(java.time.LocalDate.class, new FieldTypeDefinition("DATE"));
+
+        fd = new FieldTypeDefinition("DATETIME");
+        if (!isFractionalTimeSupported) {
+            fd.setIsSizeAllowed(false);
+        } else {
+            fd.setDefaultSize(3);
+            fd.setIsSizeRequired(true);
+        }
+        fieldTypeMapping.put(java.time.LocalDateTime.class,fd); //no timezone info
+
+        fd = new FieldTypeDefinition("TIME");
+        if (!isFractionalTimeSupported) {
+            fd.setIsSizeAllowed(false);
+        } else {
+            fd.setDefaultSize(3);
+            fd.setIsSizeRequired(true);
+        }
+        fieldTypeMapping.put(java.time.LocalTime.class, fd);
+
+        fd = new FieldTypeDefinition("DATETIME");
+        if (!isFractionalTimeSupported) {
+            fd.setIsSizeAllowed(false);
+        } else {
+            fd.setDefaultSize(3);
+            fd.setIsSizeRequired(true);
+        }
+        fieldTypeMapping.put(java.time.OffsetDateTime.class, fd); //no timezone info
+
+        fd = new FieldTypeDefinition("TIME");
+        if (!isFractionalTimeSupported) {
+            fd.setIsSizeAllowed(false);
+        } else {
+            fd.setDefaultSize(3);
+            fd.setIsSizeRequired(true);
+        }
+        fieldTypeMapping.put(java.time.OffsetTime.class, fd);
         return fieldTypeMapping;
+    }
+
+    @Override
+    public int getJDBCType(Class javaType) {
+        if (javaType == ClassConstants.TIME_ODATETIME) {
+            return Types.TIMESTAMP;
+        } else if (javaType == ClassConstants.TIME_OTIME) {
+            return Types.TIME;
+        }
+        return super.getJDBCType(javaType);
     }
 
     /**

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -1380,7 +1380,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
         } else if ((fieldType == ClassConstants.SHORT) || (fieldType == ClassConstants.PSHORT)) {
             value = Short.valueOf(resultSet.getShort(columnNumber));
             isPrimitive = ((Short)value).shortValue() == 0;
-        } else if (Helper.shouldOptimizeDates && (type == Types.TIME) || (type == Types.DATE) || (type == Types.TIMESTAMP)) {
+        } else if (Helper.shouldOptimizeDates && ((type == Types.TIME) || (type == Types.DATE) || (type == Types.TIMESTAMP))) {
             // Optimize dates by avoid conversion to timestamp then back to date or time or util.date.
             String dateString = resultSet.getString(columnNumber);
             value = platform.convertObject(dateString, fieldType);
@@ -1393,6 +1393,20 @@ public class DatabaseAccessor extends DatasourceAccessor {
                 value = resultSet.getTime(columnNumber);
             } else if (fieldType == ClassConstants.TIMESTAMP) {
                 value = resultSet.getTimestamp(columnNumber);
+            } else if (fieldType == ClassConstants.TIME_LTIME) {
+                value = resultSet.getTimestamp(columnNumber).toLocalDateTime().toLocalTime();
+            } else if (fieldType == ClassConstants.TIME_LDATE) {
+                value = resultSet.getDate(columnNumber).toLocalDate();
+            } else if (fieldType == ClassConstants.TIME_LDATETIME) {
+                value = resultSet.getTimestamp(columnNumber).toLocalDateTime();
+            } else if (fieldType == ClassConstants.TIME_OTIME) {
+                value = resultSet.getTimestamp(columnNumber)
+                            .toLocalDateTime().toLocalTime()
+                            .atOffset(java.time.OffsetDateTime.now().getOffset());
+            } else if (fieldType == ClassConstants.TIME_ODATETIME) {
+                value = java.time.OffsetDateTime.ofInstant(
+                            resultSet.getTimestamp(columnNumber).toInstant(),
+                            java.time.ZoneId.systemDefault());
             }
         } else if (fieldType == ClassConstants.BIGINTEGER) {
             value = resultSet.getBigDecimal(columnNumber);

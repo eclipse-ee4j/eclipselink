@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -38,6 +38,8 @@ public class BasicTypeHelperImpl {
     private static Set floatingPointTypes = new HashSet();
     /** Set of date classes. */
     private static Set dateClasses = new HashSet();
+    /** Set of time classes. */
+    private static Set timeClasses = new HashSet();
     /** Maps primtives types to their wrapper classes. */
     private static Map<Class, Class> primitiveToWrapper = new HashMap();
     /** Maps wrapper classes to their primitive types. */
@@ -68,6 +70,13 @@ public class BasicTypeHelperImpl {
         dateClasses.add(java.sql.Date.class);
         dateClasses.add(java.sql.Time.class);
         dateClasses.add(java.sql.Timestamp.class);
+
+        // Initialize set of java.time types
+        timeClasses.add(java.time.LocalDate.class);
+        timeClasses.add(java.time.LocalTime.class);
+        timeClasses.add(java.time.LocalDateTime.class);
+        timeClasses.add(java.time.OffsetTime.class);
+        timeClasses.add(java.time.OffsetDateTime.class);
 
         numericTypes.addAll(integralTypes);
         numericTypes.addAll(floatingPointTypes);

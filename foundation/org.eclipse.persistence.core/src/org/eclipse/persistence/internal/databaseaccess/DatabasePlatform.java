@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -742,6 +742,12 @@ public class DatabasePlatform extends DatasourcePlatform {
         fieldTypeMapping.put(java.util.Calendar.class, new FieldTypeDefinition("TIMESTAMP"));
         fieldTypeMapping.put(java.util.Date.class, new FieldTypeDefinition("TIMESTAMP"));
         fieldTypeMapping.put(java.lang.Number.class, new FieldTypeDefinition("NUMBER", 10));
+
+        fieldTypeMapping.put(java.time.LocalDate.class, new FieldTypeDefinition("DATE"));
+        fieldTypeMapping.put(java.time.LocalDateTime.class, new FieldTypeDefinition("TIMESTAMP"));
+        fieldTypeMapping.put(java.time.LocalTime.class, new FieldTypeDefinition("TIME"));
+        fieldTypeMapping.put(java.time.OffsetDateTime.class, new FieldTypeDefinition("TIMESTAMP"));
+        fieldTypeMapping.put(java.time.OffsetTime.class, new FieldTypeDefinition("TIME"));
 
         return fieldTypeMapping;
     }
@@ -2475,10 +2481,26 @@ public class DatabasePlatform extends DatasourcePlatform {
             }
         }  else if (parameter instanceof java.sql.Date){
             statement.setDate(index,(java.sql.Date)parameter);
+        }  else if (parameter instanceof java.time.LocalDate){
+            statement.setDate(index, java.sql.Date.valueOf((java.time.LocalDate) parameter));
         } else if (parameter instanceof java.sql.Timestamp){
             statement.setTimestamp(index,(java.sql.Timestamp)parameter);
+        } else if (parameter instanceof java.time.LocalDateTime){
+            statement.setTimestamp(index, java.sql.Timestamp.valueOf((java.time.LocalDateTime) parameter));
+        } else if (parameter instanceof java.time.OffsetDateTime) {
+            statement.setTimestamp(index, java.sql.Timestamp.from(((java.time.OffsetDateTime) parameter).toInstant()));
         } else if (parameter instanceof java.sql.Time){
             statement.setTime(index,(java.sql.Time)parameter);
+        } else if (parameter instanceof java.time.LocalTime){
+            java.time.LocalTime lt = (java.time.LocalTime) parameter;
+            java.sql.Timestamp ts = new java.sql.Timestamp(
+                    70, 0, 1, lt.getHour(), lt.getMinute(), lt.getSecond(), lt.getNano());
+            statement.setTimestamp(index, ts);
+        } else if (parameter instanceof java.time.OffsetTime) {
+            java.time.OffsetTime ot = (java.time.OffsetTime) parameter;
+            java.sql.Timestamp ts = new java.sql.Timestamp(
+                    70, 0, 1, ot.getHour(), ot.getMinute(), ot.getSecond(), ot.getNano());
+            statement.setTimestamp(index, ts);
         } else if (parameter instanceof Boolean) {
             statement.setBoolean(index, ((Boolean) parameter).booleanValue());
         } else if (parameter == null) {

@@ -90,6 +90,8 @@ public class Helper extends CoreHelper implements Serializable {
     /** PERF: Cache default timezone for calendar conversion. */
     protected static final TimeZone defaultTimeZone = TimeZone.getDefault();
 
+    private static java.time.format.DateTimeFormatter dateTimeFormatter;
+
     // Changed static initialization to lazy initialization for bug 2756643
 
     /** Store CR string, for some reason \n is not platform independent. */
@@ -195,6 +197,34 @@ public class Helper extends CoreHelper implements Serializable {
      */
     public static TimeZone getDefaultTimeZone() {
         return defaultTimeZone;
+    }
+
+    public static java.time.format.DateTimeFormatter getDefaultDateTimeFormatter() {
+        if (dateTimeFormatter == null) {
+            dateTimeFormatter = new java.time.format.DateTimeFormatterBuilder()
+                    .append(new java.time.format.DateTimeFormatterBuilder()
+                            .parseCaseInsensitive()
+                            .parseLenient()
+                            .optionalStart()
+                            .append(java.time.format.DateTimeFormatter.ISO_LOCAL_DATE)
+                            .optionalEnd()
+                            .optionalStart()
+                            .appendLiteral('T')
+                            .optionalEnd()
+                            .optionalStart()
+                            .append(java.time.format.DateTimeFormatter.ISO_LOCAL_TIME)
+                            .optionalEnd()
+                            .toFormatter())
+                    .optionalStart()
+                    .appendOffsetId()
+                    .optionalStart()
+                    .appendLiteral('[')
+                    .parseCaseSensitive()
+                    .appendZoneRegionId()
+                    .appendLiteral(']')
+                    .toFormatter();
+        }
+        return dateTimeFormatter;
     }
 
     /**
