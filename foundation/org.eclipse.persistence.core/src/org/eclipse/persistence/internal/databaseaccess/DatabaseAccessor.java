@@ -1380,7 +1380,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
         } else if ((fieldType == ClassConstants.SHORT) || (fieldType == ClassConstants.PSHORT)) {
             value = Short.valueOf(resultSet.getShort(columnNumber));
             isPrimitive = ((Short)value).shortValue() == 0;
-        } else if (Helper.shouldOptimizeDates && ((type == Types.TIME) || (type == Types.DATE) || (type == Types.TIMESTAMP))) {
+        } else if (Helper.shouldOptimizeDates && (type == Types.TIME) || (type == Types.DATE) || (type == Types.TIMESTAMP)) {
             // Optimize dates by avoid conversion to timestamp then back to date or time or util.date.
             String dateString = resultSet.getString(columnNumber);
             value = platform.convertObject(dateString, fieldType);
