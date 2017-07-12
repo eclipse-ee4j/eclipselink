@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -19,6 +19,8 @@
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  *     02/04/2013-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support
+ *     10/07/2017-2.7 Vikram Bhatia
+ *       - 441546: Foreign Key attribute when used in JoinColumn generates wrong DDL statement
  *******************************************************************************/
 package org.eclipse.persistence.tools.schemaframework;
 
@@ -1362,8 +1364,13 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * Set the foreign key constraints for this table.
      */
     public void setUserDefinedForeignKeyConstraints(Map<String, ForeignKeyConstraint> foreignKeyConstraints) {
-        foreignKeyMap = foreignKeyConstraints;
-        hasUserDefinedForeignKeyConstraints = true;
+        for (ForeignKeyConstraint fkConstraint : foreignKeyConstraints.values()) {
+            if (!fkConstraint.getSourceFields().isEmpty() && !fkConstraint.getTargetFields().isEmpty()) {
+                hasUserDefinedForeignKeyConstraints = true;
+                foreignKeyMap = foreignKeyConstraints;
+                break;
+            }
+        }
     }
 
     /**
