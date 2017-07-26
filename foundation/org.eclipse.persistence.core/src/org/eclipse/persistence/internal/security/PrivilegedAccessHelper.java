@@ -35,6 +35,7 @@ import java.util.Set;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.helper.JavaVersion;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.platform.server.ServerPlatformBase;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
@@ -56,7 +57,7 @@ public class PrivilegedAccessHelper {
     private static boolean shouldCheckPrivilegedAccess = true;
     private static boolean shouldUsePrivilegedAccess = false;
 
-    private final static String[] legalProperties = { "file.separator", "java.io.tmpdir", "java.version", "line.separator", "path.separator", "user.dir",
+    private final static String[] legalProperties = { "file.separator", "java.io.tmpdir", JavaVersion.VM_VERSION_PROPERTY, "line.separator", "path.separator", "user.dir",
             "org.eclipse.persistence.fetchgroupmonitor", "org.eclipse.persistence.querymonitor", "SAP_J2EE_Engine_Version",
             PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML, PersistenceUnitProperties.JAVASE_DB_INTERACTION, 
             PersistenceUnitProperties.LOGGING_FILE, PersistenceUnitProperties.LOGGING_LEVEL,
