@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2017 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -23,6 +23,8 @@
  *     11/01/2011-2.2 Michael O'Brien 
  *       - 333336: findMBeanServer() requires security API AccessController.doPrivileged() 
  *         private run method security block. 
+ *     07/28/2017-2.7 Dalia Abo Sheasha
+ *       - 520316: Multiple MBeanServers discovered by EclipseLink result in warnings
  ******************************************************************************/  
 package org.eclipse.persistence.platform.server;
 
@@ -246,7 +248,7 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
                     if(mBeanServerList.size() > 1) {
                         // There are multiple MBeanServerInstances (usually only JBoss)
                         // 328006: WebLogic may also return multiple instances (we need to register the one containing the com.bea tree)
-                        getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER, 
+                        getAbstractSession().log(SessionLog.INFO, SessionLog.SERVER, 
                                 "jmx_mbean_runtime_services_registration_encountered_multiple_mbeanserver_instances",
                                 mBeanServerList.size(), JMX_MBEANSERVER_INDEX_DEFAULT_FOR_MULTIPLE_SERVERS, mBeanServer);
                         // IE: for JBoss we need to verify we are using the correct MBean server of the two (default, null)
@@ -258,7 +260,7 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
                                     new Object[]{anMBeanServer, anMBeanServer.getMBeanCount(), anMBeanServer.getDefaultDomain(), index});
                             if(null != anMBeanServer.getDefaultDomain()) {
                                 mBeanServer = anMBeanServer;
-                                getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER, 
+                                getAbstractSession().log(SessionLog.INFO, SessionLog.SERVER, 
                                         "jmx_mbean_runtime_services_switching_to_alternate_mbeanserver",
                                         mBeanServer, index);                                                                
                             }
