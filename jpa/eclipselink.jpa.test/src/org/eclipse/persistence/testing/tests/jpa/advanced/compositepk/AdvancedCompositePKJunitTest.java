@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -19,6 +19,8 @@
  *       - 314941: multiple joinColumns without referenced column names defined, no error
  *     01/25/2011-2.3 Guy Pelletier 
  *       - 333913: @OrderBy and <order-by/> without arguments should order by primary
+ *     09/11/2017-2.1 Will Dazey 
+ *       - 520387: multiple owning descriptors for an embeddable are not set
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.advanced.compositepk;
 
@@ -35,12 +37,15 @@ import javax.persistence.EntityManager;
 import junit.framework.*;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.OneToManyMapping;
 import org.eclipse.persistence.sessions.CopyGroup;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Author;
+import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Book;
 import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Competency;
 import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Cubicle;
 import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.JuniorScientist;
@@ -142,6 +147,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
             suite.addTest(new AdvancedCompositePKJunitTest("testGetIdentifier"));
             suite.addTest(new AdvancedCompositePKJunitTest("testFailedGetIdenitifier"));
             suite.addTest(new AdvancedCompositePKJunitTest("testGetIdenitifierOnNonEntity"));
+            suite.addTest(new AdvancedCompositePKJunitTest("testNestedEmbeddableSequenceGeneration"));
         }
         return suite;
     }
@@ -1023,5 +1029,25 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
             return;
         }
         fail("IllegalArgumentException not thrown for call to getIdentifier with a non-entity class.");
+    }
+
+    // bug 520387
+    public void testNestedEmbeddableSequenceGeneration(){
+        if(!supportsSequenceObjects()) {
+            return;
+        }
+
+        Book b = new Book("Book1");
+        Author a = new Author("Author1");
+
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        b = (Book) em.merge(b);
+        a = (Author) em.merge(a);
+
+        assertTrue("The PK value for "+ b.getClass() +" (" + b.getId().getNumberId().getValue() + ") is not sequence generated", (b.getId().getNumberId().getValue() >= new Long(1000)));
+        assertTrue("The PK value for "+ a.getClass() +" (" + a.getId().getNumberId().getValue() + ") is not sequence generated", (a.getId().getNumberId().getValue() >= new Long(1000)));
+
+        rollbackTransaction(em);
     }
 }
