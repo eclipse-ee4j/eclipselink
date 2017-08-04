@@ -1394,19 +1394,25 @@ public class DatabaseAccessor extends DatasourceAccessor {
             } else if (fieldType == ClassConstants.TIMESTAMP) {
                 value = resultSet.getTimestamp(columnNumber);
             } else if (fieldType == ClassConstants.TIME_LTIME) {
-                value = resultSet.getTimestamp(columnNumber).toLocalDateTime().toLocalTime();
+                final java.sql.Timestamp ts = resultSet.getTimestamp(columnNumber);
+                value = ts != null ? ts.toLocalDateTime().toLocalTime()
+                        : platform.getConversionManager().getDefaultNullValue(ClassConstants.TIME_LTIME);
             } else if (fieldType == ClassConstants.TIME_LDATE) {
-                value = resultSet.getDate(columnNumber).toLocalDate();
+                final java.sql.Date dt = resultSet.getDate(columnNumber);
+                value = dt != null ? dt.toLocalDate()
+                        : platform.getConversionManager().getDefaultNullValue(ClassConstants.TIME_LDATE);
             } else if (fieldType == ClassConstants.TIME_LDATETIME) {
-                value = resultSet.getTimestamp(columnNumber).toLocalDateTime();
+                final java.sql.Timestamp ts = resultSet.getTimestamp(columnNumber);
+                value = ts != null ? ts.toLocalDateTime()
+                        : platform.getConversionManager().getDefaultNullValue(ClassConstants.TIME_LDATETIME);
             } else if (fieldType == ClassConstants.TIME_OTIME) {
-                value = resultSet.getTimestamp(columnNumber)
-                            .toLocalDateTime().toLocalTime()
-                            .atOffset(java.time.OffsetDateTime.now().getOffset());
+                final java.sql.Timestamp ts = resultSet.getTimestamp(columnNumber);
+                value = ts != null ? ts.toLocalDateTime().toLocalTime().atOffset(java.time.OffsetDateTime.now().getOffset())
+                        : platform.getConversionManager().getDefaultNullValue(ClassConstants.TIME_OTIME);
             } else if (fieldType == ClassConstants.TIME_ODATETIME) {
-                value = java.time.OffsetDateTime.ofInstant(
-                            resultSet.getTimestamp(columnNumber).toInstant(),
-                            java.time.ZoneId.systemDefault());
+                final java.sql.Timestamp ts = resultSet.getTimestamp(columnNumber);
+                value = ts != null ? java.time.OffsetDateTime.ofInstant(ts.toInstant(), java.time.ZoneId.systemDefault())
+                        : platform.getConversionManager().getDefaultNullValue(ClassConstants.TIME_ODATETIME);
             }
         } else if (fieldType == ClassConstants.BIGINTEGER) {
             value = resultSet.getBigDecimal(columnNumber);
