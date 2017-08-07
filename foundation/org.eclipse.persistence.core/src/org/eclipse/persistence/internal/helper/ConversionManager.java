@@ -731,6 +731,10 @@ public class ConversionManager extends CoreConversionManager implements Serializ
             return Helper.timeFromCalendar((Calendar)sourceObject);
         } else if (sourceObject instanceof Long) {
             time = Helper.timeFromLong((Long)sourceObject);
+        } else if (sourceObject.getClass() == ClassConstants.TIME_LTIME) {
+            time = java.sql.Time.valueOf((java.time.LocalTime) sourceObject);
+        } else if (sourceObject.getClass() == ClassConstants.TIME_OTIME) {
+            time = java.sql.Time.valueOf(((java.time.OffsetTime) sourceObject).toLocalTime());
         } else {
             throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.TIME);
         }
