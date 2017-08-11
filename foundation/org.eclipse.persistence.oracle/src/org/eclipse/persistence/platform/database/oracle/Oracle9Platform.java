@@ -351,7 +351,6 @@ public class Oracle9Platform extends Oracle8Platform {
         classTypeMapping.put("TIMESTAMP", ORACLE_SQL_TIMESTAMP);
         classTypeMapping.put("TIMESTAMP WITH TIME ZONE", ORACLE_SQL_TIMESTAMPTZ);
         classTypeMapping.put("TIMESTAMP WITH LOCAL TIME ZONE", ORACLE_SQL_TIMESTAMPLTZ);
-        classTypeMapping.put("DATE", java.sql.Timestamp.class);
         return classTypeMapping;
     }
 
