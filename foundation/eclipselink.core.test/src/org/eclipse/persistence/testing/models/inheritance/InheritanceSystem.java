@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -117,14 +117,7 @@ public class InheritanceSystem extends TestSystem {
             try {
                 if (session.getPlatform().supportsUniqueKeyConstraints()
                         && !session.getPlatform().requiresUniqueConstraintCreationOnTableCreate()) {
-                    if (session.getPlatform().isMySQL()) {
-                        session.executeNonSelectingSQL("Alter TABLE PROJECT_WORKER_BATCH DROP FOREIGN KEY PROJECT_WORKER_BATCH_HD");
-                        session.executeNonSelectingSQL("Alter TABLE PROJECT_BATCH DROP FOREIGN KEY PROJECT_WORKER_BATCH_FK");
-                        session.executeNonSelectingSQL("Alter TABLE ALLIGATOR DROP FOREIGN KEY FK_ALLIGATOR_VICTIM_ID");
-                        session.executeNonSelectingSQL("Alter TABLE PERSON2 DROP FOREIGN KEY PERSON2_PERSON2_FRND");
-                        session.executeNonSelectingSQL("Alter TABLE PERSON2 DROP FOREIGN KEY PERSON2_PERSON2_REP");
-                        session.executeNonSelectingSQL("Alter TABLE PERSON2 DROP FOREIGN KEY PERSON2_PERSON2_BS");
-                    } else {
+                    if (!session.getPlatform().isMySQL()) {
                         session.executeNonSelectingSQL("Alter TABLE PROJECT_WORKER_BATCH DROP CONSTRAINT PROJECT_WORKER_BATCH_HD");
                         session.executeNonSelectingSQL("Alter TABLE PROJECT_BATCH DROP CONSTRAINT PROJECT_WORKER_BATCH_FK");
                         session.executeNonSelectingSQL("Alter TABLE ALLIGATOR DROP CONSTRAINT FK_ALLIGATOR_VICTIM_ID");

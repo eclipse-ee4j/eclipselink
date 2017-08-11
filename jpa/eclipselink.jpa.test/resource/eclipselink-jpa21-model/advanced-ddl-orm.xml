@@ -23,16 +23,16 @@
                 <temporal>DATE</temporal>
                 <collection-table  name="JPA21_XML_DDL_RUNNER_ACS">
                     <join-column name="ATHLETE_ID"/>
-                    <foreign-key name="XMLAccomplistments_Foreign_Key" foreign-key-definition="FOREIGN KEY (ATHLETE_ID) REFERENCES JPA21_XML_DDL_RUNNER (ID)"/>
+                    <foreign-key name="FK_JPA21_XMLAccomplishments" foreign-key-definition="FOREIGN KEY (ATHLETE_ID) REFERENCES JPA21_XML_DDL_RUNNER (ID)"/>
                 </collection-table>
             </element-collection>
             <element-collection name="endorsements">
                 <map-key-join-column name="ENDORSER_ID"/>
-                <map-key-foreign-key name="XMLEndorsements_Key_Foreign_Key" foreign-key-definition="FOREIGN KEY (ENDORSER_ID) REFERENCES JPA_XML_DDL_ENDORSER (ID)"/>
+                <map-key-foreign-key name="FK_JPA21_XMLEndorsements_Key" foreign-key-definition="FOREIGN KEY (ENDORSER_ID) REFERENCES JPA21_XML_DDL_ENDORSER (ID)"/>
                 <column name="ENDORSEMENT"/>
                 <collection-table name="JPA21_XML_DDL_ENDORSEMENTS">
                     <join-column name="ATHLETE_ID"/>
-                    <foreign-key name="XMLEndorsements_Foreign_Key" foreign-key-definition="FOREIGN KEY (ATHLETE_ID) REFERENCES JPA21_XML_DDL_RUNNER (ID)"/>
+                    <foreign-key name="FK_JPA21_XMLEndorsements" foreign-key-definition="FOREIGN KEY (ATHLETE_ID) REFERENCES JPA21_XML_DDL_RUNNER (ID)"/>
                 </collection-table>
             </element-collection>
         </attributes>
@@ -43,7 +43,7 @@
             <id name="id">
                 <generated-value strategy="TABLE" generator="XML_UTENSIL_ID_GENERATOR"/>
                 <table-generator name="XML_UTENSIL_ID_GENERATOR" table="JPA21_XML_PK_SEQ" pk-column-name="XML_SEQ_NAME" value-column-name="XML_SEQ_COUNT"  pk-column-value="XML_UTENSIL_SEQ">
-                    <index name="XML_TABLE_GENERATOR_INDEX" column-list="XML_SEQ_COUNT,XML_SEQ_NAME"/>
+                    <index name="INDEX_JPA21_XML_TABLE_GENERATOR" column-list="XML_SEQ_COUNT,XML_SEQ_NAME"/>
                 </table-generator>
             </id>
             <basic name="serialTag">
@@ -53,7 +53,7 @@
     </mapped-superclass>
 
     <entity name="XMLRunner" class="Runner">
-        <table name="JPA21_XML_DLL_RUNNER"/>
+        <table name="JPA21_XML_DDL_RUNNER"/>
         <inheritance strategy="JOINED"/>
         <convert attribute-name="accomplishments.key" converter="org.eclipse.persistence.testing.models.jpa21.advanced.converters.AccomplishmentConverter"/>
         <convert attribute-name="accomplishments" converter="org.eclipse.persistence.testing.models.jpa21.advanced.converters.DateConverter"/>
@@ -66,15 +66,15 @@
                 <convert converter="org.eclipse.persistence.testing.models.jpa21.advanced.converters.GenderConverter"/>
             </basic>
             <one-to-many name="shoes" mapped-by="runner">
-                <map-key-join-column name="TAG_IG"/>
-                <map-key-foreign-key name="XMLRunner_ShoeTag_Foreign_Key" foreign-key-definition="FOREIGN KEY (TAG_ID) REFERENCES JPA21_XML_DDL_SHOE_TAG (ID)"/>
+                <map-key-join-column name="TAG_ID"/>
+                <map-key-foreign-key name="FK_JPA21_XMLRunner_ShoeTag" foreign-key-definition="FOREIGN KEY (TAG_ID) REFERENCES JPA21_XML_DDL_SHOE_TAG (ID)"/>
             </one-to-many>
             <many-to-many name="races">
-                <join-table name="DDL_RUNNERS_RACES">
+                <join-table name="JPA21_XML_DDL_RUNNERS_RACES">
                     <join-column name="RUNNER_ID" referenced-column-name="ID"/>
-                    <foreign-key name="XMLRunners_Races_Foreign_Key" foreign-key-definition="FOREIGN KEY (RUNNER_ID) REFERENCES JPA21_XML_DDL_RUNNER (ID)"/>
+                    <foreign-key name="FK_JPA21_XMLRunners_Races" foreign-key-definition="FOREIGN KEY (RUNNER_ID) REFERENCES JPA21_XML_DDL_RUNNER (ID)"/>
                     <inverse-join-column name="RACE_ID" referenced-column-name="ID"/>
-                    <inverse-foreign-key name="XMLRunners_Races_Inverse_Foreign_Key" foreign-key-definition="FOREIGN KEY (RACE_ID) REFERENCES JPA21_XML_DDL_RACE (ID)"/>
+                    <inverse-foreign-key name="FK_JPA21_XMLRunners_Races_Inverse" foreign-key-definition="FOREIGN KEY (RACE_ID) REFERENCES JPA21_XML_DDL_RACE (ID)"/>
                 </join-table>
             </many-to-many>
             <!-- Currently a convert can not be specified with a column as a -->
@@ -86,7 +86,7 @@
                 <convert converter="org.eclipse.persistence.testing.models.jpa21.advanced.converters.TimeConverter"/>
                 <collection-table name="JPA21_XML_DDL_RUNNER_PBS">
                     <join-column name="RUNNER_ID"/>
-                    <foreign-key name="XML_Runner_PBS_Foreign_Key" foreign-key-definition="FOREIGN KEY (RUNNER_ID) REFERENCES JPA21_XML_DDL_RUNNER (ID)"/>
+                    <foreign-key name="FK_JPA21_XML_Runner_PBS" foreign-key-definition="FOREIGN KEY (RUNNER_ID) REFERENCES JPA21_XML_DDL_RUNNER (ID)"/>
                 </collection-table>
             </element-collection -->
             <embedded name="info">
@@ -100,7 +100,7 @@
     <entity name="XMLSprinter" class="Sprinter">
         <table name="JPA21_XML_DDL_SPRINTER"/>
         <primary-key-join-column name="SPRINTER_ID" referenced-column-name="ID"/>
-        <primary-key-foreign-key name="XML_Sprinter_Foreign_Key" foreign-key-definition="FOREIGN KEY (SPRINTER_ID) REFERENCES JPA21_XML_DDL_RUNNER (ID)"/>
+        <primary-key-foreign-key name="FK_JPA21_XML_Sprinter" foreign-key-definition="FOREIGN KEY (SPRINTER_ID) REFERENCES JPA21_XML_DDL_RUNNER (ID)"/>
     </entity>
 
     <entity name="XMLShoe" class="Shoe">
@@ -111,7 +111,7 @@
             </id>
             <many-to-one name="runner">
                 <join-column name="RUNNER_ID"/>
-                <foreign-key name="XMLShoes_Runner_Foreign_Key" foreign-key-definition="FOREIGN KEY (RUNNER_ID) REFERENCES JPA21_XML_DDL_RUNNER (ID)"/>
+                <foreign-key name="FK_JPA21_XMLShoes_Runner" foreign-key-definition="FOREIGN KEY (RUNNER_ID) REFERENCES JPA21_XML_DDL_RUNNER (ID)"/>
             </many-to-one>
         </attributes>
     </entity>
@@ -159,7 +159,7 @@
             <basic name="name"/>
             <many-to-one name="race">
                 <join-column name="RACE_ID"/>
-                <foreign-key name="XMLOrganizer_Race_Foreign_Key" foreign-key-definition="FOREIGN KEY (RACE_ID) REFERENCES JPA21_XML_DDL_RACE (ID)"/>
+                <foreign-key name="FK_JPA21_XMLOrganizer_Race" foreign-key-definition="FOREIGN KEY (RACE_ID) REFERENCES JPA21_XML_DDL_RACE (ID)"/>
             </many-to-one>
         </attributes>
     </entity>
@@ -170,7 +170,7 @@
             <index column-list="STYLE, COLOR"/>
         </table>
         <secondary-table name="JPA21_XML_FORK_COSTS">
-            <index name="XML_FORK_COSTS_INDEX" column-list="COST, RENTAL_COST"/>
+            <index name="INDEX_JPA21_XML_FORK_COSTS" column-list="COST, RENTAL_COST"/>
         </secondary-table>
         <attributes>
             <basic name="price">

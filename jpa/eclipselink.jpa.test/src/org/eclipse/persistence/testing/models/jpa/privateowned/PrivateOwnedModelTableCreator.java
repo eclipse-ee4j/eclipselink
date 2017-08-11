@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -448,14 +448,7 @@ public class PrivateOwnedModelTableCreator extends TableCreator {
         if (session.getPlatform().supportsUniqueKeyConstraints()
                 && !session.getPlatform().requiresUniqueConstraintCreationOnTableCreate()) {
             try {
-                if (session.getPlatform().isMySQL()) {
-                    session.executeNonSelectingSQL("Alter table CMP3_PO_SPARK_PLUG drop foreign key CMP3_PO_SPARK_PLUG_ENGINE_ID");
-                    session.executeNonSelectingSQL("Alter table CMP3_PO_VEHICLE drop foreign key FK_CMP3_PO_VEHICLE_ENGINE_ID");
-                    session.executeNonSelectingSQL("Alter table CMP3_PO_VEHICLE drop foreign key FK_CMP3_PO_VEHICLE_CHASSIS_ID");
-                    session.executeNonSelectingSQL("Alter table CMP3_PO_WHEEL drop foreign key FK_CMP3_PO_WHEEL_WHEELRIM_ID");
-                    session.executeNonSelectingSQL("Alter table CMP3_PO_WHEEL drop foreign key FK_CMP3_PO_WHEEL_CHASSIS_ID");
-                    session.executeNonSelectingSQL("Alter table CMP3_PO_WHEEL_NUT drop foreign key FK_CMP3_PO_WHEEL_NUT_WHEEL_ID");
-                } else {
+                if (!session.getPlatform().isMySQL()) {
                     session.executeNonSelectingSQL("Alter table CMP3_PO_SPARK_PLUG drop constraint CMP3_PO_SPARK_PLUG_ENGINE_ID");
                     session.executeNonSelectingSQL("Alter table CMP3_PO_VEHICLE drop constraint FK_CMP3_PO_VEHICLE_ENGINE_ID");
                     session.executeNonSelectingSQL("Alter table CMP3_PO_VEHICLE drop constraint FK_CMP3_PO_VEHICLE_CHASSIS_ID");

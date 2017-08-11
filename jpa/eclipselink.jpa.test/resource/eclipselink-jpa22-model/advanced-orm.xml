@@ -361,7 +361,7 @@
                 </convert>
             </basic>
             <one-to-many name="shoes" mapped-by="runner">
-                <map-key-join-column name="TAG_IG"/>
+                <map-key-join-column name="TAG_ID"/>
             </one-to-many>
             <many-to-many name="races">
                 <join-table name="RUNNERS_RACES">

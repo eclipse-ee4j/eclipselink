@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -2459,9 +2459,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         try {
             if (session.getPlatform().supportsUniqueKeyConstraints()
                     && !session.getPlatform().requiresUniqueConstraintCreationOnTableCreate()) {
-                if (session.getPlatform().isMySQL()) {
-                    session.executeNonSelectingSQL("Alter table CMP3_ENGINEER_LAPTOP drop foreign key CMP3_ENGINEER_LAPTOP_FK1");
-                } else {
+                if (!session.getPlatform().isMySQL()) {
                     session.executeNonSelectingSQL("Alter table CMP3_ENGINEER_LAPTOP drop constraint CMP3_ENGINEER_LAPTOP_FK1");
                 }
             }

@@ -99,7 +99,7 @@ public class XMLForeignKeyTestSuite extends JUnitTestCase {
         ClassDescriptor sprinterDescriptor = getPersistenceUnitServerSession().getDescriptor(Sprinter.class);
         DatabaseTable table = sprinterDescriptor.getTable("JPA22_XML_DDL_SPRINTER");
 
-        assertForeignKeyConstraint("XML_Sprinter_Foreign_Key", "FOREIGN KEY (SPRINTER_ID) REFERENCES JPA22_XML_DDL_RUNNER (ID)", table);
+        assertForeignKeyConstraint("FK_JPA22_XML_Sprinter", "FOREIGN KEY (SPRINTER_ID) REFERENCES JPA22_XML_DDL_RUNNER (ID)", table);
     }
 
     /**
@@ -110,7 +110,7 @@ public class XMLForeignKeyTestSuite extends JUnitTestCase {
         DirectCollectionMapping mapping = (DirectCollectionMapping) runnerDescriptor.getMappingForAttributeName("personalBests");
         DatabaseTable table = mapping.getReferenceTable();
 
-        assertForeignKeyConstraint("XML_Runner_PBS_Foreign_Key", "FOREIGN KEY (RUNNER_ID) REFERENCES JPA22_XML_DDL_RUNNER (ID)", table);
+        assertForeignKeyConstraint("FK_JPA22_XML_Runner_PBS", "FOREIGN KEY (RUNNER_ID) REFERENCES JPA22_XML_DDL_RUNNER (ID)", table);
     }
 
     /**
@@ -121,8 +121,8 @@ public class XMLForeignKeyTestSuite extends JUnitTestCase {
         ManyToManyMapping mapping = (ManyToManyMapping) runnerDescriptor.getMappingForAttributeName("races");
         DatabaseTable table = mapping.getRelationTable();
 
-        assertForeignKeyConstraint("XMLRunners_Races_Foreign_Key", "FOREIGN KEY (RUNNER_ID) REFERENCES JPA22_XML_DDL_RUNNER (ID)", table);
-        assertForeignKeyConstraint("XMLRunners_Races_Inverse_Foreign_Key", "FOREIGN KEY (RACE_ID) REFERENCES JPA22_XML_DDL_RACE (ID)", table);
+        assertForeignKeyConstraint("FK_JPA22_XMLRunners_Races", "FOREIGN KEY (RUNNER_ID) REFERENCES JPA22_XML_DDL_RUNNER (ID)", table);
+        assertForeignKeyConstraint("FK_JPA22_XMLRunners_Races_Inverse", "FOREIGN KEY (RACE_ID) REFERENCES JPA22_XML_DDL_RACE (ID)", table);
     }
 
     /**
@@ -134,7 +134,7 @@ public class XMLForeignKeyTestSuite extends JUnitTestCase {
         OneToOneMapping keyMapping = (OneToOneMapping) ((MappedKeyMapContainerPolicy) mapping.getContainerPolicy()).getKeyMapping();
         DatabaseTable table = keyMapping.getForeignKeyFields().get(0).getTable();
 
-        assertForeignKeyConstraint("XMLRunner_ShoeTag_Foreign_Key", "FOREIGN KEY (TAG_ID) REFERENCES JPA22_XML_DDL_SHOE_TAG (ID)", table);
+        assertForeignKeyConstraint("FK_JPA22_XMLRunner_ShoeTag", "FOREIGN KEY (TAG_ID) REFERENCES JPA22_XML_DDL_SHOE_TAG (ID)", table);
     }
 
     /**
@@ -145,13 +145,13 @@ public class XMLForeignKeyTestSuite extends JUnitTestCase {
         OneToOneMapping mapping = (OneToOneMapping) shoeDescriptor.getMappingForAttributeName("runner");
         DatabaseTable table = mapping.getForeignKeyFields().get(0).getTable();
 
-        assertForeignKeyConstraint("XMLShoes_Runner_Foreign_Key", "FOREIGN KEY (RUNNER_ID) REFERENCES JPA22_XML_DDL_RUNNER (ID)", table);
+        assertForeignKeyConstraint("FK_JPA22_XMLShoes_Runner", "FOREIGN KEY (RUNNER_ID) REFERENCES JPA22_XML_DDL_RUNNER (ID)", table);
 
         ClassDescriptor organizerDescriptor = getPersistenceUnitServerSession().getDescriptor(Organizer.class);
         mapping = (OneToOneMapping) organizerDescriptor.getMappingForAttributeName("race");
         table = mapping.getForeignKeyFields().get(0).getTable();
 
-        assertForeignKeyConstraint("XMLOrganizer_Race_Foreign_Key", "FOREIGN KEY (RACE_ID) REFERENCES JPA22_XML_DDL_RACE (ID)", table);
+        assertForeignKeyConstraint("FK_JPA22_XMLOrganizer_Race", "FOREIGN KEY (RACE_ID) REFERENCES JPA22_XML_DDL_RACE (ID)", table);
     }
 
     /**
@@ -163,16 +163,16 @@ public class XMLForeignKeyTestSuite extends JUnitTestCase {
         OneToOneMapping keyMapping = (OneToOneMapping) ((MappedKeyMapContainerPolicy) mapping.getContainerPolicy()).getKeyMapping();
         DatabaseTable table = mapping.getReferenceTable();
 
-        assertForeignKeyConstraint("XMLEndorsements_Foreign_Key", "FOREIGN KEY (ATHLETE_ID) REFERENCES JPA22_XML_DDL_RUNNER (ID)", table);
+        assertForeignKeyConstraint("FK_JPA22_XMLEndorsements", "FOREIGN KEY (ATHLETE_ID) REFERENCES JPA22_XML_DDL_RUNNER (ID)", table);
 
         table = keyMapping.getForeignKeyFields().get(0).getTable();
 
-        assertForeignKeyConstraint("XMLEndorsements_Key_Foreign_Key", "FOREIGN KEY (ENDORSER_ID) REFERENCES JPA_XML_DDL_ENDORSER (ID)", table);
+        assertForeignKeyConstraint("FK_JPA22_XMLEndorsements_Key", "FOREIGN KEY (ENDORSER_ID) REFERENCES JPA22_XML_DDL_ENDORSER (ID)", table);
 
         mapping = (DirectMapMapping) runnerDescriptor.getMappingForAttributeName("accomplishments");
         table = mapping.getReferenceTable();
 
-        assertForeignKeyConstraint("XMLAccomplistments_Foreign_Key", "FOREIGN KEY (ATHLETE_ID) REFERENCES JPA22_XML_DDL_RUNNER (ID)", table);
+        assertForeignKeyConstraint("FK_JPA22_XMLAccomplishments", "FOREIGN KEY (ATHLETE_ID) REFERENCES JPA22_XML_DDL_RUNNER (ID)", table);
     }
 
     /**

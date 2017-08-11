@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -47,7 +47,7 @@ public class Runner extends Athlete {
         name="JPA21_XML_DDL_RUNNER_PBS",
         joinColumns=@JoinColumn(name="RUNNER_ID"),
         foreignKey=@ForeignKey(
-                name="XML_Runner_PBS_Foreign_Key",
+                name="FK_JPA21_XML_Runner_PBS",
                 foreignKeyDefinition="FOREIGN KEY (RUNNER_ID) REFERENCES JPA21_XML_DDL_RUNNER (ID)")
     )
     @Converts({

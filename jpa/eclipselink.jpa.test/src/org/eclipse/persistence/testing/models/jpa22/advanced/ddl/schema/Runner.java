@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2017  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -52,7 +52,7 @@ import static javax.persistence.InheritanceType.JOINED;
 
 @Entity
 @Inheritance(strategy=JOINED)
-@Table(name="JPA21_DDL_RUNNER", schema="RUNNER")
+@Table(name="JPA22_DDL_RUNNER", schema="RUNNER")
 @Convert(attributeName = "accomplishments.key", converter = AccomplishmentConverter.class)
 @Convert(attributeName = "accomplishments", converter = DateConverter.class)
 @Convert(attributeName = "age", converter = AgeConverter.class)
@@ -75,7 +75,7 @@ public class Runner extends Athlete {
         name="TAG_ID",
         foreignKey=@ForeignKey(
             name="Runner_ShoeTag_Foreign_Key",
-            foreignKeyDefinition="FOREIGN KEY (TAG_ID) REFERENCES JPA21_DDL_SHOE_TAG (ID)"
+            foreignKeyDefinition="FOREIGN KEY (TAG_ID) REFERENCES JPA22_DDL_SHOE_TAG (ID)"
         )
     )
     protected Map<ShoeTag, Shoe> shoes;
