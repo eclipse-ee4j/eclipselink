@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -19,6 +19,8 @@
  *       - 462103 : SQL for Stored Procedure named parameter with DB2 generated with incorrect marker
  *     04/15/2016 - Dalia Abo Sheasha
  *       - 491824: Setting lock timeout to 0 issues a NOWAIT causing an error in DB2
+ *     08/22/2017 - Will Dazey
+ *       - 521037: DB2 default schema is doubled for sequence queries
  *****************************************************************************/
 package org.eclipse.persistence.platform.database;
 
@@ -790,8 +792,8 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
      * INTERNAL: DB2 added SEQUENCE support as of (I believe) v8.
      */
     @Override
-    public ValueReadQuery buildSelectQueryForSequenceObject(String seqName, Integer size) {
-        return new ValueReadQuery("VALUES(NEXT VALUE FOR " + getQualifiedName(seqName) + ")");
+    public ValueReadQuery buildSelectQueryForSequenceObject(String qualifiedSeqName, Integer size) {
+        return new ValueReadQuery("VALUES(NEXT VALUE FOR " + qualifiedSeqName + ")");
     }
 
     /**
