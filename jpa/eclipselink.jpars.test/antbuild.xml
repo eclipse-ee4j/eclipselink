@@ -200,17 +200,17 @@
         <selectbundle basename="org.eclipse.persistence.antlr" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
                       criterion="[2.0.0,4.0.0)" property="antlr.lib" includepath="true"/>
         <selectbundle basename="org.eclipse.persistence.jpa.jpql" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
-                      criterion="[2.0.0,3.0.0)" property="hermes.lib" includepath="true"/>
+                      criterion="[2.0.0,4.0.0)" property="hermes.lib" includepath="true"/>
         <selectbundle basename="org.eclipse.persistence.core" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
-                      criterion="[2.0.0,3.0.0)" property="core.lib" includepath="true"/>
+                      criterion="[2.0.0,4.0.0)" property="core.lib" includepath="true"/>
         <selectbundle basename="org.eclipse.persistence.moxy" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
-                      criterion="[2.0.0,3.0.0)" property="moxy.lib" includepath="true"/>
+                      criterion="[2.0.0,4.0.0)" property="moxy.lib" includepath="true"/>
         <selectbundle basename="org.eclipse.persistence.jpa" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
-                      criterion="[2.0.0,3.0.0)" property="jpa.lib" includepath="true"/>
+                      criterion="[2.0.0,4.0.0)" property="jpa.lib" includepath="true"/>
         <selectbundle basename="org.eclipse.persistence.jpars" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
-                      criterion="[2.0.0,3.0.0)" property="jpars.lib" includepath="true"/>
+                      criterion="[2.0.0,4.0.0)" property="jpars.lib" includepath="true"/>
         <selectbundle basename="org.eclipse.persistence.dbws" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
-                      criterion="[2.0.0,3.0.0)" property="dbws.lib" includepath="true"/>
+                      criterion="[2.0.0,4.0.0)" property="dbws.lib" includepath="true"/>
 
         <available file="${antlr.lib}"        property="antlr.bundle.exist"/>
         <available file="${hermes.lib}"       property="hermes.bundle.exist"/>
