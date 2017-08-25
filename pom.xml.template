@@ -7,6 +7,10 @@
   <packaging>jar</packaging>
   <name>@artifactName@</name>
   <description>EclipseLink build based upon Git transaction @git.hash@</description>
+  <properties>
+        <timestamp>@timestamp@</timestamp>
+        <maven.build.timestamp.format>dd-MM-yyyy HH:mm</maven.build.timestamp.format>
+  </properties>
   <url>http://www.eclipse.org/eclipselink</url>
   <organization>
     <name>Eclipse.org - EclipseLink Project</name>

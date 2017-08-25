@@ -124,8 +124,13 @@
             <format property="build.date" pattern="yyyyMMdd"/>
         </tstamp>
 
+        <tstamp>
+            <format property="build.timestamp" pattern="dd-MM-yyyy HH:mm"/>
+        </tstamp>
+
         <fail message="Cannot upload to Maven without a release.version defined!" unless="release.version"/>
         <fail message="Cannot upload to Maven without a build.date defined!"      unless="build.date"/>
+        <fail message="Cannot upload to Maven without a build.timestamp defined!" unless="build.timestamp"/>
         <fail message="Cannot upload to Maven without a build.type defined!"      unless="build.type"/>
         <fail message="Cannot upload to Maven without 'git.hash' defined!"        unless="git.hash"/>
 
@@ -136,7 +141,7 @@
 
         <!-- Set maven.version appropriately depending upon ${build.type}.           -->
         <!--    variable should only be used for maven version element in POM.       -->
-        <condition property="maven.version" value="${release.version}.WAS-${build.date}-${git.hash}"
+        <condition property="maven.version" value="${release.version}.WAS-${git.hash}"
                    else="${release.version}.WAS-${build.type}">
             <equals arg1="${build.type}" arg2="RELEASE"/>
         </condition>
@@ -390,6 +395,7 @@
             <param name="artifact"        value="${maven.2.common.plugins.dir}/${hermes.prefix}_${hermes.version}.jar"/>
             <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/${hermes.prefix}.source_${hermes.version}.jar"/>
             <param name="artifactName"    value="${hermes.name}"/>
+            <param name="timestamp"       value="${build.timestamp}"/>
             <param name="dependencies"    value=""/>
         </antcall>
         <antcall target="upload-artifact">
@@ -399,6 +405,7 @@
             <param name="artifact"        value="${maven.2.common.plugins.dir}/${antlr.prefix}_${antlr.version}.jar"/>
             <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/${antlr.prefix}.source_${antlr.version}.jar"/>
             <param name="artifactName"    value="${antlr.name}"/>
+            <param name="timestamp"       value="${build.timestamp}"/>
             <param name="dependencies"    value=""/>
         </antcall>
         <antcall target="upload-artifact">
@@ -408,6 +415,7 @@
             <param name="artifact"        value="${maven.2.common.plugins.dir}/${asm.prefix}_${asm.version}.jar"/>
             <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/${asm.prefix}.source_${asm.version}.jar"/>
             <param name="artifactName"    value="${asm.name}"/>
+            <param name="timestamp"       value="${build.timestamp}"/>
             <param name="dependencies"    value=""/>
         </antcall>
         <antcall target="upload-artifact">
@@ -417,6 +425,7 @@
             <param name="artifact"        value="${maven.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
             <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/org.eclipse.persistence.core.source_${version.string}.jar"/>
             <param name="artifactName"    value="EclipseLink Core"/>
+            <param name="timestamp"       value="${build.timestamp}"/>
             <param name="dependencies"    value="${core.dependencies}"/>
         </antcall>
 <!--        <antcall target="upload-artifact">
@@ -455,6 +464,7 @@
             <param name="artifact"        value="${maven.2.common.plugins.dir}/org.eclipse.persistence.jpa_${version.string}.jar"/>
             <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/org.eclipse.persistence.jpa.source_${version.string}.jar"/>
             <param name="artifactName"    value="EclipseLink JPA"/>
+            <param name="timestamp"       value="${build.timestamp}"/>
             <param name="dependencies"    value="${jpa.dependencies}"/>
         </antcall>
 <!--        <antcall target="upload-artifact-with-javadoc">
@@ -474,6 +484,7 @@
             <param name="artifact"        value="${maven.2.common.plugins.dir}/org.eclipse.persistence.jpa.modelgen_${version.string}.jar"/>
             <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/org.eclipse.persistence.jpa.modelgen.source_${version.string}.jar"/>
             <param name="artifactName"    value="EclipseLink JPA Modelgen (non-OSGi)"/>
+            <param name="timestamp"       value="${build.timestamp}"/>
             <param name="dependencies"    value="${modelgen.dependencies}"/>
         </antcall>
 <!--        <antcall target="upload-artifact">
@@ -533,6 +544,7 @@
             <filter token="git.hash"     value="${git.hash}"/>
             <filter token="artifactId"   value="${artifactId}"/>
             <filter token="artifactName" value="${artifactName}"/>
+            <filter token="timestamp"    value="${timestamp}"/>
             <filter token="dependencies" value="${dependencies}"/>
            </filterset>
         </copy>
