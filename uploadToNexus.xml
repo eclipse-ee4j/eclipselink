@@ -547,7 +547,7 @@
     <!--<target name="upload-artifact" depends="prepare-pom, ua-snapshot, ua-staging, us-staging"> -->
     <target name="upload-artifact" depends="prepare-pom, ua-snapshot, ua-staging">
         <!-- cleanup -->
-        <!-- <delete file="pom.xml"/> -->
+        <delete file="pom.xml"/>
     </target>
     <target name="ua-snapshot" unless="sign">
         <!-- Install provider for https protocol -->
@@ -580,10 +580,6 @@
     <!-- Staging targets -->
     <target name="ua-staging" if="sign">
         <!-- sign and deploy the main artifact -->
-        <echo message="Deploying artifact: ${artifact}"/>
-        <echo message="stagingURL: ${stagingURL}"/>
-        <echo message="stagingId: ${stagingId}"/>
-        <echo message="maven.build.location: ${maven.build.location}"/>
         <artifact:mvn>
             <arg value="org.apache.maven.plugins:maven-gpg-plugin:${gpg.plugin.version}:sign-and-deploy-file"/>
             <arg value="-Durl=${stagingURL}"/>
