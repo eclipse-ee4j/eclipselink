@@ -389,7 +389,7 @@
             <param name="dependencies"    value="${eclipselink.dependencies}"/>
         </antcall> -->
         <antcall target="upload-artifact">
-            <param name="groupId"         value="org.eclipse.persistence"/>
+            <param name="groupId"         value="com.ibm.ws.org.eclipse.persistence"/>
             <param name="artifactId"      value="${hermes.prefix}"/>
             <param name="artifactVersion" value="${maven.version}"/>
             <param name="artifact"        value="${maven.2.common.plugins.dir}/${hermes.prefix}_${hermes.version}.jar"/>
@@ -399,7 +399,7 @@
             <param name="dependencies"    value=""/>
         </antcall>
         <antcall target="upload-artifact">
-            <param name="groupId"         value="org.eclipse.persistence"/>
+            <param name="groupId"         value="com.ibm.ws.org.eclipse.persistence"/>
             <param name="artifactId"      value="${antlr.prefix}"/>
             <param name="artifactVersion" value="${maven.version}"/>
             <param name="artifact"        value="${maven.2.common.plugins.dir}/${antlr.prefix}_${antlr.version}.jar"/>
@@ -409,7 +409,7 @@
             <param name="dependencies"    value=""/>
         </antcall>
         <antcall target="upload-artifact">
-            <param name="groupId"         value="org.eclipse.persistence"/>
+            <param name="groupId"         value="com.ibm.ws.org.eclipse.persistence"/>
             <param name="artifactId"      value="${asm.prefix}"/>
             <param name="artifactVersion" value="${maven.version}"/>
             <param name="artifact"        value="${maven.2.common.plugins.dir}/${asm.prefix}_${asm.version}.jar"/>
@@ -419,7 +419,7 @@
             <param name="dependencies"    value=""/>
         </antcall>
         <antcall target="upload-artifact">
-            <param name="groupId"         value="org.eclipse.persistence"/>
+            <param name="groupId"         value="com.ibm.ws.org.eclipse.persistence"/>
             <param name="artifactId"      value="org.eclipse.persistence.core"/>
             <param name="artifactVersion" value="${maven.version}"/>
             <param name="artifact"        value="${maven.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
@@ -458,7 +458,7 @@
             <param name="dependencies"    value="${nosql.dependencies}"/>
         </antcall> -->
         <antcall target="upload-artifact">
-            <param name="groupId"         value="org.eclipse.persistence"/>
+            <param name="groupId"         value="com.ibm.ws.org.eclipse.persistence"/>
             <param name="artifactId"      value="org.eclipse.persistence.jpa"/>
             <param name="artifactVersion" value="${maven.version}"/>
             <param name="artifact"        value="${maven.2.common.plugins.dir}/org.eclipse.persistence.jpa_${version.string}.jar"/>
@@ -478,7 +478,7 @@
             <param name="dependencies"    value=""/>
         </antcall> -->
         <antcall target="upload-artifact">
-            <param name="groupId"         value="org.eclipse.persistence"/>
+            <param name="groupId"         value="com.ibm.ws.org.eclipse.persistence"/>
             <param name="artifactId"      value="org.eclipse.persistence.jpa.modelgen.processor"/>
             <param name="artifactVersion" value="${maven.version}"/>
             <param name="artifact"        value="${maven.2.common.plugins.dir}/org.eclipse.persistence.jpa.modelgen_${version.string}.jar"/>
@@ -560,6 +560,10 @@
     <target name="upload-artifact" depends="prepare-pom, ua-snapshot, ua-staging">
         <!-- cleanup -->
         <delete file="pom.xml"/>
+        <!-- delete all gpg generated files -->
+        <delete>
+            <fileset dir="." includes="**/*.asc"/>
+        </delete>
     </target>
     <target name="ua-snapshot" unless="sign">
         <!-- Install provider for https protocol -->
