@@ -3,4 +3,4 @@ Bundle-ManifestVersion: 2
 Bundle-Name: EclipseLink Oracle Extensions Source
 Bundle-SymbolicName: org.eclipse.persistence.oracle.source
 Bundle-Version: 2.7.1
-Eclipse-SourceBundle: org.eclipse.persistence.oracle;version="2.7.1"
+Eclipse-SourceBundle: org.eclipse.persistence.oracle;version="2.7.1.WAS"
