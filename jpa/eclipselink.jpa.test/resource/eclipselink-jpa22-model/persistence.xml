@@ -1,8 +1,8 @@
 <persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence
-    http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
-  version="2.1">
+    http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd"
+  version="2.2">
     <!-- This is for default persistence unit -->
     <persistence-unit name="MulitPU-1" transaction-type="RESOURCE_LOCAL">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
