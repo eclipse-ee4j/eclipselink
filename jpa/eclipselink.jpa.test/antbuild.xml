@@ -132,7 +132,7 @@
 
     <property name="jacocoagent.lib" value="${extensions.depend.dir}/${jacocoagent.jar}"/>
 
-    <property name="version.qualifier"     value="qualifier"/>
+    <property name="version.qualifier"     value="WAS"/>
     <property name="version.string"        value="${release.version}.${version.qualifier}"/>
 
     <property name="modelgen.jar" value="${eclipselink.modelgen.prefix}_${version.string}.jar"/>
