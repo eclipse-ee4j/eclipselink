@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle, IBM and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -21,6 +21,8 @@
  *       - 374688: JPA 2.1 Converter support
  *     02/14/2013-2.5 Guy Pelletier
  *       - 338610: JPA 2.1 Functionality for Java EE 7 (JSR-338)
+ *     09/06/2017-2.7 Jody Grassel
+ *       - 521954: Eclipselink is not able to parse ORM XML files using the 2.2 schema 
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
@@ -66,17 +68,21 @@ public class XMLEntityMappingsReader {
     public static final String ORM_2_0_NAMESPACE = "http://java.sun.com/xml/ns/persistence/orm";
     public static final String ORM_2_1_XSD = "org/eclipse/persistence/jpa/orm_2_1.xsd";
     public static final String ORM_2_1_NAMESPACE = "http://xmlns.jcp.org/xml/ns/persistence/orm";
+    public static final String ORM_2_2_XSD = "org/eclipse/persistence/jpa/orm_2_2.xsd";
+    public static final String ORM_2_2_NAMESPACE = "http://xmlns.jcp.org/xml/ns/persistence/orm";
     public static final String ECLIPSELINK_ORM_XSD = "org/eclipse/persistence/jpa/eclipselink_orm_2_5.xsd";
     public static final String ECLIPSELINK_ORM_NAMESPACE = "http://www.eclipse.org/eclipselink/xsds/persistence/orm";
 
     private static XMLContext m_orm1_0Project;
     private static XMLContext m_orm2_0Project;
     private static XMLContext m_orm2_1Project;
+    private static XMLContext m_orm2_2Project;
     private static XMLContext m_eclipseLinkOrmProject;
 
     private static Schema m_orm1_0Schema;
     private static Schema m_orm2_0Schema;
     private static Schema m_orm2_1Schema;
+    private static Schema m_orm2_2Schema;
     private static Schema m_eclipseLinkOrmSchema;
 
     /**
@@ -115,15 +121,20 @@ public class XMLEntityMappingsReader {
                 if (validateSchema) {
                     context[1] = getOrm1_0Schema();
                 }
-            } else if (contentHandler.getVersion().indexOf("2.1") == -1) {
+            } else if (contentHandler.getVersion().indexOf("2.0") != -1) {
                 context[0] = getOrm2_0Project();
                 if (validateSchema) {
                     context[1] = getOrm2_0Schema();
                 }
-            } else {
+            } else if (contentHandler.getVersion().indexOf("2.1") != -1) {
                 context[0] = getOrm2_1Project();
                 if (validateSchema) {
                     context[1] = getOrm2_1Schema();
+                }
+            } else {
+                context[0] = getOrm2_2Project();
+                if (validateSchema) {
+                    context[1] = getOrm2_2Schema();
                 }
             }
         }
@@ -228,6 +239,28 @@ public class XMLEntityMappingsReader {
 
         return m_orm2_1Schema;
     }
+    
+    /**
+     * @return the JPA 2.2 orm project.
+     */
+    public static XMLContext getOrm2_2Project() {
+        if (m_orm2_2Project == null) {
+            m_orm2_2Project = new XMLContext(new XMLEntityMappingsMappingProject(ORM_2_2_NAMESPACE, ORM_2_2_XSD));
+        }
+
+        return m_orm2_2Project;
+    }
+
+    /**
+     * @return the JPA 2.2 orm schema.
+     */
+    public static Schema getOrm2_2Schema() throws IOException, SAXException {
+        if (m_orm2_2Schema == null) {
+            m_orm2_2Schema = loadLocalSchema(ORM_2_2_XSD);
+        }
+
+        return m_orm2_2Schema;
+    }
 
     /**
      * Free the project and schema objects to avoid holding onto the memory.
@@ -237,11 +270,13 @@ public class XMLEntityMappingsReader {
         m_orm1_0Project = null;
         m_orm2_0Project = null;
         m_orm2_1Project = null;
+        m_orm2_2Project = null;
         m_eclipseLinkOrmProject = null;
 
         m_orm1_0Schema = null;
         m_orm2_0Schema = null;
         m_orm2_1Schema = null;
+        m_orm2_2Schema = null;
         m_eclipseLinkOrmSchema = null;
     }
 
