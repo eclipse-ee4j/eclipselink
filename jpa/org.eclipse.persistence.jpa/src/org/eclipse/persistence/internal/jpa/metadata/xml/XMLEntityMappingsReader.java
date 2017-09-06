@@ -266,6 +266,28 @@ public class XMLEntityMappingsReader {
     }
 
     /**
+     * @return the JPA 2.2 orm project.
+     */
+    public static XMLContext getOrm2_2Project() {
+        if (m_orm2_2Project == null) {
+            m_orm2_2Project = new XMLContext(new XMLEntityMappingsMappingProject(ORM_2_2_NAMESPACE, ORM_2_2_XSD));
+        }
+
+        return m_orm2_2Project;
+    }
+
+    /**
+     * @return the JPA 2.2 orm schema.
+     */
+    public static Schema getOrm2_2Schema() throws IOException, SAXException {
+        if (m_orm2_2Schema == null) {
+            m_orm2_2Schema = loadLocalSchema(ORM_2_2_XSD);
+        }
+
+        return m_orm2_2Schema;
+    }
+
+    /**
      * Free the project and schema objects to avoid holding onto the memory.
      * This can be done post-deployment to conserve memory.
      */

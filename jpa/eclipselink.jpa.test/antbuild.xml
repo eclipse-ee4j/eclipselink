@@ -918,7 +918,7 @@
         </jar>
         <jar jarfile="${jpatest.basedir}/${jpa22.test.jar}">
            <fileset dir="${jpatest.basedir}/classes22"
-                    includes="org/eclipse/persistence/testing/tests/**/*.class"
+                    includes="org/eclipse/persistence/testing/tests/**/*.class,org/eclipse/samples/*"
                     excludes="org/eclipse/persistence/testing/framework/**/*.class,
                              org/eclipse/persistence/testing/tests/jpa21/**/*.class"/>
         </jar>
