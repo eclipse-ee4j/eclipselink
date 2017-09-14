@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -41,6 +41,8 @@
  *       - 478331 : Added support for defining local or server as the default locale for obtaining timestamps
  *     12/03/2015-2.6 Dalia Abo Sheasha
  *       - 483582: Add the javax.persistence.sharedCache.mode property
+ *     09/14/2017-2.6 Will Dazey
+ *       - 522312: Add the eclipselink.sequencing.start-sequence-at-nextval property
  ******************************************************************************/
 package org.eclipse.persistence.config;
 
@@ -2226,6 +2228,20 @@ public class PersistenceUnitProperties {
      * If this property is set to true, then TABLE sequencing will be used instead.
      */
     public static final String SEQUENCING_SEQUENCE_DEFAULT = "eclipselink.sequencing.default-sequence-to-table";
+
+    /**
+     * By default, EclipseLink generates sequence values at (NEXTVAL - allocationSize). For instance, if NEXTVAL returns a
+     * value of 100 and the allocationSize is 50 (default), EclipseLink will begin sequence values at 100 - allocationSize.
+     * When the "<code>eclipselink.sequencing.start-sequence-at-nextval</code>" property
+     * is set to true, the ID values generated from sequences starting at NEXTVAL and proceeding forward.
+     * <p>
+     * <b>Allowed Values</b> (String)<b>:</b>
+     * <ul>
+     * <li>"<code>false</code>" - (DEFAULT) uses default behavior of next value - allocationSize
+     * <li>"<code>true</code>"
+     * </ul>
+     */
+    public static final String SEQUENCING_START_AT_NEXTVAL = "eclipselink.sequencing.start-sequence-at-nextval";
 
     /**
      * The "<code>eclipselink.session.customizer</code>" property configures a

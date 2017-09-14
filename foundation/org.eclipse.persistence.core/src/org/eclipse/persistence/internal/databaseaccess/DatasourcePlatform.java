@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     09/14/2017-2.6 Will Dazey
+ *       - 522312: Add the eclipselink.sequencing.start-sequence-at-nextval property 
  ******************************************************************************/  
 package org.eclipse.persistence.internal.databaseaccess;
 
@@ -68,6 +70,9 @@ public class DatasourcePlatform implements Platform {
     /** If the native sequence type is not supported, if table sequencing should be used. */
     protected boolean defaultNativeSequenceToTable;
 
+    /** If sequences should start at Next Value */
+    protected boolean defaultSeqenceAtNextValue;
+
     public DatasourcePlatform() {
         this.tableQualifier = "";
         this.startDelimiter = "";
@@ -86,6 +91,20 @@ public class DatasourcePlatform implements Platform {
      */
     public void setDefaultNativeSequenceToTable(boolean defaultNativeSequenceToTable) {
         this.defaultNativeSequenceToTable = defaultNativeSequenceToTable;
+    }
+
+    /**
+     * Return if the sequence generation should start at next value.
+     */
+    public boolean getDefaultSeqenceAtNextValue() {
+        return defaultSeqenceAtNextValue;
+    }
+
+    /**
+     * Set if the sequence generation should start at next value.
+     */
+    public void setDefaultSeqenceAtNextValue(boolean defaultSeqenceAtNextValue) {
+        this.defaultSeqenceAtNextValue = defaultSeqenceAtNextValue;
     }
 
     protected void addOperator(ExpressionOperator operator) {
@@ -195,7 +214,8 @@ public class DatasourcePlatform implements Platform {
         }
         datasourcePlatform.setSequences(getSequences());
         datasourcePlatform.sequencesAfterCloneCleanup();
-        datasourcePlatform.defaultNativeSequenceToTable = this.defaultNativeSequenceToTable;
+        datasourcePlatform.setDefaultNativeSequenceToTable(getDefaultNativeSequenceToTable());
+        datasourcePlatform.setDefaultSeqenceAtNextValue(getDefaultSeqenceAtNextValue());
     }
 
     /**
