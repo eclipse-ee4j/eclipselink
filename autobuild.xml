@@ -230,7 +230,7 @@
         <condition property="milestone.tag" value="${release.version}.WAS">
             <equals arg1="${build.type}" arg2="RELEASE"/>
         </condition>
-        <property name="milestone.tag" value="${release.version}-${build.type}.WAS"/>
+        <property name="milestone.tag" value="${release.version}.WAS-${build.type}"/>
         <echo message="milestone.tag        ='${milestone.tag}'"/>
 
         <!-- Now that all our overrides are complete, pull in the rest of the build properties -->
