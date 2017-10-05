@@ -1,5 +1,4 @@
-<html>
-<!--
+/***
  * ASM: a very small and fast Java bytecode manipulation framework
  * Copyright (c) 2000-2011 INRIA, France Telecom
  * All rights reserved.
@@ -27,41 +26,57 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
--->
-<body>
+ */
+package org.eclipse.persistence.internal.libraries.asm.tree;
 
-<p>
-Provides a framework for static code analysis based on the asm.tree package.
-</p>
+import java.util.List;
 
-<p>
-Basic usage:
-</p>
+import org.eclipse.persistence.internal.libraries.asm.ModuleVisitor;
 
-<pre>
-ClassReader cr = new ClassReader(bytecode);
-ClassNode cn = new ClassNode();
-cr.accept(cn, ClassReader.SKIP_DEBUG);
+/**
+ * A node that represents an opened package with its name and the module that can access to it.
+ * 
+ * @author Remi Forax
+ */
+public class ModuleOpenNode {
+    /**
+     * The package name.
+     */
+    public String packaze;
+    
+    /**
+     * The access flags (see {@link org.eclipse.persistence.internal.libraries.asm.Opcodes}).
+     * Valid values are {@code ACC_SYNTHETIC} and {@code ACC_MANDATED}.
+     */
+    public int access;
 
-List methods = cn.methods;
-for (int i = 0; i < methods.size(); ++i) {
-    MethodNode method = (MethodNode) methods.get(i);
-    if (method.instructions.size() > 0) {
-        Analyzer a = new Analyzer(new BasicInterpreter());
-        a.analyze(cn.name, method);
-        Frame[] frames = a.getFrames();
-        // Elements of the frames arrray now contains info for each instruction
-        // from the analyzed method. BasicInterpreter creates BasicValue, that
-        // is using simplified type system that distinguishes the UNINITIALZED,
-        // INT, FLOAT, LONG, DOUBLE, REFERENCE and RETURNADDRESS types.
-        ...
+    /**
+     * A list of modules that can access to this exported package.
+     * May be <tt>null</tt>.
+     */
+    public List<String> modules;
+
+    /**
+     * Constructs a new {@link ModuleOpenNode}.
+     * 
+     * @param packaze
+     *            the parameter's name.
+     * @param modules
+     *            a list of modules that can access to this open package.
+     */
+    public ModuleOpenNode(final String packaze, final int access, final List<String> modules) {
+        this.packaze = packaze;
+        this.access = access;
+        this.modules = modules;
+    }
+
+    /**
+     * Makes the given module visitor visit this open declaration.
+     * 
+     * @param mv
+     *            a module visitor.
+     */
+    public void accept(final ModuleVisitor mv) {
+        mv.visitExport(packaze, access, (modules == null) ? null : modules.toArray(new String[0]));
     }
 }
-</pre>
-
-<p>
-@since ASM 1.4.3
-</p>
-
-</body>
-</html>

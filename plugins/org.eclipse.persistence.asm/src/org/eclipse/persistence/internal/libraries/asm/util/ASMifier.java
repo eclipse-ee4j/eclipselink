@@ -79,6 +79,11 @@ public class ASMifier extends Printer {
      * Pseudo access flag used to distinguish inner class flags.
      */
     private static final int ACCESS_INNER = 1048576;
+    
+    /**
+     * Pseudo access flag used to distinguish module requires/exports flags.
+     */
+    private static final int ACCESS_MODULE = 2097152;
 
     /**
      * Constructs a new {@link ASMifier}. <i>Subclasses must not use this
@@ -167,13 +172,17 @@ public class ASMifier extends Printer {
             final String signature, final String superName,
             final String[] interfaces) {
         String simpleName;
-        int n = name.lastIndexOf('/');
-        if (n == -1) {
-            simpleName = name;
+        if (name == null) {
+            simpleName = "module-info";
         } else {
-            text.add("package asm." + name.substring(0, n).replace('/', '.')
-                    + ";\n");
-            simpleName = name.substring(n + 1).replace('-', '_');
+            int n = name.lastIndexOf('/');
+            if (n == -1) {
+                simpleName = name;
+            } else {
+                text.add("package asm." + name.substring(0, n).replace('/', '.')
+                        + ";\n");
+                simpleName = name.substring(n + 1).replace('-', '_');
+            }
         }
         text.add("import java.util.*;\n");
         text.add("import org.eclipse.persistence.internal.libraries.asm.*;\n");
@@ -211,8 +220,8 @@ public class ASMifier extends Printer {
         case Opcodes.V1_8:
             buf.append("V1_8");
             break;
-        case Opcodes.V1_9:
-            buf.append("V1_9");
+        case Opcodes.V9:
+            buf.append("V9");
             break;
         default:
             buf.append(version);
@@ -253,10 +262,20 @@ public class ASMifier extends Printer {
     }
     
     @Override
-    public Printer visitModule() {
+    public Printer visitModule(final String name, final int flags,
+            final String version) {
+        buf.setLength(0);
+        buf.append("ModuleVisitor mdv = cw.visitModule(");
+        appendConstant(name);
+        buf.append(", ");
+        appendAccess(flags | ACCESS_MODULE);
+        buf.append(", ");
+        appendConstant(version);
+        buf.append(");\n\n");
+        text.add(buf.toString());
         ASMifier a = createASMifier("mdv", 0);
-        text.add("ModuleVisitor mdv = cw.visitModule();\n");
         text.add(a.getText());
+        text.add("}\n");
         return a;
     }
 
@@ -375,21 +394,62 @@ public class ASMifier extends Printer {
     // ------------------------------------------------------------------------
     
     @Override
-    public void visitRequire(String module, int access) {
+    public void visitMainClass(String mainClass) {
         buf.setLength(0);
-        buf.append("mdv.visitRequire(");
-        appendConstant(buf, module);
-        buf.append(", ");
-        appendAccess(access);
+        buf.append("mdv.visitMainClass(");
+        appendConstant(buf, mainClass);
         buf.append(");\n");
         text.add(buf.toString());
     }
     
     @Override
-    public void visitExport(String packaze, String... modules) {
+    public void visitPackage(String packaze) {
+        buf.setLength(0);
+        buf.append("mdv.visitPackage(");
+        appendConstant(buf, packaze);
+        buf.append(");\n");
+        text.add(buf.toString());
+    }
+    
+    @Override
+    public void visitRequire(String module, int access, String version) {
+        buf.setLength(0);
+        buf.append("mdv.visitRequire(");
+        appendConstant(buf, module);
+        buf.append(", ");
+        appendAccess(access | ACCESS_MODULE);
+        buf.append(", ");
+        appendConstant(buf, version);
+        buf.append(");\n");
+        text.add(buf.toString());
+    }
+    
+    @Override
+    public void visitExport(String packaze, int access, String... modules) {
         buf.setLength(0);
         buf.append("mdv.visitExport(");
         appendConstant(buf, packaze);
+        buf.append(", ");
+        appendAccess(access | ACCESS_MODULE);
+        if (modules != null && modules.length > 0) {
+            buf.append(", new String[] {");
+            for (int i = 0; i < modules.length; ++i) {
+                buf.append(i == 0 ? " " : ", ");
+                appendConstant(modules[i]);
+            }
+            buf.append(" }");
+        }
+        buf.append(");\n");
+        text.add(buf.toString());
+    }
+    
+    @Override
+    public void visitOpen(String packaze, int access, String... modules) {
+        buf.setLength(0);
+        buf.append("mdv.visitOpen(");
+        appendConstant(buf, packaze);
+        buf.append(", ");
+        appendAccess(access | ACCESS_MODULE);
         if (modules != null && modules.length > 0) {
             buf.append(", new String[] {");
             for (int i = 0; i < modules.length; ++i) {
@@ -412,13 +472,16 @@ public class ASMifier extends Printer {
     }
     
     @Override
-    public void visitProvide(String service, String impl) {
+    public void visitProvide(String service, String... providers) {
         buf.setLength(0);
         buf.append("mdv.visitProvide(");
         appendConstant(buf, service);
-        buf.append(", ");
-        appendConstant(buf, impl);
-        buf.append(");\n");
+        buf.append(",  new String[] {");
+        for (int i = 0; i < providers.length; ++i) {
+            buf.append(i == 0 ? " " : ", ");
+            appendConstant(providers[i]);
+        }
+        buf.append(" });\n");
         text.add(buf.toString());
     }
     
@@ -527,7 +590,7 @@ public class ASMifier extends Printer {
     // ------------------------------------------------------------------------
     // Methods
     // ------------------------------------------------------------------------
-    
+
     @Override
     public void visitParameter(String parameterName, int access) {
         buf.setLength(0);
@@ -1043,7 +1106,11 @@ public class ASMifier extends Printer {
             if (!first) {
                 buf.append(" + ");
             }
-            buf.append("ACC_FINAL");
+            if ((access & ACCESS_MODULE) == 0) {
+                buf.append("ACC_FINAL");
+            } else {
+                buf.append("ACC_TRANSITIVE");
+            }
             first = false;
         }
         if ((access & Opcodes.ACC_STATIC) != 0) {
@@ -1053,31 +1120,35 @@ public class ASMifier extends Printer {
             buf.append("ACC_STATIC");
             first = false;
         }
-        if ((access & Opcodes.ACC_SYNCHRONIZED) != 0) {
+        if ((access & (Opcodes.ACC_SYNCHRONIZED | Opcodes.ACC_SUPER | Opcodes.ACC_TRANSITIVE)) != 0) {
             if (!first) {
                 buf.append(" + ");
             }
             if ((access & ACCESS_CLASS) == 0) {
-                buf.append("ACC_SYNCHRONIZED");
+                if ((access & ACCESS_MODULE) == 0) {
+                    buf.append("ACC_SYNCHRONIZED");
+                } else {
+                    buf.append("ACC_TRANSITIVE");
+                }
             } else {
                 buf.append("ACC_SUPER");
             }
             first = false;
         }
-        if ((access & Opcodes.ACC_VOLATILE) != 0
-                && (access & ACCESS_FIELD) != 0) {
+        if ((access & (Opcodes.ACC_VOLATILE | Opcodes.ACC_BRIDGE | Opcodes.ACC_STATIC_PHASE)) != 0) {
             if (!first) {
                 buf.append(" + ");
             }
-            buf.append("ACC_VOLATILE");
-            first = false;
-        }
-        if ((access & Opcodes.ACC_BRIDGE) != 0 && (access & ACCESS_CLASS) == 0
-                && (access & ACCESS_FIELD) == 0) {
-            if (!first) {
-                buf.append(" + ");
+            if ((access & ACCESS_FIELD) == 0) {
+                if ((access & ACCESS_MODULE) == 0) {
+                    buf.append("ACC_BRIDGE");
+                } else {
+                    buf.append("ACC_STATIC_PHASE");
+                } 
+            } else {
+                buf.append("ACC_VOLATILE"); 
             }
-            buf.append("ACC_BRIDGE");
+            
             first = false;
         }
         if ((access & Opcodes.ACC_VARARGS) != 0 && (access & ACCESS_CLASS) == 0
@@ -1156,7 +1227,7 @@ public class ASMifier extends Printer {
             buf.append("ACC_DEPRECATED");
             first = false;
         }
-        if ((access & (Opcodes.ACC_MANDATED|Opcodes.ACC_MODULE)) != 0) {
+        if ((access & (Opcodes.ACC_MANDATED | Opcodes.ACC_MODULE)) != 0) {
             if (!first) {
                 buf.append(" + ");
             }
@@ -1210,7 +1281,8 @@ public class ASMifier extends Printer {
                     .append(", \"");
             buf.append(h.getOwner()).append("\", \"");
             buf.append(h.getName()).append("\", \"");
-            buf.append(h.getDesc()).append("\")");
+            buf.append(h.getDesc()).append("\", ");
+            buf.append(h.isInterface()).append(")");
         } else if (cst instanceof Byte) {
             buf.append("new Byte((byte)").append(cst).append(')');
         } else if (cst instanceof Boolean) {

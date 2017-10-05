@@ -52,15 +52,33 @@ public final class TraceModuleVisitor extends ModuleVisitor {
     }
 
     @Override
-    public void visitRequire(String module, int access) {
-        p.visitRequire(module, access);
-        super.visitRequire(module, access);
+    public void visitMainClass(String mainClass) {
+        p.visitMainClass(mainClass);
+        super.visitMainClass(mainClass);
     }
     
     @Override
-    public void visitExport(String packaze, String... modules) {
-        p.visitExport(packaze, modules);
-        super.visitExport(packaze, modules);
+    public void visitPackage(String packaze) {
+        p.visitPackage(packaze);
+        super.visitPackage(packaze);
+    }
+    
+    @Override
+    public void visitRequire(String module, int access, String version) {
+        p.visitRequire(module, access, version);
+        super.visitRequire(module, access, version);
+    }
+    
+    @Override
+    public void visitExport(String packaze, int access, String... modules) {
+        p.visitExport(packaze, access, modules);
+        super.visitExport(packaze, access, modules);
+    }
+    
+    @Override
+    public void visitOpen(String packaze, int access, String... modules) {
+        p.visitOpen(packaze, access, modules);
+        super.visitOpen(packaze, access, modules);
     }
     
     @Override
@@ -70,9 +88,9 @@ public final class TraceModuleVisitor extends ModuleVisitor {
     }
     
     @Override
-    public void visitProvide(String service, String impl) {
-        p.visitProvide(service, impl);
-        super.visitProvide(service, impl);
+    public void visitProvide(String service, String... providers) {
+        p.visitProvide(service, providers);
+        super.visitProvide(service, providers);
     }
 
     @Override

@@ -198,7 +198,20 @@ public abstract class Printer {
     public abstract void visitSource(final String source, final String debug);
 
     
-    public Printer visitModule() {
+    /**
+     * Module.
+     * See {@link org.eclipse.persistence.internal.libraries.asm.ClassVisitor#visitModule(String, int)}.
+     * 
+     * @param name 
+     *            module name.
+     * @param access
+     *            module flags, among {@code ACC_OPEN}, {@code ACC_SYNTHETIC}
+     *            and {@code ACC_MANDATED}.
+     * @param version
+     *            module version or null.
+     * @return
+     */
+    public Printer visitModule(String name, int access, String version) {
         throw new RuntimeException("Must be overriden");
     }
     
@@ -355,11 +368,23 @@ public abstract class Printer {
     // Module
     // ------------------------------------------------------------------------
     
-    public void visitRequire(String module, int access) {
+    public void visitMainClass(String mainClass) {
+        throw new RuntimeException("Must be overriden");
+    }
+
+    public void visitPackage(String packaze) {
         throw new RuntimeException("Must be overriden");
     }
     
-    public void visitExport(String packaze, String... modules) {
+    public void visitRequire(String module, int access, String version) {
+        throw new RuntimeException("Must be overriden");
+    }
+    
+    public void visitExport(String packaze, int access, String... modules) {
+        throw new RuntimeException("Must be overriden");
+    }
+    
+    public void visitOpen(String packaze, int access, String... modules) {
         throw new RuntimeException("Must be overriden");
     }
     
@@ -367,7 +392,7 @@ public abstract class Printer {
         throw new RuntimeException("Must be overriden");
     }
     
-    public void visitProvide(String service, String impl) {
+    public void visitProvide(String service, String... providers) {
         throw new RuntimeException("Must be overriden");
     }
     

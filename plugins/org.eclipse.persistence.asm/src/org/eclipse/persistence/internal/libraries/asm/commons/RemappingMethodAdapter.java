@@ -96,18 +96,20 @@ public class RemappingMethodAdapter extends LocalVariablesSorter {
     }
 
     private Object[] remapEntries(int n, Object[] entries) {
-        for (int i = 0; i < n; i++) {
-            if (entries[i] instanceof String) {
-                Object[] newEntries = new Object[n];
-                if (i > 0) {
-                    System.arraycopy(entries, 0, newEntries, 0, i);
+        if (entries != null) {
+            for (int i = 0; i < n; i++) {
+                if (entries[i] instanceof String) {
+                    Object[] newEntries = new Object[n];
+                    if (i > 0) {
+                        System.arraycopy(entries, 0, newEntries, 0, i);
+                    }
+                    do {
+                        Object t = entries[i];
+                        newEntries[i++] = t instanceof String ? remapper
+                                .mapType((String) t) : t;
+                    } while (i < n);
+                    return newEntries;
                 }
-                do {
-                    Object t = entries[i];
-                    newEntries[i++] = t instanceof String ? remapper
-                            .mapType((String) t) : t;
-                } while (i < n);
-                return newEntries;
             }
         }
         return entries;

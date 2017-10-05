@@ -70,6 +70,16 @@ public final class SAXClassAdapter extends ClassVisitor {
      * Pseudo access flag used to distinguish inner class flags.
      */
     private static final int ACCESS_INNER = 1048576;
+    
+    /**
+     * Pseudo access flag used to distinguish module flags.
+     */
+    static final int ACCESS_MODULE = 2097152;
+    
+    /**
+     * Pseudo access flag used to distinguish module requires flags.
+     */
+    static final int ACCESS_MODULE_REQUIRES = 4194304;
 
     /**
      * Constructs a new {@link SAXClassAdapter SAXClassAdapter} object.
@@ -104,8 +114,16 @@ public final class SAXClassAdapter extends ClassVisitor {
     }
     
     @Override
-    public ModuleVisitor visitModule() {
+    public ModuleVisitor visitModule(final String name, final int access,
+            final String version) {
         AttributesImpl att = new AttributesImpl();
+        att.addAttribute("", "name", "name", "", name);
+        StringBuilder sb = new StringBuilder();
+        appendAccess(access | ACCESS_MODULE, sb);
+        att.addAttribute("", "access", "access", "", sb.toString());
+        if (version != null) {
+          att.addAttribute("", "version", "version", "", encode(version));
+        }
         sa.addStart("module", att);
         return new SAXModuleAdapter(sa);
     }
@@ -286,14 +304,26 @@ public final class SAXClassAdapter extends ClassVisitor {
             sb.append("protected ");
         }
         if ((access & Opcodes.ACC_FINAL) != 0) {
-            sb.append("final ");
+            if ((access & ACCESS_MODULE) == 0) {
+                sb.append("final ");
+            } else {
+                sb.append("transitive ");
+            }
         }
         if ((access & Opcodes.ACC_STATIC) != 0) {
             sb.append("static ");
         }
         if ((access & Opcodes.ACC_SUPER) != 0) {
             if ((access & ACCESS_CLASS) == 0) {
-                sb.append("synchronized ");
+                if ((access & ACCESS_MODULE_REQUIRES) != 0) {
+                    sb.append("transitive ");
+                } else {
+                    if ((access & ACCESS_MODULE) == 0) {
+                        sb.append("synchronized ");
+                    } else {
+                        sb.append("open ");
+                    }
+                }
             } else {
                 sb.append("super ");
             }
@@ -302,7 +332,11 @@ public final class SAXClassAdapter extends ClassVisitor {
             if ((access & ACCESS_FIELD) == 0) {
                 sb.append("bridge ");
             } else {
-                sb.append("volatile ");
+                if ((access & ACCESS_MODULE_REQUIRES) == 0) {
+                    sb.append("volatile ");
+                } else {
+                    sb.append("static ");
+                }
             }
         }
         if ((access & Opcodes.ACC_TRANSIENT) != 0) {
@@ -336,7 +370,7 @@ public final class SAXClassAdapter extends ClassVisitor {
         if ((access & Opcodes.ACC_DEPRECATED) != 0) {
             sb.append("deprecated ");
         }
-        if ((access & (Opcodes.ACC_MANDATED|Opcodes.ACC_MODULE)) != 0) {
+        if ((access & Opcodes.ACC_MANDATED) != 0) {
             if ((access & ACCESS_CLASS) == 0) {
                 sb.append("module ");
             } else {

@@ -29,6 +29,8 @@
  */
 package org.eclipse.persistence.internal.libraries.asm.util;
 
+import java.util.HashSet;
+
 import org.eclipse.persistence.internal.libraries.asm.ModuleVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 
@@ -37,49 +39,94 @@ import org.eclipse.persistence.internal.libraries.asm.Opcodes;
  */
 public final class CheckModuleAdapter extends ModuleVisitor {
     private boolean end;
+    private final boolean isOpen;
 
-    public CheckModuleAdapter(final ModuleVisitor mv) {
+    private final HashSet<String> requireNames = new HashSet<String>();
+    private final HashSet<String> exportNames = new HashSet<String>();
+    private final HashSet<String> openNames = new HashSet<String>();
+    private final HashSet<String> useNames = new HashSet<String>();
+    private final HashSet<String> provideNames = new HashSet<String>();
+    
+    public CheckModuleAdapter(final ModuleVisitor mv, final boolean isOpen) {
         super(Opcodes.ASM6, mv);
+        this.isOpen = isOpen;
     }
-
+    
     @Override
-    public void visitRequire(String module, int access) {
+    public void visitRequire(String module, int access, String version) {
         checkEnd();
         if (module == null) {
             throw new IllegalArgumentException("require cannot be null");
         }
-        super.visitRequire(module, access);
+        checkDeclared("requires", requireNames, module);
+        CheckClassAdapter.checkAccess(access, Opcodes.ACC_STATIC_PHASE
+                + Opcodes.ACC_TRANSITIVE + Opcodes.ACC_SYNTHETIC + Opcodes.ACC_MANDATED);
+        super.visitRequire(module, access, version);
     }
     
     @Override
-    public void visitExport(String packaze, String... modules) {
+    public void visitExport(String packaze, int access, String... modules) {
         checkEnd();
         if (packaze == null) {
-            throw new IllegalArgumentException("require cannot be null");
+            throw new IllegalArgumentException("packaze cannot be null");
         }
+        CheckMethodAdapter.checkInternalName(packaze, "package name");
+        checkDeclared("exports", exportNames, packaze);
+        CheckClassAdapter.checkAccess(access, Opcodes.ACC_SYNTHETIC
+                + Opcodes.ACC_MANDATED);
         if (modules != null) {
-            for(int i = 0; i < modules.length; i++) {
+            for (int i = 0; i < modules.length; i++) {
                 if (modules[i] == null) {
-                    throw new IllegalArgumentException("to at index " + i + " cannot be null");
+                    throw new IllegalArgumentException("module at index " + i + " cannot be null");
                 }
             }
         }
-        super.visitExport(packaze, modules);
+        super.visitExport(packaze, access, modules);
+    }
+    
+    @Override
+    public void visitOpen(String packaze, int access, String... modules) {
+        checkEnd();
+        if (isOpen) {
+            throw new IllegalArgumentException("an open module can not use open directive");
+        }
+        if (packaze == null) {
+            throw new IllegalArgumentException("packaze cannot be null");
+        }
+        CheckMethodAdapter.checkInternalName(packaze, "package name");
+        checkDeclared("opens", openNames, packaze);
+        CheckClassAdapter.checkAccess(access, Opcodes.ACC_SYNTHETIC
+                + Opcodes.ACC_MANDATED);
+        if (modules != null) {
+            for (int i = 0; i < modules.length; i++) {
+                if (modules[i] == null) {
+                    throw new IllegalArgumentException("module at index " + i + " cannot be null");
+                }
+            }
+        }
+        super.visitOpen(packaze, access, modules);
     }
     
     @Override
     public void visitUse(String service) {
         checkEnd();
         CheckMethodAdapter.checkInternalName(service, "service");
+        checkDeclared("uses", useNames, service);
         super.visitUse(service);
     }
     
     @Override
-    public void visitProvide(String service, String impl) {
+    public void visitProvide(String service, String... providers) {
         checkEnd();
         CheckMethodAdapter.checkInternalName(service, "service");
-        CheckMethodAdapter.checkInternalName(impl, "impl");
-        super.visitProvide(service, impl);
+        checkDeclared("provides", provideNames, service);
+        if (providers == null || providers.length == 0) {
+            throw new IllegalArgumentException("providers cannot be null or empty");
+        }
+        for (int i = 0; i < providers.length; i++) {
+            CheckMethodAdapter.checkInternalName(providers[i], "provider");
+        }
+        super.visitProvide(service, providers);
     }
     
     @Override
@@ -93,6 +140,12 @@ public final class CheckModuleAdapter extends ModuleVisitor {
         if (end) {
             throw new IllegalStateException(
                     "Cannot call a visit method after visitEnd has been called");
+        }
+    }
+    
+    private static void checkDeclared(String directive, HashSet<String> names, String name) {
+        if (!names.add(name)) {
+            throw new IllegalArgumentException(directive + " " + name + " already declared");
         }
     }
 }

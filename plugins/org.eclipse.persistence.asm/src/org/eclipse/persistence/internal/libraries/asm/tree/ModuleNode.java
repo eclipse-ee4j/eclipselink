@@ -43,6 +43,35 @@ import org.eclipse.persistence.internal.libraries.asm.Opcodes;
  */
 public class ModuleNode extends ModuleVisitor {
     /**
+     * Module name
+     */
+    public String name;
+    
+    /**
+     * Module access flags, among {@code ACC_OPEN}, {@code ACC_SYNTHETIC}
+     *            and {@code ACC_MANDATED}.
+     */
+    public int access;
+    
+    /**
+     * Version of the module.
+     * May be <tt>null</tt>.
+     */
+    public String version;
+    
+    /**
+     * Name of the main class in internal form
+     * May be <tt>null</tt>.
+     */
+    public String mainClass;
+    
+    /**
+     * A list of packages that are declared by the current module.
+     * May be <tt>null</tt>.
+     */
+    public List<String> packages;
+    
+    /**
      * A list of modules can are required by the current module.
      * May be <tt>null</tt>.
      */
@@ -53,6 +82,12 @@ public class ModuleNode extends ModuleVisitor {
      * May be <tt>null</tt>.
      */
     public List<ModuleExportNode> exports;
+    
+    /**
+     * A list of packages that are opened by the current module.
+     * May be <tt>null</tt>.
+     */
+    public List<ModuleOpenNode> opens;
     
     /**
      * A list of classes in their internal forms that are used
@@ -66,18 +101,30 @@ public class ModuleNode extends ModuleVisitor {
      */
     public List<ModuleProvideNode> provides;
 
-    public ModuleNode() {
+    public ModuleNode(final String name, final int access,
+            final String version) {
         super(Opcodes.ASM6);
+        this.name = name;
+        this.access = access;
+        this.version = version;
     }
     
     public ModuleNode(final int api,
-      List<ModuleRequireNode> requires,
-      List<ModuleExportNode> exports,
-      List<String> uses,
-      List<ModuleProvideNode> provides) {
-        super(Opcodes.ASM6);
+      final String name,
+      final int access,
+      final String version,
+      final List<ModuleRequireNode> requires,
+      final List<ModuleExportNode> exports,
+      final List<ModuleOpenNode> opens,
+      final List<String> uses,
+      final List<ModuleProvideNode> provides) {
+        super(api);
+        this.name = name;
+        this.access = access;
+        this.version = version;
         this.requires = requires;
         this.exports = exports;
+        this.opens = opens;
         this.uses = uses;
         this.provides = provides;
         if (getClass() != ModuleNode.class) {
@@ -86,26 +133,54 @@ public class ModuleNode extends ModuleVisitor {
     }
     
     @Override
-    public void visitRequire(String module, int access) {
-        if (requires == null) {
-            requires = new ArrayList<ModuleRequireNode>(5);
-        }
-        requires.add(new ModuleRequireNode(module, access));
+    public void visitMainClass(String mainClass) {
+        this.mainClass = mainClass;
     }
     
     @Override
-    public void visitExport(String packaze, String... modules) {
+    public void visitPackage(String packaze) {
+        if (packages == null) {
+            packages = new ArrayList<String>(5);
+        }
+        packages.add(packaze);
+    }
+    
+    @Override
+    public void visitRequire(String module, int access, String version) {
+        if (requires == null) {
+            requires = new ArrayList<ModuleRequireNode>(5);
+        }
+        requires.add(new ModuleRequireNode(module, access, version));
+    }
+    
+    @Override
+    public void visitExport(String packaze, int access, String... modules) {
         if (exports == null) {
             exports = new ArrayList<ModuleExportNode>(5);
         }
         List<String> moduleList = null;
         if (modules != null) {
             moduleList = new ArrayList<String>(modules.length);
-            for(int i = 0; i < modules.length; i++) {
+            for (int i = 0; i < modules.length; i++) {
                 moduleList.add(modules[i]);
             }
         }
-        exports.add(new ModuleExportNode(packaze, moduleList));
+        exports.add(new ModuleExportNode(packaze, access, moduleList));
+    }
+    
+    @Override
+    public void visitOpen(String packaze, int access, String... modules) {
+        if (opens == null) {
+            opens = new ArrayList<ModuleOpenNode>(5);
+        }
+        List<String> moduleList = null;
+        if (modules != null) {
+            moduleList = new ArrayList<String>(modules.length);
+            for (int i = 0; i < modules.length; i++) {
+                moduleList.add(modules[i]);
+            }
+        }
+        opens.add(new ModuleOpenNode(packaze, access, moduleList));
     }
     
     @Override
@@ -117,11 +192,16 @@ public class ModuleNode extends ModuleVisitor {
     }
     
     @Override
-    public void visitProvide(String service, String impl) {
+    public void visitProvide(String service, String... providers) {
         if (provides == null) {
             provides = new ArrayList<ModuleProvideNode>(5);
         }
-        provides.add(new ModuleProvideNode(service, impl));
+        ArrayList<String> providerList =
+                new ArrayList<String>(providers.length);
+        for (int i = 0; i < providers.length; i++) {
+                providerList.add(providers[i]);
+        }
+        provides.add(new ModuleProvideNode(service, providerList));
     }
     
     @Override
@@ -129,27 +209,41 @@ public class ModuleNode extends ModuleVisitor {
     }
     
     public void accept(final ClassVisitor cv) {
-        ModuleVisitor mv = cv.visitModule();
+        ModuleVisitor mv = cv.visitModule(name, access, version);
         if (mv == null) {
             return;
         }
+        if (mainClass != null) {
+            mv.visitMainClass(mainClass);
+        }
+        if (packages != null) {
+            for (int i = 0; i < packages.size(); i++) {
+                mv.visitPackage(packages.get(i));
+            }
+        }
+        
         if (requires != null) {
-            for(int i = 0; i < requires.size(); i++) {
+            for (int i = 0; i < requires.size(); i++) {
                 requires.get(i).accept(mv);
             }
         }
         if (exports != null) {
-            for(int i = 0; i < exports.size(); i++) {
+            for (int i = 0; i < exports.size(); i++) {
                 exports.get(i).accept(mv);
             }
         }
+        if (opens != null) {
+            for (int i = 0; i < opens.size(); i++) {
+                opens.get(i).accept(mv);
+            }
+        }
         if (uses != null) {
-            for(int i = 0; i < uses.size(); i++) {
+            for (int i = 0; i < uses.size(); i++) {
                 mv.visitUse(uses.get(i));
             }
         }
         if (provides != null) {
-            for(int i = 0; i < provides.size(); i++) {
+            for (int i = 0; i < provides.size(); i++) {
                 provides.get(i).accept(mv);
             }
         }

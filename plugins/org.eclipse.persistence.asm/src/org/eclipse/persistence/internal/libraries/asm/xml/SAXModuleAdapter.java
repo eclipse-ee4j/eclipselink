@@ -48,28 +48,66 @@ public final class SAXModuleAdapter extends ModuleVisitor {
     }
 
     @Override
-    public void visitRequire(String module, int access) {
+    public void visitMainClass(String mainClass) {
+        AttributesImpl att = new AttributesImpl();
+        att.addAttribute("", "name", "name", "", mainClass);
+        sa.addElement("main-class", att);
+    }
+    
+    @Override
+    public void visitPackage(String packaze) {
+        AttributesImpl att = new AttributesImpl();
+        att.addAttribute("", "name", "name", "", packaze);
+        sa.addElement("packages", att);
+    }
+    
+    @Override
+    public void visitRequire(String module, int access, String version) {
         AttributesImpl att = new AttributesImpl();
         StringBuilder sb = new StringBuilder();
-        SAXClassAdapter.appendAccess(access, sb);
+        SAXClassAdapter.appendAccess(access | SAXClassAdapter.ACCESS_MODULE, sb);
         att.addAttribute("", "module", "module", "", module);
         att.addAttribute("", "access", "access", "", sb.toString());
+        if (version != null) {
+            att.addAttribute("", "access", "access", "", version);
+        }
         sa.addElement("requires", att);
     }
     
     @Override
-    public void visitExport(String packaze, String... modules) {
+    public void visitExport(String packaze, int access, String... modules) {
         AttributesImpl att = new AttributesImpl();
+        StringBuilder sb = new StringBuilder();
+        SAXClassAdapter.appendAccess(access | SAXClassAdapter.ACCESS_MODULE, sb);
         att.addAttribute("", "name", "name", "", packaze);
+        att.addAttribute("", "access", "access", "", sb.toString());
         sa.addStart("exports", att);
         if (modules != null && modules.length > 0) {
-            for(String to: modules) {
+            for (String to : modules) {
                 AttributesImpl atts = new AttributesImpl();
                 atts.addAttribute("", "module", "module", "", to);
                 sa.addElement("to", atts);
             }
         }
         sa.addEnd("exports");
+    }
+    
+    @Override
+    public void visitOpen(String packaze, int access, String... modules) {
+        AttributesImpl att = new AttributesImpl();
+        StringBuilder sb = new StringBuilder();
+        SAXClassAdapter.appendAccess(access | SAXClassAdapter.ACCESS_MODULE, sb);
+        att.addAttribute("", "name", "name", "", packaze);
+        att.addAttribute("", "access", "access", "", sb.toString());
+        sa.addStart("opens", att);
+        if (modules != null && modules.length > 0) {
+            for (String to : modules) {
+                AttributesImpl atts = new AttributesImpl();
+                atts.addAttribute("", "module", "module", "", to);
+                sa.addElement("to", atts);
+            }
+        }
+        sa.addEnd("opens");
     }
 
     @Override
@@ -80,11 +118,16 @@ public final class SAXModuleAdapter extends ModuleVisitor {
     }
     
     @Override
-    public void visitProvide(String service, String impl) {
+    public void visitProvide(String service, String... providers) {
         AttributesImpl att = new AttributesImpl();
         att.addAttribute("", "service", "service", "", service);
-        att.addAttribute("", "impl", "impl", "", impl);
-        sa.addElement("provides", att);
+        sa.addStart("provides", att);
+        for (String provider : providers) {
+            AttributesImpl atts = new AttributesImpl();
+            atts.addAttribute("", "provider", "provider", "", provider);
+            sa.addElement("with", atts);
+        }
+        sa.addEnd("provides");
     }
     
     @Override

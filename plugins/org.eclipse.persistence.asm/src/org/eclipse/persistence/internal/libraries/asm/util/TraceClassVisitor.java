@@ -152,9 +152,10 @@ public final class TraceClassVisitor extends ClassVisitor {
     }
     
     @Override
-    public ModuleVisitor visitModule() {
-        Printer p = this.p.visitModule();
-        ModuleVisitor mv =  super.visitModule();
+    public ModuleVisitor visitModule(String name, int flags,
+            String version) {
+        Printer p = this.p.visitModule(name, flags, version);
+        ModuleVisitor mv = super.visitModule(name, flags, version);
         return new TraceModuleVisitor(mv, p);
     }
 
