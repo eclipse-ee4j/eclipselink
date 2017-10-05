@@ -71,7 +71,7 @@ public class RemappingClassAdapter extends ClassVisitor {
     }
 
     @Override
-    public ModuleVisitor visitModule() {
+    public ModuleVisitor visitModule(String name, int flags, String version) {
         throw new RuntimeException("RemappingClassAdapter is deprecated, use ClassRemapper instead");
     }
     

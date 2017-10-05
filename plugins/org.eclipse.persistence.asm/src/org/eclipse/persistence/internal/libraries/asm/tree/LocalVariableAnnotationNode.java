@@ -152,6 +152,6 @@ public class LocalVariableAnnotationNode extends TypeAnnotationNode {
             index[i] = this.index.get(i);
         }
         accept(mv.visitLocalVariableAnnotation(typeRef, typePath, start, end,
-                index, desc, true));
+                index, desc, visible));
     }
 }

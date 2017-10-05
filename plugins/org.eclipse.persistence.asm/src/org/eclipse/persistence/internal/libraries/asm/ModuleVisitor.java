@@ -27,13 +27,18 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package org.eclipse.persistence.internal.libraries.asm;
 
 /**
  * A visitor to visit a Java module. The methods of this class must be called in
- * the following order: ( <tt>visitRequire</tt> | <tt>visitExport</tt> |
+ * the following order: <tt>visitMainClass</tt> | ( <tt>visitPackage</tt> |
+ * <tt>visitRequire</tt> | <tt>visitExport</tt> | <tt>visitOpen</tt> |
  * <tt>visitUse</tt> | <tt>visitProvide</tt> )* <tt>visitEnd</tt>.
+ * 
+ * The methods {@link #visitRequire(String, int, String)}, {@link #visitExport(String, int, String...)},
+ * {@link #visitOpen(String, int, String...)} and {@link #visitPackage(String)}
+ * take as parameter a package name or a module name. Unlike the other names which are internal names
+ * (names separated by slash), module and package names are qualified names (names separated by dot).
  * 
  * @author Remi Forax
  */
@@ -50,18 +55,23 @@ public abstract class ModuleVisitor {
      */
     protected ModuleVisitor mv;
     
-    
+    /**
+     * Constructs a new {@link ModuleVisitor}.
+     * 
+     * @param api
+     *            the ASM API version implemented by this visitor. Must be {@link Opcodes#ASM6}.
+     */
     public ModuleVisitor(final int api) {
         this(api, null);
     }
 
     /**
-     * Constructs a new {@link MethodVisitor}.
+     * Constructs a new {@link ModuleVisitor}.
      * 
      * @param api
      *            the ASM API version implemented by this visitor. Must be {@link Opcodes#ASM6}.
      * @param mv
-     *            the method visitor to which this visitor must delegate method
+     *            the module visitor to which this visitor must delegate method
      *            calls. May be null.
      */
     public ModuleVisitor(final int api, final ModuleVisitor mv) {
@@ -73,36 +83,79 @@ public abstract class ModuleVisitor {
     }
     
     /**
+     * Visit the main class of the current module.
+     * 
+     * @param mainClass the internal name of the main class of the current module.
+     */
+    public void visitMainClass(String mainClass) {
+        if (mv != null) {
+            mv.visitMainClass(mainClass);
+        }
+    }
+    
+    /**
+     * Visit a package of the current module.
+     * 
+     * @param packaze the qualified name of a package.
+     */
+    public void visitPackage(String packaze) {
+        if (mv != null) {
+            mv.visitPackage(packaze);
+        }
+    }
+    
+    /**
      * Visits a dependence of the current module.
      * 
-     * @param module the module name of the dependence
+     * @param module the qualified name of the dependence.
      * @param access the access flag of the dependence among
-     *        ACC_PUBLIC, ACC_SYNTHETIC and ACC_MANDATED.
+     *        ACC_TRANSITIVE, ACC_STATIC_PHASE, ACC_SYNTHETIC
+     *        and ACC_MANDATED.
+     * @param version the module version at compile time or null.
      */
-    public void visitRequire(String module, int access) {
+    public void visitRequire(String module, int access, String version) {
         if (mv != null) {
-            mv.visitRequire(module, access);
+            mv.visitRequire(module, access, version);
         }
     }
     
     /**
      * Visit an exported package of the current module.
      * 
-     * @param packaze the name of the exported package.
-     * @param modules names of the modules that can access to
+     * @param packaze the qualified name of the exported package.
+     * @param access the access flag of the exported package,
+     *        valid values are among {@code ACC_SYNTHETIC} and
+     *        {@code ACC_MANDATED}.
+     * @param modules the qualified names of the modules that can access to
      *        the public classes of the exported package or
      *        <tt>null</tt>.
      */
-    public void visitExport(String packaze, String... modules) {
+    public void visitExport(String packaze, int access, String... modules) {
         if (mv != null) {
-            mv.visitExport(packaze, modules);
+            mv.visitExport(packaze, access, modules);
+        }
+    }
+    
+    /**
+     * Visit an open package of the current module.
+     * 
+     * @param packaze the qualified name of the opened package.
+     * @param access the access flag of the opened package,
+     *        valid values are among {@code ACC_SYNTHETIC} and
+     *        {@code ACC_MANDATED}.
+     * @param modules the qualified names of the modules that can use deep
+     *        reflection to the classes of the open package or
+     *        <tt>null</tt>.
+     */
+    public void visitOpen(String packaze, int access, String... modules) {
+        if (mv != null) {
+            mv.visitOpen(packaze, access, modules);
         }
     }
     
     /**
      * Visit a service used by the current module.
-     * The name must be the name of an interface or an
-     * abstract class.
+     * The name must be the internal name of an interface or a class.
      * 
      * @param service the internal name of the service.
      */
@@ -116,15 +169,19 @@ public abstract class ModuleVisitor {
      * Visit an implementation of a service.
      * 
      * @param service the internal name of the service
-     * @param impl the internal name of the implementation
-     *        of the service
+     * @param providers the internal names of the implementations
+     *        of the service (there is at least one provider).
      */
-    public void visitProvide(String service, String impl) {
+    public void visitProvide(String service, String... providers) {
         if (mv != null) {
-            mv.visitProvide(service, impl);
+            mv.visitProvide(service, providers);
         }
     }
     
+    /**
+     * Visits the end of the module. This method, which is the last one to be
+     * called, is used to inform the visitor that everything have been visited.
+     */
     public void visitEnd() {
         if (mv != null) {
             mv.visitEnd();

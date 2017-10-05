@@ -1,0 +1,22 @@
+to update ASM library:
+-obtain a CQ
+-get ASM sources and unpack them to some <tmp> folder
+-create a properties file 'asm.properties' with following content:
+org.objectweb=org.eclipse.persistence.internal.libraries
+-run:
+java -cp $eclipselink_home/utils/eclipselink.utils.rename/package-rename.jar \
+org.eclipse.persistence.utils.rename.MigrateTopLinkToEclipseLink <tmp>/org/objectweb <dst> asm.properties
+-copy <dst>/* to $eclipselink_home/plugins/org.eclipse.persistence.asm/src/org/eclipse/persistence/internal/libraries
+-update 'release.version' property in 'antbuild.xml'
+-update release version in 'about.html' and 'readme.html'
+
+-commit changes
+-build final artifact with:
+ant -f antbuild.xml -Dbuild.type=RELEASE bld
+
+-commit & push changes
+-rebuild compdeps
+-update asm version in the source tree
+-commit and push the change
+
+done.

@@ -94,6 +94,9 @@ public class ASMContentHandler extends DefaultHandler implements Opcodes {
         
         ModuleRule moduleRule = new ModuleRule();
         RULES.add(BASE + "/module", moduleRule);
+        RULES.add(BASE + "/module/main-class", moduleRule);
+        RULES.add(BASE + "/module/target", moduleRule);
+        RULES.add(BASE + "/module/packages", moduleRule);
         RULES.add(BASE + "/module/requires", moduleRule);
         RULES.add(BASE + "/module/exports", moduleRule);
         RULES.add(BASE + "/module/exports/to", moduleRule);
@@ -688,6 +691,12 @@ public class ASMContentHandler extends DefaultHandler implements Opcodes {
             if (s.indexOf("module") != -1) {
                 access |= ACC_MODULE;
             }
+            if (s.indexOf("open") != -1) {
+                access |= ACC_OPEN;
+            }
+            if (s.indexOf("transitive") != -1) {
+                access |= ACC_TRANSITIVE;
+            }
             return access;
         }
     }
@@ -758,22 +767,39 @@ public class ASMContentHandler extends DefaultHandler implements Opcodes {
     }
     
     /**
-     * ModuleRule: module, requires, exports, restricted-to, uses and provides 
+     * ModuleRule: module, requires, exports, opens, uses and provides 
      */
     final class ModuleRule extends Rule {
         @Override
         public final void begin(final String element, final Attributes attrs)
                 throws SAXException {
             if ("module".equals(element)) {
-                push(cv.visitModule());
+                push(cv.visitModule(attrs.getValue("name"),
+                        getAccess(attrs.getValue("access")),
+                        attrs.getValue("version")));
+            } else if ("main-class".equals(element)) {
+                ModuleVisitor mv = (ModuleVisitor) peek();
+                mv.visitMainClass(attrs.getValue("name"));
+            } else if ("packages".equals(element)) {
+                ModuleVisitor mv = (ModuleVisitor) peek();
+                mv.visitPackage(attrs.getValue("name"));
             } else if ("requires".equals(element)) {
                 ModuleVisitor mv = (ModuleVisitor) peek();
+                int access = getAccess(attrs.getValue("access"));
+                if ((access & Opcodes.ACC_STATIC) != 0) {
+                    access = access & ~Opcodes.ACC_STATIC | Opcodes.ACC_STATIC_PHASE;
+                }
                 mv.visitRequire(attrs.getValue("module"),
-                        getAccess(attrs.getValue("access")));
+                        access, attrs.getValue("version"));
             } else if ("exports".equals(element)) {
-                // encode the name of the exported package as the first item
+                push(attrs.getValue("name"));
+                push(getAccess(attrs.getValue("access")));
                 ArrayList<String> list = new ArrayList<String>();
-                list.add(attrs.getValue("name"));
+                push(list);
+            } else if ("opens".equals(element)) {
+                push(attrs.getValue("name"));
+                push(getAccess(attrs.getValue("access")));
+                ArrayList<String> list = new ArrayList<String>();
                 push(list);
             } else if ("to".equals(element)) {
                 @SuppressWarnings("unchecked")
@@ -783,23 +809,41 @@ public class ASMContentHandler extends DefaultHandler implements Opcodes {
                 ModuleVisitor mv = (ModuleVisitor) peek();
                 mv.visitUse(attrs.getValue("service"));
             }  else if ("provides".equals(element)) {
-                ModuleVisitor mv = (ModuleVisitor) peek();
-                mv.visitProvide(attrs.getValue("service"), attrs.getValue("impl"));
-            }
+                push(attrs.getValue("service"));
+                push(0);  // see end() below
+                ArrayList<String> list = new ArrayList<String>();
+                push(list);
+            }  else if ("with".equals(element)) {
+                @SuppressWarnings("unchecked")
+                ArrayList<String> list = (ArrayList<String>) peek();
+                list.add(attrs.getValue("provider"));
+            }  
         }
 
         @Override
         public void end(final String element) {
-            if ("exports".equals(element)) {
+            boolean exports = "exports".equals(element);
+            boolean opens = "opens".equals(element);
+            boolean provides = "provides".equals(element);
+            if (exports | opens | provides) {
                 @SuppressWarnings("unchecked")
                 ArrayList<String> list = (ArrayList<String>) pop();
-                String export = list.remove(0);  // name of the exported package
+                int access = (Integer) pop();
+                String name = (String) pop();
                 String[] tos = null;
                 if (!list.isEmpty()) {
                     tos = list.toArray(new String[list.size()]);
                 }
                 ModuleVisitor mv = (ModuleVisitor) peek();
-                mv.visitExport(export, tos);
+                if (exports) {
+                    mv.visitExport(name, access, tos);
+                } else {
+                    if (opens) {
+                        mv.visitOpen(name, access, tos);
+                    } else {
+                        mv.visitProvide(name, tos);
+                    }
+                }
             } else if ("module".equals(element)) {
                 ((ModuleVisitor) pop()).visitEnd();
             }

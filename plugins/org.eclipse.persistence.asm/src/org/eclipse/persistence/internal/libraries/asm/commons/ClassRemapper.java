@@ -30,7 +30,10 @@
 
 package org.eclipse.persistence.internal.libraries.asm.commons;
 
+import java.util.List;
+
 import org.eclipse.persistence.internal.libraries.asm.AnnotationVisitor;
+import org.eclipse.persistence.internal.libraries.asm.Attribute;
 import org.eclipse.persistence.internal.libraries.asm.ClassVisitor;
 import org.eclipse.persistence.internal.libraries.asm.FieldVisitor;
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
@@ -69,9 +72,9 @@ public class ClassRemapper extends ClassVisitor {
     }
 
     @Override
-    public ModuleVisitor visitModule() {
-        ModuleVisitor mv = super.visitModule();
-        return mv == null ? null: createModuleRemapper(mv); 
+    public ModuleVisitor visitModule(String name, int flags, String version) {
+        ModuleVisitor mv = super.visitModule(remapper.mapModuleName(name), flags, version);
+        return mv == null ? null : createModuleRemapper(mv); 
     }
     
     @Override
@@ -89,6 +92,18 @@ public class ClassRemapper extends ClassVisitor {
         return av == null ? null : createAnnotationRemapper(av);
     }
 
+    @Override
+    public void visitAttribute(Attribute attr) {
+        if (attr instanceof ModuleHashesAttribute) {
+            ModuleHashesAttribute hashesAttr = new ModuleHashesAttribute();
+            List<String> modules = hashesAttr.modules;
+            for(int i = 0; i < modules.size(); i++) {
+                modules.set(i, remapper.mapModuleName(modules.get(i)));
+            }
+        }
+        super.visitAttribute(attr);
+    }
+    
     @Override
     public FieldVisitor visitField(int access, String name, String desc,
             String signature, Object value) {

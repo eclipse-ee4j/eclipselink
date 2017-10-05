@@ -146,7 +146,7 @@ public class CheckSignatureAdapter extends SignatureVisitor {
                 || (state != EMPTY && state != FORMAL && state != BOUND)) {
             throw new IllegalStateException();
         }
-        CheckMethodAdapter.checkIdentifier(name, "formal type parameter");
+        checkIdentifier(name, "formal type parameter");
         state = FORMAL;
         if (sv != null) {
             sv.visitFormalTypeParameter(name);
@@ -255,7 +255,7 @@ public class CheckSignatureAdapter extends SignatureVisitor {
         if (type != TYPE_SIGNATURE || state != EMPTY) {
             throw new IllegalStateException();
         }
-        CheckMethodAdapter.checkIdentifier(name, "type variable");
+        checkIdentifier(name, "type variable");
         state = SIMPLE_TYPE;
         if (sv != null) {
             sv.visitTypeVariable(name);
@@ -277,7 +277,7 @@ public class CheckSignatureAdapter extends SignatureVisitor {
         if (type != TYPE_SIGNATURE || state != EMPTY) {
             throw new IllegalStateException();
         }
-        CheckMethodAdapter.checkInternalName(name, "class name");
+        checkClassName(name, "class name");
         state = CLASS_TYPE;
         if (sv != null) {
             sv.visitClassType(name);
@@ -289,7 +289,7 @@ public class CheckSignatureAdapter extends SignatureVisitor {
         if (state != CLASS_TYPE) {
             throw new IllegalStateException();
         }
-        CheckMethodAdapter.checkIdentifier(name, "inner class name");
+        checkIdentifier(name, "inner class name");
         if (sv != null) {
             sv.visitInnerClassType(name);
         }
@@ -325,6 +325,32 @@ public class CheckSignatureAdapter extends SignatureVisitor {
         state = END;
         if (sv != null) {
             sv.visitEnd();
+        }
+    }
+
+    private void checkClassName(final String name, final String msg) {
+        if (name == null || name.length() == 0) {
+            throw new IllegalArgumentException("Invalid " + msg
+                    + " (must not be null or empty)");
+        }
+        for (int i = 0; i < name.length(); ++i) {
+            if (".;[<>:".indexOf(name.charAt(i)) != -1) {
+                throw new IllegalArgumentException("Invalid " + msg
+                        + " (must not contain . ; [ < > or :): " + name);
+            }
+        }
+    }
+
+    private void checkIdentifier(final String name, final String msg) {
+        if (name == null || name.length() == 0) {
+            throw new IllegalArgumentException("Invalid " + msg
+                    + " (must not be null or empty)");
+        }
+        for (int i = 0; i < name.length(); ++i) {
+            if (".;[/<>:".indexOf(name.charAt(i)) != -1) {
+                throw new IllegalArgumentException("Invalid " + msg
+                        + " (must not contain . ; [ / < > or :): " + name);
+            }
         }
     }
 }

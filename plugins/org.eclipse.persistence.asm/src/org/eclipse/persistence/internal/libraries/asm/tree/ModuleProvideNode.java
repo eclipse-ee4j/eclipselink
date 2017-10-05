@@ -29,6 +29,8 @@
  */
 package org.eclipse.persistence.internal.libraries.asm.tree;
 
+import java.util.List;
+
 import org.eclipse.persistence.internal.libraries.asm.ModuleVisitor;
 
 /**
@@ -43,21 +45,21 @@ public class ModuleProvideNode {
     public String service;
 
     /**
-     * The implementation name (in its internal form).
+     * The service provider names (in their internal form).
      */
-    public String impl;
+    public List<String> providers;
 
     /**
      * Constructs a new {@link ModuleProvideNode}.
      * 
      * @param service
      *            the service name (in its internal form).
-     * @param impl
-     *            the implementation name (in its internal form).
+     * @param providers
+     *            the service provider names (in their internal form).
      */
-    public ModuleProvideNode(final String service, final String impl) {
+    public ModuleProvideNode(final String service, final List<String> providers) {
         this.service = service;
-        this.impl = impl;
+        this.providers = providers;
     }
 
     /**
@@ -67,6 +69,6 @@ public class ModuleProvideNode {
      *            a module visitor.
      */
     public void accept(final ModuleVisitor mv) {
-        mv.visitProvide(service, impl);
+        mv.visitProvide(service, providers.toArray(new String[0]));
     }
 }

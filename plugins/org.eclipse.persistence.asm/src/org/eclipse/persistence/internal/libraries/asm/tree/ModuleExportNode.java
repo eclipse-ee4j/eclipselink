@@ -43,6 +43,12 @@ public class ModuleExportNode {
      * The package name.
      */
     public String packaze;
+    
+    /**
+     * The access flags (see {@link org.eclipse.persistence.internal.libraries.asm.Opcodes}).
+     * Valid values are {@code ACC_SYNTHETIC} and {@code ACC_MANDATED}.
+     */
+    public int access;
 
     /**
      * A list of modules that can access to this exported package.
@@ -58,8 +64,9 @@ public class ModuleExportNode {
      * @param modules
      *            a list of modules that can access to this exported package.
      */
-    public ModuleExportNode(final String packaze, final List<String> modules) {
+    public ModuleExportNode(final String packaze, final int access, final List<String> modules) {
         this.packaze = packaze;
+        this.access = access;
         this.modules = modules;
     }
 
@@ -70,6 +77,6 @@ public class ModuleExportNode {
      *            a module visitor.
      */
     public void accept(final ModuleVisitor mv) {
-        mv.visitExport(packaze, (modules == null)? null: modules.toArray(new String[0]));
+        mv.visitExport(packaze, access, (modules == null) ? null : modules.toArray(new String[0]));
     }
 }

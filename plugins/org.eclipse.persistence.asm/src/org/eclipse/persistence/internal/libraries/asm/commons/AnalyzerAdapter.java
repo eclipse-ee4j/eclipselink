@@ -661,6 +661,8 @@ public class AnalyzerAdapter extends MethodVisitor {
             t1 = pop();
             if (t1 instanceof String) {
                 pushDesc(((String) t1).substring(1));
+            } else if (t1 == Opcodes.NULL) {
+                push(t1);
             } else {
                 push("java/lang/Object");
             }

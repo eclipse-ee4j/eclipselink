@@ -728,6 +728,12 @@ public class CheckMethodAdapter extends MethodVisitor {
             throw new IllegalArgumentException(
                     "INVOKEINTERFACE can't be used with classes");
         }
+        if (opcode == Opcodes.INVOKESPECIAL && itf
+                && (version & 0xFFFF) < Opcodes.V1_8) {
+            throw new IllegalArgumentException(
+                    "INVOKESPECIAL can't be used with interfaces prior to Java 8");
+        }
+
         // Calling super.visitMethodInsn requires to call the correct version
         // depending on this.api (otherwise infinite loops can occur). To
         // simplify and to make it easier to automatically remove the backward

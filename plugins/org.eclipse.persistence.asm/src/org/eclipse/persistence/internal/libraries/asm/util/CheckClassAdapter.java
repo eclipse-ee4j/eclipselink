@@ -151,6 +151,11 @@ public class CheckClassAdapter extends ClassVisitor {
      * <tt>true</tt> if the visitEnd method has been called.
      */
     private boolean end;
+    
+    /**
+     * <tt>true</tt> if the visitModule method has been called.
+     */
+    private boolean module;
 
     /**
      * The already visited labels. This map associate Integer values to Label
@@ -381,7 +386,10 @@ public class CheckClassAdapter extends ClassVisitor {
                 + Opcodes.ACC_ANNOTATION + Opcodes.ACC_ENUM
                 + Opcodes.ACC_DEPRECATED + Opcodes.ACC_MODULE
                 + 0x40000); // ClassWriter.ACC_SYNTHETIC_ATTRIBUTE
-        if (name == null || !name.endsWith("package-info")) {
+        if (name == null) {
+            throw new IllegalArgumentException("Illegal class name (null)");
+        }
+        if (!name.endsWith("package-info")) {
             CheckMethodAdapter.checkInternalName(name, "class name");
         }
         if ("java/lang/Object".equals(name)) {
@@ -423,8 +431,19 @@ public class CheckClassAdapter extends ClassVisitor {
     }
 
     @Override
-    public ModuleVisitor visitModule() {
-        return new CheckModuleAdapter(super.visitModule());
+    public ModuleVisitor visitModule(String name, int access, String version) {
+        checkState();
+        if (module) {
+            throw new IllegalStateException(
+                    "visitModule can be called only once.");
+        }
+        module = true;
+        if (name == null) {
+            throw new IllegalArgumentException("Illegal module name (null)");
+        }
+        checkAccess(access, Opcodes.ACC_OPEN | Opcodes.ACC_SYNTHETIC);
+        return new CheckModuleAdapter(super.visitModule(name, access, version), 
+            (access & Opcodes.ACC_OPEN) != 0);
     }
     
     @Override
