@@ -54,7 +54,7 @@ def help_msg():
     print '        admin_user     :: Admin user name (default weblogic)'
     print '        admin_password :: Admin password (default welcome1)'
     print '        jvm_options    :: Command line options to be passed to Java VM executable'
-    print '                          (default -XX:PermSize=128m
+    print '                          (default -XX:PermSize=128m'
     print '                          -Dweblogic.Stdout=stdout.log -Dweblogic.Stderr=stderr.log)'
     print ''
     print '    start-partition --partition=<partition_name> [--host=<host>] [--port=<port>]'
@@ -66,7 +66,7 @@ def help_msg():
     print '        admin_user     :: Admin user name (default weblogic)'
     print '        admin_password :: Admin password (default welcome1)'
     print '        jvm_options    :: Command line options to be passed to Java VM executable'
-    print '                          (default -XX:PermSize=128m
+    print '                          (default -XX:PermSize=128m'
     print '                          -Dweblogic.Stdout=stdout.log -Dweblogic.Stderr=stderr.log)'
 #### Broken, do not publish
 #    print ''
