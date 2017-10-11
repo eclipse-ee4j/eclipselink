@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -827,7 +827,9 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "jaxp_sec_disabled", "Xml Security disabled, no JAXP {0} external access configuration necessary." },
         { "jaxp_sec_explicit", "Detected explicitly JAXP configuration, no JAXP {0} external access configuration necessary." },
         { "jaxp_sec_prop_supported", "Property {0} is supported and has been successfully set by used JAXP implementation." },
-        { "jaxp_sec_prop_not_supported", "Property {0} is not supported by used JAXP implementation." }
+        { "jaxp_sec_prop_not_supported", "Property {0} is not supported by used JAXP implementation." },
+        { "javase_version_ex_method_not_found", "Method {0} was not found in {1}" },
+        { "javase_version_ex_method_call", "Exception when calling method {0}: {1}" }
     };
 
     /**

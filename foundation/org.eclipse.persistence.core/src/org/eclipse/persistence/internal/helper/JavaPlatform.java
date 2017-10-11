@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -9,16 +9,17 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     ailitchev - 2010/08/19
+ *          Bug 322960 - TWO TESTS IN CUSTOMFEATURESJUNITTESTSUITE FAILED WITH 11.2.0.2 DRIVER
+ *     Tomas Kraus - 2017/10/11
+ *          Bug 525854 - Fix Java SE platform detection and clean up platform code
  ******************************************************************************/
 package org.eclipse.persistence.internal.helper;
 
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.sql.SQLException;
-
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedClassForName;
-import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
+import java.sql.SQLXML;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
 
 /**
  *  INTERNAL:
@@ -29,61 +30,75 @@ import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
  *  @author Tom Ware
  */
 public class JavaPlatform {
-    protected static JDKPlatform platform = null;
 
     /**
-     *  INTERNAL:
-     *  Get the version of JDK being used from the Version class.
-     *  @return JDKPlatform a platform appropriate for the version of JDK being used.
+     * PERF: The like expression compiled Pattern objects are cached
+     * to avoid re-compilation on every usage.
      */
-    protected static JDKPlatform getPlatform() {
-        if (platform == null) {
-            if (JavaSEPlatform.CURRENT.atLeast(JavaSEPlatform.v1_6)) {
-                try {
-                    Class platformClass = null;
-                    // use class.forName() to avoid loading the JDK 1.6 class unless it is needed.
-                    if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                        try {
-                            platformClass = AccessController.doPrivileged(new PrivilegedClassForName("org.eclipse.persistence.internal.helper.JDK16Platform"));
-                        } catch (PrivilegedActionException exception) {
-                        }
-                    } else {
-                        platformClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName("org.eclipse.persistence.internal.helper.JDK16Platform");
-                    }
-                    if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                        try {
-                            platform = (JDKPlatform)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(platformClass));
-                        } catch (PrivilegedActionException exception) {
-                        }
-                    } else {
-                        platform = (JDKPlatform)PrivilegedAccessHelper.newInstanceFromClass(platformClass);
-                    }
-                } catch (Exception exception) {
-                }
-            }
-            if (platform == null) {
-                platform = new JDK15Platform();
-            }
-        }
-        return platform;
-    }
+    private static final ConcurrentHashMap patternCache = new ConcurrentHashMap();
 
     /**
-     *  INTERNAL:
-     *  Conform an expression which uses the operator "like" for an in-memory query
-     *  @return Boolean (TRUE, FALSE, null == unknown)
+     * PERF: The regular expression compiled Pattern objects are cached
+     * to avoid re-compilation on every usage.
+     */
+    private static final ConcurrentHashMap regexpPatternCache = new ConcurrentHashMap();
+
+    /**
+     * INTERNAL:
+     * An implementation of in memory queries with Like which uses the
+     * regular expression framework.
      */
     public static Boolean conformLike(Object left, Object right) {
-        return getPlatform().conformLike(left, right);
+        if ((left == null) && (right == null)) {
+            return Boolean.TRUE;
+        } else if ((left == null) || (right == null)) {
+            return Boolean.FALSE;
+        }
+        left = String.valueOf(left);
+        right = String.valueOf(right);
+        // PERF: First check the pattern cache for the pattern.
+        // Note that the original string is the key, to avoid having to translate it first.
+        Pattern pattern = (Pattern)patternCache.get(right);
+        if (pattern == null) {
+            // Bug 3936427 - Replace regular expression reserved characters with escaped version of those characters
+            // For instance replace ? with \?
+            String convertedRight = Helper.convertLikeToRegex((String)right);
+
+            pattern = Pattern.compile(convertedRight);
+            // Ensure cache does not grow beyond 100.
+            if (patternCache.size() > 100) {
+                patternCache.remove(patternCache.keySet().iterator().next());
+            }
+            patternCache.put(right, pattern);
+        }
+        return pattern.matcher((String)left).matches();
     }
 
     /**
-     *  INTERNAL:
-     *  Conform an expression which uses the operator "regexp" for an in-memory query
-     *  @return Boolean (TRUE, FALSE, null == unknown)
+     * INTERNAL:
+     * An implementation of in memory queries with Regexp which uses the
+     * regular expression framework.
      */
     public static Boolean conformRegexp(Object left, Object right) {
-        return getPlatform().conformRegexp(left, right);
+        if ((left == null) && (right == null)) {
+            return Boolean.TRUE;
+        } else if ((left == null) || (right == null)) {
+            return Boolean.FALSE;
+        }
+        left = String.valueOf(left);
+        right = String.valueOf(right);
+        // PERF: First check the pattern cache for the pattern.
+        // Note that the original string is the key, to avoid having to translate it first.
+        Pattern pattern = (Pattern)regexpPatternCache.get(right);
+        if (pattern == null) {
+            pattern = Pattern.compile((String)right);
+            // Ensure cache does not grow beyond 100.
+            if (regexpPatternCache.size() > 100) {
+                regexpPatternCache.remove(regexpPatternCache.keySet().iterator().next());
+            }
+            regexpPatternCache.put(right, pattern);
+        }
+        return pattern.matcher((String)left).matches();
     }
 
     /**
@@ -91,7 +106,7 @@ public class JavaPlatform {
      * Indicates whether the passed object implements java.sql.SQLXML introduced in jdk 1.6
      */
     public static boolean isSQLXML(Object object) {
-        return getPlatform().isSQLXML(object);
+        return (object instanceof SQLXML);
     }
 
     /**
@@ -99,6 +114,9 @@ public class JavaPlatform {
      * Casts the passed object to SQLXML and calls getString and free methods
      */
     public static String getStringAndFreeSQLXML(Object sqlXml) throws SQLException {
-        return getPlatform().getStringAndFreeSQLXML(sqlXml);
+        String str = ((SQLXML)sqlXml).getString();
+        ((SQLXML)sqlXml).free();
+        return str;
     }
+
 }
