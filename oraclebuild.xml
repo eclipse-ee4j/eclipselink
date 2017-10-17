@@ -59,7 +59,7 @@ if build=true
              However, just in case default values are set:
         -->
         <property name="git.exec"        value="/usr/bin/git"/>
-        <property name="branch"          value="master"/>
+        <property name="branch"          value="2.7"/>
 
         <echo message=" "/>
         <echo message="os.name         = '${os.name}'"/>
