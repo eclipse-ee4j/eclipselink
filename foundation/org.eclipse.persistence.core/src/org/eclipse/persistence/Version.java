@@ -135,7 +135,6 @@ public class Version {
             case v1_8:
                 JDK_VERSION = JDK_1_8;
                 break;
-            case v1_9:
             case v9_0:
                 JDK_VERSION = JDK_1_9;
                 break;
@@ -226,7 +225,7 @@ public class Version {
      *         when we do not run on Java SE 1.9.
      */
     public static boolean isJDK19() {
-        return JavaSEPlatform.is(JavaSEPlatform.v9_0) || JavaSEPlatform.is(JavaSEPlatform.v1_9);
+        return JavaSEPlatform.is(JavaSEPlatform.v9_0);
     }
 
     public static void printVersion ( ) {

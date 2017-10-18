@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2016 Oracle and/or its affiliates.
+ * Copyright (c) 2015, 2017 Oracle and/or its affiliates.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -145,6 +145,25 @@ public class ReflectionHelper {
     }
 
     /**
+     * Invoke a method of the specified class instance.
+     * @param name Method name.
+     * @param obj Class instance containing method to invoke.
+     * @param parameterTypes Method parameter array.
+     * @param returnType Class to be returned.
+     * @param args An array of objects to be passed as arguments to the method call
+     * @throws InvocationTargetException If the underlying constructor throws an exception.
+     * @throws IllegalArgumentException  If an unwrapping conversion fails.
+     * @throws IllegalAccessException    If the underlying field is either inaccessible or final.
+     * @throws SecurityException         If a security manager is present and access to the field was denied.
+     * @throws NoSuchMethodException     If a field with the specified name is not found.
+     */
+    public static final <T> T invokeMethod(
+            final String name, final Object obj, final Class<?>[] parameterTypes, final Class<T> returnType, final Object... args)
+            throws ReflectiveOperationException {
+        return returnType.cast(invokeMethod(name, obj, parameterTypes, args));
+    }
+
+    /**
      * Invoke static method of the specified class.
      * @param name Method name.
      * @param c Class containing method to invoke.
@@ -169,6 +188,25 @@ public class ReflectionHelper {
             m.setAccessible(accessible);
         }
         return result;
+    }
+
+    /**
+     * Invoke static method of the specified class.
+     * @param name Method name.
+     * @param c Class containing method to invoke.
+     * @param parameterTypes Method parameter array.
+     * @param returnType Class to be returned.
+     * @param args An array of objects to be passed as arguments to the method call
+     * @throws InvocationTargetException If the underlying constructor throws an exception.
+     * @throws IllegalArgumentException  If an unwrapping conversion fails.
+     * @throws IllegalAccessException    If the underlying field is either inaccessible or final.
+     * @throws SecurityException         If a security manager is present and access to the field was denied.
+     * @throws NoSuchMethodException     If a field with the specified name is not found.
+     */
+    public static final <T> T invokeStaticMethod(
+            final String name, final Class c, final Class<?>[] parameterTypes, final Class<T> returnType, final Object... args)
+            throws ReflectiveOperationException {
+        return returnType.cast(invokeStaticMethod(name, c, parameterTypes, args));
     }
 
 }

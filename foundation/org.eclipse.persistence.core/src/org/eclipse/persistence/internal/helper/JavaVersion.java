@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,10 +12,13 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.helper;
 
+import java.lang.reflect.Method;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
 
 /**
  * Java version storage class. Used for version numbers retrieved from
@@ -35,13 +38,12 @@ public final class JavaVersion {
     public static final String VM_VERSION_PROPERTY = "java.specification.version";
 
     /**
-     * Java specification version output regular expression pattern.
-     * Regular expression contains tokens to read individual version number
-     * components. Expected input is string like
-     * <code>java version "1.6"</code> or <code>9</code>.
+     * Compiled regular expression pattern to read individual version number components.
+     * Expected input is string like <code>java version "1.6"</code> or <code>9</code>.
      */
-    private static final String VM_VERSION_PATTERN =
-            "[^0-9]*([0-9]+)(\\.([0-9]+))*";
+    private static final Pattern VM_VERSION_PATTERN = Pattern.compile(
+            "[^0-9]*([0-9]+)(\\.([0-9]+))*"
+    );
 
     /** Number of <code>Matcher</code> groups (REGEX tokens) expected in Java VM
      *  version output. */
@@ -55,10 +57,72 @@ public final class JavaVersion {
         return PrivilegedAccessHelper.getSystemProperty(VM_VERSION_PROPERTY);
     }
 
+    // EclipseLink still supports JDK <9 so using Runtime.Version to retrieve
+    // current JDK version is optional and can only be done trough reflection calls.
+    // TODO: Remove reflection after JDK <9 support is dropped.
+
+    /** JDK 9+ java.lang.Runtime.Version class name. */
+    private static final String VERSION_CLASS_NAME = "java.lang.Runtime$Version";
+
+    /** JDK 9+ java.lang.Runtime static version() method name. */
+    private static final String RUNTIME_VERSION_METHOD_NAME = "version";
+
     /**
-     * Java specification version detector.
-     * Retrieves Java specification version from JDK system property. Version string should
-     * look like:<ul>
+     * Invoke {@code Runtime#version()} method to retrieve {@code Runtime.Version} instance.
+     * @return {@code Runtime.Version} instance for JDK 9 and later or {@code null} otherwise.
+     */
+    private static Object runtimeVersionObject() {
+        try {
+            final Method m = Runtime.class.getMethod(RUNTIME_VERSION_METHOD_NAME);
+            return m.invoke(null);
+        // JDK <9, can't use java.lang.Runtime.Version. Just log with FINEST level and return null.
+        } catch (NoSuchMethodException e) {
+            AbstractSessionLog.getLog().log(SessionLog.FINEST, "javase_version_ex_method_not_found", new String[] {RUNTIME_VERSION_METHOD_NAME, Runtime.class.getName()});
+        // Shall never be thrown. Shall be logged as warning.
+        } catch (ReflectiveOperationException e) {
+            AbstractSessionLog.getLog().log(SessionLog.WARNING, "javase_version_ex_method_call", new String[] {RUNTIME_VERSION_METHOD_NAME, e.getClass().getName()});
+        }
+        return null;
+    }
+
+    /**
+     * Invoke {@code Runtime.Version} method with given name ({@code major} or {@code minor}) to retrieve version numbers.
+     * @param vClass {@code Runtime.Version} class.
+     * @param vObj {@code Runtime.Version} class instance containing JDK version information.
+     * @param name name of {@code Runtime.Version} instance method to invoke.
+     */
+    private static Integer getRuntimeVersionNumber(final Object vObj, final String name) {
+        try {
+            final Method m = vObj.getClass().getMethod(name);
+            return (Integer) m.invoke(vObj);
+        // Shall never be thrown. Shall be logged as warning.
+        } catch (ReflectiveOperationException e) {
+            AbstractSessionLog.getLog().log(SessionLog.WARNING, "javase_version_ex_method_call", new String[] {RUNTIME_VERSION_METHOD_NAME, e.getClass().getName()});
+        }
+        return null;
+    }
+
+    /**
+     * Retrieve JDK version numbers from {@code Runtime.Version} instance returned by {@code Runtime#version()} method.
+     * This works only for JDK 9 and later.
+     * @return Current JDK version for JDK 9 and later or {@code null} otherwise or when any problem with version retrieval happened.
+     */
+    private static JavaVersion runtimeVersion() {
+        final Object vObj = runtimeVersionObject();
+        if (vObj == null) {
+            return null;
+        }
+        final Integer major = getRuntimeVersionNumber(vObj, "major");
+        final Integer minor = getRuntimeVersionNumber(vObj, "minor");
+        if (major != null && minor != null) {
+            return new JavaVersion(major, minor);
+        }
+        return null;
+    }
+
+    /**
+     * Parse Java specification version from JDK system property provided as an argument.
+     * Version string should look like:<ul>
      * <li/><code>"MA.MI"</code>
      * </ul>
      * Where<ul>
@@ -66,11 +130,10 @@ public final class JavaVersion {
      * <li/>MI is minor version number
      * </ul>
      * Label <code>java version</code> is parsed as non case sensitive.
+     * @return Current JDK version for any JDK from system property.
      */
-    public static JavaVersion vmVersion() {
-        final String version = vmVersionString();
-        final Pattern pattern = Pattern.compile(VM_VERSION_PATTERN);
-        final Matcher matcher = pattern.matcher(version);
+    private static JavaVersion propertyVersionParser(final String version) {
+        final Matcher matcher = VM_VERSION_PATTERN.matcher(version);
         int major = 0, minor = 0;
         if (matcher.find()) {
             major = Integer.parseInt(matcher.group(1));
@@ -78,6 +141,22 @@ public final class JavaVersion {
             minor = min != null ? Integer.parseInt(min) : 0;
         }
         return new JavaVersion(major, minor);
+    }
+
+    /**
+     * Retrieve Java specification version from JDK system property.
+     * @return Current JDK version for any JDK from system property.
+     */
+    private static JavaVersion propertyVersion() {
+        return propertyVersionParser(vmVersionString());
+    }
+
+    /**
+     * Java specification version detector.
+     */
+    public static JavaVersion vmVersion() {
+        final JavaVersion version = runtimeVersion();
+        return version != null ? version : propertyVersion();
     }
 
     /** Major version number. */
@@ -147,7 +226,8 @@ public final class JavaVersion {
 
     /**
      * Return {@link JavaSEPlatform} matching this Java SE specification version.
-     * @return {@link JavaSEPlatform} matching this Java SE specification version.
+     * @return {@link JavaSEPlatform} matching this Java SE specification version
+     *         or {@code JavaSEPlatform.DEFAULT} as default when platform matching fails.
      */
     public final JavaSEPlatform toPlatform() {
         return JavaSEPlatform.toValue(major, minor);
