@@ -23,6 +23,8 @@
  *       - 336122: ValidationException thrown for JoinColumns on OneToMany with composite primary key
  *     01/06/2015-2.6 Dalia Abo Sheasha
  *       - 454917: Informix tables need to use INT fields when referencing SERIAL types.
+ *     09/11/2017-2.1 Will Dazey 
+ *       - 520387: multiple owning descriptors for an embeddable are not set
  ******************************************************************************/
 
 package org.eclipse.persistence.testing.models.jpa.advanced.compositepk;
@@ -1131,6 +1133,60 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         DESCRIPTION_field.setUnique(false);
         DESCRIPTION_field.setIsIdentity(false);
         table.addField(DESCRIPTION_field);
+
+        return table;
+    }
+
+    public static TableDefinition buildAUTHORTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_AUTHOR");
+
+        FieldDefinition ID_NUMBER_field = new FieldDefinition();
+        ID_NUMBER_field.setName("ID_NUMBER");
+        ID_NUMBER_field.setTypeName("NUMERIC");
+        ID_NUMBER_field.setSize(15);
+        ID_NUMBER_field.setShouldAllowNull(false);
+        ID_NUMBER_field.setIsPrimaryKey(true);
+        ID_NUMBER_field.setUnique(false);
+        ID_NUMBER_field.setIsIdentity(true);
+        table.addField(ID_NUMBER_field);
+
+        FieldDefinition F_NAME_field = new FieldDefinition();
+        F_NAME_field.setName("NAME");
+        F_NAME_field.setTypeName("VARCHAR");
+        F_NAME_field.setSize(40);
+        F_NAME_field.setShouldAllowNull(false);
+        F_NAME_field.setIsPrimaryKey(false);
+        F_NAME_field.setUnique(false);
+        F_NAME_field.setIsIdentity(true);
+        table.addField(F_NAME_field);
+
+        return table;
+    }
+
+    public static TableDefinition buildBOOKTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_BOOK");
+
+        FieldDefinition ID_NUMBER_field = new FieldDefinition();
+        ID_NUMBER_field.setName("ID_NUMBER");
+        ID_NUMBER_field.setTypeName("NUMERIC");
+        ID_NUMBER_field.setSize(15);
+        ID_NUMBER_field.setShouldAllowNull(false);
+        ID_NUMBER_field.setIsPrimaryKey(true);
+        ID_NUMBER_field.setUnique(false);
+        ID_NUMBER_field.setIsIdentity(true);
+        table.addField(ID_NUMBER_field);
+
+        FieldDefinition F_NAME_field = new FieldDefinition();
+        F_NAME_field.setName("TITLE");
+        F_NAME_field.setTypeName("VARCHAR");
+        F_NAME_field.setSize(40);
+        F_NAME_field.setShouldAllowNull(false);
+        F_NAME_field.setIsPrimaryKey(false);
+        F_NAME_field.setUnique(false);
+        F_NAME_field.setIsIdentity(true);
+        table.addField(F_NAME_field);
 
         return table;
     }
