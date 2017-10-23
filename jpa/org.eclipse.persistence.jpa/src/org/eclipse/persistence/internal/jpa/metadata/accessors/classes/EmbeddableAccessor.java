@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -54,6 +54,8 @@
  *       - 251554: ExcludeDefaultMapping annotation needed
  *     03/24/2011-2.3 Guy Pelletier
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     09/11/2017-2.1 Will Dazey 
+ *       - 520387: multiple owning descriptors for an embeddable are not set
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -154,10 +156,12 @@ public class EmbeddableAccessor extends ClassAccessor {
             // another entity within the persistence unit.
             EmbeddableAccessor embeddableAccessor = getProject().getEmbeddableAccessor(potentialEmbeddableClass, true);
 
-            if (embeddableAccessor != null && ! embeddableAccessor.isPreProcessed()) {
+            if (embeddableAccessor != null) {
                 embeddableAccessor.addEmbeddingAccessor(embeddingAccessor);
                 embeddableAccessor.addOwningDescriptors(getOwningDescriptors());
-                embeddableAccessor.preProcess();
+                if(!embeddableAccessor.isPreProcessed()) {
+                    embeddableAccessor.preProcess();
+                }
             }
         }
     }

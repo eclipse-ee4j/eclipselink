@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -13,6 +13,8 @@
  *       - 329008: Support dynamic context creation without persistence.xml
  *     01/23/2013-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     09/11/2017-2.1 Will Dazey 
+ *       - 520387: multiple owning descriptors for an embeddable are not set
  ******************************************************************************/
 package org.eclipse.persistence.testing.framework.junit;
 
@@ -999,6 +1001,16 @@ public abstract class JUnitTestCase extends TestCase {
         }
         warning("This database does not support NOWAIT.");
         return false;
+    }
+
+    public static boolean supportsSequenceObjects(String puName) {
+        DatabasePlatform platform = getDatabaseSession(puName).getPlatform();
+        return platform.supportsSequenceObjects();
+    }
+
+    public boolean supportsSequenceObjects() {
+        DatabasePlatform platform = getDatabaseSession(getPersistenceUnitName()).getPlatform();
+        return platform.supportsSequenceObjects();
     }
 
     /**
