@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,20 +27,24 @@ import java.sql.SQLException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.persistence.spi.PersistenceUnitInfo;
 
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.databaseaccess.Accessor;
+import org.eclipse.persistence.internal.helper.JPAClassLoaderHolder;
+import org.eclipse.persistence.internal.localization.ToStringLocalization;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.ExternalTransactionController;
 import org.eclipse.persistence.sessions.JNDIConnector;
-import org.eclipse.persistence.internal.helper.JPAClassLoaderHolder;
-import org.eclipse.persistence.internal.localization.ToStringLocalization;
-import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
-import org.eclipse.persistence.internal.databaseaccess.Accessor;
+import org.eclipse.persistence.transaction.JTA11TransactionController;
 
 /**
  * PUBLIC:
@@ -108,7 +112,6 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      * at runtime
      */
     private boolean isJTAEnabled;
-
 
     /**
      * INTERNAL:
@@ -344,6 +347,32 @@ public abstract class ServerPlatformBase implements ServerPlatform {
         return this.isJTAEnabled;
     }
 
+    /**
+     * INTERNAL:
+     * Check whether JTA 1.1 API is available.
+     *
+     * @return value of {@code true} when JTA 1.1 API is available or {@code false} otherwise.
+     */
+    public boolean isJTA11() {
+        Context context = null;
+        try {
+            context = new InitialContext();
+            if (context.lookup(JTA11TransactionController.JNDI_TRANSACTION_SYNCHRONIZATION_REGISTRY) != null) {
+                return true;
+            }
+        } catch (NamingException ex) {
+            // Ignore
+        } finally {
+            if (context != null) {
+                try {
+                    context.close();
+                } catch (Exception ex) {
+                    // Ignore
+                }
+            }
+        }
+        return false;
+    }
 
     /**
      * INTERNAL:
@@ -401,8 +430,8 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      * INTERNAL: disableJTA(): Configure the receiver such that my external transaction controller class will
      * be ignored, and will NOT be used to populate DatabaseSession's external transaction controller class
      * at runtime.
-       *
-       * TopLink will NOT be configured to register for callbacks for beforeCompletion and afterCompletion.
+     *
+     * TopLink will NOT be configured to register for callbacks for beforeCompletion and afterCompletion.
      *
      * @see #getExternalTransactionControllerClass()
      * @see #isJTAEnabled()

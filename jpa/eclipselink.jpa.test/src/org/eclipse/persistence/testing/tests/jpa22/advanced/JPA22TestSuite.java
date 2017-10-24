@@ -25,6 +25,8 @@ package org.eclipse.persistence.testing.tests.jpa22.advanced;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
+
+import org.eclipse.persistence.testing.tests.jpa22.jta.JTATestSuite;
 import org.eclipse.persistence.testing.tests.jpa22.metadata.MetadataASMFactoryTest;
 
 public class JPA22TestSuite extends TestSuite {
@@ -48,9 +50,9 @@ public class JPA22TestSuite extends TestSuite {
         fullSuite.addTest(XMLForeignKeyTestSuite.suite());
         fullSuite.addTest(XMLIndexTestSuite.suite());
         fullSuite.addTest(XMLEntityGraphTestSuite.suite());
-
         fullSuite.addTest(AnnotationsTestSuite.suite());
         fullSuite.addTest(MetadataASMFactoryTest.suite());
+        fullSuite.addTest(JTATestSuite.suite());
 
         //make sure EntityManagerFactoryTestSuite#testGetPersistenceUnitUtilOnCloseEMF
         //runs last as 'MulitPU-1' becomes closed after this test

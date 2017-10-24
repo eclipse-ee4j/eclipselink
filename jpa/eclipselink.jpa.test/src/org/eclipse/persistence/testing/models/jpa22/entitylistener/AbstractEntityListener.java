@@ -7,7 +7,6 @@
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  ******************************************************************************/
-
 package org.eclipse.persistence.testing.models.jpa22.entitylistener;
 
 import org.eclipse.persistence.testing.models.jpa22.sessionbean.InjectedBean;

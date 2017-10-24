@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -8,25 +8,19 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
+ *     10/24/2017-3.0 Tomas Kraus
+ *       - 526419: Modify EclipseLink to reflect changes in JTA 1.1.
  ******************************************************************************/
-package org.eclipse.persistence.transaction.wls;
+package org.eclipse.persistence.testing.models.jpa22.jta;
 
 import javax.transaction.TransactionManager;
+
 import org.eclipse.persistence.transaction.JTATransactionController;
 
-/**
- * <p>
- * <b>Purpose</b>: TransactionController implementation for WLS JTA
- * <p>
- * <b>Description</b>: Implements the required behavior for controlling JTA 1.0
- * transactions in WLS. The JTA TransactionManager must be set on the instance.
- *
- * @see org.eclipse.persistence.transaction.JTATransactionController
- */
-public class WebLogicTransactionController extends JTATransactionController {
+public class JTATransCtrl extends JTATransactionController {
 
-    static final String JNDI_TRANSACTION_MANAGER_NAME = "weblogic.transaction.TransactionManager";
+    /** TransactionManager common JNDI name. */
+    static final String JNDI_TRANSACTION_MANAGER_NAME = "java:comp/UserTransaction";
 
     /**
      * INTERNAL:

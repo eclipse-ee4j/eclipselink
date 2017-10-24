@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -195,4 +195,17 @@ public class WebLogicPlatform extends JMXServerPlatformBase {
             }
         }
     }
+
+    /**
+     * INTERNAL:
+     * Check whether JTA 1.1 API is available.
+     * WLS older than 10.0 is not JTA 1.1 compliant.
+     *
+     * @return always returns {@code false} for WLS older than 10.0.
+     */
+    @Override
+    public boolean isJTA11() {
+        return false;
+    }
+
 }

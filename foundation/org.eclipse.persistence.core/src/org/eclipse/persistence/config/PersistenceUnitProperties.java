@@ -1949,6 +1949,19 @@ public class PersistenceUnitProperties {
     public static final String TARGET_SERVER = "eclipselink.target-server";
 
     /**
+     * The "<code>eclipselink.jta.controller</code>" property allows to override
+     * JTA transaction controller class of {@link ServerPlatform}.
+     * <p>
+     * Value of this property is a fully qualified name of a class that implements
+     * {@link ExternalTransactionController} interface.
+     * <p>
+     * If both "<code>eclipselink.target-server</code>" and "<code>eclipselink.jta.controller</code>"
+     * properties are set and contain classes implementing {@link ExternalTransactionController}
+     * interface, "<code>eclipselink.target-server</code>" value is used.
+     */
+    public static final String JTA_CONTROLLER = "eclipselink.jta.controller";
+
+    /**
      * <p>The "<code>javax.persistence.schema-generation.database.action</code>"
      * property specifies the action to be taken by the persistence provider with
      * regard to the database artifacts.</p>

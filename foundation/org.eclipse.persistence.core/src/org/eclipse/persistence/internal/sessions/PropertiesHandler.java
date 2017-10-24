@@ -201,6 +201,7 @@ public class PropertiesHandler {
             addProp(new LoggingLevelProp(PersistenceUnitProperties.CATEGORY_LOGGING_LEVEL_, Level.INFO.getName()));
             addProp(new TargetDatabaseProp());
             addProp(new TargetServerProp());
+            addProp(new JTACntrlrProp());
             addProp(new CacheSizeProp());
             addProp(new CacheTypeProp());
             addProp(new BooleanProp(PersistenceUnitProperties.CACHE_SHARED_, "false"));
@@ -605,6 +606,12 @@ public class PropertiesHandler {
                 {TargetServer.WebLogic_12, pcg + "wls.WebLogic_12_Platform"},
                 {TargetServer.JBoss, pcg + "jboss.JBossPlatform"},
                 {TargetServer.SAPNetWeaver_7_1, pcg + "sap.SAPNetWeaver_7_1_Platform"},            };
+        }
+    }
+
+    protected static class JTACntrlrProp extends Prop {
+        JTACntrlrProp() {
+            super(PersistenceUnitProperties.JTA_CONTROLLER);
         }
     }
 

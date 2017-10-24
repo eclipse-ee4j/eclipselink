@@ -226,6 +226,8 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "mapping_not_supported_by_mw", "The EclipseLink mapping {0} is not supported by the mapping workbench" },
         { "toplink_ejb_jar_in_jar", "toplink-ejb-jar.xml is included in jar({0}) file, no migration therefore will be performed for this jar." },
         { "jta_cannot_be_disabled_in_cmp", "When using Container Managed Persistence (CMP), JTA cannot be disabled. EclipseLink will act as if JTA is enabled." },
+        { "jta_tsr_lookup_failure", "Could not lookup TransactionSynchronizationRegistry instance: {0}"},
+        { "jta_duplicate_ctrl_property", "JTA transaction controller class defined in both eclipselink.target-server and eclipselink.jta.controller properties. Using value from eclipselink.target-server." },
         { "descriptor_named_query_cannot_be_added", "Cannot add a descriptor named query whose name conflict with an existing query. Query To Be Added: [{0}] is named: [{1}] with arguments [{2}]." },
         { "metadata_access_type", "The access type for the persistent class [{1}] is set to [{0}]." },
         { "metadata_default_alias", "The alias name for the entity class [{0}] is being defaulted to: {1}." },

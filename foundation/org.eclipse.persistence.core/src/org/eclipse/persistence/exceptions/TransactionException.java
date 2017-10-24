@@ -33,6 +33,7 @@ public class TransactionException extends EclipseLinkException {
     public static final int CANNOT_ENLIST_MULTIPLE_DATASOURCES = 23015;
     public static final int EXCEPTION_IN_PROXY_EXECUTION = 23016;
     public static final int ERROR_NO_ENTITY_TRANSACTION_ACTIVE = 23017;
+    public static final int ERROR_OBTAINING_TSR=23018;
 
     public TransactionException(String message) {
         super(message);
@@ -166,6 +167,20 @@ public class TransactionException extends EclipseLinkException {
         Object[] args = {  };
         TransactionException ex = new TransactionException(ExceptionMessageGenerator.buildMessage(TransactionException.class, ERROR_NO_ENTITY_TRANSACTION_ACTIVE, args));
         ex.setErrorCode(ERROR_NO_ENTITY_TRANSACTION_ACTIVE);
+        return ex;
+    }
+
+    /**
+     * Build transaction exception instance when obtaining of {@link javax.transaction.TransactionSynchronizationRegistry} instance failed.
+     *
+     * @param internalException {@link TransactionException} cause
+     * @return new instance of {@link TransactionException}
+     */
+    public static TransactionException errorObtainingTsr(final Exception internalException) {
+        final Object[] args = {  };
+        final TransactionException ex = new TransactionException(ExceptionMessageGenerator.buildMessage(TransactionException.class, ERROR_OBTAINING_TSR, args));
+        ex.setErrorCode(ERROR_OBTAINING_TSR);
+        ex.setInternalException(internalException);
         return ex;
     }
 

@@ -3,11 +3,13 @@
   xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence
     http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
   version="2.1">
+
     <persistence-unit name="@default@" transaction-type="@transaction-type@">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <@datasource-type@>@data-source-name@</@datasource-type@>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
+
     <!-- This is for default persistence unit -->
     <persistence-unit name="MulitPU-1" transaction-type="@transaction-type@">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
@@ -62,6 +64,7 @@
             <property name="javax.persistence.schema-generation.scripts.create-target" value="jpa22-model-create.jdbc"/>
         </properties>
     </persistence-unit>
+
     <!-- This is for ddl persistence unit -->
     <persistence-unit name="MulitPU-2" transaction-type="@transaction-type@">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
@@ -109,6 +112,7 @@
             <property name="javax.persistence.schema-generation.scripts.create-target" value="jpa22-ddl-model-create.jdbc"/>
         </properties>
     </persistence-unit>
+
     <!-- This is xml-ddl persistence unit -->
     <persistence-unit name="MulitPU-3" transaction-type="@transaction-type@">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
@@ -130,6 +134,7 @@
             <property name="javax.persistence.schema-generation.create-script-source" value="META-INF/jpa22-xml-ddl-model-source-create.jdbc"/>
         </properties>
     </persistence-unit>
+
     <!-- This is xml-default persistence unit -->
     <persistence-unit name="MulitPU-4" transaction-type="@transaction-type@">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
@@ -148,6 +153,7 @@
             <property name="javax.persistence.schema-generation.scripts.create-target" value="jpa22-xml-model-create.jdbc"/>
         </properties>
     </persistence-unit>
+
     <!-- This is ddl-template persistence unit -->
     <persistence-unit name="MulitPU-5" transaction-type="@transaction-type@">
         <!-- Users of this PU are expected to provide any relevant properties -->
@@ -163,4 +169,20 @@
             <property name="eclipselink.weaving" value="@server-weaving@"/>
         </properties>
     </persistence-unit>
+
+    <!-- This is JTA tests persistence unit -->
+    <persistence-unit name="JTA" transaction-type="@transaction-type@">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.testing.models.jpa22.jta.Animal</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.session-name" value="default-jta-session"/>
+            <property name="eclipselink.orm.validate.schema" value="true"/>
+            <property name="eclipselink.jdbc.uppercase-columns" value="true"/>
+            <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
+            <property name="javax.persistence.scheme-generation.create-source" value="metadata"/>
+            <property name="javax.persistence.scheme-generation.drop-source" value="metadata"/>
+        </properties>
+    </persistence-unit>
+
 </persistence>

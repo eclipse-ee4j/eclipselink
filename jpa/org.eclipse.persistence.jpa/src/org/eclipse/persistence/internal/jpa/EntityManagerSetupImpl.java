@@ -76,6 +76,8 @@
  *       - 426852: @GeneratedValue(strategy=GenerationType.IDENTITY) support in Oracle 12c
  *     09/14/2017-2.6 Will Dazey
  *       - 522312: Add the eclipselink.sequencing.start-sequence-at-nextval property
+ *     10/24/2017-3.0 Tomas Kraus
+ *       - 526419: Modify EclipseLink to reflect changes in JTA 1.1.
  *****************************************************************************/
 package org.eclipse.persistence.internal.jpa;
 
@@ -1000,21 +1002,33 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      * @return true if the ServerPlatform has changed.
      */
     protected boolean updateServerPlatform(Map m, ClassLoader loader) {
-        String serverPlatformClassName =
-            PropertiesHandler.getPropertyValueLogDebug(PersistenceUnitProperties.TARGET_SERVER, m, session);
-        if (serverPlatformClassName == null) {
+        final String serverPlatformClassNameProperty =
+                PropertiesHandler.getPropertyValueLogDebug(PersistenceUnitProperties.TARGET_SERVER, m, session);
+        final String jtaControllerClassNameProperty =
+                PropertiesHandler.getPropertyValueLogDebug(PersistenceUnitProperties.JTA_CONTROLLER, m, session);
+
+        final String serverPlatformClassName;
+        if (serverPlatformClassNameProperty == null) {
             // property is not specified - try to detect.
             serverPlatformClassName = ServerPlatformUtils.detectServerPlatform(getSession());
             if (serverPlatformClassName == null) {
                 // Unable to detect what platform we're running on. Use default/NoServer.
                 return false;
             }
+        } else {
+            serverPlatformClassName = serverPlatformClassNameProperty;
         }
 
         // originalServerPlatform is always non-null - Session's constructor sets serverPlatform to NoServerPlatform
-        ServerPlatform originalServerPlatform = session.getServerPlatform();
-        String originalServerPlatformClassName = originalServerPlatform.getClass().getName();
-        if(originalServerPlatformClassName.equals(serverPlatformClassName)) {
+        final ServerPlatform originalServerPlatform = session.getServerPlatform();
+        final String originalServerPlatformClassName = originalServerPlatform.getClass().getName();
+        final Class originalServerPlatformTransCtrlClass = originalServerPlatform.getExternalTransactionControllerClass();
+        final String originalServerPlatformTransCtrlClassName = originalServerPlatformTransCtrlClass != null
+                ? originalServerPlatform.getExternalTransactionControllerClass().getName() : null;
+
+        if (serverPlatformClassName.equals(originalServerPlatformClassName)
+                && (serverPlatformClassNameProperty == null || serverPlatformClassNameProperty.equals(originalServerPlatformClassName))
+                && (jtaControllerClassNameProperty == null || jtaControllerClassNameProperty.equals(originalServerPlatformTransCtrlClassName))) {
             // nothing to do - use the same value as before
             return false;
         }
@@ -1023,6 +1037,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         ServerPlatform serverPlatform = null;
         // New platform - create the new instance and set it.
         Class cls = findClassForProperty(serverPlatformClassName, PersistenceUnitProperties.TARGET_SERVER, loader);
+        boolean isTargetServerTransCtrl = false;
         try {
             Constructor constructor = cls.getConstructor(new Class[]{org.eclipse.persistence.sessions.DatabaseSession.class});
             serverPlatform = (ServerPlatform)constructor.newInstance(new Object[]{session});
@@ -1034,27 +1049,53 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     // just set externalTransactionController class (if necessary) into
                     // originalServerPlatform
                     CustomServerPlatform originalCustomServerPlatform = (CustomServerPlatform)originalServerPlatform;
-                    if(cls.equals(originalCustomServerPlatform.getExternalTransactionControllerClass())) {
+                    if (cls.equals(originalCustomServerPlatform.getExternalTransactionControllerClass())) {
                         // externalTransactionController classes are the same - nothing to do
                     } else {
                         originalCustomServerPlatform.setExternalTransactionControllerClass(cls);
                     }
                 } else {
                     // originalServerPlatform is not custom - need a new one.
-                    CustomServerPlatform customServerPlatform = new CustomServerPlatform(getDatabaseSession());
-                    customServerPlatform.setExternalTransactionControllerClass(cls);
-                    serverPlatform = customServerPlatform;
+                    serverPlatform = new CustomServerPlatform(getDatabaseSession());
+                    serverPlatform.setExternalTransactionControllerClass(cls);
                 }
+                isTargetServerTransCtrl = true;
              } else {
                  throw EntityManagerSetupException.failedToInstantiateServerPlatform(serverPlatformClassName, PersistenceUnitProperties.TARGET_SERVER, ex);
              }
          }
 
-        if (serverPlatform != null){
+        // Override JTA transaction controller class by eclipselink.jta.controller property, but only when
+        // eclipselink.target-server does not contain ExternalTransactionController implementing class.
+        if (jtaControllerClassNameProperty != null) {
+            if (isTargetServerTransCtrl) {
+                session.getSessionLog().log(SessionLog.WARNING, "jta_duplicate_ctrl_property");
+            } else {
+                if (!originalServerPlatform.getClass().equals(CustomServerPlatform.class)) {
+                    serverPlatform = new CustomServerPlatform(getDatabaseSession());
+                }
+                updateJTAControllerInPlatform(serverPlatform != null ? serverPlatform : originalServerPlatform, jtaControllerClassNameProperty, loader);
+            }
+        }
+
+        if (serverPlatform != null) {
             getDatabaseSession().setServerPlatform(serverPlatform);
             return true;
         }
         return false;
+    }
+
+    /**
+     * Update JTA transaction controller class of provided {@link ServerPlatform} instance.
+     *
+     * @param serverPlatform target {@link ServerPlatform} instance
+     * @param jtaControllerClassName JTA transaction controller class name
+     * @param loader class loader containing JTA transaction controller class
+     */
+    private static void updateJTAControllerInPlatform(
+            final ServerPlatform serverPlatform, final String jtaControllerClassName, final ClassLoader loader) {
+        Class jtaCls = findClassForProperty(jtaControllerClassName, PersistenceUnitProperties.JTA_CONTROLLER, loader);
+        serverPlatform.setExternalTransactionControllerClass(jtaCls);
     }
 
     /**

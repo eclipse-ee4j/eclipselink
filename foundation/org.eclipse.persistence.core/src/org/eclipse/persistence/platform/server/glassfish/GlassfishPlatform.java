@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -18,20 +18,21 @@
  ******************************************************************************/
 package org.eclipse.persistence.platform.server.glassfish;
 
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.services.glassfish.MBeanGlassfishRuntimeServices;
-import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.transaction.glassfish.GlassfishTransactionController;
-import org.eclipse.persistence.platform.server.JMXEnabledPlatform;
-import org.eclipse.persistence.platform.server.JMXServerPlatformBase;
-import org.eclipse.persistence.platform.server.ServerPlatformBase;
-import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.logging.JavaLog;
-
 import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.sql.Connection;
+
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.logging.JavaLog;
+import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.platform.server.JMXEnabledPlatform;
+import org.eclipse.persistence.platform.server.JMXServerPlatformBase;
+import org.eclipse.persistence.platform.server.ServerPlatformBase;
+import org.eclipse.persistence.services.glassfish.MBeanGlassfishRuntimeServices;
+import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.transaction.glassfish.GlassfishTransactionController;
+import org.eclipse.persistence.transaction.glassfish.GlassfishTransactionController11;
 
 /**
  * PUBLIC:
@@ -89,12 +90,13 @@ public class GlassfishPlatform extends JMXServerPlatformBase implements JMXEnabl
      * @see ServerPlatformBase#initializeExternalTransactionController()
      */
     public Class getExternalTransactionControllerClass() {
-        if (externalTransactionControllerClass == null){
-            externalTransactionControllerClass = GlassfishTransactionController.class;
+        if (externalTransactionControllerClass == null) {
+            // JTA 1.1 exixts since Glassfish 3. Check JTA 1.1 availability to set proper JTa transaction controller.
+            externalTransactionControllerClass = isJTA11()
+                    ? GlassfishTransactionController11.class : GlassfishTransactionController.class;
         }
         return externalTransactionControllerClass;
     }
-
 
     public java.sql.Connection unwrapConnection(final Connection connection)  {
         Connection unwrappedConnection;

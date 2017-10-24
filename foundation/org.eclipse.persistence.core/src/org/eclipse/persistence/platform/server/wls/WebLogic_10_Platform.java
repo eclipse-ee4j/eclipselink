@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -46,6 +46,7 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.platform.server.JMXEnabledPlatform;
 import org.eclipse.persistence.services.weblogic.MBeanWebLogicRuntimeServices;
 import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.transaction.wls.WebLogicTransactionController11;
 
 /**
  * PUBLIC:
@@ -404,6 +405,37 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
             }
         }
         return this.vendorConnectionMethod;
+    }
+
+    /**
+     * INTERNAL:
+     * Check whether JTA 1.1 API is available.
+     * WLS 10.0 and later is JTA 1.1 compliant.
+     *
+     * @return always returns {@code true} for WLS 10.0 and later.
+     */
+    @Override
+    public boolean isJTA11() {
+        return true;
+    }
+
+    /**
+     * INTERNAL: getExternalTransactionControllerClass(): Answer the class of
+     * external transaction controller to use for WebLogic. This is read-only.
+     *
+     * @return Class externalTransactionControllerClass
+     *
+     * @see org.eclipse.persistence.transaction.JTA11TransactionController
+     * @see org.eclipse.persistence.platform.server.ServerPlatformBase#isJTAEnabled()
+     * @see org.eclipse.persistence.platform.server.ServerPlatformBase#disableJTA()
+     * @see org.eclipse.persistence.platform.server.ServerPlatformBase#initializeExternalTransactionController()
+     */
+    @Override
+    public Class getExternalTransactionControllerClass() {
+        if (externalTransactionControllerClass == null) {
+            externalTransactionControllerClass = WebLogicTransactionController11.class;
+        }
+        return externalTransactionControllerClass;
     }
 
 }

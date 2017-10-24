@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     10/24/2017-3.0 Tomas Kraus
+ *       - 526419: Modify EclipseLink to reflect changes in JTA 1.1.
  ******************************************************************************/
 package org.eclipse.persistence.transaction;
 
@@ -88,6 +90,7 @@ public class JTATransactionController extends AbstractTransactionController {
      * @param listener The synchronization listener created for this transaction
      * @param txn The active transaction for which notification is being requested
      */
+    @Override
     protected void registerSynchronization_impl(AbstractSynchronizationListener listener, Object txn) throws Exception {
         ((Transaction)txn).registerSynchronization((Synchronization)listener);
     }
@@ -99,6 +102,7 @@ public class JTATransactionController extends AbstractTransactionController {
      *
      * @return The active transaction object or id, or null if no transaction is active
      */
+    @Override
     protected Object getTransaction_impl() throws Exception {
         return getTransactionManager().getTransaction();
     }
@@ -112,6 +116,7 @@ public class JTATransactionController extends AbstractTransactionController {
      * @param transaction The transaction to which the returned key applies (may be null)
      * @return A key for the passed in transaction, or null if no transaction specified
      */
+    @Override
     protected Object getTransactionKey_impl(Object transaction) throws Exception {
         // Use the transaction itself as the key
         return transaction;
@@ -124,6 +129,7 @@ public class JTATransactionController extends AbstractTransactionController {
      *
      * @return The current transaction status
      */
+    @Override
     protected Object getTransactionStatus_impl() throws Exception {
         return Integer.valueOf(getTransactionManager().getStatus());
     }
@@ -132,6 +138,7 @@ public class JTATransactionController extends AbstractTransactionController {
      * INTERNAL:
      * Begin an external transaction.
      */
+    @Override
     protected void beginTransaction_impl() throws Exception {
         getTransactionManager().begin();
     }
@@ -140,6 +147,7 @@ public class JTATransactionController extends AbstractTransactionController {
      * INTERNAL:
      * Commit the external transaction.
      */
+    @Override
     protected void commitTransaction_impl() throws Exception {
         getTransactionManager().commit();
     }
@@ -148,6 +156,7 @@ public class JTATransactionController extends AbstractTransactionController {
      * INTERNAL:
      * Roll back the external transaction.
      */
+    @Override
     protected void rollbackTransaction_impl() throws Exception {
         getTransactionManager().rollback();
     }
@@ -156,6 +165,7 @@ public class JTATransactionController extends AbstractTransactionController {
      * INTERNAL:
      * Mark the external transaction for rollback.
      */
+    @Override
     protected void markTransactionForRollback_impl() throws Exception {
         getTransactionManager().setRollbackOnly();
     }
@@ -168,6 +178,7 @@ public class JTATransactionController extends AbstractTransactionController {
      * @param status The current transaction status
      * @return true if the current state allows for a transaction to be started
      */
+    @Override
     protected boolean canBeginTransaction_impl(Object status) {
         return getIntStatus(status) == Status.STATUS_NO_TRANSACTION;
     }
@@ -180,6 +191,7 @@ public class JTATransactionController extends AbstractTransactionController {
      * @param status The current transaction status
      * @return true if the current state allows for a transaction to be committed
      */
+    @Override
     protected boolean canCommitTransaction_impl(Object status) {
         return getIntStatus(status) == Status.STATUS_ACTIVE;
     }
@@ -192,6 +204,7 @@ public class JTATransactionController extends AbstractTransactionController {
      * @param status The current transaction status
      * @return true if the current state allows for a transaction to be rolled back
      */
+    @Override
     protected boolean canRollbackTransaction_impl(Object status) {
         return getIntStatus(status) == Status.STATUS_ACTIVE;
     }
@@ -204,6 +217,7 @@ public class JTATransactionController extends AbstractTransactionController {
      * @param status The current transaction status
      * @return true if the current state allows for the SQL to be sent to the database
      */
+    @Override
     protected boolean canIssueSQLToDatabase_impl(Object status) {
         int stat = getIntStatus(status);
         return ((stat == Status.STATUS_ACTIVE) || (stat == Status.STATUS_PREPARING));
@@ -218,6 +232,7 @@ public class JTATransactionController extends AbstractTransactionController {
      * @param status The current transaction status
      * @return true if the current state dictates that the unit of work should be merged
      */
+    @Override
     protected boolean canMergeUnitOfWork_impl(Object status) {
         return getIntStatus(status) == Status.STATUS_COMMITTED;
     }
@@ -226,6 +241,7 @@ public class JTATransactionController extends AbstractTransactionController {
      * INTERNAL:
      * Return true if the transaction is rolled back.
      */
+    @Override
     public boolean isRolledBack_impl(Object status) {
         return getIntStatus(status) == Status.STATUS_ROLLEDBACK;
     }
@@ -289,6 +305,7 @@ public class JTATransactionController extends AbstractTransactionController {
      */
     static String[] codes = { "STATUS_ACTIVE", "MARKED_ROLLBACK", "PREPARED", "COMMITTED", "ROLLEDBACK", "UNKNOWN", "NO_TRANSACTION", "PREPARING", "COMMITTING", "ROLLING_BACK" };
 
+    @Override
     protected String statusToString_impl(Object status) {
         int statusCode = getIntStatus(status);
         return codes[statusCode];

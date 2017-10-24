@@ -3951,13 +3951,39 @@
     </target>
 
     <!-- Server Tests -->
-    <!-- Run the LRG -->
-    <target name="server-test">
+
+    <!-- Run the LRG with JPA 2.0 API -->
+    <target name="server-test" depends="clean-test">
         <antcall target="server-test-lrg" inheritRefs="true"/>
+        <antcall target="generate-report" inheritRefs="true"/>
     </target>
 
-    <!-- Run all the JPA tests in the server -->
-    <target name="server-test-lrg" depends="clean-test">
+    <!-- Run the LRG with JPA 2.0 and 2.1 API -->
+    <target name="server-test-jpa21" depends="clean-test">
+        <antcall target="server-test-lrg" inheritRefs="true"/>
+        <antcall target="server-test-jpa21-lrg" inheritRefs="true"/>
+        <antcall target="generate-report" inheritRefs="true"/>
+    </target>
+
+    <!-- Run the LRG with JPA 2.0, 2.1 and 2.2 API -->
+    <target name="server-test-jpa22" depends="clean-test">
+        <antcall target="server-test-lrg" inheritRefs="true"/>
+        <antcall target="server-test-jpa21-lrg" inheritRefs="true"/>
+        <antcall target="server-test-jpa22-lrg" inheritRefs="true"/>
+        <antcall target="generate-report" inheritRefs="true"/>
+    </target>
+
+    <!-- Testing Metadata Cache by running JPA tests in the server -->
+    <target name="server-test-project-cache" depends="clean-test">
+        <antcall target="server-test-advanced" inheritRefs="true"/>
+        <antcall target="server-test-advanced-multitenantEMF" inheritRefs="true"/>
+        <antcall target="server-test-advanced-multitenant123" inheritRefs="true"/>
+        <!--antcall target="server-test-extensibility" inheritRefs="true"/-->
+        <antcall target="generate-report" inheritRefs="true"/>
+    </target>
+
+	<!-- Internal: Run all the JPA tests in the server -->
+    <target name="server-test-lrg">
         <antcall target="server-test-advanced" inheritRefs="true"/>
         <antcall target="server-test-advanced-multitenant" inheritRefs="true"/>
         <antcall target="server-test-beanvalidation" inheritRefs="true"/>
@@ -3995,29 +4021,20 @@
         <antcall target="server-test-struct-converter" inheritRefs="true"/>
         <!-- Oracle proxy authentication needs to be setup properly for the following model -->
         <antcall target="server-test-proxy-authentication" inheritRefs="true"/>
-        <antcall target="generate-report" inheritRefs="true"/>
     </target>
 
-    <!-- Run all the JPA21 tests in the server -->
-    <target name="server-test-jpa21-lrg" depends="clean-test">
+    <!-- Internal: Run all the JPA21 tests in the server -->
+    <target name="server-test-jpa21-lrg">
         <antcall target="server-test-jpa21-advanced" inheritRefs="true"/>
         <antcall target="server-test-jpa21-sessionbean" inheritRefs="true"/>
     </target>
 
-    <!-- Run all the JPA22 tests in the server -->
-    <target name="server-test-jpa22-lrg" depends="clean-test">
+    <!-- Internal: Run all the JPA22 tests in the server -->
+    <target name="server-test-jpa22-lrg">
         <antcall target="server-test-jpa22-advanced" inheritRefs="true"/>
         <antcall target="server-test-jpa22-sessionbean" inheritRefs="true"/>
     </target>
 
-    <!-- Testing Metadata Cache by running JPA tests in the server -->
-    <target name="server-test-project-cache" depends="clean-test">
-        <antcall target="server-test-advanced" inheritRefs="true"/>
-        <antcall target="server-test-advanced-multitenantEMF" inheritRefs="true"/>
-        <antcall target="server-test-advanced-multitenant123" inheritRefs="true"/>
-        <!--antcall target="server-test-extensibility" inheritRefs="true"/-->
-        <antcall target="generate-report" inheritRefs="true"/>
-    </target>
 
     <target name="server-test-performance">
         <antcall target="server-run-all" inheritRefs="true">
@@ -4092,6 +4109,7 @@
             <param name="PERSISTENCE_UNIT_NAME" value="default"/>
             <param name="USE_MULTIPLE_PERSISTENCE_UNITS" value="true"/>
             <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa22/advanced"/>
+            <param name="MODEL_DIR2" value="org/eclipse/persistence/testing/models/jpa22/jta"/>
             <param name="MODEL_NAME" value="eclipselink-jpa22-model"/>
             <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa22/advanced"/>
             <param name="TEST_NAME" value="eclipselink-jpa22-model"/>
@@ -4602,7 +4620,6 @@
             <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa21.sessionbean.EntityListenerInjectionTest"/>
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
-        <antcall target="generate-report" inheritRefs="true"/>
     </target>
 
     <target name="server-test-jpa22-sessionbean">
@@ -4617,7 +4634,8 @@
             <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa22.sessionbean.EntityListenerInjectionTest"/>
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
-        <antcall target="server-run-all-jpa22" inheritRefs="true">
+
+	<antcall target="server-run-all-jpa22" inheritRefs="true">
             <param name="PERSISTENCE_UNIT_NAME" value="jpa22-sessionbean"/>
             <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa22/sessionbean"/>
             <param name="MODEL_DIR2" value="org/eclipse/persistence/testing/models/jpa22/entity-listener"/>
@@ -4628,7 +4646,6 @@
             <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa22.sessionbean.AttributeConverterInjectionTest"/>
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
-        <antcall target="generate-report" inheritRefs="true"/>
     </target>
 
     <target name="server-test-validation">

@@ -19,27 +19,29 @@
 package org.eclipse.persistence.testing.framework.junit;
 
 import java.io.StringWriter;
-import java.io.Writer;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Hashtable;
 import java.util.Properties;
+
 import javax.naming.Context;
 import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.LockModeType;
+import javax.persistence.Persistence;
 import javax.rmi.PortableRemoteObject;
-
-import javax.persistence.*;
-
-import junit.framework.*;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
+import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
-import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
+import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.DefaultSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.Connector;
@@ -55,6 +57,9 @@ import org.eclipse.persistence.testing.framework.server.TestRunner2;
 import org.eclipse.persistence.testing.framework.server.TestRunner3;
 import org.eclipse.persistence.testing.framework.server.TestRunner4;
 import org.eclipse.persistence.testing.framework.server.TestRunner5;
+import org.eclipse.persistence.transaction.JTA11TransactionController;
+
+import junit.framework.TestCase;
 
 /**
  * This is the superclass for all EclipseLink JUnit tests
@@ -86,6 +91,9 @@ public abstract class JUnitTestCase extends TestCase {
 
     /** Determine if the data-source is JTA, or non-JTA. */
     public static Boolean isJTA =true;
+
+    /** Holds an information whether JTA 1.1 API is present. */
+    protected final boolean isJTA11;
 
     /** Allow a JEE server platform to be set. */
     protected static ServerPlatform serverPlatform;
@@ -131,13 +139,66 @@ public abstract class JUnitTestCase extends TestCase {
         isInitialzied = true;
     }
 
+    /**
+     * Check that JTA 1.1 API is present.
+     *
+     * @return value of {@code true} if {@code java:comp/TransactionSynchronizationRegistry}
+     *         JNDI name is present or {@code false}  otherwise.
+     */
+    public static final boolean isJTA11() {
+        Context context = null;
+        try {
+            context = new InitialContext();
+            return (context.lookup(JTA11TransactionController.JNDI_TRANSACTION_SYNCHRONIZATION_REGISTRY) != null);
+        } catch (NamingException ex) {
+            AbstractSessionLog.getLog().log(SessionLog.FINER, "JTA 1.1 API was not found", null, false);
+            return false;
+        } finally {
+            if (context != null) {
+                try {
+                    context.close();
+                } catch (NamingException ex) {
+                    AbstractSessionLog.getLog().log(SessionLog.WARNING, "NamingException when closing initial context: {0}", new String[] { ex.getMessage() }, false);
+                }
+            }
+        }
+    }
+
+    /**
+     * Lookup EJB by JNDI name.
+     *
+     * @param c EJB class.
+     * @param jndi EJB JNDI name
+     * @return EJB instance
+     */
+    public static <C> C lookupEJB(final Class<C> c, final String jndi) {
+        Context context = null;
+        try {
+            context = new InitialContext();
+            return c.cast(context.lookup(jndi));
+        } catch (NamingException ex) {
+            AbstractSessionLog.getLog().log(SessionLog.WARNING, "NamingException when looking up {0} {1}", new String[] { jndi, ex.getMessage() }, false);
+            return null;
+        } finally {
+            if (context != null) {
+                try {
+                    context.close();
+                } catch (NamingException ex) {
+                    AbstractSessionLog.getLog().log(SessionLog.WARNING, "NamingException when closing initial context: {0}", new String[] { ex.getMessage() }, false);
+                }
+            }
+        }
+    }
+
     public JUnitTestCase() {
         super();
+        isJTA11 = isJTA11();
         initializePlatform();
     }
 
     public JUnitTestCase(String name) {
         super(name);
+        isJTA11 = isJTA11();
         initializePlatform();
     }
 

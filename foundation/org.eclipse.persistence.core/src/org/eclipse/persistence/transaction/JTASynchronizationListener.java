@@ -12,8 +12,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.transaction;
 
-import javax.transaction.Synchronization;
-
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 
@@ -28,7 +26,7 @@ import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
  *
  * @see JTATransactionController
  */
-public class JTASynchronizationListener extends AbstractSynchronizationListener implements Synchronization, SynchronizationListenerFactory {
+public class JTASynchronizationListener extends AbstractSynchronizationListener implements SynchronizationListenerFactory {
 
     /**
      * PUBLIC:

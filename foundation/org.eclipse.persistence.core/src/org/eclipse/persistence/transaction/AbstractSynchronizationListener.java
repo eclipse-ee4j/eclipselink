@@ -16,6 +16,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.transaction.Synchronization;
+
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.TransactionException;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -40,7 +42,7 @@ import org.eclipse.persistence.sessions.DatabaseSession;
  *
  * @see AbstractTransactionController
  */
-public abstract class AbstractSynchronizationListener {
+public abstract class AbstractSynchronizationListener implements Synchronization {
 
     /**
      * The external txn controller that is intimate with the transaction manager
