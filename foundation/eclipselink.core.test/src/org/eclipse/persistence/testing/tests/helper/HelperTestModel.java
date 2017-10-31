@@ -30,6 +30,7 @@ public class HelperTestModel extends TestModel {
         suite.setDescription("This suite tests common helper methods and methods which compare data types");
 
         suite.addTestSuite(org.eclipse.persistence.testing.tests.helper.JavaUtilTest.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.tests.helper.JavaVersionTest.class);
 
         suite.addTest(new CompareArrayContentTest());
         suite.addTest(new CompareArrayLengthTest());
