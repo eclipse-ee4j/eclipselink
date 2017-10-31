@@ -14,6 +14,7 @@ package org.eclipse.persistence.testing.tests.helper;
 
 import org.eclipse.persistence.internal.helper.JavaSEPlatform;
 import org.eclipse.persistence.internal.helper.JavaVersion;
+import org.eclipse.persistence.testing.framework.ReflectionHelper;
 import org.junit.Test;
 
 /**
@@ -22,6 +23,51 @@ import org.junit.Test;
  */
 public class JavaUtilTest extends junit.framework.TestCase {
 
+    // Valid version number pairs.
+    static final int[][] VALID = {
+            {1, 1}, {1, 2}, {1, 3}, {1, 4}, {1, 5}, {1, 6}, {1, 7}, {1, 8}, {1, 9},
+            {9, 0}, {10, 0}, {18, 3}, {18, 9}
+    };
+
+    // Invalid version number pairs.
+    static final int[][] INVALID = {
+            {0, 0}, {0, 1}, {0, 3}, {0, 5}, {0, 7}, {0, 9},
+            {1, 0}, {2, 0}, {2, 1}, {2, 2}, {3, 0}, {4, 0}, {1, 10},
+            {18, 1}, {18, 2}, {18, 4}, {18, 5}, {18, 6}, {18, 7}, {18, 8}, {18, 10}, {18, 11}, {18, 12}
+    };
+
+    // DEFAULT platform value.
+    static final JavaSEPlatform LATEST = initDefault();
+
+    /** Version numbers result mapping. Covers exceptions.
+     * See also {@code JavaSEPlatform.stringValuesMap} initialization code
+     * and {@link JavaSEPlatform#toValue(int, int)}.
+     * 1.9 -> 9.0
+     * @param version source version numbers
+     * @return result version numbers
+     */
+    static int[] resultMapping(int[] version) {
+        switch (version[0]) {
+            case 1:
+                switch (version[1]) {
+                    case 9: return new int[] {9, 0};
+                    default: return version;
+                }
+            default: return version;
+        }
+    }
+
+    /**
+     * Initialize value of JavaSEPlatform.DEFAULT.
+     * @return value of JavaSEPlatform.DEFAULT.
+     */
+    private static final JavaSEPlatform initDefault() {
+        try {
+            return ReflectionHelper.getPrivateStatic(JavaSEPlatform.class, "LATEST");
+        } catch (ReflectiveOperationException e) {
+            return null;
+        }
+    }
     /**
      * Constructs an instance of Java utilities.
      * @param name java.lang.String
@@ -62,31 +108,28 @@ public class JavaUtilTest extends junit.framework.TestCase {
      */
     @Test
     public void testStringToPlatform() {
-        // Valid version number pairs.
-        int[][] valid = {{1, 1}, {1, 2}, {1, 3}, {1, 4}, {1, 5}, {1, 6}, {1, 7},
-                {1, 8}, {1, 9}, {9, 0}};
-        int[][] invalid = {{0, 0}, {0, 1}, {0, 3}, {0, 5}, {0, 7}, {0, 9},
-                {1, 0}, {2, 0}, {2, 1}, {2, 2}, {3, 0}, {4, 0}, {1, 10}};
         // Verify valid pairs.
-        for (int [] version : valid) {
+        for (int [] version : VALID) {
             int major = version[0];
             int minor = version[1];
             String versionString = JavaSEPlatform.versionString(major, minor);
             JavaSEPlatform platform = JavaSEPlatform.toValue(versionString);
             assertNotNull("There should exist platform for valid platform"
-                    +" version numbers.", platform);
+                    +" version number ["+Integer.toString(major)+","+Integer.toString(minor)+"]", platform);
+            int[] result = resultMapping(version);
             assertTrue("Returned platform version numbers do not match provided"
-                    + " version numbers", major == platform.getMajor()
-                    && minor == platform.getMinor());
+                    + " version number ["+Integer.toString(major)+","+Integer.toString(minor)+"]",
+                    result[0] == platform.getMajor() && result[1] == platform.getMinor());
         }
         // Invalid version number pairs.
-        for (int [] version : invalid) {
+        for (int [] version : INVALID) {
             int major = version[0];
             int minor = version[1];
             String versionString = JavaSEPlatform.versionString(major, minor);
             JavaSEPlatform platform = JavaSEPlatform.toValue(major, minor);
-            assertNull("Returned platform shall be null for invalid version "
-                    + "number", platform);
+            assertTrue("Returned platform shall be JavaSEPlatform.DEFAULT for invalid version "
+                    + "number ["+Integer.toString(major)+","+Integer.toString(minor)+"]",
+                    LATEST.getMajor() == platform.getMajor() && LATEST.getMinor() == platform.getMinor());
         }
     }
 
@@ -96,29 +139,26 @@ public class JavaUtilTest extends junit.framework.TestCase {
      */
     @Test
     public void testMajorMinorToPlatform() {
-        // Valid version number pairs.
-        int[][] valid = {{1, 1}, {1, 2}, {1, 3}, {1, 4}, {1, 5}, {1, 6}, {1, 7},
-                {1, 8}, {1, 9}, {9, 0}};
-        int[][] invalid = {{0, 0}, {0, 1}, {0, 3}, {0, 5}, {0, 7}, {0, 9},
-                {1, 0}, {2, 0}, {2, 1}, {2, 2}, {3, 0}, {4, 0}, {1, 10}};
         // Verify valid pairs.
-        for (int [] version : valid) {
+        for (int [] version : VALID) {
             int major = version[0];
             int minor = version[1];
             JavaSEPlatform platform = JavaSEPlatform.toValue(major, minor);
             assertNotNull("There should exist platform for valid platform"
-                    +" version numbers.", platform);
+                    +" version number ["+Integer.toString(major)+","+Integer.toString(minor)+"]", platform);
+            int[] result = resultMapping(version);
             assertTrue("Returned platform version numbers do not match provided"
-                    + " version numbers", major == platform.getMajor()
-                    && minor == platform.getMinor());
+                    + " version number ["+Integer.toString(major)+","+Integer.toString(minor)+"]",
+                    result[0] == platform.getMajor() && result[1] == platform.getMinor());
         }
         // Invalid version number pairs.
-        for (int [] version : invalid) {
+        for (int [] version : INVALID) {
             int major = version[0];
             int minor = version[1];
             JavaSEPlatform platform = JavaSEPlatform.toValue(major, minor);
-            assertNull("Returned platform shall be null for invalid version "
-                    + "number", platform);
+            assertTrue("Returned platform shall be JavaSEPlatform.DEFAULT for invalid version "
+                    + "number ["+Integer.toString(major)+","+Integer.toString(minor)+"]",
+                    LATEST.getMajor() == platform.getMajor() && LATEST.getMinor() == platform.getMinor());
         }
     }
 

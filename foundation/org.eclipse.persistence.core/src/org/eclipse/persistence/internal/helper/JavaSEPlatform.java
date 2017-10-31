@@ -37,10 +37,67 @@ public enum JavaSEPlatform implements Comparable<JavaSEPlatform> {
     v1_7(1,7),
     /** Java SE 1.8. */
     v1_8(1,8),
-    /** Java SE 9. */
-    v1_9(1,9),
-    /** Java SE 9. */
-    v9_0(9, 0);
+    /** Java SE 9. Version alias 1.9 is added too.*/
+    v9_0(9,0, new Version(1,9)),
+    /** Java SE 10. */
+    v10_0(10,0),
+    /** Java SE 18.3. */
+    v18_3(18,3),
+    /** Java SE 18.9. */
+    v18_9(18,9);
+
+    public static final class Version {
+        /**
+         * Creates an instance of Java SE version numbers.
+         * @param major major version number
+         * @param minor minor version number
+         */
+        private Version(final int major, final int minor) {
+            this.major = major;
+            this.minor = minor;
+        }
+
+        /** Major version number. */
+        private final int major;
+
+        /** Minor version number. */
+        private final int minor;
+
+        /**
+         * Get major version number.
+         * @return Major version number.
+         */
+        public final int getMajor() {
+            return major;
+        }
+
+        /**
+         * Get minor version number.
+         * @return Minor version number.
+         */
+        public final int getMinor() {
+            return minor;
+        }
+
+        /**
+         * Return computer readable {@code String} containing version numbers in {@code <major> '.' <minor>} format.
+         * @return computer readable {@code String} containing version numbers
+         */
+        public String versionString() {
+            return JavaSEPlatform.versionString(major, minor);
+        }
+
+        // Currently this is identical with versionString() method.
+        /**
+         * Return version as human readable {@code String}.
+         * @return version as human readable {@code String}.
+         */
+        @Override
+        public String toString() {
+            return JavaSEPlatform.versionString(major, minor);
+        }
+
+    }
 
     /**
      * Stored <code>String</code> values for backward <code>String</code>
@@ -52,7 +109,15 @@ public enum JavaSEPlatform implements Comparable<JavaSEPlatform> {
     // Initialize backward String conversion Map.
     static {
         for (JavaSEPlatform platform : JavaSEPlatform.values()) {
+            // Primary version numbers mapping.
             stringValuesMap.put(platform.versionString(), platform);
+            // Additional version numbers mapping.
+            Version[] additional = platform.getAdditionalVersions();
+            if (additional != null) {
+                for (Version version : additional) {
+                    stringValuesMap.put(version.versionString(), platform);
+                }
+            }
         }
     }
 
@@ -63,8 +128,11 @@ public enum JavaSEPlatform implements Comparable<JavaSEPlatform> {
     public static final JavaSEPlatform CURRENT
             = JavaVersion.vmVersion().toPlatform();
 
-    /** Lowest supported Java SE platform. Currently it's Java SE 1.7. */
-    public static final JavaSEPlatform MIN_SUPPORTED = v1_7;
+    /** Lowest supported Java SE platform. Currently it's Java SE 1.8. */
+    public static final JavaSEPlatform MIN_SUPPORTED = v1_8;
+
+    /** Latest Java SE platform. This value is used when Java SE platform detection fails. */
+    static final JavaSEPlatform LATEST = JavaSEPlatform.v18_9;
 
     /**
      * Check whether current Java SE is exactly matching provided platform.
@@ -72,6 +140,14 @@ public enum JavaSEPlatform implements Comparable<JavaSEPlatform> {
      */
     public static boolean is(JavaSEPlatform platform) {
         return CURRENT.equals(platform);
+    }
+
+    /**
+     * Check whether current Java SE is at least (greater or equal) provided platform.
+     * @param platform Java SE platform to compare with.
+     */
+    public static boolean atLeast(JavaSEPlatform platform) {
+        return CURRENT.gte(platform);
     }
 
     /**
@@ -96,14 +172,16 @@ public enum JavaSEPlatform implements Comparable<JavaSEPlatform> {
     }
 
     // There are not too many versions yet so direct mapping in code is simple.
+    // Version 1.9 is considered as valid version for 9.0.
     /**
      * Returns a <code>JavaSEPlatform</code> matching provided
      * <code>major</code> and <code>minor</code> version numbers.
      * @param major Major version number.
      * @param minor Minor version number.
      * @return <code>JavaSEPlatform</code> value matching provided
-     *         <code>major</code> and <code>minor</code> version numbers
-     *         or <code>null</code> when such a value does not exist.
+     *         <code>major</code> and <code>minor</code> version numbers.
+     *         {@code JavaSEPlatform.DEFAULT} value is returned for unknown
+     *         Java SE version numbers.
      */
     public static JavaSEPlatform toValue(final int major, final int minor) {
         switch (major) {
@@ -117,12 +195,20 @@ public enum JavaSEPlatform implements Comparable<JavaSEPlatform> {
                 case 6: return v1_6;
                 case 7: return v1_7;
                 case 8: return v1_8;
-                case 9: return v1_9;
-                default: return null;
+                case 9: return v9_0;
+                default: return LATEST;
             }
         case 9:
             return v9_0;
-        default: return null;
+        case 10:
+            return v10_0;
+        case 18:
+            switch (minor) {
+                case 3: return v18_3;
+                case 9: return v18_9;
+                default: return LATEST;
+            }
+        default: return LATEST;
         }
     }
 
@@ -143,26 +229,27 @@ public enum JavaSEPlatform implements Comparable<JavaSEPlatform> {
 
     /**
      * Constructs an instance of Java SE platform.
-     * @param major Major version number.
-     * @param minor Minor version number.
+     * @param major major version number
+     * @param minor minor version number
+     * @param addVersions additional version  numbers if defined
      */
-    JavaSEPlatform(final int major, final int minor) {
-        this.major = major;
-        this.minor = minor;
+    JavaSEPlatform(final int major, final int minor, Version ...addVersions) {
+        this.version = new Version(major, minor);
+        this.addVersions = addVersions;
     }
 
-    /** Major version number. */
-    private final int major;
+    /** Java SE version numbers. */
+    private final Version version;
 
-    /** Minor version number. */
-    private final int minor;
+    /** Additional version numbers. */
+    private final Version[] addVersions;
 
     /**
      * Get major version number.
      * @return Major version number.
      */
     public final int getMajor() {
-        return major;
+        return version.major;
     }
 
     /**
@@ -170,7 +257,16 @@ public enum JavaSEPlatform implements Comparable<JavaSEPlatform> {
      * @return Minor version number.
      */
     public final int getMinor() {
-        return minor;
+        return version.minor;
+    }
+
+    /**
+     * Get additional version numbers.
+     * @return an array of additional version numbers if exist or {@code null} if no additional
+     *         version numbers are defined.
+     */
+    public final Version[] getAdditionalVersions() {
+        return addVersions;
     }
 
     /**
@@ -179,7 +275,7 @@ public enum JavaSEPlatform implements Comparable<JavaSEPlatform> {
      * @return Value of <code>true</code> if this platform is equal
      *         or greater to specified platform or <code>false</code> otherwise.
      */
-    public boolean atLeast(final JavaSEPlatform platform) {
+    public boolean gte(final JavaSEPlatform platform) {
         return compareTo(platform) >= 0;
     }
 
@@ -193,23 +289,21 @@ public enum JavaSEPlatform implements Comparable<JavaSEPlatform> {
     }
 
     /**
-     * Generate {@link String} containing minor and major version numbers
-     * in {@code <major> '.' <minor>} format.
-     * @return Generated {@link String}
+     * Return computer readable {@code String} containing version numbers in {@code <major> '.' <minor>} format.
+     * @return computer readable {@code String} containing version numbers
      */
     public String versionString() {
-        return versionString(major, minor);
+        return versionString(version.major, version.minor);
     }
 
     // Currently this is identical with versionString() method.
     /**
-     * Convert Java SE platform version value to human readable
-     * <code>String</code>.
-     * @return A <code>String</code> representation of the value of this object.
+     * Return Java SE platform version as human readable {@code String}.
+     * @return Java SE platform version as human readable {@code String}.
      */
     @Override
     public String toString() {
-        return versionString(major, minor);
+        return versionString(version.major, version.minor);
     }
 
 }

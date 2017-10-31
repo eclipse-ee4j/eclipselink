@@ -481,6 +481,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "removing_unique_constraint", "Removing UNIQUE constraint definition from [{0}] because it is also a primary key."},
         { "session_manager_no_partition", "No partition instance associated with current SessionManager instance."},
         // MESSAGES end
+        { "javase_version_ex_method_call", "Exception when calling method {0}: {1}" },
         
         
         /**
@@ -777,8 +778,9 @@ public class LoggingLocalizationResource extends ListResourceBundle {
          * Note: Each MSGID and TOP-NNNNN key above must have a corresponding 
          * id and string message entry in the 1st section at the top of this file.
          */
-        {"detect_server_platform","Detected server platform: {0}."}
-        
+        {"detect_server_platform","Detected server platform: {0}."},
+        { "jaxp_sec_prop_not_supported", "Property {0} is not supported by used JAXP implementation." },
+        { "javase_version_ex_method_not_found", "Method {0} was not found in {1}" }
     }; 
      
     /**
