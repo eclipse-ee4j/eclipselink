@@ -147,7 +147,7 @@ public enum JavaSEPlatform implements Comparable<JavaSEPlatform> {
      * @param platform Java SE platform to compare with.
      */
     public static boolean atLeast(JavaSEPlatform platform) {
-        return CURRENT.atLeast(platform);
+        return CURRENT.gte(platform);
     }
 
     /**
