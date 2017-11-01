@@ -43,6 +43,8 @@
 
     <!-- clean -->
     <target name="clean" depends="init" description="Clean the build">
+        <!-- remove stored manifest for regen -->
+        <delete dir="${antlr.classes.dir}/META-INF" includeEmptyDirs="true" failonerror="false" quiet="true"/>
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${antlr.2.common.plugins.dir}" includes="${ant.project.name}_*.jar, ${ant.project.name}.source_*.jar"/>
         </delete>
@@ -65,7 +67,8 @@
         <property name="release.version"               value="3.5.2"/>
         <!-- Project infrastructure properties -->
         <property name="src.dir"                       value="src"/>
-        <property name="antlr.classes.dir"             value="${antlr.build.location}"/> <!-- "." -->
+        <property name="classes.dir"                   value="bin"/>
+        <property name="antlr.classes.dir"             value="${antlr.build.location}/${classes.dir}"/> <!-- "." -->
 
         <!-- local property overrides -->
         <condition property="custom.properties.message" value="Loading ${user.home}/build.properties..."
@@ -95,8 +98,10 @@
            <format property="build.time" pattern="HHmm"/>
         </tstamp>
         <property name="build.type"            value="SNAPSHOT"/>
-        <property name="svn.revision"          value="NA"/>
-        <property name="version.qualifier"     value="v201605171345"/>
+        <condition property="version.qualifier" value="v${build.date}${build.time}"
+                                                else="qualifier">
+            <equals arg1="${build.type}" arg2="RELEASE" casesensitive="false"/>
+        </condition>
         <property name="version.string"        value="${release.version}.${version.qualifier}"/>
         <property name="release.designation"   value="EclipseLink ${release.version} Build"/>
         <property name="specification.vendor"  value="Eclipse.org - EclipseLink Project"/>
@@ -104,22 +109,11 @@
     </target>
 
     <!-- compile -->
-    <target name="pre-compile" depends="compile-init" description="Compile bundle code">
-        <condition property="antlr3.lib" value="${extensions.depend.dir}/antlr-3.3-complete.jar">
-            <available file="${extensions.depend.dir}/antlr-3.3-complete.jar"/>
-        </condition>
-    </target>
-
-    <target name="compile" if="antlr3.lib" depends="pre-compile" description="Compile bundle code">
+    <target name="compile" description="Compile bundle code">
         <!-- Set Compile Path-->
-        <path id="antlr.compile.path">
-            <pathelement path="${antlr3.lib}"/>
-            <pathelement path="${antlr.2.common.plugins.dir}/osgi.core.zip"/>
-            <pathelement path="${antlr.2.common.plugins.dir}/osgi.cmpn_4.1.0.jar"/>
-        </path>
-
         <!-- remove stored classes for recompile -->
-        <delete dir="${antlr.build.location}/org" includeEmptyDirs="true" failonerror="false" quiet="true"/>
+        <delete dir="${antlr.classes.dir}/org" includeEmptyDirs="true" failonerror="false" quiet="true"/>
+        <mkdir dir="${antlr.classes.dir}/org"/>
         <property name="javac.version" value="1.7"/>
         <javac srcdir="${src.dir}"
                destdir="${antlr.classes.dir}"
@@ -134,13 +128,15 @@
                failonerror="true"
                memoryMaximumSize="512m"
                fork="true"
-               classpathref="antlr.compile.path"
         />
     </target>
 
     <!-- package -->
     <target name="package" depends="package-init" description="jar OSGI bundle">
-        <jar jarfile="${antlr.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" manifest="META-INF/MANIFEST.MF">
+        <mkdir dir="${antlr.classes.dir}/META-INF"/>
+        <copy file="META-INF/MANIFEST.MF" todir="${antlr.classes.dir}/META-INF"/>
+        <replace file="${antlr.classes.dir}/META-INF/MANIFEST.MF" token="${release.version}.qualifier" value="${version.string}" />
+        <jar jarfile="${antlr.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" manifest="${antlr.classes.dir}/META-INF/MANIFEST.MF">
             <fileset dir="${antlr.2.base.dir}">
                 <include name="license.*"/>
             </fileset>
