@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Automatic-Module-Name: eclipselink.antlr
 Export-Package: org.eclipse.persistence.internal.libraries.antlr.runtime;version="3.5.2",
  org.eclipse.persistence.internal.libraries.antlr.runtime.debug;version="3.5.2",
  org.eclipse.persistence.internal.libraries.antlr.runtime.misc;version="3.5.2",
