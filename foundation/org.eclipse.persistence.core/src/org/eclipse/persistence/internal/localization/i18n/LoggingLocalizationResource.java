@@ -484,7 +484,6 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "dbws_orm_metadata_read_error", "Could not read ORM metadata: [{0}]"},
         { "dbws_oxm_metadata_read_error", "Could not read OXM metadata: [{0}]"},
         { "dbws_no_wsdl_inline_schema", "Could not read WSDL inline schema: [{0}]"},
-        { "javase_version_ex_method_call", "Exception when calling method {0}: {1}" },
 
         // FINEST, FINER and FINE level messages.
         { "acquire_unit_of_work_with_argument", "acquire unit of work: {0}" },
@@ -828,8 +827,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "jaxp_sec_disabled", "Xml Security disabled, no JAXP {0} external access configuration necessary." },
         { "jaxp_sec_explicit", "Detected explicitly JAXP configuration, no JAXP {0} external access configuration necessary." },
         { "jaxp_sec_prop_supported", "Property {0} is supported and has been successfully set by used JAXP implementation." },
-        { "jaxp_sec_prop_not_supported", "Property {0} is not supported by used JAXP implementation." },
-        { "javase_version_ex_method_not_found", "Method {0} was not found in {1}" }
+        { "jaxp_sec_prop_not_supported", "Property {0} is not supported by used JAXP implementation." }
     };
 
     /**

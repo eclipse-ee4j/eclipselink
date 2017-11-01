@@ -17,8 +17,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.logging.AbstractSessionLog;
-import org.eclipse.persistence.logging.SessionLog;
 
 /**
  * Java version storage class. Used for version numbers retrieved from
@@ -75,14 +73,14 @@ public final class JavaVersion {
         try {
             final Method m = Runtime.class.getMethod(RUNTIME_VERSION_METHOD_NAME);
             return m.invoke(null);
-        // JDK <9, can't use java.lang.Runtime.Version. Just log with FINEST level and return null.
+        // Do not log, because AbstractSessionLog.getLog() causes cyclic dependency on ClassConstants during class initialization.
+        // NoSuchMethodException: JDK <9, can't use java.lang.Runtime.Version.
         } catch (NoSuchMethodException e) {
-            AbstractSessionLog.getLog().log(SessionLog.FINEST, "javase_version_ex_method_not_found", new String[] {RUNTIME_VERSION_METHOD_NAME, Runtime.class.getName()});
-        // Shall never be thrown. Shall be logged as warning.
+            return null;
+        // Other ReflectiveOperationException should not happen here. Otherwise throw it as RuntimeException.
         } catch (ReflectiveOperationException e) {
-            AbstractSessionLog.getLog().log(SessionLog.WARNING, "javase_version_ex_method_call", new String[] {RUNTIME_VERSION_METHOD_NAME, e.getClass().getName()});
+            throw new IllegalStateException(e);
         }
-        return null;
     }
 
     /**
@@ -95,11 +93,11 @@ public final class JavaVersion {
         try {
             final Method m = vObj.getClass().getMethod(name);
             return (Integer) m.invoke(vObj);
-        // Shall never be thrown. Shall be logged as warning.
+        // Do not log, because AbstractSessionLog.getLog() causes cyclic dependency on ClassConstants during class initialization.
+        // ReflectiveOperationException should not happen here. Otherwise throw it as RuntimeException.
         } catch (ReflectiveOperationException e) {
-            AbstractSessionLog.getLog().log(SessionLog.WARNING, "javase_version_ex_method_call", new String[] {RUNTIME_VERSION_METHOD_NAME, e.getClass().getName()});
+            throw new IllegalStateException(e);
         }
-        return null;
     }
 
     /**
