@@ -36,7 +36,7 @@ public class CompileUtil {
 
     public int compile(String classpath, Object[] javaFiles) {
         int jv = JavaSEPlatform.CURRENT.getMajor();
-        final String javaVersion = "" + jv;
+        final String javaVersion = "" + ((jv >= 9) ? jv : JavaSEPlatform.CURRENT.toString());
         final String[] args = new String[javaFiles.length + ((jv >= 9) ? 9 : 7)];
         final String javac = getJavaC();
 
@@ -47,7 +47,7 @@ public class CompileUtil {
         args[4] = javaVersion;
         args[5] = "-target";
         args[6] = javaVersion;
-        if ("9".equals(javaVersion)) {
+        if (9 >= jv) {
             args[7] = "--add-modules";
             args[8] = "java.activation";
             System.arraycopy(javaFiles, 0, args, 9, javaFiles.length);
