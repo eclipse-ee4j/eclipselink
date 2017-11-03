@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2015  Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2017  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -35,9 +35,9 @@ import static org.junit.Assert.assertTrue;
 public class XmlValueSystemPropertyTestCase {
 
     @Test
-    public void testSystemXmlValueExtensionSet(final @Mocked({""}) Property property, final @Mocked({""}) Helper helper) {
+    public void testSystemXmlValueExtensionSet(final @Mocked Property property, final @Mocked Helper helper) {
         new Expectations(System.class) {{
-            System.getProperty("org.eclipse.persistence.moxy.annotation.xml-value-extension"); returns("true");
+            System.getProperty("org.eclipse.persistence.moxy.annotation.xml-value-extension"); result = "true";
         }};
 
         AnnotationsProcessor processor = new AnnotationsProcessor(helper);

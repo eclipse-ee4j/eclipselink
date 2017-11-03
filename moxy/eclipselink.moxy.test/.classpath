@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry kind="var" path="EXTENSION_LIB_EXTERNAL/jmockit-1.35.jar" sourcepath="/EXTENSION_LIB_EXTERNAL/jmockit-1.35-sources.jar"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="resource"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
@@ -22,7 +23,6 @@
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.validation_1.1.0.v201304101302.jar"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/jaxb-xjc_2.2.11.v201407311112.jar" sourcepath="/ECLIPSELINK_HOME/plugins/jaxb-xjc.source_2.2.11.v201407311112.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.moxy.dynamicxjc"/>
-	<classpathentry kind="var" path="EXTENSION_LIB_EXTERNAL/jmockit-1.10.jar" sourcepath="/EXTENSION_LIB_EXTERNAL/jmockit-1.10-sources.jar"/>
 	<classpathentry kind="var" path="EXTENSION_LIB_EXTERNAL/hibernate-validator-5.1.0.Final.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

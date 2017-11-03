@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015  Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -66,9 +66,9 @@ public class BeanValidationHelperTestCase {
                                            final @Mocked ValidationXMLReader reader) throws NamingException {
         new Expectations() {{
             ValidationXMLReader.isValidationXmlPresent(); result = true;
-            new InitialContext();
-            initialContext.lookup("java:comp/env/concurrent/ThreadPool"); returns(managedExecutorService);
-            new ValidationXMLReader();
+            new InitialContext(); result = initialContext;
+            initialContext.lookup("java:comp/env/concurrent/ThreadPool"); result = managedExecutorService;
+            new ValidationXMLReader(); result = reader;
             managedExecutorService.submit((Callable) any);
             managedExecutorService.shutdown(); times=0;
         }};
@@ -93,9 +93,9 @@ public class BeanValidationHelperTestCase {
         new Expectations() {
             {
                 ValidationXMLReader.isValidationXmlPresent(); result = true;
-                new InitialContext();
+                new InitialContext(); result = initialContext;
                 initialContext.lookup("java:comp/env/concurrent/ThreadPool"); result = new NamingException();
-                new ValidationXMLReader();
+                new ValidationXMLReader(); result = reader;
                 jdkExecutorService.submit((Callable) any);
                 jdkExecutorService.shutdown();
             }
@@ -118,7 +118,7 @@ public class BeanValidationHelperTestCase {
 
         new Expectations() {{
             ValidationXMLReader.isValidationXmlPresent(); result = true;
-            new ValidationXMLReader();
+            new ValidationXMLReader(); result = reader;
             reader.call();
         }};
 
@@ -143,12 +143,11 @@ public class BeanValidationHelperTestCase {
         new Expectations() {
             {
                 ValidationXMLReader.isValidationXmlPresent(); result = true;
-                new InitialContext();
+                new InitialContext(); result = initialContext;
                 initialContext.lookup("java:comp/env/concurrent/ThreadPool"); result = new NamingException();
-                new ValidationXMLReader();
+                new ValidationXMLReader(); result = reader;
                 jdkExecutorService.submit((Callable) any); result = new OutOfMemoryError();
                 jdkExecutorService.shutdown();
-                new ValidationXMLReader();
                 reader.call();
             }
         };

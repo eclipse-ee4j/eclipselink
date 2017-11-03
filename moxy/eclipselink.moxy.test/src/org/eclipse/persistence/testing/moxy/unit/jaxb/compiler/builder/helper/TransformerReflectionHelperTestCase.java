@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -21,6 +21,8 @@ import java.util.List;
 
 import mockit.Deencapsulation;
 import mockit.Expectations;
+import mockit.Mock;
+import mockit.MockUp;
 import mockit.Mocked;
 import mockit.Tested;
 import mockit.integration.junit4.JMockit;
@@ -54,11 +56,22 @@ public class TransformerReflectionHelperTestCase {
 
     @Test
     public void getReturnTypeForWriteTransformationMethodTransformer(final @Mocked TransformerHelper transformerHelper, final @Mocked JavaClass writerClass, final @Mocked JavaClass expectedReturnType) {
-        new Expectations(TransformerReflectionHelper.class) {{
-            Deencapsulation.invoke(transformerReflectionHelper, "getTransformerHelper"); result = transformerHelper;
-            String transformerMethodName = "transformerMethodName";
+        final String transformerMethodName = "transformerMethodName";
+
+        new MockUp<TransformerReflectionHelper>() {
+            @Mock
+            protected TransformerHelper getTransformerHelper() {
+                return transformerHelper;
+            }
+
+            @Mock
+            private JavaClass getReturnTypeForWriteTransformationMethod(String methodName, JavaClass writerClass, boolean isSetTransformerClass) throws JAXBException {
+                return expectedReturnType;
+            }
+        };
+
+        new Expectations() {{
             transformerHelper.getTransformerMethodName(); result = transformerMethodName;
-            Deencapsulation.invoke(transformerReflectionHelper, "getReturnTypeForWriteTransformationMethod", transformerMethodName, writerClass, true); result = expectedReturnType;
         }};
 
         JavaClass returnType = Deencapsulation.invoke(transformerReflectionHelper, "getReturnTypeForWriteTransformationMethodTransformer", writerClass);
@@ -71,9 +84,12 @@ public class TransformerReflectionHelperTestCase {
 
         final String methodName = "methodName";
 
-        new Expectations(TransformerReflectionHelper.class) {{
-            Deencapsulation.invoke(transformerReflectionHelper, "getReturnTypeForWriteTransformationMethod", methodName, writerClass, false); result = expectedReturnType;
-        }};
+        new MockUp<TransformerReflectionHelper>() {
+            @Mock
+            private JavaClass getReturnTypeForWriteTransformationMethod(String methodName, JavaClass writerClass, boolean isSetTransformerClass) throws JAXBException {
+                return expectedReturnType;
+            }
+        };
 
         JavaClass returnType = Deencapsulation.invoke(transformerReflectionHelper, "getReturnTypeForWriteTransformationMethod", methodName, writerClass);
 
