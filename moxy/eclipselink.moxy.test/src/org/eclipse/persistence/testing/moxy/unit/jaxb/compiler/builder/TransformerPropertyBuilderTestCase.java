@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -24,6 +24,7 @@ import javax.xml.namespace.QName;
 
 import mockit.Deencapsulation;
 import mockit.Expectations;
+import mockit.Invocation;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
@@ -71,19 +72,24 @@ public class TransformerPropertyBuilderTestCase {
         final Property property1 = new Property();
         final Property property2 = new Property();
 
-        new Expectations(TransformerPropertyBuilder.class) {{
+        new MockUp<TransformerPropertyBuilder>() {
+            @Mock
+            private String getPropertyName(Invocation invocation, Property property, XmlWriteTransformer writeTransformer) {
+                return property.getPropertyName() + invocation.getInvocationCount();
+            }
+
+            @Mock
+            private Property buildPropertyFromTransformer(Invocation invocation, String pname, TypeInfo typeInfo, XmlWriteTransformer writeTransformer) {
+                return invocation.getInvocationCount() == 1 ? property1 : property2;
+            }
+        };
+
+        new Expectations() {{
             property.getXmlTransformation(); result = xmlTransformation;
             List<XmlWriteTransformer> transformers = new ArrayList<>();
             transformers.add(transformer1);
             transformers.add(transformer2);
             xmlTransformation.getXmlWriteTransformer(); result = transformers;
-            String property1Name = "property1";
-            Deencapsulation.invoke(builder, "getPropertyName", property, transformer1); result = property1Name;
-            Deencapsulation.invoke(builder, "buildPropertyFromTransformer", property1Name, typeInfo, transformer1); result = property1;
-
-            String property2Name = "property2";
-            Deencapsulation.invoke(builder, "getPropertyName", property, transformer2); result = property2Name;
-            Deencapsulation.invoke(builder, "buildPropertyFromTransformer", property2Name, typeInfo, transformer2); result = property2;
         }};
 
         List<Property> properties = builder.buildProperties();
@@ -110,13 +116,21 @@ public class TransformerPropertyBuilderTestCase {
     }
 
     @Test
-    public void buildPropertyFromTransformer(final @Mocked String pname, final @Mocked TypeInfo typeInfo, final @Mocked XmlWriteTransformer transformer, final @Mocked JavaClass type, final @Mocked Property propety) {
+    public void buildPropertyFromTransformer(final @Mocked TypeInfo typeInfo, final @Mocked XmlWriteTransformer transformer, final @Mocked JavaClass type, final @Mocked Property propety) {
 
         final String xmlPath = "xmlPath";
+        final String pname = "customPname";
 
-        new Expectations(TransformerPropertyBuilder.class) {{
+        new MockUp<TransformerPropertyBuilder>() {
+            @Mock
+            private JavaClass getReturnTypeFromTransformer(TypeInfo typeInfo, XmlWriteTransformer writeTransformer) {
+                return type;
+            }
+
+        };
+
+        new Expectations() {{
             transformer.getXmlPath(); result = xmlPath;
-            Deencapsulation.invoke(builder, "getReturnTypeFromTransformer", typeInfo, transformer); result = type;
         }};
 
         final Property resultProperty = Deencapsulation.invoke(builder, "buildPropertyFromTransformer", pname, typeInfo, transformer);
@@ -131,12 +145,20 @@ public class TransformerPropertyBuilderTestCase {
 
     @Test
     public void getReturnTypeFromTransformer_isSetTransformerClass(final @Mocked TypeInfo typeInfo, final @Mocked XmlWriteTransformer transformer, final @Mocked JavaClass javaClass, final @Mocked TransformerReflectionHelper transformerReflectionHelper, final @Mocked JavaClass resultJavaClass) {
+        new MockUp<TransformerPropertyBuilder>() {
+            @Mock
+            private JavaClass getTransformerJavaClass(TypeInfo typeInfo, XmlWriteTransformer writeTransformer) {
+                return javaClass;
+            }
 
-        new Expectations(TransformerPropertyBuilder.class) {{
-            Deencapsulation.invoke(builder, "getTransformerJavaClass", typeInfo, transformer); result = javaClass;
+            @Mock
+            private TransformerReflectionHelper getTransformerReflectionHelper() {
+                return transformerReflectionHelper;
+            }
+        };
+
+        new Expectations() {{
             transformer.isSetTransformerClass(); result = true;
-
-            Deencapsulation.invoke(builder, "getTransformerReflectionHelper"); result = transformerReflectionHelper;
             transformerReflectionHelper.getReturnTypeForWriteTransformationMethodTransformer(javaClass); result = resultJavaClass;
         }};
 

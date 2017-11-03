@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -16,6 +16,8 @@ package org.eclipse.persistence.testing.moxy.unit.jaxb;
 import static org.junit.Assert.assertTrue;
 import mockit.Deencapsulation;
 import mockit.Expectations;
+import mockit.Mock;
+import mockit.MockUp;
 import mockit.Mocked;
 import mockit.integration.junit4.JMockit;
 
@@ -38,9 +40,15 @@ public class MOXySystemPropertiesTestCase {
 
         final String propertyName = "propertyName";
 
-        new Expectations(PrivilegedAccessHelper.class, MOXySystemProperties.class) {{
+        new MockUp<MOXySystemProperties>() {
+            @Mock
+            private Boolean runDoPrivileged(final String propertyName) {
+                return true;
+            }
+        };
+
+        new Expectations(PrivilegedAccessHelper.class) {{
             PrivilegedAccessHelper.shouldUsePrivilegedAccess(); result = true;
-            Deencapsulation.invoke(MOXySystemProperties.class, "runDoPrivileged", propertyName); result = true;
         }};
 
         Boolean result = Deencapsulation.invoke(MOXySystemProperties.class, "getBoolean", propertyName);
@@ -54,9 +62,15 @@ public class MOXySystemPropertiesTestCase {
 
         final String propertyName = "propertyName";
 
-        new Expectations(PrivilegedAccessHelper.class, MOXySystemProperties.class) {{
+        new MockUp<MOXySystemProperties>() {
+            @Mock
+            private Boolean getSystemPropertyValue(final String propertyName) {
+                return true;
+            }
+        };
+
+        new Expectations(PrivilegedAccessHelper.class) {{
             PrivilegedAccessHelper.shouldUsePrivilegedAccess(); result = false;
-            Deencapsulation.invoke(MOXySystemProperties.class, "getSystemPropertyValue", propertyName); result = true;
         }};
 
         Boolean result = Deencapsulation.invoke(MOXySystemProperties.class, "getBoolean", propertyName);
