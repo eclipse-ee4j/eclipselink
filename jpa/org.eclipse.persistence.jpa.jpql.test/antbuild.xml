@@ -92,6 +92,10 @@
     <property name="version.qualifier"     value="qualifier"/>
     <property name="version.string"        value="${release.version}.${version.qualifier}"/>
 
+    <!-- JVM used to run tests -->
+    <property name="test.junit.jvm" value="${env.JAVA_HOME}"/>
+    <property name="test.junit.jvm.exec" value="${test.junit.jvm}/bin/java"/>
+
     <echo message="ant.project.name                 = '${ant.project.name}'"/>
     <echo message="hermes.test.build.location       = '${hermes.test.build.location}'"/>
     <echo message="hermes.test.2.base.dir           = '${hermes.test.2.base.dir}'"/>
@@ -196,7 +200,7 @@
         <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
         <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
 
-        <junit printsummary="yes" haltonfailure="yes" fork="yes" forkmode="once" showoutput="true" maxmemory="${max.heap.memory}" dir="${run.dir}">
+        <junit jvm="${test.junit.jvm.exec}" printsummary="yes" haltonfailure="yes" fork="yes" forkmode="once" showoutput="true" maxmemory="${max.heap.memory}" dir="${run.dir}">
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
             <jvmarg line="${additional.jvmargs}"/>
             <classpath>

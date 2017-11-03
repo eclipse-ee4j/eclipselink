@@ -150,7 +150,7 @@
             <echo message=" - loglevel:  @{loglevel}"/>
             <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
             <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
-            <junit printsummary="yes" failureproperty="junit.failed" fork="yes" forkmode="once"
+            <junit jvm="${test.junit.jvm.exec}" printsummary="yes" failureproperty="junit.failed" fork="yes" forkmode="once"
                    showoutput="true" maxmemory="512m" dir="@{dir}">
                 <jvmarg value="-Declipselink.logging.level=@{loglevel}"/>
                 <!--jvmarg value="-Djava.security.manager"/>
@@ -197,6 +197,10 @@
     <property name="eclipselink.plugins.dir" location="${eclipselink.home.dir}/plugins"/>
     <!-- Core tests directory -->
     <property name="core.test.dir" location="../eclipselink.core.test"/>
+
+    <!-- JVM used to run tests -->
+    <property name="test.junit.jvm" value="${env.JAVA_HOME}"/>
+    <property name="test.junit.jvm.exec" value="${test.junit.jvm}/bin/java"/>
 
     <!-- Initialize common path. -->
     <target name="common-path">

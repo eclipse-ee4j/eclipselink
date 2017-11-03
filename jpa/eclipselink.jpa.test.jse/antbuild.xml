@@ -32,6 +32,10 @@
     <property file="./antbuild.properties" />
     <property file="./test.properties" />
 
+    <!-- JVM used to run tests -->
+    <property name="test.junit.jvm" value="${env.JAVA_HOME}"/>
+    <property name="test.junit.jvm.exec" value="${test.junit.jvm}/bin/java"/>
+
     <path id="compile.jse.path">
         <pathelement path="${jse.el.root}/eclipselink.jar" />
         <pathelement path="${javax.transaction}" />
@@ -73,7 +77,7 @@
         <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
         <property name="debugargs" value="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=7777"/>
         <property name="rmi" value="-Djava.naming.provider.url=rmi://localhost:${rmi.port} -Djava.naming.factory.initial=com.sun.jndi.rmi.registry.RegistryContextFactory"/>
-        <junit printsummary="on" haltonfailure="false" failureproperty="fail" fork="yes" dir="${jse.classes.dir}" forkmode="once">
+        <junit jvm="${test.junit.jvm.exec}" printsummary="on" haltonfailure="false" failureproperty="fail" fork="yes" dir="${jse.classes.dir}" forkmode="once">
             <jvmarg line="${additional.jvmargs} ${rmi}"/>
             <sysproperty key="javax.persistence.jdbc.url" value="${db.url}"/>
             <sysproperty key="javax.persistence.jdbc.driver" value="${db.driver}"/>

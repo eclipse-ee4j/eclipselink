@@ -79,6 +79,10 @@
     <property file="${user.home}/test.properties"/>
     <property file="${dbwsbldrtest.build.location}/test.properties"/>
 
+    <!-- JVM used to run tests -->
+    <property name="test.junit.jvm" value="${env.JAVA_HOME}"/>
+    <property name="test.junit.jvm.exec" value="${test.junit.jvm}/bin/java"/>
+
     <!-- Primary Targets: "jar" separate for dev use -->
     <target name="build" depends="clean, compile, package" description="build dbwsbldrtests jar"/>
     <target name="test"  depends="build, run-tests"        description="run tests after building"/>
@@ -261,6 +265,7 @@
         <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
         <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
         <junit
+          jvm="${test.junit.jvm.exec}"
           printsummary="withOutAndErr"
           fork="yes"
           forkmode="once"

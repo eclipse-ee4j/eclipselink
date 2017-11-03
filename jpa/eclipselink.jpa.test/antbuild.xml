@@ -138,6 +138,10 @@
     <property name="modelgen.jar" value="${eclipselink.modelgen.prefix}_${version.string}.jar"/>
     <property name="projectcache.dir"       value="pcfile"/>
 
+    <!-- JVM used to run tests -->
+    <property name="test.junit.jvm" value="${env.JAVA_HOME}"/>
+    <property name="test.junit.jvm.exec" value="${test.junit.jvm}/bin/java"/>
+
     <echo message="modelgen.jar                         = '${modelgen.jar}'"/>
     <echo message="ant.project.name                     = '${ant.project.name}'"/>
     <echo message="jpatest.build.location               = '${jpatest.build.location}'"/>
@@ -2514,7 +2518,7 @@
         <!--<property name="additional.jvmargs" value="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=8787"/>-->
         <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
 
-        <junit printsummary="yes" haltonfailure="${test.haltonfailure}" fork="yes" forkmode="once" showoutput="true" maxmemory="${max.heap.memory}" dir="${run.dir}">
+        <junit jvm="${test.junit.jvm.exec}" printsummary="yes" haltonfailure="${test.haltonfailure}" fork="yes" forkmode="once" showoutput="true" maxmemory="${max.heap.memory}" dir="${run.dir}">
             <sysproperty key="proxy.user.name" value="PAS_PROXY"/>
             <sysproperty key="pa.connection.user" value="${db.user}"/>
             <sysproperty key="pa.connection.password" value="${db.pwd}"/>

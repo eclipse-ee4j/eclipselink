@@ -69,6 +69,10 @@
     <property name="jaxb-api.lib"   value="${sdotest.2.common.plugins.dir}/${jaxb-api.jar}"/>
     <property name="jacocoagent.lib" value="${extensions.depend.dir}/${jacocoagent.jar}"/>
 
+    <!-- JVM used to run tests -->
+    <property name="test.junit.jvm" value="${env.JAVA_HOME}"/>
+    <property name="test.junit.jvm.exec" value="${test.junit.jvm}/bin/java"/>
+
     <!-- path to OSGi Bundle compile dependencies -->
     <path id="sdotest.bundle.compile.path">
         <fileset
@@ -185,8 +189,9 @@
             <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
             <!-- Fix for 290177 below removed temporarily to avoid out-of-memeory issues with LRG run -->
             <!-- junit printsummary="withOutAndErr" fork="yes" forkmode="once" dir="${resource.dir}" maxmemory="512m" showoutput="yes" -->
-            <junit printsummary="withOutAndErr" fork="yes" dir="${resource.dir}" maxmemory="512m" showoutput="yes">
+            <junit jvm="${test.junit.jvm.exec}" printsummary="withOutAndErr" fork="yes" dir="${resource.dir}" maxmemory="512m" showoutput="yes">
                 <jvmarg line="${additional.jvmargs}"/>
+                <env key="JAVA_HOME" value="${test.junit.jvm}"/>
                 <sysproperty key="loggingLevelFinest" value="false"/>
                 <sysproperty key="customContext" value="@{customcontext}"/>
                 <sysproperty key="eclipselink.xml.platform" value="${xml.platform}"/>
