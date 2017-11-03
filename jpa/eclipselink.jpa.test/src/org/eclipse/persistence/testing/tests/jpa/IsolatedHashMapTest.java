@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2016 Oracle and/or its affiliates.
+ * Copyright (c) 2015, 2017 Oracle and/or its affiliates.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -23,9 +23,7 @@ import java.util.Set;
 
 import javax.persistence.spi.PersistenceUnitInfo;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
+import org.eclipse.persistence.exceptions.ServerPlatformException;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.helper.JPAClassLoaderHolder;
 import org.eclipse.persistence.internal.jpa.IsolatedHashMap;
@@ -37,6 +35,9 @@ import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.factories.SessionManager;
 import org.eclipse.persistence.testing.framework.ReflectionHelper;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
 /**
  * Tests partition isolated {@link HashMap}.
@@ -231,9 +232,17 @@ public class IsolatedHashMapTest extends JUnitTestCase {
 
     /** Class initialization code. */
     static {
-        serverPlatform = ServerPlatformUtils.createServerPlatform(
-                null, ServerPlatformUtils.detectServerPlatform(null), SessionManager.class.getClassLoader());
-        // False value also handles case when serverPlatform is null to avoid NPE.
+        String platformClass = ServerPlatformUtils.detectServerPlatform(null);
+        ServerPlatform sp = null;
+        try {
+            sp = platformClass != null
+                    ? ServerPlatformUtils.createServerPlatform(null, platformClass, SessionManager.class.getClassLoader())
+                    : null;
+        } catch (ServerPlatformException e) {
+        }
+        serverPlatform = sp;
+        // False value also handles case when serverPlatform is null to avoid
+        // NPE.
         supportPartitions = serverPlatform != null ? serverPlatform.usesPartitions() : false;
     }
 
