@@ -107,6 +107,10 @@
 
     <property file="${jparstest.build.location}/antbuild.properties"/>
 
+    <!-- JVM used to run tests -->
+    <property name="test.junit.jvm" value="${env.JAVA_HOME}"/>
+    <property name="test.junit.jvm.exec" value="${test.junit.jvm}/bin/java"/>
+
     <!-- Clean all build generated content. -->
     <target name="clean" description="Clean the build">
         <delete includeEmptyDirs="true" failonerror="false">
@@ -455,7 +459,7 @@
             <echo message="Running @{testclass} suite"/>
             <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
             <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
-            <junit printsummary="withOutAndErr" fork="yes" dir="${classes.dir}" maxmemory="512m" showoutput="yes">
+            <junit jvm="${test.junit.jvm.exec}" printsummary="withOutAndErr" fork="yes" dir="${classes.dir}" maxmemory="512m" showoutput="yes">
                 <jvmarg value="-Ddb.driver=${db.driver}"/>
                 <jvmarg value="-Ddb.url=${db.url}"/>
                 <jvmarg value="-Ddb.user=${db.user}"/>
