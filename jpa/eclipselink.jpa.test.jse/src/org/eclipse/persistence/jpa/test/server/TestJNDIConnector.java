@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2016 IBM Corporation. All rights reserved.
+ * Copyright (c) 2015, 2017 IBM Corporation, Oracle and/or its affiliates All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -68,7 +68,7 @@ public class TestJNDIConnector {
     public void setup() {
         _handler = new MyInvocationHandler();
         _ctx = (Context) Proxy.newProxyInstance(null, new Class<?>[] { Context.class }, _handler);
-        _dataSource = (DataSource) Proxy.newProxyInstance(null, new Class<?>[] { DataSource.class }, _handler);
+        _dataSource = (DataSource) Proxy.newProxyInstance(this.getClass().getClassLoader(), new Class<?>[] { DataSource.class }, _handler);
         _connector = new JNDIConnector(_ctx, "test");
     }
 
