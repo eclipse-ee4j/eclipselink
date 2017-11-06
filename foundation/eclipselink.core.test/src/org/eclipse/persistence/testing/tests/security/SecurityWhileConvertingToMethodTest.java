@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -48,11 +48,19 @@ public class SecurityWhileConvertingToMethodTest extends ExceptionTestSaveSecuri
     }
 
     public void test() {
+        boolean orig = TestSecurityManager.TRIGGER_EX;
+        TestSecurityManager.TRIGGER_EX = false;
         try {
             //need to use the remote Initialization as the normal one would product TL-084 before check this test
-            mapping.remoteInitialization((DistributedSession)(new CORBAConnection(new CORBARemoteSessionControllerDispatcher(getSession()))).createRemoteSession());
+            CORBARemoteSessionControllerDispatcher dispatcher = new CORBARemoteSessionControllerDispatcher(getSession());
+            CORBAConnection connection = new CORBAConnection(dispatcher);
+            DistributedSession ds = (DistributedSession)(connection).createRemoteSession();
+            TestSecurityManager.TRIGGER_EX = true;
+            mapping.remoteInitialization(ds);
         } catch (EclipseLinkException exception) {
             caughtException = exception;
+        } finally {
+            TestSecurityManager.TRIGGER_EX = orig;
         }
     }
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -18,13 +18,16 @@ import java.security.Permission;
 //This is an assisting class for SecurityException tests.  This is a lazy yet efficient way to
 //trigger SecurityException since triggering the real SecurityException is too much involved.
 public class TestSecurityManager extends SecurityManager {
+
+    public static boolean TRIGGER_EX = true;
+
     public TestSecurityManager() {
         super();
     }
 
     @Override
     public void checkPackageAccess(String pkg) {
-        if ("java.lang.reflect".equals(pkg)) {
+        if (TRIGGER_EX && "java.lang.reflect".equals(pkg)) {
             for (StackTraceElement ste : Thread.currentThread().getStackTrace()) {
                 if (ste.getClassName().startsWith("org.eclipse.persistence.testing.tests.security") && "test".equals(ste.getMethodName())) {
                     throw new SecurityException("Dummy SecurityException test");
