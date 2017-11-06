@@ -13,27 +13,17 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa;
 
-import java.lang.reflect.Field;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.spi.PersistenceUnitInfo;
-
 import org.eclipse.persistence.exceptions.ServerPlatformException;
-import org.eclipse.persistence.internal.databaseaccess.Accessor;
-import org.eclipse.persistence.internal.helper.JPAClassLoaderHolder;
 import org.eclipse.persistence.internal.jpa.IsolatedHashMap;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.platform.server.ServerPlatform;
 import org.eclipse.persistence.platform.server.ServerPlatformUtils;
-import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.factories.SessionManager;
-import org.eclipse.persistence.testing.framework.ReflectionHelper;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 
 import junit.framework.Test;
@@ -43,172 +33,6 @@ import junit.framework.TestSuite;
  * Tests partition isolated {@link HashMap}.
  */
 public class IsolatedHashMapTest extends JUnitTestCase {
-
-    /**
-     * {@link ServerPlatform} mocking class. Allows changing current partition ID
-     * during the test.
-     */
-    private static class TestServerPlatform implements ServerPlatform {
-
-        /** Current partition ID. */
-        private String partitionId;
-
-        /**
-         * Created an instance of {@code ServerPlatform} mocking class.
-         * Current partition ID is set to default value.
-         */
-        private TestServerPlatform() {
-            partitionId = DEFAULT_PARTITION_ID;
-        }
-
-        /**
-         * Check whether this platform uses partitions.
-         * @return Always returns {@code true}.
-         */
-        @Override
-        public boolean usesPartitions() {
-            return true;
-        }
-
-        /**
-         * Get current partition ID.
-         * @return Current partition ID.
-         */
-        @Override
-        public String getPartitionID() {
-            return partitionId;
-        }
-
-        /**
-         * Set partition ID to be used as current partition context.
-         * @param id New partition ID.
-         */
-        private void setPartitionID(final String id) {
-            partitionId = id;
-        }
-
-        @Override
-        public DatabaseSession getDatabaseSession() {
-            throw new UnsupportedOperationException("Not implemented");
-        }
-
-        @Override
-        public String getServerNameAndVersion() {
-            throw new UnsupportedOperationException("Not implemented");
-        }
-
-        @Override
-        public String getModuleName() {
-            throw new UnsupportedOperationException("Not implemented");
-        }
-
-        @Override
-        public Class getExternalTransactionControllerClass() {
-            throw new UnsupportedOperationException("Not implemented");
-        }
-
-        @Override
-        public void setExternalTransactionControllerClass(final Class newClass) {
-            throw new UnsupportedOperationException("Not implemented");
-        }
-
-        @Override
-        public void initializeExternalTransactionController() {
-            throw new UnsupportedOperationException("Not implemented");
-        }
-
-        @Override
-        public boolean isJTAEnabled() {
-            throw new UnsupportedOperationException("Not implemented");
-        }
-
-        @Override
-        public boolean isRuntimeServicesEnabledDefault() {
-            throw new UnsupportedOperationException("Not implemented");
-        }
-
-        @Override
-        public void disableJTA() {
-            throw new UnsupportedOperationException("Not implemented");
-        }
-
-        @Override
-        public boolean isRuntimeServicesEnabled() {
-            throw new UnsupportedOperationException("Not implemented");
-        }
-
-        @Override
-        public void disableRuntimeServices() {
-            throw new UnsupportedOperationException("Not implemented");
-        }
-
-        @Override
-        public void registerMBean() {
-            throw new UnsupportedOperationException("Not implemented");
-        }
-
-        @Override
-        public void unregisterMBean() {
-            throw new UnsupportedOperationException("Not implemented");
-        }
-
-        @Override
-        public void shutdown() {
-            throw new UnsupportedOperationException("Not implemented");
-        }
-
-        @Override
-        public int getThreadPoolSize() {
-            throw new UnsupportedOperationException("Not implemented");
-        }
-
-        @Override
-        public void setThreadPoolSize(final int threadPoolSize) {
-            throw new UnsupportedOperationException("Not implemented");
-        }
-
-        @Override
-        public Connection unwrapConnection(final Connection connection) {
-            throw new UnsupportedOperationException("Not implemented");
-        }
-
-        @Override
-        public void launchContainerRunnable(final Runnable runnable) {
-            throw new UnsupportedOperationException("Not implemented");
-        }
-
-        @Override
-        public SessionLog getServerLog() {
-            throw new UnsupportedOperationException("Not implemented");
-        }
-
-        @Override
-        public boolean shouldUseDriverManager() {
-            throw new UnsupportedOperationException("Not implemented");
-        }
-
-        @Override
-        public boolean wasFailureCommunicationBased(
-                final SQLException exception, final Accessor connection, final AbstractSession sessionForProfile) {
-            throw new UnsupportedOperationException("Not implemented");
-        }
-
-        @Override
-        public JPAClassLoaderHolder getNewTempClassLoader(final PersistenceUnitInfo puInfo) {
-            throw new UnsupportedOperationException("Not implemented");
-        }
-
-        @Override
-        public void clearStatementCache(Connection connection) {
-            throw new UnsupportedOperationException("Not implemented");
-        }
-
-        @Override
-        public int getJNDIConnectorLookupType() {
-            throw new UnsupportedOperationException("Not implemented");
-        }
-
-    }
 
     /** Session name and partition ID separator. */
     private static final char SEPARATOR = '$';
@@ -254,7 +78,6 @@ public class IsolatedHashMapTest extends JUnitTestCase {
         TestSuite suite = new TestSuite();
         suite.setName("IsolatedHashMapTest");
         suite.addTest(new IsolatedHashMapTest("testIsolationInRealContext"));
-        suite.addTest(new IsolatedHashMapTest("testIsolationInMockedContext"));
         return suite;
     }
 
@@ -336,48 +159,6 @@ public class IsolatedHashMapTest extends JUnitTestCase {
         final SessionLog log = getServerSession().getSessionLog();
         log.log(SessionLog.INFO, "IsolatedHashMapTest.testIsolationInRealContext()");
         doIsolationCheck(map, supportPartitions ? serverPlatform.getPartitionID() : DEFAULT_PARTITION_ID, log);
-    }
-
-    /**
-     * Test partition isolation in mocked partition context.
-     */
-    public void testIsolationInMockedContext() {
-        final SessionLog log = getServerSession().getSessionLog();
-        log.log(SessionLog.INFO, "IsolatedHashMapTest.testIsolationInMockedContext()");
-        // Replace serverPlatform with mocked instance in IsolatedHashMap.
-        final TestServerPlatform testPlatform = new TestServerPlatform();
-        Field serverPlatformField;
-        Field supportPartitions;
-        try {
-            final ServerPlatform originalPlatform
-                    = (ServerPlatform)ReflectionHelper.getPrivateStatic(IsolatedHashMap.class, "serverPlatform");
-            final boolean originalsupport
-                    = ReflectionHelper.getPrivateStatic(IsolatedHashMap.class, "supportPartitions");
-            log.log(SessionLog.INFO,
-                    "Original platform field instance: " + originalPlatform.getClass().getName());
-            log.log(SessionLog.INFO, "Original partitions support flag: " + Boolean.toString(originalsupport));
-            ReflectionHelper.setPrivateStaticFinal(IsolatedHashMap.class, "serverPlatform", testPlatform);
-            ReflectionHelper.setPrivateStaticFinal(
-                    IsolatedHashMap.class, "supportPartitions", testPlatform.usesPartitions());
-            log.log(SessionLog.INFO,
-                    "Mocked platform field instance: " + testPlatform.getClass().getName());
-            log.log(SessionLog.INFO, "Mocked partitions support flag: "
-                    + Boolean.toString(testPlatform.usesPartitions()));
-            // Run the test in mocked partition context.
-            final Map<String, String> map = IsolatedHashMap.newMap();
-            log.log(SessionLog.INFO, "Created " + map.getClass().getName() + "instance");
-            final String[] partitionIds = {"first", "second", "third"};
-            for (String partitionId : partitionIds) {
-                testPlatform.setPartitionID(partitionId);
-                doIsolationCheck(map, partitionId, log);
-            }
-            // Return original serverPlatform instance into IsolatedHashMap.
-            ReflectionHelper.setPrivateStaticFinal(IsolatedHashMap.class, "serverPlatform", originalPlatform);
-            ReflectionHelper.setPrivateStaticFinal(IsolatedHashMap.class, "supportPartitions", originalsupport);
-        } catch (ReflectiveOperationException | SecurityException e) {
-            log.logThrowable(SessionLog.WARNING, e);
-            e.printStackTrace();
-        }
     }
 
 }

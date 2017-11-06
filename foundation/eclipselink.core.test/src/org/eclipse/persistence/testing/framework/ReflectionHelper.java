@@ -18,27 +18,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import sun.misc.Unsafe;
-
 /**
  * Reflection helper methods.
  */
 public class ReflectionHelper {
-
-    private static final Unsafe unsafe;
-    static
-    {
-        try
-        {
-            Field field = Unsafe.class.getDeclaredField("theUnsafe");
-            field.setAccessible(true);
-            unsafe = (Unsafe)field.get(null);
-        }
-        catch (Exception e)
-        {
-            throw new RuntimeException(e);
-        }
-    }
 
     /**
      * Set value of private static field.
@@ -57,25 +40,6 @@ public class ReflectionHelper {
         field.setAccessible(true);
         field.set(null, newValue);
         field.setAccessible(accessible);
-     }
-
-    /**
-     * Set value of private static final field.
-     * Uses {@link sun.misc.Unsafe} which seems to be the only way to modify such a field in some cases.
-     * @param c        Class containing static field.
-     * @param name     Static field name to be modified.
-     * @param newValue New value to be set.
-     * @throws NoSuchFieldException If a field with the specified name is not found.
-     * @throws SecurityException If a security manager is present and access to the field was denied.
-     * @throws IllegalArgumentException If an unwrapping conversion fails.
-     * @throws IllegalAccessException If the underlying field is either inaccessible or final.
-     */
-    public static final void setPrivateStaticFinal(final Class c, final String name, final Object newValue)
-            throws ReflectiveOperationException {
-        final Field field = c.getDeclaredField(name);
-        final Object base = unsafe.staticFieldBase(field);
-        final long offset = unsafe.staticFieldOffset(field);
-        unsafe.putObject(base, offset, newValue);
      }
 
     /**
