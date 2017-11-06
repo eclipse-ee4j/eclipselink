@@ -47,7 +47,7 @@ public class CompileUtil {
         args[4] = javaVersion;
         args[5] = "-target";
         args[6] = javaVersion;
-        if (9 >= jv) {
+        if (jv >= 9) {
             args[7] = "--add-modules";
             args[8] = "java.activation";
             System.arraycopy(javaFiles, 0, args, 9, javaFiles.length);
