@@ -179,8 +179,7 @@ public class JavaUtilTest extends junit.framework.TestCase {
                 break;
             }
             result = JavaSEPlatform.is(platform);
-            assertFalse("Unsupported platform check shall return false.",
-                    result);
+            assertFalse("Unsupported platform check shall return false, platform " + platform.toString() + ".", result);
         }
     }
 
