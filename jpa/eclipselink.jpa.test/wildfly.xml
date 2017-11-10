@@ -1,0 +1,228 @@
+<!--/*******************************************************************************
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+* which accompanies this distribution.
+* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+* and the Eclipse Distribution License is available at
+* http://www.eclipse.org/org/documents/edl-v10.php.
+*
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*     - properties ending in .jar define jarfile names only (no path)
+*     - properties ending in .lib are fully qualified jars (path and filename)
+*     - properties ending in .dir are directory paths
+*     - properties ending in .path are path refid names (classpath fragments)
+*   - multi-word targets use hyphens '-'
+*     - targets beginning with test- are reserved for high level test targets,
+*       and are used in test results parsing
+*     - targets typically use the form <action>-<object>-<type> (ie. package-bundle-zip)
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatenated
+*     e.g. 'runpathref'
+*   - multi-word tasks (taskdef) names are concatenated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+*
+* Contributors:
+*     Lukas - initial API and implementation
+#******************************************************************************/-->
+
+<!-- This ant project includes the following tasks:
+        - wildfly-install : install binary and drivers on the server
+        - wildfly-setup : creates connection pools and prepares environment for tests
+        - wildfly-reset : removes connection pool, cleans up installation
+        - wildfly-start : starts server
+        - wildfly-stop : stops server
+        - wildfly-deploy : deploys ear
+        - wildfly-undeploy : undeploys ear
+
+        It requires some configuration of the wildfly.properties, it should be run through antbuild.xml, not directly.
+        To connect to the wildfly admin console use http://localhost:9990/console/App.html,
+        this may be useful for debugging deployment failures.
+        Sometimes if a test or deployment fails, your server gets screwed up
+        and you need to re-install your domain (ant -f antbuld.xml server-reset server-install server-setup).
+-->
+
+<project name="Eclipse Persistence Services JPA Wildfly Testing" basedir=".">
+
+    <property name="env" environment="env" value="env"/>
+    <!-- Allows a user to overide certain user specific properties. -->
+    <property file="${user.home}/wildfly.properties"/>
+    <property file="./wildfly.properties"/>
+    <property name="eclipselink.lib" value="../../${eclipselink.jar}"/>
+
+    <!-- Set db name by check db.driver -->
+    <condition property="db.name" value="oracle">
+        <contains string="${db.driver}" substring="oracle"/>
+    </condition>
+
+    <condition property="db.name" value="mysql">
+        <contains string="${db.driver}" substring="mysql"/>
+    </condition>
+
+    <condition property="db.name" value="mssql">
+        <contains string="${db.driver}" substring="sqlserver"/>
+    </condition>
+
+    <condition property="db.name" value="db2">
+        <contains string="${db.driver}" substring="db2"/>
+    </condition>
+
+    <condition property="db.name" value="sybase">
+        <contains string="${db.driver}" substring="sybase"/>
+    </condition>
+
+    <condition property="is.eap">
+        <contains string="${server.version}" substring="eap"/>
+    </condition>
+
+    <!-- JVM used to run tests -->
+    <property name="test.junit.jvm" value="${env.JAVA_HOME}"/>
+    <property name="test.junit.jvm.exec" value="${test.junit.jvm}/bin/java"/>
+
+    <property name="wildfly.modules.dir" location="${wildfly.home}/modules/system/layers/base"/>
+
+    <target name="-backup-init">
+        <condition property="do.backup">
+            <not>
+                <available file="${wildfly.modules.dir}/org/eclipse/persistence/main/module.xml.bak"/>
+            </not>
+        </condition>
+    </target>
+
+    <target name="-do-backup" description="Backup org.eclipse.persistence module definition." depends="-backup-init" if="do.backup">
+        <move file="${wildfly.modules.dir}/org/eclipse/persistence/main/module.xml" tofile="${wildfly.modules.dir}/org/eclipse/persistence/main/module.xml.bak"/>
+    </target>
+
+    <target name="-wildfly-cli-init" description="Initialize 'cli' macro for jboss-cli.">
+        <condition property="is.windows" value="true">
+            <os family="windows"/>
+        </condition>
+        <condition property="is.unix" value="true">
+            <os family="unix"/>
+        </condition>
+        <condition property="suffix" value="bat">
+            <isset property="is.windows"/>
+        </condition>
+        <condition property="suffix" value="sh">
+            <isset property="is.unix"/>
+        </condition>
+
+        <macrodef name="cli" description="Run ${wildfly.home}/bin/jboss-cli.${suffix}">
+            <attribute name="command"/>
+            <sequential>
+                <echo>Executing command: @{command}</echo>
+                <exec executable="${wildfly.home}/bin/jboss-cli.${suffix}" dir="${basedir}" resultproperty="cli.result">
+                    <env key="JAVA_HOME" value="${test.junit.jvm}"/>
+                    <env key="JBOSS_HOME" value="${wildfly.home}"/>
+                    <arg value="--connect"/>
+                    <arg value="command=@{command}"/>
+                </exec>
+                <echo> ==> Execution result: ${cli.result}</echo>
+            </sequential>
+        </macrodef>
+    </target>
+
+    <target name="wildfly-install" description="Install binaries on the server." depends="-do-backup,-wildfly-cli-init">
+        <pathconvert property="junit.jars">
+            <path path="${junit.lib}"/>
+            <flattenmapper/>
+        </pathconvert>
+        <xslt style="resource/wildfly/eclipselink-module-template.xsl" in="${wildfly.modules.dir}/org/eclipse/persistence/main/module.xml.bak" out="${wildfly.modules.dir}/org/eclipse/persistence/main/module.xml" force="true">
+            <param name="resources" expression="${eclipselink.jar}:${commonj.sdo.jar}:${junit.jars}"/>
+        </xslt>
+        <copy file="${eclipselink.lib}" todir="${wildfly.modules.dir}/org/eclipse/persistence/main"/>
+        <copy file="${jpatest.2.sdo.plugins.dir}/${commonj.sdo.jar}" todir="${wildfly.modules.dir}/org/eclipse/persistence/main"/>
+        <copy todir="${wildfly.modules.dir}/org/eclipse/persistence/main" flatten="true">
+            <path>
+                <pathelement path="${junit.lib}"/>
+            </path>
+        </copy>
+
+        <antcall target="wildfly-start"/>
+        <!-- JDBC Driver -->
+        <cli command="module add --name=com.${db.name} --resources=${jdbc.driver.jar} --dependencies=javax.api,javax.transaction.api --module-root-dir=${wildfly.modules.dir}"/>
+
+        <!-- JUnit -->
+        <!--<cli command="module add - -name=junit.junit - -resources=${junit.lib} - -module-root-dir=${wildfly.modules.dir}"/>-->
+
+        <cli command=":reload"/>
+    </target>
+
+    <target name="wildfly-setup" description="Create datasources and JDBC driver definition on the Wildfly server." depends="-wildfly-cli-init">
+        <cli command="/subsystem=datasources/jdbc-driver=${db.name}Driver:add(driver-name=${db.name}Driver,driver-module-name=com.${db.name},driver-class-name=${db.driver})"/>
+        <cli command=":reload"/>
+
+        <property name="w.ds.name" value="${wildfly.jtaDs.name}${db.name}Pool"/>
+        <echo>Setting up ${w.ds.name}</echo>
+        <cli command="data-source add --jndi-name=${wildfly.jtaDs.jndi} --name=${w.ds.name} --connection-url=${db.url} --driver-name=${db.name}Driver --user-name=${db.user} —-password=${db.pwd} --jta=true --enabled=true"/>
+        <cli command="/subsystem=datasources/data-source=${w.ds.name}:write-attribute(name=password,value=${db.pwd})"/>
+
+        <property name="w.nonjtads.name" value="${wildfly.nonJtaDs.name}${db.name}Pool"/>
+        <echo>Setting up ${w.nonjtads.name}</echo>
+        <cli command="data-source add --jndi-name=${wildfly.nonJtaDs.jndi} --name=${w.nonjtads.name} --connection-url=${db.url} --driver-name=${db.name}Driver --user-name=${db.user} —-password=${db.pwd} --jta=true --enabled=true"/>
+        <cli command="/subsystem=datasources/data-source=${w.nonjtads.name}:write-attribute(name=password,value=${db.pwd})"/>
+        <cli command=":reload"/>
+
+        <cli command="/system-property=eclipselink.archive.factory:add(value=org.jipijapa.eclipselink.JBossArchiveFactoryImpl)"/>
+        <cli command=":reload"/>
+    </target>
+
+    <target name="wildfly-reset" description="Revert all modifications on the server done by install/setup." depends="-wildfly-cli-init,wildfly-start">
+        <!-- DataSources -->
+        <cli command="data-source remove --name=${wildfly.jtaDs.name}${db.name}Pool"/>
+        <cli command="data-source remove --name=${wildfly.nonJtaDs.name}${db.name}Pool"/>
+        <cli command=":reload"/>
+
+        <cli command="/subsystem=datasources/jdbc-driver=${db.name}Driver:remove"/>
+        <cli command="/system-property=eclipselink.archive.factory:remove"/>
+        <cli command=":reload"/>
+
+        <!-- JDBC Driver -->
+        <cli command="module remove --name=com.${db.name} --module-root-dir=${wildfly.modules.dir}"/>
+
+        <!-- JUnit -->
+        <!--<cli command="module remove - -name=junit.junit"/>-->
+
+        <move file="${wildfly.modules.dir}/org/eclipse/persistence/main/module.xml.bak" tofile="${wildfly.modules.dir}/org/eclipse/persistence/main/module.xml" failonerror="false" verbose="true"/>
+        <delete file="${wildfly.modules.dir}/org/eclipse/persistence/main/${eclipselink.jar}" failonerror="false"/>
+        <delete file="${wildfly.modules.dir}/org/eclipse/persistence/main/${commonj.sdo.jar}" failonerror="false"/>
+        <delete verbose="true" failonerror="false">
+            <fileset dir="${wildfly.modules.dir}/org/eclipse/persistence/main" includes="junit-*.jar,hamcrest-*.jar"/>
+        </delete>
+        <cli command=":reload"/>
+    </target>
+
+    <target name="wildfly-start" description="Start the server." depends="-wildfly-cli-init">
+        <property name="additional.server.args" value=""/>
+        <exec executable="${wildfly.home}/bin/standalone.${suffix}" spawn="true">
+            <env key="JAVA_HOME" value="${test.junit.jvm}"/>
+            <env key="JBOSS_HOME" value="${wildfly.home}"/>
+            <arg value="--server-config=${wildfly.config}"/>
+            <arg line="${additional.server.args}"/>
+        </exec>
+        <waitfor maxwait="3" maxwaitunit="minute" checkevery="500" timeoutproperty="wildfly.not.running">
+            <http url="http://localhost:8080/index.html"/>
+        </waitfor>
+        <fail if="wildfly.not.running" message="Wildfly did not start within given time"/>
+        <echo>Wildfly is runnig at http://localhost:8080/index.html</echo>
+    </target>
+
+    <target name="wildfly-stop" description="Stop the server." depends="-wildfly-cli-init">
+        <cli command=":shutdown"/>
+    </target>
+
+    <target name="wildfly-deploy" description="Deploy the application ear to the server." depends="-wildfly-cli-init">
+        <property name="ear" location="${ear.name}"/>
+        <cli command="deploy ${ear.name} --force"/>
+    </target>
+
+    <target name="wildfly-undeploy" description="Undeploy the application ear frpm the server." depends="-wildfly-cli-init">
+        <cli command="undeploy ${application.name}.ear"/>
+    </target>
+
+</project>
