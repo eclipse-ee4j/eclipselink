@@ -198,7 +198,10 @@
     </condition>
     <!-- This checks if the Application Server is JBoss -->
     <condition property="is.jboss">
-        <contains string="${server.name}" substring="jboss"/>
+        <or>
+            <contains string="${server.name}" substring="jboss"/>
+            <contains string="${server.name}" substring="wildfly"/>
+        </or>
     </condition>
 
     <!-- This checks if the Application Server is WebSphere -->
@@ -234,15 +237,15 @@
             <fileset dir="${spring.jlib.dir}" includes="${spring.jlib}"/>
             <pathelement path="."/>
     </path>
-    <!-- This checks if the Apllication Server is applicable to run oracle jpa/customfeatures model on oracle db-->
+    <!-- This checks if the Aplication Server is applicable to run oracle jpa/customfeatures model on oracle db-->
     <condition property="run.jpa.customfeatures.model">
         <and>
             <contains string="${db.driver}" substring="oracle"/>
             <or>
-                <contains string="${server.name}" substring="weblogic"/>
-                <!--contains string="${server.name}" substring="websphere"/-->
-                <contains string="${server.name}" substring="jboss"/>
-                <contains string="${server.name}" substring="glassfish"/>
+                <istrue value="${is.weblogic}"/>
+                <!--istrue value="${is.websphere}"/-->
+                <istrue value="${is.jboss}"/>
+                <istrue value="${is.glassfish}"/>
             </or>
         </and>
     </condition>
@@ -269,35 +272,23 @@
                 <isset property="is.jboss"/>
             </or>
         </condition>
-        <condition property="SERVER.TESTRUNNER" value="${MODEL_NAME}/${server.testrunner}">
-            <and>
-                <isset property="is.jboss"/>
-            </and>
+        <condition property="SERVER.TESTRUNNER" value="${MODEL_NAME}/${MODEL_NAME}_ejb/${server.testrunner}">
+            <isset property="is.jboss"/>
         </condition>
-        <condition property="SERVER.TESTRUNNER1" value="${MODEL_NAME}/${server.testrunner1}">
-            <and>
-                <isset property="is.jboss"/>
-            </and>
+        <condition property="SERVER.TESTRUNNER1" value="${MODEL_NAME}/${MODEL_NAME}_ejb/${server.testrunner1}">
+            <isset property="is.jboss"/>
         </condition>
-        <condition property="SERVER.TESTRUNNER2" value="${MODEL_NAME}/${server.testrunner2}">
-            <and>
-                <isset property="is.jboss"/>
-            </and>
+        <condition property="SERVER.TESTRUNNER2" value="${MODEL_NAME}/${MODEL_NAME}_ejb/${server.testrunner2}">
+            <isset property="is.jboss"/>
         </condition>
-        <condition property="SERVER.TESTRUNNER3" value="${MODEL_NAME}/${server.testrunner3}">
-            <and>
-                <isset property="is.jboss"/>
-            </and>
+        <condition property="SERVER.TESTRUNNER3" value="${MODEL_NAME}/${MODEL_NAME}_ejb/${server.testrunner3}">
+            <isset property="is.jboss"/>
         </condition>
-        <condition property="SERVER.TESTRUNNER4" value="${MODEL_NAME}/${server.testrunner4}">
-            <and>
-                <isset property="is.jboss"/>
-            </and>
+        <condition property="SERVER.TESTRUNNER4" value="${MODEL_NAME}/${MODEL_NAME}_ejb/${server.testrunner4}">
+            <isset property="is.jboss"/>
         </condition>
-        <condition property="SERVER.TESTRUNNER5" value="${MODEL_NAME}/${server.testrunner5}">
-            <and>
-                <isset property="is.jboss"/>
-            </and>
+        <condition property="SERVER.TESTRUNNER5" value="${MODEL_NAME}/${MODEL_NAME}_ejb/${server.testrunner5}">
+            <isset property="is.jboss"/>
         </condition>
         <property name="SERVER.URL" value="${server.url}${MODEL_NAME}"/>
         <property name="SERVER.TESTRUNNER" value="${server.testrunner}"/>
@@ -308,7 +299,7 @@
         <property name="SERVER.TESTRUNNER5" value="${server.testrunner5}"/>
 
         <condition property="DS_NAME" value="java:/EclipseLinkDS">
-            <contains string="${server.name}" substring="jboss"/>
+            <isset property="is.jboss"/>
         </condition>
         <condition property="DS_NAME" value="jdbc/EclipseLinkDS">
             <not>
@@ -317,7 +308,7 @@
         </condition>
 
         <condition property="DS2_NAME" value="java:/EclipseLinkDS2">
-            <contains string="${server.name}" substring="jboss"/>
+            <isset property="is.jboss"/>
         </condition>
         <condition property="DS2_NAME" value="jdbc/EclipseLinkDS2">
             <not>
@@ -326,7 +317,7 @@
         </condition>
 
         <condition property="DS3_NAME" value="java:/EclipseLinkDS3">
-            <contains string="${server.name}" substring="jboss"/>
+            <isset property="is.jboss"/>
         </condition>
         <condition property="DS3_NAME" value="jdbc/EclipseLinkDS3">
             <not>
@@ -335,7 +326,7 @@
         </condition>
 
         <condition property="NONJTA_DS_NAME" value="java:/ELNonJTADS">
-            <contains string="${server.name}" substring="jboss"/>
+            <isset property="is.jboss"/>
         </condition>
         <condition property="NONJTA_DS_NAME" value="jdbc/ELNonJTADS">
             <not>
@@ -344,7 +335,7 @@
         </condition>
 
         <condition property="NONJTA_DS2_NAME" value="java:/ELNonJTADS2">
-            <contains string="${server.name}" substring="jboss"/>
+            <isset property="is.jboss"/>
         </condition>
         <condition property="NONJTA_DS2_NAME" value="jdbc/ELNonJTADS2">
             <not>
@@ -353,7 +344,7 @@
         </condition>
 
         <condition property="NONJTA_DS3_NAME" value="java:/ELNonJTADS3">
-            <contains string="${server.name}" substring="jboss"/>
+            <isset property="is.jboss"/>
         </condition>
         <condition property="NONJTA_DS3_NAME" value="jdbc/ELNonJTADS3">
             <not>
@@ -917,13 +908,13 @@
     </target>
 
     <!-- Packages JPA persistent unit test jars. -->
-    <target name="package" depends="config-classpath, package-annotation, package-ddl, package-xml-only, package-xml-merge, package-jpa21-model, 
-    package-jpa22-model, package-xml-extended, package-validation-failed, package-jpa-advanced-field-access, package-jpa-advanced-properties, 
-    package-jpa-pu_with_spaces, package-partitioned, package-plsql, package-jpa-performance, package-jpa-performance2, package-cascade-deletes, 
-    package-jpa-metamodel, package-delimited, package-beanvalidation, package-beanvalidation-dynamic, package-composite-advanced, 
-    package-composite-advanced-member_1, package-composite-advanced-member_2, package-composite-advanced-member_3, package-xml-composite-advanced, 
+    <target name="package" depends="config-classpath, package-annotation, package-ddl, package-xml-only, package-xml-merge, package-jpa21-model,
+    package-jpa22-model, package-xml-extended, package-validation-failed, package-jpa-advanced-field-access, package-jpa-advanced-properties,
+    package-jpa-pu_with_spaces, package-partitioned, package-plsql, package-jpa-performance, package-jpa-performance2, package-cascade-deletes,
+    package-jpa-metamodel, package-delimited, package-beanvalidation, package-beanvalidation-dynamic, package-composite-advanced,
+    package-composite-advanced-member_1, package-composite-advanced-member_2, package-composite-advanced-member_3, package-xml-composite-advanced,
     package-xml-composite-advanced-member_1, package-xml-composite-advanced-member_2, package-xml-composite-advanced-member_3,
-    package-xml-extended-composite-advanced, package-xml-extended-composite-advanced-member_1, package-xml-extended-composite-advanced-member_2, 
+    package-xml-extended-composite-advanced, package-xml-extended-composite-advanced-member_1, package-xml-extended-composite-advanced-member_2,
     package-xml-extended-composite-advanced-member_3, package-extensibility, package-jpa-remote, package-identity-model,
     package-xml-mapping-metadata-complete" description="build EclipseLink jar">
         <jar jarfile="${jpatest.basedir}/${jpatest.framework.jar}">
