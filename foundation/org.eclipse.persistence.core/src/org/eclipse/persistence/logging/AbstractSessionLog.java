@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     11/07/2017 - Dalia Abo Sheasha
+ *       - 526957 : Split the logging and trace messages
  ******************************************************************************/
 package org.eclipse.persistence.logging;
 
@@ -26,6 +28,7 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.localization.LoggingLocalization;
+import org.eclipse.persistence.internal.localization.TraceLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.sessions.Session;
 
@@ -924,7 +927,11 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     protected String formatMessage(SessionLogEntry entry) {
         String message = entry.getMessage();
         if (entry.shouldTranslate()) {
-            message = LoggingLocalization.buildMessage(message, entry.getParameters());
+            if (entry.getLevel() > FINE) {
+                message = LoggingLocalization.buildMessage(message, entry.getParameters());
+            } else {
+                message = TraceLocalization.buildMessage(message, entry.getParameters(), true);
+            }
         } else {
             //Bug5976657, if there are entry parameters and the string "{0" contained in the message
             //body, we assume it needs to be formatted.
