@@ -237,15 +237,15 @@
             <fileset dir="${spring.jlib.dir}" includes="${spring.jlib}"/>
             <pathelement path="."/>
     </path>
-    <!-- This checks if the Apllication Server is applicable to run oracle jpa/customfeatures model on oracle db-->
+    <!-- This checks if the Aplication Server is applicable to run oracle jpa/customfeatures model on oracle db-->
     <condition property="run.jpa.customfeatures.model">
         <and>
             <contains string="${db.driver}" substring="oracle"/>
             <or>
-                <contains string="${server.name}" substring="weblogic"/>
-                <!--contains string="${server.name}" substring="websphere"/-->
-                <contains string="${server.name}" substring="jboss"/>
-                <contains string="${server.name}" substring="glassfish"/>
+                <istrue value="${is.weblogic}"/>
+                <!--istrue value="${is.websphere}"/-->
+                <istrue value="${is.jboss}"/>
+                <istrue value="${is.glassfish}"/>
             </or>
         </and>
     </condition>
@@ -908,13 +908,13 @@
     </target>
 
     <!-- Packages JPA persistent unit test jars. -->
-    <target name="package" depends="config-classpath, package-annotation, package-ddl, package-xml-only, package-xml-merge, package-jpa21-model, 
-    package-jpa22-model, package-xml-extended, package-validation-failed, package-jpa-advanced-field-access, package-jpa-advanced-properties, 
-    package-jpa-pu_with_spaces, package-partitioned, package-plsql, package-jpa-performance, package-jpa-performance2, package-cascade-deletes, 
-    package-jpa-metamodel, package-delimited, package-beanvalidation, package-beanvalidation-dynamic, package-composite-advanced, 
-    package-composite-advanced-member_1, package-composite-advanced-member_2, package-composite-advanced-member_3, package-xml-composite-advanced, 
+    <target name="package" depends="config-classpath, package-annotation, package-ddl, package-xml-only, package-xml-merge, package-jpa21-model,
+    package-jpa22-model, package-xml-extended, package-validation-failed, package-jpa-advanced-field-access, package-jpa-advanced-properties,
+    package-jpa-pu_with_spaces, package-partitioned, package-plsql, package-jpa-performance, package-jpa-performance2, package-cascade-deletes,
+    package-jpa-metamodel, package-delimited, package-beanvalidation, package-beanvalidation-dynamic, package-composite-advanced,
+    package-composite-advanced-member_1, package-composite-advanced-member_2, package-composite-advanced-member_3, package-xml-composite-advanced,
     package-xml-composite-advanced-member_1, package-xml-composite-advanced-member_2, package-xml-composite-advanced-member_3,
-    package-xml-extended-composite-advanced, package-xml-extended-composite-advanced-member_1, package-xml-extended-composite-advanced-member_2, 
+    package-xml-extended-composite-advanced, package-xml-extended-composite-advanced-member_1, package-xml-extended-composite-advanced-member_2,
     package-xml-extended-composite-advanced-member_3, package-extensibility, package-jpa-remote, package-identity-model,
     package-xml-mapping-metadata-complete" description="build EclipseLink jar">
         <jar jarfile="${jpatest.basedir}/${jpatest.framework.jar}">

@@ -53,7 +53,16 @@
     <!-- Allows a user to overide certain user specific properties. -->
     <property file="${user.home}/wildfly.properties"/>
     <property file="./wildfly.properties"/>
-    <property name="eclipselink.lib" value="../../${eclipselink.jar}"/>
+
+    <property name="jdbc.driver.lib" value="${jdbc.driver.jar}"/>
+    <property name="w.jpa.api.jar" value="${persistence22.jar}"/>
+    <path id="eclipselink.lib">
+        <fileset dir="${jpatest.basedir}/../../plugins/">
+            <include name="org.eclipse.persistence.*"/>
+            <exclude name="*.source_*"/>
+        </fileset>
+        <pathelement location="${jpatest.2.sdo.plugins.dir}/${commonj.sdo.jar}"/>
+    </path>
 
     <!-- Set db name by check db.driver -->
     <condition property="db.name" value="oracle">
@@ -96,6 +105,7 @@
 
     <target name="-do-backup" description="Backup org.eclipse.persistence module definition." depends="-backup-init" if="do.backup">
         <move file="${wildfly.modules.dir}/org/eclipse/persistence/main/module.xml" tofile="${wildfly.modules.dir}/org/eclipse/persistence/main/module.xml.bak"/>
+        <copy file="${wildfly.modules.dir}/javax/persistence/api/main/module.xml" tofile="${wildfly.modules.dir}/javax/persistence/api/main/module.xml.bak"/>
     </target>
 
     <target name="-wildfly-cli-init" description="Initialize 'cli' macro for jboss-cli.">
@@ -128,27 +138,28 @@
     </target>
 
     <target name="wildfly-install" description="Install binaries on the server." depends="-do-backup,-wildfly-cli-init">
-        <pathconvert property="junit.jars">
+        <pathconvert property="eclipselink.jars" refid="eclipselink.lib" pathsep=":">
+            <flattenmapper/>
+        </pathconvert>
+        <pathconvert property="junit.jars" pathsep=":">
             <path path="${junit.lib}"/>
             <flattenmapper/>
         </pathconvert>
         <xslt style="resource/wildfly/eclipselink-module-template.xsl" in="${wildfly.modules.dir}/org/eclipse/persistence/main/module.xml.bak" out="${wildfly.modules.dir}/org/eclipse/persistence/main/module.xml" force="true">
-            <param name="resources" expression="${eclipselink.jar}:${commonj.sdo.jar}:${junit.jars}"/>
+            <param name="resources" expression="${eclipselink.jars}"/>
+            <param name="dependencies" expression="com.${db.name}:junit.junit"/>
         </xslt>
-        <copy file="${eclipselink.lib}" todir="${wildfly.modules.dir}/org/eclipse/persistence/main"/>
-        <copy file="${jpatest.2.sdo.plugins.dir}/${commonj.sdo.jar}" todir="${wildfly.modules.dir}/org/eclipse/persistence/main"/>
         <copy todir="${wildfly.modules.dir}/org/eclipse/persistence/main" flatten="true">
-            <path>
-                <pathelement path="${junit.lib}"/>
-            </path>
+            <path refid="eclipselink.lib"/>
         </copy>
+        <replaceregexp file="${wildfly.modules.dir}/javax/persistence/api/main/module.xml" match="hibernate-.*jar" replace="${w.jpa.api.jar}" byline="true"/>
+        <copy todir="${wildfly.modules.dir}/javax/persistence/api/main" file="${jpatest.2.jpa.plugins.dir}/${w.jpa.api.jar}" verbose="true"/>
 
         <antcall target="wildfly-start"/>
         <!-- JDBC Driver -->
-        <cli command="module add --name=com.${db.name} --resources=${jdbc.driver.jar} --dependencies=javax.api,javax.transaction.api --module-root-dir=${wildfly.modules.dir}"/>
-
+        <cli command="module add --name=com.${db.name} --resources=${jdbc.driver.lib} --dependencies=javax.api,javax.transaction.api --module-root-dir=${wildfly.modules.dir}"/>
         <!-- JUnit -->
-        <!--<cli command="module add - -name=junit.junit - -resources=${junit.lib} - -module-root-dir=${wildfly.modules.dir}"/>-->
+        <cli command="module add --name=junit.junit --resources=${junit.lib} --module-root-dir=${wildfly.modules.dir}"/>
 
         <cli command=":reload"/>
     </target>
@@ -184,24 +195,31 @@
 
         <!-- JDBC Driver -->
         <cli command="module remove --name=com.${db.name} --module-root-dir=${wildfly.modules.dir}"/>
-
         <!-- JUnit -->
-        <!--<cli command="module remove - -name=junit.junit"/>-->
+        <cli command="module remove --name=junit.junit --module-root-dir=${wildfly.modules.dir}"/>
 
-        <move file="${wildfly.modules.dir}/org/eclipse/persistence/main/module.xml.bak" tofile="${wildfly.modules.dir}/org/eclipse/persistence/main/module.xml" failonerror="false" verbose="true"/>
-        <delete file="${wildfly.modules.dir}/org/eclipse/persistence/main/${eclipselink.jar}" failonerror="false"/>
-        <delete file="${wildfly.modules.dir}/org/eclipse/persistence/main/${commonj.sdo.jar}" failonerror="false"/>
-        <delete verbose="true" failonerror="false">
-            <fileset dir="${wildfly.modules.dir}/org/eclipse/persistence/main" includes="junit-*.jar,hamcrest-*.jar"/>
+        <move file="${wildfly.modules.dir}/javax/persistence/api/main/module.xml.bak" tofile="${wildfly.modules.dir}/javax/persistence/api/main/module.xml" failonerror="false" verbose="true" overwrite="true"/>
+        <delete file="${wildfly.modules.dir}/javax/persistence/api/main/${w.jpa.api.jar}" failonerror="false"/>
+
+        <move file="${wildfly.modules.dir}/org/eclipse/persistence/main/module.xml.bak" tofile="${wildfly.modules.dir}/org/eclipse/persistence/main/module.xml" failonerror="false" verbose="true" overwrite="true"/>
+        <pathconvert property="delete.eclipselink.jars" refid="eclipselink.lib" pathsep=",">
+            <flattenmapper/>
+        </pathconvert>
+        <delete failonerror="false">
+            <fileset dir="${wildfly.modules.dir}/org/eclipse/persistence/main" includes="${delete.eclipselink.jars}"/>
         </delete>
         <cli command=":reload"/>
     </target>
 
     <target name="wildfly-start" description="Start the server." depends="-wildfly-cli-init">
         <property name="additional.server.args" value=""/>
+        <property name="additional.server.jvmOpts" value="-Xms64m -Xmx1g -XX:MetaspaceSize=96M -XX:MaxMetaspaceSize=2g -Djava.net.preferIPv4Stack=true"/>
+        <property name="w.jvmOpts" value="-Djboss.modules.system.pkgs=$JBOSS_MODULES_SYSTEM_PKGS -Djava.awt.headless=true"/>
         <exec executable="${wildfly.home}/bin/standalone.${suffix}" spawn="true">
             <env key="JAVA_HOME" value="${test.junit.jvm}"/>
             <env key="JBOSS_HOME" value="${wildfly.home}"/>
+            <env key="JBOSS_MODULES_SYSTEM_PKGS" value="org.jboss.byteman"/>
+            <env key="JAVA_OPTS" value="${additional.server.jvmOpts} ${w.jvmOpts}"/>
             <arg value="--server-config=${wildfly.config}"/>
             <arg line="${additional.server.args}"/>
         </exec>
@@ -217,7 +235,6 @@
     </target>
 
     <target name="wildfly-deploy" description="Deploy the application ear to the server." depends="-wildfly-cli-init">
-        <property name="ear" location="${ear.name}"/>
         <cli command="deploy ${ear.name} --force"/>
     </target>
 
