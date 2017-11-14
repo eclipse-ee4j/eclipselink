@@ -171,8 +171,7 @@
     <!-- A test model for bug #466271. -->
     <persistence-unit name="pu-with-mappedsuperclass" transaction-type="RESOURCE_LOCAL">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <shared-cache-mode>NONE</shared-cache-mode>
-        <class>org.eclipse.persistence.testing.models.jpa21.advanced.Athlete</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.WovenMS</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
             <property name="eclipselink.weaving" value="true" />

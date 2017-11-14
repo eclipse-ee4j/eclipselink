@@ -290,6 +290,9 @@
         <condition property="SERVER.TESTRUNNER5" value="${MODEL_NAME}/${MODEL_NAME}_ejb/${server.testrunner5}">
             <isset property="is.jboss"/>
         </condition>
+        <condition property="SERVER.TESTRUNNER6" value="${MODEL_NAME}/${MODEL_NAME}_ejb/${server.testrunner6}">
+            <isset property="is.jboss"/>
+        </condition>
         <property name="SERVER.URL" value="${server.url}${MODEL_NAME}"/>
         <property name="SERVER.TESTRUNNER" value="${server.testrunner}"/>
         <property name="SERVER.TESTRUNNER1" value="${server.testrunner1}"/>
@@ -297,6 +300,7 @@
         <property name="SERVER.TESTRUNNER3" value="${server.testrunner3}"/>
         <property name="SERVER.TESTRUNNER4" value="${server.testrunner4}"/>
         <property name="SERVER.TESTRUNNER5" value="${server.testrunner5}"/>
+        <property name="SERVER.TESTRUNNER6" value="${server.testrunner6}"/>
 
         <condition property="DS_NAME" value="java:/EclipseLinkDS">
             <isset property="is.jboss"/>
@@ -2933,8 +2937,14 @@
     </target>
 
     <target name="prepare-multiple-persistence-units-sessionbeans" if="USE_MULTIPLE_PERSISTENCE_UNITS">
+        <delete failonerror="false">
+            <fileset dir="${src.dir}/org/eclipse/persistence/testing/framework/server" includes="TestRunner1B*.java,TestRunner2B*.java,TestRunner3B*.java,TestRunner4B*.java,TestRunner5B*.java,TestRunner6B*.java"/>
+        </delete>
+        <condition property="pusb.includes" value="TestRunner*.java" else="TestRunner1*.java,TestRunner2*.java,TestRunner3*.java,TestRunner4*.java,TestRunner5*.java">
+            <contains string="${PERSISTENCE_UNIT_NAME}" substring="jpa21-sessionbean"/>
+        </condition>
         <copy todir="${jpatest.basedir}/${src.dir}/org/eclipse/persistence/testing/framework/server" overwrite="true">
-            <fileset dir="${jpatest.basedir}/${resource.dir}/server" includes="TestRunner*.java"/>
+            <fileset dir="${jpatest.basedir}/${resource.dir}/server" includes="${pusb.includes}"/>
         </copy>
     </target>
 
@@ -2954,7 +2964,8 @@
                       TestRunner2Bean*.java
                       TestRunner3Bean*.java
                       TestRunner4Bean*.java
-                      TestRunner5Bean*.java"/>
+                      TestRunner5Bean*.java
+                      TestRunner6Bean*.java"/>
         </delete>
     </target>
 
@@ -3809,6 +3820,7 @@
         <attribute name="runner3"/>
         <attribute name="runner4"/>
         <attribute name="runner5"/>
+        <attribute name="runner6"/>
         <sequential>
             <property name="server.lib.full" location="@{dir.lib}"/>
             <path id="run.path">
@@ -3832,6 +3844,7 @@
             <echo message=" * SERVER.TESTRUNNER3 = @{runner3}"/>
             <echo message=" * SERVER.TESTRUNNER4 = @{runner4}"/>
             <echo message=" * SERVER.TESTRUNNER5 = @{runner5}"/>
+            <echo message=" * SERVER.TESTRUNNER6 = @{runner6}"/>
             <echo message=" * run.metadata.cache.test.suite = ${run.metadata.cache.test.suite}"/>
             <echo message=" * run.path = ${run.path.message}"/>
             <echo message=" * run.dir = ${run.dir}"/>
@@ -3850,6 +3863,7 @@
                 <sysproperty key="server.testrunner3" value="@{runner3}"/>
                 <sysproperty key="server.testrunner4" value="@{runner4}"/>
                 <sysproperty key="server.testrunner5" value="@{runner5}"/>
+                <sysproperty key="server.testrunner6" value="@{runner6}"/>
                 <sysproperty key="server.run" value="TRUE"/>
                 <sysproperty key="com.ibm.SSL.ConfigURL" value="${com.ibm.SSL.ConfigURL}"/>
                 <sysproperty key="com.ibm.CORBA.ConfigURL" value="${com.ibm.CORBA.ConfigURL}"/>
@@ -3885,6 +3899,7 @@
             runner3="${SERVER.TESTRUNNER3}"
             runner4="${SERVER.TESTRUNNER4}"
             runner5="${SERVER.TESTRUNNER5}"
+            runner6="${SERVER.TESTRUNNER6}"
         />
     </target>
 

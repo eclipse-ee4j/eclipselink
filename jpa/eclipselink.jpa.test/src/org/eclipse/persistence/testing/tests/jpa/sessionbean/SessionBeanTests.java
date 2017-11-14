@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -93,6 +93,8 @@ public class SessionBeanTests extends JUnitTestCase {
     "org.eclipse.persistence.testing.models.jpa.sessionbean.EmployeeService",
     // jboss
     "eclipselink-sessionbean-model/EmployeeServiceBean/remote-org.eclipse.persistence.testing.models.jpa.sessionbean.EmployeeService",
+    // wildfly
+    "eclipselink-sessionbean-model/eclipselink-sessionbean-model_ejb/EmployeeServiceBean!org.eclipse.persistence.testing.models.jpa.sessionbean.EmployeeService",
     // NetWeaver
     "JavaEE/servertest/REMOTE/EmployeeServiceBean/org.eclipse.persistence.testing.models.jpa.sessionbean.EmployeeService" };
 
