@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2017 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -10,6 +10,8 @@
  * Contributors:
  *     06/08/2015-2.6 Tomas Kraus
  *       - initial API and implementation.
+ *     11/07/2017 - Dalia Abo Sheasha
+ *       - 526957 : Split the logging and trace messages
  ******************************************************************************/
 package org.eclipse.persistence.internal.logging;
 
@@ -18,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.persistence.internal.localization.LoggingLocalization;
+import org.eclipse.persistence.internal.localization.TraceLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetSystemProperty;
 import org.eclipse.persistence.logging.AbstractSessionLog;
@@ -127,7 +130,7 @@ public class StdErrLogger {
     private static void logStdErr(
             final String category, final String messageKey, final Object... arguments) {
         final String message = arguments == null || arguments.length == 0 ?
-                LoggingLocalization.buildMessage(messageKey) : LoggingLocalization.buildMessage(messageKey, arguments);
+                TraceLocalization.buildMessage(messageKey) : TraceLocalization.buildMessage(messageKey, arguments);
         final int messageLength = message != null ? message.length() : 0;
         final int categoryLength = category != null ? category.length() + CATEGORY_SEPARATOR.length() : 0;
         if (categoryLength > 0 || messageLength > 0) {

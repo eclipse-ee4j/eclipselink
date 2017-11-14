@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, 2017 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -9,6 +9,8 @@
  *
  * Contributors:
  *      Tomas Kraus - Initial implementation
+ *      11/07/2017 - Dalia Abo Sheasha
+ *        - 526957 : Split the logging and trace messages
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.localization;
 
@@ -22,6 +24,7 @@ import org.eclipse.persistence.internal.localization.i18n.EclipseLinkLocalizatio
 import org.eclipse.persistence.internal.localization.i18n.JAXBLocalizationResource;
 import org.eclipse.persistence.internal.localization.i18n.LoggingLocalizationResource;
 import org.eclipse.persistence.internal.localization.i18n.ToStringLocalizationResource;
+import org.eclipse.persistence.internal.localization.i18n.TraceLocalizationResource;
 import org.eclipse.persistence.testing.framework.ReflectionHelper;
 import org.junit.Test;
 
@@ -158,6 +161,14 @@ public class LocalizationResourcesTest extends TestCase {
     @Test
     public void testToStringLocalizationResource() {
         verifyBundle(ToStringLocalizationResource.class);
+    }
+
+    /**
+     * Test {@code TraceLocalizationResource#getContents()} for duplicate keys.
+     */
+    @Test
+    public void testTraceLocalizationResource() {
+        verifyBundle(TraceLocalizationResource.class);
     }
 
 }

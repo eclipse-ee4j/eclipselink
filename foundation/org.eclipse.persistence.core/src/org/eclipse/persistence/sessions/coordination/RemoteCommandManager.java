@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     11/07/2017 - Dalia Abo Sheasha
+ *       - 526957 : Split the logging and trace messages
  ******************************************************************************/
 package org.eclipse.persistence.sessions.coordination;
 
@@ -17,6 +19,7 @@ import java.net.InetAddress;
 import org.eclipse.persistence.exceptions.RemoteCommandManagerException;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.localization.LoggingLocalization;
+import org.eclipse.persistence.internal.localization.TraceLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
@@ -400,7 +403,11 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
      */
     public void logMessageWithoutLevelCheck(int logLevel, String message, Object[] args) {
         String i18nmsg = message;
-        i18nmsg = LoggingLocalization.buildMessage(message, args);
+        if ((logLevel == CommandProcessor.LOG_ERROR) || (logLevel == CommandProcessor.LOG_WARNING)) {
+            i18nmsg = LoggingLocalization.buildMessage(message, args);
+        } else if ((logLevel == CommandProcessor.LOG_INFO) || (logLevel == CommandProcessor.LOG_DEBUG)) {
+            i18nmsg = TraceLocalization.buildMessage(message, args);
+        }
         commandProcessor.logMessage(logLevel, i18nmsg);
     }
 

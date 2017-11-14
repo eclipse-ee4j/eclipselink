@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * Some parts Copyright (c) 2010 Mark Wolochuk
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
@@ -11,6 +11,8 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     Mark Wolochuk - Bug 321041 ConcurrentModificationException on getFromIdentityMap() fix
+ *     11/07/2017 - Dalia Abo Sheasha
+ *       - 526957 : Split the logging and trace messages
  ******************************************************************************/
 package org.eclipse.persistence.internal.identitymaps;
 
@@ -48,6 +50,7 @@ import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.InvalidObject;
 import org.eclipse.persistence.internal.helper.WriteLockManager;
 import org.eclipse.persistence.internal.localization.LoggingLocalization;
+import org.eclipse.persistence.internal.localization.TraceLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
 import org.eclipse.persistence.internal.security.PrivilegedInvokeConstructor;
@@ -1289,7 +1292,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
     public void printLocks() {
         StringWriter writer = new StringWriter();
         HashMap threadCollection = new HashMap();
-        writer.write(LoggingLocalization.buildMessage("lock_writer_header", (Object[])null) + Helper.cr());
+        writer.write(TraceLocalization.buildMessage("lock_writer_header", (Object[])null) + Helper.cr());
         Iterator idenityMapsIterator = this.session.getIdentityMapAccessorInstance().getIdentityMapManager().getIdentityMaps().values().iterator();
         while (idenityMapsIterator.hasNext()) {
             IdentityMap idenityMap = (IdentityMap)idenityMapsIterator.next();
@@ -1299,22 +1302,22 @@ public class IdentityMapManager implements Serializable, Cloneable {
         for (Iterator threads = threadCollection.keySet().iterator(); threads.hasNext();) {
             Thread activeThread = (Thread)threads.next();
             parameters[0] = activeThread.getName();
-            writer.write(LoggingLocalization.buildMessage("active_thread", parameters) + Helper.cr());
+            writer.write(TraceLocalization.buildMessage("active_thread", parameters) + Helper.cr());
             for (Iterator cacheKeys = ((HashSet)threadCollection.get(activeThread)).iterator();
                      cacheKeys.hasNext();) {
                 CacheKey cacheKey = (CacheKey)cacheKeys.next();
                 if (cacheKey.isAcquired() && cacheKey.getActiveThread() == activeThread){
                     parameters[0] = cacheKey.getObject();
-                    writer.write(LoggingLocalization.buildMessage("locked_object", parameters) + Helper.cr());
+                    writer.write(TraceLocalization.buildMessage("locked_object", parameters) + Helper.cr());
                     writer.write("PK: " + cacheKey.getKey() + Helper.cr());
                     parameters[0] = cacheKey.getDepth();
-                    writer.write(LoggingLocalization.buildMessage("depth", parameters) + Helper.cr());
+                    writer.write(TraceLocalization.buildMessage("depth", parameters) + Helper.cr());
                     Exception stack = cacheKey.getStack();
                     if (stack != null) stack.printStackTrace(new PrintWriter(writer));
                 } else{
-                    writer.write(LoggingLocalization.buildMessage("cachekey_released", new Object[]{}));
+                    writer.write(TraceLocalization.buildMessage("cachekey_released", new Object[]{}));
                     parameters[0] = cacheKey.getObject();
-                    writer.write(LoggingLocalization.buildMessage("locked_object", parameters) + Helper.cr());
+                    writer.write(TraceLocalization.buildMessage("locked_object", parameters) + Helper.cr());
                     writer.write("PK: " + cacheKey.getKey() + Helper.cr());
                 }
             }
@@ -1325,12 +1328,12 @@ public class IdentityMapManager implements Serializable, Cloneable {
                     ConcurrencyManager lock = (ConcurrencyManager)deferredLocks.next();
                     if (lock instanceof CacheKey){
                         parameters[0] = ((CacheKey)lock).getObject();
-                        writer.write(LoggingLocalization.buildMessage("deferred_locks", parameters) + Helper.cr());
+                        writer.write(TraceLocalization.buildMessage("deferred_locks", parameters) + Helper.cr());
                     }
                 }
             }
         }
-        writer.write(Helper.cr() + LoggingLocalization.buildMessage("lock_writer_footer", (Object[])null) + Helper.cr());
+        writer.write(Helper.cr() + TraceLocalization.buildMessage("lock_writer_footer", (Object[])null) + Helper.cr());
         this.session.log(SessionLog.SEVERE, SessionLog.CACHE, writer.toString(), null, null, false);
     }
 
@@ -1342,7 +1345,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
         ClassDescriptor descriptor = this.session.getDescriptor(theClass);
         StringWriter writer = new StringWriter();
         HashMap threadCollection = new HashMap();
-        writer.write(LoggingLocalization.buildMessage("lock_writer_header", (Object[])null) + Helper.cr());
+        writer.write(TraceLocalization.buildMessage("lock_writer_header", (Object[])null) + Helper.cr());
         IdentityMap identityMap = getIdentityMap(descriptor, false);
         identityMap.collectLocks(threadCollection);
 
@@ -1350,14 +1353,14 @@ public class IdentityMapManager implements Serializable, Cloneable {
         for (Iterator threads = threadCollection.keySet().iterator(); threads.hasNext();) {
             Thread activeThread = (Thread)threads.next();
             parameters[0] = activeThread.getName();
-            writer.write(LoggingLocalization.buildMessage("active_thread", parameters) + Helper.cr());
+            writer.write(TraceLocalization.buildMessage("active_thread", parameters) + Helper.cr());
             for (Iterator cacheKeys = ((HashSet)threadCollection.get(activeThread)).iterator();
                      cacheKeys.hasNext();) {
                 CacheKey cacheKey = (CacheKey)cacheKeys.next();
                 parameters[0] = cacheKey.getObject();
-                writer.write(LoggingLocalization.buildMessage("locked_object", parameters) + Helper.cr());
+                writer.write(TraceLocalization.buildMessage("locked_object", parameters) + Helper.cr());
                 parameters[0] = Integer.valueOf(cacheKey.getDepth());
-                writer.write(LoggingLocalization.buildMessage("depth", parameters) + Helper.cr());
+                writer.write(TraceLocalization.buildMessage("depth", parameters) + Helper.cr());
             }
             DeferredLockManager deferredLockManager = ConcurrencyManager.getDeferredLockManager(activeThread);
             if (deferredLockManager != null) {
@@ -1366,12 +1369,12 @@ public class IdentityMapManager implements Serializable, Cloneable {
                     ConcurrencyManager lock = (ConcurrencyManager)deferredLocks.next();
                     if (lock instanceof CacheKey){
                         parameters[0] = ((CacheKey)lock).getObject();
-                        writer.write(LoggingLocalization.buildMessage("deferred_locks", parameters) + Helper.cr());
+                        writer.write(TraceLocalization.buildMessage("deferred_locks", parameters) + Helper.cr());
                     }
                 }
             }
         }
-        writer.write(Helper.cr() + LoggingLocalization.buildMessage("lock_writer_footer", (Object[])null) + Helper.cr());
+        writer.write(Helper.cr() + TraceLocalization.buildMessage("lock_writer_footer", (Object[])null) + Helper.cr());
         this.session.log(SessionLog.SEVERE, SessionLog.CACHE, writer.toString(), null, null, false);
     }
 
