@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -13,6 +13,8 @@
  *       - 443762 : Misc message cleanup.
  *     12/18/2014-2.6 Rick Curtis
  *       - 454189 : Misc message cleanup.#2
+ *     11/14/2017 - Dalia Abo Sheasha
+ *       - 527273 : Minor message improvements
  ******************************************************************************/
 package org.eclipse.persistence.internal.localization.i18n;
 
@@ -71,8 +73,8 @@ public class ToStringLocalizationResource extends ListResourceBundle {
                                            { "unknown", "unknown" },
                                            { "connector", "connector" },
                                            { "staticweave_processor_unknown_outcome", "Weaving classes stored in a directory and outputting to a JAR often leads to unexpected results." },
-                                           { "staticweave_processor_dir_not_created", "Cannot create directory '{0}'."},
-                                           { "staticweave_processor_file_not_created", "Cannot create file '{0}'." },
+                                           { "staticweave_processor_dir_not_created", "The {0} directory cannot be created."},
+                                           { "staticweave_processor_file_not_created", "The {0} file cannot be created." },
 
                                            { "staticweave_commandline_help_message_1of19", "  Usage: StaticWeave [options] source target" },
                                            { "staticweave_commandline_help_message_2of19", "  Options:" },

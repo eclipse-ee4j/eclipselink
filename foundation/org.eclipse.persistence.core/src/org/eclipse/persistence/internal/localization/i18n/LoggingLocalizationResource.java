@@ -47,6 +47,8 @@
  *       - 455683: Automatically detect target server
  *     11/07/2017 - Dalia Abo Sheasha
  *       - 526957 : Split the logging and trace messages
+ *     11/14/2017 - Dalia Abo Sheasha
+ *       - 527273 : Minor message improvements
  ******************************************************************************/
 package org.eclipse.persistence.internal.localization.i18n;
 
@@ -480,12 +482,12 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         // 282751
         { "removing_unique_constraint", "Removing UNIQUE constraint definition from [{0}] because it is also a primary key."},
         { "session_manager_no_partition", "No partition instance associated with current SessionManager instance."},
-        { "cannot_get_nested_collection_type", "Cannot get nested collection type"},
+        { "cannot_get_nested_collection_type", "The nested collection type cannot be obtained."},
         // DBWS
-        { "dbws_xml_schema_read_error", "Could not read XML schema: [{0}]"},
-        { "dbws_orm_metadata_read_error", "Could not read ORM metadata: [{0}]"},
-        { "dbws_oxm_metadata_read_error", "Could not read OXM metadata: [{0}]"},
-        { "dbws_no_wsdl_inline_schema", "Could not read WSDL inline schema: [{0}]"}
+        { "dbws_xml_schema_read_error", "The [{0}] XML schema could not be read."},
+        { "dbws_orm_metadata_read_error", "The [{0}] ORM metadata could not be read."},
+        { "dbws_oxm_metadata_read_error", "The [{0}] OXM metadata could not be read."},
+        { "dbws_no_wsdl_inline_schema", "The [{0}] WSDL inline schema could not be read."}
     };
 
     /**
