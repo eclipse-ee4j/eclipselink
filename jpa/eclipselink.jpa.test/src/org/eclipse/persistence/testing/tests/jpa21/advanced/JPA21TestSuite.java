@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -40,7 +40,6 @@ public class JPA21TestSuite extends TestSuite {
         fullSuite.addTest(DDLTestSuite.suite());
         fullSuite.addTest(ForeignKeyTestSuite.suite());
         fullSuite.addTest(IndexTestSuite.suite());
-        fullSuite.addTest(EntityManagerFactoryTestSuite.suite());
         fullSuite.addTest(EntityGraphTestSuite.suite());
         fullSuite.addTest(QueryTestSuite.suite());
         fullSuite.addTest(EntityManagerTestSuite.suite());
@@ -50,6 +49,10 @@ public class JPA21TestSuite extends TestSuite {
         fullSuite.addTest(XMLIndexTestSuite.suite());
         fullSuite.addTest(XMLEntityGraphTestSuite.suite());
         fullSuite.addTest(WeaverTestSuite.suite());
+
+        //make sure EntityManagerFactoryTestSuite#testGetPersistenceUnitUtilOnCloseEMF
+        //runs last as 'MulitPU-1' becomes closed after this test
+        fullSuite.addTest(EntityManagerFactoryTestSuite.suite());
         return fullSuite;
     }
 }

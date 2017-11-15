@@ -157,7 +157,7 @@ public class EntityManagerFactoryTestSuite extends JUnitTestCase {
 
     public void testGetPersistenceUnitUtilOnCloseEMF(){
         EntityManagerFactory emf = getEntityManagerFactory();
-        closeEntityManagerFactory();
+        emf.close();
         try{
             emf.getPersistenceUnitUtil();
             fail("IllegalStateException not thrown when calling getPersistenceUnitUtil on a closed EMF.");
