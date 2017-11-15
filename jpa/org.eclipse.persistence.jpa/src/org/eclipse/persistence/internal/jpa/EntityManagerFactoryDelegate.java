@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -776,11 +776,12 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     @Override
     public void addNamedQuery(String name, Query query) {
         DatabaseQuery unwrapped = (DatabaseQuery) query.unwrap(DatabaseQuery.class).clone();
-        if (((QueryImpl)query).lockMode != null){
-            ((ObjectLevelReadQuery)unwrapped).setLockModeType(((QueryImpl)query).lockMode.name(), session);
+        QueryImpl originalQuery = query.unwrap(QueryImpl.class);
+        if (originalQuery.lockMode != null){
+            ((ObjectLevelReadQuery)unwrapped).setLockModeType(originalQuery.lockMode.name(), session);
         }
         if (unwrapped.isReadQuery()){
-            ((ReadQuery)unwrapped).setInternalMax((((QueryImpl)query).getMaxResultsInternal()));
+            ((ReadQuery)unwrapped).setInternalMax((originalQuery.getMaxResultsInternal()));
             if (query.getFirstResult() != QueryImpl.UNDEFINED){
                 ((ReadQuery)unwrapped).setFirstResult(query.getFirstResult());
             }

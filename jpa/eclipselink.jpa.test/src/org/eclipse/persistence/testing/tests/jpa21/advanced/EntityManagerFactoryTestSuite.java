@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -121,15 +121,22 @@ public class EntityManagerFactoryTestSuite extends JUnitTestCase {
         closeEntityManager(em);
         em = createEntityManager();
 
-        namedQuery = em.createNamedQuery("Select_Employee_by_first_name");
-        assertTrue("LockMode not retained", namedQuery.getLockMode().equals(LockModeType.OPTIMISTIC_FORCE_INCREMENT));
-        assertTrue("MaxResults not retained", namedQuery.getMaxResults() == 1);
-        assertTrue("FirstResult not retained", namedQuery.getFirstResult() == 1);
-        namedQuery.setParameter("p1", names.get(names.size()-1)[0]);
-        beginTransaction(em);
-        assertTrue("MaxResults not applied", namedQuery.getResultList().size() == 1);
-        rollbackTransaction(em);
+        try {
+            beginTransaction(em);
+            namedQuery = em.createNamedQuery("Select_Employee_by_first_name");
+            assertTrue("LockMode not retained", namedQuery.getLockMode().equals(LockModeType.OPTIMISTIC_FORCE_INCREMENT));
+            assertTrue("MaxResults not retained", namedQuery.getMaxResults() == 1);
+            assertTrue("FirstResult not retained", namedQuery.getFirstResult() == 1);
+            namedQuery.setParameter("p1", names.get(names.size() - 1)[0]);
+            assertTrue("MaxResults not applied", namedQuery.getResultList().size() == 1);
+        } finally {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
 
+        em = createEntityManager();
         query = em.createNativeQuery("SELECT EMP_ID FROM CMP3_EMPLOYEE");
         query.setMaxResults(1);
         factory.addNamedQuery("Select_Employee_NATIVE", query);
