@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2012, 2017 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -40,7 +40,6 @@ public class JPA21TestSuite extends TestSuite {
         fullSuite.addTest(DDLTestSuite.suite());
         fullSuite.addTest(ForeignKeyTestSuite.suite());
         fullSuite.addTest(IndexTestSuite.suite());
-        fullSuite.addTest(EntityManagerFactoryTestSuite.suite());
         fullSuite.addTest(EntityGraphTestSuite.suite());
         fullSuite.addTest(QueryTestSuite.suite());
         fullSuite.addTest(EntityManagerTestSuite.suite());
@@ -49,6 +48,10 @@ public class JPA21TestSuite extends TestSuite {
         fullSuite.addTest(XMLForeignKeyTestSuite.suite());
         fullSuite.addTest(XMLIndexTestSuite.suite());
         fullSuite.addTest(XMLEntityGraphTestSuite.suite());
+
+        //make sure EntityManagerFactoryTestSuite#testGetPersistenceUnitUtilOnCloseEMF
+        //runs last as 'MulitPU-1' becomes closed after this test
+        fullSuite.addTest(EntityManagerFactoryTestSuite.suite());
         return fullSuite;
     }
 }
