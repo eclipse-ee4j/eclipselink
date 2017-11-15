@@ -221,6 +221,8 @@
             <env key="JBOSS_MODULES_SYSTEM_PKGS" value="org.jboss.byteman"/>
             <env key="JAVA_OPTS" value="${additional.server.jvmOpts} ${w.jvmOpts}"/>
             <arg value="--server-config=${wildfly.config}"/>
+            <arg value="-Ddb.user=${db.user}"/>
+            <arg value="-Ddb.pwd=${db.pwd}"/>
             <arg line="${additional.server.args}"/>
         </exec>
         <waitfor maxwait="3" maxwaitunit="minute" checkevery="500" timeoutproperty="wildfly.not.running">
