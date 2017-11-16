@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -510,9 +510,9 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
      static final String COUNT_RESPONSE_MSG =
          "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
          "<SOAP-ENV:Header/>" +
-         "<SOAP-ENV:Body xmlns=\"" + SECONDARY_NAMESPACE +
-                  "\" xmlns:srvc=\"" + SECONDARY_SERVICE_NAMESPACE + "\">" +
-           "<srvc:countSecondaryResponse>" +
+         "<SOAP-ENV:Body>" +
+           "<srvc:countSecondaryResponse xmlns=\"" + SECONDARY_NAMESPACE +
+                   "\" xmlns:srvc=\"" + SECONDARY_SERVICE_NAMESPACE + "\">" +
              "<srvc:result>" +
                "<secondaryAggregate>" +
                  "<count>14</count>" +
@@ -563,9 +563,9 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
      static final String ALL_RESPONSE_MSG =
        "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
          "<SOAP-ENV:Header/>" +
-         "<SOAP-ENV:Body xmlns=\"" + SECONDARY_NAMESPACE +
-                 "\" xmlns:srvc=\"" + SECONDARY_SERVICE_NAMESPACE + "\">" +
-           "<srvc:allSecondaryResponse>" +
+         "<SOAP-ENV:Body>" +
+           "<srvc:allSecondaryResponse xmlns=\"" + SECONDARY_NAMESPACE +
+               "\" xmlns:srvc=\"" + SECONDARY_SERVICE_NAMESPACE + "\">" +
              "<srvc:result>" +
                 "<secondaryType>" +
                   "<empno>7369</empno>" +

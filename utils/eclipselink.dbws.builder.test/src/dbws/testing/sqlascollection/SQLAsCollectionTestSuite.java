@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -434,8 +434,8 @@ public class SQLAsCollectionTestSuite extends ProviderHelper implements Provider
         "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
         "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" +
             "<SOAP-ENV:Header/>\n" +
-            "<SOAP-ENV:Body xmlns=\"" + SQLCOLLECTION_NAMESPACE + "\" xmlns:srvc=\"" + SQLCOLLECTION_SERVICE_NAMESPACE + "\">\n" +
-                "<srvc:"+SQLCOLLECTION_SERVICE+"Response>\n" +
+            "<SOAP-ENV:Body>\n" +
+                "<srvc:"+SQLCOLLECTION_SERVICE+"Response xmlns=\"" + SQLCOLLECTION_NAMESPACE + "\" xmlns:srvc=\"" + SQLCOLLECTION_SERVICE_NAMESPACE + "\">\n" +
                     "<srvc:result>\n" +
                         "<sRecord>\n" +
                             "<id>1</id>\n" +
