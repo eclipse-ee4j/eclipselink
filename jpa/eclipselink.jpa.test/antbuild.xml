@@ -2937,8 +2937,14 @@
     </target>
 
     <target name="prepare-multiple-persistence-units-sessionbeans" if="USE_MULTIPLE_PERSISTENCE_UNITS">
+        <delete failonerror="false">
+            <fileset dir="${src.dir}/org/eclipse/persistence/testing/framework/server" includes="TestRunner1B*.java,TestRunner2B*.java,TestRunner3B*.java,TestRunner4B*.java,TestRunner5B*.java,TestRunner6B*.java"/>
+        </delete>
+        <condition property="pusb.includes" value="TestRunner*.java" else="TestRunner1*.java,TestRunner2*.java,TestRunner3*.java,TestRunner4*.java,TestRunner5*.java">
+            <contains string="${PERSISTENCE_UNIT_NAME}" substring="jpa21-sessionbean"/>
+        </condition>
         <copy todir="${jpatest.basedir}/${src.dir}/org/eclipse/persistence/testing/framework/server" overwrite="true">
-            <fileset dir="${jpatest.basedir}/${resource.dir}/server" includes="TestRunner*.java"/>
+            <fileset dir="${jpatest.basedir}/${resource.dir}/server" includes="${pusb.includes}"/>
         </copy>
     </target>
 
