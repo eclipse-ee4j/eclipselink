@@ -147,7 +147,7 @@
         </pathconvert>
         <xslt style="resource/wildfly/eclipselink-module-template.xsl" in="${wildfly.modules.dir}/org/eclipse/persistence/main/module.xml.bak" out="${wildfly.modules.dir}/org/eclipse/persistence/main/module.xml" force="true">
             <param name="resources" expression="${eclipselink.jars}"/>
-            <param name="dependencies" expression="com.${db.name}:junit.junit"/>
+            <param name="dependencies" expression="com.${db.name}:junit.junit:javax.json.api"/>
         </xslt>
         <copy todir="${wildfly.modules.dir}/org/eclipse/persistence/main" flatten="true">
             <path refid="eclipselink.lib"/>
