@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -79,7 +79,7 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
             EntityManager em = createEntityManager();
 
             try {
-                getServerSession(getPersistenceUnitName()).executeQuery(((StoredProcedureQueryImpl) em.createNamedStoredProcedureQuery("ReadNoAddresses")).getDatabaseQuery());
+                getServerSession(getPersistenceUnitName()).executeQuery(em.createNamedStoredProcedureQuery("ReadNoAddresses").unwrap(StoredProcedureQueryImpl.class).getDatabaseQuery());
             } catch (Exception e) {
                 if (isTransactionActive(em)){
                     rollbackTransaction(em);
