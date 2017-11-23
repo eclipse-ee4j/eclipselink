@@ -103,6 +103,7 @@ import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JP
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_CONVERTS;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_FETCH_EAGER;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -1886,7 +1887,10 @@ public abstract class MappingAccessor extends MetadataAccessor {
         // join, or if we simply set the whole mapping as read-only
         boolean allReadOnly = true;
         Map<DatabaseField, DatabaseField> fields = new HashMap<DatabaseField, DatabaseField>();
-
+        List<String> sourceFields = new ArrayList<String>();
+        List<String> targetFields = new ArrayList<String>();
+        String targetTableName = null;
+        
         // Build our fk->pk associations.
         for (JoinColumnMetadata joinColumn : joinColumns) {
             // Look up the primary key field from the referenced column name.
@@ -1904,6 +1908,11 @@ public abstract class MappingAccessor extends MetadataAccessor {
             }
 
             fields.put(fkField, pkField);
+            sourceFields.add(fkField.getName());
+            targetFields.add(pkField.getName());
+            if (targetTableName == null) {
+                targetTableName = pkField.getTableName();
+            }
             allReadOnly = allReadOnly && fkField.isReadOnly();
         }
 
@@ -1938,7 +1947,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
         // the spec case (on the source table) and our extended support when
         // the fk's are on the target table as well.
         if (foreignKey != null) {
-            foreignKey.process(foreignKeyTable);
+            foreignKey.process(foreignKeyTable, sourceFields, targetFields, targetTableName);
         }
     }
 

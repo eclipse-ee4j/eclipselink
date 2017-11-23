@@ -17,6 +17,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
+import java.util.List;
+
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
@@ -164,11 +166,34 @@ public class ForeignKeyMetadata extends ORMetadata {
      * Process this JPA metadata into an EclipseLink ForeignKeyConstraint.
      */
     public void process(DatabaseTable table) {
+        process(table, null, null, null);
+    }
+ 
+    /**
+     * INTERNAL:
+     * Process this JPA metadata into an EclipseLink ForeignKeyConstraint.
+     */
+    public void process(DatabaseTable table, List<String> sourceFields, List<String> targetFields, String targetTableName) {
         if (! isProviderDefaultConstraintMode()) {
             ForeignKeyConstraint foreignKeyConstraint = new ForeignKeyConstraint();
             foreignKeyConstraint.setName(getName());
             foreignKeyConstraint.setForeignKeyDefinition(getForeignKeyDefinition());
             foreignKeyConstraint.setDisableForeignKey(isNoConstraintMode());
+            // Bug 441546 - Foreign Key attribute when used in JoinColumn generates wrong DDL statement
+            // If foreignKeyDefinition element is not specified, the provider will generate foreign 
+            // key constraints whose update and delete actions it determines most appropriate for 
+            // the join column(s) to which the foreign key annotation is applied.
+            if (getForeignKeyDefinition() == null) {
+                if (sourceFields != null) {
+                    foreignKeyConstraint.setSourceFields(sourceFields);
+                }
+                if (targetFields != null) {
+                    foreignKeyConstraint.setTargetFields(targetFields);
+                }
+                if (targetTableName != null) {
+                    foreignKeyConstraint.setTargetTable(targetTableName);
+                }
+            }
             table.addForeignKeyConstraint(foreignKeyConstraint);
         }
     }

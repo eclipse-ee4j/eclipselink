@@ -27,6 +27,7 @@ import java.util.Map;
 import javax.persistence.EntityManager;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
 import org.eclipse.persistence.mappings.DirectCollectionMapping;
@@ -41,6 +42,7 @@ import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 
 import org.eclipse.persistence.testing.models.jpa21.advanced.ddl.Coach;
+import org.eclipse.persistence.testing.models.jpa21.advanced.ddl.Driver;
 import org.eclipse.persistence.testing.models.jpa21.advanced.ddl.Organizer;
 import org.eclipse.persistence.testing.models.jpa21.advanced.ddl.Race;
 import org.eclipse.persistence.testing.models.jpa21.advanced.ddl.Responsibility;
@@ -49,7 +51,7 @@ import org.eclipse.persistence.testing.models.jpa21.advanced.ddl.RunnerInfo;
 import org.eclipse.persistence.testing.models.jpa21.advanced.ddl.RunnerStatus;
 import org.eclipse.persistence.testing.models.jpa21.advanced.ddl.Shoe;
 import org.eclipse.persistence.testing.models.jpa21.advanced.ddl.Sprinter;
-
+import org.eclipse.persistence.testing.models.jpa21.advanced.ddl.Vehicle;
 import org.eclipse.persistence.testing.models.jpa21.advanced.enums.Health;
 import org.eclipse.persistence.testing.models.jpa21.advanced.enums.Level;
 import org.eclipse.persistence.testing.models.jpa21.advanced.enums.RunningStatus;
@@ -95,6 +97,7 @@ public class ForeignKeyTestSuite extends JUnitTestCase {
         suite.addTest(new ForeignKeyTestSuite("testElementCollectionForeignKeys"));
 
         suite.addTest(new ForeignKeyTestSuite("testReadAndWriteDDLObjects"));
+        suite.addTest(new ForeignKeyTestSuite("testBug441546"));
 
 
         return suite;
@@ -264,6 +267,65 @@ public class ForeignKeyTestSuite extends JUnitTestCase {
             }
 
             throw e;
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+    
+    /**
+     * Tests a many to one foreign key setting with null foreign key definition.
+     */
+    public void testBug441546() {
+        EntityManager em = createEntityManager();
+
+        try {
+            beginTransaction(em);
+            
+            Driver driver = new Driver();
+            driver.setName("Bob");
+            
+            Vehicle vehicle = new Vehicle();
+            vehicle.setVnum("1A467");
+            vehicle.setDriver(driver);
+
+            em.persist(driver);
+            em.persist(vehicle);
+            commitTransaction(em);
+ 
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+
+            throw e;
+        } finally {
+            closeEntityManager(em);
+        }
+        
+        em = createEntityManager();
+        try {
+            // Try Deleting Driver with constraint
+            beginTransaction(em);
+            
+            Driver d2 = em.find(Driver.class, "Bob");
+            em.remove(d2);
+            
+            commitTransaction(em);         
+            fail("Foreign Key constraint is not defined in database on table.");
+   
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            Throwable cause = e.getCause();
+
+            if (cause instanceof DatabaseException) {
+                assertTrue("Error Deleting row with constraint with different error.", cause.getCause() instanceof java.sql.SQLIntegrityConstraintViolationException);
+            } else { 
+                throw e;
+            }
+
         } finally {
             closeEntityManager(em);
         }
