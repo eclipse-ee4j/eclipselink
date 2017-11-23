@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -76,7 +76,13 @@ public class ClearDatabaseSchemaTest extends TestCase {
             x.printStackTrace(System.err);
         } finally {
             if (record != null) {
-                session.executeNonSelectingSQL("create database " + record.get("DATABASE()"));
+                try {
+                    session.executeNonSelectingSQL("create database " + record.get("DATABASE()"));
+                } catch (DatabaseException y) {
+                    AbstractSessionLog.getLog().warning("Failed to create database - it already exists");
+                    // Using System.err since session log may not print out the stack trace
+                    y.printStackTrace(System.err);
+                }
             } else {
                 DatabaseLogin databaseLogin = (DatabaseLogin) session.getDatasourceLogin();
                 String url = databaseLogin.getDatabaseURL();
