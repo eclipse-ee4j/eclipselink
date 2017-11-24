@@ -173,7 +173,7 @@ public class ForeignKeyMetadata extends ORMetadata {
      * INTERNAL:
      * Process this JPA metadata into an EclipseLink ForeignKeyConstraint.
      */
-    public void process(DatabaseTable table, List<String> sourceFields, List<String> targetFields, String targetTableName) {
+    public void process(DatabaseTable table, List<String> sourceFields, List<String> targetFields, DatabaseTable targetTable) {
         if (! isProviderDefaultConstraintMode()) {
             ForeignKeyConstraint foreignKeyConstraint = new ForeignKeyConstraint();
             foreignKeyConstraint.setName(getName());
@@ -190,8 +190,8 @@ public class ForeignKeyMetadata extends ORMetadata {
                 if (targetFields != null) {
                     foreignKeyConstraint.setTargetFields(targetFields);
                 }
-                if (targetTableName != null) {
-                    foreignKeyConstraint.setTargetTable(targetTableName);
+                if (targetTable != null) {
+                    foreignKeyConstraint.setTargetTable(targetTable.getName());
                 }
             }
             table.addForeignKeyConstraint(foreignKeyConstraint);

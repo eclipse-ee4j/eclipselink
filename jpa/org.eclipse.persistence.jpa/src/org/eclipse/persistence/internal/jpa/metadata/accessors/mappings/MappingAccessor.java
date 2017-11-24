@@ -1889,7 +1889,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
         Map<DatabaseField, DatabaseField> fields = new HashMap<DatabaseField, DatabaseField>();
         List<String> sourceFields = new ArrayList<String>();
         List<String> targetFields = new ArrayList<String>();
-        String targetTableName = null;
+        DatabaseTable targetTable = null;
         
         // Build our fk->pk associations.
         for (JoinColumnMetadata joinColumn : joinColumns) {
@@ -1910,8 +1910,8 @@ public abstract class MappingAccessor extends MetadataAccessor {
             fields.put(fkField, pkField);
             sourceFields.add(fkField.getName());
             targetFields.add(pkField.getName());
-            if (targetTableName == null) {
-                targetTableName = pkField.getTableName();
+            if (targetTable == null) {
+                targetTable = pkField.getTable();
             }
             allReadOnly = allReadOnly && fkField.isReadOnly();
         }
@@ -1947,7 +1947,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
         // the spec case (on the source table) and our extended support when
         // the fk's are on the target table as well.
         if (foreignKey != null) {
-            foreignKey.process(foreignKeyTable, sourceFields, targetFields, targetTableName);
+            foreignKey.process(foreignKeyTable, sourceFields, targetFields, targetTable);
         }
     }
 
