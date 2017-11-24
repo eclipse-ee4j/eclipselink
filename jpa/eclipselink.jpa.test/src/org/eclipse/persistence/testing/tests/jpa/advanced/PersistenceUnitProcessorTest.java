@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -15,7 +15,11 @@ package org.eclipse.persistence.testing.tests.jpa.advanced;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
+
+import org.eclipse.persistence.config.SystemProperties;
+import org.eclipse.persistence.internal.jpa.deployment.ArchiveFactoryImpl;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
+import org.eclipse.persistence.jpa.ArchiveFactory;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.junit.Assert;
 
@@ -23,6 +27,10 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.persistence.EntityManagerFactory;
 
 public class PersistenceUnitProcessorTest extends JUnitTestCase {
     
@@ -63,5 +71,33 @@ public class PersistenceUnitProcessorTest extends JUnitTestCase {
                 ).toString()
         );
     }
-    
+
+    public void testGetArchiveFactory() {
+        Map<String, Object> props = new HashMap<>();
+        props.put(SystemProperties.ARCHIVE_FACTORY, AF1.class.getName());
+        ArchiveFactory af = PersistenceUnitProcessor.getArchiveFactory(PersistenceUnitProcessorTest.class.getClassLoader(), props);
+        Assert.assertTrue("Property should be used", af instanceof AF1);
+    }
+
+    public void testGetArchiveFactoryOverride() {
+        EntityManagerFactory emf = null;
+        String orig = System.getProperty(SystemProperties.ARCHIVE_FACTORY, "--noval--");
+        try {
+            System.setProperty(SystemProperties.ARCHIVE_FACTORY, AF2.class.getName());
+            Map<String, Object> props = new HashMap<>();
+            props.put(SystemProperties.ARCHIVE_FACTORY, AF1.class.getName());
+            ArchiveFactory af = PersistenceUnitProcessor.getArchiveFactory(PersistenceUnitProcessorTest.class.getClassLoader(), props);
+            Assert.assertTrue("System property should be used", af instanceof AF2);
+        } finally {
+            if ("--noval--".equals(orig)) {
+                System.clearProperty(SystemProperties.ARCHIVE_FACTORY);
+            } else {
+                System.setProperty(SystemProperties.ARCHIVE_FACTORY, orig);
+            }
+        }
+    }
+
+    public static class AF1 extends ArchiveFactoryImpl {}
+    public static class AF2 extends ArchiveFactoryImpl {}
+
 }
