@@ -661,15 +661,16 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         // That helps during deletion - if we know there is no remaining duplicates for the object to be removed
         // we can delete it without checking its index (which allows delete several duplicates in one sql).
         // Map entry sets with no new and no old indexes removed.
-        HashMap changedIndexes = new HashMap(Math.max(oldList.size(), newList.size()));
 
-        int nOldSize = 0;
+        int nOldSize = oldList == null ? 0 : oldList.size();
+        int nNewSize = newList == null ? 0 : newList.size();
+        HashMap<Object, Set[]> changedIndexes = new HashMap<>(Math.max(nOldSize, nNewSize));
+
         // for each object in oldList insert all its indexes in oldList into the old indexes set corresponding to each object.
         if (oldList != null) {
-            nOldSize = oldList.size();
             for(int i=0; i < nOldSize; i++) {
                 Object obj = oldList.get(i);
-                Set[] indexes = (Set[])changedIndexes.get(obj);
+                Set[] indexes = changedIndexes.get(obj);
                 if (indexes == null) {
                     // the first index found for the object.
                     indexes = new Set[]{new HashSet(), null};
@@ -688,12 +689,10 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         // for each object in newList, for each its index in newList:
         //   if the object has the same index in oldList - remove the index from old indexes set;
         //   if the object doesn't have the same index in oldList - insert the index into new indexes set.
-        int nNewSize = 0;
         if (newList != null) {
-            nNewSize = newList.size();
             for(int i=0; i < nNewSize; i++) {
                 Object obj = newList.get(i);
-                Set[] indexes = (Set[])changedIndexes.get(obj);
+                Set[] indexes = changedIndexes.get(obj);
                 if (indexes == null) {
                     // the first index found for the object - or was found and removed before.
                     if(removedFromChangedIndexes.contains(obj)) {
