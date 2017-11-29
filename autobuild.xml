@@ -298,7 +298,9 @@
     </target>
 
     <target name="test-p2-repos">
+        <!-- disabled to speed up the build
         <ant antfile="antbuild.xml" dir="${build.location}/features" target="test-repos"/>
+        -->
     </target>
 
     <target name="test-srg">
