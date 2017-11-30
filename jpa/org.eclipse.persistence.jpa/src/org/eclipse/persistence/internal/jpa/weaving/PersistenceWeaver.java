@@ -31,7 +31,7 @@ import org.eclipse.persistence.internal.libraries.asm.ClassWriter;
 import org.eclipse.persistence.internal.libraries.asm.commons.SerialVersionUIDAdder;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetClassLoaderFromCurrentThread;
-import org.eclipse.persistence.internal.weaving.WeaverLogger;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.Session;
 
@@ -94,8 +94,8 @@ public class PersistenceWeaver implements ClassTransformer {
     public byte[] transform(final ClassLoader loader, final String className,
             final Class classBeingRedefined, final ProtectionDomain protectionDomain,
             final byte[] classfileBuffer) throws IllegalClassFormatException {
-        // PERF: Is finest logging turned on?
-        final boolean shouldLogFinest = WeaverLogger.shouldLog(SessionLog.FINEST);
+        // PERF: Is finest logging on weaving turned on?
+        final boolean shouldLogFinest = ((AbstractSession)session).shouldLog(SessionLog.FINEST, SessionLog.WEAVER);
         final Map classDetailsMap = this.classDetailsMap;
         final Session session = this.session;
         // Check if cleared already.
@@ -113,45 +113,14 @@ public class PersistenceWeaver implements ClassTransformer {
 
             if (classDetails != null) {
                 if (shouldLogFinest) {
-                    WeaverLogger.log(SessionLog.FINEST, "begin_weaving_class", className);
+                    ((AbstractSession)session).log(SessionLog.FINEST, SessionLog.WEAVER, "begin_weaving_class", className);
                 }
                 final ClassReader classReader = new ClassReader(classfileBuffer);
                 ClassWriter classWriter = null;
                 final String introspectForHierarchy = System.getProperty(SystemProperties.WEAVING_REFLECTIVE_INTROSPECTION, null);
                 if (introspectForHierarchy != null) {
-                    if (shouldLogFinest) {
-                        ClassLoader contextClassLoader;
-                        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                            try {
-                                contextClassLoader = AccessController.doPrivileged(
-                                        new PrivilegedGetClassLoaderFromCurrentThread());
-                            } catch (PrivilegedActionException ex) {
-                                throw (RuntimeException) ex.getCause();
-                            }
-                        } else {
-                            contextClassLoader = Thread.currentThread().getContextClassLoader();
-                        }
-                        WeaverLogger.log(SessionLog.FINEST, "weaving_init_class_writer", className,
-                                Integer.toHexString(System.identityHashCode(contextClassLoader)));
-                    }
                     classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
                 } else {
-                    if (shouldLogFinest) {
-                        ClassLoader contextClassLoader;
-                        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                            try {
-                                contextClassLoader = AccessController.doPrivileged(
-                                        new PrivilegedGetClassLoaderFromCurrentThread());
-                            } catch (PrivilegedActionException ex) {
-                                throw (RuntimeException) ex.getCause();
-                            }
-                        } else {
-                            contextClassLoader = Thread.currentThread().getContextClassLoader();
-                        }
-                        WeaverLogger.log(SessionLog.FINEST, "weaving_init_compute_class_writer", className,
-                                Integer.toHexString(System.identityHashCode(contextClassLoader)),
-                                loader != null ? Integer.toHexString(System.identityHashCode(loader)) : "null");
-                      }
                     classWriter = new ComputeClassWriter(loader, ClassWriter.COMPUTE_FRAMES);
                 }
                 final ClassWeaver classWeaver = new ClassWeaver(classWriter, classDetails);
@@ -159,7 +128,7 @@ public class PersistenceWeaver implements ClassTransformer {
                 classReader.accept(sv, 0);
                 if (classWeaver.alreadyWeaved) {
                     if (shouldLogFinest) {
-                        WeaverLogger.log(SessionLog.FINEST, "end_weaving_class", className);
+                        ((AbstractSession)session).log(SessionLog.FINEST, SessionLog.WEAVER, "end_weaving_class", className);
                     }
                     return null;
                 }
@@ -173,42 +142,40 @@ public class PersistenceWeaver implements ClassTransformer {
                     // PERF: Don't execute this set of if statements with logging turned off.
                     if (shouldLogFinest) {
                         if (classWeaver.weavedPersistenceEntity) {
-                            WeaverLogger.log(SessionLog.FINEST, "weaved_persistenceentity", className);
+                            ((AbstractSession)session).log(SessionLog.FINEST, SessionLog.WEAVER, "weaved_persistenceentity", className);
                         }
                         if (classWeaver.weavedChangeTracker) {
-                            WeaverLogger.log(SessionLog.FINEST, "weaved_changetracker", className);
+                            ((AbstractSession)session).log(SessionLog.FINEST, SessionLog.WEAVER, "weaved_changetracker", className);
                         }
                         if (classWeaver.weavedLazy) {
-                            WeaverLogger.log(SessionLog.FINEST, "weaved_lazy", className);
+                            ((AbstractSession)session).log(SessionLog.FINEST, SessionLog.WEAVER, "weaved_lazy", className);
                         }
                         if (classWeaver.weavedFetchGroups) {
-                            WeaverLogger.log(SessionLog.FINEST, "weaved_fetchgroups", className);
+                            ((AbstractSession)session).log(SessionLog.FINEST, SessionLog.WEAVER, "weaved_fetchgroups", className);
                         }
                         if (classWeaver.weavedRest) {
-                            WeaverLogger.log(SessionLog.FINEST, "weaved_rest", className);
+                            ((AbstractSession)session).log(SessionLog.FINEST, SessionLog.WEAVER, "weaved_rest", className);
                         }
-                        WeaverLogger.log(SessionLog.FINEST, "end_weaving_class", className);
+                        ((AbstractSession)session).log(SessionLog.FINEST, SessionLog.WEAVER, "end_weaving_class", className);
                     }
                     return bytes;
                 }
                 if (shouldLogFinest) {
-                    WeaverLogger.log(SessionLog.FINEST, "end_weaving_class", className);
+                    ((AbstractSession)session).log(SessionLog.FINEST, SessionLog.WEAVER, "end_weaving_class", className);
                 }
             } else {
                 if (shouldLogFinest) {
-                    WeaverLogger.log(SessionLog.FINEST, "transform_missing_class_details", className);
+                    ((AbstractSession)session).log(SessionLog.FINEST, SessionLog.WEAVER, "transform_missing_class_details", className);
                 }
             }
         } catch (Throwable exception) {
-            if (WeaverLogger.shouldLog(SessionLog.FINE)) {
-                WeaverLogger.log(SessionLog.FINE, "exception_while_weaving", new Object[] {className, exception.getLocalizedMessage()});
-                if (shouldLogFinest) {
-                    WeaverLogger.logThrowable(SessionLog.FINEST, exception);
-                }
+            ((AbstractSession)session).log(SessionLog.WARNING, SessionLog.WEAVER, "exception_while_weaving", new Object[] {className, exception.getLocalizedMessage()});
+            if (shouldLogFinest) {
+                ((AbstractSession)session).logThrowable(SessionLog.FINEST, SessionLog.WEAVER, exception);
             }
         }
         if (shouldLogFinest) {
-            WeaverLogger.log(SessionLog.FINEST, "transform_existing_class_bytes", className);
+            ((AbstractSession)session).log(SessionLog.FINEST, SessionLog.WEAVER, "transform_existing_class_bytes", className);
         }
         return null; // returning null means 'use existing class bytes'
     }
