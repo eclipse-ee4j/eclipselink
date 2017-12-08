@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved. This
+ * Copyright (c) 2015, 2017 Oracle and/or its affiliates. All rights reserved. This
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 which
  * accompanies this distribution. The Eclipse Public License is available at
@@ -122,8 +122,14 @@ public class AdvancedMultiTenantSchemaJunitTest extends JUnitTestCase {
         }
         DatabaseSessionImpl databaseSession = getDatabaseSession();
         DatabaseLogin login = getDatabaseSession().getLogin();
-        schema1 = login.getConnectionString().substring(login.getConnectionString().lastIndexOf('/') + 1);
+        String connectionString = login.getConnectionString();
+        int schemaIdx = connectionString.lastIndexOf('/');
+        int queryIdx = connectionString.indexOf('?', schemaIdx);
+        schema1 = connectionString.substring(schemaIdx + 1, queryIdx < 0 ? connectionString.length() : queryIdx);
         schema2 = schema1 + "_MT";
+        String connectionStringMT = queryIdx < 0
+                ? connectionString + "_MT"
+                : connectionString.substring(0, queryIdx) + "_MT" + connectionString.substring(queryIdx);
         assertNotNull(schema1);
         assertNotNull(schema2);
         databaseSession.executeNonSelectingSQL("use " + schema1 + ";");
@@ -146,8 +152,8 @@ public class AdvancedMultiTenantSchemaJunitTest extends JUnitTestCase {
         }
 
         Map<String, String> currentProps = JUnitTestCaseHelper.getDatabaseProperties(getPersistenceUnitName());
-        TestDataSource ds1 = new TestDataSource(login.getDriverClassName(), login.getConnectionString(), (Properties) login.getProperties().clone());
-        TestDataSource ds2 = new TestDataSource(login.getDriverClassName(), login.getConnectionString() + "_MT", (Properties) login.getProperties().clone());
+        TestDataSource ds1 = new TestDataSource(login.getDriverClassName(), connectionString, (Properties) login.getProperties().clone());
+        TestDataSource ds2 = new TestDataSource(login.getDriverClassName(), connectionStringMT, (Properties) login.getProperties().clone());
         proxyDataSource = new ProxyDS(databaseSession, currentProps.get(PersistenceUnitProperties.JDBC_USER), currentProps.get(PersistenceUnitProperties.JDBC_PASSWORD));
         proxyDataSource.add(schema1, ds1);
         proxyDataSource.add(schema2, ds2);
