@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -40,6 +40,8 @@ import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
 
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 
 /**
@@ -863,7 +865,10 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
             if (isKnownMySQLIssue(e.getCause())) {
                 warning("EOFException found on MySQL db.  This is a known problem with the MySQL Database");
             } else {
-                Assert.assertTrue(e instanceof javax.persistence.OptimisticLockException);
+                //temporary logging
+                AbstractSessionLog.getLog().log(SessionLog.WARNING, "[TEMPORARY LOGGING]", new Object[] {}, false);
+                AbstractSessionLog.getLog().logThrowable(SessionLog.WARNING, e);
+                Assert.assertTrue("Got Exception type: " + e, e instanceof javax.persistence.OptimisticLockException);
             }
         }
     }
