@@ -268,7 +268,7 @@ public class StaticWeaveProcessor {
                     JarEntry newEntry = new JarEntry(entryName);
 
                     // Ignore non-class files.
-                    if (!(entryName.endsWith(".class"))) {
+                    if (!entryName.endsWith(".class") || "module-info.class".equals(entryName)) {
                         swoh.addEntry(entryInputStream, newEntry);
                         continue;
                     }
