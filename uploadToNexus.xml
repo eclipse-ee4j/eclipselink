@@ -237,7 +237,7 @@
         <echo message="antlr.version      = ${antlr.version}"/>
         <echo message="asm.version        = ${asm.version}"/>
 <!--        <echo message="oracleddl.version  = ${oracleddl.version}"/>-->
-        <echo message="oraclebndl.version = ${oraclebndl.version}"/>-->
+        <echo message="oraclebndl.version = ${oraclebndl.version}"/>
 <!--        <echo message="oraclenosql.version= ${oraclenosql.version}"/>-->
         <echo message="hermes.version     = ${hermes.version}"/>
 
@@ -305,7 +305,7 @@
         <property name="dep.hermes"        value="${dep.grp}org.eclipse.persistence${dep.art}${hermes.prefix}${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
 <!--        <property name="dep.dbws"          value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.dbws${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>-->
         <property name="dep.core"          value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.core${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
-        <property name="dep.oracle"        value="${dep.grp}org.eclipse.persistence${dep.art}${oraclebndl.prefix}${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>-->
+        <property name="dep.oracle"        value="${dep.grp}org.eclipse.persistence${dep.art}${oraclebndl.prefix}${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
 <!--        <property name="dep.nosql"         value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.nosql${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>-->
         <property name="dep.jpa"           value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.jpa${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
 <!--        <property name="dep.moxy"          value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.moxy${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>-->
