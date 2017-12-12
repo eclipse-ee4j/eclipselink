@@ -189,9 +189,9 @@
 <!--        <property name="oracleddl.prefix"     value="org.eclipse.persistence.oracleddlparser"/>
         <property name="oracleddl.criteria"   value="[1.0.0,9.0.0)"/>
         <property name="oracleddl.name"       value="EclipseLink OracleDDL Parser"/>-->
-<!--        <property name="oraclebndl.prefix"    value="org.eclipse.persistence.oracle"/>
+        <property name="oraclebndl.prefix"    value="org.eclipse.persistence.oracle"/>
         <property name="oraclebndl.criteria"  value="[1.0.0,9.0.0)"/>
-        <property name="oraclbndl.name"       value="EclipseLink Oracle Extensions"/>-->
+        <property name="oraclebndl.name"       value="EclipseLink Oracle Extensions"/>
 <!--        <property name="oraclenosql.prefix"   value="org.eclipse.persistence.oracle.nosql"/>
         <property name="oraclenosql.criteria" value="[1.0.0,9.0.0)"/>
         <property name="oraclenosql.name"     value="EclipseLink Oracle NoSQL database Extensions"/>-->
@@ -220,9 +220,9 @@
 <!--        <selectbundle basename="${oracleddl.prefix}"  directory="${maven.2.util.plugins.dir}"
                       criterion="${oracleddl.criteria}" property="oracleddl.version" versiononly="true"
                 />-->
-<!--        <selectbundle basename="${oraclebndl.prefix}"  directory="${maven.2.common.plugins.dir}"
+        <selectbundle basename="${oraclebndl.prefix}"  directory="${maven.2.common.plugins.dir}"
                       criterion="${oraclebndl.criteria}" property="oraclebndl.version" versiononly="true"
-                />-->
+                />
 <!--        <selectbundle basename="${oraclenosql.prefix}"  directory="${maven.2.common.plugins.dir}"
                       criterion="${oraclenosql.criteria}" property="oraclenosql.version" versiononly="true"
                 />-->
@@ -237,7 +237,7 @@
         <echo message="antlr.version      = ${antlr.version}"/>
         <echo message="asm.version        = ${asm.version}"/>
 <!--        <echo message="oracleddl.version  = ${oracleddl.version}"/>-->
-<!--        <echo message="oraclebndl.version = ${oraclebndl.version}"/>-->
+        <echo message="oraclebndl.version = ${oraclebndl.version}"/>-->
 <!--        <echo message="oraclenosql.version= ${oraclenosql.version}"/>-->
         <echo message="hermes.version     = ${hermes.version}"/>
 
@@ -305,7 +305,7 @@
         <property name="dep.hermes"        value="${dep.grp}org.eclipse.persistence${dep.art}${hermes.prefix}${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
 <!--        <property name="dep.dbws"          value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.dbws${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>-->
         <property name="dep.core"          value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.core${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
-<!--        <property name="dep.oracle"        value="${dep.grp}org.eclipse.persistence${dep.art}${oraclebndl.prefix}${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>-->
+        <property name="dep.oracle"        value="${dep.grp}org.eclipse.persistence${dep.art}${oraclebndl.prefix}${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>-->
 <!--        <property name="dep.nosql"         value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.nosql${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>-->
         <property name="dep.jpa"           value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.jpa${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
 <!--        <property name="dep.moxy"          value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.moxy${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>-->
@@ -428,15 +428,15 @@
             <param name="timestamp"       value="${build.timestamp}"/>
             <param name="dependencies"    value="${core.dependencies}"/>
         </antcall>
-<!--        <antcall target="upload-artifact">
-            <param name="groupId"         value="org.eclipse.persistence"/>
+        <antcall target="upload-artifact">
+            <param name="groupId"         value="com.ibm.ws.org.eclipse.persistence"/>
             <param name="artifactId"      value="${oraclebndl.prefix}"/>
             <param name="artifactVersion" value="${maven.version}"/>
             <param name="artifact"        value="${maven.2.common.plugins.dir}/${oraclebndl.prefix}_${oraclebndl.version}.jar"/>
             <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/${oraclebndl.prefix}.source_${oraclebndl.version}.jar"/>
             <param name="artifactName"    value="${oraclebndl.name}"/>
             <param name="dependencies"    value="${oracle.dependencies}"/>
-        </antcall> -->
+        </antcall>
 <!--        <antcall target="upload-artifact">
             <param name="groupId"         value="org.eclipse.persistence"/>
             <param name="artifactId"      value="${oraclenosql.prefix}"/>
