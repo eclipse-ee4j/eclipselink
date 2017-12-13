@@ -322,7 +322,7 @@
         <!-- would need the modelgen.jar for modelgen but cannot include dep -->
         <property name="jpql.dependencies"        value="${deps.head}${dep.hermes}${deps.foot}"/>
         <property name="core.dependencies"        value="${deps.head}${dep.asm}${dep.json}${deps.foot}"/>
-<!--        <property name="oracle.dependencies"      value="${deps.head}${dep.persistence}${dep.asm}${dep.core}${deps.foot}"/> -->
+        <property name="oracle.dependencies"      value="${deps.head}${dep.persistence}${dep.asm}${dep.core}${deps.foot}"/>
         <property name="jpa.dependencies"         value="${deps.head}${dep.persistence}${dep.asm}${dep.antlr}${dep.json}${dep.hermes}${dep.core}${deps.foot}"/>
 <!--        <property name="nosql.dependencies"       value="${deps.head}${dep.resource}${dep.persistence}${dep.asm}${dep.antlr}${dep.hermes}${dep.core}${deps.foot}"/> -->
 <!--        <property name="ora.nosql.dependencies"   value="${deps.head}${dep.nosql}${deps.foot}"/> -->
@@ -435,6 +435,7 @@
             <param name="artifact"        value="${maven.2.common.plugins.dir}/${oraclebndl.prefix}_${oraclebndl.version}.jar"/>
             <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/${oraclebndl.prefix}.source_${oraclebndl.version}.jar"/>
             <param name="artifactName"    value="${oraclebndl.name}"/>
+            <param name="timestamp"       value="${build.timestamp}"/>
             <param name="dependencies"    value="${oracle.dependencies}"/>
         </antcall>
 <!--        <antcall target="upload-artifact">
