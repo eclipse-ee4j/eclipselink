@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -14,6 +14,8 @@
  *       - 211324: Add additional event(s) support to the EclipseLink-ORM.XML Schema
  *     07/15/2010-2.2 Guy Pelletier
  *       -311395 : Multiple lifecycle callback methods for the same lifecycle event
+ *     12/14/2017-3.0 Tomas Kraus
+ *       - 291546: Performance degradation due to usage of Vector in DescriptorEventManager
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.listeners;
 
@@ -25,10 +27,9 @@ import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.DescriptorEventAdapter;
@@ -62,8 +63,8 @@ public class EntityListener<T> extends DescriptorEventAdapter {
     private T m_listener;
     private Class<T> m_listenerClass;
     private Class m_entityClass;
-    private Hashtable<String, List<Method>> m_methods;
-    private Hashtable<String, Hashtable<Integer, Boolean>> m_overriddenEvents;
+    private Map<String, List<Method>> m_methods;
+    private final Map<String, Map<Integer, Boolean>> m_overriddenEvents;
     private static final Map<Integer, String> m_eventStrings;
     private AbstractSession owningSession;
 
@@ -86,11 +87,11 @@ public class EntityListener<T> extends DescriptorEventAdapter {
      */
     protected EntityListener(Class entityClass) {
         m_entityClass = entityClass;
-        m_methods = new Hashtable<>();
+        m_methods = new ConcurrentHashMap<>();
 
         // Remember which events are overridden in subclasses. Overridden events
         // must be built for each subclass chain.
-        m_overriddenEvents = new Hashtable<>();
+        m_overriddenEvents = new ConcurrentHashMap<>();
     }
 
     public EntityListener(Class<T> listenerClass, Class entityClass){
@@ -178,14 +179,14 @@ public class EntityListener<T> extends DescriptorEventAdapter {
     /**
      * INTERNAL:
      */
-    public Hashtable<String, List<Method>> getAllEventMethods() {
+    public Map<String, List<Method>> getAllEventMethods() {
         return m_methods;
     }
 
     /**
      * INTERNAL:
      */
-    public void setAllEventMethods(Hashtable<String, List<Method>> methods) {
+    public void setAllEventMethods(Map<String, List<Method>> methods) {
         m_methods = methods;
     }
 
@@ -201,12 +202,7 @@ public class EntityListener<T> extends DescriptorEventAdapter {
      */
     protected List<Method> getEventMethods(int eventCode) {
         String eventString = m_eventStrings.get(eventCode);
-
-        if (eventString != null) {
-            return getEventMethods(eventString);
-        } else {
-            return null;
-        }
+        return eventString != null ? getEventMethods(eventString) : null;
     }
 
     /**
@@ -356,14 +352,14 @@ public class EntityListener<T> extends DescriptorEventAdapter {
      * overridden in a subclass.
      */
     @Override
-    public boolean isOverriddenEvent(DescriptorEvent event, Vector<DescriptorEventManager> eventManagers) {
+    public boolean isOverriddenEvent(DescriptorEvent event, List<DescriptorEventManager> eventManagers) {
         int eventCode = event.getEventCode();
         String forSubclass = event.getDescriptor().getJavaClassName();
-        Hashtable<Integer, Boolean> subClassMap = m_overriddenEvents.get(forSubclass);
+        Map<Integer, Boolean> subClassMap = m_overriddenEvents.get(forSubclass);
 
         // If we haven't built an overridden events map for this subclass, do so now.
         if (subClassMap == null) {
-            subClassMap = new Hashtable<>();
+            subClassMap = new ConcurrentHashMap<>();
         }
 
         // Now check the individual events for this subclass.
