@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     12/14/2017-3.0 Tomas Kraus
+ *       - 522635: ConcurrentModificationException when triggering lazy load from conforming query
  ******************************************************************************/
 package org.eclipse.persistence.internal.identitymaps;
 
@@ -45,8 +47,8 @@ public class NoIdentityMap extends AbstractIdentityMap {
      * Return an empty enumerator.
      */
     @Override
-    public Enumeration elements() {
-        return new Vector(0).elements();
+    public Enumeration<Object> elements() {
+        return Collections.<Object>emptyEnumeration();
     }
 
     /**
@@ -101,15 +103,23 @@ public class NoIdentityMap extends AbstractIdentityMap {
      * Return an empty enumerator.
      */
     @Override
-    public Enumeration keys() {
-        return new Vector(0).elements();
+    public Enumeration<CacheKey> keys() {
+        return Collections.<CacheKey>emptyEnumeration();
     }
 
     /**
      * Return an empty enumerator.
      */
-    public Enumeration keys(boolean checkReadLocks) {
-        return keys();
+    @Override
+    public Enumeration<CacheKey> cloneKeys() {
+        return Collections.<CacheKey>emptyEnumeration();
+    }
+
+    /**
+     * Return an empty enumerator.
+     */
+    public Enumeration<CacheKey> keys(boolean checkReadLocks) {
+        return Collections.<CacheKey>emptyEnumeration();
     }
 
     /**
