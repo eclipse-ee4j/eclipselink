@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -9,10 +9,13 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     12/14/2017-3.0 Tomas Kraus
+ *       - 291546: Performance degradation due to usage of Vector in DescriptorEventManager
  ******************************************************************************/
 package org.eclipse.persistence.descriptors;
 
-import java.util.*;
+import java.util.EventListener;
+import java.util.List;
 
 /**
  * <p><b>Purpose</b>: Used to support Java event listener event model on descriptors.
@@ -34,14 +37,14 @@ public interface DescriptorEventListener extends EventListener {
      * This event can be used to amend an object's delete row.
      */
     // CR#2660080 was missing aboutToDelete
-    public void aboutToDelete(DescriptorEvent event);
+    void aboutToDelete(DescriptorEvent event);
 
     /**
      * This event is raised before a new object is inserted to the database.
      * The object's row has already been built and is accessible from the event.
      * This event can be used to amend an object's insert row.
      */
-    public void aboutToInsert(DescriptorEvent event);
+    void aboutToInsert(DescriptorEvent event);
 
     /**
      * This event is raised before an object is updated in the database.
@@ -49,19 +52,19 @@ public interface DescriptorEventListener extends EventListener {
      * The object's row has already been built and is accessible from the event.
      * This event can be used to amend an object's update row.
      */
-    public void aboutToUpdate(DescriptorEvent event);
+    void aboutToUpdate(DescriptorEvent event);
 
     /**
      * Implementers should define this method if they need or want to restrict
      * the calling of inherited events.
      */
-     public boolean isOverriddenEvent(DescriptorEvent event, Vector<DescriptorEventManager> eventManagers);
+    boolean isOverriddenEvent(DescriptorEvent event, List<DescriptorEventManager> eventManagers);
 
     /**
      * This event is raised after an object is built from its row on a read operation.
      * This event can be used to initialize non-persistent or non-mapped state in the object.
      */
-    public void postBuild(DescriptorEvent event);
+    void postBuild(DescriptorEvent event);
 
     /**
      * This event is raised after an object is cloned into a unit of work.
@@ -69,17 +72,17 @@ public interface DescriptorEventListener extends EventListener {
      * The event source/object is the unit of work clone,
      * the event originalObject is the original object from the session cache.
      */
-    public void postClone(DescriptorEvent event);
+    void postClone(DescriptorEvent event);
 
     /**
      * This event is raised after an object is deleted from the database.
      */
-    public void postDelete(DescriptorEvent event);
+    void postDelete(DescriptorEvent event);
 
     /**
      * This event is raised after an object is inserted to the database.
      */
-    public void postInsert(DescriptorEvent event);
+    void postInsert(DescriptorEvent event);
 
     /**
      * This event is raised after an object is merged from a unit of work into its parent.
@@ -87,46 +90,46 @@ public interface DescriptorEventListener extends EventListener {
      * The event source/object is the parent session object that was merged into,
      * the event originalObject is the unit of work clone that was merged from.
      */
-    public void postMerge(DescriptorEvent event);
+    void postMerge(DescriptorEvent event);
 
     /**
      * This event is raised after an object is refreshed from its row on a refresh operation.
      * This event can be used to initialize non-persistent or non-mapped state in the object.
      */
-    public void postRefresh(DescriptorEvent event);
+    void postRefresh(DescriptorEvent event);
 
     /**
      * This event is raised after an object updated in the database.
      * This event is only raised for objects that had changes and were updated.
      */
-    public void postUpdate(DescriptorEvent event);
+    void postUpdate(DescriptorEvent event);
 
     /**
      * This event is raised after an object is inserted or updated in the database.
      * This event is only raised for new objects or objects that had changes and were updated.
      */
-    public void postWrite(DescriptorEvent event);
+    void postWrite(DescriptorEvent event);
 
     /**
      * This event is raised before an object is deleted from the database.
      */
-    public void preDelete(DescriptorEvent event);
+    void preDelete(DescriptorEvent event);
 
     /**
      * This event is raised before an object is inserted to the database.
      */
-    public void preInsert(DescriptorEvent event);
+    void preInsert(DescriptorEvent event);
 
     /**
      * This event is only raised by the EntityManager.  It is raised when the
      * create operation is initiated on an object.
      */
-    public void prePersist(DescriptorEvent event);
+    void prePersist(DescriptorEvent event);
 
     /**
      * This event is raised when the remove operation is initiated on an object.
      */
-    public void preRemove(DescriptorEvent event);
+    void preRemove(DescriptorEvent event);
 
     /**
      * This event is raised for all existing objects written or committed in a unit of work.
@@ -134,7 +137,7 @@ public interface DescriptorEventListener extends EventListener {
      * so the object may still be modified by the event.
      * If the object has no changes, it will not be updated in a unit of work.
      */
-    public void preUpdate(DescriptorEvent event);
+    void preUpdate(DescriptorEvent event);
 
     /**
      * This event is raised before an object is updated regardless if the object
@@ -143,7 +146,7 @@ public interface DescriptorEventListener extends EventListener {
      * event. For objects that have database changes, an aboutToUpdate will also
      * be triggered.
      */
-    public void preUpdateWithChanges(DescriptorEvent event);
+    void preUpdateWithChanges(DescriptorEvent event);
 
     /**
      * This event is raised for all new or existing objects written or committed in a unit of work.
@@ -151,5 +154,6 @@ public interface DescriptorEventListener extends EventListener {
      * so the object may still be modified by the event.
      * If the object is existing and has no changes, it will not be updated in a unit of work.
      */
-    public void preWrite(DescriptorEvent event);
+    void preWrite(DescriptorEvent event);
+
 }

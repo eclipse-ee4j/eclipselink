@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation
  *     08/01/2012-2.5 Chris Delahunt
  *       - 371950: Metadata caching
+ *     12/14/2017-3.0 Tomas Kraus
+ *       - 291546: Performance degradation due to usage of Vector in DescriptorEventManager
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.listeners;
 
@@ -18,8 +20,9 @@ import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEventListener;
@@ -37,7 +40,7 @@ public class JPAEntityListenerHolder implements SerializableDescriptorEventHolde
 
     public transient DescriptorEventListener listener;
 
-    public java.util.Hashtable<String,java.util.List<MethodSerialImpl>> serializableMethods;
+    public Map<String,java.util.List<MethodSerialImpl>> serializableMethods;
 
     public void setIsDefaultListener(Boolean isDefaultListener) {
         this.isDefaultListener = isDefaultListener;
@@ -108,8 +111,8 @@ public class JPAEntityListenerHolder implements SerializableDescriptorEventHolde
         return super.clone();
     }
 
-    public void convertToSerializableMethods(java.util.Hashtable<String,java.util.List<Method>> methods) {
-        this.serializableMethods = new java.util.Hashtable();
+    public void convertToSerializableMethods(Map<String,java.util.List<Method>> methods) {
+        this.serializableMethods = new ConcurrentHashMap<>();
         for (String event: methods.keySet()){
             java.util.List<Method> methodList = methods.get(event);
             java.util.List<MethodSerialImpl> newMethodList = new java.util.ArrayList();
@@ -168,8 +171,8 @@ public class JPAEntityListenerHolder implements SerializableDescriptorEventHolde
      * @param loader
      * @return
      */
-    public java.util.Hashtable<String,java.util.List<Method>> convertToMethods(ClassLoader loader) {
-        java.util.Hashtable<String,java.util.List<Method>> table = new java.util.Hashtable();
+    public Map<String,java.util.List<Method>> convertToMethods(ClassLoader loader) {
+        Map<String,java.util.List<Method>> table = new ConcurrentHashMap<>();
         for (String event: serializableMethods.keySet()){
             java.util.List<MethodSerialImpl> methodList = serializableMethods.get(event);
             java.util.List<Method> newMethodList = new java.util.ArrayList();
@@ -186,9 +189,9 @@ public class JPAEntityListenerHolder implements SerializableDescriptorEventHolde
         return table;
     }
 
-    public java.util.Hashtable<String,java.util.List<MethodSerialImpl>> getMethods() {
+    public Map<String,java.util.List<MethodSerialImpl>> getMethods() {
         if (serializableMethods == null) {
-            serializableMethods = new Hashtable<String, List<MethodSerialImpl>>();
+            serializableMethods = new ConcurrentHashMap<String, List<MethodSerialImpl>>();
         }
         return serializableMethods;
     }
