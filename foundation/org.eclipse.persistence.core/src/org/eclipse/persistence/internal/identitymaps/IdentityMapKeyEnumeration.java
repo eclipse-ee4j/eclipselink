@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -9,63 +9,49 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     12/14/2017-3.0 Tomas Kraus
+ *       - 522635: ConcurrentModificationException when triggering lazy load from conforming query
  ******************************************************************************/
 package org.eclipse.persistence.internal.identitymaps;
 
 import java.util.*;
 
 /**
- * Used to allow iterating over a maps cache keys.
+ * Allows to iterate over {@link CacheKey} instances stored in the {@link IdentityMap}.
  */
-public class IdentityMapKeyEnumeration implements Enumeration {
+public class IdentityMapKeyEnumeration extends AbstractIdentityMapEnumeration<CacheKey> {
 
-    protected FullIdentityMap map;
-    protected Iterator cacheKeysIterator;
-    protected CacheKey nextKey;
-    protected boolean shouldCheckReadLocks;
-
-    public IdentityMapKeyEnumeration(FullIdentityMap map) {
-        this(map, true);
+    /**
+     * Creates an instance of {@link CacheKey} instances enumeration.
+     * Checking of read lock on the {@link CacheKey} instances is turned on.
+     *
+     * @param keys {@link Collection} of {@link CacheKey} instances to be iterated
+     */
+    public IdentityMapKeyEnumeration(Collection<CacheKey> keys) {
+        super(keys, true);
     }
 
-    public IdentityMapKeyEnumeration(FullIdentityMap map, boolean shouldCheckReadLocks) {
-        this.map = map;
-        this.shouldCheckReadLocks = shouldCheckReadLocks;
-        this.cacheKeysIterator = map.getCacheKeys().values().iterator();
+    /**
+     * Creates an instance of {@link CacheKey} instances enumeration.
+     *
+     * @param keys {@link Collection} of {@link CacheKey} instances to be iterated
+     * @param shouldCheckReadLocks value of {@code true} if read lock on the {@link CacheKey}
+     *        instances should be checked or {@code false} otherwise
+     */
+    public IdentityMapKeyEnumeration(Collection<CacheKey> keys, boolean shouldCheckReadLocks) {
+        super(keys, shouldCheckReadLocks);
     }
 
-    public boolean hasMoreElements() {
-        this.nextKey = getNextCacheKey();
-        return this.nextKey != null;
-    }
-
-    public Object nextElement() {
-        if (this.nextKey == null) {
-            throw new NoSuchElementException("IdentityMapKeyEnumeration nextElement");
-        }
-
-        // The read lock check is for avoidance of half built objects being returned.
-        // bug 275724: Added shouldCheckReadLocks to avoid the read lock check when invalidating.
-        if (shouldCheckReadLocks) {
-            this.nextKey.checkReadLock();
-        }
-        return this.nextKey;
-    }
-
-    protected CacheKey getNextCacheKey() {
-        CacheKey key = null;
-        while (this.cacheKeysIterator.hasNext() && (key == null)) {
-            key = (CacheKey)this.cacheKeysIterator.next();
-        }
-        return key;
-    }
-
-    public boolean getShouldCheckReadLocks() {
-        return this.shouldCheckReadLocks;
-    }
-
-    public void setShouldCheckReadLocks(boolean shouldCheckReadLocks) {
-        this.shouldCheckReadLocks = shouldCheckReadLocks;
+    /**
+     * Get next element of {@link CacheKey} enumeration if this enumeration
+     * object has at least one more element to provide.
+     *
+     * @return the next element of this enumeration
+     * @exception  NoSuchElementException  if no more elements exist
+     */
+    @Override
+    public CacheKey nextElement() {
+        return getNextElement();
     }
 
 }

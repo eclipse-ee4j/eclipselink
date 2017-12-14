@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -9,9 +9,12 @@
  *
  * Contributors:
  *     Gordon Yorke - Initial Feature development
+ *     12/14/2017-3.0 Tomas Kraus
+ *       - 522635: ConcurrentModificationException when triggering lazy load from conforming query
  ******************************************************************************/
 package org.eclipse.persistence.sessions.interceptors;
 
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -152,7 +155,7 @@ public abstract class CacheInterceptor implements IdentityMap {
      * Allow for the cache to be iterated on.  This method is only used during debugging when
      * validateCache() has been called to print out the contents of the cache.
      */
-    public Enumeration elements() {
+    public Enumeration<Object> elements() {
         return this.targetIdentityMap.elements();
     }
 
@@ -262,17 +265,35 @@ public abstract class CacheInterceptor implements IdentityMap {
     }
 
     /**
-     * Allow for the CacheKeys to be iterated on.
+     * Allow for the {@link CacheKey} elements to be iterated.
+     * {@link CacheKey} {@link Collection} is reused so this iteration may not be thread safe.
+     *
+     * @return {@link Enumeration} of {@link CacheKey} instances.
      */
-    public Enumeration keys() {
+    public Enumeration<CacheKey> keys() {
         return this.targetIdentityMap.keys();
     }
 
     /**
-     * Allow for the CacheKeys to be iterated on. - value should be true
-     * if readloacks are to be used, false otherwise.
+     * Allow for the {@link CacheKey} elements to be iterated.
+     * Clone of {@link CacheKey} {@link Collection} is returned so this iteration should
+     * be thread safe.
+     *
+     * @return {@link Enumeration} with clone of the {@link CacheKey} {@link Collection}
      */
-    public Enumeration keys(boolean checkReadLocks) {
+    public Enumeration<CacheKey> cloneKeys() {
+        return this.targetIdentityMap.cloneKeys();
+    }
+
+    /**
+     * Allow for the {@link CacheKey} elements to be iterated.
+     * {@link CacheKey} {@link Collection} is reused so this iteration may not be thread safe.
+     *
+     * @param checkReadLocks value of {@code true} if read lock on the {@link CacheKey}
+     *        instances should be checked or {@code false} otherwise
+     * @return {@link Enumeration} of {@link CacheKey} instances.
+     */
+    public Enumeration<CacheKey> keys(boolean checkReadLocks) {
         return this.targetIdentityMap.keys(checkReadLocks);
     }
 

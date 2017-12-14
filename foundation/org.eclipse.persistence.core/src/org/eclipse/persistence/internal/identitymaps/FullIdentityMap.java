@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     12/14/2017-3.0 Tomas Kraus
+ *       - 522635: ConcurrentModificationException when triggering lazy load from conforming query
  ******************************************************************************/
 package org.eclipse.persistence.internal.identitymaps;
 
@@ -84,11 +86,13 @@ public class FullIdentityMap extends AbstractIdentityMap {
     }
 
     /**
-     * Allow for the cache to be iterated on.
+     * Allow for the cache {@link CacheKey#getObject()} elements to be iterated.
+     *
+     * @return {@link Enumeration} of {@link CacheKey#getObject()} instances.
      */
     @Override
-    public Enumeration elements() {
-        return new IdentityMapEnumeration(this);
+    public Enumeration<Object> elements() {
+        return new IdentityMapEnumeration(this.getCacheKeys().values());
     }
 
     /**
@@ -157,16 +161,32 @@ public class FullIdentityMap extends AbstractIdentityMap {
      * Read locks will be checked.
      */
     @Override
-    public Enumeration keys() {
+    public Enumeration<CacheKey> keys() {
         return keys(true);
     }
 
     /**
-     * Allow for the cache keys to be iterated on.
-     * @param checkReadLocks - true if readLocks should be checked, false otherwise.
+     * Allow for the {@link CacheKey} elements to be iterated.
+     * {@link CacheKey} {@link Collection} is reused so this iteration may not be thread safe.
+     *
+     * @param checkReadLocks value of {@code true} if read lock on the {@link CacheKey}
+     *        instances should be checked or {@code false} otherwise
+     * @return {@link Enumeration} of {@link CacheKey} instances.
      */
-    public Enumeration keys(boolean checkReadLocks) {
-        return new IdentityMapKeyEnumeration(this, checkReadLocks);
+    public Enumeration<CacheKey> keys(boolean checkReadLocks) {
+        return new IdentityMapKeyEnumeration(this.getCacheKeys().values(), checkReadLocks);
+    }
+
+    /**
+     * Allow for the {@link CacheKey} elements to be iterated.
+     * Clone of {@link CacheKey} {@link Collection} is returned so this iteration should
+     * be thread safe.
+     *
+     * @return {@link Enumeration} with clone of the {@link CacheKey} {@link Collection}
+     */
+    @Override
+    public Enumeration<CacheKey> cloneKeys() {
+        return new IdentityMapKeyEnumeration(new ArrayList(this.getCacheKeys().values()), true);
     }
 
     /**

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Gordon Yorke - Part of the Cache Interceptor feature. (ER 219683)
+ *     12/14/2017-3.0 Tomas Kraus
+ *       - 522635: ConcurrentModificationException when triggering lazy load from conforming query
  ******************************************************************************/
 package org.eclipse.persistence.internal.identitymaps;
 
@@ -98,7 +100,7 @@ public interface IdentityMap extends Cloneable{
     /**
      * Allow for the cache to be iterated on.
      */
-    public Enumeration elements();
+    public Enumeration<Object> elements();
 
     /**
      * Return the object cached in the identity map or null if it could not be found.
@@ -181,13 +183,21 @@ public interface IdentityMap extends Cloneable{
      * Allow for the CacheKeys to be iterated on.
      * Read locks should be checked
      */
-    public Enumeration keys();
+    public Enumeration<CacheKey> keys();
+
+    /**
+     * Allow for the CacheKeys to be iterated on using copy of keys enumeration.
+     * This is thread safe access to keys.
+     *
+     * @return clone of the CacheKeys enumeration
+     */
+    public Enumeration<CacheKey> cloneKeys();
 
     /**
      * Allow for the CacheKeys to be iterated on.
      * @param checkReadLocks - true if readLocks should be checked, false otherwise.
      */
-    public Enumeration keys(boolean checkReadLocks);
+    public Enumeration<CacheKey> keys(boolean checkReadLocks);
 
     /**
      * Notify the cache that a lazy relationship has been triggered in the object

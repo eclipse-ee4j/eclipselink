@@ -12,7 +12,9 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     Mark Wolochuk - Bug 321041 ConcurrentModificationException on getFromIdentityMap() fix
  *     11/07/2017 - Dalia Abo Sheasha
- *       - 526957 : Split the logging and trace messages
+ *       - 526957: Split the logging and trace messages
+ *     12/14/2017-3.0 Tomas Kraus
+ *       - 522635: ConcurrentModificationException when triggering lazy load from conforming query
  ******************************************************************************/
 package org.eclipse.persistence.internal.identitymaps;
 
@@ -539,12 +541,17 @@ public class IdentityMapManager implements Serializable, Cloneable {
             }
             objects = new Vector();
             IdentityMap map = getIdentityMap(descriptor, false);
+
+            // Bug #522635 - if policy is set to trigger indirection, then iterate over a copy of the cache keys collection
+            //               to avoid a ConcurrentModificationException
+            final Enumeration cacheEnum = valueHolderPolicy == InMemoryQueryIndirectionPolicy.SHOULD_TRIGGER_INDIRECTION ? map.cloneKeys() : map.keys();
+
             // bug 327900 - If don't read subclasses is set on the descriptor heed it.
             boolean readSubclassesOrNoInheritance = (!descriptor.hasInheritance() || descriptor.getInheritancePolicy().shouldReadSubclasses());
 
             // cache the current time to avoid calculating it every time through the loop
             long currentTimeInMillis = System.currentTimeMillis();
-            for (Enumeration cacheEnum = map.keys(); cacheEnum.hasMoreElements();) {
+            while (cacheEnum.hasMoreElements()) {
                 CacheKey key = (CacheKey)cacheEnum.nextElement();
                 if ((key.getObject() == null) || (!shouldReturnInvalidatedObjects && descriptor.getCacheInvalidationPolicy().isInvalidated(key, currentTimeInMillis))) {
                     continue;
@@ -852,24 +859,9 @@ public class IdentityMapManager implements Serializable, Cloneable {
             }
             IdentityMap map = getIdentityMap(descriptor, false);
 
-            // Bug #321041 - if policy is set to trigger indirection, then make a copy of the cache keys collection
-            // and iterate over that to avoid a ConcurrentModificationException.
-            // This happens when the indirect attribute is of the same type (or has same mapped superclass) as
-            // the parent object. EclipseLink inserts the object into the same collection it is iterating over,
-            // which results in a ConcurrentModificationException.
-            // There's a slight performance hit in copying the collection, but we are already taking a hit
-            // by triggering indirection in the first place.
-            boolean copyKeyCollection = valueHolderPolicy == InMemoryQueryIndirectionPolicy.SHOULD_TRIGGER_INDIRECTION;
-            Vector cacheKeys = null;
-            if (copyKeyCollection) {
-                cacheKeys = new Vector(map.getSize());
-                for (Enumeration cacheEnum = map.keys(); cacheEnum.hasMoreElements();) {
-                    CacheKey key = (CacheKey)cacheEnum.nextElement();
-                    cacheKeys.add(key);
-                }
-            }
-
-            Enumeration cacheEnum = copyKeyCollection ? cacheKeys.elements() : map.keys();
+            // Bug #321041 - if policy is set to trigger indirection, then iterate over a copy of the cache keys collection
+            //               to avoid a ConcurrentModificationException
+            Enumeration cacheEnum = valueHolderPolicy == InMemoryQueryIndirectionPolicy.SHOULD_TRIGGER_INDIRECTION ? map.cloneKeys() : map.keys();
 
             // cache the current time to avoid calculating it every time through the loop
             long currentTimeInMillis = System.currentTimeMillis();
