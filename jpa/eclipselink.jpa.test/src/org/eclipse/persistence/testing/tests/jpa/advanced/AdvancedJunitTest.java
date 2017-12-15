@@ -75,7 +75,6 @@ public class AdvancedJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedJunitTest("testElementCollectionClear"));
         suite.addTest(new AdvancedJunitTest("testElementCollectionEntityMapKeyRemove"));
         suite.addTest(new AdvancedJunitTest("testSwitchBatchDuringSessionEvent"));
-        suite.addTest(new AdvancedJunitTest("testTableQualifierOnSequencingTableAndEntity"));
         suite.addTest(new AdvancedJunitTest("testCoalesceJPQLQueryWithNullParameterValue"));
 
         return suite;
