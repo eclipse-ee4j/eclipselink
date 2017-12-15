@@ -76,13 +76,7 @@ public class ClearDatabaseSchemaTest extends TestCase {
             x.printStackTrace(System.err);
         } finally {
             if (record != null) {
-                try {
-                    session.executeNonSelectingSQL("create database " + record.get("DATABASE()"));
-                } catch (DatabaseException y) {
-                    AbstractSessionLog.getLog().warning("Failed to create database - it already exists");
-                    // Using System.err since session log may not print out the stack trace
-                    y.printStackTrace(System.err);
-                }
+                session.executeNonSelectingSQL("create database " + record.get("DATABASE()"));
             } else {
                 DatabaseLogin databaseLogin = (DatabaseLogin) session.getDatasourceLogin();
                 String url = databaseLogin.getDatabaseURL();
