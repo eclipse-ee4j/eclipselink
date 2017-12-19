@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,22 +9,30 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     12/14/2017-3.0 Tomas Kraus
+ *       - 291546: Performance degradation due to usage of Vector in DescriptorEventManager
  ******************************************************************************/  
 package org.eclipse.persistence.descriptors;
 
-import java.lang.reflect.*;
+import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
-import java.util.*;
-import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicIntegerArray;
+import java.util.concurrent.atomic.AtomicReferenceArray;
 
-import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.core.descriptors.CoreDescriptorEventManager;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.sessions.SessionProfiler;
+import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.sessions.SessionProfiler;
 
 /**
  * <p><b>Purpose</b>: The event manager allows for a descriptor to specify that 
@@ -49,29 +57,29 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  */
 public class DescriptorEventManager extends CoreDescriptorEventManager<DescriptorEvent> implements Cloneable, Serializable {
     protected ClassDescriptor descriptor;
-    protected Vector eventSelectors;
-    protected transient Vector eventMethods;
-    protected transient Vector eventListeners;
+    protected AtomicReferenceArray<String> eventSelectors;
+    protected transient AtomicReferenceArray<Method> eventMethods;
+    protected transient List<DescriptorEventListener> eventListeners;
     
     // EJB 3.0 support for event listeners.
-    protected transient Vector defaultEventListeners;
-    protected transient Vector entityListenerEventListeners;
+    protected transient List<DescriptorEventListener> defaultEventListeners;
+    protected transient List<DescriptorEventListener> entityListenerEventListeners;
     protected transient DescriptorEventListener entityEventListener;
     /**
      * Listeners that are fired after all other listeners are fired
      */
-    protected transient List<DescriptorEventListener>  internalListeners = new ArrayList<DescriptorEventListener>();
+    protected transient List<DescriptorEventListener>  internalListeners = new ArrayList<>();
     
     // EJB 3.0 support - cache our parent event managers.
-    protected transient Vector entityEventManagers;
-    protected transient Vector entityListenerEventManagers;
+    protected transient List<DescriptorEventManager> entityEventManagers;
+    protected transient List<DescriptorEventManager> entityListenerEventManagers;
     
     // EJB 3.0 support for event listener configuration flags.
     protected boolean excludeDefaultListeners;
     protected boolean excludeSuperclassListeners;
 
     //JPA project caching support.  Holds DescriptorEventListener representations for serialization/storage.
-    protected java.util.List<SerializableDescriptorEventHolder> descriptorEventHolders;
+    protected List<SerializableDescriptorEventHolder> descriptorEventHolders;
 
     /** PERF: Cache if any events listener exist. */
     protected boolean hasAnyEventListeners;
@@ -98,22 +106,18 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
     public static final int PreRemoveEvent = 16;
     public static final int PreUpdateWithChangesEvent = 17;
 
-   protected static final int NumberOfEvents = 18;
+    protected static final int NumberOfEvents = 18;
+
     /**
      * INTERNAL:
      * Returns a new DescriptorEventManager for the specified ClassDescriptor.
      */
     public DescriptorEventManager() {
-        this.eventSelectors = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(NumberOfEvents);
-        this.eventMethods = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(NumberOfEvents);
+        this.eventSelectors = newAtomicReferenceArray(NumberOfEvents);
+        this.eventMethods = newAtomicReferenceArray(NumberOfEvents);
         this.hasAnyEventListeners = false;
         this.excludeDefaultListeners = false;
         this.excludeSuperclassListeners = false;
-
-        for (int index = 0; index < NumberOfEvents; index++) {
-            this.eventSelectors.addElement(null);
-            this.eventMethods.addElement(null);
-        }
     }
 
     /**
@@ -121,7 +125,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      * EJB 3.0 support for default listeners.
      */
     public void addDefaultEventListener(DescriptorEventListener listener) {
-        getDefaultEventListeners().addElement(listener);
+        getDefaultEventListeners().add(listener);
     }
     
     /**
@@ -130,7 +134,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      * listener class.
      */
     public void addEntityListenerEventListener(DescriptorEventListener listener) {
-        getEntityListenerEventListeners().addElement(listener);
+        getEntityListenerEventListeners().add(listener);
     }
 
     /**
@@ -139,7 +143,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      * when an event occurs on any instance of the descriptor's class.
      */
     public void addListener(DescriptorEventListener listener) {
-        getEventListeners().addElement(listener);
+        getEventListeners().add(listener);
         setHasAnyEventListeners(true);
     }
 
@@ -149,7 +153,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      */
     public void addInternalListener(DescriptorEventListener listener) {
         if (internalListeners==null) {
-            internalListeners = new ArrayList<DescriptorEventListener>();
+            internalListeners = new ArrayList<>();
         }
         internalListeners.add(listener);
         setHasAnyEventListeners(true); // ensure that events are generated
@@ -172,8 +176,8 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
 
         try {
             clone = (DescriptorEventManager)super.clone();
-            clone.setEventSelectors((Vector)getEventSelectors().clone());
-            clone.setEventMethods((Vector)getEventMethods().clone());
+            clone.setEventSelectors(newAtomicReferenceArray(getEventSelectors()));
+            clone.setEventMethods(newAtomicReferenceArray(getEventMethods()));
             clone.setEventListeners(getEventListeners());
         } catch (Exception exception) {
             ;
@@ -234,7 +238,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
                 return;
             }
 
-            Method eventMethod = (Method)getEventMethods().elementAt(event.getEventCode());
+            Method eventMethod = (Method)getEventMethods().get(event.getEventCode());
             if (eventMethod == null) {
                 return;
             }
@@ -277,7 +281,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
     protected Method findMethod(int selector) throws DescriptorException {
         Class[] declarationParameters = new Class[1];
         declarationParameters[0] = ClassConstants.DescriptorEvent_Class;
-        String methodName = (String)getEventSelectors().elementAt(selector);
+        String methodName = getEventSelectors().get(selector);
 
         try {
             return Helper.getDeclaredMethod(getDescriptor().getJavaClass(), methodName, declarationParameters);
@@ -293,32 +297,31 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      * bug 251180 - Missing method org.eclipse.persistence.descriptors.DescriptorEventManager#setAboutToDeleteSelector 
      */
     public String getAboutToDeleteSelector() {
-        return (String)getEventSelectors().elementAt(AboutToDeleteEvent);
+        return getEventSelectors().get(AboutToDeleteEvent);
     }
 
     /**
      * INTERNAL:
      */
     public String getAboutToInsertSelector() {
-        return (String)getEventSelectors().elementAt(AboutToInsertEvent);
+        return getEventSelectors().get(AboutToInsertEvent);
     }
 
     /**
      * INTERNAL:
      */
     public String getAboutToUpdateSelector() {
-        return (String)getEventSelectors().elementAt(AboutToUpdateEvent);
+        return getEventSelectors().get(AboutToUpdateEvent);
     }
 
     /**
      * INTERNAL:
      * EJB 3.0 support. Returns the default listeners.
      */
-    public Vector getDefaultEventListeners() {
+    public List<DescriptorEventListener> getDefaultEventListeners() {
         if (defaultEventListeners == null) {
-            defaultEventListeners = new NonSynchronizedVector();
+            defaultEventListeners = new CopyOnWriteArrayList<>();
         }
-        
         return defaultEventListeners;
     }
     
@@ -334,9 +337,9 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      * used by JPA project caching to store DescriptorEventListener representations that can build the underlying 
      * DescriptorEventListener and add it to the EventManager.
      */
-    public java.util.List<SerializableDescriptorEventHolder> getDescriptorEventHolders() {
+    public List<SerializableDescriptorEventHolder> getDescriptorEventHolders() {
         if (descriptorEventHolders == null) {
-            descriptorEventHolders = new java.util.ArrayList();
+            descriptorEventHolders = new CopyOnWriteArrayList<>();
         }
         return descriptorEventHolders;
     }
@@ -346,7 +349,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      * used by JPA project caching to store DescriptorEventListener representations that can build the underlying 
      * DescriptorEventListener and add it to the EventManager.
      */
-    public void setDescriptorEventHolders(java.util.List<SerializableDescriptorEventHolder> descriptorEventHolders) {
+    public void setDescriptorEventHolders(List<SerializableDescriptorEventHolder> descriptorEventHolders) {
         this.descriptorEventHolders = descriptorEventHolders;
     }
 
@@ -362,11 +365,10 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      * INTERNAL:
      * EJB 3.0 support. Returns the entity listener event listeners.
      */
-    public Vector getEntityListenerEventListeners() {
+    public List<DescriptorEventListener> getEntityListenerEventListeners() {
         if (entityListenerEventListeners == null) {
-            entityListenerEventListeners = new Vector();
+            entityListenerEventListeners = new CopyOnWriteArrayList<>();
         }
-        
         return entityListenerEventListeners;
     }
     
@@ -376,31 +378,25 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      *
      * @see #addListener(DescriptorEventListener)
      */
-    public Vector getEventListeners() {
+    public List<DescriptorEventListener> getEventListeners() {
         // Lazy initialize to avoid unnecessary enumerations.
         if (eventListeners == null) {
-            eventListeners = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
+            eventListeners = new CopyOnWriteArrayList<>();
         }
         return eventListeners;
     }
 
-    protected Vector getEventMethods() {
+    protected AtomicReferenceArray<Method> getEventMethods() {
         //Lazy Initialized to prevent Null Pointer exception after serialization
         if (this.eventMethods == null) {
-            this.eventMethods = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(NumberOfEvents);
-            for (int index = 0; index < NumberOfEvents; ++index) {
-                this.eventMethods.addElement(null);
-            }
+            this.eventMethods = newAtomicReferenceArray(NumberOfEvents);
         }
         return eventMethods;
     }
 
-    protected Vector getEventSelectors() {
+    protected AtomicReferenceArray<String> getEventSelectors() {
         if (this.eventSelectors == null) {
-            this.eventSelectors = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(NumberOfEvents);
-            for (int index = 0; index < NumberOfEvents; ++index) {
-                this.eventSelectors.addElement(null);
-            }
+            this.eventSelectors = newAtomicReferenceArray(NumberOfEvents);
         }
         return eventSelectors;
     }
@@ -410,7 +406,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      *  The name of the method called after an object is built
      */
     public String getPostBuildSelector() {
-        return (String)getEventSelectors().elementAt(PostBuildEvent);
+        return getEventSelectors().get(PostBuildEvent);
     }
 
     /**
@@ -418,7 +414,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      *  The name of the method called after an object is cloned
      */
     public String getPostCloneSelector() {
-        return (String)getEventSelectors().elementAt(PostCloneEvent);
+        return getEventSelectors().get(PostCloneEvent);
     }
 
     /**
@@ -426,7 +422,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      *  The name of the method called after an object is deleted
      */
     public String getPostDeleteSelector() {
-        return (String)getEventSelectors().elementAt(PostDeleteEvent);
+        return getEventSelectors().get(PostDeleteEvent);
     }
 
     /**
@@ -434,7 +430,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      *  The name of the method called after an object is inserted
      */
     public String getPostInsertSelector() {
-        return (String)getEventSelectors().elementAt(PostInsertEvent);
+        return getEventSelectors().get(PostInsertEvent);
     }
 
     /**
@@ -442,7 +438,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      *  The name of the method called after an object is merged
      */
     public String getPostMergeSelector() {
-        return (String)getEventSelectors().elementAt(PostMergeEvent);
+        return getEventSelectors().get(PostMergeEvent);
     }
 
     /**
@@ -450,7 +446,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      *  The name of the method called after an object is refreshed
      */
     public String getPostRefreshSelector() {
-        return (String)getEventSelectors().elementAt(PostRefreshEvent);
+        return getEventSelectors().get(PostRefreshEvent);
     }
 
     /**
@@ -458,7 +454,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      *  The name of the method called after an object is updated
      */
     public String getPostUpdateSelector() {
-        return (String)getEventSelectors().elementAt(PostUpdateEvent);
+        return getEventSelectors().get(PostUpdateEvent);
     }
 
     /**
@@ -466,7 +462,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      *  The name of the method called after an object is written
      */
     public String getPostWriteSelector() {
-        return (String)getEventSelectors().elementAt(PostWriteEvent);
+        return getEventSelectors().get(PostWriteEvent);
     }
 
     /**
@@ -474,7 +470,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      *  The name of the method called before the create operation is applied to an object
      */
     public String getPrePersistSelector() {
-        return (String)getEventSelectors().elementAt(PrePersistEvent);
+        return getEventSelectors().get(PrePersistEvent);
     }
 
   /**
@@ -482,7 +478,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      *  The name of the method called before an object is deleted
      */
     public String getPreDeleteSelector() {
-        return (String)getEventSelectors().elementAt(PreDeleteEvent);
+        return getEventSelectors().get(PreDeleteEvent);
     }
 
     /**
@@ -490,7 +486,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      *  The name of the method called before an object is inserted
      */
     public String getPreInsertSelector() {
-        return (String)getEventSelectors().elementAt(PreInsertEvent);
+        return getEventSelectors().get(PreInsertEvent);
     }
 
     /**
@@ -498,7 +494,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      *  The name of the method called before the remove operation is applied to an object
      */
     public String getPreRemoveSelector() {
-        return (String)getEventSelectors().elementAt(PreRemoveEvent);
+        return getEventSelectors().get(PreRemoveEvent);
     }
 
   /**
@@ -506,7 +502,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      *  The name of the method called before an object is updated
      */
     public String getPreUpdateSelector() {
-        return (String)getEventSelectors().elementAt(PreUpdateEvent);
+        return getEventSelectors().get(PreUpdateEvent);
     }
 
     /**
@@ -514,7 +510,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      *  The name of the method called before an object is written
      */
     public String getPreWriteSelector() {
-        return (String)getEventSelectors().elementAt(PreWriteEvent);
+        return getEventSelectors().get(PreWriteEvent);
     }
 
     /**
@@ -558,7 +554,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      * listener event listeners.
      */
     public boolean hasInternalEventListeners() {
-        return internalListeners != null && internalListeners.size() > 0;
+        return internalListeners != null && !internalListeners.isEmpty();
     }
 
     /** 
@@ -567,7 +563,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      * listener event listeners.
      */
     public boolean hasEntityListenerEventListeners() {
-        return entityListenerEventListeners != null && entityListenerEventListeners.size() > 0;
+        return entityListenerEventListeners != null && !entityListenerEventListeners.isEmpty();
     }
 
     /**
@@ -587,10 +583,11 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
             setHasAnyEventListeners(true);
         }
 
+        final AtomicReferenceArray<String> selectors = getEventSelectors();
         for (int index = 0; index < NumberOfEvents; index++) {
-            if (getEventSelectors().elementAt(index) != null) {
+            if (selectors.get(index) != null) {
                 setHasAnyEventListeners(true);
-                getEventMethods().setElementAt(findMethod(index), index);
+                getEventMethods().set(index, findMethod(index));
             }
         }
 
@@ -603,9 +600,9 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
             }
 
             for (int index = 0; index < NumberOfEvents; index++) {
-                if ((getEventSelectors().get(index) == null) && (parentEventManager.getEventSelectors().get(index) != null)) {
+                if ((selectors.get(index) == null) && (parentEventManager.getEventSelectors().get(index) != null)) {
                     setHasAnyEventListeners(true);
-                    getEventSelectors().set(index, parentEventManager.getEventSelectors().get(index));
+                    selectors.set(index, parentEventManager.getEventSelectors().get(index));
                     getEventMethods().set(index, parentEventManager.getEventMethods().get(index));
                 }
             }            
@@ -619,8 +616,8 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      * once.
      */
     protected void initializeEJB30EventManagers() {
-        entityEventManagers = new NonSynchronizedVector();
-        entityListenerEventManagers = new NonSynchronizedVector();
+        entityEventManagers = new CopyOnWriteArrayList<>();
+        entityListenerEventManagers = new CopyOnWriteArrayList<>();
              
         if (hasEntityEventListener()) {
             entityEventManagers.add(this);
@@ -667,7 +664,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
 
         // Step 2 - Notify the Entity Listener's first, top -> down.
         for (int index = entityListenerEventManagers.size() - 1; index >= 0; index--) {
-            Vector entityListenerEventListeners = ((DescriptorEventManager) entityListenerEventManagers.get(index)).getEntityListenerEventListeners();
+            List entityListenerEventListeners = ((DescriptorEventManager) entityListenerEventManagers.get(index)).getEntityListenerEventListeners();
                  
             for (int i = 0; i < entityListenerEventListeners.size(); i++) {
                 DescriptorEventListener listener = (DescriptorEventListener) entityListenerEventListeners.get(i);
@@ -678,7 +675,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
         // Step 3 - Notify the Entity event listeners. top -> down, unless
         // they are overridden in a subclass.
         for (int index = entityEventManagers.size() - 1; index >= 0; index--) {
-            DescriptorEventListener entityEventListener = ((DescriptorEventManager) entityEventManagers.get(index)).getEntityEventListener();
+            DescriptorEventListener entityEventListener = entityEventManagers.get(index).getEntityEventListener();
 
             if (! entityEventListener.isOverriddenEvent(event, entityEventManagers)) {
                 notifyListener(entityEventListener, event);
@@ -781,12 +778,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      * Used to initialize a remote DescriptorEventManager.
      */
     public void remoteInitialization(AbstractSession session) {
-        this.eventMethods = new Vector(NumberOfEvents);
-
-        for (int index = 0; index < NumberOfEvents; index++) {
-            this.eventMethods.addElement(null);
-        }
-
+        this.eventMethods = newAtomicReferenceArray(NumberOfEvents);
         initialize(session);
     }
 
@@ -795,7 +787,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      * Remove a event listener.
      */
     public void removeListener(DescriptorEventListener listener) {
-        getEventListeners().removeElement(listener);
+        getEventListeners().remove(listener);
     }
     
     /**
@@ -808,7 +800,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      */
     //bug 251180: Missing method org.eclipse.persistence.descriptors.DescriptorEventManager#setAboutToDeleteSelector 
     public void setAboutToDeleteSelector(String aboutToDeleteSelector) {
-        getEventSelectors().setElementAt(aboutToDeleteSelector, AboutToDeleteEvent);
+        getEventSelectors().set(AboutToDeleteEvent, aboutToDeleteSelector);
     }
 
     /**
@@ -820,7 +812,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      * insert, such as adding a user inserted by.
      */
     public void setAboutToInsertSelector(String aboutToInsertSelector) {
-        getEventSelectors().setElementAt(aboutToInsertSelector, AboutToInsertEvent);
+        getEventSelectors().set(AboutToInsertEvent, aboutToInsertSelector);
     }
 
     /**
@@ -833,7 +825,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      * to modify the row before insert, such as adding a user inserted by.
      */
     public void setAboutToUpdateSelector(String aboutToUpdateSelector) {
-        getEventSelectors().setElementAt(aboutToUpdateSelector, AboutToUpdateEvent);
+        getEventSelectors().set(AboutToUpdateEvent, aboutToUpdateSelector);
     }
 
     /**
@@ -852,15 +844,19 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
         this.entityEventListener = listener;
     }
 
-    protected void setEventListeners(Vector eventListeners) {
-        this.eventListeners = eventListeners;
+    protected void setEventListeners(List<DescriptorEventListener> eventListeners) {
+        if (eventListeners instanceof CopyOnWriteArrayList) {
+            this.eventListeners = eventListeners;
+        } else {
+            this.eventListeners = new CopyOnWriteArrayList(eventListeners);
+        }
     }
 
-    protected void setEventMethods(Vector eventMethods) {
+    protected void setEventMethods(AtomicReferenceArray<Method> eventMethods) {
         this.eventMethods = eventMethods;
     }
 
-    protected void setEventSelectors(Vector eventSelectors) {
+    protected void setEventSelectors(AtomicReferenceArray<String> eventSelectors) {
         this.eventSelectors = eventSelectors;
     }
     
@@ -904,7 +900,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      * mappings. This event is called whenever an object is built.
      */
     public void setPostBuildSelector(String postBuildSelector) {
-        getEventSelectors().setElementAt(postBuildSelector, PostBuildEvent);
+        getEventSelectors().set(PostBuildEvent, postBuildSelector);
     }
 
     /**
@@ -915,7 +911,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      * to correctly initialize an object's non-persistent attributes.
      */
     public void setPostCloneSelector(String postCloneSelector) {
-        getEventSelectors().setElementAt(postCloneSelector, PostCloneEvent);
+        getEventSelectors().set(PostCloneEvent, postCloneSelector);
     }
 
     /**
@@ -925,7 +921,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      * on the object.
      */
     public void setPostDeleteSelector(String postDeleteSelector) {
-        getEventSelectors().setElementAt(postDeleteSelector, PostDeleteEvent);
+        getEventSelectors().set(PostDeleteEvent, postDeleteSelector);
     }
 
     /**
@@ -936,7 +932,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      * the object has been inserted.
      */
     public void setPostInsertSelector(String postInsertSelector) {
-        getEventSelectors().setElementAt(postInsertSelector, PostInsertEvent);
+        getEventSelectors().set(PostInsertEvent, postInsertSelector);
     }
 
     /**
@@ -948,7 +944,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      * initialize an object's non-persistent attributes.
      */
     public void setPostMergeSelector(String postMergeSelector) {
-        getEventSelectors().setElementAt(postMergeSelector, PostMergeEvent);
+        getEventSelectors().set(PostMergeEvent, postMergeSelector);
     }
 
     /**
@@ -960,7 +956,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      * mappings. This event is only called on refreshes of existing objects.
      */
     public void setPostRefreshSelector(String postRefreshSelector) {
-        getEventSelectors().setElementAt(postRefreshSelector, PostRefreshEvent);
+        getEventSelectors().set(PostRefreshEvent, postRefreshSelector);
     }
 
     /**
@@ -969,7 +965,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      * updated into the database.
      */
     public void setPostUpdateSelector(String postUpdateSelector) {
-        getEventSelectors().setElementAt(postUpdateSelector, PostUpdateEvent);
+        getEventSelectors().set(PostUpdateEvent, postUpdateSelector);
     }
 
     /**
@@ -983,7 +979,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      * event can be used to notify any dependent on the object.
      */
     public void setPostWriteSelector(String postWriteSelector) {
-        getEventSelectors().setElementAt(postWriteSelector, PostWriteEvent);
+        getEventSelectors().set(PostWriteEvent, postWriteSelector);
     }
 
     /**
@@ -993,7 +989,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      * on the object.
      */
     public void setPreDeleteSelector(String preDeleteSelector) {
-        getEventSelectors().setElementAt(preDeleteSelector, PreDeleteEvent);
+        getEventSelectors().set(PreDeleteEvent, preDeleteSelector);
     }
 
     /**
@@ -1004,7 +1000,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      * mechanism.
      */
     public void setPreInsertSelector(String preInsertSelector) {
-        getEventSelectors().setElementAt(preInsertSelector, PreInsertEvent);
+        getEventSelectors().set(PreInsertEvent, preInsertSelector);
     }
     
     /**
@@ -1013,7 +1009,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      * the create operation applied to it.
      */
     public void setPrePersistSelector(String prePersistSelector) {
-        getEventSelectors().setElementAt(prePersistSelector, PrePersistEvent);
+        getEventSelectors().set(PrePersistEvent, prePersistSelector);
     }
 
     /**
@@ -1022,7 +1018,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      * the remove operation applied to it.
      */
     public void setPreRemoveSelector(String preRemoveSelector) {
-        getEventSelectors().setElementAt(preRemoveSelector, PreRemoveEvent);
+        getEventSelectors().set(PreRemoveEvent, preRemoveSelector);
     }
 
     /**
@@ -1035,7 +1031,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      * any dependent on the object.
      */
     public void setPreUpdateSelector(String preUpdateSelector) {
-        getEventSelectors().setElementAt(preUpdateSelector, PreUpdateEvent);
+        getEventSelectors().set(PreUpdateEvent, preUpdateSelector);
     }
 
     /**
@@ -1049,6 +1045,32 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      * event can be used to notify any dependent on the object.
      */
     public void setPreWriteSelector(String preWriteSelector) {
-        getEventSelectors().setElementAt(preWriteSelector, PreWriteEvent);
+        getEventSelectors().set(PreWriteEvent, preWriteSelector);
     }
+
+    /**
+     * Create an instance of {@link AtomicIntegerArray} initialized with {@code NullEvent} values.
+     *
+     * @param length length of the array.
+     * @return initialized instance of {@link AtomicIntegerArray}
+     */
+    private static <T> AtomicReferenceArray<T> newAtomicReferenceArray(final int length) {
+        final AtomicReferenceArray array = new AtomicReferenceArray<>(length);
+        for (int index = 0; index < length; array.set(index++, null));
+        return (AtomicReferenceArray<T>)array;
+    }
+
+    /**
+     * Create an instance of {@link AtomicIntegerArray} initialized with content of provided array.
+     *
+     * @param src source array.
+     * @return initialized instance of {@link AtomicIntegerArray}
+     */
+    private static <T> AtomicReferenceArray<T> newAtomicReferenceArray(final AtomicReferenceArray<T> src) {
+        final int length = src.length();
+        final AtomicReferenceArray array = new AtomicReferenceArray<>(length);
+        for (int index = 0; index < length; array.set(index, src.get(index++)));
+        return (AtomicReferenceArray<T>)array;
+    }
+
 }
