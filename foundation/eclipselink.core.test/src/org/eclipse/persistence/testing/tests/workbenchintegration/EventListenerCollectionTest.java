@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,22 +9,17 @@
  *
  * Contributors:
  *     John Vandale - initial API and implementation
- *     12/14/2017-3.0 Tomas Kraus
- *       - 291546: Performance degradation due to usage of Vector in DescriptorEventManager
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.workbenchintegration;
 
 import java.io.File;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.descriptors.DescriptorEventAdapter;
-import org.eclipse.persistence.descriptors.DescriptorEventListener;
+import org.eclipse.persistence.testing.models.employee.relational.EmployeeProject;
 import org.eclipse.persistence.sessions.factories.XMLProjectReader;
 import org.eclipse.persistence.sessions.factories.XMLProjectWriter;
+import org.eclipse.persistence.descriptors.DescriptorEventAdapter;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
-import org.eclipse.persistence.testing.models.employee.relational.EmployeeProject;
 
 /**
  * Bug 295383
@@ -58,11 +53,11 @@ public class EventListenerCollectionTest extends org.eclipse.persistence.testing
         ClassDescriptor descriptor =
             project.getDescriptors().get(Employee.class);
 
-        List<DescriptorEventListener> listeners = descriptor.getEventManager().getEventListeners();
+        java.util.Vector listeners = descriptor.getEventManager().getEventListeners();
 
         //test that the collection type is a NonSynchronizedVector
-        if (!(listeners instanceof CopyOnWriteArrayList)) {
-            throwError("Descriptor from project XML with event listeners does not use CopyOnWriteArrayList for event listeners collection.");
+        if (!(listeners instanceof org.eclipse.persistence.internal.helper.NonSynchronizedVector)) {
+        	throwError("Descriptor from project XML with event listeners does not use NonSynchronizedVector for event listeners collection.");
         }
     }
     

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -14,28 +14,27 @@
  *       - 211324: Add additional event(s) support to the EclipseLink-ORM.XML Schema
  *     07/15/2010-2.2 Guy Pelletier 
  *       -311395 : Multiple lifecycle callback methods for the same lifecycle event
- *     12/14/2017-3.0 Tomas Kraus
- *       - 291546: Performance degradation due to usage of Vector in DescriptorEventManager
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.listeners;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
+
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
 import java.util.Vector;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.DescriptorEventAdapter;
 import org.eclipse.persistence.descriptors.DescriptorEventManager;
+
 import org.eclipse.persistence.exceptions.ValidationException;
+
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
@@ -64,36 +63,35 @@ public class EntityListener extends DescriptorEventAdapter {
     private Object m_listener;
     private Class m_listenerClass;
     private Class m_entityClass;
-    private Map<String, List<Method>> m_methods;
-    private final Map<String, Map<Integer, Boolean>> m_overriddenEvents;
-    private static Map<Integer, String> m_eventStrings;
+    private Hashtable<String, List<Method>> m_methods;
+    private Hashtable<String, Hashtable<Integer, Boolean>> m_overriddenEvents;
+    private static Hashtable<Integer, String> m_eventStrings;
     private AbstractSession owningSession;
-
-    static {
-        // For quick look up of equivalent event strings from event codes.
-        Map<Integer, String> mappings = new HashMap<>(9);
-        mappings.put(DescriptorEventManager.PostBuildEvent, POST_BUILD);
-        mappings.put(DescriptorEventManager.PostCloneEvent, POST_CLONE);
-        mappings.put(DescriptorEventManager.PostDeleteEvent, POST_DELETE);
-        mappings.put(DescriptorEventManager.PostInsertEvent, POST_INSERT);
-        mappings.put(DescriptorEventManager.PostRefreshEvent, POST_REFRESH);
-        mappings.put(DescriptorEventManager.PostUpdateEvent, POST_UPDATE);
-        mappings.put(DescriptorEventManager.PrePersistEvent, PRE_PERSIST);
-        mappings.put(DescriptorEventManager.PreRemoveEvent, PRE_REMOVE);
-        mappings.put(DescriptorEventManager.PreUpdateWithChangesEvent, PRE_UPDATE_WITH_CHANGES);
-        m_eventStrings = Collections.unmodifiableMap(mappings);
-    }
 
     /**
      * INTERNAL: 
      */
     protected EntityListener(Class entityClass) {
         m_entityClass = entityClass;
-        m_methods = new ConcurrentHashMap<>();
+        m_methods = new Hashtable<String, List<Method>>();
         
         // Remember which events are overridden in subclasses. Overriden events
         // must be built for each subclass chain.
-        m_overriddenEvents = new ConcurrentHashMap<>();
+        m_overriddenEvents = new Hashtable<String, Hashtable<Integer, Boolean>>();
+        
+        // For quick look up of equivalent event strings from event codes.
+        if (m_eventStrings == null) {
+            m_eventStrings = new Hashtable<Integer, String>();   
+            m_eventStrings.put(Integer.valueOf(DescriptorEventManager.PostBuildEvent), POST_BUILD);
+            m_eventStrings.put(Integer.valueOf(DescriptorEventManager.PostCloneEvent), POST_CLONE);
+            m_eventStrings.put(Integer.valueOf(DescriptorEventManager.PostDeleteEvent), POST_DELETE);
+            m_eventStrings.put(Integer.valueOf(DescriptorEventManager.PostInsertEvent), POST_INSERT);
+            m_eventStrings.put(Integer.valueOf(DescriptorEventManager.PostRefreshEvent), POST_REFRESH);
+            m_eventStrings.put(Integer.valueOf(DescriptorEventManager.PostUpdateEvent), POST_UPDATE);
+            m_eventStrings.put(Integer.valueOf(DescriptorEventManager.PrePersistEvent), PRE_PERSIST);
+            m_eventStrings.put(Integer.valueOf(DescriptorEventManager.PreRemoveEvent), PRE_REMOVE);
+            m_eventStrings.put(Integer.valueOf(DescriptorEventManager.PreUpdateWithChangesEvent), PRE_UPDATE_WITH_CHANGES);
+        }
     }
     
     public EntityListener(Class listenerClass, Class entityClass){
@@ -183,14 +181,14 @@ public class EntityListener extends DescriptorEventAdapter {
     /**
      * INTERNAL:
      */
-    public Map<String, List<Method>> getAllEventMethods() {
+    public Hashtable<String, List<Method>> getAllEventMethods() {
         return m_methods;
     }
     
     /**
      * INTERNAL:
      */
-    public void setAllEventMethods(Map<String, List<Method>> methods) {
+    public void setAllEventMethods(Hashtable<String, List<Method>> methods) {
         m_methods = methods;
     }
     
@@ -206,7 +204,12 @@ public class EntityListener extends DescriptorEventAdapter {
      */
     protected List<Method> getEventMethods(int eventCode) {
         String eventString = m_eventStrings.get(eventCode);
-        return eventString != null ? getEventMethods(eventString) : null;
+        
+        if (eventString != null) {
+            return getEventMethods(eventString);
+        } else {
+            return null;
+        }
     }
     
     /**
@@ -354,15 +357,14 @@ public class EntityListener extends DescriptorEventAdapter {
      * Return true if listener has a lifecycle callback method that is 
      * overridden in a subclass.
      */
-    @Override
-    public boolean isOverriddenEvent(DescriptorEvent event, List<DescriptorEventManager> eventManagers) {
+    public boolean isOverriddenEvent(DescriptorEvent event, Vector eventManagers) {
         int eventCode = event.getEventCode();
         String forSubclass = event.getDescriptor().getJavaClassName();
-        Map<Integer, Boolean> subClassMap = m_overriddenEvents.get(forSubclass);
+        Hashtable<Integer, Boolean> subClassMap = m_overriddenEvents.get(forSubclass);
         
         // If we haven't built an overridden events map for this subclass, do so now.
         if (subClassMap == null) {
-            subClassMap = new ConcurrentHashMap<>();
+            subClassMap = new Hashtable<Integer, Boolean>();
         }
         
         // Now check the individual events for this subclass.
