@@ -155,7 +155,7 @@ public abstract class CacheInterceptor implements IdentityMap {
      * Allow for the cache to be iterated on.  This method is only used during debugging when
      * validateCache() has been called to print out the contents of the cache.
      */
-    public Enumeration<Object> elements() {
+    public Enumeration elements() {
         return this.targetIdentityMap.elements();
     }
 

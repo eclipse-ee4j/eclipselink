@@ -47,7 +47,7 @@ public class NoIdentityMap extends AbstractIdentityMap {
      * Return an empty enumerator.
      */
     @Override
-    public Enumeration<Object> elements() {
+    public Enumeration elements() {
         return Collections.<Object>emptyEnumeration();
     }
 

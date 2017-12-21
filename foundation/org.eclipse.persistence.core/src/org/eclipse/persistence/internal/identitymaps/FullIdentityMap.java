@@ -91,7 +91,7 @@ public class FullIdentityMap extends AbstractIdentityMap {
      * @return {@link Enumeration} of {@link CacheKey#getObject()} instances.
      */
     @Override
-    public Enumeration<Object> elements() {
+    public Enumeration elements() {
         return new IdentityMapEnumeration(this.getCacheKeys().values());
     }
 
