@@ -100,7 +100,7 @@ public interface IdentityMap extends Cloneable{
     /**
      * Allow for the cache to be iterated on.
      */
-    public Enumeration<Object> elements();
+    public Enumeration elements();
 
     /**
      * Return the object cached in the identity map or null if it could not be found.
