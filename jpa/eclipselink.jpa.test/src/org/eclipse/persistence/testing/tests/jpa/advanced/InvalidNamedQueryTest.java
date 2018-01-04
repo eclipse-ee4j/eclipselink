@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2015  IBM Corporation. All rights reserved.
+ * Copyright (c) 2014, 2018  IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -43,6 +43,8 @@ public class InvalidNamedQueryTest extends JUnitTestCase {
             fail("Shouldn't have got here!");
         } catch (PersistenceException re) {
             // expected
+        } finally {
+            closeEntityManagerFactory();
         }
     }
 
@@ -58,6 +60,7 @@ public class InvalidNamedQueryTest extends JUnitTestCase {
             if (em != null) {
                 em.close();
             }
+            closeEntityManagerFactory();
         }
     }
 
@@ -75,6 +78,7 @@ public class InvalidNamedQueryTest extends JUnitTestCase {
             if (em != null) {
                 em.close();
             }
+            closeEntityManagerFactory();
         }
     }
 
@@ -105,6 +109,7 @@ public class InvalidNamedQueryTest extends JUnitTestCase {
             if (em != null) {
                 em.close();
             }
+            closeEntityManagerFactory();
         }
     }
 }
