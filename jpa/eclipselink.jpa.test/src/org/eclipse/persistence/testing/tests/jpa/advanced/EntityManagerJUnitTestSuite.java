@@ -4898,8 +4898,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 em2.getTransaction().commit();
             }catch (RuntimeException ex){
                 em2.getTransaction().rollback();
-                em2.close();
                 throw ex;
+            } finally {
+                em2.close();
             }
 
             commitTransaction(em);
@@ -4911,9 +4912,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            throw ex;
-        } finally {
             closeEntityManager(em);
+            throw ex;
         }
         beginTransaction(em);
         try{
