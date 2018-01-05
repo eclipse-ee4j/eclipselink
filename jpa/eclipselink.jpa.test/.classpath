@@ -7,7 +7,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.jpa"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/jpa/plugins/javax.persistence_2.2.0.v201708071007.jar" sourcepath="/ECLIPSELINK_HOME/jpa/plugins/javax.persistence.source_2.2.0.v201708071007.jar"/>
-	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.validation_1.1.0.v201304101302.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.validation.api_2.0.1.Final.jar"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.ejb_3.1.0.v201205171433.jar" sourcepath="/ECLIPSELINK_HOME/plugins/javax.ejb/src"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.transaction_1.1.0.v201002051055.jar" sourcepath="/ECLIPSELINK_HOME/plugins/javax.transaction/src"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.eclipse.persistence.antlr_3.5.2.v201711011707.jar" sourcepath="/ECLIPSELINK_HOME/plugins/org.eclipse.persistence.antlr.source_3.5.2.v201711011707.jar"/>
