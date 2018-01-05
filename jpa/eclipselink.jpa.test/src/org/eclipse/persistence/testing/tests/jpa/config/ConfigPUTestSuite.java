@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2018  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -107,7 +107,7 @@ public class ConfigPUTestSuite extends JUnitTestCase {
         mappings.addTypeConverter().setName("String2String").setDataType("String").setObjectType("String");
 
         Entity person = mappings.addEntity().setClass("Person");
-        person.setTable().setName("PERSON");
+        person.setTable().setName("CFGPU_PERSON");
         Id personId = person.addId();
         personId.setName("id").setAttributeType("Integer").setColumn().setName("P_ID");
         personId.setGeneratedValue().setStrategy("AUTO");
@@ -117,9 +117,9 @@ public class ConfigPUTestSuite extends JUnitTestCase {
         /************************** EMPLOYEE ENTITY *************************/
         /********************************************************************/
         Entity emp = mappings.addEntity().setClass("Employee").setExistenceChecking("CHECK_DATABASE");
-        emp.setTable().setName("EMPLOYEE");
-        emp.addSecondaryTable().setName("SALARY").addPrimaryKeyJoinColumn().setName("E_ID").setReferencedColumnName("EMP_ID");
-        emp.setTableGenerator().setName("EMPLOYEE_TABLE_GENERATOR").setTable("EMPLOYEE_SEQ").setPKColumnName("SEQ_NAME").setValueColumnName("SEQ_COUNT").setPKColumnValue("EMP_SEQ");
+        emp.setTable().setName("CFGPU_EMPLOYEE");
+        emp.addSecondaryTable().setName("CFGPU_SALARY").addPrimaryKeyJoinColumn().setName("E_ID").setReferencedColumnName("EMP_ID");
+        emp.setTableGenerator().setName("CFGPU_EMPLOYEE_TABLE_GENERATOR").setTable("CFGPU_EMPLOYEE_SEQ").setPKColumnName("SEQ_NAME").setValueColumnName("SEQ_COUNT").setPKColumnValue("EMP_SEQ");
         emp.addNamedQuery().setName("findAllEmployeesByFirstName").setQuery("SELECT OBJECT(employee) FROM Employee employee WHERE employee.firstName = :firstname");
         emp.setChangeTracking().setType("AUTO");
         emp.setExcludeDefaultListeners(true);
@@ -134,7 +134,7 @@ public class ConfigPUTestSuite extends JUnitTestCase {
         emp.addProperty().setName("entityIntegerProperty").setValue("1").setValueType("Integer");
 
         Id employeeId = emp.addId();
-        employeeId.setName("id").setGeneratedValue().setGenerator("EMPLOYEE_TABLE_GENERATOR").setStrategy("TABLE");
+        employeeId.setName("id").setGeneratedValue().setGenerator("CFGPU_EMPLOYEE_TABLE_GENERATOR").setStrategy("TABLE");
         employeeId.setColumn().setName("EMP_ID");
         employeeId.setConvert("String2String");
 
@@ -143,7 +143,7 @@ public class ConfigPUTestSuite extends JUnitTestCase {
         emp.addBasic().setName("sin").setAttributeType("String").setColumn().setName("SIN");
         // Access methods?
         emp.addBasic().setName("gender").setAttributeType("Gender").setConvert("sex").setColumn().setName("GENDER");
-        emp.addBasic().setName("salary").setAttributeType(Integer.class.getName()).setColumn().setTable("SALARY");
+        emp.addBasic().setName("salary").setAttributeType(Integer.class.getName()).setColumn().setTable("CFGPU_SALARY");
         emp.addBasic().setName("payScale").setAttributeType("SalaryRate").setEnumerated().setType("STRING");
 
         emp.addVersion().setName("version").setAttributeType(Integer.class.getName()).setColumn().setName("VERSION");
@@ -161,7 +161,7 @@ public class ConfigPUTestSuite extends JUnitTestCase {
 
         ManyToMany projectsMapping = emp.addManyToMany().setName("projects").setTargetEntity("Project").setOrderBy("name").setAttributeType("java.util.Collection");
         projectsMapping.setCascade().setCascadePersist();
-        JoinTable joinTable = projectsMapping.setJoinTable().setName("PROJ_EMP");
+        JoinTable joinTable = projectsMapping.setJoinTable().setName("CFGPU_PROJ_EMP");
         joinTable.addJoinColumn().setName("EMP_ID").setReferencedColumnName("EMP_ID");
         joinTable.addInverseJoinColumn().setName("PROJ_ID").setReferencedColumnName("PROJ_ID");
 
@@ -172,7 +172,7 @@ public class ConfigPUTestSuite extends JUnitTestCase {
         creditLinesMapping.addProperty().setName("attributeName").setValue("creditLines");
         creditLinesMapping.setColumn().setName("ACCOUNT");
         creditLinesMapping.setMapKeyColumn().setName("BANK");
-        creditLinesMapping.setCollectionTable().setName("EMP_CREDITLINES").addJoinColumn().setName("EMP_ID");
+        creditLinesMapping.setCollectionTable().setName("CFGPU_EMP_CREDITLINES").addJoinColumn().setName("EMP_ID");
         creditLinesMapping.setTypeConverter().setName("Long2String").setDataType("String").setObjectType("Long");
 
         ObjectTypeConverter creditLinesConverter = creditLinesMapping.setObjectTypeConverter().setName("CreditLine");
@@ -193,11 +193,11 @@ public class ConfigPUTestSuite extends JUnitTestCase {
         /********************************************************************/
         Entity address = mappings.addEntity().setClass("Address");
 
-        address.setTable().setName("ADDRESS");
+        address.setTable().setName("CFGPU_ADDRESS");
         address.setChangeTracking().setType("DEFERRED");
         address.setCacheInterceptor().setInterceptorClassName("CacheAuditor");
         address.setQueryRedirectors().setAllQueriesRedirector("DoNotRedirect").setReadAllRedirector("DoNotRedirect").setReadObjectRedirector("DoNotRedirect").setReportRedirector("DoNotRedirect").setInsertRedirector("DoNotRedirect").setUpdateRedirector("DoNotRedirect").setDeleteRedirector("DoNotRedirect");
-        address.setSequenceGenerator().setName("ADDRESS_SEQUENCE_GENERATOR").setSequenceName("ADDRESS_SEQ").setAllocationSize(25);
+        address.setSequenceGenerator().setName("CFGPU_ADDRESS_SEQUENCE_GENERATOR").setSequenceName("CFGPU_ADDRESS_SEQ").setAllocationSize(25);
 
         NamedStoredProcedureQuery query = address.addNamedStoredProcedureQuery().setName("SProcAddress").addResultClass("Address").setProcedureName("SProc_Read_Address");
         query.addParameter().setMode("IN_OUT").setName("address_id_v").setQueryParameter("ADDRESS_ID").setType("Integer");
@@ -211,7 +211,7 @@ public class ConfigPUTestSuite extends JUnitTestCase {
 
         Id addressId = address.addId();
         addressId.setName("id").setAttributeType("Integer").setColumn().setName("ADDRESS_ID");
-        addressId.setGeneratedValue().setStrategy("SEQUENCE").setGenerator("ADDRESS_SEQUENCE_GENERATOR");
+        addressId.setGeneratedValue().setStrategy("SEQUENCE").setGenerator("CFGPU_ADDRESS_SEQUENCE_GENERATOR");
 
         address.addBasic().setName("postalCode").setAttributeType("String");
         address.addBasic().setName("street").setAttributeType("String");
@@ -223,7 +223,7 @@ public class ConfigPUTestSuite extends JUnitTestCase {
         /************************ PHONENUMBER ENTITY ************************/
         /********************************************************************/
         Entity phoneNumber = mappings.addEntity().setClass("PhoneNumber").setIdClass("PhoneNumberPK");
-        phoneNumber.setTable().setName("PHONENUMBER");
+        phoneNumber.setTable().setName("CFGPU_PHONENUMBER");
 
         phoneNumber.addId().setName("id").setAttributeType("Integer").setColumn().setName("OWNER_ID").setInsertable(false).setUpdatable(false);
         phoneNumber.addId().setName("type").setAttributeType("String").setColumn().setName("TYPE");
@@ -234,26 +234,26 @@ public class ConfigPUTestSuite extends JUnitTestCase {
 
         /************************** LARGEPROJECT ENTITY **************************/
         Entity largeProject = mappings.addEntity().setClass("LargeProject").setParentClass("Project").setExistenceChecking("ASSUME_NON_EXISTENCE");
-        largeProject.setTable().setName("LPROJECT");
+        largeProject.setTable().setName("CFGPU_LPROJECT");
         largeProject.setDiscriminatorValue("L");
 
         /********************************************************************/
         /*********************** SMALLPROJECT ENTITY ************************/
         /********************************************************************/
         Entity smallProject = mappings.addEntity().setClass("SmallProject").setParentClass("Project").setExistenceChecking("ASSUME_EXISTENCE");
-        smallProject.setTable().setName("PROJECT");
+        smallProject.setTable().setName("CFGPU_PROJECT");
         smallProject.setDiscriminatorValue("S");
 
         /********************************************************************/
         /************************** PROJECT ENTITY **************************/
         /********************************************************************/
         Entity project = mappings.addEntity().setClass("Project").setExistenceChecking("CHECK_CACHE");
-        project.setTable().setName("PROJECT");
+        project.setTable().setName("CFGPU_PROJECT");
         project.setChangeTracking().setType("OBJECT");
         project.setOptimisticLocking().setType("SELECTED_COLUMNS").addSelectedColumn().setName("VERSION");
         project.setInheritance().setStrategy("JOINED");
         project.setDiscriminatorValue("P").setDiscriminatorColumn().setName("PROJ_TYPE");
-        project.setSequenceGenerator().setName("PROJECT_SEQUENCE_GENERATOR").setSequenceName("PROJECT_SEQ").setAllocationSize(10);
+        project.setSequenceGenerator().setName("CFGPU_PROJECT_SEQUENCE_GENERATOR").setSequenceName("CFGPU_PROJECT_SEQ").setAllocationSize(10);
 
         // TODO: not supported using VIRTUAL.
         //project.setPrePersist("prePersist");
@@ -266,7 +266,7 @@ public class ConfigPUTestSuite extends JUnitTestCase {
 
         Id projectId = project.addId().setName("id").setAttributeType("Integer");
         projectId.setColumn().setName("PROJ_ID");
-        projectId.setGeneratedValue().setStrategy("SEQUENCE").setGenerator("PROJECT_SEQUENCE_GENERATOR");
+        projectId.setGeneratedValue().setStrategy("SEQUENCE").setGenerator("CFGPU_PROJECT_SEQUENCE_GENERATOR");
 
         project.addBasic().setName("name").setAttributeType("String").setColumn().setName("PROJ_NAME");
         project.addBasic().setName("description").setAttributeType("String").setColumn().setName("DESCRIP");
