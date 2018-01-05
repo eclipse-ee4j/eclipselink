@@ -13,6 +13,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.core"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.moxy"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.glassfish.javax.json_1.0.4.v201311181159.jar" sourcepath="/ECLIPSELINK_HOME/plugins/org.glassfish.javax.json.source_1.0.4.v201311181159.jar"/>
-	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.validation_1.1.0.v201304101302.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.validation.api_2.0.1.Final.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

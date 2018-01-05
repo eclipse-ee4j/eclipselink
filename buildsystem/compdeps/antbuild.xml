@@ -151,7 +151,7 @@
         <property name="resource.criteria" value="[0.0.1,5.0.0)"/>
         <property name="transaction.prefix" value="javax.transaction"/>
         <property name="transaction.criteria" value="[0.0.1,5.0.0)"/>
-        <property name="validation.prefix" value="javax.validation"/>
+        <property name="validation.prefix" value="javax.validation.api"/>
         <property name="validation.criteria" value="[0.0.1,5.0.0)"/>
         <property name="servlet.prefix" value="javax.servlet"/>
         <property name="servlet.criteria" value="[0.0.1,5.0.0)"/>

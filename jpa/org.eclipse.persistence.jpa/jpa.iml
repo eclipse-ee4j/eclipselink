@@ -2,7 +2,7 @@
 <module type="JAVA_MODULE" version="4">
   <component name="EclipseModuleManager">
     <varelement var="jar://$MODULE_DIR$/../../plugins/javax.transaction_1.1.0.v201002051055.jar!/" value="MODULE_DIR/../../plugins/javax.transaction_1.1.0.v201002051055.jar" />
-    <varelement var="jar://$MODULE_DIR$/../../plugins/javax.validation_1.1.0.v201304101302.jar!/" value="MODULE_DIR/../../plugins/javax.validation_1.1.0.v201304101302.jar" />
+    <varelement var="jar://$MODULE_DIR$/../../plugins/javax.validation.api_2.0.1.Final.jar!/" value="MODULE_DIR/../../plugins/javax.validation.api_2.0.1.Final.jar" />
     <varelement var="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.asm_6.0.0.v201710052159.jar!/" value="MODULE_DIR/../../plugins/org.eclipse.persistence.asm_6.0.0.v201710052159.jar" />
     <varelement var="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.asm.source_6.0.0.v201710052159.jar!/" value="src:/MODULE_DIR/../../plugins/org.eclipse.persistence.asm.source_6.0.0.v201710052159.jar" />
     <src_description expected_position="0">
@@ -46,7 +46,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/javax.validation_1.1.0.v201304101302.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/javax.validation.api_2.0.1.Final.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

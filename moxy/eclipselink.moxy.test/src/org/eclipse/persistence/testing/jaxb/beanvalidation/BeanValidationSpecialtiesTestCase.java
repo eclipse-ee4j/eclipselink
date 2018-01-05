@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -26,6 +26,7 @@ import org.eclipse.persistence.testing.jaxb.beanvalidation.special.InheritanceAn
 import org.eclipse.persistence.testing.jaxb.beanvalidation.special.MethodAnnotatedEmployee;
 import org.eclipse.persistence.testing.jaxb.beanvalidation.special.NonConstrainedClass;
 
+import javax.validation.ClockProvider;
 import javax.validation.ConstraintValidatorFactory;
 import javax.validation.ConstraintViolation;
 import javax.validation.MessageInterpolator;
@@ -44,6 +45,7 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.time.Clock;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -372,6 +374,14 @@ public class BeanValidationSpecialtiesTestCase extends junit.framework.TestCase 
         @Override
         public void close() {
 
+        }
+
+        public ClockProvider getClockProvider() {
+            return new ClockProvider() {
+                public Clock getClock() {
+                    return Clock.systemUTC();
+                }
+            };
         }
     }
 }

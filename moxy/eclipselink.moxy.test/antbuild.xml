@@ -90,7 +90,6 @@
     <property name="javax.validation.lib" value="${moxytest.2.common.plugins.dir}/${javax.validation.jar}"/>
     <property name="validation-impl.lib" value="${extensions.depend.dir}/${validation-impl.jar}"/>
     <property name="jboss-logging.lib" value="${extensions.depend.dir}/${jboss-logging.jar}"/>
-    <property name="javax.el-api.lib" value="${extensions.depend.dir}/${javax.el-api.jar}"/>
     <property name="javax.el.lib" value="${extensions.depend.dir}/${javax.el.jar}"/>
     <property name="classmate.lib" value="${extensions.depend.dir}/${classmate.jar}"/>
     <property name="jmockit.lib" value="${extensions.depend.dir}/${jmockit.jar}"/>
@@ -100,7 +99,6 @@
         <and>
             <available file="${extensions.depend.dir}/${validation-impl.jar}"/>
             <available file="${extensions.depend.dir}/${jboss-logging.jar}"/>
-            <available file="${extensions.depend.dir}/${javax.el-api.jar}"/>
             <available file="${extensions.depend.dir}/${javax.el.jar}"/>
             <available file="${extensions.depend.dir}/${classmate.jar}"/>
         </and>
@@ -158,7 +156,6 @@
         <pathelement path="${junit.lib}"/>
         <pathelement path="${validation-impl.lib}"/>
         <pathelement path="${jboss-logging.lib}"/>
-        <pathelement path="${javax.el-api.lib}"/>
         <pathelement path="${javax.el.lib}"/>
         <pathelement path="${classmate.lib}"/>
         <pathelement path="${javax.validation.lib}"/>
@@ -230,7 +227,6 @@
         <pathelement path="${javax.validation.lib}"/>
         <pathelement path="${validation-impl.lib}"/>
         <pathelement path="${jboss-logging.lib}"/>
-        <pathelement path="${javax.el-api.lib}"/>
         <pathelement path="${javax.el.lib}"/>
         <pathelement path="${classmate.lib}"/>
     </path>

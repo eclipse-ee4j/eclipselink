@@ -171,8 +171,8 @@
                       criterion="[3.0.0,4.0.0)" property="javax.ejb.lib" includepath="true"/>
         <selectbundle basename="javax.servlet" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
                       criterion="[2.0.0,3.0.0)" property="javax.servlet.lib" includepath="true"/>
-        <selectbundle basename="javax.validation" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
-                      criterion="[1.0.0,2.0.0)" property="validation.lib" includepath="true"/>
+        <selectbundle basename="javax.validation.api" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
+                      criterion="[1.0.0,5.0.0)" property="validation.lib" includepath="true"/>
 
         <available file="${jaxb-api.lib}"           property="jaxb-api.lib.exist"/>
         <available file="${persistence20.lib}"      property="persistence20.lib.exist"/>

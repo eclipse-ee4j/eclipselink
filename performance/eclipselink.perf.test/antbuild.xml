@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!--/*******************************************************************************
-* Copyright (c) 2014, 2015 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 2014, 2018 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -99,7 +99,6 @@
     <property name="validation-impl.lib"   value="${extensions.depend.dir}/${validation-impl.jar}"/>
     <property name="jboss-logging.lib"   value="${extensions.depend.dir}/${jboss-logging.jar}"/>
     <property name="javax.el-api.lib"   value="${extensions.depend.dir}/${javax.el-api.jar}"/>
-    <property name="javax.el.lib"   value="${extensions.depend.dir}/${javax.el.jar}"/>
     <property name="classmate.lib"   value="${extensions.depend.dir}/${classmate.jar}"/>
 
     <property name="jmh-core.lib" value="${extensions.depend.dir}/${jmh-core.jar}"/>
@@ -132,7 +131,6 @@
         <pathelement path="${validation-impl.lib}"/>
         <pathelement path="${jboss-logging.lib}"/>
         <pathelement path="${javax.el-api.lib}"/>
-        <pathelement path="${javax.el.lib}"/>
         <pathelement path="${classmate.lib}"/>
         <pathelement path="${asm.lib}"/>
         <pathelement path="${json.lib}"/>
@@ -161,7 +159,6 @@
         <pathelement path="${validation-impl.lib}"/>
         <pathelement path="${jboss-logging.lib}"/>
         <pathelement path="${javax.el-api.lib}"/>
-        <pathelement path="${javax.el.lib}"/>
         <pathelement path="${classmate.lib}"/>
         <pathelement path="${asm.lib}"/>
         <pathelement path="${eclipselink.lib}"/>

@@ -16,7 +16,7 @@ set THIS=%_FIXPATH:~1%
 set CLASSPATH=%THIS%..\jlib\moxy\org.glassfish.javax.json_1.0.4.v201311181159.jar
 set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\moxy\jaxb-core_2.2.11.v201407311112.jar
 set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\moxy\jaxb-xjc_2.2.11.v201407311112.jar
-set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\moxy\javax.validation_1.1.0.v201304101302.jar
+set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\moxy\javax.validation.api_2.0.1.Final.jar
 set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\eclipselink.jar
 set JAVA_ARGS=%*
 
