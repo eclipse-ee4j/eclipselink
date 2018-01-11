@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -1204,10 +1204,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                     Employee employee = (Employee) employees.get(0);
                     employee.setFirstName("New Pessimistic Employee");
 
-
-                    HashMap properties = new HashMap();
-                    properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 0);
-                    em2.lock(employee2, LockModeType.PESSIMISTIC_READ, properties);
+                    em2.lock(employee2, LockModeType.PESSIMISTIC_READ);
                     employee2.setFirstName("Invalid Lock Employee");
 
                     commitTransaction(em2);
@@ -1259,9 +1256,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                     employee.setFirstName("New Pessimistic Employee");
 
 
-                    HashMap properties = new HashMap();
-                    properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 0);
-                    em2.lock(employee2, LockModeType.PESSIMISTIC_READ, properties);
+                    em2.lock(employee2, LockModeType.PESSIMISTIC_READ);
                     employee2.setFirstName("Invalid Lock Employee");
 
                     commitTransaction(em2);
@@ -1510,9 +1505,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                     Employee employee = (Employee) employees.get(0);
                     employee.setSalary(90000);
 
-                    HashMap properties = new HashMap();
-                    properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 0);
-                    em2.lock(employee2, LockModeType.PESSIMISTIC_WRITE, properties);
+                    em2.lock(employee2, LockModeType.PESSIMISTIC_WRITE);
                     employee2.setSalary(100000);
                     commitTransaction(em2);
                 } catch (PessimisticLockException ex) {

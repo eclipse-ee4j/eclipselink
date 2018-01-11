@@ -1043,7 +1043,7 @@ public abstract class JUnitTestCase extends TestCase {
         AbstractSession dbSession = getDatabaseSession(puName);
         if (dbSession.isBroker()) {
             for (AbstractSession memberSession : ((SessionBroker)dbSession).getSessionsByName().values()) {
-                if (!isSelectForUpateSupported(memberSession.getPlatform())) {
+                if (!isSelectForUpateNoWaitSupported(memberSession.getPlatform())) {
                     return false;
                 }
             }

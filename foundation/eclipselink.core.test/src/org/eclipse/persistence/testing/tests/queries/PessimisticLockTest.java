@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -90,7 +90,7 @@ public class PessimisticLockTest extends RefreshTest {
             boolean isLocked = false;
             Object result = null;
             try {
-                result = uow2.refreshAndLockObject(employeeObject, org.eclipse.persistence.queries.ObjectBuildingQuery.LOCK_NOWAIT);
+                result = uow2.refreshAndLockObject(employeeObject, (short) lockMode);
             } catch (EclipseLinkException exeception) {
                 session2.logMessage(exeception.toString());
                 isLocked = true;
