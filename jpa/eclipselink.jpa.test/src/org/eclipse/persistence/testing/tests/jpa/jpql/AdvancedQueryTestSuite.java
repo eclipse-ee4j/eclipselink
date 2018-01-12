@@ -166,6 +166,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             suite.addTest(new AdvancedQueryTestSuite("testVersionChangeWithWriteLock"));
             suite.addTest(new AdvancedQueryTestSuite("testNamedQueryAnnotationOverwritePersistenceXML"));
         }
+        suite.addTest(new AdvancedQueryTestSuite("testTearDown"));
         return suite;
     }
 
@@ -197,6 +198,10 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
 
         //Persist the examples in the database
         inheritancePopulator.persistExample(session);
+    }
+
+    public void testTearDown() {
+        JUnitTestCase.closeEntityManagerFactory(getPersistenceUnitName());
     }
 
     /**
@@ -983,7 +988,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                 rollbackTransaction(em2);
                 throw ex;
             } finally {
-                closeEntityManager(em2);
+                closeEntityManagerAndTransaction(em2);
             }
 
             try {
@@ -1045,6 +1050,8 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                 rollbackTransaction(em2);
                 closeEntityManager(em2);
                 throw ex;
+            } finally {
+                closeEntityManagerAndTransaction(em2);
             }
 
             commitTransaction(em);
@@ -1060,6 +1067,8 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             closeEntityManager(em);
 
             throw ex;
+        } finally {
+            closeEntityManagerAndTransaction(em);
         }
 
         assertFalse("Proper exception not thrown when Query with LockModeType.WRITE is used.", optimisticLockException == null);
@@ -1097,7 +1106,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                     rollbackTransaction(em2);
                     throw ex;
                 } finally {
-                    closeEntityManager(em2);
+                    closeEntityManagerAndTransaction(em2);
                 }
 
                 try {
@@ -1155,8 +1164,9 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                     commitTransaction(em2);
                 } catch (RuntimeException ex) {
                     rollbackTransaction(em2);
-                    closeEntityManager(em2);
                     throw ex;
+                } finally {
+                    closeEntityManagerAndTransaction(em2);
                 }
 
                 commitTransaction(em);
@@ -1172,6 +1182,8 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                 closeEntityManager(em);
 
                 throw ex;
+            } finally {
+                closeEntityManagerAndTransaction(em);
             }
 
             assertFalse("Proper exception not thrown when Query with LockModeType.WRITE is used.", optimisticLockException == null);
