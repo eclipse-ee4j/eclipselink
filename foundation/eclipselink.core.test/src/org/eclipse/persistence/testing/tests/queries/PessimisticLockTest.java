@@ -48,9 +48,8 @@ public class PessimisticLockTest extends RefreshTest {
             throw new TestWarningException("This database does not support FOR UPDATE on multiple tables");
         }
 
-        if (this.lockMode == ObjectBuildingQuery.LOCK_NOWAIT) {
-            checkNoWaitSupported();
-        }
+        //Object locking is done using ObjectBuildingQuery.LOCK_NOWAIT
+        checkNoWaitSupported();
 
         uow = getSession().acquireUnitOfWork();
         this.employeeObject = (Employee)uow.registerObject(employeeObject);
@@ -73,7 +72,7 @@ public class PessimisticLockTest extends RefreshTest {
         responsibilityListSize = employeeObject.getResponsibilitiesList().size();
         employeeObject.getResponsibilitiesList().removeAllElements();
 
-        uow.refreshAndLockObject(employeeObject, (short)this.lockMode);
+        uow.refreshAndLockObject(employeeObject, org.eclipse.persistence.queries.ObjectBuildingQuery.LOCK_NOWAIT);
 
         // Test the lock.
         DatabaseSession session2 = null;
