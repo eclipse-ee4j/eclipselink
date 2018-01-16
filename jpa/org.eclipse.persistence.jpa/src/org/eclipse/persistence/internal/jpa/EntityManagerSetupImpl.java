@@ -76,6 +76,8 @@
  *       - 426852: @GeneratedValue(strategy=GenerationType.IDENTITY) support in Oracle 12c
  *     09/14/2017-2.6 Will Dazey
  *       - 522312: Add the eclipselink.sequencing.start-sequence-at-nextval property
+ *     01/16/2018-2.7 Joe Grassel
+ *       - 529907: EntityManagerSetupImpl.addBeanValidationListeners() should fall back on old method for finding helperClass
  *****************************************************************************/
 package org.eclipse.persistence.internal.jpa;
 
@@ -1976,7 +1978,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                         //bug:299926 - Case insensitive table / column matching with native SQL queries
                         EntityManagerSetupImpl.updateCaseSensitivitySettings(predeployProperties, processor.getProject(), session);
                     }
-                    
+
                     // Set the shared cache mode to the javax.persistence.sharedCache.mode property value.
                     updateSharedCacheMode(predeployProperties);
 
@@ -3631,10 +3633,24 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             Class helperClass;
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                    helperClass = AccessController.doPrivileged(
+                    try {
+                        helperClass = AccessController.doPrivileged(
                             new PrivilegedClassForName(helperClassName, true, appClassLoader));
+                    } catch (Throwable t) {
+                        // Try the ClassLoader that loaded Eclipselink classes
+                        ClassLoader eclipseLinkClassLoader = EntityManagerSetupImpl.class.getClassLoader();
+                        helperClass = AccessController.doPrivileged(
+                                new PrivilegedClassForName(helperClassName, true, eclipseLinkClassLoader));
+                    }
                 } else {
-                    helperClass = PrivilegedAccessHelper.getClassForName(helperClassName, true, appClassLoader);
+                    try {
+                        helperClass = PrivilegedAccessHelper.getClassForName(helperClassName, true, appClassLoader);
+                    } catch (Throwable t) {
+                        // Try the ClassLoader that loaded Eclipselink classes
+                        ClassLoader eclipseLinkClassLoader = EntityManagerSetupImpl.class.getClassLoader();
+                        helperClass = PrivilegedAccessHelper.getClassForName(helperClassName, true, eclipseLinkClassLoader);
+                    }
+
                 }
                 BeanValidationInitializationHelper beanValidationInitializationHelper = (BeanValidationInitializationHelper)helperClass.newInstance();
                 beanValidationInitializationHelper.bootstrapBeanValidation(puProperties, session, appClassLoader);
