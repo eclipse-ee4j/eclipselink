@@ -19,6 +19,10 @@ import static org.ops4j.pax.exam.CoreOptions.cleanCaches;
 import static org.ops4j.pax.exam.CoreOptions.junitBundles;
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.options;
+import static org.ops4j.pax.exam.CoreOptions.vmOptions;
+import static org.ops4j.pax.exam.CoreOptions.when;
+
+import org.eclipse.persistence.internal.helper.JavaSEPlatform;
 
 /**
  * Helper class with PAX options for different kind of OSGi tests.
@@ -38,6 +42,7 @@ public class OSGITestHelper {
 
     public static Option[] getDefaultOptions() {
         return options(
+                when(JavaSEPlatform.CURRENT.getMajor() >= 9).useOptions(vmOptions("--add-modules", "java.sql,java.xml.bind")),
                 // JAXB API
                 bundle("file:" + PLUGINS_DIR + JAXB_API_JAR),
 
@@ -55,12 +60,11 @@ public class OSGITestHelper {
 
     public static Option[] getOptionsWithBeanValidation() {
         return options(
+                when(JavaSEPlatform.CURRENT.getMajor() >= 9).useOptions(vmOptions("--add-modules", "java.sql,java.xml.bind")),
                 mavenBundle().groupId("org.hibernate.validator").artifactId("hibernate-validator").version("6.0.7.Final"),
                 mavenBundle().groupId("com.fasterxml").artifactId("classmate").version("1.3.1"),
                 mavenBundle().groupId("org.glassfish").artifactId("javax.el").version("3.0.1-b08"),
                 mavenBundle().groupId("org.jboss.logging").artifactId("jboss-logging").version("3.3.0.Final"),
-                mavenBundle().groupId("org.apache.logging.log4j").artifactId("log4j-api").version("2.3"),
-                mavenBundle().groupId("org.apache.logging.log4j").artifactId("log4j-core").version("2.3"),
 
                 // JAXB API
                 bundle("file:" + PLUGINS_DIR + JAXB_API_JAR),
