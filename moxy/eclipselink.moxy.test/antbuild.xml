@@ -353,6 +353,7 @@
         <echo message="    -Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
         <echo message="    -Dmaven.home=${M2_HOME}"/>
         <echo message="    -Dbuild.qualifier=${version.qualifier}"/>
+        <echo message="    -Drelease.version=${release.version}"/>
         <java jvm="${test.junit.jvm.exec}" dir="${basedir}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
             <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
             <jvmarg value="-Dmaven.home=${M2_HOME}"/>
