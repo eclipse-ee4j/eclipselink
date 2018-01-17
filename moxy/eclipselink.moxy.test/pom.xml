@@ -13,26 +13,17 @@
         <exam.version>4.11.0</exam.version>
         <url.version>2.5.2</url.version>
         <logback.version>1.1.3</logback.version>
-        <release.version>2.7.2</release.version>
-        <version.qualifier>qualifier</version.qualifier>
+        <eclipselink.version>2.7.2-SNAPSHOT</eclipselink.version>
     </properties>
 
     <dependencies>
         <!-- EclipseLink -->
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
-            <artifactId>core</artifactId>
-            <version>${release.version}-SNAPSHOT</version>
+            <artifactId>eclipselink</artifactId>
+            <version>${eclipselink.version}</version>
             <scope>system</scope>
-            <systemPath>${basedir}/../../plugins/org.eclipse.persistence.core_${release.version}.${version.qualifier}.jar</systemPath>
-        </dependency>
-
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>moxy</artifactId>
-            <version>${release.version}-SNAPSHOT</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/../../plugins/org.eclipse.persistence.moxy_${release.version}.${version.qualifier}.jar</systemPath>
+            <systemPath>${basedir}/../../eclipselink.jar</systemPath>
         </dependency>
 
         <!-- Bean validation API -->
