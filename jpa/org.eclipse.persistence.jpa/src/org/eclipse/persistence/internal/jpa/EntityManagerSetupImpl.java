@@ -78,6 +78,8 @@
  *       - 522312: Add the eclipselink.sequencing.start-sequence-at-nextval property
  *     10/24/2017-3.0 Tomas Kraus
  *       - 526419: Modify EclipseLink to reflect changes in JTA 1.1.
+ *     01/16/2018-2.7 Joe Grassel
+ *       - 529907: EntityManagerSetupImpl.addBeanValidationListeners() should fall back on old method for finding helperClass
  *****************************************************************************/
 package org.eclipse.persistence.internal.jpa;
 
@@ -3672,10 +3674,22 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             Class helperClass;
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                    helperClass = AccessController.doPrivileged(
-                            new PrivilegedClassForName(helperClassName, true, appClassLoader));
+                    try {
+                        helperClass = AccessController.doPrivileged(
+                                new PrivilegedClassForName(helperClassName, true, appClassLoader));
+                    } catch (Throwable t) {
+                        // Try the ClassLoader that loaded Eclipselink classes
+                        ClassLoader eclipseLinkClassLoader = EntityManagerSetupImpl.class.getClassLoader();
+                        helperClass = AccessController.doPrivileged(new PrivilegedClassForName(helperClassName, true, eclipseLinkClassLoader));
+                    }                   
                 } else {
-                    helperClass = PrivilegedAccessHelper.getClassForName(helperClassName, true, appClassLoader);
+                    try {
+                        helperClass = PrivilegedAccessHelper.getClassForName(helperClassName, true, appClassLoader);
+                    } catch (Throwable t) {
+                        // Try the ClassLoader that loaded Eclipselink classes
+                        ClassLoader eclipseLinkClassLoader = EntityManagerSetupImpl.class.getClassLoader();
+                        helperClass = PrivilegedAccessHelper.getClassForName(helperClassName, true, eclipseLinkClassLoader);
+                    }                   
                 }
                 BeanValidationInitializationHelper beanValidationInitializationHelper = (BeanValidationInitializationHelper)helperClass.newInstance();
                 beanValidationInitializationHelper.bootstrapBeanValidation(puProperties, session, appClassLoader);
