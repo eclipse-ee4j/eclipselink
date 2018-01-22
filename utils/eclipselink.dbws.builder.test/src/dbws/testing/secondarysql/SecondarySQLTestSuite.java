@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -69,7 +69,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 //EclipseLink imports
-import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.dbws.ProviderHelper;
 import org.eclipse.persistence.internal.helper.ConversionManager;
@@ -84,7 +83,6 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLLogin;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.platform.xml.XMLComparer;
@@ -105,7 +103,6 @@ import static org.eclipse.persistence.tools.dbws.DBWSBuilder.SESSIONS_FILENAME_K
 import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.noArchive;
 import static org.eclipse.persistence.tools.dbws.Util.DOM_PLATFORM_CLASSNAME;
 import static org.eclipse.persistence.tools.dbws.Util.OR_PRJ_SUFFIX;
-import static org.eclipse.persistence.tools.dbws.Util.TYPE_STR;
 import static org.eclipse.persistence.tools.dbws.XRPackager.__nullStream;
 
 //domain-specific (test) imports
@@ -510,9 +507,9 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
      static final String COUNT_RESPONSE_MSG =
          "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
          "<SOAP-ENV:Header/>" +
-         "<SOAP-ENV:Body>" +
-           "<srvc:countSecondaryResponse xmlns=\"" + SECONDARY_NAMESPACE +
-                   "\" xmlns:srvc=\"" + SECONDARY_SERVICE_NAMESPACE + "\">" +
+         "<SOAP-ENV:Body xmlns=\"" + SECONDARY_NAMESPACE +
+                  "\" xmlns:srvc=\"" + SECONDARY_SERVICE_NAMESPACE + "\">" +
+           "<srvc:countSecondaryResponse>" +
              "<srvc:result>" +
                "<secondaryAggregate>" +
                  "<count>14</count>" +
@@ -563,9 +560,9 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
      static final String ALL_RESPONSE_MSG =
        "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
          "<SOAP-ENV:Header/>" +
-         "<SOAP-ENV:Body>" +
-           "<srvc:allSecondaryResponse xmlns=\"" + SECONDARY_NAMESPACE +
-               "\" xmlns:srvc=\"" + SECONDARY_SERVICE_NAMESPACE + "\">" +
+         "<SOAP-ENV:Body xmlns=\"" + SECONDARY_NAMESPACE +
+                 "\" xmlns:srvc=\"" + SECONDARY_SERVICE_NAMESPACE + "\">" +
+           "<srvc:allSecondaryResponse>" +
              "<srvc:result>" +
                 "<secondaryType>" +
                   "<empno>7369</empno>" +
