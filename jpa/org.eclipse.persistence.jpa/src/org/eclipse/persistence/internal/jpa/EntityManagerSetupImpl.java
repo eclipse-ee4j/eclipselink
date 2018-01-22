@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -205,6 +205,7 @@ import org.eclipse.persistence.internal.jpa.metamodel.proxy.SingularAttributePro
 import org.eclipse.persistence.internal.jpa.weaving.PersistenceWeaver;
 import org.eclipse.persistence.internal.jpa.weaving.TransformerFactory;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
+import org.eclipse.persistence.internal.localization.LoggingLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredField;
@@ -1655,14 +1656,17 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      */
     public synchronized ClassTransformer predeploy(PersistenceUnitInfo info, Map extendedProperties) {
         ClassLoader classLoaderToUse = null;
+        // session == null
         if (state == STATE_DEPLOY_FAILED || state == STATE_UNDEPLOYED) {
             throw new PersistenceException(EntityManagerSetupException.cannotPredeploy(persistenceUnitInfo.getPersistenceUnitName(), state, persistenceException));
         }
+        // session != null
         if (state == STATE_PREDEPLOYED || state == STATE_DEPLOYED || state == STATE_HALF_DEPLOYED) {
             session.log(SessionLog.FINEST, SessionLog.JPA, "predeploy_begin", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state, factoryCount});
             factoryCount++;
             session.log(SessionLog.FINEST, SessionLog.JPA, "predeploy_end", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state, factoryCount});
             return null;
+        // session == null
         } else if (state == STATE_INITIAL) {
             persistenceUnitInfo = info;
             if (!isCompositeMember()) {
@@ -1675,11 +1679,9 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     }
                 }
             }
-        } else if (state == STATE_HALF_PREDEPLOYED_COMPOSITE_MEMBER) {
-            session.log(SessionLog.FINEST, SessionLog.JPA, "predeploy_begin", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state + " " + mode, factoryCount});
         }
         
-        // state is INITIAL or PREDEPLOY_FAILED or STATE_HALF_PREDEPLOYED_COMPOSITE_MEMBER
+        // state is INITIAL or PREDEPLOY_FAILED or STATE_HALF_PREDEPLOYED_COMPOSITE_MEMBER, session == null
         try {
             // properties not used in STATE_HALF_PREDEPLOYED_COMPOSITE_MEMBER
             Map predeployProperties = null;
@@ -2027,7 +2029,22 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             state = STATE_PREDEPLOY_FAILED;
             // cache this.persistenceException before slow logging
             PersistenceException persistenceEx = createPredeployFailedPersistenceException(ex);
-            session.log(SessionLog.FINEST, SessionLog.JPA, "predeploy_end", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state, factoryCount});
+            // If session exists, use it for logging
+            if (session != null) {
+                session.log(SessionLog.FINEST, SessionLog.JPA, "predeploy_end", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state, factoryCount});
+            // If at least staticWeaveInfo exists, use it for logging
+            } else if (staticWeaveInfo != null && staticWeaveInfo.getLogLevel() <= SessionLog.FINEST) {
+                Writer logWriter = staticWeaveInfo.getLogWriter();
+                if (logWriter != null) {
+                    String message = LoggingLocalization.buildMessage("predeploy_end", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), "N/A", state, factoryCount});
+                    try {
+                        logWriter.write(message);
+                        logWriter.write(Helper.cr());
+                    } catch (IOException ioex) {
+                        // Ignore IOException
+                    }
+                }
+            }
             session = null;
             mode = null;
             throw persistenceEx;
