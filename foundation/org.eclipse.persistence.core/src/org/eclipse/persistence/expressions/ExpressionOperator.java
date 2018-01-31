@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -12,6 +12,8 @@
  *     Markus Karg - allow arguments to be specified multiple times in argumentIndices
  *     05/07/2009-1.1.1 Dave Brosius 
  *       - 263904: [PATCH] ExpressionOperator doesn't compare arrays correctly
+ *     01/23/2018-2.6 Will Dazey
+ *       - 530214: trim operation should not bind parameters
  ******************************************************************************/  
 package org.eclipse.persistence.expressions;
 
@@ -3041,6 +3043,7 @@ public class ExpressionOperator implements Serializable {
         exOperator.printsAs(v);
         exOperator.bePrefix();
         exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        exOperator.setIsBindingSupported(false);
         return exOperator;
     }
 

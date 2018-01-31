@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     01/23/2018-2.6 Will Dazey
+ *       - 530214: trim operation should not bind parameters
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.jpql;
 
@@ -3135,6 +3137,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
                 "SELECT CONCAT(e.firstName, 'b') FROM Employee e",
                 "SELECT SUBSTRING(e.firstName, 1, 2) FROM Employee e",
                 "SELECT TRIM(e.firstName) FROM Employee e",
+                "SELECT TRIM('A' FROM e.firstName) FROM Employee e",
                 "SELECT TRIM(LEADING FROM e.firstName) FROM Employee e",
                 "SELECT TRIM(TRAILING FROM e.firstName) FROM Employee e",
                 "SELECT TRIM(LEADING 'A' FROM e.firstName) FROM Employee e",
