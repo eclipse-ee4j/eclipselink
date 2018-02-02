@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016, 2017 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 2016, 2018 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,7 +12,7 @@
  *      11/07/2017 - Dalia Abo Sheasha
  *        - 526957 : Split the logging and trace messages
  ******************************************************************************/
-package org.eclipse.persistence.testing.tests.localization;
+package org.eclipse.persistence.testing.tests.junit.localization;
 
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -26,29 +26,13 @@ import org.eclipse.persistence.internal.localization.i18n.LoggingLocalizationRes
 import org.eclipse.persistence.internal.localization.i18n.ToStringLocalizationResource;
 import org.eclipse.persistence.internal.localization.i18n.TraceLocalizationResource;
 import org.eclipse.persistence.testing.framework.ReflectionHelper;
+import org.junit.Assert;
 import org.junit.Test;
-
-import junit.framework.TestCase;
 
 /**
  * Unit tests for EclipseLink logging messages resource bundles.
  */
-public class LocalizationResourcesTest extends TestCase {
-
-    /**
-     * Creates an instance of jUnit tests for EclipseLink logging categories enumeration.
-     */
-    public LocalizationResourcesTest() {
-        super();
-    }
-
-    /**
-     * Creates an instance of jUnit tests for EclipseLink logging categories enumeration.
-     * @param name jUnit test name.
-     */
-    public LocalizationResourcesTest(final String name) {
-        super(name);
-    }
+public class LocalizationResourcesTest {
 
     /**
      * Build message with list content.
@@ -93,7 +77,7 @@ public class LocalizationResourcesTest extends TestCase {
             Object instance = ReflectionHelper.getInstance(c, new Class[] {}, new Object[] {});
             bundle = (Object[][])ReflectionHelper.invokeMethod("getContents", instance, new Class[] {}, new Object[] {});
         } catch (ReflectiveOperationException | SecurityException e) {
-            fail("Could not access " + bundleName + "#getContents()");
+            Assert.fail("Could not access " + bundleName + "#getContents()");
             bundle = null;
         }
         if (bundle != null) {
@@ -116,10 +100,10 @@ public class LocalizationResourcesTest extends TestCase {
             }
         }
         if (nonStringKeys.size() > 0) {
-            fail(buildMessageWithList("Non String key found in bundle: ", nonStringKeys));
+            Assert.fail(buildMessageWithList("Non String key found in bundle: ", nonStringKeys));
         }
         if (duplicateKeys.size() > 0) {
-            fail(buildMessageWithList("Duplicate bundle keys found: ", duplicateKeys));
+            Assert.fail(buildMessageWithList("Duplicate bundle keys found: ", duplicateKeys));
         }
     }
 

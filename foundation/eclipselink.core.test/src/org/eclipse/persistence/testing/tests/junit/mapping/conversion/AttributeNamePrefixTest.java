@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -11,11 +11,10 @@
  *     11/06/2014-2.6 Tomas Kraus
  *       - 449818: Initial API and implementation.
  ******************************************************************************/
-package org.eclipse.persistence.testing.tests.mapping.conversion;
-
-import junit.framework.TestCase;
+package org.eclipse.persistence.testing.tests.junit.mapping.conversion;
 
 import org.eclipse.persistence.internal.mappings.converters.AttributeNamePrefix;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -23,7 +22,7 @@ import org.junit.Test;
  * in {@link org.eclipse.persistence.testing.tests.mapping.MappingTestModel} test model.
  * @author Tomas Kraus
  */
-public class AttributeNamePrefixTest extends TestCase {
+public class AttributeNamePrefixTest {
 
     /** All valid attribute name prefixes names. */
     private static final String[] NAMES = new String[AttributeNamePrefix.LENGTH];
@@ -58,24 +57,24 @@ public class AttributeNamePrefixTest extends TestCase {
         // Verify valid attribute name prefixes names.
         for (int i = 0; i < AttributeNamePrefix.LENGTH; i++) {
             AttributeNamePrefix prefix = AttributeNamePrefix.toValue(NAMES[i]);
-            assertNotNull("No attribute prefix enumeration value was found.", prefix);
+            Assert.assertNotNull("No attribute prefix enumeration value was found.", prefix);
         }
         // Verify invalid attribute name prefixes names (1st letter of valid name is capital).
         for (int i = 0; i < AttributeNamePrefix.LENGTH; i++) {
             AttributeNamePrefix prefix = AttributeNamePrefix.toValue(wrongValuesFirstLetter[i]);
             if (i == 0) {
-                assertNotNull("No attribute prefix enumeration value was found for NULL name.", prefix);
+                Assert.assertNotNull("No attribute prefix enumeration value was found for NULL name.", prefix);
             } else {
-                assertNull("Attribute prefix enumeration value was found for invalid name.", prefix);
+                Assert.assertNull("Attribute prefix enumeration value was found for invalid name.", prefix);
             }
         }
         // Verify invalid attribute name prefixes names (all letters are upper case).
         for (int i = 0; i < AttributeNamePrefix.LENGTH; i++) {
             AttributeNamePrefix prefix = AttributeNamePrefix.toValue(wrongValuesFirstLetter[i]);
             if (i == 0) {
-                assertNotNull("No attribute prefix enumeration value was found for NULL name.", prefix);
+                Assert.assertNotNull("No attribute prefix enumeration value was found for NULL name.", prefix);
             } else {
-                assertNull("Attribute prefix enumeration value was found for invalid name.", prefix);
+                Assert.assertNull("Attribute prefix enumeration value was found for invalid name.", prefix);
             }
         }
     }

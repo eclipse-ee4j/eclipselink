@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -10,7 +10,7 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/
-package org.eclipse.persistence.testing.tests.sessionsxml;
+package org.eclipse.persistence.testing.tests.junit.sessionsxml;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -24,8 +24,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CountDownLatch;
-
-import junit.framework.TestCase;
 
 import org.eclipse.persistence.exceptions.ServerPlatformException;
 import org.eclipse.persistence.logging.DefaultSessionLog;
@@ -43,13 +41,12 @@ import org.junit.Test;
 /**
  * Tests the API from SessionManager.
  */
-public class SessionManagerTest extends TestCase {
+public class SessionManagerTest {
 
     private List<ServerPlatformDetector> detectors;
     private SessionLog originalLogger;
 
     @Before
-    @Override
     public void setUp() {
         originalLogger = (SessionLog) getField(SessionManager.class, "LOG", null);
         SessionLog log = new LogWrapper();
@@ -58,7 +55,6 @@ public class SessionManagerTest extends TestCase {
     }
 
     @After
-    @Override
     public void tearDown() {
         if (detectors != null) {
             for (Iterator<ServerPlatformDetector> i = detectors.iterator(); i.hasNext();) {
@@ -164,11 +160,11 @@ public class SessionManagerTest extends TestCase {
         reinitManager(true, false);
         SessionManager sm = SessionManager.getManager();
         LogWrapper logger = (LogWrapper) getField(SessionManager.class, "LOG", null);
-        assertEquals(SessionLog.WARNING, logger.getLastLevel());
-        assertEquals(SessionLog.CONNECTION, logger.getLastCategory());
+        Assert.assertEquals(SessionLog.WARNING, logger.getLastLevel());
+        Assert.assertEquals(SessionLog.CONNECTION, logger.getLastCategory());
         Throwable t = logger.getLastThrowable();
-        assertTrue("invalid excpetion type: " + t, t instanceof ServerPlatformException);
-        assertTrue("invalid excpetion type: " + t.getCause(), t.getCause() instanceof ClassNotFoundException);
+        Assert.assertTrue("invalid excpetion type: " + t, t instanceof ServerPlatformException);
+        Assert.assertTrue("invalid excpetion type: " + t.getCause(), t.getCause() instanceof ClassNotFoundException);
     }
 
     @Test
@@ -179,10 +175,10 @@ public class SessionManagerTest extends TestCase {
             reinitManager(true, true);
             SessionManager sm = SessionManager.getManager();
             LogWrapper logger = (LogWrapper) getField(SessionManager.class, "LOG", null);
-            assertEquals(SessionLog.WARNING, logger.getLastLevel());
-            assertEquals(SessionLog.CONNECTION, logger.getLastCategory());
+            Assert.assertEquals(SessionLog.WARNING, logger.getLastLevel());
+            Assert.assertEquals(SessionLog.CONNECTION, logger.getLastCategory());
             Throwable t = logger.getLastThrowable();
-            assertTrue("invalid excpetion type: " + t, t instanceof ServerPlatformException);
+            Assert.assertTrue("invalid excpetion type: " + t, t instanceof ServerPlatformException);
         } finally {
             Platform.forceNPE = false;
         }
