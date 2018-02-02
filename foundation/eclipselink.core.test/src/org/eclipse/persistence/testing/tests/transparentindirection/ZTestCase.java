@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -44,18 +44,18 @@ public class ZTestCase extends AutoVerifyTestCase {
             return;
         }
         if (expected.size() != actual.size()) {
-            this.assertTrue(this.notEqualsMessage(message, expected, actual), false);
+            assertTrue(notEqualsMessage(message, expected, actual), false);
         }
         for (int i = 0; i < expected.size(); i++) {
             Object e1 = expected.elementAt(i);
             Object e2 = actual.elementAt(i);
             if (e1 == null) {// avoid null pointer exception
                 if (e2 != null) {
-                    this.assertTrue(this.notEqualsMessage(message, expected, actual), false);
+                    assertTrue(notEqualsMessage(message, expected, actual), false);
                 }
             } else {
                 if (!e1.equals(e2)) {
-                    this.assertTrue(this.notEqualsMessage(message, expected, actual), false);
+                    assertTrue(notEqualsMessage(message, expected, actual), false);
                 }
             }
         }
@@ -78,23 +78,23 @@ public class ZTestCase extends AutoVerifyTestCase {
      * @param expected the expected value of an vector
      * @param actual the actual value of an vector
      */
-    protected void assertUnorderedElementsEqual(String message, Vector expected, Vector actual) {
+    protected static void assertUnorderedElementsEqual(String message, Vector expected, Vector actual) {
         if (expected == actual) {
             return;
         }
         if (expected.size() != actual.size()) {
-            this.assertTrue(this.notEqualsMessage(message, expected, actual), false);
+            assertTrue(notEqualsMessage(message, expected, actual), false);
         }
         Vector temp = (Vector)actual.clone();
         for (int i = 0; i < expected.size(); i++) {
             Object e1 = expected.elementAt(i);
             if (e1 == null) {// avoid null pointer exception
-                if (!this.removeNullElement(temp)) {
-                    this.assertTrue(this.notEqualsMessage(message, expected, actual), false);
+                if (!removeNullElement(temp)) {
+                    assertTrue(notEqualsMessage(message, expected, actual), false);
                 }
             } else {
                 if (!temp.removeElement(e1)) {
-                    this.assertTrue(this.notEqualsMessage(message, expected, actual), false);
+                    assertTrue(notEqualsMessage(message, expected, actual), false);
                 }
             }
         }
@@ -106,8 +106,8 @@ public class ZTestCase extends AutoVerifyTestCase {
      * @param expected the expected value of an vector
      * @param actual the actual value of an vector
      */
-    protected void assertUnorderedElementsEqual(Vector expected, Vector actual) {
-        this.assertUnorderedElementsEqual("", expected, actual);
+    public static void assertUnorderedElementsEqual(Vector expected, Vector actual) {
+        assertUnorderedElementsEqual("", expected, actual);
     }
 
     /**
@@ -153,7 +153,7 @@ public class ZTestCase extends AutoVerifyTestCase {
      * Return a nicely formatted message for when the actual value did not
      * equal the expected one.
      */
-    protected String notEqualsMessage(String message, Object expected, Object actual) {
+    public static String notEqualsMessage(String message, Object expected, Object actual) {
         StringBuffer buffer = new StringBuffer(250);
         if ((message != null) && (message.length() != 0)) {
             buffer.append(message);
@@ -172,7 +172,7 @@ public class ZTestCase extends AutoVerifyTestCase {
      * Return true if a null element was found and removed.
      * Return false if a null element was not found.
      */
-    private boolean removeNullElement(Vector v) {
+    private static boolean removeNullElement(Vector v) {
         for (int i = 0; i < v.size(); i++) {
             if (v.elementAt(i) == null) {
                 v.removeElementAt(i);

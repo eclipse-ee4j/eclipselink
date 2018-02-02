@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -10,21 +10,25 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/
-package org.eclipse.persistence.testing.tests.transparentindirection;
+package org.eclipse.persistence.testing.tests.junit.transparentindirection;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Vector;
 import java.util.stream.StreamSupport;
-
-import junit.framework.TestSuite;
 
 import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
 import org.eclipse.persistence.indirection.IndirectCollectionsFactory;
@@ -33,12 +37,22 @@ import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.indirection.QueryBasedValueHolder;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
+import org.eclipse.persistence.testing.tests.transparentindirection.TestSession;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 /**
  * Test a simple IndirectList.
  * @author: Big Country
  */
-public class IndirectListTestAPI extends ZTestCase {
+@RunWith(Parameterized.class)
+public class IndirectListTest {
+
+    public static final class L<E> extends IndirectList<E> {}
 
     private Vector<String> list;
     private IndirectList<String> testList;
@@ -46,36 +60,24 @@ public class IndirectListTestAPI extends ZTestCase {
     private Class<? extends IndirectList> cls;
     private boolean useListener;
 
-    /**
-     * Constructor
-     * @param name java.lang.String
-     */
-    public IndirectListTestAPI(String name) {
-        this(name, null, true);
+    @Parameters(name = "{0}, {1}")
+    public static Collection<Object[]> data() {
+        return Arrays.asList(new Object[][] {
+                 { IndirectList.class, true }, { IndirectList.class, false }, { L.class, true }, { L.class, false }
+           });
     }
 
-    public IndirectListTestAPI(String name, Class<? extends IndirectList> cls, boolean useListener) {
-        super(name);
+    public IndirectListTest(Class<? extends IndirectList> cls, boolean useListener) {
         this.cls = cls;
         this.useListener = useListener;
-    }
-
-    public static TestSuite getTestSuiteFor(Class<? extends IndirectList> cls, boolean useListener) {
-        ZTestSuite ts = new ZTestSuite("Suite for " + cls.getName() + "(useListener: " + useListener + ")");
-        Enumeration<String> tests = ts.methodNamesStartingWithTestFor(IndirectListTestAPI.class);
-        while (tests.hasMoreElements()) {
-            ts.addTest(new IndirectListTestAPI(tests.nextElement(), cls, useListener));
-        }
-        return ts;
     }
 
     /**
      * set up the test fixture:
      * 1. an IndirectList based on a Vector
      */
-    @Override
-    protected void setUp() {
-        super.setUp();
+    @Before
+    public void setUp() {
         list = setUpList();
         Object temp = new Vector<>(list);
 
@@ -114,14 +116,14 @@ public class IndirectListTestAPI extends ZTestCase {
     /**
      * nothing for now...
      */
-    @Override
-    protected void tearDown() {
-        super.tearDown();
+    @After
+    public void tearDown() {
         if (useListener) {
             testListLsn.events.clear();
         }
     }
 
+    @Test
     public void testAdd1() {
         String temp = "foo";
 
@@ -132,6 +134,7 @@ public class IndirectListTestAPI extends ZTestCase {
         assertAddEvents(1);
     }
 
+    @Test
     public void testAdd2() {
         String temp = "foo";
 
@@ -142,6 +145,7 @@ public class IndirectListTestAPI extends ZTestCase {
         assertAddEvents(1);
     }
 
+    @Test
     public void testAddAll1() {
         Vector temp = new Vector();
         temp.addElement("foo");
@@ -154,6 +158,7 @@ public class IndirectListTestAPI extends ZTestCase {
         assertAddEvents(2);
     }
 
+    @Test
     public void testAddAll2() {
         Vector temp = new Vector();
         temp.addElement("foo");
@@ -166,6 +171,7 @@ public class IndirectListTestAPI extends ZTestCase {
         assertAddEvents(2);
     }
 
+    @Test
     public void testAddElement() {
         String temp = "foo";
         list.addElement(temp);
@@ -175,6 +181,7 @@ public class IndirectListTestAPI extends ZTestCase {
         assertAddEvents(1);
     }
 
+    @Test
     public void testClear() {
         int originalSize = testList.size();
         list.clear();
@@ -185,58 +192,69 @@ public class IndirectListTestAPI extends ZTestCase {
 
     }
 
+    @Test
     public void testContains() {
         assertTrue(testList.contains(list.elementAt(1)));
         assertNoEvents();
     }
 
+    @Test
     public void testContainsAll() {
         assertTrue(testList.containsAll(list.subList(1, 5)));
         assertNoEvents();
     }
 
+    @Test
     public void testElementAt() {
         assertEquals(list.elementAt(1), testList.elementAt(1));
         assertNoEvents();
     }
 
+    @Test
     public void testElements() {
         assertEquals(list.elements().nextElement(), testList.elements().nextElement());
         assertNoEvents();
     }
 
+    @Test
     public void testEquals() {
         assertTrue(testList.equals(list));
         assertNoEvents();
     }
 
+    @Test
     public void testFirstElement() {
         assertEquals(list.firstElement(), testList.firstElement());
         assertNoEvents();
     }
 
+    @Test
     public void testGet() {
         assertEquals(list.get(1), testList.get(1));
         assertNoEvents();
     }
 
+    @Test
     public void testHashCode() {
         assertEquals(list.hashCode(), testList.hashCode());
         assertNoEvents();
     }
 
+    @Test
     public void testIndexOf1() {
         String temp = "one";
         assertEquals(list.indexOf(temp), testList.indexOf(temp));
         assertNoEvents();
     }
 
+    @Test
     public void testIndexOf2() {
         String temp = "seven";
         assertEquals(list.indexOf(temp, 3), testList.indexOf(temp, 3));
         assertNoEvents();
     }
 
+    @Test
     public void testInsertElementAt() {
         String temp = "foo";
         list.insertElementAt(temp, 3);
@@ -246,11 +264,13 @@ public class IndirectListTestAPI extends ZTestCase {
         assertAddEvents(1);
     }
 
+    @Test
     public void testIsEmpty() {
         assertTrue(!testList.isEmpty());
         assertNoEvents();
     }
 
+    @Test
     public void testIterator() {
         int i = 0;
 
@@ -261,23 +281,27 @@ public class IndirectListTestAPI extends ZTestCase {
         assertNoEvents();
     }
 
+    @Test
     public void testLastElement() {
         assertEquals(list.lastElement(), testList.lastElement());
         assertNoEvents();
     }
 
+    @Test
     public void testLastIndexOf1() {
         String temp = "one";
         assertEquals(list.lastIndexOf(temp), testList.lastIndexOf(temp));
         assertNoEvents();
     }
 
+    @Test
     public void testLastIndexOf2() {
         String temp = "one";
         assertEquals(list.lastIndexOf(temp, 7), testList.lastIndexOf(temp, 7));
         assertNoEvents();
     }
 
+    @Test
     public void testListIterator1() {
         int i = 0;
 
@@ -288,6 +312,7 @@ public class IndirectListTestAPI extends ZTestCase {
         assertNoEvents();
     }
 
+    @Test
     public void testListIterator2() {
         int i = 0;
 
@@ -298,6 +323,7 @@ public class IndirectListTestAPI extends ZTestCase {
         assertNoEvents();
     }
 
+    @Test
     public void testRemove1() {
         Object temp = list.remove(1);
         assertEquals(temp, testList.remove(1));
@@ -306,6 +332,7 @@ public class IndirectListTestAPI extends ZTestCase {
         assertRemoveEvents(1);
     }
 
+    @Test
     public void testRemove2() {
         Object temp = "one";
 
@@ -316,6 +343,7 @@ public class IndirectListTestAPI extends ZTestCase {
         assertRemoveEvents(1);
     }
 
+    @Test
     public void testRemoveAll() {
         Vector temp = new Vector();
         temp.addElement("one");
@@ -328,6 +356,7 @@ public class IndirectListTestAPI extends ZTestCase {
         assertRemoveEvents(2);
     }
 
+    @Test
     public void testRemoveAllElements() {
         int originalSize = testList.size();
         list.removeAllElements();
@@ -337,6 +366,7 @@ public class IndirectListTestAPI extends ZTestCase {
         assertRemoveEvents(originalSize);
     }
 
+    @Test
     public void testRemoveElement() {
         Object temp = "one";
         assertTrue(list.removeElement(temp));
@@ -346,6 +376,7 @@ public class IndirectListTestAPI extends ZTestCase {
         assertRemoveEvents(1);
     }
 
+    @Test
     public void testRemoveElementAt() {
         Object temp = testList.elementAt(1);
         list.removeElementAt(1);
@@ -355,6 +386,7 @@ public class IndirectListTestAPI extends ZTestCase {
         assertRemoveEvents(1);
     }
 
+    @Test
     public void testRetainAll() {
         int originalSize = testList.size();
         Vector temp = new Vector();
@@ -369,6 +401,7 @@ public class IndirectListTestAPI extends ZTestCase {
         assertRemoveEvents(originalSize - temp.size());
     }
 
+    @Test
     public void testSet() {
         String temp = "foo";
 
@@ -379,6 +412,7 @@ public class IndirectListTestAPI extends ZTestCase {
         assertRemoveAddEvents(1);
     }
 
+    @Test
     public void testSetElementAt() {
         String temp = "foo";
         list.setElementAt(temp, 3);
@@ -388,16 +422,19 @@ public class IndirectListTestAPI extends ZTestCase {
         assertRemoveAddEvents(1);
     }
 
+    @Test
     public void testSize() {
         assertEquals(list.size(), testList.size());
         assertNoEvents();
     }
 
+    @Test
     public void testSubList() {
         assertEquals(list.subList(2, 5), testList.subList(2, 5));
         assertNoEvents();
     }
 
+    @Test
     public void testToArray1() {
         Object[] temp = list.toArray();
         Vector v1 = new Vector(temp.length);
@@ -414,6 +451,7 @@ public class IndirectListTestAPI extends ZTestCase {
         assertNoEvents();
     }
 
+    @Test
     public void testToArray2() {
         String[] temp = list.toArray(new String[0]);
         Vector v1 = new Vector(temp.length);
@@ -431,8 +469,9 @@ public class IndirectListTestAPI extends ZTestCase {
     }
 
     //Java SE 8 API
+    @Test
     public void testSort() {
-        assertElementsEqual(list, testList);
+        assertArrayEquals(list.toArray(), testList.toArray());
         Comparator<String> c = new Comparator<String>() {
 
             @Override
@@ -442,10 +481,11 @@ public class IndirectListTestAPI extends ZTestCase {
         };
         list.sort(c);
         testList.sort(c);
-        assertElementsEqual(list, testList);
+        assertArrayEquals(list.toArray(), testList.toArray());
         assertNoEvents();
     }
 
+    @Test
     public void testSpliterator() {
         assertTrue(StreamSupport.stream(testList.spliterator(), true).allMatch(item -> list.contains(item)));
         assertTrue(StreamSupport.stream(list.spliterator(), true).allMatch(item -> testList.contains(item)));
@@ -453,6 +493,7 @@ public class IndirectListTestAPI extends ZTestCase {
         assertNoEvents();
     }
 
+    @Test
     public void testStream() {
         assertTrue(testList.stream().allMatch(item -> list.contains(item)));
         assertTrue(list.stream().allMatch(item -> testList.contains(item)));
@@ -460,6 +501,7 @@ public class IndirectListTestAPI extends ZTestCase {
         assertNoEvents();
     }
 
+    @Test
     public void testParallelStream() {
         assertTrue(testList.parallelStream().allMatch(item -> list.contains(item)));
         assertTrue(list.parallelStream().allMatch(item -> testList.contains(item)));
@@ -467,28 +509,31 @@ public class IndirectListTestAPI extends ZTestCase {
         assertNoEvents();
     }
 
+    @Test
     public void testRemoveIf() {
         // remove 'six' and 'seven'
         assertTrue(list.removeIf(item -> item.startsWith("s")));
         assertTrue(testList.removeIf(item -> item.startsWith("s")));
         assertEquals("size do not match", 8, testList.size());
-        assertElementsEqual(list, testList);
+        assertArrayEquals(list.toArray(), testList.toArray());
         assertRemoveEvents(2);
     }
 
+    @Test
     public void testReplaceAll() {
         list.replaceAll(String::toUpperCase);
         testList.replaceAll(String::toUpperCase);
-        assertElementsEqual(list, testList);
+        assertArrayEquals(list.toArray(), testList.toArray());
         assertRemoveAddEvents(testList.size());
     }
 
+    @Test
     public void testForEach() {
         final StringWriter sw1 = new StringWriter();
         final StringWriter sw2 = new StringWriter();
         list.forEach(sw1::append);
         testList.forEach(sw2::append);
-        assertElementsEqual(list, testList);
+        assertArrayEquals(list.toArray(), testList.toArray());
         assertEquals(sw1.toString(), sw2.toString());
         assertNoEvents();
     }

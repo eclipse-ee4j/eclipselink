@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -43,25 +43,8 @@ public class TransparentIndirectionModel extends TestModel {
         addRequiredSystem(new BidirectionalRelationshipSystem());
     }
 
-    public static final class X<E> extends IndirectList<E> {}
-    public static final class Y<E> extends IndirectSet<E> {}
-    public static final class Z<K, V> extends IndirectMap<K, V> {}
-
     @Override
     public void addTests() {
-        addTest(new ZTestSuite(IndirectListTestAPI.class));
-        addTest(IndirectListTestAPI.getTestSuiteFor(IndirectList.class, false));
-        addTest(IndirectListTestAPI.getTestSuiteFor(X.class, false));
-        addTest(IndirectListTestAPI.getTestSuiteFor(X.class, true));
-        addTest(new ZTestSuite(IndirectMapTestAPI.class));
-        addTest(IndirectMapTestAPI.getTestSuiteFor(IndirectMap.class, false));
-        addTest(IndirectMapTestAPI.getTestSuiteFor(Z.class, false));
-        addTest(IndirectMapTestAPI.getTestSuiteFor(Z.class, true));
-        addTest(new ZTestSuite(IndirectSetTestAPI.class));
-        addTest(IndirectSetTestAPI.getTestSuiteFor(IndirectSet.class, false));
-        addTest(IndirectSetTestAPI.getTestSuiteFor(Y.class, false));
-        addTest(IndirectSetTestAPI.getTestSuiteFor(Y.class, true));
-
         addTest(new ZTestSuite(IndirectListTestDatabase.class));
         addTest(new ZTestSuite(IndirectMapTestDatabase.class));
         addTest(new ZTestSuite(IndirectSetTestDatabase.class));
