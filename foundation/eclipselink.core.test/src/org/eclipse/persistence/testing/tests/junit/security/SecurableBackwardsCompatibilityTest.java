@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -10,7 +10,7 @@
  * Contributors:
  *     dminsky - initial API and implementation
  ******************************************************************************/
-package org.eclipse.persistence.testing.tests.security;
+package org.eclipse.persistence.testing.tests.junit.security;
 
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectOutputStream;
@@ -25,97 +25,92 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.security.JCEEncryptor;
 import org.eclipse.persistence.internal.security.Securable;
-
-import org.eclipse.persistence.testing.framework.ReflectionHelper;
-import org.eclipse.persistence.testing.framework.TestCase;
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
  * Regression test suite for the EclipseLink reference implementation of the Securable interface
  * @author dminsky
  */
-public class SecurableBackwardsCompatibilityTest extends TestCase {
-    
-    public SecurableBackwardsCompatibilityTest(String testMethod) {
-        super();
-        setName(testMethod);
-    }
-    
-    @Override
-    public void test() throws Throwable {
-        ReflectionHelper.invokeMethod(getName(), this, new Class[0], new Object[0]);
-    }
+public class SecurableBackwardsCompatibilityTest {
     
     /**
      * Test the decryption of a String encrypted with DES ECB.
      * @throws Exception
      */
+    @Test
     public void testStringDecryption_DES_ECB() throws Exception {
         String plainTextString = "welcome123_des_ecb";
         
         String testString = encryptString_DES_ECB(plainTextString);
-        assertFalse("Strings should not match.", plainTextString.equals(testString));
+        Assert.assertFalse("Strings should not match.", plainTextString.equals(testString));
         
         Securable securable = new JCEEncryptor();
         String decryptedString = securable.decryptPassword(testString);
-        assertEquals("Strings should match.", plainTextString, decryptedString);
+        Assert.assertEquals("Strings should match.", plainTextString, decryptedString);
     }
     
     /**
      * Test the decryption of a String encrypted with AES CBC.
      * @throws Exception
      */
+    @Test
     public void testStringDecryption_AES_CBC() throws Exception {
         String plainTextString = "welcome123_aes_cbc";
 
         Securable securable = new JCEEncryptor();
         String testString = securable.encryptPassword(plainTextString);
-        assertFalse("Strings should not match.", plainTextString.equals(testString));
+        Assert.assertFalse("Strings should not match.", plainTextString.equals(testString));
         
         String decryptedString = securable.decryptPassword(testString);
-        assertEquals("Strings should match.", plainTextString, decryptedString);
+        Assert.assertEquals("Strings should match.", plainTextString, decryptedString);
     }
     
     /**
      * Test the decryption of a String encrypted with AES ECB.
      * @throws Exception
      */
+    @Test
     public void testStringDecryption_AES_ECB() throws Exception {
         String plainTextString = "welcome123_aes_ecb";
         
         String testString = encryptString_AES_ECB(plainTextString);
-        assertFalse("Strings should not match.", plainTextString.equals(testString));
+        Assert.assertFalse("Strings should not match.", plainTextString.equals(testString));
         
         Securable securable = new JCEEncryptor();
         String decryptedString = securable.decryptPassword(testString);
-        assertEquals("Strings should match.", plainTextString, decryptedString);
+        Assert.assertEquals("Strings should match.", plainTextString, decryptedString);
     }
     
     /**
      * Test the decryption/processing of a plaintext String.
      * @throws Exception
      */
+    @Test
     public void testStringDecryption_PlainText() throws Exception {
         String plainTextString = "welcome123_plaintext";
         
         Securable securable = new JCEEncryptor();
         String decryptedString = securable.decryptPassword(plainTextString);
-        assertEquals("Passwords should match.", plainTextString, decryptedString);
+        Assert.assertEquals("Passwords should match.", plainTextString, decryptedString);
     }
     
     /**
      * Test the decryption/processing of a null parameter.
      * @throws Exception
      */
+    @Test
     public void testNullParameterDecryption() throws Exception {
         Securable securable = new JCEEncryptor();
         String returnValue = securable.decryptPassword(null);
-        assertNull("Null should be returned when decrypting a null value", returnValue);
+        Assert.assertNull("Null should be returned when decrypting a null value", returnValue);
     }
     
     /**
      * Test the encryption of a null parameter.
      * @throws Exception
      */
+    @Test
     public void testNullParameterEncryption() throws Exception {
         ValidationException expectedException = null;
         try {
@@ -124,7 +119,7 @@ public class SecurableBackwardsCompatibilityTest extends TestCase {
         } catch (ValidationException ve) {
             expectedException = ve;
         }
-        assertNotNull("A ValidationException should be thrown when encrypting a null value", expectedException);
+        Assert.assertNotNull("A ValidationException should be thrown when encrypting a null value", expectedException);
     }
     
     /*

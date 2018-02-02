@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -41,19 +41,9 @@ public class SecurityTestModel extends TestModel {
     }
 
     public void addTests() {
-    addTest(getJCETestSuite());
     addTest(getValidationSecurityTestSuite());
     addTest(new DatabaseLoginWithNoEncryptorTest());
-    addTest(getSecurableBackwardsCompatibilityTestSuite());
   }
-
-  public static TestSuite getJCETestSuite() {
-    TestSuite suite = new TestSuite();
-    suite.setName("JCEEncryptor");
-    suite.setDescription("This suite tests the TopLink password encryption schemes");
-    suite.addTest(new JCEEncryptionTest());
-    return suite;
-    }
 
     public static TestSuite getValidationSecurityTestSuite() {
         TestSuite suite = new TestSuite();
@@ -78,21 +68,6 @@ public class SecurityTestModel extends TestModel {
         return suite;
     }
     
-    public static TestSuite getSecurableBackwardsCompatibilityTestSuite() {
-        TestSuite suite = new TestSuite();
-        suite.setName("Securable Backward Compatibility Tests");
-        suite.setDescription("Tests the backwards compatibility of the (default) Securable reference implementation");
-        
-        suite.addTest(new SecurableBackwardsCompatibilityTest("testStringDecryption_PlainText"));
-        suite.addTest(new SecurableBackwardsCompatibilityTest("testStringDecryption_DES_ECB"));
-        suite.addTest(new SecurableBackwardsCompatibilityTest("testStringDecryption_AES_CBC"));
-        suite.addTest(new SecurableBackwardsCompatibilityTest("testStringDecryption_AES_ECB"));
-        suite.addTest(new SecurableBackwardsCompatibilityTest("testNullParameterDecryption"));
-        suite.addTest(new SecurableBackwardsCompatibilityTest("testNullParameterEncryption"));
-        
-        return suite;
-    }
-
     /**
      * Return the JUnit suite to allow JUnit runner to find it.
      * Unfortunately JUnit only allows suite methods to be static,

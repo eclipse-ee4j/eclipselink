@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -10,9 +10,10 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/
-package org.eclipse.persistence.testing.tests.security;
+package org.eclipse.persistence.testing.tests.junit.security;
 
-import org.eclipse.persistence.testing.framework.*;
+import org.junit.Assert;
+import org.junit.Test;
 import org.eclipse.persistence.internal.security.Securable;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 
@@ -25,35 +26,15 @@ import org.eclipse.persistence.internal.helper.ConversionManager;
  *
  * @author Guy Pelletier
  */
-public class JCEEncryptionTest extends AutoVerifyTestCase {
-    String toEncrypt;
-    String decrypted;
-    Securable encryptor;
+public class JCEEncryptionTest {
 
-    public JCEEncryptionTest() {
-        setDescription("Test the encryption/decryption using JCE");
-    }
-
-    public void reset() {
-    }
-
-    protected void setup() throws Exception {
-        toEncrypt = "testString";
-        encryptor = convertToEncryptionObject("org.eclipse.persistence.internal.security.JCEEncryptor");
-    }
-
+    @Test
     public void test() {
-        if (encryptor != null) {
-            decrypted = encryptor.decryptPassword(encryptor.encryptPassword(toEncrypt));
-        }
-    }
-
-    protected void verify() {
-        if (encryptor == null) {
-            throw new TestWarningException("JCE object could not be created.");
-        } else if (!decrypted.equals(toEncrypt)) {
-            throw new TestErrorException("The JCE encryption --> decryption failed");
-        }
+        String toEncrypt = "testString";
+        Securable encryptor = convertToEncryptionObject("org.eclipse.persistence.internal.security.JCEEncryptor");
+        Assert.assertNotNull("JCE object could not be created.", encryptor);
+        String decrypted = encryptor.decryptPassword(encryptor.encryptPassword(toEncrypt));
+        Assert.assertEquals("The JCE encryption --> decryption failed", toEncrypt, decrypted);
     }
 
     /**

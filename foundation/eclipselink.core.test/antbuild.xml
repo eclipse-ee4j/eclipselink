@@ -348,6 +348,7 @@
 
     <!-- Default test target, runs test.class from test.properties (default is LRG). -->
     <target name="test">
+        <antcall target="run-junit-test" inheritRefs="true" />
         <antcall target="run-test" inheritRefs="true">
             <param name="TEST_CLASS" value="${test.class}"/>
         </antcall>
@@ -359,6 +360,7 @@
 
     <!-- Runs SRG (SRGTestModel). -->
     <target name="test-srg">
+        <antcall target="run-junit-test" inheritRefs="true" />
         <antcall target="run-test" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.SRGTestModel"/>
         </antcall>
@@ -427,6 +429,7 @@
 
     <!-- Runs LRG (TestRunModel). -->
     <target name="test-lrg">
+        <antcall target="run-junit-test" inheritRefs="true" />
         <antcall target="run-test" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.TestRunModel"/>
         </antcall>
@@ -580,10 +583,42 @@
         </fail>
     </target>
 
+    <!-- Generic target for running JUnit tests. -->
+    <target name="run-junit-test" depends="init_paths, process-resource">
+        <echo>Running test on ${db.url}</echo>
+        <mkdir dir="${core_test.run.dir}"/>
+        <mkdir dir="${core_test.report.dir}"/>
+        <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
+        <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
+        <!-- 282012: On a 64-bit JVM - The XML processing at the end of the testing requires at least 1536 -->
+        <!-- Note: on a legacy XP OS with 4GB ram - the max is 1536 - use of 2048 will cause [junit] [WARN ] Unable to acquire some virtual address space - reduced from 2048 to 1908MB. -->
+        <junit jvm="${test.junit.jvm.exec}" printsummary="yes" failureproperty="junit.failed" fork="yes" showoutput="true" maxmemory="${max.heap.memory}" dir="${core_test.run.dir}">
+            <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
+            <jvmarg value="-Ddb.driver=${db.driver}"/>
+            <jvmarg value="-Ddb.url=${db.url}"/>
+            <jvmarg value="-Ddb.user=${db.user}"/>
+            <jvmarg value="-Ddb.pwd=${db.pwd}"/>
+            <jvmarg value="-Ddb.platform=${db.platform}"/>
+            <jvmarg line="${additional.jvmargs}"/>
+            <jvmarg value="${test.security-manager}"/>
+            <jvmarg value="${test.security-manager.policy}"/>
+            <classpath>
+                <path refid="core_test.run.path"/>
+            </classpath>
+            <formatter type="xml"/>
+            <batchtest haltonfailure="no" todir="${report.dir}">
+                <fileset dir="${core_test.src.dir}">
+                    <include name="**/junit/**/*Test.java"/>
+                </fileset>
+            </batchtest>
+        </junit>
+    </target>
+
     <target name="generate-report">
         <junitreport todir="${core_test.report.dir}">
             <fileset dir="${core_test.report.dir}">
                 <include name="*-test-results.xml"/>
+                <include name="TEST-*.xml"/>
             </fileset>
             <report format="noframes" todir="${core_test.report.dir}"/>
         </junitreport>

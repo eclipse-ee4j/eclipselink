@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2017, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -11,7 +11,7 @@
  *     Tomas Kraus - 2017/10/11
  *          Bug 525854 - Fix Java SE platform detection and clean up platform code
  ******************************************************************************/
-package org.eclipse.persistence.testing.tests.helper;
+package org.eclipse.persistence.testing.tests.junit.helper;
 
 import java.lang.reflect.Method;
 

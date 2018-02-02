@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -57,7 +57,6 @@ public class MappingTestModel extends TestModel {
         //CR3922  Test buildSelectionCriteria in one-to-one and one-to-many mapping
         addTest(getBuildSelectionCriteriaTestSuite());
         addTest(getSameNameMappingTestSuite());
-        addTest(getConvertAttributeNameTestSuite());
     }
 
     public static TestSuite getAdditionalJoinTest() {
@@ -282,17 +281,6 @@ public class MappingTestModel extends TestModel {
         suite.addTest(new SelectionCriteriaInOneToManyTest());
         suite.addTest(new SelectionCriteriaInTargetOneToOneTest());
 
-        return suite;
-    }
-
-    /**
-     * Creates test suite for {@code @Convert} annotation {@code attributeName} argument processing.
-     * @return Initialized test suite.
-     */
-    public static TestSuite getConvertAttributeNameTestSuite() {
-        TestSuite suite = new TestSuite();
-        suite.addTestSuite(org.eclipse.persistence.testing.tests.mapping.conversion.AttributeNamePrefixTest.class);
-        suite.addTestSuite(org.eclipse.persistence.testing.tests.mapping.conversion.AttributeNameTokenizerTest.class);
         return suite;
     }
 }

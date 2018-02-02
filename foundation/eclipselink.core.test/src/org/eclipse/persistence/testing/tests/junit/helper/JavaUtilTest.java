@@ -10,7 +10,7 @@
  * Contributors:
  *     Tomas Kraus, Peter Benedikovic - initial API and implementation
  ******************************************************************************/
-package org.eclipse.persistence.testing.tests.helper;
+package org.eclipse.persistence.testing.tests.junit.helper;
 
 import org.eclipse.persistence.internal.helper.JavaSEPlatform;
 import org.eclipse.persistence.internal.helper.JavaVersion;

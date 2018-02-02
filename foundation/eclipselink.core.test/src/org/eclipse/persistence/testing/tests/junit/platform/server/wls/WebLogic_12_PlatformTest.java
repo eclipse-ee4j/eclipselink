@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -10,7 +10,7 @@
  * Contributors:
  *     Oracle - initial API and implementation
  ******************************************************************************/
-package org.eclipse.persistence.testing.tests.platform.server.wls;
+package org.eclipse.persistence.testing.tests.junit.platform.server.wls;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -18,25 +18,18 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import junit.framework.TestCase;
-
 import org.eclipse.persistence.platform.server.ServerPlatform;
 import org.eclipse.persistence.platform.server.wls.WebLogic_12_Platform;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class WebLogic_12_PlatformTest extends TestCase {
+public class WebLogic_12_PlatformTest {
 
     public WebLogic_12_PlatformTest() {
     }
 
-    public WebLogic_12_PlatformTest(String name) {
-        super(name);
-    }
-
     @After
-    @Override
     public void tearDown() {
         resetContextHelper();
     }
@@ -102,13 +95,13 @@ public class WebLogic_12_PlatformTest extends TestCase {
         getCicManagerClassMethod.setAccessible(true);
         Object result = null;
         try {
-            result = getCicManagerClassMethod.invoke(contextHelperClass, "org/eclipse/persistence/testing/tests/platform/server/wls/WebLogic_12_PlatformTest.class", "org.eclipse.persistence.testing.tests.platform.server.wls.WebLogic_12_PlatformTest");
+            result = getCicManagerClassMethod.invoke(contextHelperClass, "org/eclipse/persistence/testing/tests/junit/platform/server/wls/WebLogic_12_PlatformTest.class", "org.eclipse.persistence.testing.tests.junit.platform.server.wls.WebLogic_12_PlatformTest");
         } catch (Exception e) {
             Assert.fail("Failed to invoke getCicManagerClass method: " + e.getMessage());
         }
         Assert.assertNotNull("Failed to retrieve test class", result);
         try {
-            result = getCicManagerClassMethod.invoke(contextHelperClass, "this/should/not/resolve", "org.eclipse.persistence.testing.tests.platform.server.wls.WebLogic_12_PlatformTest");
+            result = getCicManagerClassMethod.invoke(contextHelperClass, "this/should/not/resolve", "org.eclipse.persistence.testing.tests.junit.platform.server.wls.WebLogic_12_PlatformTest");
         } catch (Exception e) {
             Assert.fail("Failed to invoke getCicManagerClass method: " + e.getMessage());
         }
@@ -222,7 +215,7 @@ public class WebLogic_12_PlatformTest extends TestCase {
         public String getPartitionName() {
             return nameCtx;
         }
-        
+
         public boolean isGlobalRuntime() {
             return isGlobal;
         }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -20,7 +20,6 @@ import junit.framework.Test;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.tests.platform.server.wls.WebLogic_12_PlatformTest;
 
 /**
  * This class create test runs, i.e. models of model to allow all tests to be run a once.
@@ -47,11 +46,9 @@ public class TestRunModel extends TestModel {
         if (!getTests().isEmpty()) {
             return;
         }
-        addTestSuite(WebLogic_12_PlatformTest.class);
         Vector tests = new Vector();
 
         if (isLight) {
-            tests.add("org.eclipse.persistence.testing.tests.helper.HelperTestModel");
             tests.add("org.eclipse.persistence.testing.tests.workbenchintegration.MappingWMIntegrationStoredProcedureTestModel");
             tests.add("org.eclipse.persistence.testing.tests.workbenchintegration.MappingWorkbenchIntegrationTestModel");
             tests.add("org.eclipse.persistence.testing.tests.mapping.MappingTestModel");
@@ -104,11 +101,9 @@ public class TestRunModel extends TestModel {
             tests.add("org.eclipse.persistence.testing.tests.sessionsxml.SessionsXMLBasicTestModel");
             tests.add("org.eclipse.persistence.testing.tests.sessionsxml.SessionsXMLTestModel");
             tests.add("org.eclipse.persistence.testing.tests.unitofwork.changeflag.EmployeeChangeTrackingTestModel");
-            tests.add("org.eclipse.persistence.testing.tests.helper.HelperTestModel");
             tests.add("org.eclipse.persistence.testing.tests.schemaframework.AutoTableGeneratorBasicTestModel");
             tests.add("org.eclipse.persistence.testing.tests.schemaframework.StoredProcedureGeneratorModel");
             tests.add("org.eclipse.persistence.testing.tests.proxyindirection.ProxyIndirectionTestModel");
-            tests.add("org.eclipse.persistence.testing.tests.localization.LocalizationTestModel");
             tests.add("org.eclipse.persistence.testing.tests.history.HistoryTestRunModel");
             tests.add("org.eclipse.persistence.testing.tests.isolatedsession.IsolatedSessionTestModel");
             tests.add("org.eclipse.persistence.testing.tests.unitofwork.writechanges.UnitOfWorkWriteChangesTestModel");
