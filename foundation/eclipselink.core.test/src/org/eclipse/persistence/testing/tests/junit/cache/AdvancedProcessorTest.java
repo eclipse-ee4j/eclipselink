@@ -1,6 +1,5 @@
-/**
- * ****************************************************************************
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+/******************************************************************************
+ * Copyright (c) 2015, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,32 +11,36 @@
  *      Marcel Valovy - initial API and implementation
  * ****************************************************************************
  */
-package org.eclipse.persistence.testing.tests.cache;
-
-import org.eclipse.persistence.internal.cache.AdvancedProcessor;
-import org.eclipse.persistence.internal.cache.ComputableTask;
-import org.eclipse.persistence.internal.cache.Memoizer;
-import org.eclipse.persistence.testing.framework.TestCase;
+package org.eclipse.persistence.testing.tests.junit.cache;
 
 import java.lang.reflect.Field;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.eclipse.persistence.internal.cache.AdvancedProcessor;
+import org.eclipse.persistence.internal.cache.ComputableTask;
+import org.eclipse.persistence.internal.cache.Memoizer;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
 /**
  * @author Marcel Valovy - marcelv3612@gmail.com
  */
-public class AdvancedProcessorTestCase extends TestCase {
-
-    public void test() throws Exception {
-        testCompute();
-        testExpire();
-    }
+public class AdvancedProcessorTest {
 
     private AdvancedProcessor processor;
     private MutableComputableTask<Integer, Integer> computableTask;
 
+    @Before
+    public void setUp() {
+        processor = new AdvancedProcessor();
+        computableTask = new Task<>();
+    }
+
+    @Test
     public void testCompute() throws Exception {
-        assertEquals(processor.compute(computableTask.setArg(5), 5), (Integer) 10);
+        Assert.assertEquals(processor.compute(computableTask.setArg(5), 5), (Integer) 10);
 
         Field fieldOnProcessor = AdvancedProcessor.class.getDeclaredField("memoizer");
         fieldOnProcessor.setAccessible(true);
@@ -52,15 +55,15 @@ public class AdvancedProcessorTestCase extends TestCase {
 
         Object futureAfterSecondComputation = memoizerCache.values().iterator().next();
 
-        assertTrue(memoizerCache.values().size() == 1);
-        assertTrue(futureAfterFirstComputation == futureAfterSecondComputation);
+        Assert.assertTrue(memoizerCache.values().size() == 1);
+        Assert.assertTrue(futureAfterFirstComputation == futureAfterSecondComputation);
         fieldOnProcessor.setAccessible(false);
         fieldOnMemoizer.setAccessible(false);
     }
 
     public void testExpire() throws Exception {
 
-        assertEquals(processor.compute(computableTask.setArg(5), 5), (Integer) 10);
+        Assert.assertEquals(processor.compute(computableTask.setArg(5), 5), (Integer) 10);
 
         Field fieldOnProcessor = AdvancedProcessor.class.getDeclaredField("memoizer");
         fieldOnProcessor.setAccessible(true);
@@ -79,16 +82,11 @@ public class AdvancedProcessorTestCase extends TestCase {
         // we still have just one element in cache, because we called processor.clear()
         Object futureAfterSecondComputation = iteratorAfterSecondComputation.next();
 
-        assertFalse(futureAfterFirstComputation == futureAfterSecondComputation);
+        Assert.assertFalse(futureAfterFirstComputation == futureAfterSecondComputation);
         fieldOnProcessor.setAccessible(false);
         fieldOnMemoizer.setAccessible(false);
 
-        assertEquals(processor.compute(computableTask.setArg(7), 5), (Integer) 12);
-    }
-
-    public void setUp() {
-        processor = new AdvancedProcessor();
-        computableTask = new Task<>();
+        Assert.assertEquals(processor.compute(computableTask.setArg(7), 5), (Integer) 12);
     }
 
     static class Task<A, V> implements MutableComputableTask<A, V> {

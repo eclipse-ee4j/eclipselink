@@ -33,7 +33,6 @@ import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.indirection.QueryBasedValueHolder;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
-import org.eclipse.persistence.testing.tests.transparentindirection.TestSession;
 import org.eclipse.persistence.testing.tests.transparentindirection.ZTestCase;
 import org.junit.After;
 import org.junit.Before;
