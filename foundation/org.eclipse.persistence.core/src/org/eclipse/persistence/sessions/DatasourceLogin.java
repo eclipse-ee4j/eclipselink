@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -480,41 +480,36 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
         if (platformClassName.equals("org.eclipse.persistence.platform.database.oracle.OraclePlatform")) {
             platformClassName = "org.eclipse.persistence.platform.database.OraclePlatform";
         }
+
         Class platformClass = null;
         try {
             //First try loading with the Login's class loader
             platformClass = this.getClass().getClassLoader().loadClass(platformClassName);
-            DatasourcePlatform platform = null;
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try {
-                    platform = (DatasourcePlatform)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(platformClass));
-                } catch (PrivilegedActionException exception) {
-                    throw exception.getException();
-                }
-            } else {
-                platform = (DatasourcePlatform)PrivilegedAccessHelper.newInstanceFromClass(platformClass);
-            }
-            usePlatform(platform);
         } catch(Throwable cne) {
             //next try using ConversionManager
             try {
-                platformClass = ConversionManager.loadClass(platformClassName);           
-                Platform platform = null;
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    try {
-                        platform = (Platform)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(platformClass));
-                    } catch (PrivilegedActionException exception) {
-                        throw ValidationException.platformClassNotFound(exception.getException(), platformClassName);  
-                    }
-                } else {
-                    platform = (Platform)PrivilegedAccessHelper.newInstanceFromClass(platformClass);
-                }
-                usePlatform(platform);
+                platformClass = ConversionManager.loadClass(platformClassName);
             } catch(Throwable cne2) {
+                //set the original exception
+                cne2.addSuppressed(cne);
                 //if still not found, throw exception
-                throw ValidationException.platformClassNotFound(cne2, platformClassName);                
+                throw ValidationException.platformClassNotFound(cne2, platformClassName);
             }
         }
+
+        Platform platform = null;
+        try {
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                platform = (Platform)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(platformClass));
+            } else {
+                platform = (Platform)PrivilegedAccessHelper.newInstanceFromClass(platformClass);
+            }
+        } catch (PrivilegedActionException exception) {
+            throw ValidationException.platformClassNotFound(exception.getException(), platformClassName);
+        } catch(Throwable cne) {
+            throw ValidationException.platformClassNotFound(cne, platformClassName);
+        }
+        usePlatform(platform);
     }
     /**
      * INTERNAL:
