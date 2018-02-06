@@ -810,7 +810,9 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                         }
                     }
                     // Initialize platform specific identity sequences.
-                    session.getDatasourcePlatform().initIdentitySequences(getDatabaseSession(), MetadataProject.DEFAULT_IDENTITY_GENERATOR);
+                    if (PrivilegedAccessHelper.getSystemPropertyBoolean("eclipselink.oracle.identity", false)) {
+                        session.getDatasourcePlatform().initIdentitySequences(getDatabaseSession(), MetadataProject.DEFAULT_IDENTITY_GENERATOR);
+                    }
                     updateTunerPostDeploy(deployProperties, classLoaderToUse);
                     this.deployLock.release();
                     isLockAcquired = false;
