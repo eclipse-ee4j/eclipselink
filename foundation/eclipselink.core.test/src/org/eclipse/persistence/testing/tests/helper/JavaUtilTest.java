@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -26,14 +26,15 @@ public class JavaUtilTest extends junit.framework.TestCase {
     // Valid version number pairs.
     static final int[][] VALID = {
             {1, 1}, {1, 2}, {1, 3}, {1, 4}, {1, 5}, {1, 6}, {1, 7}, {1, 8}, {1, 9},
-            {9, 0}, {10, 0}, {18, 3}, {18, 9}
+            {9, 0}, {10, 0}, {11, 0}
     };
 
     // Invalid version number pairs.
     static final int[][] INVALID = {
             {0, 0}, {0, 1}, {0, 3}, {0, 5}, {0, 7}, {0, 9},
             {1, 0}, {2, 0}, {2, 1}, {2, 2}, {3, 0}, {4, 0}, {1, 10},
-            {18, 1}, {18, 2}, {18, 4}, {18, 5}, {18, 6}, {18, 7}, {18, 8}, {18, 10}, {18, 11}, {18, 12}
+            {18, 1}, {18, 2}, {18, 3}, {18, 4}, {18, 5}, {18, 6},
+            {18, 7}, {18, 8}, {18, 9}, {18, 10}, {18, 11}, {18, 12}
     };
 
     // DEFAULT platform value.
@@ -127,7 +128,7 @@ public class JavaUtilTest extends junit.framework.TestCase {
             int minor = version[1];
             String versionString = JavaSEPlatform.versionString(major, minor);
             JavaSEPlatform platform = JavaSEPlatform.toValue(major, minor);
-            assertTrue("Returned platform shall be JavaSEPlatform.DEFAULT for invalid version "
+            assertTrue("Returned platform shall be JavaSEPlatform.LATEST for invalid version "
                     + "number ["+Integer.toString(major)+","+Integer.toString(minor)+"]",
                     LATEST.getMajor() == platform.getMajor() && LATEST.getMinor() == platform.getMinor());
         }
@@ -156,7 +157,7 @@ public class JavaUtilTest extends junit.framework.TestCase {
             int major = version[0];
             int minor = version[1];
             JavaSEPlatform platform = JavaSEPlatform.toValue(major, minor);
-            assertTrue("Returned platform shall be JavaSEPlatform.DEFAULT for invalid version "
+            assertTrue("Returned platform shall be JavaSEPlatform.LATEST for invalid version "
                     + "number ["+Integer.toString(major)+","+Integer.toString(minor)+"]",
                     LATEST.getMajor() == platform.getMajor() && LATEST.getMinor() == platform.getMinor());
         }
