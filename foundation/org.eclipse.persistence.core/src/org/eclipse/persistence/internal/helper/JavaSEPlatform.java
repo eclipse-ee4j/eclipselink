@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -41,10 +41,8 @@ public enum JavaSEPlatform implements Comparable<JavaSEPlatform> {
     v9_0(9,0, new Version(1,9)),
     /** Java SE 10. */
     v10_0(10,0),
-    /** Java SE 18.3. */
-    v18_3(18,3),
-    /** Java SE 18.9. */
-    v18_9(18,9);
+    /** Java SE 11. */
+    v11_0(11,0);
 
     public static final class Version {
         /**
@@ -124,15 +122,15 @@ public enum JavaSEPlatform implements Comparable<JavaSEPlatform> {
     /** GlassFish Java SE platform enumeration length. */
     public static final int LENGTH = JavaSEPlatform.values().length;
 
-    /** Current Java SE platform. */
-    public static final JavaSEPlatform CURRENT
-            = JavaVersion.vmVersion().toPlatform();
-
     /** Lowest supported Java SE platform. Currently it's Java SE 1.8. */
     public static final JavaSEPlatform MIN_SUPPORTED = v1_8;
 
     /** Latest Java SE platform. This value is used when Java SE platform detection fails. */
-    static final JavaSEPlatform LATEST = JavaSEPlatform.v18_9;
+    static final JavaSEPlatform LATEST = JavaSEPlatform.v11_0;
+
+    /** Current Java SE platform. */
+    public static final JavaSEPlatform CURRENT
+            = JavaVersion.vmVersion().toPlatform();
 
     /**
      * Check whether current Java SE is exactly matching provided platform.
@@ -198,16 +196,9 @@ public enum JavaSEPlatform implements Comparable<JavaSEPlatform> {
                 case 9: return v9_0;
                 default: return LATEST;
             }
-        case 9:
-            return v9_0;
-        case 10:
-            return v10_0;
-        case 18:
-            switch (minor) {
-                case 3: return v18_3;
-                case 9: return v18_9;
-                default: return LATEST;
-            }
+        case 9: return v9_0;
+        case 10: return v10_0;
+        case 11: return v11_0;
         default: return LATEST;
         }
     }

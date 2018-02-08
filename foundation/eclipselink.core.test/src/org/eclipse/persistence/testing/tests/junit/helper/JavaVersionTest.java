@@ -13,6 +13,10 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.junit.helper;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.lang.reflect.Method;
 
 import org.eclipse.persistence.internal.helper.JavaSEPlatform;
@@ -20,9 +24,7 @@ import org.eclipse.persistence.internal.helper.JavaVersion;
 import org.eclipse.persistence.testing.framework.ReflectionHelper;
 import org.junit.Test;
 
-import junit.framework.TestCase;
-
-public class JavaVersionTest extends TestCase {
+public class JavaVersionTest {
 
     /**
      * Check whether current Java has {@code Runtime.Version} class.

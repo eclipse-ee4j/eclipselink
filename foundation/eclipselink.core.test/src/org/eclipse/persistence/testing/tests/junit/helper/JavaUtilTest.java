@@ -12,6 +12,11 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.junit.helper;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import org.eclipse.persistence.internal.helper.JavaSEPlatform;
 import org.eclipse.persistence.internal.helper.JavaVersion;
 import org.eclipse.persistence.testing.framework.ReflectionHelper;
@@ -21,19 +26,20 @@ import org.junit.Test;
  * Test Java related utilities.
  * @author Tomas Kraus, Peter Benedikovic
  */
-public class JavaUtilTest extends junit.framework.TestCase {
+public class JavaUtilTest {
 
     // Valid version number pairs.
     static final int[][] VALID = {
             {1, 1}, {1, 2}, {1, 3}, {1, 4}, {1, 5}, {1, 6}, {1, 7}, {1, 8}, {1, 9},
-            {9, 0}, {10, 0}, {18, 3}, {18, 9}
+            {9, 0}, {10, 0}, {11, 0}
     };
 
     // Invalid version number pairs.
     static final int[][] INVALID = {
             {0, 0}, {0, 1}, {0, 3}, {0, 5}, {0, 7}, {0, 9},
             {1, 0}, {2, 0}, {2, 1}, {2, 2}, {3, 0}, {4, 0}, {1, 10},
-            {18, 1}, {18, 2}, {18, 4}, {18, 5}, {18, 6}, {18, 7}, {18, 8}, {18, 10}, {18, 11}, {18, 12}
+            {18, 1}, {18, 2}, {18, 3}, {18, 4}, {18, 5}, {18, 6},
+            {18, 7}, {18, 8}, {18, 9}, {18, 10}, {18, 11}, {18, 12}
     };
 
     // DEFAULT platform value.
@@ -61,19 +67,12 @@ public class JavaUtilTest extends junit.framework.TestCase {
      * Initialize value of JavaSEPlatform.DEFAULT.
      * @return value of JavaSEPlatform.DEFAULT.
      */
-    private static final JavaSEPlatform initDefault() {
+    static final JavaSEPlatform initDefault() {
         try {
             return ReflectionHelper.getPrivateStatic(JavaSEPlatform.class, "LATEST");
         } catch (ReflectiveOperationException e) {
             return null;
         }
-    }
-    /**
-     * Constructs an instance of Java utilities.
-     * @param name java.lang.String
-     */
-    public JavaUtilTest(String name) {
-        super(name);
     }
 
     /**
@@ -127,7 +126,7 @@ public class JavaUtilTest extends junit.framework.TestCase {
             int minor = version[1];
             String versionString = JavaSEPlatform.versionString(major, minor);
             JavaSEPlatform platform = JavaSEPlatform.toValue(major, minor);
-            assertTrue("Returned platform shall be JavaSEPlatform.DEFAULT for invalid version "
+            assertTrue("Returned platform shall be JavaSEPlatform.LATEST for invalid version "
                     + "number ["+Integer.toString(major)+","+Integer.toString(minor)+"]",
                     LATEST.getMajor() == platform.getMajor() && LATEST.getMinor() == platform.getMinor());
         }
@@ -156,7 +155,7 @@ public class JavaUtilTest extends junit.framework.TestCase {
             int major = version[0];
             int minor = version[1];
             JavaSEPlatform platform = JavaSEPlatform.toValue(major, minor);
-            assertTrue("Returned platform shall be JavaSEPlatform.DEFAULT for invalid version "
+            assertTrue("Returned platform shall be JavaSEPlatform.LATEST for invalid version "
                     + "number ["+Integer.toString(major)+","+Integer.toString(minor)+"]",
                     LATEST.getMajor() == platform.getMajor() && LATEST.getMinor() == platform.getMinor());
         }
