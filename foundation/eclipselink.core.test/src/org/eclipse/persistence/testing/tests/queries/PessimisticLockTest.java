@@ -12,11 +12,11 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.queries;
 
-import org.eclipse.persistence.queries.ObjectBuildingQuery;
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.testing.models.employee.domain.*;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.exceptions.EclipseLinkException;
+import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.UnitOfWork;
+import org.eclipse.persistence.testing.framework.TestWarningException;
+import org.eclipse.persistence.testing.models.employee.domain.Employee;
 
 /**
  * Test pessimistic locking.
@@ -72,7 +72,7 @@ public class PessimisticLockTest extends RefreshTest {
         responsibilityListSize = employeeObject.getResponsibilitiesList().size();
         employeeObject.getResponsibilitiesList().removeAllElements();
 
-        uow.refreshAndLockObject(employeeObject, org.eclipse.persistence.queries.ObjectBuildingQuery.LOCK_NOWAIT);
+        uow.refreshAndLockObject(employeeObject, (short) this.lockMode);
 
         // Test the lock.
         DatabaseSession session2 = null;
@@ -89,7 +89,7 @@ public class PessimisticLockTest extends RefreshTest {
             boolean isLocked = false;
             Object result = null;
             try {
-                result = uow2.refreshAndLockObject(employeeObject, (short) lockMode);
+                result = uow2.refreshAndLockObject(employeeObject, org.eclipse.persistence.queries.ObjectBuildingQuery.LOCK_NOWAIT);
             } catch (EclipseLinkException exeception) {
                 session2.logMessage(exeception.toString());
                 isLocked = true;
