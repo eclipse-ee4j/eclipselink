@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -253,6 +253,43 @@ public class FullRegressionTestSuite extends TestSuite {
         suite.addTest(AbstractEntityWithColumnDiscriminatorTest.suite());
         fullSuite.addTest(suite);
 
+        // Fetch Groups tests.
+        suite = new TestSuite();
+        suite.setName("FetchGroups");
+        suite.addTest(FetchGroupAPITests.suite());
+        suite.addTest(FetchGroupTrackerWeavingTests.suite());
+        suite.addTest(SimpleDefaultFetchGroupTests.suite());
+        suite.addTest(SimpleFetchGroupTests.suite());
+        suite.addTest(SimpleNamedFetchGroupTests.suite());
+        suite.addTest(SimpleSerializeFetchGroupTests.suite());
+        suite.addTest(NestedDefaultFetchGroupTests.suite());
+        suite.addTest(NestedFetchGroupTests.suite());
+        suite.addTest(NestedNamedFetchGroupTests.suite());
+        suite.addTest(FetchGroupMergeWithCacheTests.suite());
+        fullSuite.addTest(suite);
+
+        fullSuite.addTest(PartitionedTestSuite.suite());
+        fullSuite.addTest(PartitionedXMLTestSuite.suite());
+        fullSuite.addTest(PLSQLTestSuite.suite());
+        fullSuite.addTest(XMLPLSQLTestSuite.suite());
+        // Has security manager issues on some JVMs.
+        //fullSuite.addTest(RemoteEntityManagerTestSuite.suite());
+
+        // Composite tests.
+        fullSuite.addTest(org.eclipse.persistence.testing.tests.jpa.composite.advanced.EntityManagerJUnitTestSuite.suite());
+
+        // Fetch Groups tests.
+        suite = new TestSuite();
+        suite.setName("Extensibility");
+        suite.addTest(ExtensibilityTests.suite());
+        fullSuite.addTest(suite);
+
+        return fullSuite;
+    }
+
+    public static TestSuite suite2() {
+        TestSuite fullSuite = new TestSuite();
+
         // XML model
         fullSuite.addTest(EntityMappingsJUnitTestSuite.suite());
 
@@ -289,7 +326,7 @@ public class FullRegressionTestSuite extends TestSuite {
         fullSuite.addTest(org.eclipse.persistence.testing.tests.jpa.metamodel.MetamodelTestSuite.suite());
 
         // JPA 2.0 Criteria JPQL model
-        suite = new TestSuite();
+        TestSuite suite = new TestSuite();
         suite.setName("Criteria");
         suite.addTest(org.eclipse.persistence.testing.tests.jpa.criteria.JUnitCriteriaUnitTestSuite.suite());
         suite.addTest(org.eclipse.persistence.testing.tests.jpa.criteria.AdvancedCompositePKJunitTest.suite());
@@ -310,37 +347,6 @@ public class FullRegressionTestSuite extends TestSuite {
         fullSuite.addTest(CascadeDeletesJUnitTestSuite.suite());
 
         fullSuite.addTest(QueryCastTestSuite.suite());
-
-        // Fetch Groups tests.
-        suite = new TestSuite();
-        suite.setName("FetchGroups");
-        suite.addTest(FetchGroupAPITests.suite());
-        suite.addTest(FetchGroupTrackerWeavingTests.suite());
-        suite.addTest(SimpleDefaultFetchGroupTests.suite());
-        suite.addTest(SimpleFetchGroupTests.suite());
-        suite.addTest(SimpleNamedFetchGroupTests.suite());
-        suite.addTest(SimpleSerializeFetchGroupTests.suite());
-        suite.addTest(NestedDefaultFetchGroupTests.suite());
-        suite.addTest(NestedFetchGroupTests.suite());
-        suite.addTest(NestedNamedFetchGroupTests.suite());
-        suite.addTest(FetchGroupMergeWithCacheTests.suite());
-        fullSuite.addTest(suite);
-
-        fullSuite.addTest(PartitionedTestSuite.suite());
-        fullSuite.addTest(PartitionedXMLTestSuite.suite());
-        fullSuite.addTest(PLSQLTestSuite.suite());
-        fullSuite.addTest(XMLPLSQLTestSuite.suite());
-        // Has security manager issues on some JVMs.
-        //fullSuite.addTest(RemoteEntityManagerTestSuite.suite());
-
-        // Composite tests.
-        fullSuite.addTest(org.eclipse.persistence.testing.tests.jpa.composite.advanced.EntityManagerJUnitTestSuite.suite());
-
-        // Fetch Groups tests.
-        suite = new TestSuite();
-        suite.setName("Extensibility");
-        suite.addTest(ExtensibilityTests.suite());
-        fullSuite.addTest(suite);
 
         // XML Mapping Metadata Complete
         fullSuite.addTest(XMLMappingMetadataCompleteJunitTestCase.suite());
