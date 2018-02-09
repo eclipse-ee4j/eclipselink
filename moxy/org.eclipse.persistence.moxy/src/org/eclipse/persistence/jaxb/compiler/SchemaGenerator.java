@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -788,7 +788,7 @@ public class SchemaGenerator {
             } else if (URI.equals(Constants.REF_URL)) {
                 prefix = schema.getNamespaceResolver().generatePrefix(Constants.REF_PREFIX);
 
-                if(!importExists(schema, SWA_REF_IMPORT)){
+                if(!importExists(schema, URI, SWA_REF_IMPORT)){
                     Import schemaImport = new Import();
                     schemaImport.setSchemaLocation(SWA_REF_IMPORT);
                     schemaImport.setNamespace(URI);
@@ -926,12 +926,20 @@ public class SchemaGenerator {
         return this.schemaTypeInfo;
     }
 
-    private boolean importExists(Schema schema, String schemaName) {
+    private boolean importExists(Schema schema, String importNsURI, String schemaLocation) {
         java.util.List imports = schema.getImports();
         for (int i = 0; i < imports.size(); i++) {
             Import nextImport = (Import) imports.get(i);
-            if (nextImport.getSchemaLocation() != null && nextImport.getSchemaLocation().equals(schemaName)) {
-                return true;
+            if (nextImport.getSchemaLocation() != null && nextImport.getSchemaLocation().equals(schemaLocation)) {
+                if ("".equals(importNsURI)) {
+                    if (nextImport.getNamespace() == null) {
+                        return true;
+                    }
+                } else {
+                    if (importNsURI.equals(nextImport.getNamespace())) {
+                        return true;
+                    }
+                }
             }
         }
         return false;
@@ -972,7 +980,7 @@ public class SchemaGenerator {
                 }
             }
 
-            if (schemaName != null && !importExists(sourceSchema, schemaName)) {
+            if (schemaName != null && !importExists(sourceSchema, importNamespace, schemaName)) {
                 Import schemaImport = new Import();
                 schemaImport.setSchemaLocation(schemaName);
                 if (importNamespace != null && !importNamespace.equals(EMPTY_STRING)) {
