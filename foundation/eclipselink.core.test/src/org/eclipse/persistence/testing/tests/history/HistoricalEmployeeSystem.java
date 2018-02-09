@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -76,6 +76,9 @@ public class HistoricalEmployeeSystem extends EmployeeSystem {
                 executeCall(session, "drop table EMPLOYEE CASCADE CONSTRAINTS");
                 executeCall(session, "drop table ADDRESS CASCADE CONSTRAINTS");
             } else {
+                if (session.getPlatform().isMySQL()) {
+                    executeCall(session, "SET FOREIGN_KEY_CHECKS = 0");
+                }
                 executeCall(session, "drop table PHONE");
                 executeCall(session, "drop table RESPONS");
                 executeCall(session, "drop table SALARY");
@@ -84,6 +87,9 @@ public class HistoricalEmployeeSystem extends EmployeeSystem {
                 executeCall(session, "drop table PROJECT");
                 executeCall(session, "drop table EMPLOYEE");
                 executeCall(session, "drop table ADDRESS");
+                if (session.getPlatform().isMySQL()) {
+                    executeCall(session, "SET FOREIGN_KEY_CHECKS = 1");
+                }
             }
         }
 
