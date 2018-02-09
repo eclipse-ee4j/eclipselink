@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -8,13 +8,10 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- * Matt MacIvor - July 2011
+ * Lukas Jungmann - Feb 2018
  ******************************************************************************/
-package org.eclipse.persistence.testing.jaxb.schemagen.imports.url.a;
+@XmlSchema(namespace="c", location="http://someuri.com/myschema.xsd")
+package org.eclipse.persistence.testing.jaxb.schemagen.imports.url.c;
 
-public class Employee{
-    public String name;
+import javax.xml.bind.annotation.XmlSchema;
 
-    public org.eclipse.persistence.testing.jaxb.schemagen.imports.url.b.Address address;
-    public org.eclipse.persistence.testing.jaxb.schemagen.imports.url.c.Gender gender;
-}
