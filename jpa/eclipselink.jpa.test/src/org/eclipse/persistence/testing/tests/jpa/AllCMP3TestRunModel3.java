@@ -15,9 +15,10 @@ package org.eclipse.persistence.testing.tests.jpa;
 import org.eclipse.persistence.testing.framework.TestModel;
 
 /**
- * <p><b>Purpose</b>: Test run for all CMP3 tests.
+ * <p>
+ * <b>Purpose</b>: Test run for all CMP3 tests.
  */
-public class AllCMP3TestRunModel2 extends TestModel {
+public class AllCMP3TestRunModel3 extends TestModel {
 
     /**
      * Return the JUnit suite to allow JUnit runner to find it. Unfortunately
@@ -25,10 +26,10 @@ public class AllCMP3TestRunModel2 extends TestModel {
      * generically do this.
      */
     public static junit.framework.TestSuite suite() {
-        return new AllCMP3TestRunModel2();
+        return new AllCMP3TestRunModel3();
     }
 
-    public AllCMP3TestRunModel2() {
-        addTest(FullRegressionTestSuite.suite2());
+    public AllCMP3TestRunModel3() {
+        addTest(FullRegressionTestSuite.suite3());
     }
 }
