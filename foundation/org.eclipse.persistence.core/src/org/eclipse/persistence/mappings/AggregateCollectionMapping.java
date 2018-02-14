@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -17,6 +17,8 @@
  *       - 374688: JPA 2.1 Converter support
  *     02/11/2013-2.5 Guy Pelletier
  *       - 365931: @JoinColumn(name="FK_DEPT",insertable = false, updatable = true) causes INSERT statement to include this data value that it is associated with
+ *     02/14/2018-2.7.2 Lukas Jungmann
+ *       - 530680: embedded element collection within an entity of protected isolation does not merged changes into clones correctly
  ******************************************************************************/
 package org.eclipse.persistence.mappings;
 
@@ -2186,10 +2188,8 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      */
     @Override
     public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager, AbstractSession targetSession) {
-        if (this.descriptor.getCachePolicy().isProtectedIsolation()){
-            if (!this.isCacheable && !targetSession.isProtectedSession()){
-                setAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder(null)));
-            }
+        if (this.descriptor.getCachePolicy().isProtectedIsolation() && !this.isCacheable && !targetSession.isProtectedSession()) {
+            setAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder(null)));
             return;
         }
         //Check to see if the target has an instantiated collection
@@ -2249,10 +2249,8 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      */
     @Override
     public void mergeIntoObject(Object target, boolean isTargetUnInitialized, Object source, MergeManager mergeManager, AbstractSession targetSession) {
-        if (this.descriptor.getCachePolicy().isProtectedIsolation()) {
-            if (!this.isCacheable && !targetSession.isProtectedSession()){
-                setAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder(null)));
-            }
+        if (this.descriptor.getCachePolicy().isProtectedIsolation() && !this.isCacheable && !targetSession.isProtectedSession()) {
+            setAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder(null)));
             return;
         }
         if (isTargetUnInitialized) {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -39,6 +39,7 @@ public class CacheableTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildCACHEABLEREL_PROTECTEDTable());
         addTableDefinition(buildCACHEABLEREL_FALSEDETAILTable());
         addTableDefinition(buildCACHEABLEREL_PROTECTEMBEDDABLETable());
+        addTableDefinition(buildCACHEABLEREL_SHAREDEMBEDDABLETable());
         addTableDefinition(buildProductFalseTable());
         addTableDefinition(buildProductTrueTable());
     }
@@ -566,6 +567,34 @@ public class CacheableTableCreator extends TogglingFastTableCreator {
         falseFK.setUnique(false);
         falseFK.setIsIdentity(false);
         table.addField(falseFK);
+
+        return table;
+    }
+
+    public static TableDefinition buildCACHEABLEREL_SHAREDEMBEDDABLETable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CACHREL_SHAREDEMB");
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setIsPrimaryKey(false);
+        fieldID.setUnique(false);
+        fieldID.setIsIdentity(false);
+        fieldID.setForeignKeyFieldName("JPA_CACHEREL.ID");
+        table.addField(fieldID);
+
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("SE_NAME");
+        fieldNAME.setTypeName("VARCHAR");
+        fieldNAME.setSize(75);
+        fieldNAME.setShouldAllowNull(true);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setIsIdentity(false);
+        table.addField(fieldNAME);
 
         return table;
     }
