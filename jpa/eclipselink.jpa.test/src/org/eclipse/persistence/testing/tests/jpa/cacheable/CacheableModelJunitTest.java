@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -302,6 +302,9 @@ public class CacheableModelJunitTest extends JUnitTestCase {
 
             // Bug 408262
             suite.addTest(new CacheableModelJunitTest("testRefreshProtectedEntityInEarlyTransaction"));
+
+            // Bug 530680
+            suite.addTest(new CacheableModelJunitTest("testUpdateSharedElementCollection"));
         }
         return suite;
     }
@@ -1736,6 +1739,46 @@ public class CacheableModelJunitTest extends JUnitTestCase {
             assertTrue("A protected ElementCollection relationship was merged into the shared cache", cachedCRE.getProtectedEmbeddables() == null || cachedCRE.getProtectedEmbeddables().isEmpty());
             beginTransaction(em);
             cre.getProtectedEmbeddables().clear();
+            commitTransaction(em);
+        }finally{
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEM(em);
+        }
+    }
+
+    //Bug #530680
+    public void testUpdateSharedElementCollection() {
+        EntityManager em = createDSEntityManager();
+        beginTransaction(em);
+        try{
+            CacheableRelationshipsEntity cre = em.find(CacheableRelationshipsEntity.class, m_cacheableRelationshipsEntityId);
+            ServerSession session = em.unwrap(ServerSession.class);
+            SharedEmbeddable cem1 = new SharedEmbeddable();
+            cem1.setName("origName1");
+            SharedEmbeddable cem2 = new SharedEmbeddable();
+            cem2.setName("origName2");
+            cre.addSharedEmbeddable(cem1);
+            cre.addSharedEmbeddable(cem2);
+            commitTransaction(em);
+
+            CacheableRelationshipsEntity cachedCRE = (CacheableRelationshipsEntity) session.getIdentityMapAccessor().getFromIdentityMap(cre);
+            assertTrue("A shared ElementCollection relationship was not merged into the shared cache", cachedCRE.getSharedEmbeddables() != null && !cachedCRE.getSharedEmbeddables().isEmpty());
+
+            CacheableRelationshipsEntity cre2 = em.find(CacheableRelationshipsEntity.class, m_cacheableRelationshipsEntityId);
+            beginTransaction(em);
+            em.detach(cre2);
+            cre2.getSharedEmbeddables().remove(0);
+            em.merge(cre2);
+            commitTransaction(em);
+
+            session = em.unwrap(ServerSession.class);
+            CacheableRelationshipsEntity cachedCRE2 = (CacheableRelationshipsEntity) session.getIdentityMapAccessor().getFromIdentityMap(cre2);
+            assertEquals("Changes in shared ElementCollection relationship were not merged into the shared cache", 1, cachedCRE2.getSharedEmbeddables().size());
+
+            beginTransaction(em);
+            cre.getSharedEmbeddables().clear();
             commitTransaction(em);
         }finally{
             if (isTransactionActive(em)){

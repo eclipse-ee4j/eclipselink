@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -50,6 +50,8 @@ public class CacheableRelationshipsEntity {
     protected List<CacheableFalseDetail> cacheableFalseDetails;
 
     protected List<ProtectedEmbeddable> protectedEmbeddables;
+
+    protected List<SharedEmbeddable> sharedEmbeddables;
 
     @Id
     @GeneratedValue(strategy=TABLE, generator="CACHEABLE_TABLE_GENERATOR")
@@ -155,11 +157,30 @@ public class CacheableRelationshipsEntity {
         protectedEmbeddables.add(protectedEmbeddable);
     }
 
+    /* element collection with embeddable (true protected)*/
+    @ElementCollection
+    @CollectionTable(
+        name="CACHREL_SHAREDEMB",
+        joinColumns=@JoinColumn(name="ID")
+    )
+    public List<SharedEmbeddable> getSharedEmbeddables() {
+        return sharedEmbeddables;
+    }
+
+    public void setSharedEmbeddables(List<SharedEmbeddable> sharedEmbeddables) {
+        this.sharedEmbeddables = sharedEmbeddables;
+    }
+
+    public void addSharedEmbeddable(SharedEmbeddable sharedEmbeddables) {
+        this.sharedEmbeddables.add(sharedEmbeddables);
+    }
+
     public CacheableRelationshipsEntity() {
         cacheableFalses = new ArrayList<CacheableFalseEntity>();
         cacheableProtecteds = new ArrayList<CacheableProtectedEntity>();
         cacheableFalseDetails = new ArrayList<CacheableFalseDetail>();
         protectedEmbeddables = new ArrayList<ProtectedEmbeddable>();
+        sharedEmbeddables = new ArrayList<SharedEmbeddable>();
     }
 
 }
