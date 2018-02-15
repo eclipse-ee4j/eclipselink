@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -1160,6 +1160,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
         UnitOfWork uow = clientSession.acquireUnitOfWork();
         uow.registerObject(expectedResult);
         uow.commit();
+        uow.release();
 
         //test the apostrophe
         //"SELECT OBJECT(address) FROM Address address WHERE address.street LIKE :pattern ESCAPE :esc"
@@ -1771,6 +1772,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
         UnitOfWork uow = clientSession.acquireUnitOfWork();
         uow.registerObject(nullEmployee);
         uow.commit();
+        uow.release();
 
         ReadAllQuery raq = new ReadAllQuery();
         raq.setReferenceClass(Employee.class);
@@ -1800,6 +1802,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
         uow = clientSession.acquireUnitOfWork();
         uow.deleteObject(nullEmployee);
         uow.commit();
+        uow.release();
 
         assertTrue("Simple Null test failed", comparer.compareObjects(result, expectedResult));
     }
@@ -1815,6 +1818,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
         UnitOfWork uow = clientSession.acquireUnitOfWork();
         uow.registerObject(nullEmployee);
         uow.commit();
+        uow.release();
 
         ReadAllQuery raq = new ReadAllQuery();
         raq.setReferenceClass(Employee.class);
@@ -1843,6 +1847,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
         uow = clientSession.acquireUnitOfWork();
         uow.deleteObject(nullEmployee);
         uow.commit();
+        uow.release();
 
         assertTrue("Simple Not Null test failed", comparer.compareObjects(result, expectedResult));
     }
@@ -2047,6 +2052,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
         UnitOfWork uow = clientSession.acquireUnitOfWork();
         uow.registerObject(expectedResult);
         uow.commit();
+        uow.release();
 
         Character escapeChar;
         //"SELECT OBJECT(address) FROM Address address WHERE address.street LIKE '234 Wandering "
@@ -2367,6 +2373,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
         empClone.addPhoneNumber(phoneClone);
         uow.registerObject(phone);
         uow.commit();
+        uow.release();
 
 
         //"SELECT OBJECT(emp) FROM Employee emp " + "WHERE ?1 MEMBER OF emp.phoneNumbers";
@@ -2387,6 +2394,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
         uow = clientSession.acquireUnitOfWork();
         uow.deleteObject(phone);
         uow.commit();
+        uow.release();
 
         assertTrue("Select simple member of with parameter test failed", comparer.compareObjects(result, expectedResult));
 
@@ -2425,6 +2433,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
                 phoneClone.setId(emp.getId());
             }
             uow.commit();
+            uow.release();
             phone = emp.getPhoneNumbers().iterator().next();
             shouldCleanUp = true;
         } else {
@@ -2456,6 +2465,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
             emp.removePhoneNumber(phoneToRemove);
             uow.deleteObject(phoneToRemove);
             uow.commit();
+            uow.release();
         }
         if (!ok) {
             fail("unexpected query result");
