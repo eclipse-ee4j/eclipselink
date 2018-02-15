@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -19,6 +19,8 @@
  *       - 357474: Address primaryKey option from tenant discriminator column
  *     08/07/2016-2.6 Dalia Abo Sheasha 
  *       - 499335: Multiple embeddable fields can't reference same object
+ *     02/14/2018-2.7 Will Dazey
+ *       - 529602: Added support for CLOBs in DELETE statements for Oracle
  ******************************************************************************/  
 package org.eclipse.persistence.internal.descriptors;
 
@@ -2909,9 +2911,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         if(null != primaryKeyFields) {
             for (int index = 0; index < primaryKeyFields.size(); index++) {
                 DatabaseField primaryKeyField = (DatabaseField)primaryKeyFields.get(index);
-                subExp1 = builder.getField(primaryKeyField);
-                subExp2 = builder.getParameter(primaryKeyField);
-                subExpression = subExp1.equal(subExp2);
+                subExpression = session.getPlatform().createExpressionFor(primaryKeyField, builder);
 
                 if (expression == null) {
                     expression = subExpression;

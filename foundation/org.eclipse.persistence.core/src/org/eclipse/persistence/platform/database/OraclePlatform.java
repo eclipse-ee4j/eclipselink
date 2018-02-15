@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -20,6 +20,8 @@
  *       - 458877 : Add national character support
  *     02/23/2015-2.6 Dalia Abo Sheasha
  *       - 460607: Change DatabasePlatform StoredProcedureTerminationToken to be configurable
+ *     02/14/2018-2.7 Will Dazey
+ *       - 529602: Added support for CLOBs in DELETE statements for Oracle
  *****************************************************************************/  
 package org.eclipse.persistence.platform.database;
 
@@ -37,6 +39,7 @@ import java.util.Vector;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
@@ -1043,4 +1046,15 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         return super.wasFailureCommunicationBased(exception, connection, sessionForProfile);
     }
 
+    @Override
+    public Expression createExpressionFor(DatabaseField field, Expression builder) {
+        if (field.getType() == java.sql.Clob.class || 
+                field.getType() == java.sql.Blob.class) {
+            Expression subExp1 = builder.getField(field);
+            Expression subExp2 = builder.getParameter(field);
+            subExp1 = subExp1.getFunction("dbms_lob.compare", subExp2);
+            return subExp1.equal(0);
+        }
+        return super.createExpressionFor(field, builder);
+    }
 }
