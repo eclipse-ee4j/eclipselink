@@ -21,6 +21,8 @@ import java.util.HashSet;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
+import org.eclipse.persistence.internal.databaseaccess.Platform;
+import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.jpa.test.framework.DDLGen;
 import org.eclipse.persistence.jpa.test.framework.Emf;
 import org.eclipse.persistence.jpa.test.framework.EmfRunner;
@@ -44,6 +46,12 @@ public class TestLobMerge {
      */
     @Test
     public void testLobMerge() throws Exception {
+        //Test for Oracle only
+        Platform pl = emf.unwrap(EntityManagerFactoryImpl.class).getDatabaseSession().getDatasourcePlatform();
+        if(!pl.isOracle()) {
+            Assert.assertTrue("Platform \""+ pl +"\". Test will run on Oracle only", true);
+            return;
+        }
         EntityManager em = null;
         try {
             em = emf.createEntityManager();
@@ -55,7 +63,6 @@ public class TestLobMerge {
                             new CollectedEntity("label3", "content3") }));
 
             final ParentEntity pdo = new ParentEntity(9, Collections.unmodifiableSet(col1));
-            System.out.println("EM CREATED!!");
             em.getTransaction().begin();
             em.persist(pdo);
             em.getTransaction().commit();
