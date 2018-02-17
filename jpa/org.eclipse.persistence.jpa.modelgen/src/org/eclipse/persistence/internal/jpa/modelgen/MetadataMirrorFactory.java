@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -20,6 +20,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 2)
  *     09/20/2011-2.3.1 Guy Pelletier
  *       - 357476: Change caching default to ISOLATED for multitenant's using a shared EMF.
+ *     02/17/2018-2.7.2 Lukas Jungmann
+ *       - 531305: Canonical model generator fails to run on JDK9
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.modelgen;
 
@@ -31,7 +33,9 @@ import java.util.Map;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.type.TypeMirror;
@@ -41,9 +45,8 @@ import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataFactory;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
-import org.eclipse.persistence.internal.jpa.modelgen.MetadataMirrorFactory;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataFactory;
 import org.eclipse.persistence.internal.jpa.modelgen.objects.PersistenceUnit;
 import org.eclipse.persistence.internal.jpa.modelgen.visitors.ElementVisitor;
 import org.eclipse.persistence.logging.SessionLog;
@@ -324,7 +327,16 @@ public class MetadataMirrorFactory extends MetadataFactory {
                 // @MappedSuperclass or @Embeddable, since it may be a class
                 // defined solely in XML and we want to make sure we look at
                 // the changes for those classes as well.
-                if (element.getAnnotation(javax.annotation.Generated.class) == null) {
+                boolean isGenerated = false;
+                List<? extends AnnotationMirror> annotationMirrors = element.getAnnotationMirrors();
+                for (AnnotationMirror am : annotationMirrors) {
+                    Name qn = ((TypeElement) am.getAnnotationType().asElement()).getQualifiedName();
+                    if ("javax.annotation.Generated".equals(qn) || "javax.annotation.processing.Generated".equals(qn)) {
+                        isGenerated = true;
+                        break;
+                    }
+                }
+                if (!isGenerated) {
                     roundElements.put(element, null);
                 }
             }
