@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,28 +12,31 @@
  ******************************************************************************/
 package dbws.testing.simplesp;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.io.ByteArrayOutputStream;
 //javase imports
 import java.io.StringReader;
 import java.sql.SQLException;
 import java.sql.Statement;
-
-import org.w3c.dom.Document;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CountDownLatch;
 
 //java eXtension imports
 import javax.wsdl.WSDLException;
-
-//JUnit4 imports
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 //EclipseLink imports
 import org.eclipse.persistence.internal.xr.Invocation;
 import org.eclipse.persistence.internal.xr.Operation;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.platform.database.MySQLPlatform;
+//JUnit4 imports
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.w3c.dom.Document;
 
 //testing imports
 import dbws.testing.DBWSTestSuite;
@@ -486,6 +489,60 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
         assertTrue("control document not same as instance document", comparer.isNodeEqual(
             controlDoc, doc));
     }
+
+    // Bug #531304
+    @Test
+    public void inOutArgsConcurrencyTest() {
+        int runs = 10;
+        Queue<String> errors = new ConcurrentLinkedQueue<>();
+        CountDownLatch start = new CountDownLatch(1);
+        CountDownLatch end = new CountDownLatch(runs);
+
+        class Tst extends Thread {
+            private final int id;
+
+            Tst(int id) {
+                this.id = id;
+            }
+
+            @Override
+            public void run() {
+                try {
+                    start.await();
+                    Invocation invocation = new Invocation("InOutArgsConcurrencyTest");
+                    invocation.setParameter("T", Integer.toString(id));
+                    Operation op = xrService.getOperation("InOutArgsTest");
+                    Object result = op.invoke(xrService, invocation);
+                    assertNotNull("result is null", result);
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+                    marshaller.marshal(result, baos);
+                    String s = baos.toString();
+                    if (!s.contains("barf-" + id)) {
+                        errors.add("Got: '" + s + "' for '" + id + "'");
+                    }
+                } catch (InterruptedException e) {
+                    // ignore
+                } finally {
+                    end.countDown();
+                }
+            }
+        }
+
+        Tst[] threads = new Tst[runs];
+        for (int i = 0; i < runs; i++) {
+            threads[i] = new Tst(i);
+            threads[i].start();
+        }
+        start.countDown();
+        try {
+            end.await();
+        } catch (InterruptedException e) {
+            // ignore
+        }
+        assertTrue(errors.toString(), errors.isEmpty());
+    }
+
     public static final String IN_OUT_ARGS_XML =
       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
       "<simple-xml-format>" +
