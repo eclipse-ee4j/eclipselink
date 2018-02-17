@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -375,21 +375,20 @@ public class QueryOperation extends Operation {
 
         // a named query created via ORM metadata processing does not have
         // parameters set, however, the operation should
+        List<Object> argVals = new ArrayList<>();
         if (query.getArguments().size() == 0) {
             int idx = 0;
             for (Parameter param : getParameters()) {
                 // for custom SQL query (as configured via ORM metadata
                 // processing) we add args by position
                 query.addArgument(Integer.toString(++idx), Util.SCHEMA_2_CLASS.get(param.getType()));
-                query.addArgumentValue(invocation.getParameter(param.getName()));
+                argVals.add(invocation.getParameter(param.getName()));
             }
         } else {
-            List<Object> argVals = new ArrayList<Object>();
             // need to set argument values
             for (Parameter param : getParameters()) {
                 argVals.add(invocation.getParameter(param.getName()));
             }
-            query.setArgumentValues(argVals);
         }
         // for SimpleXML + DataReadQuery we need to set MAP result type
         if (isSimpleXMLFormat() && query.isDataReadQuery()) {
@@ -397,7 +396,7 @@ public class QueryOperation extends Operation {
         }
 
         // now execute the query
-        Object value = xrService.getORSession().getActiveSession().executeQuery(query);
+        Object value = xrService.getORSession().getActiveSession().executeQuery(query, argVals);
 
         if (value != null) {
             // a recent change in core results in an empty vector being returned in cases

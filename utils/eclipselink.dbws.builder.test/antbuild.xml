@@ -89,9 +89,9 @@
 
     <!-- clean -->
     <target name="clean" description="Clean all generated content">
-        <DeleteDirQuietly dir="${classes.dir}"/>
-        <DeleteDirQuietly dir="${run.dir}"/>
-        <DeleteFileQuietly file="${dbwsbldrtest.jar}"/>
+        <delete dir="${classes.dir}" failonerror="false"/>
+        <delete dir="${run.dir}" failonerror="false"/>
+        <delete file="${dbwsbldrtest.jar}" failonerror="false"/>
     </target>
 
     <!-- initialize varables and paths needed for compile -->
@@ -247,6 +247,15 @@
                includes="**/*.java"
                fork="true"
                classpathref="dbwsbldrtest.compile.path"
+               debug="${javac.debug}"
+               debuglevel="${javac.debuglevel}"
+               encoding="UTF-8"
+               optimize="${javac.optimize}"
+               source="${javac.version}"
+               target="${javac.version}"
+               deprecation="${javac.deprecation}"
+               failonerror="true"
+               memoryMaximumSize="512m"
         />
     </target>
 
@@ -260,174 +269,44 @@
 
     <target name="run-tests" if="support.test" depends="init-tests" description="setup, compile, and run dbws util testsuites">
         <mkdir dir="${classes.dir}"/>
-        <DeleteDirQuietly dir="./${report.dir}"/>
+        <delete dir="./${report.dir}" failonerror="false"/>
         <mkdir dir="./${report.dir}"/>
         <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
         <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
         <junit
-          jvm="${test.junit.jvm.exec}"
-          printsummary="withOutAndErr"
-          fork="yes"
-          forkmode="once"
-          maxmemory="512m"
-          >
-          <formatter
-            type="xml"
-          />
-          <classpath>
-            <path
-              refid="dbwsbldrtest.run.path"
-            />
-            <pathelement
-              path="./${dbwsbldrtest.jar}"
-            />
-          </classpath>
-          <jvmarg line="${additional.jvmargs}"/>
-          <sysproperty
-            key="eclipselink.logging.level"
-            value="${logging.level}"
-          />
-          <sysproperty
-            key="db.driver"
-            value="${db.driver}"
-          />
-          <sysproperty
-            key="db.url"
-            value="${db.url}"
-          />
-          <sysproperty
-            key="db.user"
-            value="${db.user}"
-          />
-          <sysproperty
-            key="db.pwd"
-            value="${db.pwd}"
-          />
-          <sysproperty
-            key="db.platform"
-            value="${db.platform}"
-          />
-          <sysproperty
-            key="db.ddl.create"
-            value="${db.ddl.create}"
-          />
-          <sysproperty
-            key="db.ddl.drop"
-            value="${db.ddl.drop}"
-          />
-          <sysproperty
-            key="db.ddl.debug"
-            value="${db.ddl.debug}"
-          />
-          <sysproperty
-            key="release.version"
-            value="${release.version}"
-          />
-          <test
-            name="dbws.testing.attachedbinary.AttachedBinaryTestSuite"
-          />
-          <test
-            name="dbws.testing.batchsql.BatchSQLTestSuite"
-          />
-          <test
-            name="dbws.testing.bindingmodel.BindingModelTestSuite"
-          />
-          <test
-            name="dbws.testing.crud.CRUDTestSuite"
-          />
-          <test
-            name="dbws.testing.customsql.CustomSQLTestSuite"
-          />
-          <test
-            name="dbws.testing.inlinebinary.InlineBinaryTestSuite"
-          />
-          <test
-            name="dbws.testing.invalidinput.InvalidInputTestSuite"
-          />
-          <test
-            name="dbws.testing.loglevelvalidation.LogLevelValidationTestSuite"
-          />
-          <test
-            name="dbws.testing.mtom.MTOMTestSuite"
-          />
-          <test
-            name="dbws.testing.namingtransformer.NamingTransformerTestSuite"
-          />
-          <test
-            name="dbws.testing.optlock.OptLockTestSuite"
-          />
-          <test
-            name="dbws.testing.rootcause.RootCauseTestSuite"
-          />
-          <test
-            name="dbws.testing.secondarysql.SecondarySQLTestSuite"
-          />
-          <test
-            name="dbws.testing.simplesp.SimpleSPTestSuite"
-          />
-          <test
-            name="dbws.testing.simpletable.SimpleTableTestSuite"
-          />
-          <test
-            name="dbws.testing.simpletablewithnestedsql.SimpleTableWithNestedSQLTestSuite"
-          />
-          <test
-            name="dbws.testing.soap12.SOAP12TestSuite"
-          />
-          <test
-            name="dbws.testing.sqlascollection.SQLAsCollectionTestSuite"
-          />
-          <test
-            name="dbws.testing.updatefault.UpdateFaultTestSuite"
-          />
+            jvm="${test.junit.jvm.exec}"
+            printsummary="withOutAndErr"
+            fork="yes"
+            forkmode="once"
+            maxmemory="512m"
+        >
+            <formatter type="xml" />
+            <classpath>
+                <path refid="dbwsbldrtest.run.path" />
+                <pathelement path="./${dbwsbldrtest.jar}" />
+            </classpath>
+            <jvmarg line="${additional.jvmargs}"/>
+            <sysproperty key="eclipselink.logging.level" value="${logging.level}" />
+            <sysproperty key="db.driver" value="${db.driver}" />
+            <sysproperty key="db.url" value="${db.url}" />
+            <sysproperty key="db.user" value="${db.user}" />
+            <sysproperty key="db.pwd" value="${db.pwd}" />
+            <sysproperty key="db.platform" value="${db.platform}" />
+            <sysproperty key="db.ddl.create" value="${db.ddl.create}" />
+            <sysproperty key="db.ddl.drop" value="${db.ddl.drop}" />
+            <sysproperty key="db.ddl.debug" value="${db.ddl.debug}" />
+            <sysproperty key="release.version" value="${release.version}" />
+            <batchtest todir="${report.dir}" haltonfailure="no" haltonerror="no">
+                <fileset dir="${src.dir}">
+                    <include name="dbws/testing/*/*TestSuite.java"/>
+                </fileset>
+            </batchtest>
         </junit>
-        <junitreport
-          todir="./${report.dir}"
-          >
-          <fileset
-            dir="."
-            >
-            <include
-              name="TEST-*.xml"
-            />
-          </fileset>
-          <report
-            format="noframes"
-            todir="./${report.dir}"
-          />
+        <junitreport todir="${report.dir}" >
+            <fileset dir="${report.dir}" >
+                <include name="TEST-*.xml" />
+            </fileset>
+            <report format="noframes" todir="${report.dir}" />
         </junitreport>
-        <delete>
-          <fileset dir="." includes="TEST-*xml"/>
-        </delete>
     </target>
-
-    <!-- MACRO and SCRIPT definitions -->
-    <presetdef name="javac">
-      <javac
-        debug="${javac.debug}"
-        debuglevel="${javac.debuglevel}"
-        encoding="UTF-8"
-        optimize="${javac.optimize}"
-        source="${javac.version}"
-        target="${javac.version}"
-        deprecation="${javac.deprecation}"
-        failonerror="true"
-        memoryMaximumSize="512m"
-      />
-    </presetdef>
-    <presetdef name="DeleteDirQuietly">
-        <delete
-            dir="_tmp_"
-            quiet="true"
-            failonerror="false"
-        />
-    </presetdef>
-    <presetdef name="DeleteFileQuietly">
-        <delete
-            file="_tmp_"
-            quiet="true"
-            failonerror="false"
-        />
-    </presetdef>
-
 </project>
