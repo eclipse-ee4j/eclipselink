@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -25,15 +25,17 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.modelgen;
 
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_PREFIX;
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_SUFFIX;
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_SUB_PACKAGE;
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_LOAD_XML;
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_USE_STATIC_FACTORY;
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_USE_STATIC_FACTORY_DEFAULT;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML;
 import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_GENERATE_TIMESTAMP;
 import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_GENERATE_TIMESTAMP_DEFAULT;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_GLOBAL_LOG_LEVEL;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_LOAD_XML;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_PREFIX;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_PROCESSOR_LOG_LEVEL;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_SUB_PACKAGE;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_SUFFIX;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_USE_STATIC_FACTORY;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_USE_STATIC_FACTORY_DEFAULT;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -70,6 +72,8 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataC
 import org.eclipse.persistence.internal.jpa.modelgen.objects.PersistenceUnit;
 import org.eclipse.persistence.internal.jpa.modelgen.objects.PersistenceUnitReader;
 import org.eclipse.persistence.internal.jpa.modelgen.visitors.TypeVisitor;
+import org.eclipse.persistence.logging.LogCategory;
+import org.eclipse.persistence.logging.LogLevel;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.server.ServerSession;
@@ -86,7 +90,9 @@ import org.eclipse.persistence.sessions.server.ServerSession;
         CANONICAL_MODEL_LOAD_XML,
         CANONICAL_MODEL_USE_STATIC_FACTORY,
         CANONICAL_MODEL_GENERATE_TIMESTAMP,
-        ECLIPSELINK_PERSISTENCE_XML})
+        ECLIPSELINK_PERSISTENCE_XML,
+        CANONICAL_MODEL_PROCESSOR_LOG_LEVEL,
+        CANONICAL_MODEL_GLOBAL_LOG_LEVEL})
 @SupportedAnnotationTypes({"javax.persistence.*", "org.eclipse.persistence.annotations.*"})
 public class CanonicalModelProcessor extends AbstractProcessor {
     protected enum AttributeType {CollectionAttribute, ListAttribute, MapAttribute, SetAttribute, SingularAttribute }
@@ -240,7 +246,9 @@ public class CanonicalModelProcessor extends AbstractProcessor {
             MetadataClass roundClass = roundElements.get(roundElement);
 
             if (persistenceUnit.containsClass(roundClass)) {
-                //processingEnv.getMessager().printMessage(Kind.NOTE, "Generating class: " + element);
+                if (factory.getLogger().shouldLog(LogLevel.FINEST, LogCategory.PROCESSOR)) {
+                    processingEnv.getMessager().printMessage(Kind.NOTE, "Generating class: " + roundClass.getName());
+                }
                 generateCanonicalModelClass(roundClass, roundElement, persistenceUnit);
             }
         }
@@ -355,9 +363,8 @@ public class CanonicalModelProcessor extends AbstractProcessor {
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         if (! roundEnv.processingOver() && ! roundEnv.errorRaised()) {
+            MetadataMirrorFactory factory = null;
             try {
-                MetadataMirrorFactory factory;
-
                 if (Boolean.valueOf(CanonicalModelProperties.getOption(CANONICAL_MODEL_USE_STATIC_FACTORY, CANONICAL_MODEL_USE_STATIC_FACTORY_DEFAULT, processingEnv.getOptions()))) {
                     if (staticFactory == null) {
                         // We must remember some state from one round to another.
@@ -369,20 +376,40 @@ public class CanonicalModelProcessor extends AbstractProcessor {
                         // persistence unit. Doing this is going to need careful
                         // cleanup thoughts though. Adding classes ok, but what
                         // about removing some?
-                        MetadataLogger logger = new MetadataLogger(new ServerSession(new Project(new DatabaseLogin())));
-                        staticFactory = new MetadataMirrorFactory(logger, Thread.currentThread().getContextClassLoader());
-                        processingEnv.getMessager().printMessage(Kind.NOTE, "Creating static metadata factory ...");
+                        final MetadataLogger logger = new MetadataLogger(new ServerSession(new Project(new DatabaseLogin())));
+                        staticFactory = new MetadataMirrorFactory(logger,
+                                LoggerContext.buildContext(processingEnv.getOptions()),
+                                Thread.currentThread().getContextClassLoader());
+                        staticFactory.getLoggerContext().updateMetadataLogger(logger);
+                        if (logger.shouldLog(LogLevel.INFO, LogCategory.PROCESSOR)) {
+                            processingEnv.getMessager().printMessage(Kind.NOTE, "Creating static metadata factory ...");
+                        }
                     }
 
                     factory = staticFactory;
                 } else {
                     if (nonStaticFactory == null) {
-                        MetadataLogger logger = new MetadataLogger(new ServerSession(new Project(new DatabaseLogin())));
-                        nonStaticFactory = new MetadataMirrorFactory(logger, Thread.currentThread().getContextClassLoader());
-                        processingEnv.getMessager().printMessage(Kind.NOTE, "Creating non-static metadata factory ...");
+                        final MetadataLogger logger = new MetadataLogger(new ServerSession(new Project(new DatabaseLogin())));
+                        nonStaticFactory = new MetadataMirrorFactory(logger,
+                                LoggerContext.buildContext(processingEnv.getOptions()),
+                                Thread.currentThread().getContextClassLoader());
+                        nonStaticFactory.getLoggerContext().updateMetadataLogger(logger);
+                        if (logger.shouldLog(LogLevel.INFO, LogCategory.PROCESSOR)) {
+                            processingEnv.getMessager().printMessage(Kind.NOTE, "Creating non-static metadata factory ...");
+                        }
                     }
 
                     factory = nonStaticFactory;
+                }
+
+                final MetadataLogger logger = factory.getLogger();
+                final LoggerContext logCtx = factory.getLoggerContext();
+
+                // Log processing environment options
+                if (logger.shouldLog(LogLevel.CONFIG, LogCategory.PROCESSOR)) {
+                    for (String optionKey : processingEnv.getOptions().keySet()) {
+                        processingEnv.getMessager().printMessage(Kind.OTHER, "Found Option : " + optionKey + ", with value: " + processingEnv.getOptions().get(optionKey));
+                    }
                 }
 
                 // Step 1 - The factory is passed around so those who want the
@@ -396,11 +423,19 @@ public class CanonicalModelProcessor extends AbstractProcessor {
                 // created and override existing ones (causing them to be un-
                 // pre-processed. We can never tell what changes in XML so we
                 // have to do this.
-                PersistenceUnitReader puReader = new PersistenceUnitReader(factory);
+                final PersistenceUnitReader puReader = new PersistenceUnitReader(logger, processingEnv);
+                puReader.initPersistenceUnits(factory);
 
                 // Step 3 - iterate over all the persistence units and generate
                 // their canonical model classes.
-                for (PersistenceUnit persistenceUnit : puReader.getPersistenceUnits()) {
+                for (PersistenceUnit persistenceUnit : factory.getPersistenceUnits()) {
+
+                    // Update log level using PU property when no command line logging level option is set
+                    final boolean updateLogger = logger != null && !logCtx.isAny();
+                    if (updateLogger) {
+                        LoggerContext.updateMetadataLogger(logger, persistenceUnit);
+                    }
+
                     // Step 3a - add the Entities not defined in XML that are
                     // being compiled.
                     for (Element element : roundEnv.getElementsAnnotatedWith(Entity.class)) {
@@ -424,9 +459,16 @@ public class CanonicalModelProcessor extends AbstractProcessor {
 
                     // Step 3e - We're set, generate the canonical model classes.
                     generateCanonicalModelClasses(factory, persistenceUnit);
+
+                    if (updateLogger) {
+                        logCtx.updateMetadataLogger(logger);
+                    }
                 }
             } catch (Exception e) {
-                processingEnv.getMessager().printMessage(Kind.ERROR, e.toString());
+                final MetadataLogger logger = (factory != null) ? factory.getLogger() : null;
+                if (logger == null || logger.shouldLog(LogLevel.SEVERE, LogCategory.PROCESSOR)) {
+                    processingEnv.getMessager().printMessage(Kind.ERROR, e.toString());
+                }
                 throw new RuntimeException(e);
             }
         }
@@ -473,4 +515,5 @@ public class CanonicalModelProcessor extends AbstractProcessor {
         writer.append("\n");
         return parentCanonicalName;
     }
+
 }

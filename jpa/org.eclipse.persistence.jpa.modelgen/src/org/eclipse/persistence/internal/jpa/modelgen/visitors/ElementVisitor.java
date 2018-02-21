@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -37,12 +37,15 @@ import javax.lang.model.util.AbstractElementVisitor6;
 import javax.tools.Diagnostic.Kind;
 
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotatedElement;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataField;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataMethod;
 import org.eclipse.persistence.internal.jpa.modelgen.MetadataMirrorFactory;
+import org.eclipse.persistence.logging.LogCategory;
+import org.eclipse.persistence.logging.LogLevel;
 
 /**
  * An element visitor.
@@ -190,7 +193,10 @@ public class ElementVisitor<R, P> extends AbstractElementVisitor6<MetadataAnnota
      */
     @Override
     public MetadataClass visitPackage(PackageElement packageElement, MetadataClass metadataClass) {
-        processingEnv.getMessager().printMessage(Kind.NOTE, "ElementVisitor Package NOT IMPLEMENTED : " + packageElement);
+        MetadataLogger logger = ((MetadataMirrorFactory) metadataClass.getMetadataFactory()).getLogger();
+        if (logger.shouldLog(LogLevel.FINE, LogCategory.PROCESSOR)) {
+            processingEnv.getMessager().printMessage(Kind.NOTE, "ElementVisitor Package NOT IMPLEMENTED : " + packageElement);
+        }
         return null;
     }
 
@@ -199,8 +205,10 @@ public class ElementVisitor<R, P> extends AbstractElementVisitor6<MetadataAnnota
      */
     @Override
     public MetadataClass visitType(TypeElement typeElement, MetadataClass metadataClass) {
-        //processingEnv.getMessager().printMessage(Kind.NOTE, "Visiting class: " + typeElement);
         MetadataMirrorFactory factory = ((MetadataMirrorFactory) metadataClass.getMetadataFactory());
+        if (factory.getLogger().shouldLog(LogLevel.FINEST, LogCategory.PROCESSOR)) {
+            processingEnv.getMessager().printMessage(Kind.NOTE, "Visiting class: " + typeElement);
+        }
 
         // Set the qualified name.
         metadataClass.setName(typeElement.getQualifiedName().toString());

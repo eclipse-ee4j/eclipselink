@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -60,6 +60,8 @@ import java.util.HashMap;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 
+import org.eclipse.persistence.logging.LogCategory;
+import org.eclipse.persistence.logging.LogLevel;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
@@ -530,6 +532,18 @@ public class MetadataLogger {
      */
     public AbstractSession getSession() {
         return m_session;
+    }
+
+    /**
+     * INTERNAL:
+     * Check if a message of the given {@link LogLevel} and {@link LogCategory} would actually be logged.
+     *
+     * @param level the log request level value
+     * @param category an EclipseLink logging category
+     * @return value of {@code true} if the given message level will be logged or {@code false} otherwise
+     */
+    public boolean shouldLog(final LogLevel level, final LogCategory category) {
+        return m_session.shouldLog(level.getId(), category.getName());
     }
 
     /**

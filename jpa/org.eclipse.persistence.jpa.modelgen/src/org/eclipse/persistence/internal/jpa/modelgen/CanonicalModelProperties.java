@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -86,6 +86,17 @@ public abstract class CanonicalModelProperties {
      */
     public static final String CANONICAL_MODEL_GENERATE_TIMESTAMP = PersistenceUnitProperties.CANONICAL_MODEL_GENERATE_TIMESTAMP;
     public static final String CANONICAL_MODEL_GENERATE_TIMESTAMP_DEFAULT = PersistenceUnitProperties.CANONICAL_MODEL_GENERATE_TIMESTAMP_DEFAULT;
+
+    // This value must match LogCategory.PROCESSOR.getLogLevelProperty()
+    /**
+     * This optional property can be used to set processor logging level of Canonical model generator.
+     */
+    public static final String CANONICAL_MODEL_PROCESSOR_LOG_LEVEL = PersistenceUnitProperties.CATEGORY_LOGGING_LEVEL_ + "processor";
+
+    /**
+     * This optional property can be used to set global logging level of Canonical model generator.
+     */
+    public static final String CANONICAL_MODEL_GLOBAL_LOG_LEVEL = PersistenceUnitProperties.LOGGING_LEVEL;
 
     /**
      * INTERNAL:

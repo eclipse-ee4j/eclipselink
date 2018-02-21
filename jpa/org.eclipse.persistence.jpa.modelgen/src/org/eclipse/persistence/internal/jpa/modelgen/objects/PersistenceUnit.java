@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,6 +27,13 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.modelgen.objects;
 
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_EMBEDDABLE;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ENTITY;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_MAPPED_SUPERCLASS;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_PREFIX;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_SUB_PACKAGE;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_SUFFIX;
+
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -51,16 +58,9 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataC
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappingsReader;
 import org.eclipse.persistence.internal.jpa.modelgen.MetadataMirrorFactory;
-import org.eclipse.persistence.internal.jpa.modelgen.objects.PersistenceUnitReader;
+import org.eclipse.persistence.logging.LogCategory;
+import org.eclipse.persistence.logging.LogLevel;
 import org.eclipse.persistence.oxm.XMLContext;
-
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_SUB_PACKAGE;
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_PREFIX;
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_SUFFIX;
-
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_EMBEDDABLE;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ENTITY;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_MAPPED_SUPERCLASS;
 
 /**
  * A representation of a persistence unit definition.
@@ -262,7 +262,9 @@ public class PersistenceUnit {
                 // For eclipselink-orm merging and overriding these need to be set.
                 entityMappings.setIsEclipseLinkORMFile(mappingFile.equals(MetadataHelper.ECLIPSELINK_ORM_FILE));
                 entityMappings.setMappingFile(mappingFile);
-                processingEnv.getMessager().printMessage(Kind.NOTE, "File loaded : " + mappingFile + ", is eclipselink-orm file: " + entityMappings.isEclipseLinkORMFile());
+                if (factory.getLogger().shouldLog(LogLevel.INFO, LogCategory.PROCESSOR)) {
+                    processingEnv.getMessager().printMessage(Kind.NOTE, "File loaded : " + mappingFile + ", is eclipselink-orm file: " + entityMappings.isEclipseLinkORMFile());
+                }
                 xmlEntityMappings.add(entityMappings);
             } finally {
                 persistenceUnitReader.closeInputStream(inputStream);
@@ -357,6 +359,22 @@ public class PersistenceUnit {
 
     /**
      * INTERNAL:
+     * Get persistence unit property value by name.
+     *
+     * @param name persistence unit property name
+     * @return persistence unit property value
+     */
+    public String getPersistenceUnitProperty(final String name) {
+        Object objVal = persistenceUnitProperties.get(name);
+        if (objVal instanceof String) {
+            return String.class.cast(objVal);
+        } else {
+            return objVal != null ? objVal.toString() : null;
+        }
+    }
+
+    /**
+     * INTERNAL:
      */
     public void initPersistenceUnitProperties() {
         persistenceUnitProperties = new HashMap<String, Object>();
@@ -366,7 +384,9 @@ public class PersistenceUnit {
         // named properties.
         for (SEPersistenceUnitProperty property : persistenceUnitInfo.getPersistenceUnitProperties()) {
             if (property.getName() != null) {
-                //processingEnv.getMessager().printMessage(Kind.NOTE, "Key: " + property.getName() + " , value: " + property.getValue());
+                if (factory.getLogger().shouldLog(LogLevel.FINE, LogCategory.PROCESSOR)) {
+                    processingEnv.getMessager().printMessage(Kind.NOTE, "Key: " + property.getName() + " , value: " + property.getValue());
+                }
                 persistenceUnitProperties.put(property.getName(), property.getValue());
             }
         }
