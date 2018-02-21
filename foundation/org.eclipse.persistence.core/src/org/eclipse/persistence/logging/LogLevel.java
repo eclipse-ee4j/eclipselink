@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016  Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, 2018  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -101,6 +101,22 @@ public enum LogLevel {
      */
     public static final LogLevel toValue(final String name) {
         return name != null ? stringValuesMap.get(name.toUpperCase()) : null;
+    }
+
+    /**
+     * Returns {@link LogLevel} object holding the value of the specified {@link String}.
+     * @param name The {@link String} to be parsed.
+     * @param fallBack {@link LogLevel} object to return on ID lookup failure.
+     * @return {@link LogLevel} object holding the value represented by the string argument or {@code fallBack} when
+     *         there exists no corresponding {@link LogLevel} object to provided argument value.
+     */
+    public static final LogLevel toValue(final String name, final LogLevel fallBack) {
+        if (name != null) {
+            final LogLevel level = stringValuesMap.get(name.toUpperCase());
+            return level != null ? level : fallBack;
+        } else {
+            return fallBack;
+        }
     }
 
     /**

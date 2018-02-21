@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016  Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, 2018  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -14,6 +14,8 @@ package org.eclipse.persistence.logging;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 
 /**
  * EclipseLink categories used for logging name space.
@@ -56,14 +58,15 @@ public enum LogCategory {
     METAMODEL(  (byte)0x0A, SessionLog.METAMODEL),
     MISC(       (byte)0x0B, SessionLog.MISC),
     MONITORING( (byte)0x0C, SessionLog.MONITORING),
-    PROPAGATION((byte)0x0D, SessionLog.PROPAGATION),
-    PROPERTIES( (byte)0x0E, SessionLog.PROPERTIES),
-    QUERY(      (byte)0x0F, SessionLog.QUERY),
-    SEQUENCING( (byte)0x10, SessionLog.SEQUENCING),
-    SERVER(     (byte)0x11, SessionLog.SERVER),
-    SQL(        (byte)0x12, SessionLog.SQL),
-    TRANSACTION((byte)0x13, SessionLog.TRANSACTION),
-    WEAVER(     (byte)0x14, SessionLog.WEAVER);
+    PROCESSOR(  (byte)0x0D, SessionLog.PROCESSOR),
+    PROPAGATION((byte)0x0E, SessionLog.PROPAGATION),
+    PROPERTIES( (byte)0x0F, SessionLog.PROPERTIES),
+    QUERY(      (byte)0x10, SessionLog.QUERY),
+    SEQUENCING( (byte)0x11, SessionLog.SEQUENCING),
+    SERVER(     (byte)0x12, SessionLog.SERVER),
+    SQL(        (byte)0x13, SessionLog.SQL),
+    TRANSACTION((byte)0x14, SessionLog.TRANSACTION),
+    WEAVER(     (byte)0x15, SessionLog.WEAVER);
 
     /** Logging categories enumeration length. */
     public static final int length = LogCategory.values().length;
@@ -77,6 +80,9 @@ public enum LogCategory {
     /** Logger name spaces lookup table. */
     private static final String[] nameSpaces = new String[length];
 
+    /** Logger name spaces lookup table. */
+    private static final String[] levelNameSpaces = new String[length];
+
     static {
         // Initialize String to LogCategory case insensitive lookup Map.
         for (LogCategory category : LogCategory.values()) {
@@ -84,7 +90,8 @@ public enum LogCategory {
         }
         // Initialize logger name spaces lookup table.
         for (LogCategory category : LogCategory.values()) {
-            nameSpaces[category.id] = NAMESPACE_PREFIX + category.name;
+            nameSpaces[category.id] = (NAMESPACE_PREFIX + category.name).intern();
+            levelNameSpaces[category.id] = (PersistenceUnitProperties.CATEGORY_LOGGING_LEVEL_ + category.name).intern();
         }
     }
 
@@ -137,6 +144,14 @@ public enum LogCategory {
      */
     public String getNameSpace() {
         return nameSpaces[id];
+    }
+
+    /**
+     * Get log level property name for this logging category.
+     * @return Log level property name for this logging category.
+     */
+    public String getLogLevelProperty() {
+        return levelNameSpaces[id];
     }
 
 }

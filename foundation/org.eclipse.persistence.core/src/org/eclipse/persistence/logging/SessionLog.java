@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -51,6 +51,7 @@ import org.eclipse.persistence.sessions.Session;
  * <tr><td>&nbsp;</td><td>{@link #METADATA}</td>      <td>&nbsp;</td><td>= {@value #METADATA} </td></tr>
  * <tr><td>&nbsp;</td><td>{@link #METAMODEL}</td>     <td>&nbsp;</td><td>= {@value #METAMODEL}</td></tr>
  * <tr><td>&nbsp;</td><td>{@link #MOXY}</td>          <td>&nbsp;</td><td>= {@value #MOXY}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@link #PROCESSOR}</td>     <td>&nbsp;</td><td>= {@value #PROCESSOR}</td></tr>
  * <tr><td>&nbsp;</td><td>{@link #PROPAGATION}</td>   <td>&nbsp;</td><td>= {@value #PROPAGATION}</td></tr>
  * <tr><td>&nbsp;</td><td>{@link #PROPERTIES}</td>    <td>&nbsp;</td><td>= {@value #PROPERTIES}</td></tr>
  * <tr><td>&nbsp;</td><td>{@link #QUERY}</td>         <td>&nbsp;</td><td>= {@value #QUERY}</td></tr>
@@ -130,6 +131,8 @@ public interface SessionLog extends Cloneable {
     public static final String DDL = "ddl";
     public static final String DBWS = "dbws";
     public static final String JPARS = "jpars";
+    /** ModelGen logging name space. */
+    public static final String PROCESSOR = "processor";
 
     public final String[] loggerCatagories = new String[] {
         SQL,
@@ -152,7 +155,8 @@ public interface SessionLog extends Cloneable {
         WEAVER,
         PROPERTIES,
         SERVER,
-        DDL
+        DDL,
+        PROCESSOR
     };
 
     /**
@@ -300,6 +304,7 @@ public interface SessionLog extends Cloneable {
      * <tr><td>&nbsp;</td><td>{@link #JPARS}</td>           <td>&nbsp;</td><td>= {@value #JPARS}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #METAMODEL}</td>       <td>&nbsp;</td><td>= {@value #METAMODEL}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #MOXY}</td>            <td>&nbsp;</td><td>= {@value #MOXY}</td></tr>
+     * <tr><td>&nbsp;</td><td>{@link #PROCESSOR}</td>       <td>&nbsp;</td><td>= {@value #PROCESSOR}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #PROPAGATION}</td>     <td>&nbsp;</td><td>= {@value #PROPAGATION}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #PROPERTIES}</td>      <td>&nbsp;</td><td>= {@value #PROPERTIES}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #QUERY}</td>           <td>&nbsp;</td><td>= {@value #QUERY}</td></tr>
@@ -361,6 +366,7 @@ public interface SessionLog extends Cloneable {
      * <tr><td>&nbsp;</td><td>{@link #JPARS}</td>           <td>&nbsp;</td><td>= {@value #JPARS}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #METAMODEL}</td>       <td>&nbsp;</td><td>= {@value #METAMODEL}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #MOXY}</td>            <td>&nbsp;</td><td>= {@value #MOXY}</td></tr>
+     * <tr><td>&nbsp;</td><td>{@link #PROCESSOR}</td>       <td>&nbsp;</td><td>= {@value #PROCESSOR}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #PROPAGATION}</td>     <td>&nbsp;</td><td>= {@value #PROPAGATION}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #PROPERTIES}</td>      <td>&nbsp;</td><td>= {@value #PROPERTIES}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #QUERY}</td>           <td>&nbsp;</td><td>= {@value #QUERY}</td></tr>
@@ -423,6 +429,7 @@ public interface SessionLog extends Cloneable {
      * <tr><td>&nbsp;</td><td>{@link #JPARS}</td>           <td>&nbsp;</td><td>= {@value #JPARS}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #METAMODEL}</td>       <td>&nbsp;</td><td>= {@value #METAMODEL}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #MOXY}</td>            <td>&nbsp;</td><td>= {@value #MOXY}</td></tr>
+     * <tr><td>&nbsp;</td><td>{@link #PROCESSOR}</td>       <td>&nbsp;</td><td>= {@value #PROCESSOR}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #PROPAGATION}</td>     <td>&nbsp;</td><td>= {@value #PROPAGATION}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #PROPERTIES}</td>      <td>&nbsp;</td><td>= {@value #PROPERTIES}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #QUERY}</td>           <td>&nbsp;</td><td>= {@value #QUERY}</td></tr>

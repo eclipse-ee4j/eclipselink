@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -21,31 +21,30 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.modelgen.objects;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.StringTokenizer;
-
-import javax.annotation.processing.ProcessingEnvironment;
-import javax.tools.FileObject;
-import javax.tools.StandardLocation;
-import javax.tools.Diagnostic.Kind;
-
-import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
-import org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties;
-import org.eclipse.persistence.internal.jpa.modelgen.MetadataMirrorFactory;
-import org.eclipse.persistence.internal.jpa.modelgen.objects.PersistenceUnit;
-import org.eclipse.persistence.internal.jpa.modelgen.objects.PersistenceXML;
-import org.eclipse.persistence.internal.jpa.modelgen.objects.PersistenceXMLMappings;
-
 import static org.eclipse.persistence.config.PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML_DEFAULT;
 import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_LOAD_XML;
 import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_LOAD_XML_DEFAULT;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashSet;
+import java.util.StringTokenizer;
+
+import javax.annotation.processing.ProcessingEnvironment;
+import javax.tools.Diagnostic.Kind;
+import javax.tools.FileObject;
+import javax.tools.StandardLocation;
+
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
+import org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties;
+import org.eclipse.persistence.internal.jpa.modelgen.MetadataMirrorFactory;
+import org.eclipse.persistence.logging.LogCategory;
+import org.eclipse.persistence.logging.LogLevel;
 
 /**
  * Used to read persistence units through the java annotation processing API.
@@ -54,23 +53,18 @@ import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProper
  * @since EclipseLink 1.2
  */
 public class PersistenceUnitReader {
-    protected MetadataMirrorFactory factory;
-    protected ProcessingEnvironment processingEnv;
+
+    /** Current logger. */
+    protected final MetadataLogger logger;
+    /** Annotation model processing environment. */
+    protected final ProcessingEnvironment processingEnv;
 
     /**
      * INTERNAL:
      */
-    public PersistenceUnitReader(MetadataMirrorFactory factory) throws IOException {
-        this.factory = factory;
-        processingEnv = factory.getProcessingEnvironment();
-
-        // As a performance enhancement to avoid reloading and merging XML
-        // metadata for every compile round, the user may choose to turn off
-        // the XML loading by setting the load XML flag to false.
-        if (Boolean.valueOf(CanonicalModelProperties.getOption(CANONICAL_MODEL_LOAD_XML, CANONICAL_MODEL_LOAD_XML_DEFAULT, processingEnv.getOptions()))) {
-            // after initializing our member variables, initialize the pu's.
-            initPersistenceUnits();
-        }
+    public PersistenceUnitReader(final MetadataLogger logger, final ProcessingEnvironment processingEnv) throws IOException {
+        this.logger = logger;
+        this.processingEnv = processingEnv;
     }
 
     /**
@@ -112,10 +106,15 @@ public class PersistenceUnitReader {
             } catch (IOException e) {
                 if (loadingPersistenceXML) {
                     // If loading the persistence.xml, log a BIG warning message.
-                    processingEnv.getMessager().printMessage(Kind.NOTE, "The persistence xml file ["+filename+"] was not found. NO GENERATION will occur!! Please ensure a persistence xml file is available either from the CLASS_OUTPUT directory [META-INF/persistence.xml] or using the eclipselink.persistencexml property to specify its location. ");
+                    if (logger.shouldLog(LogLevel.WARNING, LogCategory.PROCESSOR)) {
+                        processingEnv.getMessager().printMessage(Kind.NOTE, "The persistence xml file [" + filename
+                                + "] was not found. NO GENERATION will occur!! Please ensure a persistence xml file is available either from the CLASS_OUTPUT directory [META-INF/persistence.xml] or using the eclipselink.persistencexml property to specify its location.");
+                    }
                 } else {
                     // For any other mapping file log a message.
-                    processingEnv.getMessager().printMessage(Kind.NOTE, "Optional file was not found: " + filename + " continuing with generation.");
+                    if (logger.shouldLog(LogLevel.INFO, LogCategory.PROCESSOR)) {
+                        processingEnv.getMessager().printMessage(Kind.NOTE, "Optional file was not found: " + filename + " continuing with generation.");
+                    }
                 }
             }
         }
@@ -148,53 +147,50 @@ public class PersistenceUnitReader {
     /**
      * INTERNAL:
      */
-    public Collection<PersistenceUnit> getPersistenceUnits() {
-        return factory.getPersistenceUnits();
-    }
+    public void initPersistenceUnits(final MetadataMirrorFactory factory) {
+        // As a performance enhancement to avoid reloading and merging XML metadata for every compile round,
+        // the user may choose to turn off the XML loading by setting the load XML flag to false.
+        if (Boolean.valueOf(CanonicalModelProperties.getOption(CANONICAL_MODEL_LOAD_XML, CANONICAL_MODEL_LOAD_XML_DEFAULT, processingEnv.getOptions()))) {
+            final String filename = CanonicalModelProperties.getOption(ECLIPSELINK_PERSISTENCE_XML, ECLIPSELINK_PERSISTENCE_XML_DEFAULT, processingEnv.getOptions());
+            HashSet<String> persistenceUnitList = getPersistenceUnitList(processingEnv);
 
-    /**
-     * INTERNAL:
-     */
-    protected void initPersistenceUnits() {
-        for (String optionKey : processingEnv.getOptions().keySet()) {
-            processingEnv.getMessager().printMessage(Kind.OTHER, "Found Option : " + optionKey + ", with value: " + processingEnv.getOptions().get(optionKey));
-        }
+            InputStream inStream1 = null;
+            InputStream inStream2 = null;
 
-        String filename = CanonicalModelProperties.getOption(ECLIPSELINK_PERSISTENCE_XML, ECLIPSELINK_PERSISTENCE_XML_DEFAULT, processingEnv.getOptions());
-        HashSet<String> persistenceUnitList = getPersistenceUnitList(processingEnv);
+            try {
+                inStream1 = getInputStream(filename, true);
 
-        InputStream inStream1 = null;
-        InputStream inStream2 = null;
+                // If the persistence.xml was not found, then there is nothing
+                // to do.
+                if (inStream1 != null) {
+                    PersistenceXML persistenceXML;
 
-        try {
-            inStream1 = getInputStream(filename, true);
+                    try {
+                        // Try a 2.1 context first.
+                        persistenceXML = (PersistenceXML) PersistenceXMLMappings.createXML2_1Context().createUnmarshaller().unmarshal(inStream1);
+                    } catch (Exception e) {
+                        // Catch all exceptions and try a 2.0 context second
+                        // with a new input stream.
+                        inStream2 = getInputStream(filename, true);
+                        persistenceXML = (PersistenceXML) PersistenceXMLMappings.createXML2_0Context().createUnmarshaller().unmarshal(inStream2);
+                    }
 
-            // If the persistence.xml was not found, then there is nothing to do.
-            if (inStream1 != null) {
-                PersistenceXML persistenceXML;
-
-                try {
-                    // Try a 2.1 context first.
-                    persistenceXML = (PersistenceXML) PersistenceXMLMappings.createXML2_1Context().createUnmarshaller().unmarshal(inStream1);
-                } catch (Exception e) {
-                    // Catch all exceptions and try a 2.0 context second with a new input stream.
-                    inStream2 = getInputStream(filename, true);
-                    persistenceXML = (PersistenceXML) PersistenceXMLMappings.createXML2_0Context().createUnmarshaller().unmarshal(inStream2);
-                }
-
-                for (SEPersistenceUnitInfo puInfo : persistenceXML.getPersistenceUnitInfos()) {
-                    // If no persistence unit list has been specified or one
-                    // has been specified and this persistence unit info's name
-                    // appears in that list then add it.
-                    if (persistenceUnitList == null || persistenceUnitList.contains(puInfo.getPersistenceUnitName())) {
-                        factory.addPersistenceUnit(puInfo, new PersistenceUnit(puInfo, factory, this));
+                    for (SEPersistenceUnitInfo puInfo : persistenceXML.getPersistenceUnitInfos()) {
+                        // If no persistence unit list has been specified or one
+                        // has been specified and this persistence unit info's
+                        // name
+                        // appears in that list then add it.
+                        if (persistenceUnitList == null || persistenceUnitList.contains(puInfo.getPersistenceUnitName())) {
+                            factory.addPersistenceUnit(puInfo, new PersistenceUnit(puInfo, factory, this));
+                        }
                     }
                 }
+            } finally {
+                closeInputStream(inStream1);
+                closeInputStream(inStream2);
             }
-        } finally {
-            closeInputStream(inStream1);
-            closeInputStream(inStream2);
         }
     }
+
 }
 
