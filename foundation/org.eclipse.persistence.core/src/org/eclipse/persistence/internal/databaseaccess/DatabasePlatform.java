@@ -24,8 +24,6 @@
  *       - 458877 : Add national character support
  *     02/23/2015-2.6 Dalia Abo Sheasha
  *       - 460607: Change DatabasePlatform StoredProcedureTerminationToken to be configurable
- *     02/14/2018-2.7 Will Dazey
- *       - 529602: Added support for CLOBs in DELETE statements for Oracle
  ******************************************************************************/
 package org.eclipse.persistence.internal.databaseaccess;
 
@@ -3518,15 +3516,4 @@ public class DatabasePlatform extends DatasourcePlatform {
      public String getConnectionUserName() {
          throw new UnsupportedOperationException("Connection user name is not supported.");
      }
-
-    /**
-     * INTERNAL:
-     * Override this method if the platform needs to use a custom function based on the DatabaseField
-     * @return An expression for the given field set equal to a parameter matching the field
-     */
-    public Expression createExpressionFor(DatabaseField field, Expression builder) {
-        Expression subExp1 = builder.getField(field);
-        Expression subExp2 = builder.getParameter(field);
-        return subExp1.equal(subExp2);
-    }
 }

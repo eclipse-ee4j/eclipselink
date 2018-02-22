@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,7 +12,9 @@
  *     09/29/2016-2.7 Tomas Kraus
  *       - 426852: @GeneratedValue(strategy=GenerationType.IDENTITY) support in Oracle 12c
  *     09/14/2017-2.6 Will Dazey
- *       - 522312: Add the eclipselink.sequencing.start-sequence-at-nextval property 
+ *       - 522312: Add the eclipselink.sequencing.start-sequence-at-nextval property
+ *     02/20/2018-2.7 Will Dazey
+ *       - 529602: Added support for CLOBs in DELETE statements for Oracle
  ******************************************************************************/
 package org.eclipse.persistence.internal.databaseaccess;
 
@@ -28,6 +30,7 @@ import java.util.Vector;
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.ConversionManager;
@@ -1061,4 +1064,14 @@ public class DatasourcePlatform implements Platform {
             final Session session, final String defaultIdentityGenerator, final Set<String> tableNames) {
     }
 
+    /**
+     * INTERNAL:
+     * Override this method if the platform needs to use a custom function based on the DatabaseField
+     * @return An expression for the given field set equal to a parameter matching the field
+     */
+    public Expression createExpressionFor(DatabaseField field, Expression builder) {
+        Expression subExp1 = builder.getField(field);
+        Expression subExp2 = builder.getParameter(field);
+        return subExp1.equal(subExp2);
+    }
 }

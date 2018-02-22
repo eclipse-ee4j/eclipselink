@@ -21,7 +21,7 @@
  *       - 485984: Retrieve FetchGroup info along with getReference() from cache
  *     08/07/2016-2.7 Dalia Abo Sheasha
  *       - 499335: Multiple embeddable fields can't reference same object
- *     02/14/2018-2.7 Will Dazey
+ *     02/20/2018-2.7 Will Dazey
  *       - 529602: Added support for CLOBs in DELETE statements for Oracle
  ******************************************************************************/
 package org.eclipse.persistence.internal.descriptors;
@@ -49,6 +49,7 @@ import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.core.descriptors.CoreObjectBuilder;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
+import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.expressions.*;
 import org.eclipse.persistence.internal.helper.*;
@@ -2918,7 +2919,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         if(null != primaryKeyFields) {
             for (int index = 0; index < primaryKeyFields.size(); index++) {
                 DatabaseField primaryKeyField = (DatabaseField)primaryKeyFields.get(index);
-                subExpression = session.getPlatform().createExpressionFor(primaryKeyField, builder);
+                subExpression = ((DatasourcePlatform)session.getDatasourcePlatform()).createExpressionFor(primaryKeyField, builder);
 
                 if (expression == null) {
                     expression = subExpression;
