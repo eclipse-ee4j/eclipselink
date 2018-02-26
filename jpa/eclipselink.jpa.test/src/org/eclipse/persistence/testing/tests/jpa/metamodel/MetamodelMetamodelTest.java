@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -95,7 +95,7 @@ import org.eclipse.persistence.testing.models.jpa.metamodel.Person;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Position;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Processor;
 import org.eclipse.persistence.testing.models.jpa.metamodel.VectorProcessor;
-
+import org.eclipse.persistence.testing.models.jpa.metamodel.WithInner;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 
 /**
@@ -123,9 +123,9 @@ import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
  */
 public class MetamodelMetamodelTest extends MetamodelTest {
 
-    public static final int METAMODEL_ALL_ATTRIBUTES_SIZE = 147;//6;
+    public static final int METAMODEL_ALL_ATTRIBUTES_SIZE = 150;//6;
     // Note: Since BasicTypes are lazy - loaded into the metamodel-types Map - this test must preceed any test that verifies all BasicType objects like "testIdentifiableType_getIdType_Method"
-    public static final int METAMODEL_ALL_TYPES = 51;
+    public static final int METAMODEL_ALL_TYPES = 52;
     public static final int METAMODEL_MANUFACTURER_DECLARED_TYPES = 28;
     // Get # of processor cores (hard cores + hyperthreaded cores)
     public static final int numberProcessingUnits = Runtime.getRuntime().availableProcessors();
@@ -2000,6 +2000,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertNotNull(entityLocation_);
             EntityTypeImpl<Computer> entityComputer_ = (EntityTypeImpl)metamodel.entity(Computer.class);
             assertNotNull(entityComputer_);
+            EntityTypeImpl<WithInner> withInner_ = (EntityTypeImpl)metamodel.entity(WithInner.class);
+            assertNotNull(withInner_);
 
             /**
              *  Whether or not the identifiable type has an id attribute.
@@ -2042,6 +2044,19 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             hasSingleIdAttribute = true;
         try {
             EntityType<Enclosure> aType = metamodel.entity(Enclosure.class);
+            hasSingleIdAttribute = aType.hasSingleIdAttribute();
+        } catch (IllegalArgumentException iae) {
+            iae.printStackTrace();
+            expectedIAExceptionThrown = true;
+            }
+            assertFalse(expectedIAExceptionThrown);
+            assertFalse(hasSingleIdAttribute);
+
+            // @IdClass - inner
+            expectedIAExceptionThrown = false;
+            hasSingleIdAttribute = false;
+        try {
+            EntityType<WithInner> aType = metamodel.entity(WithInner.class);
             hasSingleIdAttribute = aType.hasSingleIdAttribute();
         } catch (IllegalArgumentException iae) {
             iae.printStackTrace();

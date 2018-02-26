@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -73,6 +73,8 @@ DROP TABLE CMP3_MM_COMPUTER
         addTableDefinition(buildGALACTICPOSITIONTable());
         // Test ms-ms-entity chain with idclass above id
         addTableDefinition(buildMS_MS_Entity_Leaf_Table());
+        // Test idclass in inner class
+        addTableDefinition(buildWITHINNERPKTable());
 
 
         // 1:n
@@ -1107,6 +1109,43 @@ DROP TABLE CMP3_MM_COMPUTER
         field6.setForeignKeyFieldName("CMP3_MM_BOARD.BOARD_ID");
         table.addField(field6);
 */
+        return table;
+    }
+
+    public static TableDefinition buildWITHINNERPKTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("INNER_PK");
+
+        FieldDefinition field = new FieldDefinition();
+        field.setName("DESC");
+        field.setTypeName("VARCHAR");
+        field.setSize(80);
+        field.setShouldAllowNull(false);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(true);
+        table.addField(field);
+
+        FieldDefinition field4 = new FieldDefinition();
+        field4.setName("ID1");
+        field4.setTypeName("NUMERIC");
+        field4.setSize(15);
+        field4.setShouldAllowNull(true);
+        field4.setIsPrimaryKey(true);
+        field4.setUnique(true);
+        field4.setIsIdentity(false);
+        table.addField(field4);
+
+        FieldDefinition field6 = new FieldDefinition();
+        field6.setName("ID2");
+        field6.setTypeName("VARCHAR");
+        field6.setSize(15);
+        field6.setShouldAllowNull(false);
+        field6.setIsPrimaryKey(true);
+        field6.setUnique(true);
+        field6.setIsIdentity(false);
+        table.addField(field6);
+
         return table;
     }
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -74,6 +74,8 @@
  *       - 395406: Fix nightly static weave test errors
  *     06/12/2017-2.7 Lukas Jungmann
  *       - 518155: [jpa22] add support for repeatable annotations
+ *     02/26/2018-2.7.2 Lukas Jungmann
+ *       - 531528: IdentifiableType.hasSingleIdAttribute() returns true when IdClass references an inner class
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -620,7 +622,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         if (m_idClass != null && ! m_idClass.equals(void.class)) {
             getProject().addIdClass(m_idClass.getName());
             // 266912: We store the IdClass (not an EmbeddableId) for use by the Metamodel API
-            getProject().getProject().addMetamodelIdClassMapEntry(getAccessibleObject().getName(), m_idClass.getName());
+            getProject().getProject().addMetamodelIdClassMapEntry(getAccessibleObject().getName(), m_idClass.getName().replace('$', '.'));
         }
     }
 
