@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -13,8 +13,6 @@
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,12 +20,6 @@ import java.util.Vector;
 
 import javax.persistence.EntityManager;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
-import org.eclipse.persistence.sessions.server.ServerSession;
-import org.eclipse.persistence.config.CacheIsolationType;
-import org.eclipse.persistence.descriptors.CachePolicy;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.CommunicationException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -46,14 +38,17 @@ import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
 import org.eclipse.persistence.sessions.coordination.ServiceId;
 import org.eclipse.persistence.sessions.coordination.TransportManager;
 import org.eclipse.persistence.sessions.serializers.JavaSerializer;
+import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
-import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
 import org.eclipse.persistence.testing.models.jpa.cacheable.CacheableFalseEntity;
 import org.eclipse.persistence.testing.models.jpa.cacheable.CacheableForceProtectedEntity;
 import org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTableCreator;
+
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
 /**
  * JPARCMLocalChangeSetTestSuite
@@ -469,6 +464,10 @@ public class JPARCMLocalChangeSetTestSuite extends JUnitTestCase {
             allowForChangePropagation();
             
             LocalConnection conn = getLocalConnection(session);
+            List<UnitOfWorkChangeSet> changeSets = conn.getReceivedChangeSets();
+            for (UnitOfWorkChangeSet changeSet : changeSets) {
+                assertNull(changeSet.getSession());
+            }
             assertEquals("Should have received one UnitOfWorkChangeSet", 1, conn.getReceivedChangeSets().size());
             UnitOfWorkChangeSet uowcs = conn.getReceivedChangeSets().get(0);
             

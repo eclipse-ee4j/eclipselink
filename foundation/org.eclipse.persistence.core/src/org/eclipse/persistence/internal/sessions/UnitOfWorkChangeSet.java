@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -17,12 +17,15 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.queries.FetchGroup;
 
 /**
  * <p>
@@ -311,6 +314,8 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
      * INTERNAL:
      * Return a new UnitOfWorkChangeSet that only includes data require for the remote merge,
      * for cache coordination.
+     *
+     * @param session current database session
      */
     public UnitOfWorkChangeSet buildCacheCoordinationMergeChangeSet(AbstractSession session) {
         //bug 4416412: Map sent instead of Vector
@@ -334,7 +339,13 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
             // Note: New objects could still be sent if the are referred to by a change record.
             if ((syncType != ClassDescriptor.DO_NOT_SEND_CHANGES)
                     && (!changeSet.isNew() || (syncType == ClassDescriptor.SEND_NEW_OBJECTS_WITH_CHANGES))) {
+                changeSet.unitOfWorkChangeSet.setSession(null);
                 writableChangeSets.put(changeSet, changeSet);
+            }
+            // bug 530681: ensureChanges(AbstractSession, ObjectChangeSet, ClassDescriptor) from ObjectChangeSet was moved here
+            if (changeSet.isNew() && ((changeSet.changes == null) || changeSet.changes.isEmpty()
+                    || syncType != ClassDescriptor.SEND_NEW_OBJECTS_WITH_CHANGES)) {
+                ensureChanges(session, changeSet, descriptor);
             }
         }
         Map sendableDeletedObjects = new IdentityHashMap();
@@ -347,6 +358,7 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
             // if they are meant to be merged into the distributed cache.
             // Note: New objects could still be sent if the are referred to by a change record.
             if (syncType != ClassDescriptor.DO_NOT_SEND_CHANGES) {
+                changeSet.unitOfWorkChangeSet.setSession(null);
                 sendableDeletedObjects.put(changeSet, changeSet);
             }
         }
@@ -363,6 +375,25 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
             remoteChangeSet.deletedObjects = sendableDeletedObjects;
         }
         return remoteChangeSet;
+    }
+
+    /**
+     * Ensure the change set is populated for cache coordination.
+     *
+     * @param session current database session
+     * @param changeSet change set to populate
+     * @param descriptor class (relational) descriptor related to the change set
+     */
+    private void ensureChanges(final AbstractSession session, final ObjectChangeSet changeSet, final ClassDescriptor descriptor) {
+        FetchGroup fetchGroup = null;
+        if (descriptor.hasFetchGroupManager()) {
+            fetchGroup = descriptor.getFetchGroupManager().getObjectFetchGroup(changeSet.cloneObject);
+        }
+        for (DatabaseMapping mapping : descriptor.getMappings()) {
+            if (fetchGroup == null || fetchGroup.containsAttributeInternal(mapping.getAttributeName())) {
+                changeSet.addChange(mapping.compareForChange(changeSet.cloneObject, changeSet.cloneObject, changeSet, session));
+            }
+        }
     }
 
     /**

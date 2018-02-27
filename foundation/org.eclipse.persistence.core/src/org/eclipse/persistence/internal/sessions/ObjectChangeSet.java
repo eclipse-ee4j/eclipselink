@@ -1118,40 +1118,11 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
      * Helper method to readObject.  Completely write this ObjectChangeSet to the stream
      */
     public void writeCompleteChangeSet(java.io.ObjectOutputStream stream) throws java.io.IOException {
-        ensureChanges();
         writeIdentityInformation(stream);
         stream.writeObject(this.changes);
         stream.writeObject(this.oldKey);
         stream.writeObject(this.newKey);
         stream.writeObject(this.protectedForeignKeys);
-    }
-
-    /**
-     * INTERNAL:
-     * Ensure the change set is populated for cache coordination.
-     */
-    public void ensureChanges() {
-        if (this.isNew && ((this.changes == null) || this.changes.isEmpty() || cacheSynchronizationType != ClassDescriptor.SEND_NEW_OBJECTS_WITH_CHANGES)) {
-            AbstractSession unitOfWork = this.unitOfWorkChangeSet.getSession();
-            // Full change set is only required for cache coordination, not remote.
-            if (unitOfWork != null && !unitOfWork.isRemoteUnitOfWork()) {
-                ClassDescriptor descriptor = getDescriptor();
-                if (descriptor != null) {
-                    FetchGroup fetchGroup = null;
-                    if(descriptor.hasFetchGroupManager()) {
-                        fetchGroup = descriptor.getFetchGroupManager().getObjectFetchGroup(this.cloneObject);
-                    }
-                    List mappings = descriptor.getMappings();
-                    int mappingsSize = mappings.size();
-                    for (int index = 0; index < mappingsSize; index++) {
-                        DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
-                        if (fetchGroup == null || fetchGroup.containsAttributeInternal(mapping.getAttributeName())) {
-                            addChange(mapping.compareForChange(this.cloneObject, this.cloneObject, this, unitOfWork));
-                        }
-                    }
-                }
-            }
-        }
     }
 
     /**
