@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -25,7 +25,6 @@ import java.util.Vector;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
@@ -197,9 +196,7 @@ public class TableCreator {
         createConstraints(missingTables, session, schemaManager, false);
 
         schemaManager.createOrReplaceSequences(createSequenceTables, createSequences);
-        if (PrivilegedAccessHelper.getSystemPropertyBoolean("eclipselink.oracle.identity", false)) {
-            session.getDatasourcePlatform().initIdentitySequences(session, DEFAULT_IDENTITY_GENERATOR);
-        }
+        session.getDatasourcePlatform().initIdentitySequences(session, DEFAULT_IDENTITY_GENERATOR);
     }
 
     /**
@@ -293,9 +290,7 @@ public class TableCreator {
                         }
                     }
                 }
-                if (PrivilegedAccessHelper.getSystemPropertyBoolean("eclipselink.oracle.identity", false)) {
-                    session.getDatasourcePlatform().removeIdentitySequences(session, DEFAULT_IDENTITY_GENERATOR, tableNames);
-                }
+                session.getDatasourcePlatform().removeIdentitySequences(session, DEFAULT_IDENTITY_GENERATOR, tableNames);
                 tables = failed;
             }
         } finally {
@@ -577,9 +572,7 @@ public class TableCreator {
         createConstraints(session, schemaManager, false);
 
         schemaManager.createSequences();
-        if (PrivilegedAccessHelper.getSystemPropertyBoolean("eclipselink.oracle.identity", false)) {
-            session.getDatasourcePlatform().initIdentitySequences(session, DEFAULT_IDENTITY_GENERATOR);
-        }
+        session.getDatasourcePlatform().initIdentitySequences(session, DEFAULT_IDENTITY_GENERATOR);
 
     }
 }
