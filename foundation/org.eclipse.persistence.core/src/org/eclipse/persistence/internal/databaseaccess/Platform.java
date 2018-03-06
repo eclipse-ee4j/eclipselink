@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,20 +12,14 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.databaseaccess;
 
-import java.io.Serializable;
-import java.io.Writer;
+import java.io.*;
 import java.util.Map;
-import java.util.Set;
-
-import org.eclipse.persistence.exceptions.ConversionException;
+import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.internal.core.databaseaccess.CorePlatform;
-import org.eclipse.persistence.internal.helper.ConversionManager;
-import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.queries.Call;
-import org.eclipse.persistence.queries.ValueReadQuery;
 import org.eclipse.persistence.sequencing.Sequence;
-import org.eclipse.persistence.sessions.Session;
 
 /**
  * Platform is private to TopLink. It encapsulates behavior specific to a datasource platform
@@ -113,8 +107,6 @@ public interface Platform extends CorePlatform<ConversionManager>, Serializable,
     public boolean isOracle();
 
     public boolean isOracle9();
-
-    public boolean isOracle12();
 
     public boolean isPointBase();
 
@@ -267,28 +259,4 @@ public interface Platform extends CorePlatform<ConversionManager>, Serializable,
      * Indicates whether defaultSequence is the same as platform default sequence.
      */
     public boolean usesPlatformDefaultSequence();
-
-    /**
-     * INTERNAL:
-     * Initialize platform specific identity sequences.
-     * This method is called from {@code EntityManagerSetupImpl} after login and optional schema generation.
-     * Method is also called from {@code TableCreator} class during tables creation and update..
-     * @param session Active database session (in connected state).
-     * @param defaultIdentityGenerator Default identity generator sequence name.
-     * @since 2.7
-     */
-    public void initIdentitySequences(final Session session, final String defaultIdentityGenerator);
-
-    /**
-     * INTERNAL:
-     * Remove platform specific identity sequences for specified tables. Default identity sequences are restored.
-     * Method is also called from {@code TableCreator} class during tables removal.
-     * @param dbSession Active database session (in connected state).
-     * @param defaultIdentityGenerator Default identity generator sequence name.
-     * @param tableNames Set of table names to check for identity sequence removal.
-     * @since 2.7
-     */
-    public void removeIdentitySequences(
-            final Session session, final String defaultIdentityGenerator, final Set<String> tableNames);
-
 }

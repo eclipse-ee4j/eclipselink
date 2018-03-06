@@ -9,8 +9,6 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     09/29/2016-2.7 Tomas Kraus
- *       - 426852: @GeneratedValue(strategy=GenerationType.IDENTITY) support in Oracle 12c
  *     09/14/2017-2.6 Will Dazey
  *       - 522312: Add the eclipselink.sequencing.start-sequence-at-nextval property
  *     02/20/2018-2.7 Will Dazey
@@ -24,7 +22,6 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
@@ -45,7 +42,6 @@ import org.eclipse.persistence.queries.ValueReadQuery;
 import org.eclipse.persistence.sequencing.DefaultSequence;
 import org.eclipse.persistence.sequencing.QuerySequence;
 import org.eclipse.persistence.sequencing.Sequence;
-import org.eclipse.persistence.sessions.Session;
 
 /**
  * DatasourcePlatform is private to TopLink. It encapsulates behavior specific to a datasource platform
@@ -80,7 +76,7 @@ public class DatasourcePlatform implements Platform {
     protected Sequence defaultSequence;
 
     /** Store map of sequence names to sequences */
-    protected Map<String, Sequence> sequences;
+    protected Map sequences;
 
     /** Delimiter to use for fields and tables using spaces or other special values */
     protected String startDelimiter = null;
@@ -578,11 +574,6 @@ public class DatasourcePlatform implements Platform {
         return false;
     }
 
-    @Override
-    public boolean isOracle12() {
-        return false;
-    }
-
     public boolean isPervasive(){
         return false;
     }
@@ -849,7 +840,7 @@ public class DatasourcePlatform implements Platform {
      * Returns a map of sequence names to Sequences (may be null).
      */
     @Override
-    public Map<String, Sequence> getSequences() {
+    public Map getSequences() {
         return this.sequences;
     }
 
@@ -858,7 +849,7 @@ public class DatasourcePlatform implements Platform {
      * Used only for writing into XML or Java.
      */
     @Override
-    public Map<String, Sequence> getSequencesToWrite() {
+    public Map getSequencesToWrite() {
         if ((getSequences() == null) || getSequences().isEmpty()) {
             return null;
         }
@@ -1038,30 +1029,6 @@ public class DatasourcePlatform implements Platform {
      */
     public DatasourceCall buildNativeCall(String queryString) {
         return new SQLCall(queryString);
-    }
-
-    /**
-     * INTERNAL:
-     * Initialize platform specific identity sequences.
-     * @param session Active database session (in connected state).
-     * @param defaultIdentityGenerator Default identity generator sequence name.
-     * @since 2.7
-     */
-    @Override
-    public void initIdentitySequences(final Session session, final String defaultIdentityGenerator) {
-    }
-
-    /**
-     * INTERNAL:
-     * Remove platform specific identity sequences for specified tables. Default identity sequences are restored.
-     * @param dbSession Active database session (in connected state).
-     * @param defaultIdentityGenerator Default identity generator sequence name.
-     * @param tableNames Set of table names to check for identity sequence removal.
-     * @since 2.7
-     */
-    @Override
-    public void removeIdentitySequences(
-            final Session session, final String defaultIdentityGenerator, final Set<String> tableNames) {
     }
 
     /**

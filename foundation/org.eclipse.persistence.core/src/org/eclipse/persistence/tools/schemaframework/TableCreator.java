@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -17,10 +17,8 @@ package org.eclipse.persistence.tools.schemaframework;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Vector;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -43,10 +41,6 @@ import org.eclipse.persistence.sessions.Session;
  * @author Peter Krogh
  */
 public class TableCreator {
-    /** Default identity generator sequence name.
-     *  Copy of value from JPA: {@code MetadataProject.DEFAULT_IDENTITY_GENERATOR}. */
-    public static final String DEFAULT_IDENTITY_GENERATOR = "SEQ_GEN_IDENTITY";
-
     /** Flag to disable table existence check before create. */
     public static boolean CHECK_EXISTENCE = true;
 
@@ -157,19 +151,12 @@ public class TableCreator {
     /**
      * This creates the tables on the database.
      * If the table already exists this will fail.
-     * @param session Active database session.
-     * @param schemaManager Database schema manipulation manager.
-     * @param build Whether to build constraints.
-     * @param check Whether to check for tables existence.
-     * @param createSequenceTables Whether to create sequence tables.
-     * @param createSequences Whether to create sequences.
      */
-    public void createTables(final DatabaseSession session, final SchemaManager schemaManager, final boolean build,
-            final boolean check, final boolean createSequenceTables, final boolean createSequences) {
+    public void createTables(DatabaseSession session, SchemaManager schemaManager, boolean build, boolean check, boolean createSequenceTables, boolean createSequences) {
         buildConstraints(schemaManager, build);
 
-        final String sequenceTableName = getSequenceTableName(session);
-        final List<TableDefinition> missingTables = new ArrayList<TableDefinition>();
+        String sequenceTableName = getSequenceTableName(session);
+        List<TableDefinition> missingTables = new ArrayList<TableDefinition>();
         for (TableDefinition table : getTableDefinitions()) {
             // Must not create sequence table as done in createSequences.
             if (!table.getName().equals(sequenceTableName)) {
@@ -196,7 +183,6 @@ public class TableCreator {
         createConstraints(missingTables, session, schemaManager, false);
 
         schemaManager.createOrReplaceSequences(createSequenceTables, createSequences);
-        session.getDatasourcePlatform().initIdentitySequences(session, DEFAULT_IDENTITY_GENERATOR);
     }
 
     /**
@@ -246,16 +232,13 @@ public class TableCreator {
 
     /**
      * Drop the tables from the database.
-     * @param session Active database session.
-     * @param schemaManager Database schema manipulation manager.
-     * @param build Whether to build constraints.
      */
-    public void dropTables(final DatabaseSession session, final SchemaManager schemaManager, final boolean build) {
+    public void dropTables(DatabaseSession session, SchemaManager schemaManager, boolean build) {
         buildConstraints(schemaManager, build);
 
         // CR 3870467, do not log stack, or log at all if not fine
         boolean shouldLogExceptionStackTrace = session.getSessionLog().shouldLogExceptionStackTrace();
-        final int level = session.getSessionLog().getLevel();
+        int level = session.getSessionLog().getLevel();
         if (shouldLogExceptionStackTrace) {
             session.getSessionLog().setShouldLogExceptionStackTrace(false);
         }
@@ -265,7 +248,7 @@ public class TableCreator {
         try {
             dropConstraints(session, schemaManager, false);
 
-            final String sequenceTableName = getSequenceTableName(session);
+            String sequenceTableName = getSequenceTableName(session);
             List<TableDefinition> tables = getTableDefinitions();
             int trys = 1;
             if (SchemaManager.FORCE_DROP) {
@@ -273,15 +256,12 @@ public class TableCreator {
             }
             while ((trys > 0) && !tables.isEmpty()) {
                 trys--;
-                final List<TableDefinition> failed = new ArrayList<TableDefinition>();
-                final Set<String> tableNames = new HashSet<>(tables.size());
-                for (final TableDefinition table : tables) {
-                    final String tableName = table.getName();
+                List<TableDefinition> failed = new ArrayList<TableDefinition>();
+                for (TableDefinition table : tables) {
                     // Must not create sequence table as done in createSequences.
-                    if (!tableName.equals(sequenceTableName)) {
+                    if (!table.getName().equals(sequenceTableName)) {
                         try {
                             schemaManager.dropObject(table);
-                            tableNames.add(tableName);
                         } catch (DatabaseException exception) {
                             failed.add(table);
                             if (!shouldIgnoreDatabaseException()) {
@@ -290,7 +270,6 @@ public class TableCreator {
                         }
                     }
                 }
-                session.getDatasourcePlatform().removeIdentitySequences(session, DEFAULT_IDENTITY_GENERATOR, tableNames);
                 tables = failed;
             }
         } finally {
@@ -443,18 +422,15 @@ public class TableCreator {
 
     /**
      * This creates/extends the tables on the database.
-     * @param session Active database session.
-     * @param schemaManager Database schema manipulation manager.
-     * @param build Whether to build constraints.
      */
-    public void extendTables(final DatabaseSession session, final SchemaManager schemaManager, final boolean build) {
+    public void extendTables(DatabaseSession session, SchemaManager schemaManager, boolean build) {
         buildConstraints(schemaManager, build);
 
-        final String sequenceTableName = getSequenceTableName(session);
-        for (final TableDefinition table : getTableDefinitions()) {
+        String sequenceTableName = getSequenceTableName(session);
+        for (TableDefinition table : getTableDefinitions()) {
             // Must not create sequence table as done in createSequences.
             if (!table.getName().equals(sequenceTableName)) {
-                final AbstractSession abstractSession = (AbstractSession) session;
+                AbstractSession abstractSession = (AbstractSession) session;
                 boolean alreadyExists = false;
                 // Check if the table already exists, to avoid logging create error.
                 if (CHECK_EXISTENCE && schemaManager.shouldWriteToDatabase()) {
@@ -466,7 +442,7 @@ public class TableCreator {
                     try {
                         schemaManager.createObject(table);
                         session.getSessionLog().log(SessionLog.FINEST, SessionLog.DDL, "default_tables_created", table.getFullName());
-                    } catch (final DatabaseException exception) {
+                    } catch (DatabaseException exception) {
                         createTableException = exception;
                         alreadyExists = true;
                     }
@@ -477,7 +453,7 @@ public class TableCreator {
                     //While SQL is case insensitive, getColumnInfo is and will not return the table info unless the name is passed in
                     //as it is stored internally.
                     String tableName = table.getTable()==null? table.getName(): table.getTable().getName();
-                    final boolean usesDelimiting = (table.getTable()!=null && table.getTable().shouldUseDelimiters());
+                    boolean usesDelimiting = (table.getTable()!=null && table.getTable().shouldUseDelimiters());
                     List<DatabaseRecord> columnInfo = null;
 
                     //I need the actual table catalog, schema and tableName for getTableInfo.
@@ -495,9 +471,9 @@ public class TableCreator {
                         //Table exists, add individual fields as necessary
 
                         //hash the table's existing columns by name
-                        final Map<DatabaseField, DatabaseRecord> columns = new HashMap(columnInfo.size());
-                        final DatabaseField columnNameLookupField = new DatabaseField("COLUMN_NAME");
-                        final DatabaseField schemaLookupField = new DatabaseField("TABLE_SCHEM");
+                        Map<DatabaseField, DatabaseRecord> columns = new HashMap(columnInfo.size());
+                        DatabaseField columnNameLookupField = new DatabaseField("COLUMN_NAME");
+                        DatabaseField schemaLookupField = new DatabaseField("TABLE_SCHEM");
                         boolean schemaMatchFound = false;
                         // Determine the probably schema for the table, this is a heuristic, so should not cause issues if wrong.
                         String qualifier = table.getQualifier();
@@ -514,15 +490,15 @@ public class TableCreator {
                                 }
                             }
                         }
-                        final boolean checkSchema = (qualifier != null) && (qualifier.length() > 0);
-                        for (final DatabaseRecord record : columnInfo) {
-                            final String fieldName = (String)record.get(columnNameLookupField);
+                        boolean checkSchema = (qualifier != null) && (qualifier.length() > 0);
+                        for (DatabaseRecord record : columnInfo) {
+                            String fieldName = (String)record.get(columnNameLookupField);
                             if (fieldName != null && fieldName.length() > 0) {
-                                final DatabaseField column = new DatabaseField(fieldName);
+                                DatabaseField column = new DatabaseField(fieldName);
                                 if (session.getPlatform().shouldForceFieldNamesToUpperCase()) {
                                     column.useUpperCaseForComparisons(true);
                                 }
-                                final String schema = (String)record.get(schemaLookupField);
+                                String schema = (String)record.get(schemaLookupField);
                                 // Check the schema as well.  Ignore columns for other schema if a schema match is found.
                                 if (schemaMatchFound) {
                                     if (qualifier.equalsIgnoreCase(schema)) {
@@ -543,7 +519,7 @@ public class TableCreator {
                         }
 
                         //Go through each field we need to have in the table to see if it already exists
-                        for (final FieldDefinition fieldDef : table.getFields()){
+                        for (FieldDefinition fieldDef : table.getFields()){
                             DatabaseField dbField = fieldDef.getDatabaseField();
                             if ( dbField == null ) {
                                 dbField = new DatabaseField(fieldDef.getName());
@@ -552,7 +528,7 @@ public class TableCreator {
                                 //field does not exist so add it to the table
                                 try {
                                     table.addFieldOnDatabase(abstractSession, fieldDef);
-                                } catch (final DatabaseException addFieldEx) {
+                                } catch(DatabaseException addFieldEx) {
                                     session.getSessionLog().log(SessionLog.FINEST,  SessionLog.DDL, "table_cannot_add_field", dbField.getName(), table.getFullName(), addFieldEx.getMessage());
                                     if (!shouldIgnoreDatabaseException()) {
                                         throw addFieldEx;
@@ -572,7 +548,5 @@ public class TableCreator {
         createConstraints(session, schemaManager, false);
 
         schemaManager.createSequences();
-        session.getDatasourcePlatform().initIdentitySequences(session, DEFAULT_IDENTITY_GENERATOR);
-
     }
 }
