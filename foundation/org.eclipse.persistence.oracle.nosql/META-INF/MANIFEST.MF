@@ -13,8 +13,8 @@ Bundle-Version: 3.0.0.qualifier
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.eclipse.persistence.oracle.nosql
 Import-Package: oracle.AQ;resolution:=optional,
- javax.resource;version="1.5.0";resolution:=optional,
- javax.resource.cci;version="1.5.0";resolution:=optional,
+ javax.resource;version="[1.5.0,2.0)";resolution:=optional,
+ javax.resource.cci;version="[1.5.0,2.0)";resolution:=optional,
  oracle.kv;resolution:=optional,
  org.eclipse.persistence.internal.sessions;version="3.0.0",
  org.eclipse.persistence.exceptions;version="3.0.0",

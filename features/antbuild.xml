@@ -743,7 +743,7 @@
         <property name="p2.director.profile" value="SDKProfile" />
         <property name="p2.director.installIU" value="org.eclipse.persistence.sdk.feature.group" />
         <property name="p2.director.action" value="-verifyOnly" />
-        <property name="p2.director.eclipse.version" value="luna" />
+        <property name="p2.director.eclipse.version" value="photon" />
         <property name="p2.director.eclipse.updateSite" value="http://download.eclipse.org/releases/${p2.director.eclipse.version}" />
         <property name="p2.director.additionalArgs" value="" />
         <echo message="p2.director.jar                  ='${p2.director.jar}'"/>
