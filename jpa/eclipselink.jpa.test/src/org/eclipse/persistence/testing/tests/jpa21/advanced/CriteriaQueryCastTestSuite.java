@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -18,18 +18,16 @@ import java.math.BigInteger;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
-import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.LargeProject;
 import org.eclipse.persistence.testing.models.jpa.advanced.Project;
@@ -39,7 +37,6 @@ import org.eclipse.persistence.testing.models.jpa.inheritance.Bus;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Car;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Company;
 import org.eclipse.persistence.testing.models.jpa.inheritance.FueledVehicle;
-import org.eclipse.persistence.testing.models.jpa.inheritance.InheritanceTableCreator;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Jalopy;
 import org.eclipse.persistence.testing.models.jpa.inheritance.NonFueledVehicle;
 import org.eclipse.persistence.testing.models.jpa.inheritance.OffRoadTireInfo;
@@ -52,7 +49,12 @@ import org.eclipse.persistence.testing.models.jpa.inheritance.Vehicle;
 import org.eclipse.persistence.testing.models.jpa.inherited.BeerConsumer;
 import org.eclipse.persistence.testing.models.jpa.inherited.Blue;
 import org.eclipse.persistence.testing.models.jpa.inherited.BlueLight;
-import org.eclipse.persistence.testing.models.jpa.inherited.InheritedTableManager;
+import org.eclipse.persistence.testing.models.jpa21.advanced.animals.Animal;
+import org.eclipse.persistence.testing.models.jpa21.advanced.animals.Beaver;
+import org.eclipse.persistence.testing.models.jpa21.advanced.animals.Rodent;
+
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
 public class CriteriaQueryCastTestSuite extends JUnitTestCase {
 
@@ -70,30 +72,35 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
         suite.setName("QueryCastTestSuite");
 
         suite.addTest(new CriteriaQueryCastTestSuite("testSetup"));
-        suite.addTest(new CriteriaQueryCastTestSuite("testDowncastOneToManyLeafQueryKey"));
-        suite.addTest(new CriteriaQueryCastTestSuite("testDowncastOneToManyMidHierarchyQueryKey"));
-        suite.addTest(new CriteriaQueryCastTestSuite("testDowncastManyToManyQueryKey"));
-        suite.addTest(new CriteriaQueryCastTestSuite("testDowncastOneToManyLeafExpressionBuilder"));
-        suite.addTest(new CriteriaQueryCastTestSuite("testDowncastOneToManyMidHierarchyExpressionBuilder"));
-        suite.addTest(new CriteriaQueryCastTestSuite("testDowncastManyToManyExpressionBuilder"));
-        suite.addTest(new CriteriaQueryCastTestSuite("testDowncastInSelect"));
-        suite.addTest(new CriteriaQueryCastTestSuite("testDowncastSingleTableQueryKey"));
-        suite.addTest(new CriteriaQueryCastTestSuite("testDoubleDowncastOneToManyLeafQueryKey"));
-        suite.addTest(new CriteriaQueryCastTestSuite("testDoubleDowncastSeparateClass"));
-        suite.addTest(new CriteriaQueryCastTestSuite("testDowncastRelationshipTraversal"));
-        suite.addTest(new CriteriaQueryCastTestSuite("testDoubleDowncastOneToOne"));
-        suite.addTest(new CriteriaQueryCastTestSuite("testSelectCast"));
-        suite.addTest(new CriteriaQueryCastTestSuite("testCastInSubselect"));
-        suite.addTest(new CriteriaQueryCastTestSuite("testDowncastWithFetchJoin"));
-        suite.addTest(new CriteriaQueryCastTestSuite("testDoubleTreatOnRoot"));
-        suite.addTest(new CriteriaQueryCastTestSuite("testDoubleTreatOnRootSTI"));
-        suite.addTest(new CriteriaQueryCastTestSuite("testTreatInFrom"));
-        suite.addTest(new CriteriaQueryCastTestSuite("testTreatInFromSTI"));
-        suite.addTest(new CriteriaQueryCastTestSuite("testTreatInWhere"));
-        suite.addTest(new CriteriaQueryCastTestSuite("testTreatInWhereSTI"));
-        suite.addTest(new CriteriaQueryCastTestSuite("testTreatUsingAndOr"));
-        suite.addTest(new CriteriaQueryCastTestSuite("testTreatUsingAndOrSTI"));
-        suite.addTest(new CriteriaQueryCastTestSuite("testTreatUsingJoinOverDowncastRelationship"));
+// Bug 532018 - Can't use org.eclipse.persistence.testing.models.jpa entities in JPA 2.1 test
+//        suite.addTest(new CriteriaQueryCastTestSuite("testDowncastOneToManyLeafQueryKey"));
+//        suite.addTest(new CriteriaQueryCastTestSuite("testDowncastOneToManyMidHierarchyQueryKey"));
+//        suite.addTest(new CriteriaQueryCastTestSuite("testDowncastManyToManyQueryKey"));
+//        suite.addTest(new CriteriaQueryCastTestSuite("testDowncastOneToManyLeafExpressionBuilder"));
+//        suite.addTest(new CriteriaQueryCastTestSuite("testDowncastOneToManyMidHierarchyExpressionBuilder"));
+//        suite.addTest(new CriteriaQueryCastTestSuite("testDowncastManyToManyExpressionBuilder"));
+//        suite.addTest(new CriteriaQueryCastTestSuite("testDowncastInSelect"));
+//        suite.addTest(new CriteriaQueryCastTestSuite("testDowncastSingleTableQueryKey"));
+//        suite.addTest(new CriteriaQueryCastTestSuite("testDoubleDowncastOneToManyLeafQueryKey"));
+//        suite.addTest(new CriteriaQueryCastTestSuite("testDoubleDowncastSeparateClass"));
+//        suite.addTest(new CriteriaQueryCastTestSuite("testDowncastRelationshipTraversal"));
+//        suite.addTest(new CriteriaQueryCastTestSuite("testDoubleDowncastOneToOne"));
+//        suite.addTest(new CriteriaQueryCastTestSuite("testSelectCast"));
+//        suite.addTest(new CriteriaQueryCastTestSuite("testCastInSubselect"));
+//        suite.addTest(new CriteriaQueryCastTestSuite("testDowncastWithFetchJoin"));
+//        suite.addTest(new CriteriaQueryCastTestSuite("testDoubleTreatOnRoot"));
+//        suite.addTest(new CriteriaQueryCastTestSuite("testDoubleTreatOnRootSTI"));
+//        suite.addTest(new CriteriaQueryCastTestSuite("testTreatInFrom"));
+//        suite.addTest(new CriteriaQueryCastTestSuite("testTreatInFromSTI"));
+//        suite.addTest(new CriteriaQueryCastTestSuite("testTreatInWhere"));
+//        suite.addTest(new CriteriaQueryCastTestSuite("testTreatInWhereSTI"));
+//        suite.addTest(new CriteriaQueryCastTestSuite("testTreatUsingAndOr"));
+//        suite.addTest(new CriteriaQueryCastTestSuite("testTreatUsingAndOrSTI"));
+//        suite.addTest(new CriteriaQueryCastTestSuite("testTreatUsingJoinOverDowncastRelationship"));
+
+        suite.addTest(new CriteriaQueryCastTestSuite("testTreatOverInheritance"));
+        suite.addTest(new CriteriaQueryCastTestSuite("testTreatOverInheritanceWithCount"));
+        suite.addTest(new CriteriaQueryCastTestSuite("testTreatOverInheritanceWithCountJPQL"));
         return suite;
     }
 
@@ -101,12 +108,25 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
     public void testSetup() {
-        new AdvancedTableCreator().replaceTables(getPersistenceUnitServerSession());
-        new InheritanceTableCreator().replaceTables(getPersistenceUnitServerSession());
-        new InheritedTableManager().replaceTables(getPersistenceUnitServerSession());
-        // Force uppercase for Postgres.
-        if (getPersistenceUnitServerSession().getPlatform().isPostgreSQL()) {
-            getPersistenceUnitServerSession().getLogin().setShouldForceFieldNamesToUpperCase(true);
+// Bug 532018 - Can't use org.eclipse.persistence.testing.models.jpa entities in JPA 2.1 test
+//        new AdvancedTableCreator().replaceTables(getPersistenceUnitServerSession());
+//        new InheritanceTableCreator().replaceTables(getPersistenceUnitServerSession());
+//        new InheritedTableManager().replaceTables(getPersistenceUnitServerSession());
+//        // Force uppercase for Postgres.
+//        if (getPersistenceUnitServerSession().getPlatform().isPostgreSQL()) {
+//            getPersistenceUnitServerSession().getLogin().setShouldForceFieldNamesToUpperCase(true);
+//        }
+
+        EntityManager em = createEntityManager("AnimalsPU");
+        beginTransaction(em);
+        try {
+            Animal.initAnimals(em);
+            commitTransaction(em);
+        } finally {
+            if (this.isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
         }
     }
 
@@ -1338,6 +1358,96 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
                 assertTrue("query did not return intances of Company, instead it returned :"+result, (result instanceof Person));
             }
             assertTrue("Incorrect results returned", resultList.size() == 1);
+        } finally {
+            if (this.isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
+    }
+
+    /**
+     * Test scenario from bug 531726: Treat over 2 subsequent inheritance using
+     * direct {@code select}. Using CriteriaQuery to build the query.
+     */
+    public void testTreatOverInheritance() {
+        EntityManager em = createEntityManager("AnimalsPU");
+        beginTransaction(em);
+        try {
+            CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+            CriteriaQuery<Animal> createQuery = criteriaBuilder.createQuery(Animal.class);
+            Root<Animal> from = createQuery.from(Animal.class);
+
+            Root<Rodent> treat1 = criteriaBuilder.treat(from, Rodent.class);
+            Root<Beaver> treat2 = criteriaBuilder.treat(from, Beaver.class);
+
+            Predicate equal1 = criteriaBuilder.isNotNull(treat1.get("name"));
+            Predicate equal2 = criteriaBuilder.isNotNull(treat2.get("name"));
+
+            createQuery.select(from);
+            createQuery.where(equal1, equal2);
+            TypedQuery<Animal> query = em.createQuery(createQuery);
+            List<Animal> result = query.getResultList();
+            assertEquals("Animals count:", 2, result.size());
+        } finally {
+            if (this.isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
+    }
+
+    /**
+     * Test scenario from bug 531726: Treat over 2 subsequent inheritance using
+     * {@code select count}. Using CriteriaQuery to build the query.
+     */
+    public void testTreatOverInheritanceWithCount() {
+        EntityManager em = createEntityManager("AnimalsPU");
+        beginTransaction(em);
+        try {
+
+            CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+            CriteriaQuery<Long> createQuery = criteriaBuilder.createQuery(Long.class);
+            Root<Animal> from = createQuery.from(Animal.class);
+
+            Root<Rodent> treat1 = criteriaBuilder.treat(from, Rodent.class);
+            Root<Beaver> treat2 = criteriaBuilder.treat(from, Beaver.class);
+
+            Predicate equal1 = criteriaBuilder.isNotNull(treat1.get("name"));
+            Predicate equal2 = criteriaBuilder.isNotNull(treat2.get("name"));
+
+            createQuery.select(criteriaBuilder.count(from));
+            createQuery.where(equal1, equal2);
+
+            TypedQuery<Long> query = em.createQuery(createQuery);
+            Long result = query.getSingleResult();
+            assertEquals("Animals count:", 2, result.longValue());
+        } finally {
+            if (this.isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
+    }
+
+    /**
+     * Test scenario from bug 531726: Treat over 2 subsequent inheritance using {@code select count}.
+     * Using JPQL to build the query.
+     */
+    public void testTreatOverInheritanceWithCountJPQL() {
+        EntityManager em = createEntityManager("AnimalsPU");
+        beginTransaction(em);
+        try {
+            TypedQuery<Long> query = em.createQuery(
+                    "SELECT count(a.name) " +
+                      "FROM Animal a " +
+                      "JOIN TREAT (a AS Rodent) r " +
+                      "JOIN TREAT (a AS Beaver) b " +
+                     "WHERE r IS NOT null " +
+                       "AND b IS NOT null ",
+                      Long.class);
+            Long result = query.getSingleResult();
+            assertEquals("Animals count:", 2, result.longValue());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
