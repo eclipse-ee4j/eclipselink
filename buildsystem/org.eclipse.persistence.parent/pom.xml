@@ -33,8 +33,8 @@
         <svn.revision>NA</svn.revision>
         <src>./src</src>
         <!-- BUILD Properties -->
-        <orbit.drop>R20130827064939</orbit.drop>
-        <eclipse.drop>luna</eclipse.drop>
+        <orbit.drop>S20180302171354</orbit.drop>
+        <eclipse.drop>photon</eclipse.drop>
         <findbugs.version>3.0.1</findbugs.version>
         <findbugs.threshold>Normal</findbugs.threshold>
     </properties>
