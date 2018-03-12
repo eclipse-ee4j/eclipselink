@@ -42,7 +42,6 @@
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.TagConverter</class>
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.TimeConverter</class>
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.ResponsibilityConverter</class>
-
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
 
         <properties>
@@ -176,6 +175,21 @@
         <properties>
             <property name="eclipselink.weaving" value="true" />
             <property name="eclipselink.ddl-generation" value="none" />
+        </properties>
+    </persistence-unit>
+
+    <persistence-unit name="AnimalsPU" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.animals.Animal</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.animals.Rodent</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.animals.Hedgehog</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.animals.Beaver</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.session-name" value="animal-session"/>
+            <property name="eclipselink.orm.validate.schema" value="true"/>
+            <property name="eclipselink.jdbc.uppercase-columns" value="true"/>
+            <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
         </properties>
     </persistence-unit>
 
