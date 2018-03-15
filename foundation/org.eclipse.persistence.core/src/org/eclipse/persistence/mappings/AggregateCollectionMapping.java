@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -17,6 +17,8 @@
  *       - 374688: JPA 2.1 Converter support
  *     02/11/2013-2.5 Guy Pelletier 
  *       - 365931: @JoinColumn(name="FK_DEPT",insertable = false, updatable = true) causes INSERT statement to include this data value that it is associated with
+ *     03/14/2018-2.7 Will Dazey
+ *       - 500753: Synchronize initialization of InsertQuery
  ******************************************************************************/  
 package org.eclipse.persistence.mappings;
 
@@ -33,6 +35,7 @@ import java.util.Vector;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.DescriptorEventManager;
+import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackingPolicy;
 import org.eclipse.persistence.descriptors.changetracking.DeferredChangeDetectionPolicy;
 import org.eclipse.persistence.descriptors.changetracking.ObjectChangeTrackingPolicy;
@@ -2528,11 +2531,15 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * Returns clone of InsertObjectQuery from the reference descriptor, if it is not set - create it.
      */
     protected InsertObjectQuery getInsertObjectQuery(AbstractSession session, ClassDescriptor desc) {
-        InsertObjectQuery insertQuery = desc.getQueryManager().getInsertQuery();
-        if (insertQuery == null) {
-            insertQuery = new InsertObjectQuery();
-            desc.getQueryManager().setInsertQuery(insertQuery);
+        DescriptorQueryManager queryManager = desc.getQueryManager();
+        if (!queryManager.hasInsertQuery()) {
+            synchronized (queryManager) {
+                if (!queryManager.hasInsertQuery()) {
+                    queryManager.setInsertQuery(new InsertObjectQuery());
+                }
+            }
         }
+        InsertObjectQuery insertQuery = queryManager.getInsertQuery();
         if (insertQuery.getModifyRow() == null) {
             AbstractRecord modifyRow = new DatabaseRecord();
             for (int i = 0; i < getTargetForeignKeyFields().size(); i++) {
