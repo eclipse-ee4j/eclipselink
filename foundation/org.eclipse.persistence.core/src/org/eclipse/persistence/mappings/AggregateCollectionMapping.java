@@ -19,6 +19,8 @@
  *       - 365931: @JoinColumn(name="FK_DEPT",insertable = false, updatable = true) causes INSERT statement to include this data value that it is associated with
  *     02/14/2018-2.7.2 Lukas Jungmann
  *       - 530680: embedded element collection within an entity of protected isolation does not merged changes into clones correctly
+ *     03/14/2018-2.7 Will Dazey
+ *       - 500753: Synchronize initialization of InsertQuery
  ******************************************************************************/
 package org.eclipse.persistence.mappings;
 
@@ -35,6 +37,7 @@ import java.util.Vector;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.DescriptorEventManager;
+import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackingPolicy;
 import org.eclipse.persistence.descriptors.changetracking.DeferredChangeDetectionPolicy;
 import org.eclipse.persistence.descriptors.changetracking.ObjectChangeTrackingPolicy;
@@ -2526,11 +2529,15 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * Returns clone of InsertObjectQuery from the reference descriptor, if it is not set - create it.
      */
     protected InsertObjectQuery getInsertObjectQuery(AbstractSession session, ClassDescriptor desc) {
-        InsertObjectQuery insertQuery = desc.getQueryManager().getInsertQuery();
-        if (insertQuery == null) {
-            insertQuery = new InsertObjectQuery();
-            desc.getQueryManager().setInsertQuery(insertQuery);
+        DescriptorQueryManager queryManager = desc.getQueryManager();
+        if (!queryManager.hasInsertQuery()) {
+            synchronized (queryManager) {
+                if (!queryManager.hasInsertQuery()) {
+                    queryManager.setInsertQuery(new InsertObjectQuery());
+                }
+            }
         }
+        InsertObjectQuery insertQuery = queryManager.getInsertQuery();
         if (insertQuery.getModifyRow() == null) {
             AbstractRecord modifyRow = new DatabaseRecord();
             for (int i = 0; i < getTargetForeignKeyFields().size(); i++) {
