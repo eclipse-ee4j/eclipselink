@@ -44,8 +44,8 @@
     </license>
   </licenses>
   <scm>
-    <connection>scm:git:http://git.eclipse.org/eclipselink/eclipselink.runtime.git</connection>
-    <url>http://git.eclipse.org/eclipselink/eclipselink.runtime.git</url>
+    <connection>scm:git:https://github.com/eclipse-ee4j/eclipselink.git</connection>
+    <url>https://github.com/eclipse-ee4j/eclipselink.git</url>
   </scm>
   <developers>
     <developer>
