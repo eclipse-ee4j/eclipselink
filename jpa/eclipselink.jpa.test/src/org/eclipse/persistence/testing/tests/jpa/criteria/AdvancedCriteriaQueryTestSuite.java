@@ -447,15 +447,15 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
     public void testInParameterCollection2(){
         EntityManager em = createEntityManager();
         beginTransaction(em);
-        List respons = new Vector();
-        respons.add("NoResults");
-        respons.add("Bug fixes");
+        List<String> response = new Vector<>();
+        response.add("NoResults");
+        response.add("Bug fixes");
         try {
             CriteriaBuilder qbuilder = em.getCriteriaBuilder();
-            CriteriaQuery<Employee> cquery =qbuilder.createQuery(Employee.class);
+            CriteriaQuery<Employee> cquery = qbuilder.createQuery(Employee.class);
             Root<Employee> emp = cquery.from(Employee.class);
             cquery.where(emp.join("responsibilities").in(qbuilder.parameter(java.util.Collection.class, "param")));
-            List<Employee> result = em.createQuery(cquery).setParameter("param",respons).getResultList();
+            List<Employee> result = em.createQuery(cquery).setParameter("param", response).getResultList();
             assertFalse("testInParameterCollection failed: No Employees were returned", result.isEmpty());
         } finally {
             closeEntityManagerAndTransaction(em);
