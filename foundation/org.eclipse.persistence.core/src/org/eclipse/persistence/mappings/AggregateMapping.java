@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -15,6 +15,8 @@
  *       - 397772: JPA 2.1 Entity Graph Support
  *     08/07/2016-2.7 Dalia Abo Sheasha
  *       - 499335: Multiple embeddable fields can't reference same object
+ *     03/19/2018-2.7.2 Lukas Jungmann
+ *       - 413120: Nested Embeddable Null pointer
  ******************************************************************************/
 package org.eclipse.persistence.mappings;
 
@@ -1023,7 +1025,10 @@ public abstract class AggregateMapping extends DatabaseMapping {
                         if(oldValue != null) {
                             nestedOldValue = mapping.getAttributeValueFromObject(oldValue);
                         }
-                        mapping.updateChangeRecord(newValue, nestedNewValue, nestedOldValue, (org.eclipse.persistence.internal.sessions.ObjectChangeSet)changeRecord.getChangedObject(), uow);
+                        // bug #413120 - update nested change record only if the value is different
+                        if (nestedNewValue != nestedOldValue) {
+                            mapping.updateChangeRecord(newValue, nestedNewValue, nestedOldValue, (org.eclipse.persistence.internal.sessions.ObjectChangeSet)changeRecord.getChangedObject(), uow);
+                        }
                     }
                 }
                 referenceDescriptor.getObjectChangePolicy().setChangeSetOnListener((ObjectChangeSet)changeRecord.getChangedObject(), newValue);
