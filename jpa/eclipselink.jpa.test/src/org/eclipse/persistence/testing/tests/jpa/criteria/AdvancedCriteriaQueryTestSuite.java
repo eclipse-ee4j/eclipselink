@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2017 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -122,6 +122,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testInCollectionEntity"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testInCollectionPrimitives"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testInParameterCollection"));
+        suite.addTest(new AdvancedCriteriaQueryTestSuite("testInParameterCollection2"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testProd"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testSize"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testJoinDistinct"));
@@ -439,6 +440,28 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             closeEntityManagerAndTransaction(em);
         }
     }
+
+    /*
+     * bug 349477 - Using criteria.in(...) with ParameterExpression of type Collection creates invalid SQL
+     */
+    public void testInParameterCollection2(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        List<String> response = new Vector<>();
+        response.add("NoResults");
+        response.add("Bug fixes");
+        try {
+            CriteriaBuilder qbuilder = em.getCriteriaBuilder();
+            CriteriaQuery<Employee> cquery = qbuilder.createQuery(Employee.class);
+            Root<Employee> emp = cquery.from(Employee.class);
+            cquery.where(emp.join("responsibilities").in(qbuilder.parameter(java.util.Collection.class, "param")));
+            List<Employee> result = em.createQuery(cquery).setParameter("param", response).getResultList();
+            assertFalse("testInParameterCollection failed: No Employees were returned", result.isEmpty());
+        } finally {
+            closeEntityManagerAndTransaction(em);
+        }
+    }
+
     public void testInlineInParameter(){
         EntityManager em = createEntityManager();
         beginTransaction(em);
