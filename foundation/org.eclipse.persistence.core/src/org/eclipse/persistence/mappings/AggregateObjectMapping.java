@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -24,6 +24,8 @@
  *         "java.lang.NoClassDefFoundError: org/eclipse/persistence/testing/models/jpa21/advanced/enums/Gender"
  *     10/19/2016-2.6 Will Dazey
  *       - 506168: Make sure nestedTranslation map is new reference when cloned
+ *     03/22/2018-2.7.2 Lukas Jungmann
+ *       - 441498: @ElementCollection on Map<@Embeddable,String> cause NullPointerException when @Embeddable has a FK
  ******************************************************************************/
 package org.eclipse.persistence.mappings;
 
@@ -1459,7 +1461,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         setFields(collectFields());
 
         // Add the nested pre delete mappings to the source entity.
-        if (clonedDescriptor.hasPreDeleteMappings()) {
+        if (!isMapKeyMapping() && clonedDescriptor.hasPreDeleteMappings()) {
             getDescriptor().addPreDeleteMapping(this);
         }
     }
