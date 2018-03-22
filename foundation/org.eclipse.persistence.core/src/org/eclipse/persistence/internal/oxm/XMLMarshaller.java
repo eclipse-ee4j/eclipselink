@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -1107,6 +1107,8 @@ public abstract class XMLMarshaller<
                     session = context.getSession(((Root)object).getObject());
                     if(session != null){
                         descriptor = getDescriptor(((Root)object).getObject(), session);
+                    } else if (descriptor == null) {
+                        descriptor = context.getDescriptor(new QName(((Root)object).getNamespaceURI(),((Root)object).getLocalName()));
                     }
                 }catch (XMLMarshalException marshalException) {
                     if (!isSimpleXMLRoot((Root) object)) {
