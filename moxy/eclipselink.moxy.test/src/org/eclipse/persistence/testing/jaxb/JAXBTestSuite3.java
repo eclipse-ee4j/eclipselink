@@ -26,6 +26,7 @@ import org.eclipse.persistence.testing.jaxb.jaxbintrospector.elementname.JAXBInt
 import org.eclipse.persistence.testing.jaxb.prefixmapper.DefaultNSPrefixMapperSimpleTestCases;
 import org.eclipse.persistence.testing.jaxb.prefixmapper.PrefixMapperContextTestCases;
 import org.eclipse.persistence.testing.jaxb.prefixmapper.PrefixMapperMapTestCases;
+import org.eclipse.persistence.testing.jaxb.prefixmapper.PrefixMapperPackageInfoTestCases;
 import org.eclipse.persistence.testing.jaxb.prefixmapper.PrefixMapperTestCases;
 import org.eclipse.persistence.testing.jaxb.properties.PropertyTestCases;
 import org.eclipse.persistence.testing.jaxb.readonly.ReadAndWriteOnlyTestCases;
@@ -135,6 +136,7 @@ public class JAXBTestSuite3 extends TestCase {
         suite.addTestSuite(UnmarshalWithSpaceEventTestCases.class);
         suite.addTestSuite(PrefixMapperTestCases.class);
         suite.addTestSuite(PrefixMapperMapTestCases.class);
+        suite.addTestSuite(PrefixMapperPackageInfoTestCases.class);
         suite.addTestSuite(PrefixMapperContextTestCases.class);
         suite.addTestSuite(DefaultNSPrefixMapperSimpleTestCases.class);
         suite.addTestSuite(ChildURITestCases.class);

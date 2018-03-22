@@ -29,6 +29,14 @@ public class PrefixMapperContextTestCases extends TestCase {
               "<firstName>Jon</firstName><lastName>Doe</lastName><acmeNS:employeeId>123</acmeNS:employeeId>" +
               "</newPrefix:employeeContext>";
 
+    public PrefixMapperContextTestCases(String name) {
+        super(name);
+    }
+
+    public String getName() {
+        return "JAXB set/getProperty Tests: " + super.getName();
+    }
+
     public void testMarshalWithContextualNamespaces() throws Exception  {
         JAXBContext ctx = JAXBContextFactory.createContext(new Class[]{EmployeeContext.class}, null);
         Marshaller m = ctx.createMarshaller();
