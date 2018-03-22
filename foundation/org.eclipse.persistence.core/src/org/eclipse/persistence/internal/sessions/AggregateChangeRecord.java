@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     03/19/2018-2.7.2 Lukas Jungmann
+ *       - 496836: NullPointerException on ObjectChangeSet.mergeObjectChanges
  ******************************************************************************/
 package org.eclipse.persistence.internal.sessions;
 
@@ -58,7 +60,13 @@ public class AggregateChangeRecord extends ChangeRecord implements org.eclipse.p
                 return;
             }
         }
-        ((ObjectChangeSet)this.changedObject).mergeObjectChanges((ObjectChangeSet)((AggregateChangeRecord)mergeFromRecord).getChangedObject(), mergeToChangeSet, mergeFromChangeSet);
+        ObjectChangeSet change = (ObjectChangeSet)((AggregateChangeRecord)mergeFromRecord).getChangedObject();
+        if (change == null) {
+            // bug #496836 - incoming change is setting the aggregate to null
+            this.changedObject = null;
+        } else {
+            ((ObjectChangeSet)this.changedObject).mergeObjectChanges(change, mergeToChangeSet, mergeFromChangeSet);
+        }
     }
 
     /**
