@@ -1107,6 +1107,8 @@ public abstract class XMLMarshaller<
                     session = context.getSession(((Root)object).getObject());
                     if(session != null){
                         descriptor = getDescriptor(((Root)object).getObject(), session);
+                    } else if (descriptor == null) {
+                        descriptor = context.getDescriptor(new QName(((Root)object).getNamespaceURI(),((Root)object).getLocalName()));
                     }
                 }catch (XMLMarshalException marshalException) {
                     if (!isSimpleXMLRoot((Root) object)) {
