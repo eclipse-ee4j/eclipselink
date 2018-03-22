@@ -24,21 +24,17 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="MAIN_ENTITY")
+@Table(name = "MAIN_ENTITY")
 public class MainEntity {
 
-  @Id
-  @Column(name = "ID")
-  public long id;
+    @Id
+    @Column(name = "ID")
+    public long id;
 
-  @ElementCollection(fetch = FetchType.LAZY)
-  @CollectionTable(
-          name = "PARAMS",
-          joinColumns = {
-              @JoinColumn(name = "MAIN_ENTITY_ID", referencedColumnName = "ID")
-          }
-  )
-  @Column(name = "VALUE")
-  public Map<Param, String> params;
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name = "PARAMS", joinColumns = {
+            @JoinColumn(name = "MAIN_ENTITY_ID", referencedColumnName = "ID") })
+    @Column(name = "VALUE")
+    public Map<Param, String> params;
 
 }
