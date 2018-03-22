@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -11,6 +11,9 @@
  *     Oracle - Initial API and implementation.
  *     07/07/2014-2.6 Tomas Kraus
  *       - 439127: Modified as jUnit test.
+ *     03/19/2018-2.7.2 Lukas Jungmann
+ *       - 413120: Nested Embeddable Null pointer
+ *       - 496836: NullPointerException on ObjectChangeSet.mergeObjectChanges
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
@@ -26,7 +29,9 @@ import junit.framework.TestSuite;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
+import org.eclipse.persistence.testing.models.jpa.advanced.embeddable.Continent;
 import org.eclipse.persistence.testing.models.jpa.advanced.embeddable.Country;
+import org.eclipse.persistence.testing.models.jpa.advanced.embeddable.Description;
 import org.eclipse.persistence.testing.models.jpa.advanced.embeddable.Visitor;
 import org.eclipse.persistence.testing.models.jpa.advanced.embeddable.VisitorPopulator;
 
@@ -70,6 +75,9 @@ public class EntityEmbeddableTest extends JUnitTestCase {
     public static Test addEntityEmbeddableTest(TestSuite suite){
         suite.setName("EntityEmbeddableTest");
         suite.addTest(new EntityEmbeddableTest("testNativeQueryWithSqlResultSetMappings"));
+        suite.addTest(new EntityEmbeddableTest("testRootEmbeddable"));
+        suite.addTest(new EntityEmbeddableTest("testNestedEmbeddable"));
+        suite.addTest(new EntityEmbeddableTest("testMixedEmbeddable"));
         return suite;
     }
 
@@ -159,4 +167,115 @@ public class EntityEmbeddableTest extends JUnitTestCase {
         }
     }
 
+    public void testRootEmbeddable() {
+        EntityManager em = createEntityManager(PUName);
+        beginTransaction(em);
+        Visitor v = null;
+        try {
+            v = VisitorPopulator.visitorExample3();
+            em.persist(v);
+            em.flush();
+            commitTransaction(em);
+        } catch (RuntimeException ex) {
+            rollbackTransaction(em);
+            throw ex;
+        }
+        beginTransaction(em);
+        try {
+            v.setName("fixed name");
+            em.merge(v);
+            em.flush();
+            v.setCountry(null);
+            em.merge(v);
+            em.flush();
+            v.setCountry(new Country("HU", "Hungary", "EUR"));
+            v.getCountry().setCode("OTH");
+            em.merge(v);
+            em.flush();
+            v.getCountry().setCode(null);
+            em.merge(v);
+            em.flush();
+        } finally {
+            closeEntityManagerAndTransaction(em);
+        }
+    }
+
+    public void testNestedEmbeddable() {
+        EntityManager em = createEntityManager(PUName);
+        beginTransaction(em);
+        Visitor v = null;
+        try {
+            v = VisitorPopulator.visitorExample4();
+            em.persist(v);
+            em.flush();
+            v.getCountry().setContinent(null);
+            em.merge(v);
+            em.flush();
+            Continent c = new Continent("Africa");
+            v.getCountry().setContinent(c);
+            em.merge(v);
+            em.flush();
+            v.getCountry().setContinent(new Continent("AFR"));
+            em.merge(v);
+            em.flush();
+            v.getCountry().setContinent(null);
+            em.merge(v);
+            em.flush();
+        } finally {
+            closeEntityManagerAndTransaction(em);
+        }
+    }
+
+    public void testMixedEmbeddable() {
+        EntityManager em = createEntityManager(PUName);
+        beginTransaction(em);
+        Visitor v = null;
+        try {
+            v = VisitorPopulator.visitorExample5();
+            em.persist(v);
+            em.flush();
+            commitTransaction(em);
+        } catch (RuntimeException ex) {
+            rollbackTransaction(em);
+            throw ex;
+        }
+        beginTransaction(em);
+        try {
+            v.getCountry().getContinent().setDescription(null);
+            em.merge(v);
+            em.flush();
+            v.getCountry().setContinent(null);
+            em.merge(v);
+            em.flush();
+            v.setCountry(null);
+            em.merge(v);
+            em.flush();
+            v.setCountry(new Country("JAR", "South Africa", "EUR"));
+            Continent c = new Continent("Africa");
+            v.getCountry().setContinent(c);
+            em.merge(v);
+            em.flush();
+            v.getCountry().getContinent().setContinentCode("AFR");
+            em.merge(v);
+            em.flush();
+            v.getCountry().getContinent().setDescription(new Description("Africa is nice continent"));
+            em.merge(v);
+            em.flush();
+            v.getCountry().getContinent().setDescription(null);
+            em.merge(v);
+            em.flush();
+            v.getCountry().setContinent(null);
+            em.merge(v);
+            em.flush();
+            v.setCountry(null);
+            em.merge(v);
+            em.flush();
+            v.setCountry(new Country("ALB", "ALBANIA", "EUR"));
+            v.getCountry().getContinent().setDescription(new Description("Small continent"));
+            em.merge(v);
+            em.flush();
+        } finally {
+            closeEntityManagerAndTransaction(em);
+        }
+    }
 }
