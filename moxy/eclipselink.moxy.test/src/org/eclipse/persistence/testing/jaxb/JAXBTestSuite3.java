@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -79,6 +79,7 @@ public class JAXBTestSuite3 extends TestCase {
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlmarshaller.UnmarshallerNullTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlmarshaller.NoSchemaRefTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlmarshaller.HandleListenerExceptionsTestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlmarshaller.UnmarshallerCollectionTestCases.class);
         suite.addTestSuite(XMLStreamWriterDefaultNamespaceTestCases.class);
         suite.addTestSuite(XMLStreamReaderEndEventTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.qname.QNameTestCases.class);

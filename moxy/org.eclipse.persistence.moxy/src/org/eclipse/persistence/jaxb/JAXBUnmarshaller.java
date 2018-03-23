@@ -18,9 +18,11 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.Reader;
 import java.lang.reflect.Array;
+import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -568,6 +570,19 @@ public class JAXBUnmarshaller implements Unmarshaller {
                     declaredClass = (Class)type.getType();
                 }else{
                     declaredClass = Object.class;
+                }
+                //check if the value contain any field type java.util.List and null , if so set default value as empty array 
+                if(value!=null){
+                	try{
+                		for (Field field : value.getClass().getDeclaredFields()) {
+                			field.setAccessible(true);
+	                		if(field.getType().equals(java.util.List.class) && field.get(value) == null){
+	                			field.set(value, new ArrayList());
+	                		}
+	                	}
+                	}catch(Exception ex){
+        				 throw new JAXBException(XMLMarshalException.marshalException(ex));
+                	}
                 }
                 return new JAXBElement(new QName(unmarshalRecord.getRootElementNamespaceUri(), unmarshalRecord.getLocalName()), declaredClass, value);
             }
