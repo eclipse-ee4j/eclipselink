@@ -11,6 +11,9 @@ addons:
       - libmysql-java
       - mysql-server
       - mysql-client
+env:
+  - ANT_HOME=/usr/share/ant
+  - M2_HOME=/usr/local/maven-3.5.2
 
 before_install:
   - sudo mysql_upgrade
@@ -21,9 +24,6 @@ script:
   - env | sort
   - . ./jdk_switcher.sh
   - jdk_switcher use oraclejdk8
-  - echo $JAVA_HOME
-  - export M2_HOME=/usr/share/maven
-  - export ANT_HOME=/usr/share/ant
   - echo 'junit.lib=/usr/share/java/junit4.jar:/usr/share/java/hamcrest-all-1.3.jar' >> $HOME/build.properties
   - echo 'jdbc.driver.jar=/usr/share/java/mysql.jar' >> $HOME/build.properties
   - echo 'db.driver=com.mysql.jdbc.Driver' >> $HOME/build.properties
