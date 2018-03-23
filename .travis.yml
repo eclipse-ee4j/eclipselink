@@ -44,6 +44,5 @@ script:
   - cat $HOME/build.properties
   - ant -f antbuild.xml build
   - echo 'RUNNING TESTS, BE PATIENT...'
-  - ant -f antbuild.xml test-lrg > test.log.txt
-  - grep -E "\[junit\] Running|\[junit\] Tests run:" test.log.txt
+  - ant -f antbuild.xml test-core-srg test-ext test-jpa22 test-jpa-jse test-jpql test-wdf test-jpars test-moxy test-sdo test-dbws test-dbws-builder test-osgi | grep -E "\[junit\] Running|\[junit\] Tests run:"
 
