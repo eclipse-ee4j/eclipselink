@@ -11,6 +11,7 @@ addons:
       - libmysql-java
       - mysql-server
       - mysql-client
+
 env:
   global:
     - ANT_HOME=/usr/share/ant
@@ -25,10 +26,12 @@ before_install:
   - sudo service mysql restart
 
 install:
-  - wget http://repo1.maven.org/maven2/org/jmockit/jmockit/1.35/jmockit-1.35.jar
+  - mkdir $HOME/extension.lib.external
+  - wget http://repo1.maven.org/maven2/org/jmockit/jmockit/1.35/jmockit-1.35.jar -O $HOME/extension.lib.external/jmockit-1.35.jar
 
 before_script:
   - env | sort
+  - echo "extensions.depend.dir=$HOME/extension.lib.external" >> $HOME/build.properties
   - echo 'junit.lib=/usr/share/java/junit4.jar:/usr/share/java/hamcrest-all-1.3.jar' >> $HOME/build.properties
   - echo 'jdbc.driver.jar=/usr/share/java/mysql.jar' >> $HOME/build.properties
   - echo 'db.driver=com.mysql.jdbc.Driver' >> $HOME/build.properties
@@ -36,9 +39,8 @@ before_script:
   - echo 'db.user=root' >> $HOME/build.properties
   - echo 'db.pwd=root' >> $HOME/build.properties
   - echo 'db.platform=org.eclipse.persistence.platform.database.MySQLPlatform' >> $HOME/build.properties
-  - echo "jmockit.jar=$HOME/jmockit-1.35.jar" >> $HOME/build.properties
 
 script:
   - cat $HOME/build.properties
-  - ant -f antbuild.xml build clear-db
+  - ant -f antbuild.xml build clear-db 
 
