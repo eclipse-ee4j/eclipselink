@@ -1,19 +1,36 @@
 language: java
-sudo: false
+sudo: required
 
 addons:
   apt:
+    sources:
+      - mysql-5.7-trusty
     packages:
-    - maven
-    - ant
-    - openjdk-8-jdk
-    - junit4
-    - libhamcrest-java
+      - junit4
+      - libhamcrest-java
+      - libmysql-java
+      - mysql-server
+      - mysql-client
+
+before_install:
+  - sudo mysql -e "use mysql; update user set authentication_string=PASSWORD('root') where User='root'; update user set plugin='mysql_native_password';FLUSH PRIVILEGES;CREATE DATABASE IF NOT EXISTS ecltest;"
+  - sudo mysql_upgrade
+  - sudo service mysql restart
 
 script:
-- export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
-- export M2_HOME=/usr/share/maven
-- export ANT_HOME=/usr/share/ant
-- echo 'junit.lib=/usr/share/java/junit4.jar:/usr/share/java/hamcrest-all-1.3.jar' >> $HOME/build.properties
-- ant -f antbuild.xml
+  - env | sort
+  - . ./jdk_switcher.sh
+  - jdk_switcher use oraclejdk8
+  - echo $JAVA_HOME
+  - export M2_HOME=/usr/share/maven
+  - export ANT_HOME=/usr/share/ant
+  - echo 'junit.lib=/usr/share/java/junit4.jar:/usr/share/java/hamcrest-all-1.3.jar' >> $HOME/build.properties
+  - echo 'jdbc.driver.jar=/usr/share/java/mysql.jar' >> $HOME/build.properties
+  - echo 'db.driver=com.mysql.jdbc.Driver' >> $HOME/build.properties
+  - echo 'db.url=jdbc:mysql://localhost/ecltest?useSSL=false' >> $HOME/build.properties
+  - echo 'db.user=root' >> $HOME/build.properties
+  - echo 'db.pwd=root' >> $HOME/build.properties
+  - echo 'db.platform=org.eclipse.persistence.platform.database.MySQLPlatform' >> $HOME/build.properties
+  - cat $HOME/build.properties
+  - ant -f antbuild.xml build clear-db
 
