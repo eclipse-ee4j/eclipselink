@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -29,7 +29,7 @@ public interface DescriptorCustomizer {
 
     /**
      * Customize the provided descriptor. This method is called after the
-     * descriptor is populated form annotations/XML/defaults but before it is
+     * descriptor is populated from annotations/XML/defaults but before it is
      * initialized.
      */
     public void customize(ClassDescriptor descriptor) throws Exception;
