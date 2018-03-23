@@ -16,6 +16,9 @@ env:
     - ANT_HOME=/usr/share/ant
     - M2_HOME=/usr/local/maven-3.5.2
 
+jdk:
+  - oraclejdk8
+
 before_install:
   - sudo mysql_upgrade
   - sudo mysql -u root -e "use mysql; update user set authentication_string=PASSWORD('root') where User='root'; update user set plugin='mysql_native_password';FLUSH PRIVILEGES;CREATE DATABASE IF NOT EXISTS ecltest;"
@@ -26,8 +29,6 @@ install:
 
 before_script:
   - env | sort
-  - . ./jdk_switcher.sh
-  - jdk_switcher use oraclejdk8
   - echo 'junit.lib=/usr/share/java/junit4.jar:/usr/share/java/hamcrest-all-1.3.jar' >> $HOME/build.properties
   - echo 'jdbc.driver.jar=/usr/share/java/mysql.jar' >> $HOME/build.properties
   - echo 'db.driver=com.mysql.jdbc.Driver' >> $HOME/build.properties
