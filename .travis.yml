@@ -36,7 +36,7 @@ before_script:
   - echo 'db.user=root' >> $HOME/build.properties
   - echo 'db.pwd=root' >> $HOME/build.properties
   - echo 'db.platform=org.eclipse.persistence.platform.database.MySQLPlatform' >> $HOME/build.properties
-  - echo 'jmockit.jar=$HOME/jmockit-1.35.jar' >> $HOME/build.properties
+  - echo "jmockit.jar=$HOME/jmockit-1.35.jar" >> $HOME/build.properties
 
 script:
   - cat $HOME/build.properties
