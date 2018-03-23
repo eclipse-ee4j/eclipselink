@@ -12,15 +12,19 @@ addons:
       - mysql-server
       - mysql-client
 env:
-  - ANT_HOME=/usr/share/ant
-  - M2_HOME=/usr/local/maven-3.5.2
+  global:
+    - ANT_HOME=/usr/share/ant
+    - M2_HOME=/usr/local/maven-3.5.2
 
 before_install:
   - sudo mysql_upgrade
   - sudo mysql -u root -e "use mysql; update user set authentication_string=PASSWORD('root') where User='root'; update user set plugin='mysql_native_password';FLUSH PRIVILEGES;CREATE DATABASE IF NOT EXISTS ecltest;"
   - sudo service mysql restart
 
-script:
+install:
+  - wget http://repo1.maven.org/maven2/org/jmockit/jmockit/1.35/jmockit-1.35.jar
+
+before_script:
   - env | sort
   - . ./jdk_switcher.sh
   - jdk_switcher use oraclejdk8
@@ -31,6 +35,9 @@ script:
   - echo 'db.user=root' >> $HOME/build.properties
   - echo 'db.pwd=root' >> $HOME/build.properties
   - echo 'db.platform=org.eclipse.persistence.platform.database.MySQLPlatform' >> $HOME/build.properties
+  - echo 'jmockit.jar=$HOME/jmockit-1.35.jar' >> $HOME/build.properties
+
+script:
   - cat $HOME/build.properties
   - ant -f antbuild.xml build clear-db
 
