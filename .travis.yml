@@ -42,5 +42,5 @@ before_script:
 
 script:
   - cat $HOME/build.properties
-  - ant -f antbuild.xml build clear-db 
+  - ant -f antbuild.xml build test-lrg 
 
