@@ -29,8 +29,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
 import javax.persistence.Entity;
+import javax.persistence.metamodel.StaticMetamodel;
 import javax.tools.Diagnostic;
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
@@ -57,7 +59,7 @@ public class TestProcessor {
             }
         }
     }
-    
+
     @Test
     public void testProc() throws Exception {
         File runDir = new File(System.getProperty("run.dir"), "testproc");
@@ -82,7 +84,7 @@ public class TestProcessor {
         sfm.setLocation(StandardLocation.CLASS_OUTPUT, Arrays.asList(cpDir));
 
         TestFO entity = new TestFO("org.Sample",
-                "package org; import javax.persistence.Entity; @Entity public class Sample { public  Sample() {} public int getX() {return 1;}}");
+                "package org; import javax.persistence.Entity; @Entity public class Sample { public  Sample() {} public int getX() {return 1;} interface A {}}");
         TestFO nonEntity = new TestFO("org.NotE",
                 "package org; import javax.persistence.Entity; public class NotE extends some.IF { public  NotE() {} @custom.Ann public external.Cls getW() {return new Object();}}");
         TestFO generated8 = new TestFO("org.Gen8",
@@ -99,7 +101,9 @@ public class TestProcessor {
         for ( Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {
             System.out.println(diagnostic);
         }
-        Assert.assertTrue("Model file not generated", new File(srcOut, "org/Sample_.java").exists());
+        File outputFile = new File(srcOut, "org/Sample_.java");
+        Assert.assertTrue("Model file not generated", outputFile.exists());
+        Assert.assertTrue(Files.lines(outputFile.toPath()).anyMatch(s -> s.contains("@StaticMetamodel(Sample.class)")));
     }
 
     @Test
