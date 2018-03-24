@@ -159,7 +159,7 @@ public class TestProcessor {
     private List<String> getJavacOptions(String... opts) {
         List<String> result = new ArrayList<String>();
         String systemOpts = System.getProperty("additional.jvmargs");
-        if (systemOpts != null && !systemOpts.isEmpty()) {
+        if (systemOpts != null && !systemOpts.isEmpty() && !systemOpts.contains("dummy")) {
             result.addAll(Arrays.asList(System.getProperty("additional.jvmargs").split(" ")));
         }
         result.add("-proc:only");
