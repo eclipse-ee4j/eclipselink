@@ -33,7 +33,7 @@ import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
  * @see ValueHolderInterface
  * @author    Dorin Sandu
  */
-public abstract class DatabaseValueHolder implements WeavedAttributeValueHolderInterface, Cloneable, Serializable {
+public abstract class DatabaseValueHolder implements WeavedAttributeValueHolderInterface<Object>, Cloneable, Serializable {
 
     /** Stores the object after it is read from the database. */
     protected volatile Object value;
