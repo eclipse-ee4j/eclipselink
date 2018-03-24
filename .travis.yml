@@ -20,6 +20,11 @@ env:
 jdk:
   - oraclejdk8
 
+cache:
+  directories:
+    - .autoconf
+    - $HOME/.m2
+
 before_install:
   - sudo mysql_upgrade
   - sudo mysql -u root -e "use mysql; update user set authentication_string=PASSWORD('root') where User='root'; update user set plugin='mysql_native_password';FLUSH PRIVILEGES;CREATE DATABASE IF NOT EXISTS ecltest;"
