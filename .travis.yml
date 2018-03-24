@@ -19,6 +19,7 @@ env:
 
 jdk:
   - oraclejdk8
+  - oraclejdk9
 
 cache:
   directories:
@@ -44,6 +45,7 @@ before_script:
   - echo 'db.user=root' >> $HOME/build.properties
   - echo 'db.pwd=root' >> $HOME/build.properties
   - echo 'db.platform=org.eclipse.persistence.platform.database.MySQLPlatform' >> $HOME/build.properties
+  - if [ `java -version 2>&1|awk -F\" '/version/ {print $2}' | cut -d'.' -f1` -gt "8" ]; then echo 'additional.jvmargs=--add-modules java.xml.ws,java.corba' >> $HOME/build.properties; fi
 
 script:
   - cat $HOME/build.properties
