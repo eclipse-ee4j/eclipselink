@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -198,7 +198,7 @@ public class TestModel extends TestCollection {
     public void execute(TestExecutor executor) throws Throwable {
         setSummary(new TestResultsSummary(this));
         setExecutor(executor);
-        long startTime = System.currentTimeMillis();
+        long startTime = System.nanoTime();
         try {
             setupEntity();
             setFinishedTests(new Vector());
@@ -220,7 +220,7 @@ public class TestModel extends TestCollection {
             }
             resetEntity();
         } finally {
-            long endTime = System.currentTimeMillis();
+            long endTime = System.nanoTime();
             getSummary().setTotalTime(endTime - startTime);
         }
     }

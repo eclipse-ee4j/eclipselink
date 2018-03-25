@@ -23,7 +23,6 @@ jdk:
 
 cache:
   directories:
-    - .autoconf
     - $HOME/.m2
 
 before_install:
@@ -45,11 +44,11 @@ before_script:
   - echo 'db.user=root' >> $HOME/build.properties
   - echo 'db.pwd=root' >> $HOME/build.properties
   - echo 'db.platform=org.eclipse.persistence.platform.database.MySQLPlatform' >> $HOME/build.properties
-  - if [ `java -version 2>&1|awk -F\" '/version/ {print $2}' | cut -d'.' -f1` -gt "8" ]; then echo 'additional.jvmargs=--add-modules java.xml.ws,java.corba' >> $HOME/build.properties; fi
+  - if [ `java -version 2>&1|awk -F\" '/version/ {print $2}' | cut -d'.' -f1` -gt "8" ]; then echo 'additional.jvmargs=--add-modules java.xml.ws,java.xml.ws.annotation,java.corba' >> $HOME/build.properties; fi
 
 script:
   - cat $HOME/build.properties
   - ant -f antbuild.xml build
   - echo 'RUNNING TESTS, BE PATIENT...'
-  - ant -f antbuild.xml test-core-srg test-ext test-jpa22 test-jpa-jse test-jpql test-wdf test-jpars test-moxy test-sdo test-dbws test-dbws-builder test-osgi | grep -E "\[junit\] Running|\[junit\] Tests run:"
+  - ant -f antbuild.xml test-lrg | grep -E "\[junit\] Running|\[junit\] Tests run:"
 
