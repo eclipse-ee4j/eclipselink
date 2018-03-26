@@ -16,6 +16,19 @@ env:
   global:
     - ANT_HOME=/usr/share/ant
     - M2_HOME=/usr/local/maven-3.5.2
+  matrix:
+    - TEST_TARGET=test-core
+    - TEST_TARGET=test-ext
+    - TEST_TARGET=test-jpa22
+    - TEST_TARGET=test-jpa-jse
+    - TEST_TARGET=test-jpql
+    - TEST_TARGET=test-wdf
+    - TEST_TARGET=test-jpars
+    - TEST_TARGET=test-moxy
+    - TEST_TARGET=test-sdo
+    - TEST_TARGET=test-dbws
+    - TEST_TARGET=test-dbws-builder
+    - TEST_TARGET=test-osgi
 
 jdk:
   - oraclejdk8
@@ -50,5 +63,5 @@ script:
   - cat $HOME/build.properties
   - ant -f antbuild.xml build
   - echo 'RUNNING TESTS, BE PATIENT...'
-  - ant -f antbuild.xml test-lrg | grep -E "\[junit\] Running|\[junit\] Tests run:"
+  - ant -f antbuild.xml $TEST_TARGET | grep -E "\[junit\] Running|\[junit\] Tests run:"
 
