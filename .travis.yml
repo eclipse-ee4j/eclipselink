@@ -34,6 +34,7 @@ jdk:
 
 cache:
   directories:
+    - .autoconf
     - $HOME/.m2
 
 before_install:
@@ -61,5 +62,5 @@ script:
   - cat $HOME/build.properties
   - ant -f antbuild.xml build
   - echo 'RUNNING TESTS, BE PATIENT...'
-  - ant -f antbuild.xml $TEST_TARGET | grep -E "\[junit\] Running|\[junit\] Tests run:"
+  - ant -f antbuild.xml -Dtest.fail.fast=true $TEST_TARGET | grep -E "\[junit\] Running|\[junit\] Tests run:"
 

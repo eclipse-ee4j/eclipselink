@@ -2541,7 +2541,8 @@
         <!--<property name="additional.jvmargs" value="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=8787"/>-->
         <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
 
-        <junit jvm="${test.junit.jvm.exec}" printsummary="yes" haltonfailure="${test.haltonfailure}" fork="yes" forkmode="once" showoutput="true" maxmemory="${max.heap.memory}" dir="${run.dir}">
+        <junit jvm="${test.junit.jvm.exec}" printsummary="yes" haltonfailure="${test.haltonfailure}" failureproperty="junit.failed" logfailedtests="true"
+               fork="yes" forkmode="once" showoutput="true" maxmemory="${max.heap.memory}" dir="${run.dir}">
             <sysproperty key="proxy.user.name" value="PAS_PROXY"/>
             <sysproperty key="pa.connection.user" value="${db.user}"/>
             <sysproperty key="pa.connection.password" value="${db.pwd}"/>
@@ -2566,6 +2567,15 @@
             <test name="${TEST_CLASS}" haltonfailure="no" outfile="${report.dir}/${TEST_CLASS}-test-results">
             </test>
         </junit>
+
+        <fail message="TESTS FAILED !">
+            <condition>
+                <and>
+                    <isset property="junit.failed"/>
+                    <istrue value="${test.fail.fast}"/>
+                </and>
+            </condition>
+        </fail>
     </target>
 
     <!-- Generic target for running spring tests. -->
