@@ -1,6 +1,10 @@
 language: java
 sudo: required
 
+branches:
+  only:
+    - travis_experiment
+
 addons:
   apt:
     sources:
