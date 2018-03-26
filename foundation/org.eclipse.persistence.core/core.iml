@@ -7,7 +7,7 @@
     <varelement var="file://$MODULE_DIR$/../../plugins/org.glassfish.javax.json.source_1.0.4.v201311181159.jar" value="src:/MODULE_DIR/../../plugins/org.glassfish.javax.json.source_1.0.4.v201311181159.jar" />
     <varelement var="jar://$MODULE_DIR$/../../plugins/javax.mail_1.4.0.v201005080615.jar!/" value="MODULE_DIR/../../plugins/javax.mail_1.4.0.v201005080615.jar" />
     <varelement var="jar://$MODULE_DIR$/../../plugins/javax.resource_1.6.0.v201204270900.jar!/" value="MODULE_DIR/../../plugins/javax.resource_1.6.0.v201204270900.jar" />
-    <varelement var="jar://$MODULE_DIR$/../../plugins/javax.transaction_1.1.0.v201002051055.jar!/" value="MODULE_DIR/../../plugins/javax.transaction_1.1.0.v201002051055.jar" />
+    <varelement var="jar://$MODULE_DIR$/../../plugins/javax.transaction.api_1.3.0.jar!/" value="MODULE_DIR/../../plugins/javax.transaction.api_1.3.0.jar" />
     <varelement var="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.asm_6.0.0.v201710052159.jar!/" value="MODULE_DIR/../../plugins/org.eclipse.persistence.asm_6.0.0.v201710052159.jar" />
     <varelement var="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.asm.source_6.0.0.v201710052159.jar!/" value="src:/MODULE_DIR/../../plugins/org.eclipse.persistence.asm.source_6.0.0.v201710052159.jar" />
     <src_description expected_position="0">
@@ -79,7 +79,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/javax.transaction_1.1.0.v201002051055.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/javax.transaction.api_1.3.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
