@@ -576,7 +576,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
                 	try{
                 		for (Field field : value.getClass().getDeclaredFields()) {
                 			field.setAccessible(true);
-	                		if(field.getType().equals(java.util.List.class) && field.get(value) == null){
+	                		if(java.util.List.class.isAssignableFrom(field.getType()) && field.get(value) == null){
 	                			field.set(value, new ArrayList());
 	                		}
 	                	}
