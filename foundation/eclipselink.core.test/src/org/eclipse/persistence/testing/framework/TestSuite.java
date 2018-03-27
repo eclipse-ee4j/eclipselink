@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -64,9 +64,14 @@ public class TestSuite extends TestCollection {
     public void execute(TestExecutor executor) throws Throwable {
         setSummary(new TestResultsSummary(this));
         setExecutor(executor);
+        computeNestedLevel();
         setupEntity();
         setFinishedTests(new Vector());
-        long startTime = System.currentTimeMillis();
+        if (getNestedCounter() < 1) {
+            System.out.println();
+            System.out.println("Running " + getSummary().getName());
+        }
+        long startTime = System.nanoTime();
         for (Enumeration tests = getTests().elements(); tests.hasMoreElements();) {
             junit.framework.Test test = (junit.framework.Test)tests.nextElement();
             if ((TestExecutor.getDefaultJUnitTestResult() != null) && TestExecutor.getDefaultJUnitTestResult().shouldStop()) {
@@ -75,9 +80,18 @@ public class TestSuite extends TestCollection {
             executor.execute(test);
             getFinishedTests().addElement(test);
         }
-        long endTime = System.currentTimeMillis();
+        long endTime = System.nanoTime();
         getSummary().setTotalTime(endTime - startTime);
         setFinishedTests((Vector)getTests().clone());
+        if (getNestedCounter() < 1) {
+            computeResultSummary();
+            System.out.printf("Tests run: %d, Failures: %d, Errors: %d, Skipped: %d, Time elapsed: %.3f sec",
+                    getSummary().getPassed(), getSummary().getErrors() + getSummary().getSetupFailures(),
+                    getSummary().getFatalErrors(),
+                    getSummary().getWarnings() + getSummary().getProblems() + getSummary().getSetupWarnings(),
+                    getSummary().getTotalTime() / 1e9);
+            System.out.println();
+        }
     }
 
     /**
