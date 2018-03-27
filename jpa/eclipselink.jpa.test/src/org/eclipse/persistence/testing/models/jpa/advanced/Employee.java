@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -238,7 +238,7 @@ import static org.eclipse.persistence.annotations.OptimisticLockingType.VERSION_
 )
 // overrides IdValidation.NEGATIVE set in persistence.xml
 @PrimaryKey(validation=IdValidation.ZERO)
-@CacheIndex(columnNames={"F_NAME", "L_NAME"})
+@CacheIndex(columnNames={"f_name", "L_NAME"})
 public class Employee implements Serializable, Cloneable {
     public enum EmployeeStatus {FULL_TIME, PART_TIME, CONTRACT}
     public enum Gender { Female, Male }
