@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -334,7 +334,7 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
             Object removed = iterator.next();
             if (!((DirectCollectionChangeRecord)mergeFromRecord).getCommitAddMap().containsKey(removed)){
                 // we have not recorded a change of this type in this class before so  add it
-                this.getCommitAddMap().put(removed, ((DirectCollectionChangeRecord)mergeFromRecord).getCommitAddMap().get(removed));
+                this.getCommitAddMap().put(removed, Integer.valueOf(1));
             }
             this.addRemoveChange(removed, (Integer)removeMapToMerge.get(removed));
         }
