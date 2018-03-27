@@ -273,7 +273,7 @@
         <mkdir dir="./${report.dir}"/>
         <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
         <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
-        <junit
+        <junit failureproperty="junit.failed" logfailedtests="true"
             jvm="${test.junit.jvm.exec}"
             printsummary="withOutAndErr"
             fork="yes"
@@ -302,6 +302,14 @@
                 </fileset>
             </batchtest>
         </junit>
+        <fail message="TESTS FAILED !">
+            <condition>
+                <and>
+                    <isset property="junit.failed"/>
+                    <istrue value="${test.fail.fast}"/>
+                </and>
+            </condition>
+        </fail>
         <junitreport todir="${report.dir}" >
             <fileset dir="${report.dir}" >
                 <include name="TEST-*.xml" />

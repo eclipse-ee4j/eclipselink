@@ -200,7 +200,8 @@
         <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
         <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
 
-        <junit jvm="${test.junit.jvm.exec}" printsummary="yes" haltonfailure="yes" fork="yes" forkmode="once" showoutput="true" maxmemory="${max.heap.memory}" dir="${run.dir}">
+        <junit jvm="${test.junit.jvm.exec}" printsummary="yes" haltonfailure="yes" failureproperty="junit.failed" logfailedtests="true"
+               fork="yes" forkmode="once" showoutput="true" maxmemory="${max.heap.memory}" dir="${run.dir}">
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
             <jvmarg line="${additional.jvmargs}"/>
             <classpath>
@@ -210,6 +211,14 @@
             <test name="${TEST_CLASS}" haltonfailure="no" outfile="${report.dir}/${TEST_CLASS}-test-results">
             </test>
         </junit>
+        <fail message="TESTS FAILED !">
+            <condition>
+                <and>
+                    <isset property="junit.failed"/>
+                    <istrue value="${test.fail.fast}"/>
+                </and>
+            </condition>
+        </fail>
     </target>
 
     <!-- Generate the Hermes tests report -->

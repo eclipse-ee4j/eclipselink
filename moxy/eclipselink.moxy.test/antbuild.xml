@@ -499,7 +499,8 @@
             <mkdir dir="${build.dir}/${test.dir}/${tmp.dir}"/>
             <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
             <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
-            <junit jvm="${test.junit.jvm.exec}" printsummary="yes" fork="true" dir="${build.dir}/${test.dir}" tempdir="${build.dir}/${test.dir}" showoutput="yes" maxmemory="512m">
+            <junit jvm="${test.junit.jvm.exec}" failureproperty="junit.failed.jaxb" logfailedtests="true"
+                   printsummary="yes" fork="true" dir="${build.dir}/${test.dir}" tempdir="${build.dir}/${test.dir}" showoutput="yes" maxmemory="512m">
                 <!--<jvmarg value="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"/>-->
                 <jvmarg value="-ea"/>
                 <jvmarg value="-javaagent:${jmockit.lib}"/>
@@ -554,6 +555,14 @@
                     <path refid="@{runpathref}"/>
                 </classpath>
             </junit>
+            <fail message="TESTS FAILED !">
+                <condition>
+                    <and>
+                        <isset property="junit.failed.jaxb"/>
+                        <istrue value="${test.fail.fast}"/>
+                    </and>
+                </condition>
+            </fail>
         </sequential>
     </macrodef>
     <macrodef name="run_jaxb_srg_tests">
@@ -564,7 +573,8 @@
             <mkdir dir="${build.dir}/${test.dir}/${tmp.dir}"/>
             <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
             <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
-            <junit jvm="${test.junit.jvm.exec}" printsummary="yes" fork="true" dir="${build.dir}/${test.dir}" tempdir="${build.dir}/${test.dir}" showoutput="yes" maxmemory="512m">
+            <junit jvm="${test.junit.jvm.exec}" failureproperty="junit.failed.jaxb_srg" logfailedtests="true"
+                   printsummary="yes" fork="true" dir="${build.dir}/${test.dir}" tempdir="${build.dir}/${test.dir}" showoutput="yes" maxmemory="512m">
                 <jvmarg value="-ea"/>
                 <jvmarg line="${additional.jvmargs}"/>
                 <env key="T_WORK" value="${tmp.dir}"/>
@@ -584,6 +594,14 @@
                     <path refid="@{runpathref}"/>
                 </classpath>
             </junit>
+            <fail message="TESTS FAILED !">
+                <condition>
+                    <and>
+                        <isset property="junit.failed.jaxb_srg"/>
+                        <istrue value="${test.fail.fast}"/>
+                    </and>
+                </condition>
+            </fail>
         </sequential>
     </macrodef>
     <macrodef name="run_oxm_srg_tests">
@@ -592,7 +610,8 @@
             <delete dir="${report.dir}/srg/oxm" failonerror="false"/>
             <mkdir dir="${report.dir}/srg/oxm/default"/>
             <mkdir dir="${build.dir}/${test.dir}"/>
-            <junit jvm="${test.junit.jvm.exec}" printsummary="yes" fork="true" dir="${build.dir}/${test.dir}" tempdir="${build.dir}/${test.dir}" showoutput="yes" maxmemory="512m">
+            <junit jvm="${test.junit.jvm.exec}" failureproperty="junit.failed.oxm_srg" logfailedtests="true"
+                   printsummary="yes" fork="true" dir="${build.dir}/${test.dir}" tempdir="${build.dir}/${test.dir}" showoutput="yes" maxmemory="512m">
                 <sysproperty key="useLogging" value="false"/>
                 <sysproperty key="eclipselink.xml.platform" value="${xml.platform}"/>
                 <sysproperty key="parser" value="${parser}"/>
@@ -607,6 +626,14 @@
                     <path refid="@{runpathref}"/>
                 </classpath>
             </junit>
+            <fail message="TESTS FAILED !">
+                <condition>
+                    <and>
+                        <isset property="junit.failed.oxm_srg"/>
+                        <istrue value="${test.fail.fast}"/>
+                    </and>
+                </condition>
+            </fail>
         </sequential>
     </macrodef>
     <macrodef name="run_oxm_tests">
@@ -615,7 +642,8 @@
             <delete dir="${report.dir}/oxm/default" failonerror="false"/>
             <mkdir dir="${report.dir}/oxm/default"/>
             <mkdir dir="${build.dir}/${test.dir}"/>
-            <junit jvm="${test.junit.jvm.exec}" printsummary="yes" fork="true" dir="${build.dir}/${test.dir}" tempdir="${build.dir}/${test.dir}" showoutput="yes" maxmemory="512m">
+            <junit jvm="${test.junit.jvm.exec}" failureproperty="junit.failed.oxm" logfailedtests="true"
+                   printsummary="yes" fork="true" dir="${build.dir}/${test.dir}" tempdir="${build.dir}/${test.dir}" showoutput="yes" maxmemory="512m">
                 <jvmarg value="-ea"/>
                 <jvmarg line="${additional.jvmargs}"/>
                 <sysproperty key="useLogging" value="false"/>
@@ -654,6 +682,14 @@
                     <path refid="@{runpathref}"/>
                 </classpath>
             </junit>
+            <fail message="TESTS FAILED !">
+                <condition>
+                    <and>
+                        <isset property="junit.failed.oxm"/>
+                        <istrue value="${test.fail.fast}"/>
+                    </and>
+                </condition>
+            </fail>
         </sequential>
     </macrodef>
     <macrodef name="run_oxm_dom_tests">
@@ -662,7 +698,8 @@
             <delete dir="${report.dir}/oxm/dom" failonerror="false"/>
             <mkdir dir="${report.dir}/oxm/dom"/>
             <mkdir dir="${build.dir}/${test.dir}"/>
-            <junit jvm="${test.junit.jvm.exec}" printsummary="yes" fork="true" dir="${build.dir}/${test.dir}" tempdir="${build.dir}/${test.dir}" showoutput="yes" maxmemory="512m">
+            <junit jvm="${test.junit.jvm.exec}" failureproperty="junit.failed.oxm_dom" logfailedtests="true"
+                   printsummary="yes" fork="true" dir="${build.dir}/${test.dir}" tempdir="${build.dir}/${test.dir}" showoutput="yes" maxmemory="512m">
                 <jvmarg value="-ea"/>
                 <jvmarg line="${additional.jvmargs}"/>
                 <sysproperty key="platformType" value="DOM"/>
@@ -703,6 +740,14 @@
                     <path refid="@{runpathref}"/>
                 </classpath>
             </junit>
+            <fail message="TESTS FAILED !">
+                <condition>
+                    <and>
+                        <isset property="junit.failed.oxm_dom"/>
+                        <istrue value="${test.fail.fast}"/>
+                    </and>
+                </condition>
+            </fail>
         </sequential>
     </macrodef>
     <macrodef name="run_oxm_deploymentxml_tests">
@@ -711,7 +756,8 @@
             <delete dir="${report.dir}/oxm/deploymentxml" failonerror="false"/>
             <mkdir dir="${report.dir}/oxm/deploymentxml"/>
             <mkdir dir="${build.dir}/${test.dir}"/>
-            <junit jvm="${test.junit.jvm.exec}" printsummary="yes" fork="true" dir="${build.dir}/${test.dir}" tempdir="${build.dir}/${test.dir}" showoutput="yes" maxmemory="512m">
+            <junit jvm="${test.junit.jvm.exec}" failureproperty="junit.failed.oxm_deploymentxml" logfailedtests="true"
+                   printsummary="yes" fork="true" dir="${build.dir}/${test.dir}" tempdir="${build.dir}/${test.dir}" showoutput="yes" maxmemory="512m">
                 <jvmarg value="-ea"/>
                 <jvmarg line="${additional.jvmargs}"/>
                 <sysproperty key="platformType" value="DOM"/>
@@ -770,6 +816,14 @@
                     <path refid="@{runpathref}"/>
                 </classpath>
             </junit>
+            <fail message="TESTS FAILED !">
+                <condition>
+                    <and>
+                        <isset property="junit.failed.oxm_deploymentxml"/>
+                        <istrue value="${test.fail.fast}"/>
+                    </and>
+                </condition>
+            </fail>
         </sequential>
     </macrodef>
     <macrodef name="run_oxm_deploymentxml_tl_tests">
@@ -778,7 +832,8 @@
             <delete dir="${report.dir}/oxm/deploymentxml-tl" failonerror="false"/>
             <mkdir dir="${report.dir}/oxm/deploymentxml-tl"/>
             <mkdir dir="${build.dir}/${test.dir}"/>
-            <junit jvm="${test.junit.jvm.exec}" printsummary="yes" fork="true" dir="${build.dir}/${test.dir}" tempdir="${build.dir}/${test.dir}" showoutput="yes" maxmemory="512m">
+            <junit jvm="${test.junit.jvm.exec}" failureproperty="junit.failed.oxm_deploymentxml_tl" logfailedtests="true"
+                   printsummary="yes" fork="true" dir="${build.dir}/${test.dir}" tempdir="${build.dir}/${test.dir}" showoutput="yes" maxmemory="512m">
                 <jvmarg value="-ea"/>
                 <jvmarg line="${additional.jvmargs}"/>
                 <sysproperty key="platformType" value="DOM"/>
@@ -833,6 +888,14 @@
                     <path refid="@{runpathref}"/>
                 </classpath>
             </junit>
+            <fail message="TESTS FAILED !">
+                <condition>
+                    <and>
+                        <isset property="junit.failed.oxm_deploymentxml_tl"/>
+                        <istrue value="${test.fail.fast}"/>
+                    </and>
+                </condition>
+            </fail>
         </sequential>
     </macrodef>
     <macrodef name="run_oxm_docpres_tests">
@@ -841,7 +904,8 @@
             <delete dir="${report.dir}/oxm/docpres" failonerror="false"/>
             <mkdir dir="${report.dir}/oxm/docpres"/>
             <mkdir dir="${build.dir}/${test.dir}"/>
-            <junit jvm="${test.junit.jvm.exec}" printsummary="yes" fork="true" dir="${build.dir}/${test.dir}" tempdir="${build.dir}/${test.dir}" showoutput="yes" maxmemory="512m">
+            <junit jvm="${test.junit.jvm.exec}" failureproperty="junit.failed.oxm_docpres" logfailedtests="true"
+                   printsummary="yes" fork="true" dir="${build.dir}/${test.dir}" tempdir="${build.dir}/${test.dir}" showoutput="yes" maxmemory="512m">
                 <jvmarg value="-ea"/>
                 <jvmarg line="${additional.jvmargs}"/>
                 <sysproperty key="platformType" value="DOC_PRES"/>
@@ -885,6 +949,14 @@
                     <path refid="@{runpathref}"/>
                 </classpath>
             </junit>
+            <fail message="TESTS FAILED !">
+                <condition>
+                    <and>
+                        <isset property="junit.failed.oxm_docpres"/>
+                        <istrue value="${test.fail.fast}"/>
+                    </and>
+                </condition>
+            </fail>
         </sequential>
     </macrodef>
 
