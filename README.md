@@ -1,3 +1,8 @@
+EclipseLink 3.0.0 [![Master Build Status](https://travis-ci.org/eclipse-ee4j/eclipselink.svg?branch=master)](https://travis-ci.org/eclipse-ee4j/eclipselink)
+
+EclipseLink 2.7.2 [![2.7.x  Build Status](https://travis-ci.org/eclipse-ee4j/eclipselink.svg?branch=2.7)](https://travis-ci.org/eclipse-ee4j/eclipselink)
+
+
 EclipseLink Project
 ========================================
 
