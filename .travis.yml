@@ -11,6 +11,7 @@ addons:
       - mysql-5.7-trusty
     packages:
       - ant-optional
+      - junit
       - libmysql-java
       - mysql-server
       - mysql-client
