@@ -23,8 +23,7 @@ env:
     - TEST_TARGET=test-jpa22
     - TEST_TARGET=test-moxy
     - TEST_TARGET=test-sdo
-    - TEST_TARGET="test-jpa-jse test-ext test-jpql test-wdf test-jpars test-dbws test-dbws-builder"
-    - TEST_TARGET=test-osgi
+    - TEST_TARGET="test-jpa-jse test-ext test-jpql test-wdf test-jpars test-dbws test-dbws-builder test-osgi"
 
 jdk:
   - oraclejdk8
@@ -54,7 +53,7 @@ install:
 before_script:
   - env | sort
   - echo "extensions.depend.dir=$HOME/extension.lib.external" >> $HOME/build.properties
-  - echo "junit.lib=$HOME/junit-4.12.jar:$HOME/hamcrest-core-1.3.jar" >> $HOME/build.properties
+  - echo "junit.lib=$HOME/extension.lib.external/junit-4.12.jar:$HOME/extension.lib.external/hamcrest-core-1.3.jar" >> $HOME/build.properties
   - echo 'jdbc.driver.jar=/usr/share/java/mysql.jar' >> $HOME/build.properties
   - echo 'db.driver=com.mysql.jdbc.Driver' >> $HOME/build.properties
   - echo 'db.url=jdbc:mysql://localhost/ecltest?useSSL=false' >> $HOME/build.properties
