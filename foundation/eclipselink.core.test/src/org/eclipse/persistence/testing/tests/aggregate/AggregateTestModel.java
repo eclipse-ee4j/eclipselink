@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,8 +12,14 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.aggregate;
 
-import org.eclipse.persistence.tools.schemaframework.PopulationManager;
-import org.eclipse.persistence.testing.framework.*;
+import org.eclipse.persistence.testing.framework.DeleteObjectTest;
+import org.eclipse.persistence.testing.framework.InsertObjectTest;
+import org.eclipse.persistence.testing.framework.ReadAllTest;
+import org.eclipse.persistence.testing.framework.ReadObjectTest;
+import org.eclipse.persistence.testing.framework.TestModel;
+import org.eclipse.persistence.testing.framework.TestSuite;
+import org.eclipse.persistence.testing.framework.UnitOfWorkBasicUpdateObjectTest;
+import org.eclipse.persistence.testing.framework.WriteObjectTest;
 import org.eclipse.persistence.testing.models.aggregate.Agent;
 import org.eclipse.persistence.testing.models.aggregate.AggregateSystem;
 import org.eclipse.persistence.testing.models.aggregate.Builder;
@@ -22,6 +28,7 @@ import org.eclipse.persistence.testing.models.aggregate.Employee;
 import org.eclipse.persistence.testing.models.aggregate.Employee1;
 import org.eclipse.persistence.testing.models.aggregate.EvaluationClient;
 import org.eclipse.persistence.testing.models.aggregate.Transport;
+import org.eclipse.persistence.tools.schemaframework.PopulationManager;
 
 /**
  * This model tests reading/writing/deleting through using the aggregate model.
@@ -528,5 +535,9 @@ public class AggregateTestModel extends TestModel {
         }
 
         return suite;
+    }
+
+    public static junit.framework.TestSuite suite() {
+        return new AggregateTestModel();
     }
 }
