@@ -86,8 +86,10 @@
         <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
         <property name="debugargs" value="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=7777"/>
         <property name="rmi" value="-Djava.naming.provider.url=rmi://localhost:${rmi.port} -Djava.naming.factory.initial=com.sun.jndi.rmi.registry.RegistryContextFactory"/>
-        <junit jvm="${test.junit.jvm.exec}" printsummary="on" haltonfailure="false" failureproperty="fail" fork="yes" dir="${jse.classes.dir}" forkmode="once">
+        <junit jvm="${test.junit.jvm.exec}" printsummary="on" haltonfailure="false" failureproperty="fail" logfailedtests="true"
+               fork="yes" dir="${jse.classes.dir}" forkmode="once">
             <jvmarg line="${additional.jvmargs} ${rmi}"/>
+            <sysproperty key="additional.jvmargs" value="${additional.jvmargs}"/>
             <sysproperty key="javax.persistence.jdbc.url" value="${db.url}"/>
             <sysproperty key="javax.persistence.jdbc.driver" value="${db.driver}"/>
             <sysproperty key="javax.persistence.jdbc.user" value="${db.user}"/>
@@ -107,6 +109,14 @@
             </batchtest>
 
         </junit>
+        <fail message="TESTS FAILED !">
+            <condition>
+                <and>
+                    <isset property="fail"/>
+                    <istrue value="${test.fail.fast}"/>
+                </and>
+            </condition>
+        </fail>
     </target>
     
     <target name="test-report">

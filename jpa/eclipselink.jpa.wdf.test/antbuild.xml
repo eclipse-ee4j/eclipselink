@@ -324,7 +324,8 @@
         </condition>
         <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
         <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
-        <junit jvm="${test.junit.jvm.exec}" printsummary="yes" haltonfailure="yes" fork="yes" forkmode="once" showoutput="true" maxmemory="512m" dir="${run.dir}">
+        <junit jvm="${test.junit.jvm.exec}" printsummary="yes" haltonfailure="yes" failureproperty="junit.failed" logfailedtests="true"
+               fork="yes" forkmode="once" showoutput="true" maxmemory="512m" dir="${run.dir}">
             <jvmarg value="${TEST_AGENT}"/>
             <jvmarg value="${TEST_WEAVING}"/>
             <jvmarg value="${ORM_TESTING}"/>
@@ -349,6 +350,14 @@
                          excludes="org/eclipse/persistence/testing/tests/wdf/jpa1/query/QueryTest.java"/>
             </batchtest>
         </junit>
+        <fail message="TESTS FAILED !">
+            <condition>
+                <and>
+                    <isset property="junit.failed"/>
+                    <istrue value="${test.fail.fast}"/>
+                </and>
+            </condition>
+        </fail>
     </target>
 
     <target name="generate-report">

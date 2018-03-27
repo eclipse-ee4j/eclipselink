@@ -189,7 +189,8 @@
             <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
             <!-- Fix for 290177 below removed temporarily to avoid out-of-memeory issues with LRG run -->
             <!-- junit printsummary="withOutAndErr" fork="yes" forkmode="once" dir="${resource.dir}" maxmemory="512m" showoutput="yes" -->
-            <junit jvm="${test.junit.jvm.exec}" printsummary="withOutAndErr" fork="yes" dir="${resource.dir}" maxmemory="512m" showoutput="yes">
+            <junit jvm="${test.junit.jvm.exec}" printsummary="withOutAndErr" failureproperty="junit.failed" logfailedtests="true"
+                   fork="yes" dir="${resource.dir}" maxmemory="512m" showoutput="yes">
                 <jvmarg line="${additional.jvmargs}"/>
                 <env key="JAVA_HOME" value="${test.junit.jvm}"/>
                 <sysproperty key="loggingLevelFinest" value="false"/>
@@ -218,6 +219,14 @@
                 </batchtest>
                 <classpath refid="@{runpathref}"/>
             </junit>
+            <fail message="TESTS FAILED !">
+               <condition>
+                   <and>
+                       <isset property="junit.failed"/>
+                       <istrue value="${test.fail.fast}"/>
+                   </and>
+               </condition>
+           </fail>
             <!-- Create JUnit report -->
             <mkdir dir="${report.dir}/@{customcontext}"/>
             <junitreport todir="${report.dir}/@{customcontext}">
