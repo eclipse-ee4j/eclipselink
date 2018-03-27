@@ -68,4 +68,4 @@ script:
   - ant -f antbuild.xml build
   - echo 'RUNNING TESTS, BE PATIENT...'
   - set -o pipefail
-  - ant -f antbuild.xml -Dtest.fail.fast=true $TEST_TARGET | grep -E "\[junit\] Running|\[junit\] Tests run:"
+  - ant -f antbuild.xml -Dtest.fail.fast=true $TEST_TARGET | grep -E "\] Running |\] Tests run:"
