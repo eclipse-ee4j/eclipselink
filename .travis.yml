@@ -10,8 +10,6 @@ addons:
     sources:
       - mysql-5.7-trusty
     packages:
-      - ant-optional
-      - junit
       - libmysql-java
       - mysql-server
       - mysql-client
@@ -69,7 +67,4 @@ script:
   - ant -f antbuild.xml build
   - echo 'RUNNING TESTS, BE PATIENT...'
   - set -o pipefail
-  - ant -f antbuild.xml -Dant.junit.failureCollector=$HOME/FailedTests -Dtest.fail.fast=true $TEST_TARGET | grep -E "\] Running |\] Tests run:"
-
-after_failure:
-  - cat $HOME/FailedTests.java
+  - ant -f antbuild.xml -Dtest.fail.fast=true $TEST_TARGET | grep -E "\] Running |\] Tests run:"
