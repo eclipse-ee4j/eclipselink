@@ -538,6 +538,7 @@
                         <include name="org/eclipse/persistence/testing/moxy/unit/**/*TestCase.java"/>
                     </fileset>
                     <formatter type="xml"/>
+                    <formatter type="failure"/>
                 </batchtest>
                 <test name="org.eclipse.persistence.testing.jaxb.annotations.xmlidref.XmlIdSystemPropertyTestCase" todir="${report.dir}/jaxb">
                     <formatter type="xml"/>
