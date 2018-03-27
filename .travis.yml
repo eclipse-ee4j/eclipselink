@@ -62,6 +62,7 @@ script:
   - cat $HOME/build.properties
   - ant -f antbuild.xml build
   - echo 'RUNNING TESTS, BE PATIENT...'
+  - set -o pipefail
   - ant -f antbuild.xml -Dtest.fail.fast=true $TEST_TARGET | grep -E "\[junit\] Running|\[junit\] Tests run:"
-  - test "${PIPESTATUS[0]}" -eq "0"
-
+  - test "${PIPESTATUS[@]}" -eq "0"
+  - echo "${PIPESTATUS[@]}" -eq "0"
