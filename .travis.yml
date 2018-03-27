@@ -10,6 +10,7 @@ addons:
     sources:
       - mysql-5.7-trusty
     packages:
+      - ant-optional
       - libmysql-java
       - mysql-server
       - mysql-client
