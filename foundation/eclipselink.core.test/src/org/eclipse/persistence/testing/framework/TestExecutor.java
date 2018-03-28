@@ -243,8 +243,8 @@ public class TestExecutor {
                 if (getDefaultJUnitTestResult() == null) {
                     result = new junit.framework.TestResult();
                     result.addListener(getListener());
-                    getJUnitTestResults().put(test, result);
                 }
+                getJUnitTestResults().put(test, result);
                 test.run(result);
             } else {
                 ((TestEntity)test).execute(this);
