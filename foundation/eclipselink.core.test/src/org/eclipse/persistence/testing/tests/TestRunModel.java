@@ -116,7 +116,6 @@ public class TestRunModel extends TestModel {
             tests.add("org.eclipse.persistence.testing.tests.tableswithspacesmodel.EmployeeWithSpacesTestModel");
             tests.add("org.eclipse.persistence.testing.tests.optimization.queryandsqlcounting.QueryAndSQLCountingTestModel");
             tests.add("org.eclipse.persistence.testing.tests.identitymaps.cache.CacheIdentityMapTestModel");
-            tests.add("org.eclipse.persistence.testing.tests.cache.AdvancedProcessingTestModel");
         }
 
         // ** All new tests should be in light, unless they require specific db/config support
