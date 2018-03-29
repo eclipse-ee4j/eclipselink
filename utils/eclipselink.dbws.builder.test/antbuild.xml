@@ -83,6 +83,11 @@
     <property name="test.junit.jvm" value="${env.JAVA_HOME}"/>
     <property name="test.junit.jvm.exec" value="${test.junit.jvm}/bin/java"/>
 
+    <!-- JVM specific settings -->
+    <condition property="test.junit.jvm.modules.prop" value="-Dignore.modules=true" else="${test.junit.jvm.modules}">
+        <matches pattern="[1-8]\..*" string="${java.version}"/>
+    </condition>
+
     <!-- Primary Targets: "jar" separate for dev use -->
     <target name="build" depends="clean, compile, package" description="build dbwsbldrtests jar"/>
     <target name="test"  depends="build, run-tests"        description="run tests after building"/>
@@ -285,6 +290,7 @@
                 <path refid="dbwsbldrtest.run.path" />
                 <pathelement path="./${dbwsbldrtest.jar}" />
             </classpath>
+            <jvmarg line="${test.junit.jvm.modules.prop}"/>
             <jvmarg line="${additional.jvmargs}"/>
             <sysproperty key="eclipselink.logging.level" value="${logging.level}" />
             <sysproperty key="db.driver" value="${db.driver}" />
