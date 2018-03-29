@@ -8,7 +8,7 @@
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.glassfish.javax.json_1.0.4.v201311181159.jar" sourcepath="/ECLIPSELINK_HOME/plugins/org.glassfish.javax.json.source_1.0.4.v201311181159.jar"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.mail_1.4.0.v201005080615.jar"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.resource_1.6.0.v201204270900.jar"/>
-	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.transaction_1.1.0.v201002051055.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.transaction.api_1.3.0.jar"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm_6.0.0.v201710052159.jar" sourcepath="/ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm.source_6.0.0.v201710052159.jar"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="output" path="target/classes"/>

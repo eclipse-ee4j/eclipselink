@@ -149,7 +149,9 @@
         <property name="persistence.criteria" value="[2.0.0,2.3.0)"/>
         <property name="resource.prefix" value="javax.resource"/>
         <property name="resource.criteria" value="[0.0.1,5.0.0)"/>
-        <property name="transaction.prefix" value="javax.transaction"/>
+        <property name="interceptor.prefix" value="javax.interceptor.api"/>
+        <property name="interceptor.criteria" value="[0.0.1,5.0.0)"/>
+        <property name="transaction.prefix" value="javax.transaction.api"/>
         <property name="transaction.criteria" value="[0.0.1,5.0.0)"/>
         <property name="validation.prefix" value="javax.validation.api"/>
         <property name="validation.criteria" value="[0.0.1,5.0.0)"/>
@@ -163,6 +165,8 @@
         <property name="xml.soap.criteria" value="[0.0.1,5.0.0)"/>
         <property name="json.prefix" value="org.glassfish.javax.json"/>
         <property name="json.criteria" value="[1.0.4,5.0.0)"/>
+        <property name="cdi.prefix" value="cdi.api"/>
+        <property name="cdi.criteria" value="[0.0.1,5.0.0)"/>
         <!-- For EclipseLink bundles -->
         <property name="antlr.prefix" value="org.eclipse.persistence.antlr"/>
         <property name="antlr.criteria" value="[3.0,5.0)"/>
@@ -210,6 +214,9 @@
         <selectbundle basename="${resource.prefix}"  directory="${compdeps.2.common.plugins.dir}"
                      criterion="${resource.criteria}" property="resource.version" versiononly="true"
         />
+        <selectbundle basename="${interceptor.prefix}"  directory="${compdeps.2.common.plugins.dir}"
+                     criterion="${interceptor.criteria}" property="interceptor.version" versiononly="true"
+        />
         <selectbundle basename="${transaction.prefix}"  directory="${compdeps.2.common.plugins.dir}"
                      criterion="${transaction.criteria}" property="transaction.version" versiononly="true"
         />
@@ -240,6 +247,9 @@
         <selectbundle basename="${mongodb.prefix}"  directory="${compdeps.2.common.plugins.dir}"
                      criterion="${mongodb.criteria}" property="mongodb.version" versiononly="true"
         />
+        <selectbundle basename="${cdi.prefix}"  directory="${compdeps.2.common.plugins.dir}"
+                     criterion="${cdi.criteria}" property="cdi.version" versiononly="true"
+        />
 
         <say  message="   javax.xml.bind.version   = '${javax.xml.bind.version}'"                                                   if="javax.xml.bind.version"/>
         <say  message="   '{$javax.xml.bind.prefix}_{$javax.xml.bind.criteria}' not found! Generated features will be invalid."   unless="javax.xml.bind.version"/>
@@ -253,6 +263,8 @@
         <say  message="   '${jms.prefix}_${jms.criteria}.jar' not found! Generated features will be invalid."                   unless="jms.version"/>
         <say  message="   resource.version         = '${resource.version}'"                                                         if="resource.version"/>
         <say  message="   '${resource.prefix}_${resource.criteria}.jar' not found! Generated features will be invalid."         unless="resource.version"/>
+        <say  message="   interceptor.version      = '${interceptor.version}'"                                                         if="interceptor.version"/>
+        <say  message="   '${interceptor.prefix}_${interceptor.criteria}.jar' not found! Generated features will be invalid."         unless="interceptor.version"/>
         <say  message="   transaction.version      = '${transaction.version}'"                                                         if="transaction.version"/>
         <say  message="   '${transaction.prefix}_${transaction.criteria}.jar' not found! Generated features will be invalid."         unless="transaction.version"/>
         <say  message="   servlet.version          = '${servlet.version}'"                                                          if="servlet.version"/>
@@ -267,12 +279,14 @@
         <say  message="   '${validation.prefix}_${validation.criteria}.jar' not found! Generated features will be invalid."     unless="validation.version"/>
         <say  message="   json.version             = '${json.version}'"                                                                   if="json.version"/>
         <say  message="   '${json.prefix}_${json.criteria}.jar' not found! Generated features will be invalid."                 unless="json.version"/>
-        <say  message="   slf4j.version             = '${slf4j.version}'"                                                       if="slf4j.version"/>
+        <say  message="   slf4j.version            = '${slf4j.version}'"                                                       if="slf4j.version"/>
         <say  message="   '${slf4j.prefix}_${slf4j.criteria}.jar' not found! Generated features will be invalid."               unless="slf4j.version"/>
         <say  message="   wsrs.version             = '${wsrs.version}'"                                                                   if="wsrs.version"/>
         <say  message="   '${wsrs.prefix}_${wsrs.criteria}.jar' not found! Generated features will be invalid."                 unless="wsrs.version"/>
-        <say  message="   mongodb.version             = '${mongodb.version}'"                                                                   if="mongodb.version"/>
+        <say  message="   mongodb.version          = '${mongodb.version}'"                                                                   if="mongodb.version"/>
         <say  message="   '${mongodb.prefix}_${mongodb.criteria}.jar' not found! Generated features will be invalid."                 unless="mongodb.version"/>
+        <say  message="   cdi.version              = '${cdi.version}'"                                                                   if="cdi.version"/>
+        <say  message="   '${cdi.prefix}_${cdi.criteria}.jar' not found! Generated features will be invalid."                 unless="cdi.version"/>
 
         <echo message="Searching ${compdeps.2.jpa.plugins.dir}..."/>
         <selectbundle basename="${persistence.prefix}"  directory="${compdeps.2.jpa.plugins.dir}"
@@ -333,6 +347,7 @@
         <filter token="EJB_VERSION"          value="${ejb.version}"/>
         <filter token="JMS_VERSION"          value="${jms.version}"/>
         <filter token="RESOURCE_VERSION"     value="${resource.version}"/>
+        <filter token="INTERCEPTOR_VERSION"  value="${interceptor.version}"/>
         <filter token="TRANSACTION_VERSION"  value="${transaction.version}"/>
         <filter token="SERVLET_VERSION"      value="${servlet.version}"/>
         <filter token="XML_SOAP_VERSION"     value="${xml.soap.version}"/>
@@ -343,6 +358,7 @@
         <filter token="WSDL_VERSION"         value="${wsdl.version}"/>
         <filter token="WSRS_VERSION"         value="${wsrs.version}"/>
         <filter token="MONGODB_VERSION"      value="${mongodb.version}"/>
+        <filter token="CDI_VERSION"          value="${cdi.version}"/>
         <!--          Filters for product bundles in feature.xml files -->
         <filter token="ANTLR_VERSION"        value="${antlr.version}"/>
         <filter token="ASM_VERSION"          value="${asm.version}"/>
@@ -376,6 +392,8 @@
                           ${ejb.prefix}_${ejb.version}.jar,
                           ${jms.prefix}_${jms.version}.jar,
                           ${resource.prefix}_${resource.version}.jar,
+                          ${interceptor.prefix}_${interceptor.version}.jar,
+                          ${cdi.prefix}_${cdi.version}.jar,
                           ${transaction.prefix}_${transaction.version}.jar,
                           ${servlet.prefix}_${servlet.version}.jar,
                           ${xml.soap.prefix}_${xml.soap.version}.jar,
