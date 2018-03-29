@@ -44,6 +44,11 @@
     <property name="test.junit.jvm" value="${env.JAVA_HOME}"/>
     <property name="test.junit.jvm.exec" value="${test.junit.jvm}/bin/java"/>
 
+    <!-- JVM specific settings -->
+    <condition property="test.junit.jvm.modules.prop" value="-Dignore.modules=true" else="${test.junit.jvm.modules}">
+        <matches pattern="[1-8]\..*" string="${java.version}"/>
+    </condition>
+
     <path id="compile.jse.path">
         <pathelement path="${jse.eclipselink.jar}" />
         <pathelement path="${jse.modelgen.jar}" />

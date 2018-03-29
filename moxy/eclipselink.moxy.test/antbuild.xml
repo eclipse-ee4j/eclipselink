@@ -108,6 +108,11 @@
     <property name="test.junit.jvm" value="${env.JAVA_HOME}"/>
     <property name="test.junit.jvm.exec" value="${test.junit.jvm}/bin/java"/>
 
+    <!-- JVM specific settings -->
+    <condition property="test.junit.jvm.modules.prop" value="-Dignore.modules=true" else="${test.junit.jvm.modules}">
+        <matches pattern="[1-8]\..*" string="${java.version}"/>
+    </condition>
+
     <path id="xml.parser.path">
         <fileset
                 dir="${xml.parser.jar.dir}"
@@ -503,6 +508,7 @@
                    printsummary="yes" fork="true" dir="${build.dir}/${test.dir}" tempdir="${build.dir}/${test.dir}" showoutput="yes" maxmemory="512m">
                 <!--<jvmarg value="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"/>-->
                 <jvmarg value="-ea"/>
+                <jvmarg line="${test.junit.jvm.modules.prop}"/>
                 <jvmarg value="-javaagent:${jmockit.lib}"/>
                 <jvmarg line="${additional.jvmargs}"/>
                 <env key="T_WORK" value="${tmp.dir}"/>
@@ -576,6 +582,7 @@
             <junit jvm="${test.junit.jvm.exec}" failureproperty="junit.failed.jaxb_srg" logfailedtests="true"
                    printsummary="yes" fork="true" dir="${build.dir}/${test.dir}" tempdir="${build.dir}/${test.dir}" showoutput="yes" maxmemory="512m">
                 <jvmarg value="-ea"/>
+                <jvmarg line="${test.junit.jvm.modules.prop}"/>
                 <jvmarg line="${additional.jvmargs}"/>
                 <env key="T_WORK" value="${tmp.dir}"/>
                 <sysproperty key="platformType" value="SAX"/>
@@ -612,6 +619,9 @@
             <mkdir dir="${build.dir}/${test.dir}"/>
             <junit jvm="${test.junit.jvm.exec}" failureproperty="junit.failed.oxm_srg" logfailedtests="true"
                    printsummary="yes" fork="true" dir="${build.dir}/${test.dir}" tempdir="${build.dir}/${test.dir}" showoutput="yes" maxmemory="512m">
+                <jvmarg value="-ea"/>
+                <jvmarg line="${test.junit.jvm.modules.prop}"/>
+                <jvmarg line="${additional.jvmargs}"/>
                 <sysproperty key="useLogging" value="false"/>
                 <sysproperty key="eclipselink.xml.platform" value="${xml.platform}"/>
                 <sysproperty key="parser" value="${parser}"/>
@@ -645,6 +655,7 @@
             <junit jvm="${test.junit.jvm.exec}" failureproperty="junit.failed.oxm" logfailedtests="true"
                    printsummary="yes" fork="true" dir="${build.dir}/${test.dir}" tempdir="${build.dir}/${test.dir}" showoutput="yes" maxmemory="512m">
                 <jvmarg value="-ea"/>
+                <jvmarg line="${test.junit.jvm.modules.prop}"/>
                 <jvmarg line="${additional.jvmargs}"/>
                 <sysproperty key="useLogging" value="false"/>
                 <sysproperty key="eclipselink.xml.platform" value="${xml.platform}"/>
@@ -701,6 +712,7 @@
             <junit jvm="${test.junit.jvm.exec}" failureproperty="junit.failed.oxm_dom" logfailedtests="true"
                    printsummary="yes" fork="true" dir="${build.dir}/${test.dir}" tempdir="${build.dir}/${test.dir}" showoutput="yes" maxmemory="512m">
                 <jvmarg value="-ea"/>
+                <jvmarg line="${test.junit.jvm.modules.prop}"/>
                 <jvmarg line="${additional.jvmargs}"/>
                 <sysproperty key="platformType" value="DOM"/>
                 <sysproperty key="metadataType" value="JAVA"/>
@@ -759,6 +771,7 @@
             <junit jvm="${test.junit.jvm.exec}" failureproperty="junit.failed.oxm_deploymentxml" logfailedtests="true"
                    printsummary="yes" fork="true" dir="${build.dir}/${test.dir}" tempdir="${build.dir}/${test.dir}" showoutput="yes" maxmemory="512m">
                 <jvmarg value="-ea"/>
+                <jvmarg line="${test.junit.jvm.modules.prop}"/>
                 <jvmarg line="${additional.jvmargs}"/>
                 <sysproperty key="platformType" value="DOM"/>
                 <sysproperty key="metadataType" value="XML_ECLIPSELINK"/>
@@ -835,6 +848,7 @@
             <junit jvm="${test.junit.jvm.exec}" failureproperty="junit.failed.oxm_deploymentxml_tl" logfailedtests="true"
                    printsummary="yes" fork="true" dir="${build.dir}/${test.dir}" tempdir="${build.dir}/${test.dir}" showoutput="yes" maxmemory="512m">
                 <jvmarg value="-ea"/>
+                <jvmarg line="${test.junit.jvm.modules.prop}"/>
                 <jvmarg line="${additional.jvmargs}"/>
                 <sysproperty key="platformType" value="DOM"/>
                 <sysproperty key="metadataType" value="XML_TOPLINK"/>
@@ -907,6 +921,7 @@
             <junit jvm="${test.junit.jvm.exec}" failureproperty="junit.failed.oxm_docpres" logfailedtests="true"
                    printsummary="yes" fork="true" dir="${build.dir}/${test.dir}" tempdir="${build.dir}/${test.dir}" showoutput="yes" maxmemory="512m">
                 <jvmarg value="-ea"/>
+                <jvmarg line="${test.junit.jvm.modules.prop}"/>
                 <jvmarg line="${additional.jvmargs}"/>
                 <sysproperty key="platformType" value="DOC_PRES"/>
                 <sysproperty key="metadataType" value="JAVA"/>

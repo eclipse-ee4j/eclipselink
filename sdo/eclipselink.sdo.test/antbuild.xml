@@ -73,6 +73,11 @@
     <property name="test.junit.jvm" value="${env.JAVA_HOME}"/>
     <property name="test.junit.jvm.exec" value="${test.junit.jvm}/bin/java"/>
 
+    <!-- JVM specific settings -->
+    <condition property="test.junit.jvm.modules.prop" value="-Dignore.modules=true" else="${test.junit.jvm.modules}">
+        <matches pattern="[1-8]\..*" string="${java.version}"/>
+    </condition>
+
     <!-- path to OSGi Bundle compile dependencies -->
     <path id="sdotest.bundle.compile.path">
         <fileset
@@ -191,6 +196,7 @@
             <!-- junit printsummary="withOutAndErr" fork="yes" forkmode="once" dir="${resource.dir}" maxmemory="512m" showoutput="yes" -->
             <junit jvm="${test.junit.jvm.exec}" printsummary="withOutAndErr" failureproperty="junit.failed" logfailedtests="true"
                    fork="yes" dir="${resource.dir}" maxmemory="512m" showoutput="yes">
+                <jvmarg line="${test.junit.jvm.modules.prop}"/>
                 <jvmarg line="${additional.jvmargs}"/>
                 <env key="JAVA_HOME" value="${test.junit.jvm}"/>
                 <sysproperty key="loggingLevelFinest" value="false"/>
@@ -250,6 +256,7 @@
             <echo message="customContext=@{customcontext}"/>
             <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
             <junit printsummary="withOutAndErr" fork="yes" forkmode="once" dir="${resource.dir}" maxmemory="512m" showoutput="yes">
+                <jvmarg line="${test.junit.jvm.modules.prop}"/>
                 <jvmarg line="${additional.jvmargs}"/>
                 <sysproperty key="loggingLevelFinest" value="false"/>
                 <sysproperty key="customContext" value="@{customcontext}"/>
