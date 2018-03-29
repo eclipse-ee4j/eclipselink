@@ -50,7 +50,7 @@ public class TestConcurrencyPersistence {
     @Test
     public void testInsertConcurrency() throws Exception {
 
-        Queue<Exception> errors = new ConcurrentLinkedQueue<>();
+        Queue<Exception> errors = new ConcurrentLinkedQueue();
         int runs = 10;
         for(int run = 0; run < runs; run++) {
             int threadCount = 3;
