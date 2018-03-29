@@ -81,7 +81,14 @@
          unpack="false"/>
 
    <plugin
-         id="javax.transaction"
+         id="javax.interceptor.api"
+         download-size="0"
+         install-size="0"
+         version="@INTERCEPTOR_VERSION@"
+         unpack="false"/>
+
+   <plugin
+         id="javax.transaction.api"
          download-size="0"
          install-size="0"
          version="@TRANSACTION_VERSION@"
@@ -183,6 +190,13 @@
          download-size="0"
          install-size="0"
          version="@MONGODB_VERSION@"
+         unpack="false"/>
+
+   <plugin
+         id="cdi.api"
+         download-size="0"
+         install-size="0"
+         version="@CDI_VERSION@"
          unpack="false"/>
 
 </feature>

@@ -121,7 +121,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/javax.transaction_1.1.0.v201002051055.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/javax.transaction.api_1.3.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
