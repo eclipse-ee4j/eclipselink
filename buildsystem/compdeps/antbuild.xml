@@ -358,7 +358,7 @@
         <filter token="WSDL_VERSION"         value="${wsdl.version}"/>
         <filter token="WSRS_VERSION"         value="${wsrs.version}"/>
         <filter token="MONGODB_VERSION"      value="${mongodb.version}"/>
-        <filter token="CDI_VERSION"      value="${cdi.version}"/>
+        <filter token="CDI_VERSION"          value="${cdi.version}"/>
         <!--          Filters for product bundles in feature.xml files -->
         <filter token="ANTLR_VERSION"        value="${antlr.version}"/>
         <filter token="ASM_VERSION"          value="${asm.version}"/>
