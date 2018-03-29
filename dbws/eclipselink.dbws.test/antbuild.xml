@@ -97,6 +97,11 @@
     <property name="test.junit.jvm" value="${env.JAVA_HOME}"/>
     <property name="test.junit.jvm.exec" value="${test.junit.jvm}/bin/java"/>
 
+    <!-- JVM specific settings -->
+    <condition property="test.junit.jvm.modules.prop" value="-Dignore.modules=true" else="${test.junit.jvm.modules}">
+        <matches pattern="[1-8]\..*" string="${java.version}"/>
+    </condition>
+
     <!-- Set Compile Path-->
     <path id="dbws_test.compile.path">
         <pathelement path="${junit.lib}"/>
@@ -259,6 +264,7 @@
           key="db.platform"
           value="${db.platform}"
         />
+        <jvmarg line="${test.junit.jvm.modules.prop}"/>
         <jvmarg line="${additional.jvmargs}"/>
         <test
           name="dbws.testing.@{package-name}.@{testsuite-name}TestSuite" outfile="${report.dir}/@{package-name}.@{testsuite-name}-test-results"
