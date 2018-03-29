@@ -64,7 +64,7 @@
 
         <!-- Properties usually defined in build.properties, set here to avoid easy redefinition. -->
         <!-- Version properties -->
-        <property name="release.version"             value="6.0.0"/>
+        <property name="release.version"             value="6.1.1"/>
 
         <condition property="javac.debug" value="false"
                                           else="true">
