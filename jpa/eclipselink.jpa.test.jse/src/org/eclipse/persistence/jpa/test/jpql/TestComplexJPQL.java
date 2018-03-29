@@ -17,12 +17,16 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 
+import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.jpa.test.framework.DDLGen;
 import org.eclipse.persistence.jpa.test.framework.Emf;
 import org.eclipse.persistence.jpa.test.framework.EmfRunner;
 import org.eclipse.persistence.jpa.test.jpql.model.JPQLEmbeddedValue;
 import org.eclipse.persistence.jpa.test.jpql.model.JPQLEntity;
 import org.eclipse.persistence.jpa.test.jpql.model.JPQLEntityId;
+import org.eclipse.persistence.platform.database.DatabasePlatform;
+import org.eclipse.persistence.platform.database.DerbyPlatform;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -34,6 +38,11 @@ public class TestComplexJPQL {
 
     @Test
     public void testComplexJPQLIN() {
+        if(getPlatform(emf) instanceof DerbyPlatform) {
+            Assert.assertTrue("Test will not run on DerbyPlatform. Derby does "
+                    + "not support multiple IN clause for prepared statements.", true);
+            return;
+        }
         EntityManager em = emf.createEntityManager();
 
         Query q = em.createQuery("select t0.id from JPQLEntity t0 "
@@ -45,5 +54,9 @@ public class TestComplexJPQL {
             em.clear();
             em.close();
         }
+    }
+
+    private DatabasePlatform getPlatform(EntityManagerFactory emf) {
+        return ((EntityManagerFactoryImpl)emf).getServerSession().getPlatform();
     }
 }
