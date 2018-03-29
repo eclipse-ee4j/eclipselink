@@ -29,10 +29,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Stream;
 
 import javax.persistence.Entity;
-import javax.persistence.metamodel.StaticMetamodel;
 import javax.tools.Diagnostic;
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
@@ -162,9 +160,9 @@ public class TestProcessor {
 
     private List<String> getJavacOptions(String... opts) {
         List<String> result = new ArrayList<String>();
-        String systemOpts = System.getProperty("additional.jvmargs");
-        if (systemOpts != null && !systemOpts.isEmpty() && !systemOpts.contains("dummy")) {
-            result.addAll(Arrays.asList(System.getProperty("additional.jvmargs").split(" ")));
+        String systemOpts = System.getProperty("test.junit.jvm.modules");
+        if (systemOpts != null && systemOpts.contains("--add-modules")) {
+            result.addAll(Arrays.asList(System.getProperty("test.junit.jvm.modules").split(" ")));
         }
         result.add("-proc:only");
         result.add("-Aeclipselink.canonicalmodel.use_static_factory=false");

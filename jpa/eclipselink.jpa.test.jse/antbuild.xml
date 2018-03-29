@@ -44,6 +44,11 @@
     <property name="test.junit.jvm" value="${env.JAVA_HOME}"/>
     <property name="test.junit.jvm.exec" value="${test.junit.jvm}/bin/java"/>
 
+    <!-- JVM specific settings -->
+    <condition property="test.junit.jvm.modules.prop" value="-Dignore.modules=true" else="${test.junit.jvm.modules}">
+        <matches pattern="[1-8]\..*" string="${java.version}"/>
+    </condition>
+
     <path id="compile.jse.path">
         <pathelement path="${jse.eclipselink.jar}" />
         <pathelement path="${jse.modelgen.jar}" />
@@ -90,8 +95,10 @@
         <property name="rmi" value="-Djava.naming.provider.url=rmi://localhost:${rmi.port} -Djava.naming.factory.initial=com.sun.jndi.rmi.registry.RegistryContextFactory"/>
         <junit jvm="${test.junit.jvm.exec}" printsummary="on" haltonfailure="false" failureproperty="fail" logfailedtests="true"
                fork="yes" dir="${jse.classes.dir}" forkmode="once">
+            <jvmarg line="${test.junit.jvm.modules.prop}"/>
             <jvmarg line="${additional.jvmargs} ${rmi}"/>
             <sysproperty key="additional.jvmargs" value="${additional.jvmargs}"/>
+            <sysproperty key="test.junit.jvm.modules" value="${test.junit.jvm.modules.prop}"/>
             <sysproperty key="javax.persistence.jdbc.url" value="${db.url}"/>
             <sysproperty key="javax.persistence.jdbc.driver" value="${db.driver}"/>
             <sysproperty key="javax.persistence.jdbc.user" value="${db.user}"/>

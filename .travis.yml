@@ -25,10 +25,6 @@ env:
     - TEST_TARGET=test-sdo
     - TEST_TARGET="test-jpa-jse test-ext test-jpql test-wdf test-jpars test-dbws test-dbws-builder test-osgi"
 
-matrix:
-  allow_failures:
-    - jdk: oraclejdk9
-
 jdk:
   - oraclejdk8
   - oraclejdk9
@@ -64,7 +60,6 @@ before_script:
   - echo 'db.user=root' >> $HOME/build.properties
   - echo 'db.pwd=root' >> $HOME/build.properties
   - echo 'db.platform=org.eclipse.persistence.platform.database.MySQLPlatform' >> $HOME/build.properties
-  - if [ `java -version 2>&1|awk -F\" '/version/ {print $2}' | cut -d'.' -f1` -gt "8" ]; then echo "additional.jvmargs=--add-modules java.xml.ws,java.xml.ws.annotation,java.corba,java.transaction --upgrade-module-path $TRAVIS_BUILD_DIR/plugins/javax.transaction.api_1.3.0.jar" >> $HOME/build.properties; fi
 
 script:
   - cat $HOME/build.properties

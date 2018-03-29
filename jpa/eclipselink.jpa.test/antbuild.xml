@@ -142,6 +142,11 @@
     <property name="test.junit.jvm" value="${env.JAVA_HOME}"/>
     <property name="test.junit.jvm.exec" value="${test.junit.jvm}/bin/java"/>
 
+    <!-- JVM specific settings -->
+    <condition property="test.junit.jvm.modules.prop" value="-Dignore.modules=true" else="${test.junit.jvm.modules}">
+        <matches pattern="[1-8]\..*" string="${java.version}"/>
+    </condition>
+
     <echo message="modelgen.jar                         = '${modelgen.jar}'"/>
     <echo message="ant.project.name                     = '${ant.project.name}'"/>
     <echo message="jpatest.build.location               = '${jpatest.build.location}'"/>
@@ -2548,6 +2553,7 @@
             <sysproperty key="pa.connection.password" value="${db.pwd}"/>
             <sysproperty key="pa.proxyuser" value="${pa.proxyuser}"/>
             <sysproperty key="pa.proxyuser2" value="${pa.proxyuser2}"/>
+            <jvmarg line="${test.junit.jvm.modules.prop}"/>
             <jvmarg line="${additional.jvmargs}"/>
             <jvmarg value="${TEST_AGENT}"/>
             <jvmarg value="${TEST_WEAVING}"/>

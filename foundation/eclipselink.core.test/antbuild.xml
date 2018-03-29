@@ -96,6 +96,11 @@
     <property name="test.junit.jvm" value="${env.JAVA_HOME}"/>
     <property name="test.junit.jvm.exec" value="${test.junit.jvm}/bin/java"/>
 
+    <!-- JVM specific settings -->
+    <condition property="test.junit.jvm.modules.prop" value="-Dignore.modules=true" else="${test.junit.jvm.modules}">
+        <matches pattern="[1-8]\..*" string="${java.version}"/>
+    </condition>
+
     <!-- Local path variables -->
     <property name="core_test.src.dir"      value="${core_test.build.location}/${src.dir}"/>
     <property name="core_test.resource.dir" value="${core_test.build.location}/${resource.dir}"/>
@@ -556,6 +561,7 @@
         <!-- Note: on a legacy XP OS with 4GB ram - the max is 1536 - use of 2048 will cause [junit] [WARN ] Unable to acquire some virtual address space - reduced from 2048 to 1908MB. -->
         <junit jvm="${test.junit.jvm.exec}" printsummary="yes" failureproperty="junit.failed" logfailedtests="true"
                fork="yes" forkmode="once" showoutput="true" maxmemory="${max.heap.memory}" dir="${core_test.run.dir}">
+            <jvmarg line="${test.junit.jvm.modules.prop}"/>
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
             <jvmarg value="-Ddb.driver=${db.driver}"/>
             <jvmarg value="-Ddb.url=${db.url}"/>
@@ -593,6 +599,7 @@
         <!-- 282012: On a 64-bit JVM - The XML processing at the end of the testing requires at least 1536 -->
         <!-- Note: on a legacy XP OS with 4GB ram - the max is 1536 - use of 2048 will cause [junit] [WARN ] Unable to acquire some virtual address space - reduced from 2048 to 1908MB. -->
         <junit jvm="${test.junit.jvm.exec}" printsummary="yes" failureproperty="junit.failed" fork="yes" showoutput="true" maxmemory="${max.heap.memory}" dir="${core_test.run.dir}">
+            <jvmarg line="${test.junit.jvm.modules.prop}"/>
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
             <jvmarg value="-Ddb.driver=${db.driver}"/>
             <jvmarg value="-Ddb.url=${db.url}"/>
