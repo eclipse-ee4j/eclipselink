@@ -95,8 +95,10 @@
         <property name="rmi" value="-Djava.naming.provider.url=rmi://localhost:${rmi.port} -Djava.naming.factory.initial=com.sun.jndi.rmi.registry.RegistryContextFactory"/>
         <junit jvm="${test.junit.jvm.exec}" printsummary="on" haltonfailure="false" failureproperty="fail" logfailedtests="true"
                fork="yes" dir="${jse.classes.dir}" forkmode="once">
+            <jvmarg line="${test.junit.jvm.modules.prop}"/>
             <jvmarg line="${additional.jvmargs} ${rmi}"/>
             <sysproperty key="additional.jvmargs" value="${additional.jvmargs}"/>
+            <sysproperty key="test.junit.jvm.modules" value="${test.junit.jvm.modules.prop}"/>
             <sysproperty key="javax.persistence.jdbc.url" value="${db.url}"/>
             <sysproperty key="javax.persistence.jdbc.driver" value="${db.driver}"/>
             <sysproperty key="javax.persistence.jdbc.user" value="${db.user}"/>
