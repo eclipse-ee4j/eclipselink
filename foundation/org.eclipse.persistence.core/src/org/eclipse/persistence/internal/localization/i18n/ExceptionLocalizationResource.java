@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -251,7 +251,8 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "cannot_get_from_non_correlated_query", "getCorrelationParent() called on a from-clause that was not obtained through correlation." },
                                            { "wrap_convert_exception", "An exception occurred while calling {0} on converter class {1} with value {2}"},
                                            { "ora_pessimistic_locking_with_rownum", "Pessimistic locking with query row limits is not supported."},
-                                           { "bean_validation_constraint_violated", "One or more Bean Validation constraints were violated while executing Automatic Bean Validation on callback event: {0} for class: {1}. Please refer to the embedded constraint violations for details."}
+                                           { "bean_validation_constraint_violated", "One or more Bean Validation constraints were violated while executing Automatic Bean Validation on callback event: {0} for class: {1}. Please refer to the embedded constraint violations for details."},
+                                           { "unsupported_classfile_version", "Class {0} was compiled with unsupported JDK. Report this error to the EclipseLink team, please."}
 
                                         };
     /**

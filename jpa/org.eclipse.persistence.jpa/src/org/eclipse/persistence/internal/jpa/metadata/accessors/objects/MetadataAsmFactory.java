@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle, Hans Harz, Andrew Rustleund, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle, Hans Harz, Andrew Rustleund, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -38,11 +38,17 @@ import org.eclipse.persistence.internal.libraries.asm.AnnotationVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Attribute;
 import org.eclipse.persistence.internal.libraries.asm.ClassReader;
 import org.eclipse.persistence.internal.libraries.asm.ClassVisitor;
+import org.eclipse.persistence.internal.libraries.asm.EclipseLinkClassReader;
 import org.eclipse.persistence.internal.libraries.asm.FieldVisitor;
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 import org.eclipse.persistence.internal.libraries.asm.Type;
+import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.logging.SessionLogEntry;
 
 /**
  * INTERNAL: A metadata factory that uses ASM technology and no reflection
@@ -118,9 +124,36 @@ public class MetadataAsmFactory extends MetadataFactory {
                     metadataClass.setIsAccessible(false);
                 }
             } else {
-                metadataClass.setIsAccessible(false);
+                // class was probably compiled with some newer than officially
+                // supported and tested JDK
+                // in such case log a warning and try to re-read the class
+                // without class version check
+                AbstractSession session = getLogger().getSession();
+                SessionLog log = getLogger().getSession() != null ? getLogger().getSession().getSessionLog() : AbstractSessionLog.getLog();
+                if (log.shouldLog(SessionLog.SEVERE, SessionLog.METADATA)) {
+                    SessionLogEntry entry = new SessionLogEntry(session, SessionLog.SEVERE, SessionLog.METADATA, exception);
+                    entry.setMessage(ExceptionLocalization.buildMessage("unsupported_classfile_version", new Object[] { className }));
+                    log.log(entry);
+                }
+                if (stream != null) {
+                    try {
+                        ClassReader reader = new EclipseLinkClassReader(stream);
+                        Attribute[] attributes = new Attribute[0];
+                        reader.accept(visitor, attributes, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
+                    } catch (Exception e) {
+                        if (log.shouldLog(SessionLog.SEVERE, SessionLog.METADATA)) {
+                            SessionLogEntry entry = new SessionLogEntry(session, SessionLog.SEVERE, SessionLog.METADATA, exception);
+                            entry.setMessage(ExceptionLocalization.buildMessage("unsupported_classfile_version", new Object[] { className }));
+                            log.log(entry);
+                        }
+                        metadataClass.setIsAccessible(false);
+                        addMetadataClass(metadataClass);
+                    }
+                } else {
+                    metadataClass.setIsAccessible(false);
+                    addMetadataClass(metadataClass);
+                }
             }
-            addMetadataClass(metadataClass);
         } finally {
             try {
                 if (stream != null) {
