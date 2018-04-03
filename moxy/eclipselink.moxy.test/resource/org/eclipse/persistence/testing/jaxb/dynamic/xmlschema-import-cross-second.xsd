@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns="http://second.temp.com/"
+           xmlns:tns="http://second.temp.com/"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://second.temp.com/"
+           xmlns:third="http://third.temp.com/"
+           xmlns:fourth="http://fourth.temp.com/"
+           elementFormDefault="unqualified" attributeFormDefault="unqualified" version="1.0">
+
+    <xs:import namespace="http://third.temp.com/"
+               schemaLocation="xmlschema-import-cross-third.xsd"/>
+    <xs:import namespace="http://fourth.temp.com/"
+               schemaLocation="xmlschema-import-cross-fourth.xsd"/>
+
+    <xs:complexType name="Base_Type">
+        <xs:sequence>
+            <xs:element minOccurs="0" ref="third:fault"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:element name="base" type="tns:Base_Type">
+    </xs:element>
+
+    <xs:complexType name="InheritedFault_Type">
+        <xs:complexContent>
+            <xs:extension base="third:DataReference_Type">
+                <xs:sequence>
+                    <xs:choice>
+                        <xs:element ref="fourth:userKey" />
+                        <xs:element ref="fourth:companyKey" />
+                    </xs:choice>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="inheritedFaultType" type="tns:InheritedFault_Type">
+    </xs:element>
+
+</xs:schema>
