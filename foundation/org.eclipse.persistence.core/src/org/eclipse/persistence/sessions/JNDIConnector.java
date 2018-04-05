@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -218,6 +218,7 @@ public class JNDIConnector implements Connector {
      *             {@link org.eclipse.persistence.platform.server.ServerPlatform#getJNDIConnectorLookupType()}
      * @param lookupType
      */
+    @Deprecated
     public void setLookupType(int lookupType) {
         this.lookupType = lookupType;
     }
@@ -226,6 +227,7 @@ public class JNDIConnector implements Connector {
      * @deprecated As of 2.6.0, replaced by configuration provided by
      *             {@link org.eclipse.persistence.platform.server.ServerPlatform#getJNDIConnectorLookupType()}
      */
+    @Deprecated
     public int getLookupType() {
         return lookupType;
     }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -39,6 +39,7 @@ public class TableSequence extends QuerySequence {
      * Use an empty string as a default sequence table name instead,
      * that triggers usage of platform.getDefaultSequenceTableName() when the sequence is connected.
      */
+    @Deprecated
     public static final String defaultTableName = "SEQUENCE";
 
     /** Hold the database table */

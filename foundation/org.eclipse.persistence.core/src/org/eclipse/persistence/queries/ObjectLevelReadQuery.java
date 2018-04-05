@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -741,6 +741,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * fetchGroup.addAttribute("address.city");
      * query.setFetchGroup(fetchGroup);
      */
+    @Deprecated
     public void addPartialAttribute(String attributeName) {
         addPartialAttribute(getExpressionBuilder().get(attributeName));
     }
@@ -835,6 +836,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * fetchGroup.addAttribute("address.city");
      * query.setFetchGroup(fetchGroup);
      */
+    @Deprecated
     public void addPartialAttribute(Expression attributeExpression) {
         getPartialAttributeExpressions().add(attributeExpression);
         //Bug2804042 Must un-prepare if prepared as the SQL may change.

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -53,6 +53,7 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
      * The profiler can be registered with a session to log performance information on queries.
      * @deprecated replaced by PerformanceProfiler()
      */
+    @Deprecated
     public PerformanceProfiler(org.eclipse.persistence.sessions.Session session) {
         this(session, true);
     }
@@ -63,6 +64,7 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
      * The profiler can be registered with a session to log performance information on queries.
      * @deprecated replaced by PerformanceProfiler()
      */
+    @Deprecated
     public PerformanceProfiler(org.eclipse.persistence.sessions.Session session, boolean shouldLogProfile) {
         super();
         this.profiles = new Vector();

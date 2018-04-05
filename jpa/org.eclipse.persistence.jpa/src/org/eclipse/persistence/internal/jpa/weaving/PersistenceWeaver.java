@@ -50,6 +50,7 @@ public class PersistenceWeaver implements ClassTransformer {
      * @param classDetailsMap Class name to {@link ClassDetails} map.
      * @deprecated Session instance is no longer needed for logging. Will be removed in 2.8.
      */
+    @Deprecated
     public PersistenceWeaver(final Session session, final Map<String, ClassDetails> classDetailsMap) {
         this.classDetailsMap = classDetailsMap;
     }

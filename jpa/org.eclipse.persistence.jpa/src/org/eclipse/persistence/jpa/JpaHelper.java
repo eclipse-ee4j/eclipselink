@@ -155,6 +155,7 @@ public class JpaHelper {
      * @see JpaEntityManagerFactory
      * @deprecated
      */
+    @Deprecated
     public static EntityManagerFactoryImpl getEntityManagerFactory(EntityManagerFactoryImpl emf) {
         return (emf);
     }
