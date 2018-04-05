@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -2299,7 +2299,7 @@ public class SDOTypesGenerator {
         String uri = null;
 
         for (int i = namespaceResolvers.size() - 1; i >= 0; i--) {
-            NamespaceResolver next = (NamespaceResolver) namespaceResolvers.get(i);
+            NamespaceResolver next = namespaceResolvers.get(i);
             uri = next.resolveNamespacePrefix(prefix);
             if ((uri != null) && !uri.equals(SDOConstants.EMPTY_STRING)) {
                 break;

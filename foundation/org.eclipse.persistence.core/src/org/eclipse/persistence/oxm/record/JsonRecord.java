@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2018  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -174,7 +174,7 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
              startRootLevelCollection();
         } else {
             if(isLastEventStart){
-                setComplex((T)position, true);
+                setComplex(position, true);
             }
             position = createNewLevel(true, position);
         }
@@ -315,7 +315,7 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
             }else if(isCDATA){
                 cdata((String)value);
             }else{
-                writeValue((String)value, null, isAttribute);
+                writeValue(value, null, isAttribute);
             }
        }else{
            Class<?> theClass = ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).javaType(schemaType);

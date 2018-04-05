@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -387,7 +387,7 @@ class JAXBBeanValidator {
     @SuppressWarnings({"RedundantCast", "unchecked"})
     private BeanValidationException buildConstraintViolationException() {
         ConstraintViolationException cve = new ConstraintViolationException(
-                (Set<ConstraintViolation<Object>>) /* Do not remove the cast. */ constraintViolations);
+                /* Do not remove the cast. */ constraintViolations);
         return BeanValidationException.constraintViolation(createConstraintViolationExceptionArgs(), cve);
     }
 

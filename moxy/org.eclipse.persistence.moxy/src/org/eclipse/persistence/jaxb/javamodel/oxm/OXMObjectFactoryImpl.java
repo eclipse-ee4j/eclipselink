@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -62,7 +62,7 @@ public class OXMObjectFactoryImpl implements JavaClass {
         // Build annotations and methods
         List<XmlElementDecl> decls = this.registry.getXmlElementDecl();
         for (Iterator<XmlElementDecl> iterator = decls.iterator(); iterator.hasNext();) {
-            XmlElementDecl xmlElementDecl = (XmlElementDecl) iterator.next();
+            XmlElementDecl xmlElementDecl = iterator.next();
 
             String paramType = xmlElementDecl.getType();
 

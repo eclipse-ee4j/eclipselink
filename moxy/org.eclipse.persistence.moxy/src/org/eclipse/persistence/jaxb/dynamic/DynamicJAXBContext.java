@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import javax.xml.bind.JAXBException;
-import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.core.sessions.CoreProject;
@@ -290,7 +289,7 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
             XMLContext ctx = new XMLContext(dp, classLoader, sessionEventListeners());
             state.setXMLContext(ctx);
 
-            List<Session> sessions = (List<Session>) ctx.getSessions();
+            List<Session> sessions = ctx.getSessions();
             for (Object session : sessions) {
                 state.getHelpers().add(new DynamicHelper((DatabaseSession) session));
             }
@@ -322,7 +321,7 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
             } else if (schema instanceof InputStream) {
                 constructorArg = new StreamSource((InputStream) schema);
             } else {
-                constructorArg = (Source) schema;
+                constructorArg = schema;
             }
 
             try {
@@ -362,10 +361,10 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
                 throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.errorCreatingDynamicJAXBContext(e));
             }
 
-            XMLContext ctx = new XMLContext(dp, (DynamicClassLoader) classLoader, sessionEventListeners());
+            XMLContext ctx = new XMLContext(dp, classLoader, sessionEventListeners());
             state.setXMLContext(ctx);
 
-            List<Session> sessions = (List<Session>) ctx.getSessions();
+            List<Session> sessions = ctx.getSessions();
             for (Object session : sessions) {
                 state.getHelpers().add(new DynamicHelper((DatabaseSession) session));
             }
@@ -401,7 +400,7 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
             XMLContext xmlContext = new XMLContext(dynamicProjects);
             state.setXMLContext(xmlContext);
 
-            List<Session> sessions = (List<Session>) xmlContext.getSessions();
+            List<Session> sessions = xmlContext.getSessions();
             for (Object session : sessions) {
                 state.getHelpers().add(new DynamicHelper((DatabaseSession) session));
             }

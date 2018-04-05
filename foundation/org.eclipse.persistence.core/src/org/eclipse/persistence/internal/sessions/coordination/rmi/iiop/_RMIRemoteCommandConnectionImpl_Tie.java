@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2017 IBM Corporation, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 IBM Corporation, Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -75,7 +75,7 @@ public class _RMIRemoteCommandConnectionImpl_Tie extends org.omg.CORBA_2_3.porta
     }
 
     public String[] _ids() { 
-        return (String [] )  _type_ids.clone();
+        return _type_ids.clone();
     }
 
     public OutputStream _invoke(String method, InputStream _in, ResponseHandler reply) throws SystemException {

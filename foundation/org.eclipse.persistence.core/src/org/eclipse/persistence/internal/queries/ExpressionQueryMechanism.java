@@ -2086,7 +2086,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             Map.Entry entry = (Map.Entry)tables_databaseFieldsToValues.entrySet().iterator().next();
             DatabaseTable table = (DatabaseTable)entry.getKey();
             HashMap databaseFieldsToValues = (HashMap)entry.getValue();
-            Collection primaryKeyFields = (Collection)tablesToPrimaryKeyFields.values().iterator().next();
+            Collection primaryKeyFields = tablesToPrimaryKeyFields.values().iterator().next();
             setSQLStatement(buildUpdateAllStatement(table, databaseFieldsToValues, selectCallForExist, selectStatementForExist, primaryKeyFields));
         } else {
             // To figure out the order of statements we need to find dependencies
@@ -2281,7 +2281,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             for(int i=0; i < orderedTables.size(); i++) {
                 DatabaseTable table = (DatabaseTable)orderedTables.elementAt(i);
                 HashMap databaseFieldsToValues = (HashMap)tables_databaseFieldsToValues.get(table);
-                Collection primaryKeyFields = (Collection)tablesToPrimaryKeyFields.get(table);
+                Collection primaryKeyFields = tablesToPrimaryKeyFields.get(table);
                 getSQLStatements().addElement(buildUpdateAllStatement(table, databaseFieldsToValues, selectCallForExist, selectStatementForExist, primaryKeyFields));
             }
         }

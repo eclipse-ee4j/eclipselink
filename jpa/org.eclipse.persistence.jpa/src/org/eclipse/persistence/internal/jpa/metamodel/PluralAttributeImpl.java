@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -72,7 +72,7 @@ public abstract class PluralAttributeImpl<X, C, V> extends AttributeImpl<X, C> i
         // Set the element type on this attribute (the value parameter for a MapAttribute)
         if (elementDesc != null && !(mapping.isMapKeyMapping() || mapping.isDirectMapMapping())) {
             // Mappings: OneToMany, UnidirectionalOneToMany, ManyToMany
-            this.elementType = (Type<V>)getMetamodel().getType(elementDesc.getJavaClass());
+            this.elementType = getMetamodel().getType(elementDesc.getJavaClass());
         } else {
             // See CollectionContainerPolicy
             Class attributeClass = null;
@@ -124,7 +124,7 @@ public abstract class PluralAttributeImpl<X, C, V> extends AttributeImpl<X, C> i
                 attributeClass = Object.class;
                 AbstractSessionLog.getLog().log(SessionLog.FINEST, SessionLog.METAMODEL, "metamodel_attribute_class_type_is_null", this);
             }
-            this.elementType = (Type<V>)getMetamodel().getType(attributeClass);
+            this.elementType = getMetamodel().getType(attributeClass);
         }
     }
 

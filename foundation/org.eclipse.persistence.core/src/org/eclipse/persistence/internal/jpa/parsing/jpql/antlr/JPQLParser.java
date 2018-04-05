@@ -21,8 +21,6 @@ import org.eclipse.persistence.internal.libraries.antlr.runtime.TokenStream;
 import java.util.Stack;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
 
 /*******************************************************************************
  * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.

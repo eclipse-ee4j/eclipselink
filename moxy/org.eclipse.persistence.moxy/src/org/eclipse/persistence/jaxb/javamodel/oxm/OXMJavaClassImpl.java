@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -248,7 +248,7 @@ public class OXMJavaClassImpl implements JavaClass {
                 for (Iterator<JAXBElement<? extends JavaAttribute>> iterator = fields.iterator(); iterator.hasNext();) {
                     JAXBElement<? extends JavaAttribute> jaxbElement = iterator.next();
 
-                    JavaAttribute att = (JavaAttribute) jaxbElement.getValue();
+                    JavaAttribute att = jaxbElement.getValue();
 
                     if (att instanceof XmlElement) {
                         XmlElement xme = (XmlElement) att;

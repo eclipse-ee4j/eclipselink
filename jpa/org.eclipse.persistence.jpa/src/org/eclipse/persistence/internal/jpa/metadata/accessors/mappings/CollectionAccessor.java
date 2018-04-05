@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -211,7 +211,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
         // Set the attribute overrides if some are present.
         // Process the attribute overrides first.
         if (isAnnotationPresent(JPA_ATTRIBUTE_OVERRIDES)) {
-            for (Object attributeOverride : (Object[]) getAnnotation(JPA_ATTRIBUTE_OVERRIDES).getAttributeArray("value")) {
+            for (Object attributeOverride : getAnnotation(JPA_ATTRIBUTE_OVERRIDES).getAttributeArray("value")) {
                 addAttributeOverride(new AttributeOverrideMetadata((MetadataAnnotation) attributeOverride, this));
             }
         }
@@ -224,7 +224,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
         // Set the association overrides if some are present.
         // Process the attribute overrides first.
         if (isAnnotationPresent(JPA_ASSOCIATION_OVERRIDES)) {
-            for (Object associationOverride : (Object[]) getAnnotation(JPA_ASSOCIATION_OVERRIDES).getAttributeArray("value")) {
+            for (Object associationOverride : getAnnotation(JPA_ASSOCIATION_OVERRIDES).getAttributeArray("value")) {
                 addAssociationOverride(new AssociationOverrideMetadata((MetadataAnnotation) associationOverride, this));
             }
         }

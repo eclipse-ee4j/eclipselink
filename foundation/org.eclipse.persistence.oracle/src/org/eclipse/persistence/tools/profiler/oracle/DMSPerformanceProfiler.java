@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -342,7 +342,7 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
                 }
                 phaseEvent = PhaseEvent.create(queryNoun, sensorName, DMSLocalization.buildMessage("query", new Object[]{sensorName}));
             } else {
-                queryNoun = (Noun)getAllWeightNouns().get(MiscellaneousNounType);
+                queryNoun = getAllWeightNouns().get(MiscellaneousNounType);
                 phaseEvent = PhaseEvent.create(queryNoun, sensorName, DMSLocalization.buildMessage("query_misc", new Object[]{sensorName}));
             }
             phaseEvent.deriveMetric(Sensor.all);
@@ -395,11 +395,11 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
     protected Sensor getSensorByName(String operationName) {
         Sensor sensor = null;
         if (getProfileWeight() == DMSConsole.NORMAL) {
-            sensor = (Sensor)getNormalWeightSensors().get(operationName);
+            sensor = getNormalWeightSensors().get(operationName);
         } else if (getProfileWeight() == DMSConsole.HEAVY) {
-            sensor = (Sensor)getNormalAndHeavyWeightSensors().get(operationName);
+            sensor = getNormalAndHeavyWeightSensors().get(operationName);
         } else if (getProfileWeight() == DMSConsole.ALL) {
-            sensor = (Sensor)getNormalHeavyAndAllWeightSensors().get(operationName);
+            sensor = getNormalHeavyAndAllWeightSensors().get(operationName);
         }
         return sensor;
     }
@@ -434,7 +434,7 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
      * Build dms HEAVY weight sensors for TopLink dms metrics.
      */
     protected void initializeHeavyWeightSensors() {
-        Noun baseSessionNoun = (Noun)getNormalWeightNouns().get(SessionNounType);
+        Noun baseSessionNoun = getNormalWeightNouns().get(SessionNounType);
 
         //clientSession
         Event clientSession = Event.create(baseSessionNoun, SessionProfiler.ClientSessionCreated, DMSLocalization.buildMessage("client_session_count"));
@@ -522,7 +522,7 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
      */
     protected void initializeAllWeightSensors() {
         //MergeTime
-        Noun baseTransactionNoun = (Noun)getHeavyWeightNouns().get(TransactionNounType);
+        Noun baseTransactionNoun = getHeavyWeightNouns().get(TransactionNounType);
         PhaseEvent mergeTime = PhaseEvent.create(baseTransactionNoun, MergeTime, DMSLocalization.buildMessage("merge_time"));
         mergeTime.deriveMetric(Sensor.all);
         this.getAllWeightSensors().put(SessionProfiler.Merge, mergeTime);
@@ -552,19 +552,19 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
         this.getAllWeightSensors().put(SessionProfiler.AssignSequence, sequence);
 
         //Caching
-        Noun baseCacheNoun = (Noun)getHeavyWeightNouns().get(CacheNounType);
+        Noun baseCacheNoun = getHeavyWeightNouns().get(CacheNounType);
         PhaseEvent cache = PhaseEvent.create(baseCacheNoun, SessionProfiler.Caching, DMSLocalization.buildMessage("caching"));
         cache.deriveMetric(Sensor.all);
         this.getAllWeightSensors().put(CACHE, cache);
 
         //Connection
-        Noun baseConnectionNoun = (Noun)getHeavyWeightNouns().get(ConnectionNounType);
+        Noun baseConnectionNoun = getHeavyWeightNouns().get(ConnectionNounType);
         PhaseEvent dbConnect = PhaseEvent.create(baseConnectionNoun, SessionProfiler.ConnectionManagement, DMSLocalization.buildMessage("connection"));
         dbConnect.deriveMetric(Sensor.all);
         this.getAllWeightSensors().put(CONNECT, dbConnect);
 
         //rcm
-        Noun baseRcmNoun = (Noun)getHeavyWeightNouns().get(RcmNounType);
+        Noun baseRcmNoun = getHeavyWeightNouns().get(RcmNounType);
 
         //ChangeSetsMerged
         Event changeSetsProcessed = Event.create(baseRcmNoun, SessionProfiler.ChangeSetsProcessed, DMSLocalization.buildMessage("change_set_processed"));

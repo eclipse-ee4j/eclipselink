@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -384,7 +384,7 @@ public class AbstractMarshalRecordImpl<
         }
 
          for (int i = 0; i < extraNamespaces.size(); i++) {
-             Namespace nextExtraNamespace = (Namespace)extraNamespaces.get(i);
+             Namespace nextExtraNamespace = extraNamespaces.get(i);
              String uri = namespaceResolver.resolveNamespacePrefix(nextExtraNamespace.getPrefix());
              if ((uri != null) && uri.equals(nextExtraNamespace.getNamespaceURI())) {
                 namespaceResolver.removeNamespace(nextExtraNamespace.getPrefix());

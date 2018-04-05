@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -20,7 +20,6 @@ package org.eclipse.persistence.internal.jpa;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
-import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.OptimisticLockException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -30,8 +29,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.persistence.LockModeType;
-import javax.persistence.PersistenceException;
-
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.EntityResult;
 import org.eclipse.persistence.queries.SQLResultSetMapping;

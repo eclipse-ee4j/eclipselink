@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -958,7 +958,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         if (m_converts.isEmpty()) {
             // Look for a Converts annotation.
             if (isAnnotationPresent(JPA_CONVERTS)) {
-                for (Object convert : (Object[]) getAnnotation(JPA_CONVERTS).getAttributeArray("value")) {
+                for (Object convert : getAnnotation(JPA_CONVERTS).getAttributeArray("value")) {
                     processConvert(new ConvertMetadata((MetadataAnnotation) convert, this));
                 }
             } else {
@@ -1078,7 +1078,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         if (m_namedEntityGraphs.isEmpty()) {
             // Look for an NamedEntityGraphs annotation.
             if (isAnnotationPresent(JPA_ENTITY_GRAPHS)) {
-                for (Object entityGraph : (Object[]) getAnnotation(JPA_ENTITY_GRAPHS).getAttributeArray("value")) {
+                for (Object entityGraph : getAnnotation(JPA_ENTITY_GRAPHS).getAttributeArray("value")) {
                     new NamedEntityGraphMetadata((MetadataAnnotation) entityGraph, this).process(this);
                 }
             } else {

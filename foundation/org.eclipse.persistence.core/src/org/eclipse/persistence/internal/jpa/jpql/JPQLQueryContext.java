@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -298,7 +298,7 @@ final class JPQLQueryContext {
 
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                 try {
-                    return (Class<?>) AccessController.doPrivileged(
+                    return AccessController.doPrivileged(
                         new PrivilegedClassForName(typeName, true, getClassLoader())
                     );
                 }
@@ -525,7 +525,7 @@ final class JPQLQueryContext {
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                 try {
-                    return (Constructor<T>) AccessController.doPrivileged(
+                    return AccessController.doPrivileged(
                         new PrivilegedGetConstructorFor(type, parameterTypes, true)
                     );
                 }

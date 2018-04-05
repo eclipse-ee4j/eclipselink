@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -52,7 +52,7 @@ public abstract class MultiDimensionalCollectionValue<T extends ManyValue<?, Obj
             Collection<T> collection = (Collection<T>) item;
             adaptedValue = new ArrayList<T>(collection.size());
             for(Object stringArray : collection) {
-                ManyValue<?, Object> stringArrayValue = (ManyValue<?, Object>) PrivilegedAccessHelper.newInstanceFromClass(componentClass());
+                ManyValue<?, Object> stringArrayValue = PrivilegedAccessHelper.newInstanceFromClass(componentClass());
                 stringArrayValue.setItem(stringArray);
                 adaptedValue.add((T) stringArrayValue);
             }

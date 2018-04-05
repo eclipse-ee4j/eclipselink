@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2015 Oracle. All rights reserved.
+ * Copyright (c) 2014, 2018 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -16,8 +16,6 @@ package org.eclipse.persistence.jpa.rs.features.paging;
 import org.eclipse.persistence.jpa.rs.QueryParameters;
 import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
 import org.eclipse.persistence.jpa.rs.resources.common.AbstractResource;
-import org.eclipse.persistence.logging.AbstractSessionLog;
-
 import javax.ws.rs.core.UriInfo;
 import java.util.Map;
 

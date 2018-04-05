@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -700,7 +700,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
     protected void initializeSourceKeys(ForeignReferenceMapping mapping) {
         for (int index = 0; index < getSourceKeyFields().size(); index++) {
             DatabaseField field = mapping.getDescriptor().buildField(getSourceKeyFields().get(index));
-            if (((ForeignReferenceMapping)mapping).usesIndirection()) {
+            if (mapping.usesIndirection()) {
                 field.setKeepInRow(true);
             }
             getSourceKeyFields().set(index, field);

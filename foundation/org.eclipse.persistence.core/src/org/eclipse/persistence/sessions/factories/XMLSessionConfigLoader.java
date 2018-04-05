@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -14,7 +14,6 @@ package org.eclipse.persistence.sessions.factories;
 
 import java.io.File;
 import java.net.URL;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -90,7 +90,7 @@ public class XMLUnmarshaller extends org.eclipse.persistence.internal.oxm.XMLUnm
      */
     @Override
     public UnmarshalRecord createUnmarshalRecord(XMLDescriptor xmlDescriptor, AbstractSession session) {
-        org.eclipse.persistence.oxm.record.UnmarshalRecord wrapper = (org.eclipse.persistence.oxm.record.UnmarshalRecord) xmlDescriptor.getObjectBuilder().createRecord((AbstractSession) session);
+        org.eclipse.persistence.oxm.record.UnmarshalRecord wrapper = (org.eclipse.persistence.oxm.record.UnmarshalRecord) xmlDescriptor.getObjectBuilder().createRecord(session);
         return wrapper.getUnmarshalRecord();
     }
 
@@ -200,7 +200,7 @@ public class XMLUnmarshaller extends org.eclipse.persistence.internal.oxm.XMLUnm
             Iterator xmlDescriptors;
             XMLDescriptor xmlDescriptor;
             XMLSchemaReference xmlSchemaReference;
-            int numberOfSessions = ((XMLContext) context).getSessions().size();
+            int numberOfSessions = context.getSessions().size();
             for (int x = 0; x < numberOfSessions; x++) {
                 xmlDescriptors = ((CoreSession)context.getSessions().get(x)).getDescriptors().values().iterator();
                 URL schemaURL;

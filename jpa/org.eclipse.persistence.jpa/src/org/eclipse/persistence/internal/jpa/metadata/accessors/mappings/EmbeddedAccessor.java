@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -124,7 +124,7 @@ public class EmbeddedAccessor extends MappingAccessor {
         // Set the association overrides if some are present.
         // Process the attribute overrides first.
         if (isAnnotationPresent(JPA_ASSOCIATION_OVERRIDES)) {
-            for (Object associationOverride : (Object[]) getAnnotation(JPA_ASSOCIATION_OVERRIDES).getAttributeArray("value")) {
+            for (Object associationOverride : getAnnotation(JPA_ASSOCIATION_OVERRIDES).getAttributeArray("value")) {
                 m_associationOverrides.add(new AssociationOverrideMetadata((MetadataAnnotation) associationOverride, this));
             }
         }

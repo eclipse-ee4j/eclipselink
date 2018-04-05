@@ -917,7 +917,7 @@ public class ExpressionOperator implements Serializable {
             }
             if (left instanceof Number && left instanceof Comparable && right instanceof Comparable
                 && left.getClass().equals (right.getClass())) {
-                return (((Comparable) left).compareTo( (Comparable) right) == 0) == (this.selector == Equal);
+                return (((Comparable) left).compareTo( right) == 0) == (this.selector == Equal);
             }
             if (((left instanceof Number) && (right instanceof Number)) && (left.getClass() != right.getClass())) {
                 double leftDouble = ((Number)left).doubleValue();

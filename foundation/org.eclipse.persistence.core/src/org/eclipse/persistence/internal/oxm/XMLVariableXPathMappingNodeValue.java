@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -78,7 +78,7 @@ public abstract class XMLVariableXPathMappingNodeValue extends XMLRelationshipMa
         }
 
         Object originalValue = value;
-        VariableXPathObjectMapping mapping = (VariableXPathObjectMapping)this.getMapping();
+        VariableXPathObjectMapping mapping = this.getMapping();
         Descriptor descriptor = (Descriptor)mapping.getReferenceDescriptor();
 
         if(descriptor.hasInheritance()){
@@ -145,10 +145,10 @@ public abstract class XMLVariableXPathMappingNodeValue extends XMLRelationshipMa
     public abstract VariableXPathObjectMapping getMapping();
 
     public void setXPathInObject(String uri, String localName, Object childObject) {
-        CoreAttributeAccessor variableAttributeAccessor = ((VariableXPathObjectMapping)this.getMapping()).getVariableAttributeAccessor();
+        CoreAttributeAccessor variableAttributeAccessor = this.getMapping().getVariableAttributeAccessor();
         if(!variableAttributeAccessor.isWriteOnly()){
         Object value = null;
-         if(((VariableXPathObjectMapping)getMapping()).getVariableAttributeAccessor().getAttributeClass() == CoreClassConstants.QNAME){
+         if(getMapping().getVariableAttributeAccessor().getAttributeClass() == CoreClassConstants.QNAME){
                  if(uri != null && uri.length() > 0) {
                      value =  new QName(uri, localName);
                  }else{

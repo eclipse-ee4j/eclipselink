@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -617,14 +617,14 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
             }
         }
 
-        CoreDescriptor xmlDescriptor = (CoreDescriptor) treeObjectBuilder.getDescriptor();
+        CoreDescriptor xmlDescriptor = treeObjectBuilder.getDescriptor();
 
         try {
             // PROCESS COLLECTION MAPPINGS
         //All populated containerValues need to be set on the object
         if(null != populatedContainerValues){
                 for (int populatedCVSize=populatedContainerValues.size(), i = populatedCVSize-1; i>=0; i--) {
-                ContainerValue cv = ((ContainerValue) populatedContainerValues.get(i));
+                ContainerValue cv = (populatedContainerValues.get(i));
                 cv.setContainerInstance(currentObject, getContainerInstance(cv, cv.isDefaultEmptyContainer()));
             }
         }
@@ -632,7 +632,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
         //Additionally if any containerValues are defaultEmptyContainerValues they need to be set to a new empty container
         if(null != defaultEmptyContainerValues){
                  for (int defaultEmptyCVSize=defaultEmptyContainerValues.size(),i = defaultEmptyCVSize-1; i>=0; i--) {
-                     ContainerValue cv = ((ContainerValue) defaultEmptyContainerValues.get(i));
+                     ContainerValue cv = (defaultEmptyContainerValues.get(i));
                      cv.setContainerInstance(currentObject, getContainerInstance(cv, cv.isDefaultEmptyContainer()));
                  }
 

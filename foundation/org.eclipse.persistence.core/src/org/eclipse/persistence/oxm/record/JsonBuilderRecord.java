@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2018  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -133,7 +133,7 @@ public class JsonBuilderRecord extends JsonRecord<JsonBuilderRecord.Level> {
             if((schemaType == null || theClass == null) && (CoreClassConstants.NUMBER.isAssignableFrom(value.getClass()))){
                 //if it's still a number and falls through the cracks we dont want "" around the value
                     BigDecimal convertedNumberValue = ((BigDecimal) ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.BIGDECIMAL, schemaType));
-                    jsonObjectBuilder.add(keyName, (BigDecimal)convertedNumberValue);
+                    jsonObjectBuilder.add(keyName, convertedNumberValue);
             }else{
                 jsonObjectBuilder.add(keyName, convertedValue);
             }
@@ -170,7 +170,7 @@ public class JsonBuilderRecord extends JsonRecord<JsonBuilderRecord.Level> {
             if((schemaType == null || theClass == null) && (CoreClassConstants.NUMBER.isAssignableFrom(value.getClass()))){
                 //if it's still a number and falls through the cracks we dont want "" around the value
                     BigDecimal convertedNumberValue = ((BigDecimal) ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.BIGDECIMAL, schemaType));
-                    jsonArrayBuilder.add((BigDecimal)convertedNumberValue);
+                    jsonArrayBuilder.add(convertedNumberValue);
             }else{
                 jsonArrayBuilder.add(convertedValue);
             }
