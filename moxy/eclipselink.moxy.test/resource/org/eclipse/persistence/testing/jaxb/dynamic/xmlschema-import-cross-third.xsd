@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns="http://third.temp.com/"
+           xmlns:tns="http://third.temp.com/"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://third.temp.com/"
+           elementFormDefault="unqualified" attributeFormDefault="unqualified" version="1.0">
+
+    <xs:element name="referenceId" type="xs:string" />
+
+    <xs:complexType name="DataReference_Type">
+        <xs:sequence>
+            <xs:element minOccurs="0" ref="tns:referenceId"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:element name="dataReference" type="tns:DataReference_Type">
+    </xs:element>
+
+    <xs:complexType name="Fault_Type">
+        <xs:sequence>
+            <xs:element minOccurs="0" ref="tns:dataReference"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:element name="fault" type="tns:Fault_Type">
+    </xs:element>
+</xs:schema>
