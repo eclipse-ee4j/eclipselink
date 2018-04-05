@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,8 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.dynamic;
 
-import java.io.File;
-import java.io.InputStream;
+import java.io.*;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -23,6 +22,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -32,17 +32,20 @@ import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
 
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.dynamic.util.NoExtensionEntityResolver;
+import org.eclipse.persistence.testing.jaxb.dynamic.util.CustomEntityResolver;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 import junit.framework.TestCase;
+
 
 public class DynamicJAXBFromXSDTestCases extends TestCase {
 
@@ -187,7 +190,7 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
 
         InputStream inputStream = ClassLoader.getSystemResourceAsStream(XMLSCHEMA_IMPORT);
 
-        jaxbContext = DynamicJAXBContextFactory.createContextFromXSD(inputStream, new NoExtensionEntityResolver(), null, null);
+        jaxbContext = DynamicJAXBContextFactory.createContextFromXSD(inputStream, new CustomEntityResolver(false), null, null);
 
         DynamicEntity person = jaxbContext.newDynamicEntity(PACKAGE + "." + PERSON);
         assertNotNull("Could not create Dynamic Entity.", person);
@@ -929,6 +932,58 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
         }
     }
 
+
+    /**
+     * Test for element type reference across multiple XML schemas with different namespaces.
+     * Validates result after marshalling against XML Schema.
+     * @throws Exception
+     */
+    public void testXmlSchemaCrossSchema() throws Exception {
+        String backupProperty = null;
+        try {
+            InputStream inputStream = ClassLoader.getSystemResourceAsStream(XMLSCHEMA_IMPORT_CROSS_SCHEMA);
+            DynamicJAXBContext jaxbContext = DynamicJAXBContextFactory.createContextFromXSD(inputStream, new CustomEntityResolver(true), null, null);
+            backupProperty = (System.getProperty(PROP_CORRECTNESS_CHECK_SCHEMA) != null) ? System.getProperty(PROP_CORRECTNESS_CHECK_SCHEMA) : null;
+            System.setProperty(PROP_CORRECTNESS_CHECK_SCHEMA, "true");
+
+            DynamicEntity testReq = jaxbContext.newDynamicEntity("com.temp.first.TestReq");
+
+            DynamicEntity fault = jaxbContext.newDynamicEntity("com.temp.third.FaultType");
+
+            DynamicEntity dataReference = jaxbContext.newDynamicEntity("com.temp.second.InheritedFaultType");
+            dataReference.set("referenceId", "123456");
+
+            DynamicEntity userKey = jaxbContext.newDynamicEntity("com.temp.fourth.UserType");
+            userKey.set("userId", "TestUserID");
+
+            dataReference.set("userKey", userKey);
+
+            fault.set("dataReference", dataReference);
+
+            testReq.set("fault", fault);
+            testReq.set("companyId", "TestCompanyID");
+
+            final StringWriter sw = new StringWriter();
+            Marshaller marshaller = jaxbContext.createMarshaller();
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+            marshaller.marshal(testReq, sw);
+
+            SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            Schema testReqSchema = factory.newSchema(Thread.currentThread().getContextClassLoader().getResource(XMLSCHEMA_IMPORT_CROSS_SCHEMA));
+            testReqSchema.newValidator().validate(
+                    new StreamSource(new StringReader(sw.getBuffer().toString())));
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            if (backupProperty != null) {
+                System.setProperty(PROP_CORRECTNESS_CHECK_SCHEMA, backupProperty);
+            } else {
+                System.clearProperty(PROP_CORRECTNESS_CHECK_SCHEMA);
+            }
+        }
+    }
+
+
     public void testGetByXPathPosition() throws Exception {
         InputStream inputStream = ClassLoader.getSystemResourceAsStream(XPATH_POSITION);
         jaxbContext = DynamicJAXBContextFactory.createContextFromXSD(inputStream, null, null, null);
@@ -984,11 +1039,18 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
     private static final String RESOURCE_DIR = "org/eclipse/persistence/testing/jaxb/dynamic/";
     private static final String CONTEXT_PATH = "mynamespace";
 
+    // System property name to restrict access to external schemas
+    private static final String PROP_ACCESS_EXTERNAL_SCHEMA = "javax.xml.accessExternalSchema";
+    // System property name to disable XJC's schema correctness check.  XSD imports do not seem to work if this is left on.
+    private static final String PROP_CORRECTNESS_CHECK_SCHEMA = "com.sun.tools.xjc.api.impl.s2j.SchemaCompilerImpl.noCorrectnessCheck";
+
+
     // Schema files used to test each annotation
     private static final String XMLSCHEMA_QUALIFIED = RESOURCE_DIR + "xmlschema-qualified.xsd";
     private static final String XMLSCHEMA_UNQUALIFIED = RESOURCE_DIR +  "xmlschema-unqualified.xsd";
     private static final String XMLSCHEMA_DEFAULTS = RESOURCE_DIR + "xmlschema-defaults.xsd";
     private static final String XMLSCHEMA_IMPORT = RESOURCE_DIR + "xmlschema-import.xsd";
+    private static final String XMLSCHEMA_IMPORT_CROSS_SCHEMA = RESOURCE_DIR + "xmlschema-import-cross-first.xsd";
     private static final String XMLSCHEMA_CURRENCY = RESOURCE_DIR + "xmlschema-currency.xsd";
     private static final String XMLSEEALSO = RESOURCE_DIR + "xmlseealso.xsd";
     private static final String XMLROOTELEMENT = RESOURCE_DIR + "xmlrootelement.xsd";

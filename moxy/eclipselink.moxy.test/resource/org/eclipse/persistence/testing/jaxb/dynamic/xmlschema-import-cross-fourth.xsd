@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns="http://fourth.temp.com/"
+           xmlns:tns="http://fourth.temp.com/"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://fourth.temp.com/"
+           elementFormDefault="unqualified" attributeFormDefault="unqualified" version="1.0">
+
+    <xs:element name="userId" type="xs:string" />
+    <xs:element name="companyId" type="xs:string" />
+
+    <xs:complexType name="User_Type">
+        <xs:sequence>
+            <xs:element minOccurs="0" ref="tns:userId"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:element name="userKey" type="tns:User_Type">
+    </xs:element>
+
+    <xs:complexType name="Company_Type">
+        <xs:sequence>
+            <xs:element minOccurs="0" ref="tns:companyId"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:element name="companyKey" type="tns:Company_Type">
+    </xs:element>
+</xs:schema>
