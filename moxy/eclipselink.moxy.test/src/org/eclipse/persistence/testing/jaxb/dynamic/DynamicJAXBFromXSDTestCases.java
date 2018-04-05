@@ -932,42 +932,55 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
         }
     }
 
+
     /**
      * Test for element type reference across multiple XML schemas with different namespaces.
      * Validates result after marshalling against XML Schema.
      * @throws Exception
      */
     public void testXmlSchemaCrossSchema() throws Exception {
-        InputStream inputStream = ClassLoader.getSystemResourceAsStream(XMLSCHEMA_IMPORT_CROSS_SCHEMA);
-        DynamicJAXBContext jaxbContext = DynamicJAXBContextFactory.createContextFromXSD(inputStream, new CustomEntityResolver(true), null, null);
-        System.setProperty("com.sun.tools.xjc.api.impl.s2j.SchemaCompilerImpl.noCorrectnessCheck", "true");
+        String backupProperty = null;
+        try {
+            InputStream inputStream = ClassLoader.getSystemResourceAsStream(XMLSCHEMA_IMPORT_CROSS_SCHEMA);
+            DynamicJAXBContext jaxbContext = DynamicJAXBContextFactory.createContextFromXSD(inputStream, new CustomEntityResolver(true), null, null);
+            backupProperty = (System.getProperty(PROP_CORRECTNESS_CHECK_SCHEMA) != null) ? System.getProperty(PROP_CORRECTNESS_CHECK_SCHEMA) : null;
+            System.setProperty(PROP_CORRECTNESS_CHECK_SCHEMA, "true");
 
-        DynamicEntity testReq = jaxbContext.newDynamicEntity("com.temp.first.TestReq");
+            DynamicEntity testReq = jaxbContext.newDynamicEntity("com.temp.first.TestReq");
 
-        DynamicEntity fault = jaxbContext.newDynamicEntity("com.temp.third.FaultType");
+            DynamicEntity fault = jaxbContext.newDynamicEntity("com.temp.third.FaultType");
 
-        DynamicEntity dataReference = jaxbContext.newDynamicEntity("com.temp.second.InheritedFaultType");
-        dataReference.set("referenceId", "123456");
+            DynamicEntity dataReference = jaxbContext.newDynamicEntity("com.temp.second.InheritedFaultType");
+            dataReference.set("referenceId", "123456");
 
-        DynamicEntity userKey = jaxbContext.newDynamicEntity("com.temp.fourth.UserType");
-        userKey.set("userId", "TestUserID");
+            DynamicEntity userKey = jaxbContext.newDynamicEntity("com.temp.fourth.UserType");
+            userKey.set("userId", "TestUserID");
 
-        dataReference.set("userKey", userKey);
+            dataReference.set("userKey", userKey);
 
-        fault.set("dataReference", dataReference);
+            fault.set("dataReference", dataReference);
 
-        testReq.set("fault", fault);
-        testReq.set("companyId", "TestCompanyID");
+            testReq.set("fault", fault);
+            testReq.set("companyId", "TestCompanyID");
 
-        final StringWriter sw = new StringWriter();
-        Marshaller marshaller = jaxbContext.createMarshaller();
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-        marshaller.marshal(testReq, sw);
+            final StringWriter sw = new StringWriter();
+            Marshaller marshaller = jaxbContext.createMarshaller();
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+            marshaller.marshal(testReq, sw);
 
-        SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        Schema testReqSchema = factory.newSchema(Thread.currentThread().getContextClassLoader().getResource(XMLSCHEMA_IMPORT_CROSS_SCHEMA));
-        testReqSchema.newValidator().validate(
-                new StreamSource(new StringReader(sw.getBuffer().toString())));
+            SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            Schema testReqSchema = factory.newSchema(Thread.currentThread().getContextClassLoader().getResource(XMLSCHEMA_IMPORT_CROSS_SCHEMA));
+            testReqSchema.newValidator().validate(
+                    new StreamSource(new StringReader(sw.getBuffer().toString())));
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            if (backupProperty != null) {
+                System.setProperty(PROP_CORRECTNESS_CHECK_SCHEMA, backupProperty);
+            } else {
+                System.clearProperty(PROP_CORRECTNESS_CHECK_SCHEMA);
+            }
+        }
     }
 
 
@@ -1028,6 +1041,9 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
 
     // System property name to restrict access to external schemas
     private static final String PROP_ACCESS_EXTERNAL_SCHEMA = "javax.xml.accessExternalSchema";
+    // System property name to disable XJC's schema correctness check.  XSD imports do not seem to work if this is left on.
+    private static final String PROP_CORRECTNESS_CHECK_SCHEMA = "com.sun.tools.xjc.api.impl.s2j.SchemaCompilerImpl.noCorrectnessCheck";
+
 
     // Schema files used to test each annotation
     private static final String XMLSCHEMA_QUALIFIED = RESOURCE_DIR + "xmlschema-qualified.xsd";
