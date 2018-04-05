@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -29,12 +29,11 @@ import junit.framework.TestCase;
 
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.exceptions.DynamicException;
-import org.eclipse.persistence.exceptions.i18n.JAXBExceptionResource;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.dynamic.util.NoExtensionEntityResolver;
+import org.eclipse.persistence.testing.jaxb.dynamic.util.CustomEntityResolver;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -230,7 +229,7 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(DynamicJAXBContextFactory.XML_SCHEMA_KEY, xsdElement);
 
-        NoExtensionEntityResolver re = new NoExtensionEntityResolver();
+        CustomEntityResolver re = new CustomEntityResolver(false);
         properties.put(DynamicJAXBContextFactory.ENTITY_RESOLVER_KEY, re);
 
         JAXBException caughtEx = null;

@@ -1,0 +1,24 @@
+<xs:schema xmlns="http://first.temp.com/"
+           xmlns:tns="http://first.temp.com/"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://first.temp.com/"
+           xmlns:second="http://second.temp.com/"
+           elementFormDefault="unqualified" attributeFormDefault="unqualified" version="1.0">
+
+    <xs:import namespace="http://second.temp.com/"
+               schemaLocation="xmlschema-import-cross-second.xsd"/>
+
+    <xs:element name="companyId" type="xs:string" />
+
+    <xs:element name="TestReq">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="second:Base_Type">
+                    <xs:sequence>
+                        <xs:element ref="tns:companyId"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
