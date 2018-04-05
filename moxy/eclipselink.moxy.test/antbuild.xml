@@ -372,6 +372,7 @@
             <arg line="-Djaxb-api.jar=${jaxb-api.jar}"/>
             <arg line="-Djaxrs.jar=${jaxrs.jar}"/>
             <arg line="-Dasm.jar=${asm.jar}"/>
+            <arg line="-DargLine='${test.junit.jvm.modules.prop}'"/>
             <arg line="-Dtest.junit.jvm=${test.junit.jvm}"/>
             <classpath>
                 <fileset dir="${M2_HOME}/boot">
