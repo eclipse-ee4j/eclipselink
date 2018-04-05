@@ -103,56 +103,41 @@ public class MetadataAsmFactory extends MetadataFactory {
             ClassReader reader = new ClassReader(stream);
             Attribute[] attributes = new Attribute[0];
             reader.accept(visitor, attributes, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
-        } catch (Exception exception) {
-            // Some basic types can't be found, so can just be registered
-            // (i.e. arrays). Also, VIRTUAL classes may also not exist,
-            // therefore, tag the MetadataClass as loadable false. This will be
-            // used to determine if a class will be dynamically created or not.
-            metadataClass = new MetadataClass(this, className, false);
-            // If the class is a JDK class, then maybe there is a class loader issues,
-            // since it is a JDK class, just use reflection.
-            if ((className.length() > 5) && className.substring(0, 5).equals("java.")) {
+        } catch (IllegalArgumentException iae) {
+            // class was probably compiled with some newer than officially
+            // supported and tested JDK
+            // in such case log a warning and try to re-read the class
+            // without class version check
+            SessionLog log = getLogger().getSession() != null
+                    ? getLogger().getSession().getSessionLog() : AbstractSessionLog.getLog();
+            if (log.shouldLog(SessionLog.SEVERE, SessionLog.METADATA)) {
+                SessionLogEntry entry = new SessionLogEntry(getLogger().getSession(), SessionLog.SEVERE, SessionLog.METADATA, iae);
+                entry.setMessage(ExceptionLocalization.buildMessage("unsupported_classfile_version", new Object[] { className }));
+                log.log(entry);
+            }
+            if (stream != null) {
                 try {
-                    Class reflectClass = Class.forName(className);
-                    if (reflectClass.getSuperclass() != null) {
-                        metadataClass.setSuperclassName(reflectClass.getSuperclass().getName());
+                    ClassReader reader = new EclipseLinkClassReader(stream);
+                    Attribute[] attributes = new Attribute[0];
+                    reader.accept(visitor, attributes, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
+                } catch (Exception e) {
+                    if (log.shouldLog(SessionLog.SEVERE, SessionLog.METADATA)) {
+                        SessionLogEntry entry = new SessionLogEntry(getLogger().getSession(), SessionLog.SEVERE, SessionLog.METADATA, e);
+                        entry.setMessage(ExceptionLocalization.buildMessage("unsupported_classfile_version", new Object[] { className }));
+                        log.log(entry);
                     }
-                    for (Class reflectInterface : reflectClass.getInterfaces()) {
-                        metadataClass.addInterface(reflectInterface.getName());
-                    }
-                } catch (Exception failed) {
-                    metadataClass.setIsAccessible(false);
+                    addMetadataClass(getVirtualMetadataClass(className));
                 }
             } else {
-                // class was probably compiled with some newer than officially
-                // supported and tested JDK
-                // in such case log a warning and try to re-read the class
-                // without class version check
-                SessionLog log = getLogger().getSession() != null ? getLogger().getSession().getSessionLog() : AbstractSessionLog.getLog();
-                if (log.shouldLog(SessionLog.SEVERE, SessionLog.METADATA)) {
-                    SessionLogEntry entry = new SessionLogEntry(getLogger().getSession(), SessionLog.SEVERE, SessionLog.METADATA, exception);
-                    entry.setMessage(ExceptionLocalization.buildMessage("unsupported_classfile_version", new Object[] { className }));
-                    log.log(entry);
-                }
-                if (stream != null) {
-                    try {
-                        ClassReader reader = new EclipseLinkClassReader(stream);
-                        Attribute[] attributes = new Attribute[0];
-                        reader.accept(visitor, attributes, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
-                    } catch (Exception e) {
-                        if (log.shouldLog(SessionLog.SEVERE, SessionLog.METADATA)) {
-                            SessionLogEntry entry = new SessionLogEntry(getLogger().getSession(), SessionLog.SEVERE, SessionLog.METADATA, exception);
-                            entry.setMessage(ExceptionLocalization.buildMessage("unsupported_classfile_version", new Object[] { className }));
-                            log.log(entry);
-                        }
-                        metadataClass.setIsAccessible(false);
-                        addMetadataClass(metadataClass);
-                    }
-                } else {
-                    metadataClass.setIsAccessible(false);
-                    addMetadataClass(metadataClass);
-                }
+                addMetadataClass(getVirtualMetadataClass(className));
             }
+        } catch (Exception exception) {
+            SessionLog log = getLogger().getSession() != null
+                    ? getLogger().getSession().getSessionLog() : AbstractSessionLog.getLog();
+            if (log.shouldLog(SessionLog.FINE, SessionLog.METADATA)) {
+                log.logThrowable(SessionLog.FINE, SessionLog.METADATA, exception);
+            }
+            addMetadataClass(getVirtualMetadataClass(className));
         } finally {
             try {
                 if (stream != null) {
@@ -529,6 +514,43 @@ public class MetadataAsmFactory extends MetadataFactory {
             }
         }
 
+    }
+
+    /**
+     * Get MetadataClass for a class which can not be found
+     * @param className class which has not been found
+     * @return MetadataClass
+     */
+    private MetadataClass getVirtualMetadataClass(String className) {
+        // Some basic types can't be found, so can just be registered
+        // (i.e. arrays). Also, VIRTUAL classes may also not exist,
+        // therefore, tag the MetadataClass as loadable false. This will be
+        // used to determine if a class will be dynamically created or not.
+        MetadataClass metadataClass = new MetadataClass(this, className, false);
+        // If the class is a JDK class, then maybe there is a class loader
+        // issues,
+        // since it is a JDK class, just use reflection.
+        if ((className.length() > 5) && className.substring(0, 5).equals("java.")) {
+            try {
+                Class reflectClass = Class.forName(className);
+                if (reflectClass.getSuperclass() != null) {
+                    metadataClass.setSuperclassName(reflectClass.getSuperclass().getName());
+                }
+                for (Class reflectInterface : reflectClass.getInterfaces()) {
+                    metadataClass.addInterface(reflectInterface.getName());
+                }
+            } catch (Exception failed) {
+                SessionLog log = getLogger().getSession() != null
+                        ? getLogger().getSession().getSessionLog() : AbstractSessionLog.getLog();
+                if (log.shouldLog(SessionLog.FINE, SessionLog.METADATA)) {
+                    log.logThrowable(SessionLog.FINE, SessionLog.METADATA, failed);
+                }
+                metadataClass.setIsAccessible(false);
+            }
+        } else {
+            metadataClass.setIsAccessible(false);
+        }
+        return metadataClass;
     }
 
     /**
