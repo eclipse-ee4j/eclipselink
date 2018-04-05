@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     rbarkhouse - 2.2 - initial implementation
- *     rfelcman - 2.7 - withExtension parameter
+ *     rfelcman - 2.7.2 - withExtension parameter
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.dynamic.util;
 
@@ -34,7 +34,7 @@ public class CustomEntityResolver implements EntityResolver {
         // Grab only the filename part from the full path
         File f = new File(systemId);
 
-        String correctedId = RESOURCE_DIR + f.getName() + (this.withExtension?"":".xsd");
+        String correctedId = RESOURCE_DIR + f.getName() + (this.withExtension ? "" : ".xsd");
 
         InputSource is = new InputSource(ClassLoader.getSystemResourceAsStream(correctedId));
         is.setSystemId(correctedId);

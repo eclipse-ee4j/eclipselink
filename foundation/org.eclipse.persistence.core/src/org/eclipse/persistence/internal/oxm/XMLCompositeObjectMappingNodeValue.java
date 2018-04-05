@@ -249,7 +249,6 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
             }
 
             List extraNamespaces = null;
-            boolean equalNamespaceResolvers = marshalRecord.hasEqualNamespaceResolvers();
             if (marshalRecord.getNamespaceResolver() != null && descriptor.getNamespaceResolver() != null) {
                 for (String prefix: descriptor.getNamespaceResolver().getPrefixesToNamespaces().keySet()) {
                     if (!marshalRecord.getNamespaceResolver().hasPrefix(prefix)) {
@@ -262,7 +261,6 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
                 extraNamespaces = objectBuilder.addExtraNamespacesToNamespaceResolver(descriptor, marshalRecord, session, true, false);
                 writeExtraNamespaces(extraNamespaces, marshalRecord, session);
             }
-            marshalRecord.setEqualNamespaceResolvers(equalNamespaceResolvers);
             if(!isSelfFragment) {
                 marshalRecord.addXsiTypeAndClassIndicatorIfRequired(descriptor, (Descriptor) xmlCompositeObjectMapping.getReferenceDescriptor(), (Field)xmlCompositeObjectMapping.getField(), false);
             }
