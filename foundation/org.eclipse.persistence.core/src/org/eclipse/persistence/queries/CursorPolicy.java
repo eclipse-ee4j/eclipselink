@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -48,6 +48,7 @@ public abstract class CursorPolicy extends ContainerPolicy {
     /**
      * INTERNAL:
      */
+    @Override
     public ContainerPolicy clone(ReadQuery query) {
         CursorPolicy clone = (CursorPolicy)super.clone(query);
         clone.setQuery(query);
@@ -59,6 +60,7 @@ public abstract class CursorPolicy extends ContainerPolicy {
      * INTERNAL:
      * Creates a CollectionChangeEvent for the container
      */
+    @Override
     public CollectionChangeEvent createChangeEvent(Object collectionOwner, String propertyName, Object collectionChanged, Object elementChanged, int changeType, Integer index, boolean isChangeApplied){
         throw ValidationException.operationNotSupported("createChangeEvent");
     }
@@ -67,6 +69,7 @@ public abstract class CursorPolicy extends ContainerPolicy {
      * INTERNAL:
      * Execute the cursored select and build the stream.
      */
+    @Override
     public abstract Object execute();
 
     /**
@@ -92,10 +95,12 @@ public abstract class CursorPolicy extends ContainerPolicy {
      * @param iterator java.lang.Object
      * @return boolean true if iterator has more objects
      */
+    @Override
     public boolean hasNext(Object iterator) {
         return ((Enumeration)iterator).hasMoreElements();
     }
 
+    @Override
     public boolean isCursorPolicy() {
         return true;
     }
@@ -109,6 +114,7 @@ public abstract class CursorPolicy extends ContainerPolicy {
      * @see ContainerPolicy#hasNext(java.lang.Object)
      * @see ContainerPolicy#next(java.lang.Object)
      */
+    @Override
     public Object iteratorFor(Object container) {
         return container;
     }
@@ -120,6 +126,7 @@ public abstract class CursorPolicy extends ContainerPolicy {
      *
      * @see ContainerPolicy#iteratorFor(java.lang.Object)
      */
+    @Override
     protected Object next(Object iterator) {
         return ((Enumeration)iterator).nextElement();
     }
@@ -128,6 +135,7 @@ public abstract class CursorPolicy extends ContainerPolicy {
      * INTERNAL:
      * This can be used by collection such as cursored stream to gain control over execution.
      */
+    @Override
     public boolean overridesRead() {
         return true;
     }
@@ -136,6 +144,7 @@ public abstract class CursorPolicy extends ContainerPolicy {
      * INTERNAL:
      * Prepare and validate.
      */
+    @Override
     public void prepare(DatabaseQuery query, AbstractSession session) throws QueryException {
         super.prepare(query, session);
         setQuery((ReadQuery)query);
@@ -160,6 +169,7 @@ public abstract class CursorPolicy extends ContainerPolicy {
      * INTERNAL:
      * Execute the cursored select and build the stream.
      */
+    @Override
     public abstract Object remoteExecute();
 
     /**
@@ -182,10 +192,12 @@ public abstract class CursorPolicy extends ContainerPolicy {
      * INTERNAL:
      * Return the size of container.
      */
+    @Override
     public int sizeFor(Object container) {
         return ((Cursor)container).size();
     }
 
+    @Override
     protected Object toStringInfo() {
         return "page size = " + getPageSize();
     }

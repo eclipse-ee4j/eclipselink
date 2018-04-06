@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -56,14 +56,17 @@ public class SetJoinImpl<Z, X>  extends JoinImpl<Z, X> implements SetJoin<Z, X>{
     * @return metamodel type representing the Collection that is
     * the target of the join
     */
+    @Override
     public javax.persistence.metamodel.SetAttribute<? super Z, X> getModel(){
         return (javax.persistence.metamodel.SetAttribute<? super Z, X>)this.modelArtifact;
     }
 
+    @Override
     public SetJoinImpl<Z, X> on(Expression<Boolean> restriction) {
         return (SetJoinImpl<Z, X>)super.on(restriction);
     }
 
+    @Override
     public SetJoinImpl<Z, X> on(Predicate... restrictions) {
         return (SetJoinImpl<Z, X>)super.on(restrictions);
     }

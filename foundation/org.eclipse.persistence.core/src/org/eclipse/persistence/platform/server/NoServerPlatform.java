@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -47,6 +47,7 @@ public final class NoServerPlatform extends ServerPlatformBase {
      *
      * @return String serverNameAndVersion
      */
+    @Override
     public String getServerNameAndVersion() {
         return null;
     }
@@ -58,6 +59,7 @@ public final class NoServerPlatform extends ServerPlatformBase {
      * @see #disableJTA()
      * @see #initializeExternalTransactionController()
      */
+    @Override
     public Class getExternalTransactionControllerClass() {
         return null;
     }
@@ -78,6 +80,7 @@ public final class NoServerPlatform extends ServerPlatformBase {
      *
      * @return org.eclipse.persistence.logging.SessionLog
      */
+    @Override
     public org.eclipse.persistence.logging.SessionLog getServerLog() {
         return new DefaultSessionLog();
     }
@@ -86,6 +89,7 @@ public final class NoServerPlatform extends ServerPlatformBase {
      * INTERNAL:
      * When there is no server, the original connection will be returned
      */
+    @Override
     public java.sql.Connection unwrapConnection(java.sql.Connection connection){
         return connection;
     }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -200,6 +200,7 @@ public class CacheId implements Serializable, Comparable<CacheId> {
     /**
      * Determine if the receiver is greater or less than the key.
      */
+    @Override
     public int compareTo(CacheId id) {
         if (this == id) {
             return 0;
@@ -243,6 +244,7 @@ public class CacheId implements Serializable, Comparable<CacheId> {
         return this.hasArray;
     }
 
+    @Override
     public String toString() {
         return "[" + Arrays.asList(this.primaryKey) + ": " + this.hash + "]";
     }

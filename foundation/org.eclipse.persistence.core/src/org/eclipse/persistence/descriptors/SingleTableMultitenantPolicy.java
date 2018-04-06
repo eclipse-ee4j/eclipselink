@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -55,6 +55,7 @@ public class SingleTableMultitenantPolicy implements MultitenantPolicy {
      * INTERNAL:
      * Add the tenant discriminator fields to the row.
      */
+    @Override
     public void addFieldsToRow(AbstractRecord row, AbstractSession session) {
         for (DatabaseField discriminatorField : tenantDiscriminatorFields.keySet()) {
             String property = tenantDiscriminatorFields.get(discriminatorField);
@@ -66,6 +67,7 @@ public class SingleTableMultitenantPolicy implements MultitenantPolicy {
     /**
      * INTERNAL:
      */
+    @Override
     public void addToTableDefinition(TableDefinition tableDefinition) {
         // Does nothing at this level.
     }
@@ -73,6 +75,7 @@ public class SingleTableMultitenantPolicy implements MultitenantPolicy {
     /**
      * INTERNAL:
      */
+    @Override
     public MultitenantPolicy clone(ClassDescriptor descriptor) {
         SingleTableMultitenantPolicy clonedPolicy = new SingleTableMultitenantPolicy(descriptor);
         clonedPolicy.includeTenantCriteria = includeTenantCriteria;
@@ -138,6 +141,7 @@ public class SingleTableMultitenantPolicy implements MultitenantPolicy {
      * Initialize the mappings as a separate step.
      * This is done as a separate step to ensure that inheritance has been first resolved.
      */
+    @Override
     public void initialize(AbstractSession session) throws DescriptorException {
         if (hasTenantDiscriminatorFields()) {
             for (DatabaseField discriminatorField : tenantDiscriminatorFields.keySet()) {
@@ -156,6 +160,7 @@ public class SingleTableMultitenantPolicy implements MultitenantPolicy {
     /**
      * INTERNAL:
      */
+    @Override
     public boolean isSingleTableMultitenantPolicy() {
         return true;
     }
@@ -163,6 +168,7 @@ public class SingleTableMultitenantPolicy implements MultitenantPolicy {
     /**
      * INTERNAL:
      */
+    @Override
     public boolean isTablePerMultitenantPolicy() {
         return false;
     }
@@ -179,6 +185,7 @@ public class SingleTableMultitenantPolicy implements MultitenantPolicy {
      * INTERNAL:
      * Subclasses that need to add field to an expresison should override this method.
      */
+    @Override
     public void postInitialize(AbstractSession session) {
         if (includeTenantCriteria) {
             Expression expression = getDescriptor().getQueryManager().getAdditionalJoinExpression();
@@ -208,6 +215,7 @@ public class SingleTableMultitenantPolicy implements MultitenantPolicy {
      * INTERNAL:
      * Allow the descriptor to initialize any dependencies on this session.
      */
+    @Override
     public void preInitialize(AbstractSession session) throws DescriptorException {
         for (DatabaseField discriminatorField : tenantDiscriminatorFields.keySet()) {
             DatabaseField field = getDescriptor().buildField(discriminatorField);

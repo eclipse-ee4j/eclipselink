@@ -90,6 +90,7 @@ public class EmptyCollectionComparisonExpressionStateObject extends AbstractStat
     /**
      * {@inheritDoc}
      */
+    @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }

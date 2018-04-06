@@ -38,6 +38,7 @@ public class PreLoginMappingAdapterV2 extends SessionEventListener {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void preLogin(SessionEvent event) {
         final Project project = event.getSession().getProject();
         final DefaultXMLNameTransformer xmlNameTransformer = new DefaultXMLNameTransformer();

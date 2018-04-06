@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -32,6 +32,7 @@ public class CollectionExpression extends ConstantExpression {
         super(newValue, baseExpression);
     }
 
+    @Override
     public void printSQL(ExpressionSQLPrinter printer) {
         Object value = getLocalBase().getFieldValue(getValue(), getSession());
         printer.printList((Collection)value);
@@ -42,6 +43,7 @@ public class CollectionExpression extends ConstantExpression {
      * Return the value for in memory comparison.
      * This is only valid for valueable expressions.
      */
+    @Override
     public Object valueFromObject(Object object, AbstractSession session, AbstractRecord translationRow, int valueHolderPolicy, boolean isObjectUnregistered) {
         if (value instanceof Collection) {
             Collection values = (Collection)value;
@@ -61,6 +63,7 @@ public class CollectionExpression extends ConstantExpression {
         return getLocalBase().getFieldValue(getValue(), session);
     }
 
+    @Override
     public void setLocalBase(Expression e) {
         super.setLocalBase(e);
         if (value instanceof Collection) {
@@ -78,6 +81,7 @@ public class CollectionExpression extends ConstantExpression {
      * INTERNAL:
      * Used for cloning.
      */
+    @Override
     protected void postCopyIn(Map alreadyDone) {
         super.postCopyIn(alreadyDone);
         if (value instanceof Collection) {

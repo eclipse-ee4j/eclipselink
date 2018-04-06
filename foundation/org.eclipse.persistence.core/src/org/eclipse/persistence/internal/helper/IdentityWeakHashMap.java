@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -135,6 +135,7 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
     /**
      * @return the size of this <tt>IdentityWeakHashMap</tt>.
      */
+    @Override
     public int size() {
         cleanUp();
         return count;
@@ -143,6 +144,7 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
     /**
      * @return <tt>true</tt> if this <tt>IdentityWeakHashMap</tt> is empty.
      */
+    @Override
     public boolean isEmpty() {
         return (count == 0);
     }
@@ -156,6 +158,7 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
      * obj.
      * @throws <tt>NullPointerException</tt> if obj is null</tt>.
      */
+    @Override
     public boolean containsValue(Object obj) {
         if (obj == null) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("null_not_supported_identityweakhashmap"));
@@ -182,6 +185,7 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
      * @return <tt>true</tt> if this <tt>IdentityWeakHashMap</tt> contains a
      * mapping for key.
      */
+    @Override
     public boolean containsKey(Object key) {
         if (key == null) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("null_not_supported_identityweakhashmap"));
@@ -207,6 +211,7 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
      * given key.
      * @param key key whose associated value is to be returned.
      */
+    @Override
     public V get(Object key) {
         if (key == null) return null;
         cleanUp();
@@ -256,6 +261,7 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
      * <tt>IdentityWeakHashMap</tt> did not have one.
      * @throws <tt>NullPointerException</tt> if obj is null</tt>.
      */
+    @Override
     public V put(K key, V obj) {
         if (obj == null || key == null) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("null_not_supported_identityweakhashmap"));
@@ -296,6 +302,7 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
      * @return the previous object for key or <tt>null</tt> if this
      * <tt>IdentityWeakHashMap</tt> did not have one.
      */
+    @Override
     public V remove(Object key) {
         if (key == null) return null;
         cleanUp();
@@ -352,6 +359,7 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
      * @param m mappings to be stored in this <tt>IdentityWeakHashMap</tt>.
      * @throws <tt>NullPointerException</tt> if m is null.
      */
+    @Override
     public void putAll(Map<? extends K, ? extends V> m) {
         if (m == null) {
             throw new NullPointerException();
@@ -367,6 +375,7 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
     /**
      * Removes all of the mappings from this <tt>IdentityWeakHashMap</tt>.
      */
+    @Override
     public void clear() {
         if (count > 0) {
             modCount++;
@@ -394,6 +403,7 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
      *
      * @return a shallow copy of this <tt>IdentityWeakHashMap</tt>.
      */
+    @Override
     public Object clone() {
         try {
             WeakEntry[] copyOfEntries = entries;
@@ -431,27 +441,33 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
      * @return a set view of the keys contained in this
      * <tt>IdentityWeakHashMap</tt>.
      */
+    @Override
     public Set keySet() {
         if (keySet == null) {
             keySet = new AbstractSet() {
+                        @Override
                         public Iterator iterator() {
                             return getHashIterator(COMPONENT_TYPES.KEYS);
                         }
 
+                        @Override
                         public int size() {
                             return count;
                         }
 
+                        @Override
                         public boolean contains(Object o) {
                             return containsKey(o);
                         }
 
+                        @Override
                         public boolean remove(Object o) {
                             int oldSize = count;
                             IdentityWeakHashMap.this.remove(o);
                             return count != oldSize;
                         }
 
+                        @Override
                         public void clear() {
                             IdentityWeakHashMap.this.clear();
                         }
@@ -473,21 +489,26 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
      * @return a collection view of the values contained in this
      * <tt>IdentityWeakHashMap</tt>.
      */
+    @Override
     public Collection values() {
         if (values == null) {
             values = new AbstractCollection() {
+                        @Override
                         public Iterator iterator() {
                             return getHashIterator(COMPONENT_TYPES.VALUES);
                         }
 
+                        @Override
                         public int size() {
                             return count;
                         }
 
+                        @Override
                         public boolean contains(Object o) {
                             return containsValue(o);
                         }
 
+                        @Override
                         public void clear() {
                             IdentityWeakHashMap.this.clear();
                         }
@@ -510,13 +531,16 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
      * @return a collection view of the mappings contained in this
      * <tt>IdentityWeakHashMap</tt>.
      */
+    @Override
     public Set entrySet() {
         if (entrySet == null) {
             entrySet = new AbstractSet() {
+                        @Override
                         public Iterator iterator() {
                             return getHashIterator(COMPONENT_TYPES.ENTRIES);
                         }
 
+                        @Override
                         public boolean contains(Object o) {
                             if (!(o instanceof Map.Entry)) {
                                 return false;
@@ -535,6 +559,7 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
                             return false;
                         }
 
+                        @Override
                         public boolean remove(Object o) {
                             if (!(o instanceof WeakEntry)) {
                                 return false;
@@ -545,10 +570,12 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
                             return removeEntry(entry, true);
                         }
 
+                        @Override
                         public int size() {
                             return count;
                         }
 
+                        @Override
                         public void clear() {
                             IdentityWeakHashMap.this.clear();
                         }
@@ -601,14 +628,17 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
         }
 
         // Map.Entry Ops
+        @Override
         public K getKey() {
             return key.get();
         }
 
+        @Override
         public V getValue() {
             return value.get();
         }
 
+        @Override
         public V setValue(V value) {
             EntryReference<V> oldValue = this.value;
             if (value == this.key.get()){
@@ -619,6 +649,7 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
             return oldValue.get();
         }
 
+        @Override
         public boolean equals(Object o) {
             if (!(o instanceof Map.Entry)) {
                 return false;
@@ -629,11 +660,13 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
             return (key == e.getKey()) && ((v == null) ? (e.getValue() == null) : v.equals(e.getValue()));
         }
 
+        @Override
         public int hashCode() {
             Object v = value.get();
             return hash ^ ((v == null) ? 0 : v.hashCode());
         }
 
+        @Override
         public String toString() {
             return key.get() + "=" + value.get();
         }
@@ -668,6 +701,7 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
             this.referent = referent;
         }
 
+        @Override
         public T get(){
             return referent;
         }
@@ -682,14 +716,17 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
         EmptyHashIterator() {
         }
 
+        @Override
         public boolean hasNext() {
             return false;
         }
 
+        @Override
         public Object next() {
             throw new NoSuchElementException();
         }
 
+        @Override
         public void remove() {
             throw new IllegalStateException();
         }
@@ -714,6 +751,7 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
             this.type = type;
         }
 
+        @Override
         public boolean hasNext() {
             WeakEntry e = entry;
             int i = index;
@@ -731,6 +769,7 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
             return e != null && currentEntryRef != null;
         }
 
+        @Override
         public Object next() {
             if (modCount != expectedModCount) {
                 throw new ConcurrentModificationException();
@@ -762,6 +801,7 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
             throw new NoSuchElementException();
         }
 
+        @Override
         public void remove() {
             if (lastReturned == null) {
                 throw new IllegalStateException();

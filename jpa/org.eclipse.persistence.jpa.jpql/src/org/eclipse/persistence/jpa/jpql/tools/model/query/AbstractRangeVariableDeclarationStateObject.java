@@ -195,6 +195,7 @@ public abstract class AbstractRangeVariableDeclarationStateObject extends Abstra
     /**
      * {@inheritDoc}
      */
+    @Override
     public ListIterable<IdentificationVariableStateObject> identificationVariables() {
         return new SingleElementListIterable<IdentificationVariableStateObject>(identificationVariable);
     }

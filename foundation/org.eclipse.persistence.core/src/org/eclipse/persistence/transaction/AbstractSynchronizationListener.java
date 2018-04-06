@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -109,6 +109,7 @@ public abstract class AbstractSynchronizationListener implements Synchronization
      * transaction.commit(), or in the case of container-managed transactions,
      * in the context of the method for which the Container started the transaction.
      */
+    @Override
     public void beforeCompletion() {
         UnitOfWorkImpl uow = getUnitOfWork();
         // it's a purely sequencing listener - nothing to do in beforeCompletion.

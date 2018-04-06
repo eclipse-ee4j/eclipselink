@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -92,6 +92,7 @@ public abstract class XMLRecord extends AbstractRecord implements AbstractMarsha
      * @param prefix
      * @param value
      */
+    @Override
     public void attributeWithoutQName(String namespaceURI, String localName, String prefix, String value){
         String qualifiedName = localName;
         if(prefix != null && prefix.length() >0){
@@ -107,6 +108,7 @@ public abstract class XMLRecord extends AbstractRecord implements AbstractMarsha
      * @param qName
      * @param value
      */
+    @Override
     public void attribute(String namespaceURI, String localName, String qName, String value){
         XMLField xmlField = new XMLField(XMLConstants.ATTRIBUTE +qName);
         xmlField.setNamespaceResolver(getNamespaceResolver());
@@ -119,6 +121,7 @@ public abstract class XMLRecord extends AbstractRecord implements AbstractMarsha
      * @param prefix
      * @param namespaceURI
      */
+    @Override
     public void namespaceDeclaration(String prefix, String namespaceURI){
 
         String existingPrefix = getNamespaceResolver().resolveNamespaceURI(namespaceURI);
@@ -146,6 +149,7 @@ public abstract class XMLRecord extends AbstractRecord implements AbstractMarsha
      * PUBLIC:
      * Clear the sub-nodes of the DOM.
      */
+    @Override
     public abstract void clear();
 
     /**
@@ -158,6 +162,7 @@ public abstract class XMLRecord extends AbstractRecord implements AbstractMarsha
      * PUBLIC:
      * Check if the value is contained in the row.
      */
+    @Override
     public boolean contains(Object value) {
         return values().contains(value);
     }
@@ -166,6 +171,7 @@ public abstract class XMLRecord extends AbstractRecord implements AbstractMarsha
     * PUBLIC:
     * Return the DOM.
     */
+    @Override
     public abstract Node getDOM();
 
     /**
@@ -201,6 +207,7 @@ public abstract class XMLRecord extends AbstractRecord implements AbstractMarsha
      * INTERNAL:
      * Retrieve the value for the field. If missing null is returned.
      */
+    @Override
     public Object get(DatabaseField key) {
         return getIndicatingNoEntry(key);
     }
@@ -208,6 +215,7 @@ public abstract class XMLRecord extends AbstractRecord implements AbstractMarsha
      * INTERNAL:
      * Retrieve the value for the field name.
      */
+    @Override
     public Object getIndicatingNoEntry(String fieldName) {
         return getIndicatingNoEntry(new XMLField(fieldName));
     }
@@ -237,6 +245,7 @@ public abstract class XMLRecord extends AbstractRecord implements AbstractMarsha
     /**
      * INTERNAL:
      */
+    @Override
     public XMLUnmarshaller getUnmarshaller() {
         return unmarshaller;
     }
@@ -307,26 +316,32 @@ public abstract class XMLRecord extends AbstractRecord implements AbstractMarsha
         abstractMarshalRecord.setLeafElementType(leafElementType);
     }
 
+    @Override
     public void setNamespaceResolver(NamespaceResolver nr) {
         abstractMarshalRecord.setNamespaceResolver(nr);
     }
 
+    @Override
     public NamespaceResolver getNamespaceResolver() {
         return abstractMarshalRecord.getNamespaceResolver();
     }
 
+    @Override
     public AbstractSession getSession() {
         return session;
     }
 
+    @Override
     public void setSession(AbstractSession session) {
         this.session = session;
     }
 
+    @Override
     public void setEqualNamespaceResolvers(boolean equalNRs) {
         this.equalNamespaceResolvers = equalNRs;
     }
 
+    @Override
     public boolean hasEqualNamespaceResolvers() {
         return equalNamespaceResolvers;
     }
@@ -356,14 +371,17 @@ public abstract class XMLRecord extends AbstractRecord implements AbstractMarsha
      * The character used to separate the prefix and uri portions when namespaces are present
      * @since 2.4
      */
+    @Override
     public char getNamespaceSeparator(){
         return XMLConstants.COLON;
     }
 
+    @Override
     public boolean hasCustomNamespaceMapper() {
         return hasCustomNamespaceMapper;
     }
 
+    @Override
     public void setCustomNamespaceMapper(boolean customNamespaceMapper) {
         this.hasCustomNamespaceMapper = customNamespaceMapper;
     }

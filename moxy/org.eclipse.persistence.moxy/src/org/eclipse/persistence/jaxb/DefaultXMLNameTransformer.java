@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -30,6 +30,7 @@ public class DefaultXMLNameTransformer implements XMLNameTransformer {
      *By default convert class names to xml names based the rules defined in
      *the JAXB specification
     */
+    @Override
     public String transformRootElementName(String className) {
         String elementName = null;
         if (className.indexOf(DOLLAR_SIGN_CHAR) != -1) {
@@ -52,6 +53,7 @@ public class DefaultXMLNameTransformer implements XMLNameTransformer {
      * By default convert class names to xml names based the rules defined in
      * the JAXB specification
      */
+    @Override
     public String transformTypeName(String className) {
         String typeName = EMPTY_STRING;
         if (className.indexOf(DOLLAR_SIGN_CHAR) != -1) {
@@ -106,6 +108,7 @@ public class DefaultXMLNameTransformer implements XMLNameTransformer {
     /**
      * By default do not make changes to element names
      */
+    @Override
     public String transformElementName(String name) {
         return name;
     }
@@ -113,6 +116,7 @@ public class DefaultXMLNameTransformer implements XMLNameTransformer {
     /**
      * By default do not make changes to attribute names
      */
+    @Override
     public String transformAttributeName(String name) {
         return name;
     }

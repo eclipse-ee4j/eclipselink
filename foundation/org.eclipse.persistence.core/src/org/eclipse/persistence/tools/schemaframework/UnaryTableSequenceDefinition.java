@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -48,6 +48,7 @@ public class UnaryTableSequenceDefinition extends TableSequenceDefinition {
      * INTERNAL:
      * Return the SQL required to create the unary sequence table.
      */
+    @Override
     public Writer buildCreationWriter(AbstractSession session, Writer writer) throws ValidationException {
         try {
             writer.write("INSERT INTO ");
@@ -64,6 +65,7 @@ public class UnaryTableSequenceDefinition extends TableSequenceDefinition {
      * INTERNAL:
      * Return the SQL to delete the unary sequence table.
      */
+    @Override
     public Writer buildDeletionWriter(AbstractSession session, Writer writer) throws ValidationException {
         try {
             writer.write("DELETE FROM ");
@@ -79,6 +81,7 @@ public class UnaryTableSequenceDefinition extends TableSequenceDefinition {
      * Verify whether the sequence exists.
      * Assume that the unary sequence table exists.
      */
+    @Override
     public boolean checkIfExist(AbstractSession session) throws DatabaseException {
         Vector results = session.priviledgedExecuteSelectingCall(new org.eclipse.persistence.queries.SQLCall("SELECT * FROM " + getName()));
         return !results.isEmpty();
@@ -88,6 +91,7 @@ public class UnaryTableSequenceDefinition extends TableSequenceDefinition {
      * PUBLIC:
      * Return the name of the only field of this table
      */
+    @Override
     public String getSequenceCounterFieldName() {
         return getUnaryTableSequence().getCounterFieldName();
     }
@@ -96,6 +100,7 @@ public class UnaryTableSequenceDefinition extends TableSequenceDefinition {
      * INTERNAL:
      * Return a TableDefinition specifying a unary sequence table.
      */
+    @Override
     public TableDefinition buildTableDefinition() {
         TableDefinition definition = new TableDefinition();
         definition.setName(getName());

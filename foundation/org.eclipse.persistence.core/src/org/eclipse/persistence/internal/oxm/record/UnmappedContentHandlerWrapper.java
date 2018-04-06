@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -46,14 +46,17 @@ public class UnmappedContentHandlerWrapper extends UnmarshalRecordImpl {
         unmappedContentHandler.setUnmarshalRecord(new org.eclipse.persistence.oxm.record.UnmarshalRecord(this));
     }
 
+    @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
         this.unmappedContentHandler.characters(ch, start, length);
     }
 
+    @Override
     public void endDocument() throws SAXException {
         this.unmappedContentHandler.endDocument();
     }
 
+    @Override
     public void endElement(String uri, String localName, String name) throws SAXException {
         this.unmappedContentHandler.endElement(uri, localName, name);
         this.depth--;
@@ -65,6 +68,7 @@ public class UnmappedContentHandlerWrapper extends UnmarshalRecordImpl {
         }
     }
 
+    @Override
     public void endPrefixMapping(String prefix) throws SAXException {
         if(getParentRecord() != null) {
             getParentRecord().endPrefixMapping(prefix);
@@ -72,31 +76,38 @@ public class UnmappedContentHandlerWrapper extends UnmarshalRecordImpl {
         this.unmappedContentHandler.endPrefixMapping(prefix);
     }
 
+    @Override
     public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {
         this.unmappedContentHandler.ignorableWhitespace(ch, start, length);
     }
 
+    @Override
     public void processingInstruction(String target, String data) throws SAXException {
         this.unmappedContentHandler.processingInstruction(target, data);
     }
 
+    @Override
     public void setDocumentLocator(Locator locator) {
         this.unmappedContentHandler.setDocumentLocator(locator);
     }
 
+    @Override
     public void skippedEntity(String name) throws SAXException {
         this.unmappedContentHandler.skippedEntity(name);
     }
 
+    @Override
     public void startDocument() throws SAXException {
         this.unmappedContentHandler.startDocument();
     }
 
+    @Override
     public void startElement(String uri, String localName, String name, Attributes atts) throws SAXException {
         this.unmappedContentHandler.startElement(uri, localName, name, atts);
         this.depth++;
     }
 
+    @Override
     public void startPrefixMapping(String prefix, String uri) throws SAXException {
         this.unmappedContentHandler.startPrefixMapping(prefix, uri);
     }

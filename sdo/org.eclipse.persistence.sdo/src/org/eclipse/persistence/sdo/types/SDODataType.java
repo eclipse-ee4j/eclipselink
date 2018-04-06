@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -36,26 +36,32 @@ public class SDODataType extends SDOType implements Type {
         this.pseudoDefault = aPseudoDefault;
     }
 
+    @Override
     public boolean isAbstract() {
         return false;
     }
 
+    @Override
     public boolean isDataType() {
         return true;
     }
 
+    @Override
     public boolean isInstance(Object object) {
         return getInstanceClass().isInstance(object);
     }
 
+    @Override
     public boolean isOpen() {
         return false;
     }
 
+    @Override
     public boolean isSequenced() {
         return false;
     }
 
+    @Override
     public Object getPseudoDefault() {
         return pseudoDefault;
     }
@@ -63,6 +69,7 @@ public class SDODataType extends SDOType implements Type {
     protected void addOpenMappings() {
     }
 
+    @Override
     public void setOpen(boolean bOpen) {
         if(bOpen) {
             throw SDOException.typeCannotBeOpenAndDataType(getURI(), getName());

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -181,10 +181,12 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
         setForeignKeyGroupingElement(new DatabaseField(name));
     }
 
+    @Override
     public boolean hasCustomDeleteAllQuery() {
         return hasCustomDeleteAllQuery;
     }
 
+    @Override
     public ModifyQuery getDeleteAllQuery() {
         if (deleteAllQuery == null) {
             deleteAllQuery = new DataModifyQuery();
@@ -198,6 +200,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
      * This call is responsible for doing the deletion required by the mapping,
      * such as optimized delete all of target objects for 1-M.
      */
+    @Override
     public void setDeleteAllCall(Call call) {
         DeleteAllQuery deleteAllQuery = new DeleteAllQuery();
         deleteAllQuery.setCall(call);
@@ -711,6 +714,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
      * In case Query By Example is used, this method builds and returns an expression that
      * corresponds to a single attribute and it's value.
      */
+    @Override
     public Expression buildExpression(Object queryObject, QueryByExamplePolicy policy, Expression expressionBuilder, Map processedObjects, AbstractSession session) {
         if (policy.shouldValidateExample()){
             throw QueryException.unsupportedMappingQueryByExample(queryObject.getClass().getName(), this);
@@ -1133,6 +1137,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
      * It contains the foreign keys with non null values that were set to null for shallow insert.
      * If mapping overrides writeFromObjectIntoRowForShallowInsert method it must override this one, too.
      */
+    @Override
     public void writeFromObjectIntoRowForUpdateAfterShallowInsert(Object object, AbstractRecord row, AbstractSession session, DatabaseTable table) {
         if (isReadOnly() || !isForeignKeyRelationship()) {
             return;

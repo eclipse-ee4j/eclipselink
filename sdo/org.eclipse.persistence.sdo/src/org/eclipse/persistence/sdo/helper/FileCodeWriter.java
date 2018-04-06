@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -40,6 +40,7 @@ public class FileCodeWriter implements CodeWriter {
      * @param filename The name of the generated source file including the .java extension
      * @param content StringBuffer containing the contents of the generated interface.
      */
+    @Override
     public void writeInterface(String dir, String filename, StringBuffer content) {
         writeFile(dir, filename, content);
     }
@@ -52,6 +53,7 @@ public class FileCodeWriter implements CodeWriter {
        * @param filename The name of the generated source file including the .java extension
        * @param content StringBuffer containing the contents of the generated implementation class.
        */
+    @Override
     public void writeImpl(String dir, String filename, StringBuffer content) {
         writeFile(dir, filename, content);
     }

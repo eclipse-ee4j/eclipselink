@@ -106,6 +106,7 @@ public class ExistsExpressionStateObject extends AbstractSingleEncapsulatedExpre
     /**
      * {@inheritDoc}
      */
+    @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }

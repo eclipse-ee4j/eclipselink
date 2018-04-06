@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -40,10 +40,12 @@ public class AttachmentUnmarshallerAdapter implements org.eclipse.persistence.ox
     public AttachmentUnmarshallerAdapter(AttachmentUnmarshaller at) {
         this.attachmentUnmarshaller = at;
     }
+    @Override
     public byte[] getAttachmentAsByteArray(String id) {
         return attachmentUnmarshaller.getAttachmentAsByteArray(id);
     }
 
+    @Override
     public DataHandler getAttachmentAsDataHandler(String id) {
         return attachmentUnmarshaller.getAttachmentAsDataHandler(id);
     }
@@ -52,6 +54,7 @@ public class AttachmentUnmarshallerAdapter implements org.eclipse.persistence.ox
         return attachmentUnmarshaller;
     }
 
+    @Override
     public boolean isXOPPackage() {
         return attachmentUnmarshaller.isXOPPackage();
     }

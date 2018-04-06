@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -111,6 +111,7 @@ public abstract class ReadQuery extends DatabaseQuery {
      * Used to give the subclasses opportunity to copy aspects of the cloned query
      * to the original query.
      */
+    @Override
     protected void clonedQueryExecutionComplete(DatabaseQuery query, AbstractSession session) {
         if (shouldCacheQueryResults()) {
             Object result = ((ReadQuery)query).getTemporaryCachedQueryResults();
@@ -259,6 +260,7 @@ public abstract class ReadQuery extends DatabaseQuery {
      * i.e. does not use any properties that may conflict with another query
      * with the same EJBQL or selection criteria.
      */
+    @Override
     public boolean isDefaultPropertiesQuery() {
         return super.isDefaultPropertiesQuery()
             && (this.maxRows == 0)
@@ -270,6 +272,7 @@ public abstract class ReadQuery extends DatabaseQuery {
      * PUBLIC:
      * Return if this is a read query.
      */
+    @Override
     public boolean isReadQuery() {
         return true;
     }
@@ -281,6 +284,7 @@ public abstract class ReadQuery extends DatabaseQuery {
      * By default this calls prepareFromQuery, but additional properties may be required
      * to be copied as prepareFromQuery only copies properties that affect the SQL.
      */
+    @Override
     public void copyFromQuery(DatabaseQuery query) {
         super.copyFromQuery(query);
         if (query.isReadQuery()) {
@@ -301,6 +305,7 @@ public abstract class ReadQuery extends DatabaseQuery {
      *
      * Clear the query cache when a query is prepared.
      */
+    @Override
     protected void prepare() throws QueryException {
         super.prepare();
         if (shouldCacheQueryResults()) {
@@ -315,6 +320,7 @@ public abstract class ReadQuery extends DatabaseQuery {
      * INTERNAL:
      * Prepare the receiver for execution in a session.
      */
+    @Override
     public void prepareForExecution() throws QueryException {
         super.prepareForExecution();
         DatabaseCall databaseCall = this.getCall();
@@ -340,6 +346,7 @@ public abstract class ReadQuery extends DatabaseQuery {
      * INTERNAL:
      * Return if this is a read query.
      */
+    @Override
     public Object remoteExecute(AbstractSession session) throws DatabaseException {
         if (shouldCacheQueryResults()) {
             AbstractRecord arguments = new DatabaseRecord();

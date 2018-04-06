@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -68,6 +68,7 @@ public class StatementQueryMechanism extends CallQueryMechanism {
     /**
      * Clone the mechanism for the specified query clone.
      */
+    @Override
     public DatabaseQueryMechanism clone(DatabaseQuery queryClone) {
         StatementQueryMechanism clone = (StatementQueryMechanism)super.clone(queryClone);
         if ((!hasMultipleStatements()) && (getSQLStatement() != null)) {
@@ -92,6 +93,7 @@ public class StatementQueryMechanism extends CallQueryMechanism {
      * @exception  DatabaseException - an error has occurred on the database.
      * @return the row count.
      */
+    @Override
     public Integer deleteObject() throws DatabaseException {
         // Prepare the calls if not already set (prepare may not have had the modify row).
         if ((this.call == null) && (!hasMultipleCalls())) {
@@ -109,6 +111,7 @@ public class StatementQueryMechanism extends CallQueryMechanism {
      * @exception  DatabaseException - an error has occurred on the database.
      * @return the row count.
      */
+    @Override
     public Integer executeNoSelect() throws DatabaseException {
         // Prepare the calls if not already set (prepare may not have had the modify row).
         if ((this.call == null) && (!hasMultipleCalls())) {
@@ -121,6 +124,7 @@ public class StatementQueryMechanism extends CallQueryMechanism {
     /**
      * Return the selection criteria for the statement.
      */
+    @Override
     public Expression getSelectionCriteria() {
         return getSQLStatement().getWhereClause();
     }
@@ -156,6 +160,7 @@ public class StatementQueryMechanism extends CallQueryMechanism {
      * Insert the object
      * @exception  DatabaseException - an error has occurred on the database.
      */
+    @Override
     public void insertObject() throws DatabaseException {
         // Prepare the calls if not already set (prepare may not have had the modify row).
         if ((this.call == null) && (!hasMultipleCalls())) {
@@ -170,6 +175,7 @@ public class StatementQueryMechanism extends CallQueryMechanism {
      * Added for CR#3237
      * @param boolean reprepare - whether to reprepare the query.
      */
+    @Override
     public void insertObject(boolean reprepare) {
         if (reprepare) {
             // Clear old calls, and reprepare.
@@ -191,6 +197,7 @@ public class StatementQueryMechanism extends CallQueryMechanism {
     /**
      * Return true if this is a call query mechanism
      */
+    @Override
     public boolean isCallQueryMechanism() {
         return false;
     }
@@ -198,6 +205,7 @@ public class StatementQueryMechanism extends CallQueryMechanism {
     /**
      * Return true if this is a statement query mechanism
      */
+    @Override
     public boolean isStatementQueryMechanism() {
         return true;
     }
@@ -209,6 +217,7 @@ public class StatementQueryMechanism extends CallQueryMechanism {
      * This query is copied for concurrency so this prepare can only setup things that
      * will apply to any future execution of this query.
      */
+    @Override
     public void prepare() {
         if ((!hasMultipleStatements()) && (getSQLStatement() == null)) {
             throw QueryException.sqlStatementNotSetProperly(getQuery());
@@ -220,6 +229,7 @@ public class StatementQueryMechanism extends CallQueryMechanism {
     /**
      * Pre-build the SQL call from the statement.
      */
+    @Override
     public void prepareCursorSelectAllRows() {
         setCallFromStatement();
         // The statement is no longer require so can be released.
@@ -231,6 +241,7 @@ public class StatementQueryMechanism extends CallQueryMechanism {
     /**
      * Pre-build the SQL call from the statement.
      */
+    @Override
     public void prepareDeleteAll() {
         setCallFromStatement();
         // The statement is no longer require so can be released.
@@ -242,6 +253,7 @@ public class StatementQueryMechanism extends CallQueryMechanism {
     /**
      * Pre-build the SQL call from the statement.
      */
+    @Override
     public void prepareDeleteObject() {
         setCallFromStatement();
         // The statement is no longer require so can be released.
@@ -253,6 +265,7 @@ public class StatementQueryMechanism extends CallQueryMechanism {
     /**
      * Pre-build the SQL call from the statement.
      */
+    @Override
     public void prepareDoesExist(DatabaseField field) {
         setCallFromStatement();
         // The statement is no longer require so can be released.
@@ -265,6 +278,7 @@ public class StatementQueryMechanism extends CallQueryMechanism {
     /**
      * Pre-build the SQL call from the statement.
      */
+    @Override
     public void prepareExecuteNoSelect() {
         setCallFromStatement();
         // The statement is no longer require so can be released.
@@ -276,6 +290,7 @@ public class StatementQueryMechanism extends CallQueryMechanism {
     /**
      * Pre-build the SQL call from the statement.
      */
+    @Override
     public void prepareExecuteSelect() {
         setCallFromStatement();
         // The statement is no longer require so can be released.
@@ -287,6 +302,7 @@ public class StatementQueryMechanism extends CallQueryMechanism {
     /**
      * Pre-build the SQL call from the statement.
      */
+    @Override
     public void prepareInsertObject() {
         // Require modify row to prepare.
         if (getModifyRow() == null) {
@@ -311,6 +327,7 @@ public class StatementQueryMechanism extends CallQueryMechanism {
     /**
      * Pre-build the SQL call from the statement.
      */
+    @Override
     public void prepareSelectAllRows() {
         setCallFromStatement();
         // The statement is no longer require so can be released.
@@ -322,6 +339,7 @@ public class StatementQueryMechanism extends CallQueryMechanism {
     /**
      * Pre-build the SQL call from the statement.
      */
+    @Override
     public void prepareSelectOneRow() {
         setCallFromStatement();
         // The statement is no longer require so can be released.
@@ -333,6 +351,7 @@ public class StatementQueryMechanism extends CallQueryMechanism {
     /**
      * Pre-build the SQL call from the statement.
      */
+    @Override
     public void prepareUpdateObject() {
         // Require modify row to prepare.
         if (getModifyRow() == null) {
@@ -357,6 +376,7 @@ public class StatementQueryMechanism extends CallQueryMechanism {
     /**
      * Pre-build the SQL call from the statement.
      */
+    @Override
     public void prepareUpdateAll() {
         setCallFromStatement();// Will build an SQLUpdateAllStatement
         clearStatement();// The statement is no longer require so can be released.
@@ -423,6 +443,7 @@ public class StatementQueryMechanism extends CallQueryMechanism {
      * @exception  DatabaseException - an error has occurred on the database.
      * @return the row count.
      */
+    @Override
     public Integer updateObject() throws DatabaseException {
         // Prepare the calls if not already set (prepare may not have had the modify row).
         if ((this.call == null) && (!hasMultipleCalls())) {

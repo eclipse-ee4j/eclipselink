@@ -466,6 +466,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * ADVANCED:
      * Return all registered descriptors.
      */
+    @Override
     public Map<Class, ClassDescriptor> getDescriptors();
 
     /**
@@ -479,6 +480,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * Return the event manager.
      * The event manager can be used to register for various session events.
      */
+    @Override
     public SessionEventManager getEventManager();
 
     /**
@@ -534,6 +536,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * Return the database platform currently connected to.
      * The platform is used for database specific behavior.
      */
+    @Override
     public Platform getDatasourcePlatform();
 
     /**
@@ -549,6 +552,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * Return the login, the login holds any database connection information given.
      * This return the Login interface and may need to be cast to the datasource specific implementation.
      */
+    @Override
     public Login getDatasourceLogin();
 
     /**
@@ -577,6 +581,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * Return the project.
      * The project includes the login and descriptor and other configuration information.
      */
+    @Override
     public org.eclipse.persistence.sessions.Project getProject();
 
     /**
@@ -965,6 +970,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * <br>Possible values for log level are listed in SessionLog.
      * @see org.eclipse.persistence.logging.SessionLog
      */
+    @Override
     public void setLogLevel(int level);
 
     /**

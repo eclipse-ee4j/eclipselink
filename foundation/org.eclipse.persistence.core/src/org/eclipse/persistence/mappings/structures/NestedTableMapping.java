@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -57,6 +57,7 @@ public class NestedTableMapping extends CollectionMapping {
      * In case Query By Example is used, this method builds and returns an expression that
      * corresponds to a single attribute and it's value.
      */
+    @Override
     public Expression buildExpression(Object queryObject, QueryByExamplePolicy policy, Expression expressionBuilder, Map processedObjects, AbstractSession session) {
         if (policy.shouldValidateExample()){
             throw QueryException.unsupportedMappingQueryByExample(queryObject.getClass().getName(), this);
@@ -68,6 +69,7 @@ public class NestedTableMapping extends CollectionMapping {
      * INTERNAL:
      * The mapping clones itself to create deep copy
      */
+    @Override
     public Object clone() {
         NestedTableMapping clone = (NestedTableMapping)super.clone();
         return clone;
@@ -76,6 +78,7 @@ public class NestedTableMapping extends CollectionMapping {
     /**
      * Returns all the aggregate fields.
      */
+    @Override
     protected Vector collectFields() {
         Vector fields = new Vector(1);
         fields.addElement(getField());
@@ -86,6 +89,7 @@ public class NestedTableMapping extends CollectionMapping {
      * INTERNAL:
      * Returns the field which this mapping represents.
      */
+    @Override
     public DatabaseField getField() {
         return field;
     }

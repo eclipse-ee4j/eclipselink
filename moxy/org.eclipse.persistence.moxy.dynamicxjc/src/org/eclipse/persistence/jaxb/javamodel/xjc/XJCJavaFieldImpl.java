@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -95,6 +95,7 @@ public class XJCJavaFieldImpl implements JavaField {
      *
      * @return the <code>JavaAnnotation</code> represented by <code>aClass</code>, if one exists, otherwise return <code>null</code>.
      */
+    @Override
     @SuppressWarnings("unchecked")
     public JavaAnnotation getAnnotation(JavaClass aClass) {
         if (aClass != null) {
@@ -127,6 +128,7 @@ public class XJCJavaFieldImpl implements JavaField {
      *
      * @return A <code>Collection</code> containing this <code>JavaField's</code> <code>JavaAnnotations</code>.
      */
+    @Override
     @SuppressWarnings("unchecked")
     public Collection<JavaAnnotation> getAnnotations() {
         ArrayList<JavaAnnotation> annotationsList = new ArrayList<JavaAnnotation>();
@@ -154,6 +156,7 @@ public class XJCJavaFieldImpl implements JavaField {
      *
      * @see java.lang.reflect.Modifier
      */
+    @Override
     public int getModifiers() {
         return xjcField.mods().getValue();
     }
@@ -163,6 +166,7 @@ public class XJCJavaFieldImpl implements JavaField {
      *
      * @return the <code>String</code> name of this <code>JavaField</code>.
      */
+    @Override
     public String getName() {
         return xjcField.name();
     }
@@ -172,6 +176,7 @@ public class XJCJavaFieldImpl implements JavaField {
      *
      * @return the type of this <code>JavaField</code> as a <code>JavaClass</code>.
      */
+    @Override
     @SuppressWarnings("unchecked")
     public JavaClass getResolvedType() {
         JType type = xjcField.type();
@@ -242,6 +247,7 @@ public class XJCJavaFieldImpl implements JavaField {
      *
      * @return <code>true</code> if this <code>JavaField</code> is <code>final</code>, otherwise <code>false</code>.
      */
+    @Override
     public boolean isFinal() {
         return Modifier.isFinal(getModifiers());
     }
@@ -251,6 +257,7 @@ public class XJCJavaFieldImpl implements JavaField {
      *
      * @return <code>true</code> if this <code>JavaField</code> is <code>abstract</code>, otherwise <code>false</code>.
      */
+    @Override
     public boolean isAbstract() {
         return Modifier.isAbstract(getModifiers());
     }
@@ -260,6 +267,7 @@ public class XJCJavaFieldImpl implements JavaField {
      *
      * @return <code>true</code> if this <code>JavaField</code> is <code>private</code>, otherwise <code>false</code>.
      */
+    @Override
     public boolean isPrivate() {
         return Modifier.isPrivate(getModifiers());
     }
@@ -269,6 +277,7 @@ public class XJCJavaFieldImpl implements JavaField {
      *
      * @return <code>true</code> if this <code>JavaField</code> is <code>protected</code>, otherwise <code>false</code>.
      */
+    @Override
     public boolean isProtected() {
         return Modifier.isProtected(getModifiers());
     }
@@ -278,6 +287,7 @@ public class XJCJavaFieldImpl implements JavaField {
      *
      * @return <code>true</code> if this <code>JavaField</code> is <code>public</code>, otherwise <code>false</code>.
      */
+    @Override
     public boolean isPublic() {
         return Modifier.isPublic(getModifiers());
     }
@@ -287,6 +297,7 @@ public class XJCJavaFieldImpl implements JavaField {
      *
      * @return <code>true</code> if this <code>JavaField</code> is <code>static</code>, otherwise <code>false</code>.
      */
+    @Override
     public boolean isStatic() {
         return Modifier.isStatic(getModifiers());
     }
@@ -294,6 +305,7 @@ public class XJCJavaFieldImpl implements JavaField {
     /**
      * Not supported.
      */
+    @Override
     public boolean isSynthetic() {
         throw new UnsupportedOperationException("isSynthetic");
     }
@@ -303,6 +315,7 @@ public class XJCJavaFieldImpl implements JavaField {
      *
      * @return <code>true</code> if this <code>JavaField</code> is an <code>enum</code> constant.
      */
+    @Override
     public boolean isEnumConstant() {
         return getOwningClass().isEnum();
     }
@@ -315,6 +328,7 @@ public class XJCJavaFieldImpl implements JavaField {
      *
      * @return the <code>JavaAnnotation</code> represented by <code>aClass</code>, if one exists, otherwise return <code>null</code>.
      */
+    @Override
     public JavaAnnotation getDeclaredAnnotation(JavaClass aClass) {
         return getAnnotation(aClass);
     }
@@ -324,6 +338,7 @@ public class XJCJavaFieldImpl implements JavaField {
      *
      * @return A <code>Collection</code> containing this <code>JavaField's</code> <code>JavaAnnotations</code>.
      */
+    @Override
     public Collection<JavaAnnotation> getDeclaredAnnotations() {
         return getAnnotations();
     }

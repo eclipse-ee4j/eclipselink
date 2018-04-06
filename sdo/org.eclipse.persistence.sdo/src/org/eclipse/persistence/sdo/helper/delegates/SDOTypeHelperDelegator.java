@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -44,50 +44,62 @@ public class SDOTypeHelperDelegator extends AbstractHelperDelegator implements S
         aHelperContext = aContext;
     }
 
+    @Override
     public Class getJavaWrapperTypeForSDOType(Type sdoType) {
         return getTypeHelperDelegate().getJavaWrapperTypeForSDOType(sdoType);
     }
 
+    @Override
     public Type getType(String uri, String typeName) {
         return getTypeHelperDelegate().getType(uri, typeName);
     }
 
+    @Override
     public Type getTypeForSimpleJavaType(Class implClass) {
         return getTypeHelperDelegate().getTypeForSimpleJavaType(implClass);
     }
 
+    @Override
     public void addType(SDOType newType) {
         getTypeHelperDelegate().addType(newType);
     }
 
+    @Override
     public Type getType(Class interfaceClass) {
         return getTypeHelperDelegate().getType(interfaceClass);
     }
 
+    @Override
     public SDOType getTypeForImplClass(Class implClass) {
         return getTypeHelperDelegate().getTypeForImplClass(implClass);
     }
 
+    @Override
     public Type define(DataObject dataObject) {
         return getTypeHelperDelegate().define(dataObject);
     }
 
+    @Override
     public List define(List types) {
         return getTypeHelperDelegate().define(types);
     }
 
+    @Override
     public QName getXSDTypeFromSDOType(Type aType) {
         return getTypeHelperDelegate().getXSDTypeFromSDOType(aType);
     }
 
+    @Override
     public SDOType getSDOTypeFromXSDType(QName aName) {
         return getTypeHelperDelegate().getSDOTypeFromXSDType(aName);
     }
 
+    @Override
     public void setTypesHashMap(Map typesHashMap) {
         getTypeHelperDelegate().setTypesHashMap(typesHashMap);
     }
 
+    @Override
     public Map getTypesHashMap() {
         return getTypeHelperDelegate().getTypesHashMap();
     }
@@ -97,6 +109,7 @@ public class SDOTypeHelperDelegator extends AbstractHelperDelegator implements S
      * Return the map of Wrapper objects (SDOWrapperTypes that wrap a primitive document).
      * @return a HashMap of SDOWrapperTypes, keyed on the XSD type that it wraps.
      */
+    @Override
     public Map getWrappersHashMap() {
         return getTypeHelperDelegate().getWrappersHashMap();
     }
@@ -106,18 +119,22 @@ public class SDOTypeHelperDelegator extends AbstractHelperDelegator implements S
      * Set the map of Wrapper objects (SDOWrapperTypes that wrap a primitive document).
      * @param   aMap        a HashMap of SDOWrapperTypes, keyed on the XSD type that it wraps.
      */
+    @Override
     public void setWrappersHashMap(Map aMap) {
         getTypeHelperDelegate().setWrappersHashMap(aMap);
     }
 
+    @Override
     public void reset() {
         getTypeHelperDelegate().reset();
     }
 
+    @Override
     public Property defineOpenContentProperty(String uri, DataObject property) {
         return getTypeHelperDelegate().defineOpenContentProperty(uri, property);
     }
 
+    @Override
     public Property getOpenContentProperty(String uri, String propertyName) {
         return getTypeHelperDelegate().getOpenContentProperty(uri, propertyName);
     }
@@ -130,6 +147,7 @@ public class SDOTypeHelperDelegator extends AbstractHelperDelegator implements S
       * INTERNAL:
       * Add the given namespace uri and prefix to the global namespace resolver.
       */
+    @Override
     public String addNamespace(String prefix, String uri) {
         return getTypeHelperDelegate().addNamespace(prefix, uri);
     }
@@ -138,6 +156,7 @@ public class SDOTypeHelperDelegator extends AbstractHelperDelegator implements S
       * INTERNAL:
       * Return the prefix for the given uri, or generate a new one if necessary
       */
+    @Override
     public String getPrefix(String uri) {
         return getTypeHelperDelegate().getPrefix(uri);
     }
@@ -146,6 +165,7 @@ public class SDOTypeHelperDelegator extends AbstractHelperDelegator implements S
       * INTERNAL:
       * Return the NamespaceResolver
       */
+    @Override
     public NamespaceResolver getNamespaceResolver() {
         return getTypeHelperDelegate().getNamespaceResolver();
     }
@@ -154,22 +174,27 @@ public class SDOTypeHelperDelegator extends AbstractHelperDelegator implements S
     * INTERNAL:
     * Return the Map of Open Content Properties
     */
+    @Override
     public Map getOpenContentProperties() {
         return getTypeHelperDelegate().getOpenContentProperties();
     }
 
+    @Override
     public void addWrappersToProject(Project toplinkProject) {
         getTypeHelperDelegate().addWrappersToProject(toplinkProject);
     }
 
+    @Override
     public Map getInterfacesToSDOTypeHashMap() {
         return getTypeHelperDelegate().getInterfacesToSDOTypeHashMap();
     }
 
+    @Override
     public Map<Class, SDOType> getImplClassesToSDOType() {
         return getTypeHelperDelegate().getImplClassesToSDOType();
     }
 
+    @Override
     public List getAnonymousTypes() {
         return getTypeHelperDelegate().getAnonymousTypes();
     }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -55,6 +55,7 @@ class ClientSessionSequencing implements Sequencing {
     * INTERNAL:
     * Simply calls the same method on SequencingServer
     */
+    @Override
     public int whenShouldAcquireValueForAll() {
         return sequencingServer.whenShouldAcquireValueForAll();
     }
@@ -66,6 +67,7 @@ class ClientSessionSequencing implements Sequencing {
     * the first argument being a session which owns write connection
     * (either DatabaseSession or ClientSession).
     */
+    @Override
     public Object getNextValue(Class cls) {
         return sequencingServer.getNextValue(clientSession, cls);
     }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -55,6 +55,7 @@ public class JPQLCallQueryMechanism extends ExpressionQueryMechanism {
         call.setQuery(query);
     }
 
+    @Override
     public Object clone() {
         JPQLCallQueryMechanism copyOfMyself = (JPQLCallQueryMechanism)super.clone();
         copyOfMyself.ejbqlCall = (JPQLCall)ejbqlCall.clone();
@@ -66,6 +67,7 @@ public class JPQLCallQueryMechanism extends ExpressionQueryMechanism {
      * Internal:
      * In the case of EJBQL, an expression needs to be generated, and the query populated.
      */
+    @Override
     public void buildSelectionCriteria(AbstractSession newSession) {
         getJPQLCall().setQuery(getQuery());
         getJPQLCall().populateQuery(newSession);
@@ -75,6 +77,7 @@ public class JPQLCallQueryMechanism extends ExpressionQueryMechanism {
         return ejbqlCall;
     }
 
+    @Override
     public boolean isJPQLCallQueryMechanism() {
         return true;
     }

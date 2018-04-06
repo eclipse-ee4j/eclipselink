@@ -107,10 +107,12 @@ public class TableSequence extends QuerySequence {
         setCounterFieldName(counterFieldName);
     }
 
+    @Override
     public boolean isTable() {
         return true;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof TableSequence) {
             TableSequence other = (TableSequence)obj;
@@ -176,6 +178,7 @@ public class TableSequence extends QuerySequence {
         table = new DatabaseTable(name);
     }
 
+    @Override
     public void onConnect() {
         if(this.table.getName().length() == 0) {
             this.table.setName(((DatabasePlatform)getDatasourcePlatform()).getDefaultSequenceTableName());
@@ -187,6 +190,7 @@ public class TableSequence extends QuerySequence {
         super.onConnect();
     }
 
+    @Override
     protected ValueReadQuery buildSelectQuery() {
         ValueReadQuery query = new ValueReadQuery();
         query.addArgument(getNameFieldName());
@@ -200,6 +204,7 @@ public class TableSequence extends QuerySequence {
         return query;
     }
 
+    @Override
     protected DataModifyQuery buildUpdateQuery() {
         DataModifyQuery query = new DataModifyQuery();
         query.addArgument(getNameFieldName());

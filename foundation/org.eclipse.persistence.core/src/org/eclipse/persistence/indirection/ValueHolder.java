@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -55,6 +55,7 @@ public class ValueHolder implements WeavedAttributeValueHolderInterface, Cloneab
     /**
      * INTERNAL:
      */
+    @Override
     public Object clone() {
         try {
             return super.clone();
@@ -69,6 +70,7 @@ public class ValueHolder implements WeavedAttributeValueHolderInterface, Cloneab
      * PUBLIC:
      * Return the wrapped object.
      */
+    @Override
     public Object getValue() {
         return value;
     }
@@ -78,6 +80,7 @@ public class ValueHolder implements WeavedAttributeValueHolderInterface, Cloneab
      * Used to track whether a valueholder that has been weaved into a class is coordinated
      * with the underlying property
      */
+    @Override
     public boolean isCoordinatedWithProperty(){
         return isCoordinatedWithProperty;
     }
@@ -87,6 +90,7 @@ public class ValueHolder implements WeavedAttributeValueHolderInterface, Cloneab
      * Used to determine if this ValueHolder was added instantiated as part of
      * the constructor of a weaved class
      */
+    @Override
     public boolean isNewlyWeavedValueHolder(){
         return isNewlyWeavedValueHolder;
     }
@@ -96,6 +100,7 @@ public class ValueHolder implements WeavedAttributeValueHolderInterface, Cloneab
      * Return a boolean indicating whether the
      * wrapped object has been set or not.
      */
+    @Override
     public boolean isInstantiated() {
         // Always return true since we consider
         // null to be a valid wrapped object.
@@ -110,6 +115,7 @@ public class ValueHolder implements WeavedAttributeValueHolderInterface, Cloneab
      * This method will be called internall when the state of Coordination between the
      * weaved valueholder and the underlying value is known
      */
+    @Override
     public void setIsCoordinatedWithProperty(boolean coordinated){
         this.isCoordinatedWithProperty = coordinated;
         // this is not a newly weaved valueholder any more since we have done some coordination work
@@ -123,6 +129,7 @@ public class ValueHolder implements WeavedAttributeValueHolderInterface, Cloneab
      *
      * This method will be called when a ValueHolder is instantiated in a weaved class
      */
+    @Override
     public void setIsNewlyWeavedValueHolder(boolean isNew){
         this.isNewlyWeavedValueHolder = isNew;
     }
@@ -131,6 +138,7 @@ public class ValueHolder implements WeavedAttributeValueHolderInterface, Cloneab
      * PUBLIC:
      * Set the wrapped object.
      */
+    @Override
     public void setValue(Object value) {
         this.value = value;
     }
@@ -140,6 +148,7 @@ public class ValueHolder implements WeavedAttributeValueHolderInterface, Cloneab
      * Return if add/remove should trigger instantiation or avoid.
      * Current instantiation is avoided is using change tracking.
      */
+    @Override
     public boolean shouldAllowInstantiationDeferral() {
         return false;
     }
@@ -147,6 +156,7 @@ public class ValueHolder implements WeavedAttributeValueHolderInterface, Cloneab
     /**
      * INTERNAL:
      */
+    @Override
     public String toString() {
         if (getValue() == null) {
             return "{" + null + "}";

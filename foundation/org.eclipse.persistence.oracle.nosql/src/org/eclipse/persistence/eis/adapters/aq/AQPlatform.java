@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -55,6 +55,7 @@ public class AQPlatform extends EISPlatform {
     /**
      * Allow the platform to build the interaction spec based on properties defined in the interaction.
      */
+    @Override
     public InteractionSpec buildInteractionSpec(EISInteraction interaction) {
         InteractionSpec spec = interaction.getInteractionSpec();
         if (spec == null) {
@@ -86,6 +87,7 @@ public class AQPlatform extends EISPlatform {
      * Allow the platform to handle the creation of the DOM record.
      * Create an indexed record (mapped are not supported).
      */
+    @Override
     public Record createDOMRecord(String recordName, EISAccessor accessor) {
         try {
             return accessor.getRecordFactory().createIndexedRecord(recordName);
@@ -98,6 +100,7 @@ public class AQPlatform extends EISPlatform {
      * Stores the XML DOM value into the record.
      * Convert the DOM to a RAW and add to the indexed record.
      */
+    @Override
     public void setDOMInRecord(Element dom, Record record, EISInteraction call, EISAccessor accessor) {
         IndexedRecord indexedRecord = (IndexedRecord)record;
         indexedRecord.add(new org.eclipse.persistence.oxm.record.DOMRecord(dom).transformToXML());
@@ -107,6 +110,7 @@ public class AQPlatform extends EISPlatform {
      * Allow the platform to handle the creation of the Record for the DOM record.
      * Translate the indexed record RAW bytes into a DOM record.
      */
+    @Override
     public AbstractRecord createDatabaseRowFromDOMRecord(Record record, EISInteraction call, EISAccessor accessor) {
         EISDOMRecord domRecord = new EISDOMRecord();
         IndexedRecord indexedRecord = (IndexedRecord)record;

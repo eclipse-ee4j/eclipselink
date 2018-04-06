@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2015 Fujitsu Limited, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2018 Fujitsu Limited, Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -353,6 +353,7 @@ public class SymfowarePlatform extends DatabasePlatform {
     /**
      * Identifies this database platform as Symfoware's.
      */
+    @Override
     public boolean isSymfoware() {
         return true;
     }
@@ -973,6 +974,7 @@ public class SymfowarePlatform extends DatabasePlatform {
      * @param isUniqueSetOnField
      * @return
      */
+    @Override
     public String getIndexNamePrefix(boolean isUniqueSetOnField){
         if (isUniqueSetOnField){
             return "UIX_";
@@ -1076,6 +1078,7 @@ public class SymfowarePlatform extends DatabasePlatform {
      * INTERNAL:
      * Returns the minimum time increment supported by the platform.
      */
+    @Override
     public long minimumTimeIncrement() {
         return 1000;
     }
@@ -1149,6 +1152,7 @@ public class SymfowarePlatform extends DatabasePlatform {
      *
      * @see SymfowarePlatform
      */
+    @Override
     public void retrieveFirstPrimaryKeyOrOne(ReportQuery subselect){
         subselect.selectValue1();
     }

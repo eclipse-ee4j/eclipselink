@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -55,6 +55,7 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
      * TransparentIndirectionPolicy may wrap the valueholder in another object.
      */
 
+    @Override
     public Object buildIndirectObject(ValueHolderInterface valueHolder){
         return valueHolder.getValue();
     }
@@ -66,6 +67,7 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
      * from a row as opposed to building the original from the row, putting it in
      * the shared cache, and then cloning the original.
      */
+    @Override
     public Object cloneAttribute(Object attributeValue, Object original, CacheKey cacheKey, Object clone, Integer refreshCascade, AbstractSession cloningSession, boolean buildDirectlyFromRow) {
         // Since valueFromRow was called with the UnitOfWork, attributeValue
         // is already a registered result.
@@ -96,6 +98,7 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
      * the reference object.
      * Return null if the object has already been instantiated.
      */
+    @Override
     public AbstractRecord extractReferenceRow(Object referenceObject) {
         return null;
     }
@@ -106,6 +109,7 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
      * Replace the transient attributes of the remote value holders
      * with client-side objects.
      */
+    @Override
     public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
         this.mapping.fixRealObjectReferences(object, objectDescriptors, processedObjects, query, session);
     }
@@ -136,6 +140,7 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
      * Return the "real" attribute value, as opposed to any wrapper.
      * This will trigger the wrapper to instantiate the value.
      */
+    @Override
     public Object getRealAttributeValueFromObject(Object object, Object attribute) {
         return attribute;
     }
@@ -145,6 +150,7 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
      * Extract and return the appropriate value from the
      * specified remote value holder.
      */
+    @Override
     public Object getValueFromRemoteValueHolder(RemoteValueHolder remoteValueHolder) {
         throw DescriptorException.invalidIndirectionPolicyOperation(this, "getValueFromRemoteValueHolder");
     }
@@ -154,6 +160,7 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
      * Replace the client value holder with the server value holder,
      * after copying some of the settings from the client value holder.
      */
+    @Override
     public void mergeRemoteValueHolder(Object clientSideDomainObject, Object serverSideDomainObject, org.eclipse.persistence.internal.sessions.MergeManager mergeManager) {
         throw DescriptorException.invalidIndirectionPolicyOperation(this, "mergeRemoteValueHolder");
     }
@@ -164,6 +171,7 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
      * field from the database is NULL, return what should be
      * placed in the object's attribute as a result.
      */
+    @Override
     public Object nullValueFromRow() {
         return null;
     }
@@ -172,6 +180,7 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
      * INTERNAL:
      * Return whether the specified object is instantiated.
      */
+    @Override
     public boolean objectIsInstantiated(Object object) {
         return true;
     }
@@ -180,6 +189,7 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
      * INTERNAL:
      * Return whether the specified object can be instantiated without database access.
      */
+    @Override
     public boolean objectIsEasilyInstantiated(Object object) {
         return true;
     }
@@ -198,6 +208,7 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
      * Return whether the indirection policy actually uses indirection.
      * Here, we must reply false.
      */
+    @Override
     public boolean usesIndirection() {
         return false;
     }
@@ -209,6 +220,7 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
      * integrity checker.
      * In this case, the attribute type CANNOT be ValueHolderInterface.
      */
+    @Override
     public void validateDeclaredAttributeType(Class attributeType, IntegrityChecker checker) throws DescriptorException {
         super.validateDeclaredAttributeType(attributeType, checker);
         if (!this.typeIsValid(attributeType)) {
@@ -223,6 +235,7 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
      * In this case, the type MUST be a Vector (or, in the case of jdk1.2,
      * Collection or Map).
      */
+    @Override
     public void validateDeclaredAttributeTypeForCollection(Class attributeType, IntegrityChecker checker) throws DescriptorException {
         super.validateDeclaredAttributeTypeForCollection(attributeType, checker);
         if (!this.collectionTypeIsValid(attributeType)) {
@@ -238,6 +251,7 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
      * to the integrity checker.
      * In this case, the return type CANNOT be ValueHolderInterface.
      */
+    @Override
     public void validateGetMethodReturnType(Class returnType, IntegrityChecker checker) throws DescriptorException {
         super.validateGetMethodReturnType(returnType, checker);
         if (!this.typeIsValid(returnType)) {
@@ -252,6 +266,7 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
      * In this case, the type MUST be a Vector (or, in the case of jdk1.2,
      * Collection or Map).
      */
+    @Override
     public void validateGetMethodReturnTypeForCollection(Class returnType, IntegrityChecker checker) throws DescriptorException {
         super.validateGetMethodReturnTypeForCollection(returnType, checker);
         if (!this.collectionTypeIsValid(returnType)) {
@@ -266,6 +281,7 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
      * to the integrity checker.
      * In this case, the parameter type CANNOT be ValueHolderInterface.
      */
+    @Override
     public void validateSetMethodParameterType(Class parameterType, IntegrityChecker checker) throws DescriptorException {
         super.validateSetMethodParameterType(parameterType, checker);
         if (!this.typeIsValid(parameterType)) {
@@ -280,6 +296,7 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
      * In this case, the type MUST be a Vector (or, in the case of jdk1.2,
      * Collection or Map).
      */
+    @Override
     public void validateSetMethodParameterTypeForCollection(Class parameterType, IntegrityChecker checker) throws DescriptorException {
         super.validateSetMethodParameterTypeForCollection(parameterType, checker);
         if (!this.collectionTypeIsValid(parameterType)) {
@@ -293,6 +310,7 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
      * This value is determined by the batchQuery.
      * In this case, extract the result from the query.
      */
+    @Override
     public Object valueFromBatchQuery(ReadQuery batchQuery, AbstractRecord row, ObjectLevelReadQuery originalQuery, CacheKey parentCacheKey) {
         return getForeignReferenceMapping().extractResultFromBatchQuery(batchQuery, parentCacheKey, row, originalQuery.getSession(), originalQuery);
     }
@@ -302,6 +320,7 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
      * Return the value to be stored in the object's attribute.
      * This value is determined by invoking the mapping's AttributeTransformer
      */
+    @Override
     public Object valueFromMethod(Object object, AbstractRecord row, AbstractSession session) {
         return getTransformationMapping().invokeAttributeTransformer(row, object, session);
     }
@@ -312,6 +331,7 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
      *    This value is determined by the query.
      * In this case, wrap the query in a ValueHolder for later invocation.
      */
+    @Override
     public Object valueFromQuery(ReadQuery query, AbstractRecord row, Object sourceObject, AbstractSession session) {
         return valueFromQuery(query, row, session);
     }
@@ -322,6 +342,7 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
      * This value is determined by the query.
      * In this case, simply execute the query and return its results.
      */
+    @Override
     public Object valueFromQuery(ReadQuery query, AbstractRecord row, AbstractSession session) {
         return session.executeQuery(query, row);
     }
@@ -332,6 +353,7 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
      * This value is determined by the row.
      * In this case, simply return the object.
      */
+    @Override
     public Object valueFromRow(Object object) {
         return object;
     }

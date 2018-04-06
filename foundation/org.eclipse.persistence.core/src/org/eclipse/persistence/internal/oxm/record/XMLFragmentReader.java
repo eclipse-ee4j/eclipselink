@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -54,6 +54,7 @@ public class XMLFragmentReader extends DOMReader {
         tmpresolverMap = new HashMap<Element, NamespaceResolver>();
     }
 
+    @Override
     public void parse (Node node, String uri, String name) throws SAXException {
         if (node.getNodeType() == Node.DOCUMENT_FRAGMENT_NODE) {
             handleChildNodes(node.getChildNodes());
@@ -61,6 +62,7 @@ public class XMLFragmentReader extends DOMReader {
             super.parse(node, uri, name);
         }
     }
+    @Override
     protected void reportElementEvents(Element elem) throws SAXException {
         super.reportElementEvents(elem);
         // Clean up any temporary namespace resolvers created while processing this element
@@ -70,6 +72,7 @@ public class XMLFragmentReader extends DOMReader {
     /**
      * Trigger an endDocument event on the contenthandler.
      */
+    @Override
     protected void endDocument() throws SAXException {
         // NOT APPLICABLE FOR FRAGMENTS - DO NOTHING
     }
@@ -77,6 +80,7 @@ public class XMLFragmentReader extends DOMReader {
     /**
      * Trigger a startDocument event on the contenthandler.
      */
+    @Override
     protected void startDocument() throws SAXException {
         // NOT APPLICABLE FOR FRAGMENTS - DO NOTHING
     }
@@ -152,6 +156,7 @@ public class XMLFragmentReader extends DOMReader {
      * each entry contains a prefix that requires an endPrefixMapping
      * event to be triggered
      */
+    @Override
     protected void endPrefixMappings(Element elem) throws SAXException {
         NamespaceResolver tmpresolver = getTempResolver(elem);
         if (tmpresolver != null) {
@@ -237,10 +242,12 @@ public class XMLFragmentReader extends DOMReader {
      *
      * @param element
      */
+    @Override
     protected void processParentNamespaces(Element element) throws SAXException {
         // DO NOTHING FOR FRAGMENTS
     }
 
+    @Override
     protected void handleXsiTypeAttribute(Attr attr) throws SAXException {
         String value = attr.getValue();
         int colon = value.indexOf(':');

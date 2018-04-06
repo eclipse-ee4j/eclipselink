@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -696,6 +696,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     /**
      * INTERNAL: Clone the query
      */
+    @Override
     public Object clone() {
         try {
             DatabaseQuery cloneQuery = (DatabaseQuery) super.clone();
@@ -2671,6 +2672,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         setShouldStoreBypassCache(true);
     }
 
+    @Override
     public String toString() {
         String referenceClassString = "";
         String nameString = "";

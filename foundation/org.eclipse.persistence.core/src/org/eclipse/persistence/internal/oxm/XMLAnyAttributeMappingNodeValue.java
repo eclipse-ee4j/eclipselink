@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -41,6 +41,7 @@ public class XMLAnyAttributeMappingNodeValue extends MappingNodeValue implements
         this.xmlAnyAttributeMapping = xmlAnyAttributeMapping;
     }
 
+    @Override
     public boolean isOwningNode(XPathFragment xPathFragment) {
         return xPathFragment == null;
     }
@@ -50,6 +51,7 @@ public class XMLAnyAttributeMappingNodeValue extends MappingNodeValue implements
         return false;
     }
 
+    @Override
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver) {
         if (xmlAnyAttributeMapping.isReadOnly()) {
             return false;
@@ -108,6 +110,7 @@ public class XMLAnyAttributeMappingNodeValue extends MappingNodeValue implements
         return true;
     }
 
+    @Override
     public void attribute(UnmarshalRecord unmarshalRecord, String namespaceURI, String localName, String value) {
         boolean includeAttribute = true;
         if(!xmlAnyAttributeMapping.isNamespaceDeclarationIncluded() && javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI.equals(namespaceURI)){
@@ -124,30 +127,37 @@ public class XMLAnyAttributeMappingNodeValue extends MappingNodeValue implements
         }
     }
 
+    @Override
     public Object getContainerInstance() {
         return xmlAnyAttributeMapping.getContainerPolicy().containerInstance();
     }
 
+    @Override
     public void setContainerInstance(Object object, Object container) {
         xmlAnyAttributeMapping.setAttributeValueInObject(object, container);
     }
 
+    @Override
     public CoreMappedKeyMapContainerPolicy getContainerPolicy() {
         return (CoreMappedKeyMapContainerPolicy) xmlAnyAttributeMapping.getContainerPolicy();
     }
 
+    @Override
     public boolean isContainerValue() {
         return true;
     }
 
+    @Override
     public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         return true;
     }
 
+    @Override
     public AnyAttributeMapping getMapping() {
         return xmlAnyAttributeMapping;
     }
 
+    @Override
     public boolean getReuseContainer() {
         return getMapping().getReuseContainer();
     }
@@ -156,6 +166,7 @@ public class XMLAnyAttributeMappingNodeValue extends MappingNodeValue implements
      *  INTERNAL:
      *  Used to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord
      */
+    @Override
     public void setIndex(int index){
         this.index = index;
     }
@@ -165,6 +176,7 @@ public class XMLAnyAttributeMappingNodeValue extends MappingNodeValue implements
      * Set to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord
      * Set during TreeObjectBuilder initialization
      */
+    @Override
     public int getIndex(){
         return index;
     }
@@ -175,6 +187,7 @@ public class XMLAnyAttributeMappingNodeValue extends MappingNodeValue implements
      * is no presence of the collection in the XML document.
      * @since EclipseLink 2.3.3
      */
+    @Override
     public boolean isDefaultEmptyContainer() {
         return getMapping().isDefaultEmptyContainer();
     }

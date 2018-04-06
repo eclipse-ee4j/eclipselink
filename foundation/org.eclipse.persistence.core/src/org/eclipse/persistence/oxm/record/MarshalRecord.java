@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -81,6 +81,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
         namespaceResolver = new NamespaceResolver();
     }
 
+    @Override
     public void forceValueWrapper(){};
 
     public HashMap getPositionalNodes() {
@@ -117,6 +118,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
      * MarshalRecord as a grouping element.
      * @param xPathNode
      */
+    @Override
     public void addGroupingElement(XPathNode xPathNode) {
         if (null == groupingElements) {
             groupingElements = new ArrayList(2);
@@ -129,6 +131,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
      * INTERNAL:
      * @param xPathNode
      */
+    @Override
     public void removeGroupingElement(XPathNode xPathNode) {
         if (null != groupingElements) {
             groupingElements.remove(xPathNode);
@@ -139,6 +142,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
         return null;
     }
 
+    @Override
     public void setSession(CoreAbstractSession session) {
         super.setSession(session);
         if (session != null && session.getDatasourceLogin() instanceof Login) {
@@ -206,6 +210,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
      * @param openGrouping if grouping elements should be marshalled for empty collections
      * @return
      */
+    @Override
     public boolean emptyCollection(XPathFragment xPathFragment, NamespaceResolver namespaceResolver, boolean openGrouping) {
          if (openGrouping) {
              XPathFragment groupingFragment = openStartGroupingElements(namespaceResolver);
@@ -221,6 +226,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
      * @param prefix
      * @param namespaceURI
      */
+    @Override
     public void namespaceDeclaration(String prefix, String namespaceURI){
         attribute(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, prefix, javax.xml.XMLConstants.XMLNS_ATTRIBUTE + Constants.COLON + prefix, namespaceURI);
     }
@@ -263,6 +269,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
      * @param prefix The namespace prefix.
      * @param namespaceURI The namespace URI.
      */
+    @Override
     public void startPrefixMapping(String prefix, String namespaceURI) {
     }
 
@@ -279,6 +286,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
      * ended.
      * @param prefix The namespace prefix.
      */
+    @Override
     public void endPrefixMapping(String prefix) {
     }
 
@@ -293,6 +301,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
      * namespace URI for the namespace prefix held by the XPathFragment (if
      * required).
      */
+    @Override
     public void openStartElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
         this.addPositionalNodes(xPathFragment, namespaceResolver);
     }
@@ -312,6 +321,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
      * required).
      * @param value This is the complete value for the attribute.
      */
+    @Override
     public abstract void attribute(XPathFragment xPathFragment, NamespaceResolver namespaceResolver, String value);
 
     /**
@@ -330,6 +340,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
      * Receive notification that all of the attribute events have occurred for
      * the most recent element that has been started.
      */
+    @Override
     public abstract void closeStartElement();
 
     /**
@@ -340,18 +351,21 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
      * namespace URI for the namespace prefix held by the XPathFragment (if
      * required).
      */
+    @Override
     public abstract void endElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver);
 
     /**
      * Receive notification of character data.
      * @param value This is the entire value of the text node.
      */
+    @Override
     public abstract void characters(String value);
 
     /**
      * Convert the value if necessary and write out the attribute and converted value.
      * @since EclipseLink 2.4
      */
+    @Override
     public void attribute(XPathFragment xPathFragment, NamespaceResolver namespaceResolver,  Object value, QName schemaType){
          if(schemaType != null && Constants.QNAME_QNAME.equals(schemaType)){
              String convertedValue = getStringForQName((QName)value);
@@ -366,6 +380,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
      * Convert the value if necessary and write out the converted value.
      * @since EclipseLink 2.4
      */
+    @Override
     public void characters(QName schemaType, Object value, String mimeType, boolean isCDATA){
         if(mimeType != null) {
             if(value instanceof List){
@@ -442,6 +457,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
      * Receive notification of character data to be wrapped in a CDATA node.
      * @param value This is the value of the text to be wrapped
      */
+    @Override
     public abstract void cdata(String value);
 
     /**
@@ -450,7 +466,8 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
      * @param resolver The NamespaceResolver can be used to resolve the
      * namespace URI/prefix of the node
      */
-     public void node(Node node, NamespaceResolver resolver ){
+     @Override
+    public void node(Node node, NamespaceResolver resolver ){
         node(node, resolver, null, null);
      }
 
@@ -473,6 +490,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
      * namespace URI for the namespace prefix held by the XPathFragment (if
      * required).
      */
+    @Override
     public XPathFragment openStartGroupingElements(NamespaceResolver namespaceResolver) {
         if (null == groupingElements) {
             return null;
@@ -493,6 +511,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
         return xPathFragment;
     }
 
+    @Override
     public void closeStartGroupingElements(XPathFragment groupingFragment) {
         if (null != groupingFragment) {
             this.closeStartElement();
@@ -516,6 +535,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
         }
     }
 
+    @Override
     public void beforeContainmentMarshal(Object child) {
         if(null != marshaller) {
             Marshaller.Listener marshalListener = marshaller.getMarshalListener();
@@ -540,6 +560,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
         setOwningObject(child);
     }
 
+    @Override
     public void afterContainmentMarshal(Object parent, Object child) {
         if(null != marshaller) {
             Marshaller.Listener marshalListener = marshaller.getMarshalListener();
@@ -568,6 +589,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
      * INTERNAL:
      * Returns the list of grouping elements currently stored on the MarshalRecord
      */
+    @Override
     public ArrayList<XPathNode> getGroupingElements() {
         return this.groupingElements;
     }
@@ -576,6 +598,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
      * INTERNAL:
      * Sets the list of grouping elements to be marshalled on this record.
      */
+    @Override
     public void setGroupingElement(ArrayList<XPathNode> elements) {
         this.groupingElements = elements;
     }
@@ -583,6 +606,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
     /**
      * Marshal the attribute for the predicate if one was specified.
      */
+    @Override
     public void predicateAttribute(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
         if(null != xPathFragment) {
             XPathPredicate predicate = xPathFragment.getPredicate();
@@ -601,6 +625,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
      * @since EclipseLink 2.4
      * @see #endCollection
      */
+    @Override
     public void startCollection() {
     }
 
@@ -608,6 +633,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
      * Used when an nil attribute should be written
      * @since EclipseLink 2.4
      */
+    @Override
     public void emptyAttribute(XPathFragment xPathFragment,NamespaceResolver namespaceResolver){
         XPathFragment groupingFragment = openStartGroupingElements(namespaceResolver);
         // We mutate the null into an empty string
@@ -620,6 +646,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
      * Used when an nil attribute should be written
      * @since EclipseLink 2.4
      */
+    @Override
     public void emptyComplex(XPathFragment xPathFragment, NamespaceResolver namespaceResolver){
         XPathFragment groupingFragment = openStartGroupingElements(namespaceResolver);
         closeStartGroupingElements(groupingFragment);
@@ -632,6 +659,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
      * Used when an nil attribute should be written
      * @since EclipseLink 2.4
      */
+    @Override
     public void emptySimple(NamespaceResolver namespaceResolver){
         XPathFragment groupingFragment = openStartGroupingElements(namespaceResolver);
         closeStartGroupingElements(groupingFragment);
@@ -641,6 +669,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
      * Used when an nil attribute should be written
      * @since EclipseLink 2.4
      */
+    @Override
     public void nilSimple(NamespaceResolver namespaceResolver){
          XPathFragment groupingFragment = openStartGroupingElements(namespaceResolver);
          String xsiPrefix = processNamespaceResolverForXSIPrefix(namespaceResolver);
@@ -656,6 +685,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
      * Used when an nil attribute should be written
      * @since EclipseLink 2.4
      */
+    @Override
     public void nilComplex(XPathFragment xPathFragment, NamespaceResolver namespaceResolver){
          XPathFragment groupingFragment = openStartGroupingElements(namespaceResolver);
          closeStartGroupingElements(groupingFragment);
@@ -675,6 +705,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
      * @since EclipseLink 2.4
      * @see #startCollection
      */
+    @Override
     public void endCollection() {
     }
 
@@ -711,6 +742,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
      * The optional fragment used to wrap the text() mappings
      * @since 2.4
      */
+    @Override
     public XPathFragment getTextWrapperFragment() {
         //return null as this is not supported by default
         //subclass records can return the fragment if supported.
@@ -771,6 +803,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
     /**
      * INTERNAL
      */
+    @Override
     public CycleDetectionStack<Object> getCycleDetectionStack() {
         return this.cycleDetectionStack;
     }
@@ -784,6 +817,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
         return false;
     }
 
+    @Override
     public CoreAttributeGroup getCurrentAttributeGroup() {
         if(this.attributeGroupStack == null || this.attributeGroupStack.isEmpty()) {
             return DEFAULT_ATTRIBUTE_GROUP;
@@ -791,6 +825,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
         return attributeGroupStack.peek();
     }
 
+    @Override
     public void pushAttributeGroup(CoreAttributeGroup group) {
         if(group == DEFAULT_ATTRIBUTE_GROUP && this.attributeGroupStack == null) {
             return;
@@ -801,6 +836,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
         this.attributeGroupStack.push(group);
     }
 
+    @Override
     public void popAttributeGroup() {
         if(attributeGroupStack != null) {
             attributeGroupStack.pop();

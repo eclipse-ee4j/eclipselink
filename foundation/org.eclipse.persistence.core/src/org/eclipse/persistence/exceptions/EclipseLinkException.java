@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -103,6 +103,7 @@ public abstract class EclipseLinkException extends RuntimeException {
      * Return the exception error message.
      * EclipseLink error messages are multi-line so that detail descriptions of the exception are given.
      */
+    @Override
     public String getMessage() {
         StringWriter writer = new StringWriter(100);
 
@@ -151,6 +152,7 @@ public abstract class EclipseLinkException extends RuntimeException {
      * PUBLIC:
      * Print both the normal and internal stack traces.
      */
+    @Override
     public void printStackTrace() {
         printStackTrace(System.err);
     }
@@ -159,6 +161,7 @@ public abstract class EclipseLinkException extends RuntimeException {
      * PUBLIC:
      * Print both the normal and internal stack traces.
      */
+    @Override
     public void printStackTrace(PrintStream outStream) {
         printStackTrace(new PrintWriter(outStream));
     }
@@ -167,6 +170,7 @@ public abstract class EclipseLinkException extends RuntimeException {
      * PUBLIC:
      * Print both the normal and internal stack traces.
      */
+    @Override
     public void printStackTrace(PrintWriter writer) {
         writer.write(ExceptionMessageGenerator.getHeader("LocalExceptionStackHeader"));
         writer.write(cr());
@@ -255,6 +259,7 @@ public abstract class EclipseLinkException extends RuntimeException {
     /**
      * INTERNAL:
      */
+    @Override
     public String toString() {
         return getIndentationString() + ExceptionMessageGenerator.getHeader("ExceptionHeader") + getErrorCode() + "] (" + org.eclipse.persistence.sessions.DatabaseLogin.getVersion() + "): " + getClass().getName() + getMessage();
     }

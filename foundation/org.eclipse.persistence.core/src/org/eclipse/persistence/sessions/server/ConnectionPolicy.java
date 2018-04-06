@@ -123,6 +123,7 @@ public class ConnectionPolicy implements Cloneable, Serializable {
      * INTERNAL:
      * Clone the query
      */
+    @Override
     public Object clone() {
         try {
             ConnectionPolicy clone = (ConnectionPolicy)super.clone();
@@ -358,6 +359,7 @@ public class ConnectionPolicy implements Cloneable, Serializable {
      * INTERNAL:
      * return a string representation of this ConnectionPolicy
      */
+    @Override
     public String toString() {
         String type = "";
         if (isPooled()) {

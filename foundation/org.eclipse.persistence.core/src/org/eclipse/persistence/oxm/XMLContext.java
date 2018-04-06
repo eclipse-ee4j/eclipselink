@@ -238,6 +238,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
      *
      * @return An XMLUnmarshaller based on this XMLContext
      */
+    @Override
     public XMLUnmarshaller createUnmarshaller() {
         return new XMLUnmarshaller(this);
     }
@@ -277,6 +278,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
      *
      * @return An XMLMarshaller based on this XMLContext
      */
+    @Override
     public XMLMarshaller createMarshaller() {
         return new XMLMarshaller(this);
     }
@@ -353,6 +355,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
      * object may be mapped by more that one of the projects used to create the
      * XML Context, this method will return the first match.
      */
+    @Override
     public AbstractSession getSession(Object object) {
         return super.getSession(object);
     }
@@ -362,6 +365,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
      * may be mapped by more that one of the projects used to create the XML
      * Context, this method will return the first match.
      */
+    @Override
     public AbstractSession getSession(Class clazz) {
         return super.getSession(clazz);
     }
@@ -371,6 +375,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
      * the class may be mapped by more that one of the projects used to create
      * the XML Context, this method will return the first match.
      */
+    @Override
     public AbstractSession getSession(XMLDescriptor xmlDescriptor) {
         return super.getSession(xmlDescriptor);
     }
@@ -386,6 +391,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
      * INTERNAL: Return the XMLDescriptor with the default root mapping matching
      * the QName parameter.
      */
+    @Override
     public XMLDescriptor getDescriptor(QName qName) {
         return super.getDescriptor(qName);
     }
@@ -394,6 +400,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
      * INTERNAL: Return the XMLDescriptor with the default root mapping matching
      * the QName parameter.
      */
+    @Override
     public XMLDescriptor getDescriptor(XPathQName xpathQName) {
         return super.getDescriptor(xpathQName);
     }
@@ -406,6 +413,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
      * INTERNAL: Return the XMLDescriptor mapped to the global type matching the
      * XPathFragment parameter.
      */
+    @Override
     public XMLDescriptor getDescriptorByGlobalType(XPathFragment xPathFragment) {
         return super.getDescriptorByGlobalType(xPathFragment);
     }
@@ -433,6 +441,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
      * Return true if any session held onto by this context has a document preservation
      * policy that requires unmarshalling from a Node.
      */
+    @Override
     public boolean hasDocumentPreservation() {
         return getXMLContextState().hasDocumentPreservation();
     }
@@ -559,6 +568,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
      * @param returnType The return type.
      * @return The object corresponding to the XPath or null if no result was found.
      */
+    @Override
     public <T> T getValueByXPath(Object object, String xPath, NamespaceResolver namespaceResolver, Class<T> returnType) {
         return super.getValueByXPath(object, xPath, namespaceResolver, returnType);
     }
@@ -591,6 +601,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
      * @param namespaceResolver A NamespaceResolver containing the prefix/URI pairings from the XPath statement.
      * @param value The value to be set.
      */
+    @Override
     public void setValueByXPath(Object object, String xPath, NamespaceResolver namespaceResolver, Object value) {
         super.setValueByXPath(object, xPath, namespaceResolver, value);
     }
@@ -649,6 +660,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
      *      An instance of the Java class mapped to the supplied XML type, or null
      *      if no result was found.
      */
+    @Override
     public <T> T createByXPath(Object parentObject, String xPath, NamespaceResolver namespaceResolver, Class<T> returnType) {
         return super.createByXPath(parentObject, xPath, namespaceResolver, returnType);
     }

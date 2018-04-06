@@ -41,15 +41,18 @@ public abstract class XMLVariableXPathMappingNodeValue extends XMLRelationshipMa
      * @param xPathFragment
      * @return
      */
-     public boolean isOwningNode(XPathFragment xPathFragment) {
+     @Override
+    public boolean isOwningNode(XPathFragment xPathFragment) {
             return null == xPathFragment;
      }
 
+    @Override
     protected Descriptor findReferenceDescriptor(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts, Mapping mapping, UnmarshalKeepAsElementPolicy policy) {
        return (Descriptor)mapping.getReferenceDescriptor();
     }
 
-     public void attribute(UnmarshalRecord unmarshalRecord, String namespaceURI, String localName, String value) {
+     @Override
+    public void attribute(UnmarshalRecord unmarshalRecord, String namespaceURI, String localName, String value) {
             Descriptor referenceDescriptor = (Descriptor) getMapping().getReferenceDescriptor();
             ObjectBuilder treeObjectBuilder = (ObjectBuilder) referenceDescriptor.getObjectBuilder();
             MappingNodeValue textMappingNodeValue = (MappingNodeValue) treeObjectBuilder.getRootXPathNode().getTextNode().getNodeValue();
@@ -72,6 +75,7 @@ public abstract class XMLVariableXPathMappingNodeValue extends XMLRelationshipMa
             setOrAddAttributeValue(unmarshalRecord, childObject, null, null);
         }
 
+    @Override
     public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         if (null == value) {
             return false;
@@ -126,6 +130,7 @@ public abstract class XMLVariableXPathMappingNodeValue extends XMLRelationshipMa
         return true;
     }
 
+    @Override
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord) {
         UnmarshalRecord childRecord = unmarshalRecord.getChildRecord();
         if(childRecord != null){
@@ -142,6 +147,7 @@ public abstract class XMLVariableXPathMappingNodeValue extends XMLRelationshipMa
         }
     }
 
+    @Override
     public abstract VariableXPathObjectMapping getMapping();
 
     public void setXPathInObject(String uri, String localName, Object childObject) {
@@ -162,6 +168,7 @@ public abstract class XMLVariableXPathMappingNodeValue extends XMLRelationshipMa
         }
     }
 
+    @Override
     public boolean startElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts) {
            try {
             processChild(xPathFragment, unmarshalRecord, atts, (Descriptor) getMapping().getReferenceDescriptor(), getMapping());

@@ -288,6 +288,7 @@ public class MongoPlatform extends EISPlatform {
      * Override this method to throw an exception by default.
      * Platforms that support dynamic querying can override this to generate an EISInteraction.
      */
+    @Override
     public DatasourceCall buildCallFromStatement(SQLStatement statement, DatabaseQuery query, AbstractSession session) {
         if (query.isObjectLevelReadQuery()) {
             ObjectLevelReadQuery readQuery = (ObjectLevelReadQuery)query;

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -257,6 +257,7 @@ public abstract class DatabaseCall extends DatasourceCall {
      * If using binding bind the parameter otherwise let the platform print it.
      * The platform may also decide to bind the value.
      */
+    @Override
     public void appendParameter(Writer writer, Object parameter, AbstractSession session) {
         if (Boolean.TRUE.equals(usesBinding)) {
             bindParameter(writer, parameter);
@@ -285,6 +286,7 @@ public abstract class DatabaseCall extends DatasourceCall {
      * Return the appropriate mechanism,
      * with the call added as necessary.
      */
+    @Override
     public DatabaseQueryMechanism buildNewQueryMechanism(DatabaseQuery query) {
         return new CallQueryMechanism(query, this);
     }
@@ -334,6 +336,7 @@ public abstract class DatabaseCall extends DatasourceCall {
      * Return the appropriate mechanism,
      * with the call added as necessary.
      */
+    @Override
     public DatabaseQueryMechanism buildQueryMechanism(DatabaseQuery query, DatabaseQueryMechanism mechanism) {
         if (mechanism.isCallQueryMechanism() && (mechanism instanceof CallQueryMechanism)) {
             // Must also add the call singleton...
@@ -353,6 +356,7 @@ public abstract class DatabaseCall extends DatasourceCall {
      * INTERNAL:
      * Returns INOUT parameter. The first parameter is value to pass in, the second DatabaseField for out.
      */
+    @Override
     protected Object createInOutParameter(Object inValue, Object outParameter, AbstractSession session) {
         if (outParameter instanceof OutputParameterForCallableStatement) {
             return new InOutputParameterForCallableStatement(inValue, (OutputParameterForCallableStatement)outParameter);
@@ -438,6 +442,7 @@ public abstract class DatabaseCall extends DatasourceCall {
     /**
      * Return the SQL string for logging purposes.
      */
+    @Override
     public String getLogString(Accessor accessor) {
         if (hasParameters()) {
             StringWriter writer = new StringWriter();
@@ -527,6 +532,7 @@ public abstract class DatabaseCall extends DatasourceCall {
      * INTERNAL:
      * Return the query string (SQL) of the call.
      */
+    @Override
     public String getQueryString() {
         return getSQLString();
     }
@@ -626,6 +632,7 @@ public abstract class DatabaseCall extends DatasourceCall {
     /**
      * The return type is one of, NoReturn, ReturnOneRow or ReturnManyRows.
      */
+    @Override
     public boolean isCursorReturned() {
         return this.returnType == RETURN_CURSOR;
     }
@@ -641,6 +648,7 @@ public abstract class DatabaseCall extends DatasourceCall {
     /**
      * Return whether all the results of the call have been returned.
      */
+    @Override
     public boolean isFinished() {
         return !isCursorReturned() && !isExecuteUpdate();
     }
@@ -938,6 +946,7 @@ public abstract class DatabaseCall extends DatasourceCall {
      * INTERNAL:
      * Set the query string (SQL) of the call.
      */
+    @Override
     public void setQueryString(String queryString) {
         setSQLStringInternal(queryString);
     }
@@ -1078,6 +1087,7 @@ public abstract class DatabaseCall extends DatasourceCall {
      * INTERNAL:
      * Print the SQL string.
      */
+    @Override
     public String toString() {
         String str = Helper.getShortClassName(getClass());
         if (getSQLString() == null) {

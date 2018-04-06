@@ -20,6 +20,7 @@ import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 
 @Provider
 public class JPARSExceptionMapper extends AbstractExceptionMapper implements ExceptionMapper<JPARSException> {
+    @Override
     public Response toResponse(JPARSException exception) {
         if (exception.getCause() != null) {
             JPARSLogger.exception("jpars_caught_exception", new Object[] {}, exception.getCause());

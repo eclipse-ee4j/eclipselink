@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -37,6 +37,7 @@ public class ConnectToHostCommand extends RCMCommand {
      * Executed on the RCM when received. Just add the remote object reference to
      * the connection list.
      */
+    @Override
     public void executeWithRCM(RemoteCommandManager rcm) {
         RemoteConnection connection = rcm.getTransportManager().createConnection(this.getServiceId());
         // null is returned from createConnection if connection cannot be created
@@ -45,6 +46,7 @@ public class ConnectToHostCommand extends RCMCommand {
         }
     }
 
+    @Override
     public void executeWithSession(AbstractSession session) {
         // Internal RCM commands do not implement this method
     }

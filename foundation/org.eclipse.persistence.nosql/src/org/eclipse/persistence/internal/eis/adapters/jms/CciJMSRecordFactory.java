@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -40,6 +40,7 @@ public class CciJMSRecordFactory implements RecordFactory {
      * @param recordName - the name of the new record
      * @return the newly created record
      */
+    @Override
     public IndexedRecord createIndexedRecord(String recordName) {
         return new CciJMSRecord();
     }
@@ -47,6 +48,7 @@ public class CciJMSRecordFactory implements RecordFactory {
     /**
      * Mapped records are not supported
      */
+    @Override
     public MappedRecord createMappedRecord(String recordName) {
         throw ValidationException.operationNotSupported("createMappedRecord");
     }

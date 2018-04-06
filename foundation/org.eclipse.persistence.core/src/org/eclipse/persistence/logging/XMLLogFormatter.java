@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -74,6 +74,7 @@ public class XMLLogFormatter extends XMLFormatter {
      * @param record0 the log record to be formatted.
      * @return a formatted log record
      */
+    @Override
     public String format(LogRecord record0) {
         if (!(record0 instanceof EclipseLinkLogRecord)) {
             return super.format(record0);

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -126,17 +126,21 @@ public class NodeRecord extends MarshalRecord {
         getNamespaceResolver().setDOM(node);
     }
 
+    @Override
     public String getLocalName() {
         return node.getLocalName();
     }
 
+    @Override
     public String getNamespaceURI() {
         return node.getNamespaceURI();
     }
 
+    @Override
     public void clear() {
     }
 
+    @Override
     public Document getDocument() {
         return document;
     }
@@ -145,6 +149,7 @@ public class NodeRecord extends MarshalRecord {
      * Return the Node that the object will be marshalled to.
      * @return The marshal target.
      */
+    @Override
     public Node getDOM() {
         return node;
     }
@@ -167,6 +172,7 @@ public class NodeRecord extends MarshalRecord {
         }
     }
 
+    @Override
     public String transformToXML() {
         return null;
     }
@@ -174,13 +180,16 @@ public class NodeRecord extends MarshalRecord {
     /**
      * INTERNAL:
      */
+    @Override
     public void startDocument(String encoding, String version) {}
 
     /**
      * INTERNAL:
      */
+    @Override
     public void endDocument() {}
 
+    @Override
     public void node(Node node, NamespaceResolver namespaceResolver, String uri, String name) {
         if (node.getNodeType() == Node.ATTRIBUTE_NODE) {
             Attr attr = (Attr) node;
@@ -217,6 +226,7 @@ public class NodeRecord extends MarshalRecord {
     /**
      * INTERNAL:
      */
+    @Override
     public void openStartElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
         try {
             super.openStartElement(xPathFragment, namespaceResolver);
@@ -233,6 +243,7 @@ public class NodeRecord extends MarshalRecord {
     /**
      * INTERNAL:
      */
+    @Override
     public void element(XPathFragment frag) {
         Element element = document.createElementNS(frag.getNamespaceURI(), getNameForFragment(frag));
         node.appendChild(element);
@@ -241,6 +252,7 @@ public class NodeRecord extends MarshalRecord {
     /**
      * INTERNAL:
      */
+    @Override
     public void attribute(XPathFragment xPathFragment, NamespaceResolver namespaceResolver, String value) {
         if (node.getNodeType() == Node.ELEMENT_NODE) {
             ((Element)getDOM()).setAttributeNS(xPathFragment.getNamespaceURI(), getNameForFragment(xPathFragment), value);
@@ -250,6 +262,7 @@ public class NodeRecord extends MarshalRecord {
     /**
      * INTERNAL:
      */
+    @Override
     public void attribute(String namespaceURI, String localName, String qName, String value) {
         if (node.getNodeType() == Node.ELEMENT_NODE) {
             ((Element)getDOM()).setAttributeNS(namespaceURI, qName, value);
@@ -259,12 +272,14 @@ public class NodeRecord extends MarshalRecord {
     /**
      * INTERNAL:
      */
+    @Override
     public void closeStartElement() {
     }
 
     /**
      * INTERNAL:
      */
+    @Override
     public void endElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
         node = node.getParentNode();
     }
@@ -272,12 +287,14 @@ public class NodeRecord extends MarshalRecord {
     /**
      * INTERNAL:
      */
+    @Override
     public void characters(String value) {
         if (value.length() > 0) {
             node.appendChild(document.createTextNode(value));
         }
     }
 
+    @Override
     public void cdata(String value) {
         for (String part : MarshalRecord.splitCData(value)) {
             CDATASection cdata = document.createCDATASection(part);
@@ -316,6 +333,7 @@ public class NodeRecord extends MarshalRecord {
      * INTERNAL:
      * override so we don't iterate over namespaces when startPrefixMapping doesn't do anything
      */
+    @Override
     public void startPrefixMappings(NamespaceResolver namespaceResolver) {
     }
 
@@ -335,6 +353,7 @@ public class NodeRecord extends MarshalRecord {
             prefixMappings = new HashMap<String, String>();
         }
 
+        @Override
         public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
             Element element;
             if (namespaceURI == null) {
@@ -369,6 +388,7 @@ public class NodeRecord extends MarshalRecord {
             marshalRecord.closeStartElement();
         }
 
+        @Override
         public void startPrefixMapping(String prefix, String uri) throws SAXException {
             String namespaceUri = getNamespaceResolver().resolveNamespacePrefix(prefix);
             if(namespaceUri == null || !namespaceUri.equals(uri)) {

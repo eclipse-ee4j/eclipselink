@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -26,6 +26,7 @@ public class PointBasePlatform extends org.eclipse.persistence.platform.database
     /**
      * Appends a Boolean value as true/false instead of 0/1
      */
+    @Override
     protected void appendBoolean(Boolean bool, Writer writer) throws IOException {
         writer.write(bool.toString());
     }
@@ -33,6 +34,7 @@ public class PointBasePlatform extends org.eclipse.persistence.platform.database
     /**
      * Write a Time in PointBase specific format.
      */
+    @Override
     protected void appendTime(java.sql.Time time, Writer writer) throws IOException {
         writer.write("TIME '" + time + "'");
     }
@@ -40,6 +42,7 @@ public class PointBasePlatform extends org.eclipse.persistence.platform.database
     /**
      * Write a Date in PointBase specific format.
      */
+    @Override
     protected void appendDate(java.sql.Date date, Writer writer) throws IOException {
         writer.write("DATE '" + date + "'");
     }
@@ -47,10 +50,12 @@ public class PointBasePlatform extends org.eclipse.persistence.platform.database
     /**
      * Write a TimeStamp in PointBase specific format.
      */
+    @Override
     protected void appendTimestamp(java.sql.Timestamp timestamp, Writer writer) throws IOException {
         writer.write("TIMESTAMP '" + timestamp + "'");
     }
 
+    @Override
     protected Map<String, Class> buildClassTypes() {
         Map<String, Class> classTypeMapping = super.buildClassTypes();
 
@@ -64,6 +69,7 @@ public class PointBasePlatform extends org.eclipse.persistence.platform.database
         return classTypeMapping;
     }
 
+    @Override
     protected Hashtable buildFieldTypes() {
         Hashtable fieldTypeMapping;
 
@@ -87,11 +93,13 @@ public class PointBasePlatform extends org.eclipse.persistence.platform.database
         return fieldTypeMapping;
     }
 
+    @Override
     protected void initializePlatformOperators() {
         super.initializePlatformOperators();
         addOperator(ExpressionOperator.simpleMath(ExpressionOperator.Concat, "||"));
     }
 
+    @Override
     public boolean isPointBase() {
         return true;
     }

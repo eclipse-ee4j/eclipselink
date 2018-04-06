@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -181,6 +181,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
         }
     }
 
+    @Override
     public SequencingControl getSequencingControl() {
         return this;
     }
@@ -189,6 +190,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
         this.seq = sequencing;
     }
 
+    @Override
     public Sequencing getSequencing() {
         return seq;
     }
@@ -197,6 +199,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
         this.server = server;
     }
 
+    @Override
     public SequencingServer getSequencingServer() {
         return server;
     }
@@ -205,42 +208,52 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
         this.callbackFactory = callbackFactory;
     }
 
+    @Override
     public boolean isSequencingCallbackRequired() {
         return this.callbackFactory != null;
     }
 
+    @Override
     public boolean shouldUseSeparateConnection() {
         return shouldUseSeparateConnection;
     }
 
+    @Override
     public void setShouldUseSeparateConnection(boolean shouldUseSeparateConnection) {
         this.shouldUseSeparateConnection = shouldUseSeparateConnection;
     }
 
+    @Override
     public boolean isConnectedUsingSeparateConnection() {
         return isConnected() && (getConnectionHandler() != null);
     }
 
+    @Override
     public Login getLogin() {
         return login;
     }
 
+    @Override
     public void setLogin(Login login) {
         this.login = login;
     }
 
+    @Override
     public int getMinPoolSize() {
         return minPoolSize;
     }
 
+    @Override
     public void setMinPoolSize(int size) {
         this.minPoolSize = size;
     }
 
+    @Override
     public int getMaxPoolSize() {
         return maxPoolSize;
     }
 
+    @Override
     public void setMaxPoolSize(int size) {
         this.maxPoolSize = size;
     }
@@ -249,10 +262,12 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
         return this.initialPoolSize;
     }
 
+    @Override
     public void setInitialPoolSize(int size) {
         this.initialPoolSize = size;
     }
 
+    @Override
     public boolean isConnected() {
         return states != null;
     }
@@ -266,6 +281,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
         this.connectionHandler = handler;
     }
 
+    @Override
     public ConnectionPool getConnectionPool() {
         if ((getConnectionHandler() != null) && (getConnectionHandler() instanceof ServerSessionConnectionHandler)) {
             return ((ServerSessionConnectionHandler)getConnectionHandler()).getPool();
@@ -273,10 +289,12 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
         return this.connectionPool;
     }
 
+    @Override
     public Object getNextValue(Class cls) {
         return getNextValue(getOwnerSession(), cls);
     }
 
+    @Override
     public void initializePreallocated() {
         if (preallocationHandler != null) {
             for (PreallocationHandler handler : preallocationHandler.values()) {
@@ -285,6 +303,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
         }
     }
 
+    @Override
     public void initializePreallocated(String seqName) {
         if (preallocationHandler != null) {
             for (PreallocationHandler handler : preallocationHandler.values()) {
@@ -348,6 +367,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
             return null;
         }
 
+        @Override
         public String toString() {
             String name = getClass().getName();
             return name.substring(name.lastIndexOf('$') + 1);
@@ -374,6 +394,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
             * Called after transaction has committed (commit in non-jta case; after completion - jta case).
             * Should not be called after rollback.
             */
+            @Override
             public void afterCommit(Accessor accessor) {
                 afterCommitInternal(context, localSequences, accessor);
             }
@@ -383,6 +404,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
             }
         }
 
+        @Override
         SequencingCallbackFactory getSequencingCallbackFactory() {
             return this;
         }
@@ -391,6 +413,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
         * INTERNAL:
         * Creates SequencingCallback.
         */
+        @Override
         public SequencingCallback createSequencingCallback() {
             return new SequencingCallbackImpl();
         }
@@ -436,6 +459,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
          * Return the next sequence value.
          * First check the global pool, if empty then allocate new sequences locally.
          */
+        @Override
         public Object getNextValue(Sequence sequence, AbstractSession writeSession) {
             String seqName = sequence.getName();
             if(sequence.getPreallocationSize() > 1) {
@@ -570,6 +594,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
      * This is typically the default behavior.
      */
     class Preallocation_Transaction_Accessor_State extends State {
+        @Override
         public Object getNextValue(Sequence sequence, AbstractSession writeSession) {
             String seqName = sequence.getName();
             if(sequence.getPreallocationSize() > 1) {
@@ -651,6 +676,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
      * No transaction is required as sequence objects are non-transactional.
      */
     class Preallocation_NoTransaction_State extends State {
+        @Override
         public Object getNextValue(Sequence sequence, AbstractSession writeSession) {
             String seqName = sequence.getName();
             if(sequence.getPreallocationSize() > 1) {
@@ -692,11 +718,13 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
      * Table or sequence object with preallocation size 1 still goes through the preallocation state.
      */
     class NoPreallocation_State extends State {
+        @Override
         public Object getNextValue(Sequence sequence, AbstractSession writeSession) {
             return sequence.getGeneratedValue(null, writeSession);
         }
     }
 
+    @Override
     public void resetSequencing() {
         if (isConnected()) {
             onDisconnect();
@@ -707,6 +735,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
     /**
      * Initialize the sequences on login.
      */
+    @Override
     public void onConnect() {
         if (isConnected()) {
             return;
@@ -722,6 +751,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
     /**
      * If sequencing is connected initialize the sequences used by descriptors, otherwise connect.
      */
+    @Override
     public void onAddDescriptors(Collection descriptors) {
         if (!isConnected()) {
             onConnect();
@@ -852,6 +882,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
         logDebugSequencingConnected(nAlreadyConnectedSequences);
     }
 
+    @Override
     public void onDisconnect() {
         if (!isConnected()) {
             return;
@@ -1101,6 +1132,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
         }
     }
 
+    @Override
     public Object getNextValue(AbstractSession writeSession, Class cls) {
         Sequence sequence = getSequence(cls);
         State state = getState(sequence.shouldUsePreallocation(), sequence.shouldUseTransaction());
@@ -1142,6 +1174,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
         return getDefaultSequence().getInitialValue();
     }
 
+    @Override
     public int whenShouldAcquireValueForAll() {
         return whenShouldAcquireValueForAll;
     }
@@ -1154,6 +1187,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
         return getOwnerSession().getDatasourcePlatform().getSequence(seqName);
     }
 
+    @Override
     public void setConnectionPool(ConnectionPool connectionPool) {
         this.connectionPool = connectionPool;
     }

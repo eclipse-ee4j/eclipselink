@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -32,6 +32,7 @@ public abstract class EclipseLinkAnonymousExpressionVisitor extends AnonymousExp
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(AsOfClause expression) {
         visit((Expression) expression);
     }
@@ -39,6 +40,7 @@ public abstract class EclipseLinkAnonymousExpressionVisitor extends AnonymousExp
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(CastExpression expression) {
         visit((Expression) expression);
     }
@@ -46,6 +48,7 @@ public abstract class EclipseLinkAnonymousExpressionVisitor extends AnonymousExp
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(ConnectByClause expression) {
         visit((Expression) expression);
     }
@@ -53,6 +56,7 @@ public abstract class EclipseLinkAnonymousExpressionVisitor extends AnonymousExp
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(DatabaseType expression) {
         visit((Expression) expression);
     }
@@ -60,6 +64,7 @@ public abstract class EclipseLinkAnonymousExpressionVisitor extends AnonymousExp
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(ExtractExpression expression) {
         visit((Expression) expression);
     }
@@ -67,6 +72,7 @@ public abstract class EclipseLinkAnonymousExpressionVisitor extends AnonymousExp
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(HierarchicalQueryClause expression) {
         visit((Expression) expression);
     }
@@ -74,6 +80,7 @@ public abstract class EclipseLinkAnonymousExpressionVisitor extends AnonymousExp
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(OrderSiblingsByClause expression) {
         visit((Expression) expression);
     }
@@ -81,6 +88,7 @@ public abstract class EclipseLinkAnonymousExpressionVisitor extends AnonymousExp
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(RegexpExpression expression) {
         visit((Expression) expression);
     }
@@ -88,6 +96,7 @@ public abstract class EclipseLinkAnonymousExpressionVisitor extends AnonymousExp
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(StartWithClause expression) {
         visit((Expression) expression);
     }
@@ -95,6 +104,7 @@ public abstract class EclipseLinkAnonymousExpressionVisitor extends AnonymousExp
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(TableExpression expression) {
         visit((Expression) expression);
     }
@@ -102,6 +112,7 @@ public abstract class EclipseLinkAnonymousExpressionVisitor extends AnonymousExp
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(TableVariableDeclaration expression) {
         visit((Expression) expression);
     }
@@ -109,6 +120,7 @@ public abstract class EclipseLinkAnonymousExpressionVisitor extends AnonymousExp
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(UnionClause expression) {
         visit((Expression) expression);
     }

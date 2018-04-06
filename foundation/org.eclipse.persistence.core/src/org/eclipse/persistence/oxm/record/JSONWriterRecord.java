@@ -109,6 +109,7 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
     /**
      * INTERNAL:
      */
+    @Override
     public void setMarshaller(XMLMarshaller marshaller) {
         super.setMarshaller(marshaller);
         attributePrefix = marshaller.getAttributePrefix();
@@ -129,6 +130,7 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
      * @param openGrouping if grouping elements should be marshalled for empty collections
      * @return
      */
+    @Override
     public boolean emptyCollection(XPathFragment xPathFragment, NamespaceResolver namespaceResolver, boolean openGrouping) {
          if(marshaller.isMarshalEmptyCollections()){
              super.emptyCollection(xPathFragment, namespaceResolver, true);
@@ -150,6 +152,7 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
          }
     }
 
+    @Override
     public void forceValueWrapper(){
         charactersAllowed = false;
     }
@@ -170,15 +173,18 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
         this.writer = new WriterOutput(writer);
     }
 
+    @Override
     public void namespaceDeclaration(String prefix, String namespaceURI){
     }
 
+    @Override
     public void defaultNamespaceDeclaration(String defaultNamespace){
     }
 
     /**
      * INTERNAL:
      */
+    @Override
     public void startDocument(String encoding, String version) {
         try {
              if(null != level) {
@@ -220,6 +226,7 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
     /**
      * INTERNAL:
      */
+    @Override
     public void endDocument() {
         try {
             closeComplex();
@@ -235,6 +242,7 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
     /**
      * INTERNAL:
      */
+    @Override
     public void openStartElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
         try {
              if(level.isFirst()) {
@@ -280,12 +288,14 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
     /**
      * INTERNAL:
      */
+    @Override
     public void element(XPathFragment frag) {
     }
 
     /**
      * INTERNAL:
      */
+    @Override
     public void attribute(String namespaceURI, String localName, String qName, String value) {
         XPathFragment xPathFragment = new XPathFragment();
         xPathFragment.setNamespaceURI(namespaceURI);
@@ -300,6 +310,7 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
     /**
      * INTERNAL:
      */
+    @Override
     public void attribute(XPathFragment xPathFragment, NamespaceResolver namespaceResolver, String value) {
         attribute(xPathFragment, namespaceResolver, value, null);
     }
@@ -308,6 +319,7 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
      * INTERNAL:
      * override so we don't iterate over namespaces when startPrefixMapping doesn't do anything
      */
+    @Override
     public void startPrefixMappings(NamespaceResolver namespaceResolver) {
     }
 
@@ -315,17 +327,20 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
      * INTERNAL:
      * override so we don't iterate over namespaces when endPrefixMapping doesn't do anything
      */
+    @Override
     public void endPrefixMappings(NamespaceResolver namespaceResolver) {
     }
 
     /**
      * INTERNAL:
      */
+    @Override
     public void closeStartElement() {}
 
     /**
      * INTERNAL:
      */
+    @Override
     public void endElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
         try{
             if(null != level) {
@@ -395,6 +410,7 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
     /**
      * INTERNAL:
      */
+    @Override
     public void characters(String value) {
         characters(value, true, false);
     }
@@ -430,7 +446,8 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
              }
      }
 
-     public void attribute(XPathFragment xPathFragment, NamespaceResolver namespaceResolver,  Object value, QName schemaType){
+     @Override
+    public void attribute(XPathFragment xPathFragment, NamespaceResolver namespaceResolver,  Object value, QName schemaType){
          if(xPathFragment.getNamespaceURI() != null && xPathFragment.getNamespaceURI() == javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI){
              return;
          }
@@ -440,7 +457,8 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
          endElement(xPathFragment, namespaceResolver);
      }
 
-     public void characters(QName schemaType, Object value, String mimeType, boolean isCDATA){
+     @Override
+    public void characters(QName schemaType, Object value, String mimeType, boolean isCDATA){
         characters(schemaType, value, mimeType, isCDATA, false);
      }
 
@@ -523,13 +541,15 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
     /**
      * INTERNAL:
      */
-     public void namespaceDeclarations(NamespaceResolver namespaceResolver) {
+     @Override
+    public void namespaceDeclarations(NamespaceResolver namespaceResolver) {
      }
 
     /**
      * INTERNAL:
      */
-     public void nilComplex(XPathFragment xPathFragment, NamespaceResolver namespaceResolver){
+     @Override
+    public void nilComplex(XPathFragment xPathFragment, NamespaceResolver namespaceResolver){
          XPathFragment groupingFragment = openStartGroupingElements(namespaceResolver);
          closeStartGroupingElements(groupingFragment);
          openStartElement(xPathFragment, namespaceResolver);
@@ -540,7 +560,8 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
     /**
      * INTERNAL:
      */
-     public void nilSimple(NamespaceResolver namespaceResolver){
+     @Override
+    public void nilSimple(NamespaceResolver namespaceResolver){
          XPathFragment groupingFragment = openStartGroupingElements(namespaceResolver);
          characters(NULL, false, false);
          closeStartGroupingElements(groupingFragment);
@@ -550,11 +571,13 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
       * Used when an empty simple value should be written
       * @since EclipseLink 2.4
       */
-     public void emptySimple(NamespaceResolver namespaceResolver){
+     @Override
+    public void emptySimple(NamespaceResolver namespaceResolver){
          nilSimple(namespaceResolver);
      }
 
-     public void emptyAttribute(XPathFragment xPathFragment,NamespaceResolver namespaceResolver){
+     @Override
+    public void emptyAttribute(XPathFragment xPathFragment,NamespaceResolver namespaceResolver){
          XPathFragment groupingFragment = openStartGroupingElements(namespaceResolver);
          openStartElement(xPathFragment, namespaceResolver);
          characters(NULL, false, false);
@@ -566,7 +589,8 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
       * Used when an empty complex item should be written
       * @since EclipseLink 2.4
       */
-     public void emptyComplex(XPathFragment xPathFragment, NamespaceResolver namespaceResolver){
+     @Override
+    public void emptyComplex(XPathFragment xPathFragment, NamespaceResolver namespaceResolver){
          XPathFragment groupingFragment = openStartGroupingElements(namespaceResolver);
          closeStartGroupingElements(groupingFragment);
          openStartElement(xPathFragment, namespaceResolver);
@@ -587,6 +611,7 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
     /**
      * INTERNAL:
      */
+    @Override
     public void cdata(String value) {
         characters(value);
     }
@@ -596,6 +621,7 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
      * The character used to separate the prefix and uri portions when namespaces are present
      * @since 2.4
      */
+    @Override
     public char getNamespaceSeparator(){
         return marshaller.getNamespaceSeparator();
     }
@@ -605,6 +631,7 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
      * The optional fragment used to wrap the text() mappings
      * @since 2.4
      */
+    @Override
     public XPathFragment getTextWrapperFragment() {
         return textWrapperFragment;
     }
@@ -698,6 +725,7 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
         }
     }
 
+    @Override
     protected String getStringForQName(QName qName){
         if(null == qName) {
             return null;
@@ -713,6 +741,7 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
      * @param namespaceResolver The NamespaceResolver can be used to resolve the
      * namespace URI/prefix of the node
      */
+    @Override
     public void node(Node node, NamespaceResolver namespaceResolver, String uri, String name) {
         if (node.getNodeType() == Node.ATTRIBUTE_NODE) {
             Attr attr = (Attr) node;
@@ -777,6 +806,7 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
         }
 
         // --------------------- CONTENTHANDLER METHODS --------------------- //
+        @Override
         public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
                 XPathFragment xPathFragment = new XPathFragment(localName);
                 xPathFragment.setNamespaceURI(namespaceURI);
@@ -784,6 +814,7 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
                 handleAttributes(atts);
         }
 
+        @Override
         public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
             XPathFragment xPathFragment = new XPathFragment(localName);
             xPathFragment.setNamespaceURI(namespaceURI);
@@ -791,26 +822,32 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
             JSONWriterRecord.this.endElement(xPathFragment, namespaceResolver);
         }
 
+        @Override
         public void startPrefixMapping(String prefix, String uri) throws SAXException {
         }
 
+        @Override
         public void characters(char[] ch, int start, int length) throws SAXException {
             String characters = new String (ch, start, length);
             characters(characters);
         }
 
+        @Override
         public void characters(CharSequence characters) throws SAXException {
             JSONWriterRecord.this.characters(characters.toString());
         }
 
         // --------------------- LEXICALHANDLER METHODS --------------------- //
+        @Override
         public void comment(char[] ch, int start, int length) throws SAXException {
         }
 
+        @Override
         public void startCDATA() throws SAXException {
             isProcessingCData = true;
         }
 
+        @Override
         public void endCDATA() throws SAXException {
             isProcessingCData = false;
         }
@@ -837,18 +874,29 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
             }
         }
         // --------------- SATISFY CONTENTHANDLER INTERFACE --------------- //
+        @Override
         public void endPrefixMapping(String prefix) throws SAXException {}
+        @Override
         public void processingInstruction(String target, String data) throws SAXException {}
+        @Override
         public void setDocumentLocator(Locator locator) {}
+        @Override
         public void startDocument() throws SAXException {}
+        @Override
         public void endDocument() throws SAXException {}
+        @Override
         public void skippedEntity(String name) throws SAXException {}
+        @Override
         public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {}
 
         // --------------- SATISFY LEXICALHANDLER INTERFACE --------------- //
+        @Override
         public void startEntity(String name) throws SAXException {}
+        @Override
         public void endEntity(String name) throws SAXException {}
+        @Override
         public void startDTD(String name, String publicId, String systemId) throws SAXException {}
+        @Override
         public void endDTD() throws SAXException {}
         @Override
         public void setNil(boolean isNil) {}
@@ -1121,6 +1169,7 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
             this.writer = writer;
         }
 
+        @Override
         public XMLMarshaller getMarshaller() {
             return marshaller;
         }
@@ -1158,6 +1207,7 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
             writer.write(text);
         }
 
+        @Override
         public void writeCR() throws IOException {
             writer.write(cr);
         }

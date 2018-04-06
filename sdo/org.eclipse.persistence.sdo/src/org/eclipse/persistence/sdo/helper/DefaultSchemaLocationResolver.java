@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -35,6 +35,7 @@ public class DefaultSchemaLocationResolver implements SchemaLocationResolver {
      * @param targetType the target type
      * @return the value for the schemaLocation attribute of the generated Import
      */
+    @Override
     public String resolveSchemaLocation(Type sourceType, Type targetType) {
         QName qname = new QName(targetType.getURI(), targetType.getName());
         String schemaLocation = (String)schemaLocationMap.get(qname);

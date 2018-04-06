@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -63,6 +63,7 @@ public class JPQLCall implements Serializable, Call {
      * Return the appropriate mechanism,
      * with the call added as necessary.
      */
+    @Override
     public DatabaseQueryMechanism buildNewQueryMechanism(DatabaseQuery query) {
         return new JPQLCallQueryMechanism(query, this);
     }
@@ -72,10 +73,12 @@ public class JPQLCall implements Serializable, Call {
      * Return the appropriate mechanism,
      * with the call added as necessary.
      */
+    @Override
     public DatabaseQueryMechanism buildQueryMechanism(DatabaseQuery query, DatabaseQueryMechanism mechanism) {
         return buildNewQueryMechanism(query);
     }
 
+    @Override
     public Object clone() {
         try {
             return super.clone();
@@ -128,6 +131,7 @@ public class JPQLCall implements Serializable, Call {
      * Return the SQL string for this call. Always return null
      * since this is an EJBQL call
      */
+    @Override
     public String getLogString(Accessor accessor) {
         return getSQLString();
     }
@@ -152,6 +156,7 @@ public class JPQLCall implements Serializable, Call {
     /**
      * Return whether all the results of the call have been returned.
      */
+    @Override
     public boolean isFinished() {
         //never used, but required for implementing Call.
         return true;
@@ -230,6 +235,7 @@ public class JPQLCall implements Serializable, Call {
     /**
      * The return type is one of, NoReturn, ReturnOneRow or ReturnManyRows.
      */
+    @Override
     public boolean isNothingReturned() {
         return false;
     }
@@ -237,6 +243,7 @@ public class JPQLCall implements Serializable, Call {
     /**
      * The return type is one of, NoReturn, ReturnOneRow or ReturnManyRows.
      */
+    @Override
     public boolean isOneRowReturned() {
         return false;
     }
@@ -245,6 +252,7 @@ public class JPQLCall implements Serializable, Call {
      * INTERNAL:
      * Print the JPQL string.
      */
+    @Override
     public String toString() {
         String name = getClass().getSimpleName();
         if (getJPQLString() == null) {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -42,6 +42,7 @@ public class MarshalRecordContentHandler implements ExtendedContentHandler {
         return marshalRecord;
     }
 
+    @Override
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
         XPathFragment frag = new XPathFragment(qName);
         marshalRecord.openStartElement(frag, resolver);
@@ -51,48 +52,59 @@ public class MarshalRecordContentHandler implements ExtendedContentHandler {
         marshalRecord.closeStartElement();
     }
 
+    @Override
     public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
         XPathFragment frag = new XPathFragment(qName);
         marshalRecord.endElement(frag, resolver);
     }
 
+    @Override
     public void startPrefixMapping(String prefix, String uri) throws SAXException {
         marshalRecord.startPrefixMapping(prefix, uri);
     }
 
+    @Override
     public void processingInstruction(String target, String data) throws SAXException {
         //refContentHandler.processingInstruction(target, data);
     }
 
+    @Override
     public void setDocumentLocator(Locator locator) {
         //refContentHandler.setDocumentLocator(locator);
     }
 
+    @Override
     public void startDocument() throws SAXException {
         //do nothing.  startDocument() on the content handler is not triggered when fragment on XMLMarshaller is true
     }
 
+    @Override
     public void endDocument() throws SAXException {
         //do nothing.  startDocument() on the content handler is not triggered when fragment on XMLMarshaller is true
     }
 
+    @Override
     public void skippedEntity(String name) throws SAXException {
         //refContentHandler.skippedEntity(name);
     }
 
+    @Override
     public void endPrefixMapping(String prefix) throws SAXException {
         marshalRecord.endPrefixMapping(prefix);
     }
 
+    @Override
     public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {
         //refContentHandler.ignorableWhitespace(ch, start, length);
     }
 
+    @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
         String characters = new String(ch, start, length);
         characters(characters);
     }
 
+    @Override
     public void characters(CharSequence charSequence) throws SAXException {
         String characters = charSequence.toString();
         if (characters.trim().length() > 0) {

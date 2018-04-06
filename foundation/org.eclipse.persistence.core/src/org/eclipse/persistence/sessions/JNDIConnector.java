@@ -84,6 +84,7 @@ public class JNDIConnector implements Connector {
      * INTERNAL:
      * Clone the connector.
      */
+    @Override
     public Object clone() {
         try {
             return super.clone();
@@ -96,6 +97,7 @@ public class JNDIConnector implements Connector {
      * INTERNAL:
      * Connect with the specified properties and return the Connection.
      */
+    @Override
     public Connection connect(Properties properties, Session session) throws DatabaseException, ValidationException {
         String user = properties.getProperty("user");
         DataSource dataSource = getDataSource();
@@ -184,6 +186,7 @@ public class JNDIConnector implements Connector {
      * Provide the details of my connection information. This is primarily for JMX runtime services.
      * @return java.lang.String
      */
+    @Override
     public String getConnectionDetails() {
         return getName();
     }
@@ -236,6 +239,7 @@ public class JNDIConnector implements Connector {
      * PUBLIC:
      * Print data source info.
      */
+    @Override
     public String toString() {
         return Helper.getShortClassName(getClass()) + ToStringLocalization.buildMessage("datasource_name", (Object[])null) + "=>" + getName();
     }
@@ -244,6 +248,7 @@ public class JNDIConnector implements Connector {
      * INTERNAL:
      * Print something useful on the log.
      */
+    @Override
     public void toString(java.io.PrintWriter writer) {
         writer.print(ToStringLocalization.buildMessage("connector", (Object[])null) + "=>" + Helper.getShortClassName(getClass()));
         writer.print(" ");

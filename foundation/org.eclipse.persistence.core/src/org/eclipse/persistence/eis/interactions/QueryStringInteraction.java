@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -53,6 +53,7 @@ public class QueryStringInteraction extends MappedInteraction implements QuerySt
      * PUBLIC:
      * Return the query string.
      */
+    @Override
     public String getQueryString() {
         return queryString;
     }
@@ -61,6 +62,7 @@ public class QueryStringInteraction extends MappedInteraction implements QuerySt
      * PUBLIC:
      * Set the query string.
      */
+    @Override
     public void setQueryString(String queryString) {
         this.queryString = queryString;
     }
@@ -68,6 +70,7 @@ public class QueryStringInteraction extends MappedInteraction implements QuerySt
     /**
      * Allow the call to translate the query arguments.
      */
+    @Override
     public void translate(AbstractRecord translationRow, AbstractRecord modifyRow, AbstractSession session) {
         translateQueryString(translationRow, modifyRow, session);
     }
@@ -75,6 +78,7 @@ public class QueryStringInteraction extends MappedInteraction implements QuerySt
     /**
      * Translate the custom query markers.
      */
+    @Override
     public void prepare(AbstractSession session) {
         if (isPrepared()) {
             return;
@@ -86,6 +90,7 @@ public class QueryStringInteraction extends MappedInteraction implements QuerySt
     /**
      * Return the string for logging purposes.
      */
+    @Override
     public String getLogString(Accessor accessor) {
         StringWriter writer = new StringWriter();
         writer.write("Executing ");
@@ -111,6 +116,7 @@ public class QueryStringInteraction extends MappedInteraction implements QuerySt
         return writer.toString();
     }
 
+    @Override
     public boolean isQueryStringCall() {
         return true;
     }

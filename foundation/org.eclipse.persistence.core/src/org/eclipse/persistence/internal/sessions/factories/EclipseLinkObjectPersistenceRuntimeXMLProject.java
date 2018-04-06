@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -111,6 +111,7 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends ObjectPersist
         return new ConstantTransformer(DatabaseLogin.getVersion());
     }
 
+    @Override
     protected ClassDescriptor buildXMLChoiceFieldToClassAssociationDescriptor() {
         ClassDescriptor descriptor = super.buildXMLChoiceFieldToClassAssociationDescriptor();
 
@@ -215,6 +216,7 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends ObjectPersist
         return descriptor;
     }
 
+    @Override
     protected ClassDescriptor buildXMLAnyAttributeMappingDescriptor() {
         ClassDescriptor descriptor = super.buildXMLAnyAttributeMappingDescriptor();
 
@@ -243,6 +245,7 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends ObjectPersist
         return descriptor;
     }
 
+    @Override
     protected ClassDescriptor buildXMLAnyObjectMappingDescriptor() {
         ClassDescriptor descriptor = super.buildXMLAnyObjectMappingDescriptor();
 
@@ -258,6 +261,7 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends ObjectPersist
         return descriptor;
     }
 
+    @Override
     protected ClassDescriptor buildConverterDescriptor() {
         ClassDescriptor descriptor = super.buildConverterDescriptor();
         descriptor.getInheritancePolicy().addClassIndicator(XMLListConverter.class, getPrimaryNamespaceXPath() + "xml-list-converter");
@@ -280,6 +284,7 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends ObjectPersist
         return descriptor;
     }
 
+    @Override
     protected ClassDescriptor buildOXXMLDescriptorDescriptor() {
         ClassDescriptor descriptor = super.buildOXXMLDescriptorDescriptor();
 

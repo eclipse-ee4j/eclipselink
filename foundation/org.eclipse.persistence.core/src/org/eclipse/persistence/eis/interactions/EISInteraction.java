@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -124,6 +124,7 @@ public abstract class EISInteraction extends DatasourceCall {
         return (arguments != null) && (!arguments.isEmpty());
     }
 
+    @Override
     public boolean isEISInteraction() {
         return true;
     }
@@ -194,6 +195,7 @@ public abstract class EISInteraction extends DatasourceCall {
     /**
      * Set the default record name from the descriptor.
      */
+    @Override
     public void prepare(AbstractSession session) {
         if (getInputRecordName().length() == 0) {
             if ((getQuery() != null) && (getQuery().getDescriptor() instanceof EISDescriptor)) {
@@ -274,6 +276,7 @@ public abstract class EISInteraction extends DatasourceCall {
     /**
      * Return the string for logging purposes.
      */
+    @Override
     public String getLogString(Accessor accessor) {
         StringWriter writer = new StringWriter();
         writer.write("Executing ");
@@ -308,6 +311,7 @@ public abstract class EISInteraction extends DatasourceCall {
      * The entire argument row can be converted to the input record,
      * or the arguments from the row can be translated into the interaction parameters.
      */
+    @Override
     public void translate(AbstractRecord translationRow, AbstractRecord modifyRow, AbstractSession session) {
         if (modifyRow != null) {
             // Avoid clearing a prepared row.
@@ -500,6 +504,7 @@ public abstract class EISInteraction extends DatasourceCall {
         this.inputRow = inputRow;
     }
 
+    @Override
     public String toString() {
         return Helper.getShortClassName(getClass()) + "(" + getFunctionName() + ")";
     }

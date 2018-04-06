@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2017 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -135,6 +135,7 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
      * Initialize the remote command manager. This will also trigger the
      * DiscoveryManager to start establishing the EclipseLink cluster.
      */
+    @Override
     public void initialize() {
         Object[] args = { this.getServiceId() };
         logDebug("starting_rcm", args);
@@ -180,6 +181,7 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
      * NOTE: Although this call initiates the shutdown process,
      * no guarantees are made as to when it will actually complete.
      */
+    @Override
     public void shutdown() {
         Object[] args = { this.getServiceId() };
         logDebug("stopping_rcm", args);
@@ -203,6 +205,7 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
      *
      * @param command An object representing a EclipseLink command
      */
+    @Override
     public void propagateCommand(Object command) {
         Command newCommand;
         CommandPropagator propagator;
@@ -306,10 +309,12 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
         this.commandProcessor.incrementProfile(SessionProfiler.RemoteChangeSet);
     }
 
+    @Override
     public CommandProcessor getCommandProcessor() {
         return commandProcessor;
     }
 
+    @Override
     public void setCommandProcessor(CommandProcessor newCommandProcessor) {
         commandProcessor = newCommandProcessor;
         if (newCommandProcessor instanceof Session) {
@@ -317,10 +322,12 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
         }
     }
 
+    @Override
     public TransportManager getTransportManager() {
         return transportManager;
     }
 
+    @Override
     public void setTransportManager(TransportManager newTransportManager) {
         transportManager = newTransportManager;
         newTransportManager.setRemoteCommandManager(this);
@@ -349,6 +356,7 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
      * PUBLIC:
      * Return the discovery manager that detects the arrival of new cluster members
      */
+    @Override
     public DiscoveryManager getDiscoveryManager() {
         return discoveryManager;
     }
@@ -358,6 +366,7 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
      * Return the converter instance used to convert between EclipseLink Command
      * objects and an application command format.
      */
+    @Override
     public CommandConverter getCommandConverter() {
         return commandConverter;
     }
@@ -370,6 +379,7 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
      * The converter will also be invoked to convert EclipseLink Command objects into
      * application format before being sent to the CommandProcessor for execution.
      */
+    @Override
     public void setCommandConverter(CommandConverter newCommandConverter) {
         commandConverter = newCommandConverter;
     }
@@ -452,6 +462,7 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
      * Commands sent on other service channels will not be exchanged with this
      * command manager.
      */
+    @Override
     public String getChannel() {
         return this.getServiceId().getChannel();
     }
@@ -463,6 +474,7 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
      * Commands sent on other service channels will not be exchanged with this
      * command manager.
      */
+    @Override
     public void setChannel(String channel) {
         this.getServiceId().setChannel(channel);
     }
@@ -471,6 +483,7 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
      * INTERNAL:
      * Return whether this command manager should process profile commands
      */
+    @Override
     public boolean isCommandProcessorASession() {
         return this.isEclipseLinkSession;
     }
@@ -479,6 +492,7 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
      * PUBLIC:
      * Return the URL for this command manager.
      */
+    @Override
     public String getUrl() {
         return this.getServiceId().getURL();
     }
@@ -487,6 +501,7 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
      * ADVANCED:
      * Set the URL for this command manager.
      */
+    @Override
     public void setUrl(String url) {
         this.getServiceId().setURL(url);
     }
@@ -500,6 +515,7 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
      * the command manager will create a separate thread for each of the remote
      * service executions, and then promptly return to the caller.
      */
+    @Override
     public boolean shouldPropagateAsynchronously() {
         return isAsynchronous;
     }
@@ -513,6 +529,7 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
      * the command manager will create a separate thread for each of the remote
      * service executions, and then promptly return to the caller.
      */
+    @Override
     public void setShouldPropagateAsynchronously(boolean asyncMode) {
         isAsynchronous = asyncMode;
     }

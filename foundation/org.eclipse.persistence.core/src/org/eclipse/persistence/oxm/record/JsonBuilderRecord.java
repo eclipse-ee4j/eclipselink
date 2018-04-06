@@ -44,16 +44,19 @@ public class JsonBuilderRecord extends JsonRecord<JsonBuilderRecord.Level> {
         isRootArray = true;
     }
 
+    @Override
     protected Level createNewLevel(boolean collection, Level parentLevel){
       return new Level(collection, position);
     }
 
+    @Override
     protected void startRootObject(){
         super.startRootObject();
         position.setJsonObjectBuilder(rootJsonObjectBuilder);
         setComplex(position, true);
     }
 
+    @Override
     protected void finishLevel(){
         if(!(position.isCollection && position.isEmptyCollection() && position.getKeyName() == null)){
 
@@ -78,6 +81,7 @@ public class JsonBuilderRecord extends JsonRecord<JsonBuilderRecord.Level> {
         super.finishLevel();
     }
 
+    @Override
     protected void startRootLevelCollection(){
         if(rootJsonArrayBuilder == null){
             rootJsonArrayBuilder = Json.createArrayBuilder();
@@ -90,6 +94,7 @@ public class JsonBuilderRecord extends JsonRecord<JsonBuilderRecord.Level> {
         finishLevel();
     }
 
+    @Override
     protected void setComplex(Level level, boolean complex){
         boolean isAlreadyComplex = level.isComplex;
         super.setComplex(level, complex);
@@ -100,10 +105,12 @@ public class JsonBuilderRecord extends JsonRecord<JsonBuilderRecord.Level> {
         }
     }
 
+    @Override
     protected void writeEmptyCollection(Level level, String keyName){
         level.getJsonObjectBuilder().add(keyName, Json.createArrayBuilder());
     }
 
+    @Override
     protected void addValueToObject(Level level, String keyName, Object value, QName schemaType){
         JsonObjectBuilder jsonObjectBuilder = level.getJsonObjectBuilder();
         if(value == NULL){
@@ -141,6 +148,7 @@ public class JsonBuilderRecord extends JsonRecord<JsonBuilderRecord.Level> {
         }
     }
 
+    @Override
     protected void addValueToArray(Level level, Object value, QName schemaType){
         JsonArrayBuilder jsonArrayBuilder = level.getJsonArrayBuilder();
         if(value == NULL){
@@ -191,6 +199,7 @@ public class JsonBuilderRecord extends JsonRecord<JsonBuilderRecord.Level> {
             super(isCollection, position);
         }
 
+        @Override
         public void setCollection(boolean isCollection) {
             super.setCollection(isCollection);
             if(isCollection && jsonArrayBuilder == null){

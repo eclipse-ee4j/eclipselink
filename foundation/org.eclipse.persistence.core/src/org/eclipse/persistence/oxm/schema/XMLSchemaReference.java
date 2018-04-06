@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -76,6 +76,7 @@ public abstract class XMLSchemaReference implements org.eclipse.persistence.plat
         this.resource = resource;
     }
 
+    @Override
     public abstract URL getURL();
 
     /**
@@ -84,6 +85,7 @@ public abstract class XMLSchemaReference implements org.eclipse.persistence.plat
      *
      * @return COMPLEX_TYPE=1, SIMPLE_TYPE=2, ELEMENT=3, GROUP=5
      */
+    @Override
     public int getType() {
         return type;
     }
@@ -109,6 +111,7 @@ public abstract class XMLSchemaReference implements org.eclipse.persistence.plat
      *
      * @return the schema context
      */
+    @Override
     public String getSchemaContext() {
         return this.schemaContext;
     }

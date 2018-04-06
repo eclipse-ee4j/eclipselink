@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -455,6 +455,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * In case Query By Example is used, this method builds and returns an expression that
      * corresponds to a single attribute and it's value.
      */
+    @Override
     public Expression buildExpression(Object queryObject, QueryByExamplePolicy policy, Expression expressionBuilder, Map processedObjects, AbstractSession session) {
         if (policy.shouldValidateExample()){
             throw QueryException.unsupportedMappingQueryByExample(queryObject.getClass().getName(), this);
@@ -1105,6 +1106,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * the instance variable value to that data type.
      * @since Java Persistence API 2.0
      */
+    @Override
     public Class getAttributeClassification() {
         return attributeClassification;
     }
@@ -1244,6 +1246,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * INTERNAL:
      * Return null if this mapping is used in an order by.
      */
+    @Override
     public List<Expression> getOrderByNormalizedExpressions(Expression base) {
         return null;
     }
@@ -1875,6 +1878,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * Return whether this mapping should be traversed when we are locking
      * @return
      */
+    @Override
     public boolean isLockableMapping(){
         return false;
     }
@@ -3101,6 +3105,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * Collection containers are supported for DirectCollectionMappings.
      * @see org.eclipse.persistence.mappings.DirectMapMapping
      */
+    @Override
     public void useMapClass(Class concreteClass, String methodName) {
         throw ValidationException.illegalUseOfMapInDirectCollection(this, concreteClass, methodName);
     }

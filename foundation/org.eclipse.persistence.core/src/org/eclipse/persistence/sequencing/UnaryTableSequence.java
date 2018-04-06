@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -62,10 +62,12 @@ public class UnaryTableSequence extends QuerySequence {
         setCounterFieldName(counterFieldName);
     }
 
+    @Override
     public boolean isUnaryTable() {
         return true;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof UnaryTableSequence) {
             UnaryTableSequence other = (UnaryTableSequence)obj;
@@ -98,6 +100,7 @@ public class UnaryTableSequence extends QuerySequence {
     /**
     * INTERNAL:
     */
+    @Override
     public void onConnect() {
         super.onConnect();
         initialize();
@@ -106,11 +109,13 @@ public class UnaryTableSequence extends QuerySequence {
     /**
     * INTERNAL:
     */
+    @Override
     public void onDisconnect() {
         clear();
         super.onDisconnect();
     }
 
+    @Override
     protected ValueReadQuery buildSelectQuery(String seqName, Integer size) {
         ValueReadQuery selectQuery = new ValueReadQuery();
         selectQuery.dontBindAllParameters();
@@ -121,6 +126,7 @@ public class UnaryTableSequence extends QuerySequence {
         return selectQuery;
     }
 
+    @Override
     protected DataModifyQuery buildUpdateQuery(String seqName, Number size) {
         DataModifyQuery updateQuery = new DataModifyQuery();
         updateQuery.dontBindAllParameters();

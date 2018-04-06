@@ -49,14 +49,17 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
         this.xmlAnyObjectMapping = xmlAnyObjectMapping;
     }
 
+    @Override
     public boolean isOwningNode(XPathFragment xPathFragment) {
         return null == xPathFragment;
     }
 
+    @Override
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver) {
         return marshal(xPathFragment, marshalRecord, object, session, namespaceResolver, ObjectMarshalContext.getInstance());
     }
 
+    @Override
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         if (xmlAnyObjectMapping.isReadOnly()) {
             return false;
@@ -65,6 +68,7 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
         return this.marshalSingleValue(xPathFragment, marshalRecord, object, objectValue, session, namespaceResolver, marshalContext);
     }
 
+    @Override
     public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object objectValue, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         XPathFragment rootFragment = null;
 
@@ -168,6 +172,7 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
         return true;
     }
 
+    @Override
     public boolean startElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts) {
         try {
             Descriptor workingDescriptor = findReferenceDescriptor(xPathFragment, unmarshalRecord, atts, xmlAnyObjectMapping, xmlAnyObjectMapping.getKeepAsElementPolicy());
@@ -196,6 +201,7 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
         return true;
     }
 
+    @Override
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord) {
         UnmarshalRecord childRecord = unmarshalRecord.getChildRecord();
         if (null != childRecord) {
@@ -232,6 +238,7 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
         }
     }
 
+    @Override
     protected void setOrAddAttributeValue(UnmarshalRecord unmarshalRecord, Object value, XPathFragment xPathFragment, Object collection){
         if (!xmlAnyObjectMapping.usesXMLRoot()) {
             unmarshalRecord.setAttributeValue(value, xmlAnyObjectMapping);
@@ -285,14 +292,17 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
         }
     }
 
+    @Override
     public AnyObjectMapping getMapping() {
         return xmlAnyObjectMapping;
     }
 
+    @Override
     public boolean isWhitespaceAware() {
         return false;
     }
 
+    @Override
     public boolean isAnyMappingNodeValue() {
         return true;
     }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -107,6 +107,7 @@ public class ListWrapper implements List, Serializable, Cloneable {
     /**
      *
      */
+    @Override
     public boolean add(Object item) {
         return add(item, true);
     }
@@ -147,6 +148,7 @@ public class ListWrapper implements List, Serializable, Cloneable {
      * @param index (start at 0 = prepend, length = append)
      * @param item
      */
+    @Override
     public void add(int index, Object item) {
         add(index, item, true);
     }
@@ -367,6 +369,7 @@ public class ListWrapper implements List, Serializable, Cloneable {
      * @param item
      * @return
      */
+    @Override
     public boolean remove(Object item) {
         // remove item without removing containment
         return remove(item, false, true);
@@ -389,6 +392,7 @@ public class ListWrapper implements List, Serializable, Cloneable {
      * @param items
      * @return boolean
      */
+    @Override
     public boolean addAll(Collection items) {
         // Not allowed to add null if the property is non-nullable
         if (items.contains(null) && (property != null && !property.isNullable())) {
@@ -464,6 +468,7 @@ public class ListWrapper implements List, Serializable, Cloneable {
      * @param items
      * @return boolean
      */
+    @Override
     public boolean addAll(int position, Collection items) {
         return addAll(position, items, true);
     }
@@ -532,6 +537,7 @@ public class ListWrapper implements List, Serializable, Cloneable {
      * @param items
      * @return boolean
      */
+    @Override
     public boolean removeAll(Collection items) {
         return removeAll(items, true);
     }
@@ -562,6 +568,7 @@ public class ListWrapper implements List, Serializable, Cloneable {
      * @param itemsToKeep
      * @return boolean
      */
+    @Override
     public boolean retainAll(Collection itemsToKeep) {
         // fail-fast range checking
         if (itemsToKeep == null) {
@@ -602,6 +609,7 @@ public class ListWrapper implements List, Serializable, Cloneable {
     /**
      * Removes all of the currentElements from this list. The list will be empty after this call returns.
      */
+    @Override
     public void clear() {
         clear(true);
     }
@@ -624,6 +632,7 @@ public class ListWrapper implements List, Serializable, Cloneable {
      * @param item
      * @return Object (the element previously at the specified position)
      */
+    @Override
     public Object set(int index, Object item) {
         // fail-fast range checking
         if ((index < 0) || (index > size())) {
@@ -715,14 +724,17 @@ public class ListWrapper implements List, Serializable, Cloneable {
      * @param index
      * @return Object (the element previously at the specified position)
      */
+    @Override
     public Object remove(int index) {
         return remove(index, true);
     }
 
+    @Override
     public ListIterator listIterator() {
         return currentElements.listIterator();
     }
 
+    @Override
     public ListIterator listIterator(int position) {
         return currentElements.listIterator(position);
     }
@@ -733,10 +745,12 @@ public class ListWrapper implements List, Serializable, Cloneable {
      * @param end - high endpoint (exclusive) of the subList.
      * @return
      */
+    @Override
     public List subList(int start, int end) {
         return currentElements.subList(start, end);
     }
 
+    @Override
     public Object[] toArray() {
         return currentElements.toArray();
     }
@@ -756,38 +770,47 @@ public class ListWrapper implements List, Serializable, Cloneable {
      *   otherwise, a new array of the same runtime type is allocated for this purpose.<br>
      * @return Object[] - an array containing the currentElements of this list.
      */
+    @Override
     public Object[] toArray(Object[] items) {
         return currentElements.toArray(items);
     }
 
+    @Override
     public int size() {
         return currentElements.size();
     }
 
+    @Override
     public boolean isEmpty() {
         return currentElements.isEmpty();
     }
 
+    @Override
     public boolean contains(Object item) {
         return currentElements.contains(item);
     }
 
+    @Override
     public boolean containsAll(Collection items) {
         return currentElements.containsAll(items);
     }
 
+    @Override
     public Iterator iterator() {
         return currentElements.iterator();
     }
 
+    @Override
     public int indexOf(Object item) {
         return currentElements.indexOf(item);
     }
 
+    @Override
     public int lastIndexOf(Object item) {
         return currentElements.lastIndexOf(item);
     }
 
+    @Override
     public Object get(int position) {
         try {
             return currentElements.get(position);
@@ -836,6 +859,7 @@ public class ListWrapper implements List, Serializable, Cloneable {
      * This creates a new ListWrapper with the same contents as the original (shallow clone)
      * Minimal clone operation implemented to support usage in JPA
      */
+    @Override
     public Object clone() {
         ListWrapper listWrapperClone = new ListWrapper(dataObject, property);
         listWrapperClone.setCurrentElements(new ArrayList(currentElements));

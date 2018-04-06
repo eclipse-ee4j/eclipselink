@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -40,14 +40,17 @@ public class XMLListConverter implements Converter {
     private Class objectClass = null;
     private String objectClassName = null;
 
+    @Override
     public Object convertDataValueToObjectValue(Object dataValue, Session session) {
         return this.conversionManager.convertStringToList(dataValue, getObjectClass(), mapping.getContainerPolicy(), ((Field)mapping.getField()).getSchemaType());
     }
 
+    @Override
     public Object convertObjectValueToDataValue(Object objectValue, Session session) {
         return this.conversionManager.convertListToString(objectValue, ((Field)mapping.getField()).getSchemaType());
     }
 
+    @Override
     public void initialize(DatabaseMapping mapping, Session session) {
         this.conversionManager = (XMLConversionManager) session.getDatasourcePlatform().getConversionManager();
         this.mapping = (XMLCompositeDirectCollectionMapping) mapping;
@@ -63,6 +66,7 @@ public class XMLListConverter implements Converter {
         }
     }
 
+    @Override
     public boolean isMutable() {
         return false;
     }

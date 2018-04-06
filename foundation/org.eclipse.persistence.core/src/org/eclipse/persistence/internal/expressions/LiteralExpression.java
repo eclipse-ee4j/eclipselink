@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -43,6 +43,7 @@ public class LiteralExpression extends Expression {
      * Return if the expression is equal to the other.
      * This is used to allow dynamic expression's SQL to be cached.
      */
+    @Override
     public boolean equals(Object object) {
         if (this == object) {
             return true;
@@ -59,6 +60,7 @@ public class LiteralExpression extends Expression {
      * Compute a consistent hash-code for the expression.
      * This is used to allow dynamic expression's SQL to be cached.
      */
+    @Override
     public int computeHashCode() {
         int hashCode = super.computeHashCode();
         if (getValue() != null) {
@@ -71,6 +73,7 @@ public class LiteralExpression extends Expression {
      * INTERNAL:
      * Used for debug printing.
      */
+    @Override
     public String descriptionOfNodeType() {
         return "Literal";
     }
@@ -79,6 +82,7 @@ public class LiteralExpression extends Expression {
      * Return the expression builder which is the ultimate base of this expression, or
      * null if there isn't one (shouldn't happen if we start from a root)
      */
+    @Override
     public ExpressionBuilder getBuilder() {
         if(this.localBase != null) {
             return this.localBase.getBuilder();
@@ -95,6 +99,7 @@ public class LiteralExpression extends Expression {
         return value;
     }
 
+    @Override
     public boolean isLiteralExpression() {
         return true;
     }
@@ -103,6 +108,7 @@ public class LiteralExpression extends Expression {
      * INTERNAL:
      * Used for cloning.
      */
+    @Override
     protected void postCopyIn(Map alreadyDone) {
         super.postCopyIn(alreadyDone);
         localBase = localBase.copiedVersionFrom(alreadyDone);
@@ -112,6 +118,7 @@ public class LiteralExpression extends Expression {
      * INTERNAL:
      * Print SQL onto the stream, using the ExpressionPrinter for context
      */
+    @Override
     public void printSQL(ExpressionSQLPrinter printer) {
         printer.printString(value);
     }
@@ -121,6 +128,7 @@ public class LiteralExpression extends Expression {
      * This expression is built on a different base than the one we want. Rebuild it and
      * return the root of the new tree
      */
+    @Override
     public Expression rebuildOn(Expression newBase) {
         Expression result = (LiteralExpression)clone();
         result.setLocalBase(getLocalBase().rebuildOn(newBase));
@@ -133,11 +141,13 @@ public class LiteralExpression extends Expression {
      * built using a builder that is not attached to the query.  This happens in case of an Exists
      * call using a new ExpressionBuilder().  This builder needs to be replaced with one from the query.
      */
+    @Override
     public void resetPlaceHolderBuilder(ExpressionBuilder queryBuilder){
         return;
     }
 
 
+    @Override
     public void setLocalBase(Expression e) {
         localBase = e;
     }
@@ -159,6 +169,7 @@ public class LiteralExpression extends Expression {
      * Return the value for in memory comparison.
      * This is only valid for valueable expressions.
      */
+    @Override
     public Object valueFromObject(Object object, AbstractSession session, AbstractRecord translationRow, int valueHolderPolicy, boolean isObjectUnregistered) {
         return getLocalBase().getFieldValue(getValue(), session);
     }
@@ -167,6 +178,7 @@ public class LiteralExpression extends Expression {
      * INTERNAL:
      * Used to print a debug form of the expression tree.
      */
+    @Override
     public void writeDescriptionOn(BufferedWriter writer) throws IOException {
         writer.write(getValue().toString());
     }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -72,6 +72,7 @@ public class RelationalDescriptor extends ClassDescriptor {
      * If the table has a qualifier it should be specified using the dot notation,
      * (i.e. "userid.employee"). This method is used if there is more than one table.
      */
+    @Override
     public void addTableName(String tableName) {
         super.addTableName(tableName);
     }
@@ -81,6 +82,7 @@ public class RelationalDescriptor extends ClassDescriptor {
      * Return the name of the descriptor's first table.
      * This method must only be called on single table descriptors.
      */
+    @Override
     public String getTableName() {
         return super.getTableName();
     }
@@ -89,6 +91,7 @@ public class RelationalDescriptor extends ClassDescriptor {
      * PUBLIC:
      * Return the table names.
      */
+    @Override
     public Vector getTableNames() {
         return super.getTableNames();
     }
@@ -97,6 +100,7 @@ public class RelationalDescriptor extends ClassDescriptor {
      * PUBLIC:
      * The descriptors default table can be configured if the first table is not desired.
      */
+    @Override
     public void setDefaultTableName(String defaultTableName) {
         super.setDefaultTableName(defaultTableName);
     }
@@ -107,6 +111,7 @@ public class RelationalDescriptor extends ClassDescriptor {
      * If the table has a qualifier it should be specified using the dot notation,
      * (i.e. "userid.employee"). This method is used for single table.
      */
+    @Override
     public void setTableName(String tableName) throws DescriptorException {
         super.setTableName(tableName);
     }
@@ -117,6 +122,7 @@ public class RelationalDescriptor extends ClassDescriptor {
      * If the table has a qualifier it should be specified using the dot notation,
      * (i.e. "userid.employee"). This method is used for multiple tables
      */
+    @Override
     public void setTableNames(Vector tableNames) {
         super.setTableNames(tableNames);
     }
@@ -125,6 +131,7 @@ public class RelationalDescriptor extends ClassDescriptor {
      * PUBLIC: Set the table Qualifier for this descriptor.  This table creator will be used for
      * all tables in this descriptor
      */
+    @Override
     public void setTableQualifier(String tableQualifier) {
         super.setTableQualifier(tableQualifier);
     }

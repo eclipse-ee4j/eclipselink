@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2018  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -41,44 +41,52 @@ public class PersistenceUnitDefaultsImpl extends MetadataImpl<XMLPersistenceUnit
         getMetadata().setTenantDiscriminatorColumns(new ArrayList<TenantDiscriminatorColumnMetadata>());
     }
 
+    @Override
     public EntityListener addEntityListener() {
         EntityListenerImpl listener = new EntityListenerImpl();
         getMetadata().getEntityListeners().add(listener.getMetadata());
         return listener;
     }
 
+    @Override
     public TenantDiscriminatorColumn addTenantDiscriminatorColumn() {
         TenantDiscriminatorColumnImpl column = new TenantDiscriminatorColumnImpl();
         getMetadata().getTenantDiscriminatorColumns().add(column.getMetadata());
         return column;
     }
 
+    @Override
     public PersistenceUnitDefaults setAccess(String access) {
         getMetadata().setAccess(access);
         return this;
     }
 
+    @Override
     public AccessMethods setAccessMethods() {
         AccessMethodsImpl accessMethods = new AccessMethodsImpl();
         getMetadata().setAccessMethods(accessMethods.getMetadata());
         return accessMethods;
     }
 
+    @Override
     public PersistenceUnitDefaults setCascadePersist(Boolean cascadePersist) {
         getMetadata().setCascadePersist(cascadePersist);
         return this;
     }
 
+    @Override
     public PersistenceUnitDefaults setCatalog(String catalog) {
         getMetadata().setCatalog(catalog);
         return this;
     }
 
+    @Override
     public PersistenceUnitDefaults setDelimitedIdentifiers(Boolean delimitedIdentifiers) {
         getMetadata().setDelimitedIdentifiers(delimitedIdentifiers);
         return this;
     }
 
+    @Override
     public PersistenceUnitDefaults setSchema(String schema) {
         getMetadata().setSchema(schema);
         return this;

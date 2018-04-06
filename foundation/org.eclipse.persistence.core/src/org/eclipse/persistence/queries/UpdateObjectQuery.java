@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -58,6 +58,7 @@ public class UpdateObjectQuery extends WriteObjectQuery {
      * INTERNAL:
      * Perform an update.
      */
+    @Override
     public void executeCommit() throws DatabaseException, OptimisticLockException {
         // Check for redirection.
         QueryRedirector localRedirector = getRedirectorForQuery();
@@ -73,6 +74,7 @@ public class UpdateObjectQuery extends WriteObjectQuery {
      * INTERNAL:
      * Perform an update.
      */
+    @Override
     public void executeCommitWithChangeSet() throws DatabaseException, OptimisticLockException {
         // Check for redirection.
         QueryRedirector localRedirector = getRedirectorForQuery();
@@ -88,6 +90,7 @@ public class UpdateObjectQuery extends WriteObjectQuery {
      * INTERNAL:
      * Prepare the receiver for execution in a session.
      */
+    @Override
     protected void prepare() {
         super.prepare();
         if (this.name == null) {
@@ -102,6 +105,7 @@ public class UpdateObjectQuery extends WriteObjectQuery {
      * This is done before the query is copied and prepared/executed.
      * null means there is none.
      */
+    @Override
     protected DatabaseQuery checkForCustomQuery(AbstractSession session, AbstractRecord translationRow) {
         checkDescriptor(session);
 
@@ -120,6 +124,7 @@ public class UpdateObjectQuery extends WriteObjectQuery {
      * INTERNAL:
      * Set the properties needed to be cascaded into the custom query.
      */
+    @Override
     protected void prepareCustomQuery(DatabaseQuery customQuery) {
         UpdateObjectQuery customUpdateQuery = (UpdateObjectQuery)customQuery;
         customUpdateQuery.setObject(getObject());
@@ -134,6 +139,7 @@ public class UpdateObjectQuery extends WriteObjectQuery {
      * Returns the specific default redirector for this query type.  There are numerous default query redirectors.
      * See ClassDescriptor for their types.
      */
+    @Override
     protected QueryRedirector getDefaultRedirector(){
         return descriptor.getDefaultUpdateObjectQueryRedirector();
     }
@@ -142,6 +148,7 @@ public class UpdateObjectQuery extends WriteObjectQuery {
      * PUBLIC:
      * Return if this is an update object query.
      */
+    @Override
     public boolean isUpdateObjectQuery() {
         return true;
     }

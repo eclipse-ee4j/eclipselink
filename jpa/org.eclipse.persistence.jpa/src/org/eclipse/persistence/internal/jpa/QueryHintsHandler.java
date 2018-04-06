@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -474,6 +474,7 @@ public class QueryHintsHandler {
          * is expected to be a ResultSetMappingQuery instance.
          * @throws IllegalArgumentException if 'query' is not a ResultSetMappingQuery instance
          */
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isResultSetMappingQuery()) {
                 if (valueToApply != null) {
@@ -496,6 +497,7 @@ public class QueryHintsHandler {
             };
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (valueToApply == null) {
                 query.ignoreBindAllParameters();
@@ -515,6 +517,7 @@ public class QueryHintsHandler {
             };
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             query.setAllowNativeSQLQuery((Boolean) valueToApply);
             return query;
@@ -531,6 +534,7 @@ public class QueryHintsHandler {
             // No valueArray modification is required for unrestricted values
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             // Only change the default set by the DatabaseQuery constructor - if an override is requested via the Hint
             if (valueToApply != null) {
@@ -549,6 +553,7 @@ public class QueryHintsHandler {
             super(name, defaultValue);
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isObjectLevelReadQuery()) {
                 if (valueToApply.equals(CacheRetrieveMode.BYPASS) || valueToApply.equals(CacheRetrieveMode.BYPASS.name())) {
@@ -570,6 +575,7 @@ public class QueryHintsHandler {
             super("javax.persistence.cacheRetrieveMode", CacheRetrieveMode.USE.name());
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (activeSession != null) {
                 String[] properties = new String[] { QueryHints.CACHE_RETRIEVE_MODE, "javax.persistence.cacheRetrieveMode" };
@@ -588,6 +594,7 @@ public class QueryHintsHandler {
             super(name, defaultValue);
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (valueToApply.equals(CacheStoreMode.BYPASS) || valueToApply.equals(CacheStoreMode.BYPASS.name())) {
                 query.storeBypassCache();
@@ -610,6 +617,7 @@ public class QueryHintsHandler {
             super("javax.persistence.cacheStoreMode", CacheStoreMode.USE.name());
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (activeSession != null) {
                 String[] properties = new String[] { QueryHints.CACHE_STORE_MODE, "javax.persistence.cacheStoreMode" };
@@ -639,6 +647,7 @@ public class QueryHintsHandler {
             };
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isObjectLevelReadQuery()) {
                 int cacheUsage = ((Integer)valueToApply).intValue();
@@ -673,6 +682,7 @@ public class QueryHintsHandler {
                 };
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isDataReadQuery()) {
                 DataModifyQuery newQuery = new DataModifyQuery();
@@ -699,6 +709,7 @@ public class QueryHintsHandler {
             };
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             query.setCascadePolicy((Integer)valueToApply);
             return query;
@@ -713,6 +724,7 @@ public class QueryHintsHandler {
             super(QueryHints.QUERY_TYPE, QueryType.DEFAULT);
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (valueToApply.equals(QueryType.DEFAULT)) {
                 return query;
@@ -761,6 +773,7 @@ public class QueryHintsHandler {
             };
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isObjectBuildingQuery()) {
                 ((ObjectBuildingQuery)query).setLockMode(((Short)valueToApply).shortValue());
@@ -780,6 +793,7 @@ public class QueryHintsHandler {
             };
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isObjectLevelReadQuery()) {
                 boolean shouldExtend = valueToApply.equals(javax.persistence.PessimisticLockScope.EXTENDED.name());
@@ -800,6 +814,7 @@ public class QueryHintsHandler {
             super(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, "");
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isObjectLevelReadQuery()) {
                 ((ObjectLevelReadQuery) query).setWaitTimeout(QueryHintsHandler.parseIntegerHint(valueToApply, QueryHints.PESSIMISTIC_LOCK_TIMEOUT));
@@ -820,6 +835,7 @@ public class QueryHintsHandler {
             };
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isObjectBuildingQuery()) {
                 ((ObjectBuildingQuery)query).setShouldRefreshIdentityMapResult(((Boolean)valueToApply).booleanValue());
@@ -845,6 +861,7 @@ public class QueryHintsHandler {
             };
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isDataReadQuery()) {
                 if (valueToApply == ResultType.Map) {
@@ -884,6 +901,7 @@ public class QueryHintsHandler {
             };
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isObjectLevelReadQuery()) {
                 ((ObjectLevelReadQuery) query).setInMemoryQueryIndirectionPolicyState((Integer)valueToApply);
@@ -907,6 +925,7 @@ public class QueryHintsHandler {
             };
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             int value = (Integer)valueToApply;
             if (query.isReadAllQuery()) {
@@ -935,6 +954,7 @@ public class QueryHintsHandler {
             };
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             int value = (Integer)valueToApply;
             if (query.isReadAllQuery()) {
@@ -963,6 +983,7 @@ public class QueryHintsHandler {
             };
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isObjectBuildingQuery()) {
                 ((ObjectBuildingQuery)query).setShouldUseExclusiveConnection(((Boolean)valueToApply).booleanValue());
@@ -982,6 +1003,7 @@ public class QueryHintsHandler {
             };
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isObjectLevelReadQuery()) {
                 ((ObjectLevelReadQuery)query).setShouldOuterJoinSubclasses(((Boolean)valueToApply).booleanValue());
@@ -1001,6 +1023,7 @@ public class QueryHintsHandler {
             };
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isObjectLevelReadQuery()) {
                 ((ObjectLevelReadQuery)query).setShouldUseDefaultFetchGroup(((Boolean)valueToApply).booleanValue());
@@ -1016,6 +1039,7 @@ public class QueryHintsHandler {
             super(QueryHints.FETCH_GROUP_NAME, "");
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isObjectLevelReadQuery()) {
                 ((ObjectLevelReadQuery)query).setFetchGroupName((String)valueToApply);
@@ -1031,6 +1055,7 @@ public class QueryHintsHandler {
             super(QueryHints.FETCH_GROUP, "");
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isObjectLevelReadQuery()) {
                 if(valueToApply != null) {
@@ -1050,6 +1075,7 @@ public class QueryHintsHandler {
             super(QueryHints.JPA_FETCH_GRAPH, "");
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isObjectLevelReadQuery()) {
                 if(valueToApply != null) {
@@ -1084,6 +1110,7 @@ public class QueryHintsHandler {
             super(QueryHints.FETCH_GROUP_ATTRIBUTE, "");
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isObjectLevelReadQuery()) {
                 FetchGroup fetchGroup = ((ObjectLevelReadQuery)query).getFetchGroup();
@@ -1108,6 +1135,7 @@ public class QueryHintsHandler {
                 };
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isObjectLevelReadQuery()) {
                 FetchGroup fetchGroup = ((ObjectLevelReadQuery)query).getFetchGroup();
@@ -1128,6 +1156,7 @@ public class QueryHintsHandler {
             super(QueryHints.LOAD_GROUP, "");
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isObjectLevelReadQuery()) {
                 if(valueToApply != null) {
@@ -1147,6 +1176,7 @@ public class QueryHintsHandler {
             super(QueryHints.JPA_LOAD_GRAPH, "");
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isObjectLevelReadQuery()) {
                 if(valueToApply != null) {
@@ -1177,6 +1207,7 @@ public class QueryHintsHandler {
             super(QueryHints.LOAD_GROUP_ATTRIBUTE, "");
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isObjectLevelReadQuery()) {
                 LoadGroup loadGroup = ((ObjectLevelReadQuery)query).getLoadGroup();
@@ -1205,6 +1236,7 @@ public class QueryHintsHandler {
             };
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isReadQuery()) {
                 if (((Boolean)valueToApply).booleanValue()) {
@@ -1232,6 +1264,7 @@ public class QueryHintsHandler {
             };
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isReadQuery()) {
                 if (((ReadQuery)query).getQueryResultsCachePolicy() == null) {
@@ -1258,6 +1291,7 @@ public class QueryHintsHandler {
             };
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isReadQuery()) {
                 if (((ReadQuery)query).getQueryResultsCachePolicy() == null) {
@@ -1284,6 +1318,7 @@ public class QueryHintsHandler {
             };
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isReadQuery()) {
                 if (((ReadQuery)query).getQueryResultsCachePolicy() == null) {
@@ -1309,6 +1344,7 @@ public class QueryHintsHandler {
             super(QueryHints.QUERY_RESULTS_CACHE_SIZE, "");
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isReadQuery()) {
                 ReadQuery readQuery = (ReadQuery)query;
@@ -1336,6 +1372,7 @@ public class QueryHintsHandler {
             super(QueryHints.QUERY_RESULTS_CACHE_EXPIRY, "");
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isReadQuery()) {
                 ReadQuery readQuery = (ReadQuery)query;
@@ -1364,6 +1401,7 @@ public class QueryHintsHandler {
             super(QueryHints.QUERY_RESULTS_CACHE_TYPE, "");
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isReadQuery()) {
                 ReadQuery readQuery = (ReadQuery)query;
@@ -1405,6 +1443,7 @@ public class QueryHintsHandler {
             super(QueryHints.QUERY_RESULTS_CACHE_EXPIRY_TIME_OF_DAY, "");
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isReadQuery()) {
                 ReadQuery readQuery = (ReadQuery)query;
@@ -1432,6 +1471,7 @@ public class QueryHintsHandler {
             super(QueryHints.BATCH, "");
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isObjectLevelReadQuery() && !query.isReportQuery()) {
                 ObjectLevelReadQuery objectQuery = (ObjectLevelReadQuery)query;
@@ -1475,6 +1515,7 @@ public class QueryHintsHandler {
             super(QueryHints.BATCH_TYPE, "");
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isObjectLevelReadQuery()) {
                 if (valueToApply instanceof BatchFetchType) {
@@ -1495,6 +1536,7 @@ public class QueryHintsHandler {
             super(QueryHints.BATCH_SIZE, "");
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isObjectLevelReadQuery()) {
                 ((ObjectLevelReadQuery) query).setBatchFetchSize(QueryHintsHandler.parseIntegerHint(valueToApply, QueryHints.BATCH_SIZE));
@@ -1511,6 +1553,7 @@ public class QueryHintsHandler {
             super(QueryHints.FETCH, "");
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isObjectLevelReadQuery() && !query.isReportQuery()) {
                 ObjectLevelReadQuery olrq = (ObjectLevelReadQuery)query;
@@ -1563,6 +1606,7 @@ public class QueryHintsHandler {
             super(QueryHints.LEFT_FETCH, "");
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isObjectLevelReadQuery() && !query.isReportQuery()) {
                 ObjectLevelReadQuery olrq = (ObjectLevelReadQuery)query;
@@ -1619,6 +1663,7 @@ public class QueryHintsHandler {
             };
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isObjectLevelReadQuery()) {
                 ((ObjectLevelReadQuery)query).setIsReadOnly(((Boolean)valueToApply).booleanValue());
@@ -1638,6 +1683,7 @@ public class QueryHintsHandler {
             };
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             query.setIsNativeConnectionRequired(((Boolean)valueToApply).booleanValue());
             return query;
@@ -1653,6 +1699,7 @@ public class QueryHintsHandler {
             };
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (!((Boolean)valueToApply).booleanValue()) {
                 if (query.isReadAllQuery()) {
@@ -1687,6 +1734,7 @@ public class QueryHintsHandler {
             super(QueryHints.CURSOR_INITIAL_SIZE, "");
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isReadAllQuery()) {
                 if (!((ReadAllQuery) query).getContainerPolicy().isCursoredStreamPolicy()) {
@@ -1711,6 +1759,7 @@ public class QueryHintsHandler {
             super(QueryHints.CURSOR_PAGE_SIZE, "");
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isReadAllQuery()) {
                 if (!((ReadAllQuery) query).getContainerPolicy().isCursorPolicy()) {
@@ -1735,6 +1784,7 @@ public class QueryHintsHandler {
             super(QueryHints.CURSOR_SIZE, "");
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isReadAllQuery()) {
                 if (!((ReadAllQuery) query).getContainerPolicy().isCursoredStreamPolicy()) {
@@ -1763,6 +1813,7 @@ public class QueryHintsHandler {
             };
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (!((Boolean)valueToApply).booleanValue()) {
                 if (query.isReadAllQuery()) {
@@ -1801,6 +1852,7 @@ public class QueryHintsHandler {
             };
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             query.setShouldMaintainCache(((Boolean)valueToApply).booleanValue());
             return query;
@@ -1816,6 +1868,7 @@ public class QueryHintsHandler {
             };
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             query.setShouldPrepare(((Boolean)valueToApply).booleanValue());
             return query;
@@ -1831,6 +1884,7 @@ public class QueryHintsHandler {
             };
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             query.setShouldCacheStatement(((Boolean)valueToApply).booleanValue());
             return query;
@@ -1846,6 +1900,7 @@ public class QueryHintsHandler {
             };
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             query.setFlushOnExecute((Boolean)valueToApply);
             return query;
@@ -1857,6 +1912,7 @@ public class QueryHintsHandler {
             super(QueryHints.HINT, "");
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             query.setHintString((String)valueToApply);
             return query;
@@ -1868,6 +1924,7 @@ public class QueryHintsHandler {
             super(QueryHints.JDBC_TIMEOUT, "");
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             query.setQueryTimeout(QueryHintsHandler.parseIntegerHint(valueToApply, QueryHints.JDBC_TIMEOUT));
             query.setIsPrepared(false);
@@ -1881,6 +1938,7 @@ public class QueryHintsHandler {
             super(QueryHints.QUERY_TIMEOUT_UNIT, "");
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             try {
                 TimeUnit unit = TimeUnit.valueOf((String)valueToApply);
@@ -1899,6 +1957,7 @@ public class QueryHintsHandler {
             super(QueryHints.QUERY_TIMEOUT, "");
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             query.setQueryTimeout(QueryHintsHandler.parseIntegerHint(valueToApply, QueryHints.QUERY_TIMEOUT));
             return query;
@@ -1910,6 +1969,7 @@ public class QueryHintsHandler {
             super(QueryHints.JDBC_FETCH_SIZE, "");
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isReadQuery()) {
                 ((ReadQuery) query).setFetchSize(QueryHintsHandler.parseIntegerHint(valueToApply, QueryHints.JDBC_FETCH_SIZE));
@@ -1926,6 +1986,7 @@ public class QueryHintsHandler {
             super(QueryHints.AS_OF, "");
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isObjectLevelReadQuery()) {
                 ((ObjectLevelReadQuery) query).setAsOfClause(new AsOfClause(Helper.timestampFromString((String)valueToApply)));
@@ -1942,6 +2003,7 @@ public class QueryHintsHandler {
             super(QueryHints.AS_OF_SCN, "");
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isObjectLevelReadQuery()) {
                 ((ObjectLevelReadQuery) query).setAsOfClause(new AsOfSCNClause(QueryHintsHandler.parseIntegerHint(valueToApply, QueryHints.AS_OF_SCN)));
@@ -1958,6 +2020,7 @@ public class QueryHintsHandler {
             super(QueryHints.JDBC_MAX_ROWS, "");
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isReadQuery()) {
                 ((ReadQuery) query).setMaxRows(QueryHintsHandler.parseIntegerHint(valueToApply, QueryHints.JDBC_MAX_ROWS));
@@ -1973,6 +2036,7 @@ public class QueryHintsHandler {
             super(QueryHints.JDBC_FIRST_RESULT, "");
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isReadQuery()) {
                 ((ReadQuery) query).setFirstResult(QueryHintsHandler.parseIntegerHint(valueToApply, QueryHints.JDBC_FIRST_RESULT));
@@ -1988,6 +2052,7 @@ public class QueryHintsHandler {
             super(QueryHints.RESULT_COLLECTION_TYPE, "");
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isReadAllQuery()) {
                 Class collectionClass = null;
@@ -2009,6 +2074,7 @@ public class QueryHintsHandler {
             super(QueryHints.QUERY_REDIRECTOR, "");
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             // Can be an instance, class, or class name.
             try {
@@ -2032,6 +2098,7 @@ public class QueryHintsHandler {
             super(QueryHints.PARTITIONING, "");
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             // Can be an instance, class, or name.
             Object policy = valueToApply;
@@ -2053,6 +2120,7 @@ public class QueryHintsHandler {
             super(QueryHints.COMPOSITE_UNIT_MEMBER, "");
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             query.setSessionName((String)valueToApply);
             return query;
@@ -2069,6 +2137,7 @@ public class QueryHintsHandler {
             };
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isObjectLevelReadQuery()) {
                 if (valueToApply != null) {
@@ -2092,6 +2161,7 @@ public class QueryHintsHandler {
             };
         }
 
+        @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isObjectLevelReadQuery()) {
                 ((ObjectLevelReadQuery)query).setShouldUseSerializedObjectPolicy((Boolean)valueToApply);

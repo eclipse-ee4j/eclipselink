@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -79,9 +79,11 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
             protected String encapsulatedExpressionMissingKey(CastExpression expression) {
                 return CastExpression_MissingExpression;
             }
+            @Override
             public String leftParenthesisMissingKey(CastExpression expression) {
                 return CastExpression_MissingLeftParenthesis;
             }
+            @Override
             public String rightParenthesisMissingKey(CastExpression expression) {
                 return CastExpression_MissingRightParenthesis;
             }
@@ -138,6 +140,7 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
                 return !expression.hasComma() ||
                         expression.hasSecondExpression();
             }
+            @Override
             public String leftParenthesisMissingKey(DatabaseType expression) {
                 return DatabaseType_MissingLeftParenthesis;
             }
@@ -145,6 +148,7 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
             protected String missingCommaKey() {
                 return DatabaseType_MissingComma;
             }
+            @Override
             public String rightParenthesisMissingKey(DatabaseType expression) {
                 return DatabaseType_MissingRightParenthesis;
             }
@@ -169,6 +173,7 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
             protected String encapsulatedExpressionMissingKey(ExtractExpression expression) {
                 return ExtractExpression_MissingExpression;
             }
+            @Override
             public String leftParenthesisMissingKey(ExtractExpression expression) {
                 return ExtractExpression_MissingLeftParenthesis;
             }
@@ -179,6 +184,7 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
                        (expression.hasFrom() ? 4 /* FROM */ : 0) +
                        (expression.hasSpaceAfterFrom() ? 1 : 0);
             }
+            @Override
             public String rightParenthesisMissingKey(ExtractExpression expression) {
                 return ExtractExpression_MissingRightParenthesis;
             }
@@ -219,9 +225,11 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
             protected String encapsulatedExpressionMissingKey(TableExpression expression) {
                 return TableExpression_MissingExpression;
             }
+            @Override
             public String leftParenthesisMissingKey(TableExpression expression) {
                 return TableExpression_MissingLeftParenthesis;
             }
+            @Override
             public String rightParenthesisMissingKey(TableExpression expression) {
                 return TableExpression_MissingRightParenthesis;
             }
@@ -397,12 +405,14 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(AsOfClause expression) {
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(CastExpression expression) {
 
         // Wrong JPA version
@@ -440,6 +450,7 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(ConnectByClause expression) {
         // TODO: 2.5
     }
@@ -447,6 +458,7 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(DatabaseType expression) {
         validateAbstractDoubleEncapsulatedExpression(expression, databaseTypeHelper());
     }
@@ -454,6 +466,7 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(ExtractExpression expression) {
 
         // Wrong JPA version
@@ -479,6 +492,7 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(HierarchicalQueryClause expression) {
         // TODO: 2.5
     }
@@ -486,6 +500,7 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(OrderSiblingsByClause expression) {
         // TODO
     }
@@ -493,6 +508,7 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(RegexpExpression expression) {
 
         // Wrong JPA version
@@ -581,6 +597,7 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(StartWithClause expression) {
         // TODO: 2.5
     }
@@ -588,6 +605,7 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(TableExpression expression) {
         validateAbstractSingleEncapsulatedExpression(expression, tableExpressionHelper());
     }
@@ -595,6 +613,7 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(TableVariableDeclaration expression) {
 
         // Wrong JPA version
@@ -629,6 +648,7 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(UnionClause expression) {
 
         // Wrong JPA version

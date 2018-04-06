@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -36,10 +36,12 @@ public class AQConnectionFactory implements ConnectionFactory {
     public AQConnectionFactory() {
     }
 
+    @Override
     public Connection getConnection() throws ResourceException {
         return getConnection(new AQConnectionSpec());
     }
 
+    @Override
     public Connection getConnection(ConnectionSpec spec) throws ResourceException {
         AQConnectionSpec aqSpec;
         AQSession session;
@@ -66,18 +68,22 @@ public class AQConnectionFactory implements ConnectionFactory {
         return new AQConnection(session, connection, aqSpec);
     }
 
+    @Override
     public ResourceAdapterMetaData getMetaData() {
         return new AQAdapterMetaData();
     }
 
+    @Override
     public RecordFactory getRecordFactory() {
         return new AQRecordFactory();
     }
 
+    @Override
     public Reference getReference() {
         return new Reference(getClass().getName());
     }
 
+    @Override
     public void setReference(Reference reference) {
     }
 }

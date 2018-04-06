@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -129,6 +129,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
      * Return the converter on the mapping.
      * A converter can be used to convert between the object's value and database value of the attribute.
      */
+    @Override
     public Converter getConverter() {
         return converter;
     }
@@ -137,6 +138,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
      * Set the converter on the mapping.
      * A converter can be used to convert between the object's value and database value of the attribute.
      */
+    @Override
     public void setConverter(Converter converter) {
         this.converter = converter;
     }
@@ -145,6 +147,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
      * INTERNAL:
      * Clone the attribute from the clone and assign it to the backup.
      */
+    @Override
     public void buildBackupClone(Object clone, Object backup, UnitOfWorkImpl unitOfWork) {
         throw DescriptorException.invalidMappingOperation(this, "buildBackupClone");
     }
@@ -158,6 +161,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
         throw DescriptorException.invalidMappingOperation(this, "buildClone");
     }
 
+    @Override
     public void buildCloneFromRow(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object clone, CacheKey sharedCacheKey, ObjectBuildingQuery sourceQuery, UnitOfWorkImpl unitOfWork, AbstractSession executionSession) {
         throw DescriptorException.invalidMappingOperation(this, "buildCloneFromRow");
     }
@@ -166,6 +170,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
      * INTERNAL:
      * Cascade perform delete through mappings that require the cascade
      */
+    @Override
     public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
         //objects referenced by this mapping are not registered as they have
         // no identity, this is a no-op.
@@ -175,6 +180,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade
      */
+    @Override
     public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
         //Our current XML support does not make use of the UNitOfWork.
     }
@@ -184,6 +190,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
      * This method was created in VisualAge.
      * @return prototype.changeset.ChangeRecord
      */
+    @Override
     public ChangeRecord compareForChange(Object clone, Object backup, ObjectChangeSet owner, AbstractSession session) {
         throw DescriptorException.invalidMappingOperation(this, "compareForChange");
     }
@@ -192,6 +199,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
     * INTERNAL:
     * Compare the attributes belonging to this mapping for the objects.
     */
+    @Override
     public boolean compareObjects(Object firstObject, Object secondObject, AbstractSession session) {
         throw DescriptorException.invalidMappingOperation(this, "compareObjects");
     }
@@ -202,6 +210,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
     * Replace the transient attributes of the remote value holders
     * with client-side objects.
     */
+    @Override
     public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
         throw DescriptorException.invalidMappingOperation(this, "fixObjectReferences");
     }
@@ -209,6 +218,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
     /**
     * INTERNAL:
     */
+    @Override
     public Object getFieldValue(Object object, CoreAbstractSession session, AbstractMarshalRecord record) {
         Object attributeValue = super.getAttributeValueFromObject(object);
         attributeValue = convertObjectValueToDataValue(attributeValue, (AbstractSession) session, (XMLMarshaller) record.getMarshaller());
@@ -219,6 +229,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
      * INTERNAL:
      * Iterate on the appropriate attribute value.
      */
+    @Override
     public void iterate(DescriptorIterator iterator) {
         throw DescriptorException.invalidMappingOperation(this, "iterate");
     }
@@ -241,6 +252,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
         throw DescriptorException.invalidMappingOperation(this, "mergeIntoObject");
     }
 
+    @Override
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected, Boolean[] wasCacheUsed) throws DatabaseException {
         //try each of the fields and see if any of them has a value
         for(XMLMapping nextMapping:this.choiceElementMappings.values()) {
@@ -293,9 +305,11 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
         }
     }
 
+    @Override
     public void writeSingleValue(Object value, Object parent, XMLRecord row, AbstractSession session) {
     }
 
+    @Override
     public Object readFromRowIntoObject(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object targetObject, CacheKey parentCacheKey, ObjectBuildingQuery sourceQuery, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
         Object toReturn = super.readFromRowIntoObject(databaseRow, joinManager, targetObject, parentCacheKey, sourceQuery, executionSession, isTargetProtected);
         for(XMLMapping next:choiceElementMappings.values()) {
@@ -306,14 +320,17 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
         return toReturn;
     }
 
+    @Override
     public boolean isXMLMapping() {
         return true;
     }
 
+    @Override
     public Vector<DatabaseField> getFields() {
         return this.collectFields();
     }
 
+    @Override
     protected Vector<DatabaseField> collectFields() {
         Vector<DatabaseField> fields = new Vector<DatabaseField>(getFieldToClassMappings().keySet());
         return fields;
@@ -342,6 +359,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
         addChoiceElementMapping(field, elementTypeName);
     }
 
+    @Override
     public void addChoiceElement(String srcXpath, String elementTypeName, String tgtXpath) {
         XMLField field = new XMLField(srcXpath);
         XMLField tgtField = new XMLField(tgtXpath);
@@ -389,6 +407,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
         addChoiceElementMapping(srcFields, elementType, tgtFields);
     }
 
+    @Override
     public void addChoiceElement(List<XMLField> srcFields, String elementTypeName, List<XMLField> tgtFields) {
         for(XMLField sourceField:srcFields) {
             this.fieldToClassNameMappings.put(sourceField, elementTypeName);
@@ -400,6 +419,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
     }
 
 
+    @Override
     public void addChoiceElement(XMLField field, String elementTypeName) {
         this.fieldToClassNameMappings.put(field, elementTypeName);
         if(this.classNameToFieldMappings.get(elementTypeName) == null) {
@@ -408,10 +428,12 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
         addChoiceElementMapping(field, elementTypeName);
     }
 
+    @Override
     public Map<XMLField, Class> getFieldToClassMappings() {
         return fieldToClassMappings;
     }
 
+    @Override
     public void initialize(AbstractSession session) throws DescriptorException {
         super.initialize(session);
 
@@ -464,14 +486,17 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
         }
     }
 
+    @Override
     public Map<Class, XMLField> getClassToFieldMappings() {
         return classToFieldMappings;
     }
 
+    @Override
     public Map<XMLField, XMLMapping> getChoiceElementMappings() {
         return choiceElementMappings;
     }
 
+    @Override
     public void convertClassNamesToClasses(ClassLoader classLoader) {
         Iterator<Entry<XMLField, String>> entries = fieldToClassNameMappings.entrySet().iterator();
         while (entries.hasNext()) {
@@ -589,6 +614,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
         }
     }
 
+    @Override
     public void addConverter(XMLField field, Converter converter) {
         if(this.fieldsToConverters == null) {
             fieldsToConverters = new HashMap<XMLField, Converter>();
@@ -596,6 +622,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
         fieldsToConverters.put(field, converter);
     }
 
+    @Override
     public Converter getConverter(XMLField field) {
         if(null != this.fieldsToConverters) {
             Converter converter = fieldsToConverters.get(field);
@@ -617,6 +644,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
         return null;
     }
 
+    @Override
     public ArrayList getChoiceFieldToClassAssociations() {
         ArrayList associations = new ArrayList();
         if(this.fieldToClassNameMappings.size() > 0) {
@@ -759,14 +787,17 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
         this.choiceElementMappingsByClassName.put(theClass, xmlMapping);
     }
 
+    @Override
     public boolean isWriteOnly() {
         return this.isWriteOnly;
     }
 
+    @Override
     public void setIsWriteOnly(boolean b) {
         this.isWriteOnly = b;
     }
 
+    @Override
     public void preInitialize(AbstractSession session) throws DescriptorException {
         getAttributeAccessor().setIsWriteOnly(this.isWriteOnly());
         getAttributeAccessor().setIsReadOnly(this.isReadOnly());
@@ -796,6 +827,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
 
     }
 
+    @Override
     public void setAttributeValueInObject(Object object, Object value) throws DescriptorException {
         if(isWriteOnly()) {
             return;
@@ -803,6 +835,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
         super.setAttributeValueInObject(object, value);
     }
 
+    @Override
     public Map<Class, List<XMLField>> getClassToSourceFieldsMappings() {
         if(this.classToSourceFieldsMappings == null) {
             this.classToSourceFieldsMappings = new HashMap<Class, List<XMLField>>();
@@ -834,10 +867,12 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
         return false;
     }
 
+    @Override
     public Map<String, XMLField> getClassNameToFieldMappings() {
         return this.classNameToFieldMappings;
     }
 
+    @Override
     public Map<Class, XMLMapping> getChoiceElementMappingsByClass() {
         return choiceElementMappingsByClass;
     }
@@ -850,6 +885,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
      * INTERNAL
      * @since EclipseLink 2.5.0
      */
+    @Override
     public Object convertObjectValueToDataValue(Object value, Session session, XMLMarshaller marshaller) {
         if (null != converter) {
             if (converter instanceof XMLConverter) {
@@ -865,6 +901,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
      * INTERNAL
      * @since EclipseLink 2.5.0
      */
+    @Override
     public Object convertDataValueToObjectValue(Object fieldValue, Session session, XMLUnmarshaller unmarshaller) {
         if (null != converter) {
             if (converter instanceof XMLConverter) {

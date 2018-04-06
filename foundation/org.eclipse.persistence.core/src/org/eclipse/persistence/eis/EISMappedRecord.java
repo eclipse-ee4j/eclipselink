@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -59,6 +59,7 @@ public class EISMappedRecord extends AbstractRecord {
     /**
      * Forward the request to the record.
      */
+    @Override
     public Set keySet() {
         Set keys = getRecord().keySet();
 
@@ -72,6 +73,7 @@ public class EISMappedRecord extends AbstractRecord {
     /**
      * Forward the request to the record.
      */
+    @Override
     public Collection values() {
         return getRecord().values();
     }
@@ -79,6 +81,7 @@ public class EISMappedRecord extends AbstractRecord {
     /**
      * Forward the request to the record.
      */
+    @Override
     public int size() {
         return getRecord().size();
     }
@@ -88,6 +91,7 @@ public class EISMappedRecord extends AbstractRecord {
      * For some reason Attunity MappedRecords think they are empty when not,
      * so always return false.
      */
+    @Override
     public boolean isEmpty() {
         return false;
     }
@@ -95,6 +99,7 @@ public class EISMappedRecord extends AbstractRecord {
     /**
      * Forward the request to the record.
      */
+    @Override
     public void clear() {
         getRecord().clear();
     }
@@ -102,6 +107,7 @@ public class EISMappedRecord extends AbstractRecord {
     /**
      * Forward the request to the record.
      */
+    @Override
     public Object get(String key) {
         return getRecord().get(key);
     }
@@ -110,6 +116,7 @@ public class EISMappedRecord extends AbstractRecord {
      * Forward the request to the record.
      * Wrapped nested records and collections to SDKFieldValues.
      */
+    @Override
     public Object get(DatabaseField field) {
         Object value = get(field.getName());
         if (value instanceof Map) {
@@ -135,6 +142,7 @@ public class EISMappedRecord extends AbstractRecord {
     /**
      * Check if the field is contained in the row.
      */
+    @Override
     public boolean containsKey(String fieldName) {
         return get(fieldName) != null;
     }
@@ -142,6 +150,7 @@ public class EISMappedRecord extends AbstractRecord {
     /**
      * Check if the field is contained in the row.
      */
+    @Override
     public boolean containsKey(DatabaseField key) {
         return get(key) != null;
     }
@@ -177,6 +186,7 @@ public class EISMappedRecord extends AbstractRecord {
     /**
      * Print all of the record keys and values.
      */
+    @Override
     public String toString() {
         StringWriter writer = new StringWriter();
         writer.write(Helper.getShortClassName(getClass()));

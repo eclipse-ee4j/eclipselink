@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -40,6 +40,7 @@ public class SoftCacheWeakIdentityMap extends HardCacheWeakIdentityMap {
      * Creates a Soft reference to the object.
      * @param object is the domain object to cache.
      */
+    @Override
     public Object buildReference(Object object) {
         if (object != null) {
             return new SoftReference(object);
@@ -52,6 +53,7 @@ public class SoftCacheWeakIdentityMap extends HardCacheWeakIdentityMap {
      * Checks if the object is null, or reference's object is null.
      * @param the object for hard or the reference for soft.
      */
+    @Override
     public boolean hasReference(Object reference) {
         return (reference != null) && (((SoftReference)reference).get() != null);
     }

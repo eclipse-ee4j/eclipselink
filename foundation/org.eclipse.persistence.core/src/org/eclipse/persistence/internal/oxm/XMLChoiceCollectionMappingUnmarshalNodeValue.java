@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -69,6 +69,7 @@ public class XMLChoiceCollectionMappingUnmarshalNodeValue extends MappingNodeVal
         initializeNodeValue();
     }
 
+    @Override
     public boolean isOwningNode(XPathFragment xPathFragment) {
         if(isMixedNodeValue) {
             if(xPathFragment.nameIsText()) {
@@ -117,6 +118,7 @@ public class XMLChoiceCollectionMappingUnmarshalNodeValue extends MappingNodeVal
         xmlChoiceCollectionMapping.setAttributeValueInObject(object, null);
     }
 
+    @Override
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord) {
         Object collection = unmarshalRecord.getContainerInstance(this.containerNodeValue);
 
@@ -130,36 +132,44 @@ public class XMLChoiceCollectionMappingUnmarshalNodeValue extends MappingNodeVal
         }
     }
 
+    @Override
     public boolean startElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts) {
         return this.choiceElementNodeValue.startElement(xPathFragment, unmarshalRecord, atts);
     }
 
+    @Override
     public void setXPathNode(XPathNode xPathNode) {
         super.setXPathNode(xPathNode);
         this.choiceElementNodeValue.setXPathNode(xPathNode);
     }
 
+    @Override
     public Object getContainerInstance() {
         return getContainerPolicy().containerInstance();
     }
 
+    @Override
     public void setContainerInstance(Object object, Object containerInstance) {
         xmlChoiceCollectionMapping.setAttributeValueInObject(object, containerInstance);
     }
 
+    @Override
     public CoreContainerPolicy getContainerPolicy() {
         return xmlChoiceCollectionMapping.getContainerPolicy();
     }
 
+    @Override
     public boolean isContainerValue() {
         return true;
     }
 
+    @Override
     public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         //empty impl in the unmarshal node value
         return false;
     }
 
+    @Override
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver) {
         //dummy impl in the unmarshal node value
         return false;
@@ -173,22 +183,27 @@ public class XMLChoiceCollectionMappingUnmarshalNodeValue extends MappingNodeVal
         return this.choiceElementMarshalNodeValue;
     }
 
+    @Override
     public boolean isUnmarshalNodeValue() {
         return true;
     }
 
+    @Override
     public boolean isWrapperAllowedAsCollectionName() {
         return false;
     }
 
+    @Override
     public boolean isMarshalNodeValue() {
         return false;
     }
 
+    @Override
     public ChoiceCollectionMapping getMapping() {
         return xmlChoiceCollectionMapping;
     }
 
+    @Override
     public boolean getReuseContainer() {
         return getMapping().getReuseContainer();
     }
@@ -205,6 +220,7 @@ public class XMLChoiceCollectionMappingUnmarshalNodeValue extends MappingNodeVal
      * The underlying choice element node value will handle attributes.
      *
      */
+    @Override
     public void attribute(UnmarshalRecord unmarshalRecord, String URI, String localName, String value) {
         this.choiceElementNodeValue.attribute(unmarshalRecord, URI, localName, value);
     }
@@ -221,6 +237,7 @@ public class XMLChoiceCollectionMappingUnmarshalNodeValue extends MappingNodeVal
      * INTERNAL:
      * Return true if this is the node value representing mixed content.
      */
+    @Override
     public boolean isMixedContentNodeValue() {
         return this.isMixedNodeValue;
     }
@@ -229,6 +246,7 @@ public class XMLChoiceCollectionMappingUnmarshalNodeValue extends MappingNodeVal
      *  INTERNAL:
      *  Used to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord
      */
+    @Override
     public void setIndex(int index){
         this.index = index;
     }
@@ -238,6 +256,7 @@ public class XMLChoiceCollectionMappingUnmarshalNodeValue extends MappingNodeVal
      * Set to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord
      * Set during TreeObjectBuilder initialization
      */
+    @Override
     public int getIndex(){
         return index;
     }
@@ -248,6 +267,7 @@ public class XMLChoiceCollectionMappingUnmarshalNodeValue extends MappingNodeVal
      * is no presence of the collection in the XML document.
      * @since EclipseLink 2.3.3
      */
+    @Override
     public boolean isDefaultEmptyContainer() {
         return getMapping().isDefaultEmptyContainer();
     }

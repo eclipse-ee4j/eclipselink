@@ -67,6 +67,7 @@ public class UpdateClauseStateObject extends AbstractModifyClauseStateObject
     /**
      * {@inheritDoc}
      */
+    @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
@@ -200,6 +201,7 @@ public class UpdateClauseStateObject extends AbstractModifyClauseStateObject
     /**
      * {@inheritDoc}
      */
+    @Override
     @SuppressWarnings("unchecked")
     public UpdateItemStateObject addItem(UpdateItemStateObject item) {
         getChangeSupport().addItem(this, items, UPDATE_ITEMS_LIST, parent(item));
@@ -209,6 +211,7 @@ public class UpdateClauseStateObject extends AbstractModifyClauseStateObject
     /**
      * {@inheritDoc}
      */
+    @Override
     public void addItems(List<? extends UpdateItemStateObject> items) {
         getChangeSupport().addItems(this, this.items, UPDATE_ITEMS_LIST, parent(items));
     }
@@ -216,6 +219,7 @@ public class UpdateClauseStateObject extends AbstractModifyClauseStateObject
     /**
      * {@inheritDoc}
      */
+    @Override
     public void addListChangeListener(String listName, IListChangeListener<UpdateItemStateObject> listener) {
         getChangeSupport().addListChangeListener(listName, listener);
     }
@@ -251,6 +255,7 @@ public class UpdateClauseStateObject extends AbstractModifyClauseStateObject
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean canMoveDown(UpdateItemStateObject item) {
         return getChangeSupport().canMoveDown(items, item);
     }
@@ -258,6 +263,7 @@ public class UpdateClauseStateObject extends AbstractModifyClauseStateObject
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean canMoveUp(UpdateItemStateObject item) {
         return getChangeSupport().canMoveUp(items, item);
     }
@@ -281,6 +287,7 @@ public class UpdateClauseStateObject extends AbstractModifyClauseStateObject
     /**
      * {@inheritDoc}
      */
+    @Override
     public UpdateItemStateObject getItem(int index) {
         return items.get(index);
     }
@@ -296,6 +303,7 @@ public class UpdateClauseStateObject extends AbstractModifyClauseStateObject
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean hasItems() {
         return !items.isEmpty();
     }
@@ -331,6 +339,7 @@ public class UpdateClauseStateObject extends AbstractModifyClauseStateObject
     /**
      * {@inheritDoc}
      */
+    @Override
     public ListIterable<UpdateItemStateObject> items() {
         return new SnapshotCloneListIterable<UpdateItemStateObject>(items);
     }
@@ -338,6 +347,7 @@ public class UpdateClauseStateObject extends AbstractModifyClauseStateObject
     /**
      * {@inheritDoc}
      */
+    @Override
     public int itemsSize() {
         return items.size();
     }
@@ -345,6 +355,7 @@ public class UpdateClauseStateObject extends AbstractModifyClauseStateObject
     /**
      * {@inheritDoc}
      */
+    @Override
     public UpdateItemStateObject moveDown(UpdateItemStateObject item) {
         getChangeSupport().moveDown(this, items, UPDATE_ITEMS_LIST, item);
         return item;
@@ -353,6 +364,7 @@ public class UpdateClauseStateObject extends AbstractModifyClauseStateObject
     /**
      * {@inheritDoc}
      */
+    @Override
     public UpdateItemStateObject moveUp(UpdateItemStateObject item) {
         getChangeSupport().moveUp(this, items, UPDATE_ITEMS_LIST, item);
         return item;
@@ -372,6 +384,7 @@ public class UpdateClauseStateObject extends AbstractModifyClauseStateObject
     /**
      * {@inheritDoc}
      */
+    @Override
     public void removeItem(UpdateItemStateObject stateObject) {
         getChangeSupport().removeItem(this, this.items, UPDATE_ITEMS_LIST, stateObject);
     }
@@ -379,6 +392,7 @@ public class UpdateClauseStateObject extends AbstractModifyClauseStateObject
     /**
      * {@inheritDoc}
      */
+    @Override
     public void removeItems(Collection<UpdateItemStateObject> items) {
         getChangeSupport().removeItems(this, this.items, UPDATE_ITEMS_LIST, items);
     }
@@ -386,6 +400,7 @@ public class UpdateClauseStateObject extends AbstractModifyClauseStateObject
     /**
      * {@inheritDoc}
      */
+    @Override
     public void removeListChangeListener(String listName, IListChangeListener<UpdateItemStateObject> listener) {
         getChangeSupport().removeListChangeListener(listName, listener);
     }

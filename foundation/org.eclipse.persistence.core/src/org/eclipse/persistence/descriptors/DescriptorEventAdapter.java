@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -25,10 +25,13 @@ import java.util.List;
  * @see DescriptorEvent
  */
 public class DescriptorEventAdapter implements DescriptorEventListener {
+    @Override
     public void aboutToInsert(DescriptorEvent event) {}
 
+    @Override
     public void aboutToUpdate(DescriptorEvent event) {}
 
+    @Override
     public void aboutToDelete(DescriptorEvent event) {}
 
     @Override
@@ -36,33 +39,48 @@ public class DescriptorEventAdapter implements DescriptorEventListener {
         return false;
     }
 
+    @Override
     public void postBuild(DescriptorEvent event) {}
 
+    @Override
     public void postClone(DescriptorEvent event) {}
 
+    @Override
     public void postDelete(DescriptorEvent event) {}
 
+    @Override
     public void postInsert(DescriptorEvent event) {}
 
+    @Override
     public void postMerge(DescriptorEvent event) {}
 
+    @Override
     public void postRefresh(DescriptorEvent event) {}
 
+    @Override
     public void postUpdate(DescriptorEvent event) {}
 
+    @Override
     public void postWrite(DescriptorEvent event) {}
 
+    @Override
     public void prePersist(DescriptorEvent event) {}
 
+    @Override
     public void preDelete(DescriptorEvent event) {}
 
+    @Override
     public void preRemove(DescriptorEvent event) {}
 
+    @Override
     public void preInsert(DescriptorEvent event) {}
 
+    @Override
     public void preUpdate(DescriptorEvent event) {}
 
+    @Override
     public void preUpdateWithChanges(DescriptorEvent event) {}
 
+    @Override
     public void preWrite(DescriptorEvent event) {}
 }

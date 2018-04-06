@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -89,6 +89,7 @@ public class EntityResult extends SQLResult {
      * with class names to a project with classes.
      * @param classLoader
      */
+    @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){
         super.convertClassNamesToClasses(classLoader);
         Class entityClass = null;
@@ -149,6 +150,7 @@ public class EntityResult extends SQLResult {
      * INTERNAL:
      * This method is a convenience method for extracting values from Results
      */
+    @Override
     public Object getValueFromRecord(DatabaseRecord record, ResultSetMappingQuery query){
         // From the row data build result entity.
         // To do this let's collect the column based data for this entity from
@@ -199,6 +201,7 @@ public class EntityResult extends SQLResult {
         return descriptor.getObjectBuilder().buildObject(query, entityRecord, null);
     }
 
+    @Override
     public boolean isEntityResult(){
         return true;
     }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -30,6 +30,7 @@ public abstract class ModifyNode extends QueryNode {
      * INTERNAL
      * Apply this node to the passed query.  This node does not change the query.
      */
+    @Override
     public void applyToQuery(DatabaseQuery theQuery, GenerationContext context) {
     }
 
@@ -37,6 +38,7 @@ public abstract class ModifyNode extends QueryNode {
      * INTERNAL
      * Validate node and calculate its type.
      */
+    @Override
     public void validate(ParseTreeContext context) {
         // If defined use the abstractSchemaIdentifier as the base variable,
         // otherwise use the abstractSchemaName
@@ -48,6 +50,7 @@ public abstract class ModifyNode extends QueryNode {
     /**
      * INTERNAL
      */
+    @Override
     public Expression generateExpression(GenerationContext context) {
         return null;
     }
@@ -96,6 +99,7 @@ public abstract class ModifyNode extends QueryNode {
      * resolveClass: Answer the class which corresponds to my variableName. This is the class for
      * an alias, where the variableName is registered to an alias.
      */
+    @Override
     public Class resolveClass(GenerationContext context) {
         String alias = abstractSchemaName;
         ClassDescriptor descriptor = context.getSession().getDescriptorForAlias(alias);

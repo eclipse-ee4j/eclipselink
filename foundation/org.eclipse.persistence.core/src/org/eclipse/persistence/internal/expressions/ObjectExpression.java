@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -173,6 +173,7 @@ public abstract class ObjectExpression extends DataExpression {
      * and return the new value of  the counter , i.e. if initialValue is one
      * and I have tables ADDRESS and EMPLOYEE I will assign them t1 and t2 respectively, and return 3.
      */
+    @Override
     public int assignTableAliasesStartingAt(int initialValue) {
         //This differs from the Expression implementation only in that it must set the hasBeenAliased flag when done.
         int returnVal = super.assignTableAliasesStartingAt(initialValue);
@@ -598,6 +599,7 @@ public abstract class ObjectExpression extends DataExpression {
         return tables;
     }
 
+    @Override
     public boolean hasBeenAliased() {
         return hasBeenAliased;
     }
@@ -605,6 +607,7 @@ public abstract class ObjectExpression extends DataExpression {
     /**
      * INTERNAL:
      */
+    @Override
     public void clearAliases() {
         hasBeenAliased = false;
         super.clearAliases();

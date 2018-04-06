@@ -121,6 +121,7 @@ public class JPAQuery extends DatabaseQuery  {
      * it will execute the resulting query instead, this allows JPA style queries to be executed
      * on a normal EclipseLink Session.
      */
+    @Override
     public Object executeDatabaseQuery() throws DatabaseException, OptimisticLockException{
         return getSession().executeQuery(getDatabaseQuery());
     }
@@ -149,6 +150,7 @@ public class JPAQuery extends DatabaseQuery  {
     /**
      * Return the JPQL string.
      */
+    @Override
     public String getJPQLString(){
         return jpqlString;
     }
@@ -171,6 +173,7 @@ public class JPAQuery extends DatabaseQuery  {
      * INTERNAL:
      * Generate the DatabaseQuery query from the JPA named query.
      */
+    @Override
     public void prepare() {
         DatabaseQuery query = null;
         ClassLoader loader = session.getDatasourcePlatform().getConversionManager().getLoader();
@@ -303,6 +306,7 @@ public class JPAQuery extends DatabaseQuery  {
         this.hints = hints;
     }
 
+    @Override
     public void setJPQLString(String jpqlString){
         this.jpqlString = jpqlString;
     }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -329,6 +329,7 @@ public class EISPlatform extends DatasourcePlatform {
      * Convert the parameter to a string and write it.
      * Convert rows to XML strings.
      */
+    @Override
     public void appendParameter(Call call, Writer writer, Object parameter) {
         if (parameter instanceof Vector) {
             Vector records = (Vector)parameter;
@@ -356,6 +357,7 @@ public class EISPlatform extends DatasourcePlatform {
     /**
      * The platform holds its own instance of conversion manager to allow customization.
      */
+    @Override
     public ConversionManager getConversionManager() {
         // For XML we need an XMLConversionManager instance
         if (isDOMRecordSupported()) {
@@ -385,6 +387,7 @@ public class EISPlatform extends DatasourcePlatform {
      * Return the correct call type for the native query string.
      * This allows EIS platforms to use different types of native calls.
      */
+    @Override
     public DatasourceCall buildNativeCall(String queryString) {
         return new QueryStringInteraction(queryString);
     }

@@ -405,6 +405,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
      * INTERNAL:
      * Return the default fetch type for a collection mapping.
      */
+    @Override
     public String getDefaultFetchType() {
         return JPA_FETCH_LAZY;
     }
@@ -439,6 +440,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
      * INTERNAL:
      * Used for OX mapping.
      */
+    @Override
     public List<AssociationOverrideMetadata> getMapKeyAssociationOverrides() {
         return m_mapKeyAssociationOverrides;
     }
@@ -447,6 +449,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
      * INTERNAL:
      * Used for OX mapping.
      */
+    @Override
     public List<AttributeOverrideMetadata> getMapKeyAttributeOverrides() {
         return m_mapKeyAttributeOverrides;
     }
@@ -454,6 +457,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
     /**
      * INTERNAL:
      */
+    @Override
     public MetadataClass getMapKeyClass() {
         return m_mapKeyClass;
     }
@@ -472,6 +476,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
      * class to support an auto-apply jpa converter. Per the spec auto-apply
      * converters are applied against basics only.
      */
+    @Override
     public MetadataClass getMapKeyClassWithGenerics() {
         return getMapKeyClass();
     }
@@ -480,6 +485,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
      * INTERNAL:
      * Used for OX mapping.
      */
+    @Override
     public ColumnMetadata getMapKeyColumn() {
         return m_mapKeyColumn;
     }
@@ -487,6 +493,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
     /**
      * INTERNAL:
      */
+    @Override
     public String getMapKeyConvert() {
         return m_mapKeyConvert;
     }
@@ -495,6 +502,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
      * INTERNAL:
      * Used for OX mapping.
      */
+    @Override
     public List<ConvertMetadata> getMapKeyConverts() {
         return m_mapKeyConverts;
     }
@@ -511,6 +519,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
      * INTERNAL:
      * Used for OX mapping.
      */
+    @Override
     public ForeignKeyMetadata getMapKeyForeignKey() {
         return m_mapKeyForeignKey;
     }
@@ -519,6 +528,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
      * INTERNAL:
      * Used for OX mapping.
      */
+    @Override
     public List<JoinColumnMetadata> getMapKeyJoinColumns() {
         return m_mapKeyJoinColumns;
     }
@@ -813,6 +823,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
     /**
      * INTERNAL:
      */
+    @Override
     public void setMapKeyClass(MetadataClass mapKeyClass) {
         m_mapKeyClass = mapKeyClass;
     }

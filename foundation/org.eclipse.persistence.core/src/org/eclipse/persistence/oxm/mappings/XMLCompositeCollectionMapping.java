@@ -292,11 +292,13 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
     /**
      * INTERNAL:
      */
+    @Override
     public boolean isXMLMapping() {
         return true;
     }
 
 
+    @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){
         if(XMLConstants.UNKNOWN_OR_TRANSIENT_CLASS.equals(referenceClassName)){
             return;
@@ -308,6 +310,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
      * The mapping is initialized with the given session. This mapping is fully initialized
      * after this.
      */
+    @Override
     public void initialize(AbstractSession session) throws DescriptorException {
         //modified so that reference class on composite mappings is no longer mandatory
         String referenceClassName = getReferenceClassName();
@@ -371,6 +374,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
      * @param xpathString String
      *
      */
+    @Override
     public void setXPath(String xpathString) {
         this.setField(new XMLField(xpathString));
     }
@@ -466,6 +470,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
         row.put(this.getField(), fieldValue);
     }
 
+    @Override
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected, Boolean[] wasCacheUsed) throws DatabaseException {
         ContainerPolicy cp = this.getContainerPolicy();
 
@@ -659,6 +664,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
 
     }
 
+    @Override
     protected ClassDescriptor getReferenceDescriptor(Class theClass, AbstractSession session) {
         if ((getReferenceDescriptor() != null) && getReferenceDescriptor().getJavaClass().equals(theClass)) {
             return getReferenceDescriptor();
@@ -672,6 +678,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
         }
     }
 
+    @Override
     public void writeSingleValue(Object value, Object parent, XMLRecord record, AbstractSession session) {
         Object element = convertObjectValueToDataValue(value, session, record.getMarshaller());
         XMLRecord nestedRow = (XMLRecord) buildCompositeRow(element, session, record, WriteType.UNDEFINED);
@@ -684,6 +691,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
      *
      * @param aNullPolicy
      */
+    @Override
     public void setNullPolicy(AbstractNullPolicy aNullPolicy) {
         nullPolicy = aNullPolicy;
     }
@@ -694,14 +702,17 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
      * The default policy is NullPolicy.<br>
      * @return
      */
+    @Override
     public AbstractNullPolicy getNullPolicy() {
         return nullPolicy;
     }
 
+    @Override
     public UnmarshalKeepAsElementPolicy getKeepAsElementPolicy() {
         return keepAsElementPolicy;
     }
 
+    @Override
     public void setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy keepAsElementPolicy) {
         this.keepAsElementPolicy = keepAsElementPolicy;
     }
@@ -720,20 +731,24 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
         return xmlDescriptor;
     }
 
+    @Override
     public boolean isWriteOnly() {
         return this.isWriteOnly;
     }
 
+    @Override
     public void setIsWriteOnly(boolean b) {
         this.isWriteOnly = b;
     }
 
+    @Override
     public void preInitialize(AbstractSession session) throws DescriptorException {
         getAttributeAccessor().setIsWriteOnly(this.isWriteOnly());
         getAttributeAccessor().setIsReadOnly(this.isReadOnly());
         super.preInitialize(session);
     }
 
+    @Override
     public void setAttributeValueInObject(Object object, Object value) throws DescriptorException {
         if(isWriteOnly()) {
             return;
@@ -746,6 +761,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
      * present.  If it is not present then the container policy will be used to
      * create the container.
      */
+    @Override
     public boolean getReuseContainer() {
         return reuseContainer;
     }
@@ -755,10 +771,12 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
      * present.  If it is not present then the container policy will be used to
      * create the container.
      */
+    @Override
     public void setReuseContainer(boolean reuseContainer) {
         this.reuseContainer = reuseContainer;
     }
 
+    @Override
     public XMLInverseReferenceMapping getInverseReferenceMapping() {
         return inverseReferenceMapping;
     }
@@ -773,6 +791,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
      * is no presence of the collection in the XML document.
      * @since EclipseLink 2.3.3
      */
+    @Override
     public boolean isDefaultEmptyContainer() {
         return defaultEmptyContainer;
     }
@@ -783,14 +802,17 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
      * field/property if the collection is not present in the XML document.
      * @since EclipseLink 2.3.3
      */
+    @Override
     public void setDefaultEmptyContainer(boolean defaultEmptyContainer) {
         this.defaultEmptyContainer = defaultEmptyContainer;
     }
 
+    @Override
     public AbstractNullPolicy getWrapperNullPolicy() {
         return this.wrapperNullPolicy;
     }
 
+    @Override
     public void setWrapperNullPolicy(AbstractNullPolicy policy) {
         this.wrapperNullPolicy = policy;
     }
@@ -799,6 +821,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
      * INTERNAL
      * @since EclipseLink 2.5.0
      */
+    @Override
     public Object convertObjectValueToDataValue(Object value, Session session, XMLMarshaller marshaller) {
         if (hasConverter()) {
             if (converter instanceof XMLConverter) {
@@ -814,6 +837,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
      * INTERNAL
      * @since EclipseLink 2.5.0
      */
+    @Override
     public Object convertDataValueToObjectValue(Object value, Session session, XMLUnmarshaller unmarshaller) {
         if (hasConverter()) {
             if (converter instanceof XMLConverter) {

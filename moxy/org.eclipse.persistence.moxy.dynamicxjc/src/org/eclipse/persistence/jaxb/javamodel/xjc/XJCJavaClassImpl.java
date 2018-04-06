@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 - 2014, 2015  Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 - 2014, 2018  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -137,6 +137,7 @@ public class XJCJavaClassImpl implements JavaClass {
      *
      * @return a <code>Collection</code> containing the actual type's <code>JavaClass</code>.
      */
+    @Override
     public Collection<JavaClass> getActualTypeArguments() {
 
 
@@ -193,6 +194,7 @@ public class XJCJavaClassImpl implements JavaClass {
      * @return <code>JavaClass</code> of this array's component type, or <code>null</code> if
      *         this is not an array type.
      */
+    @Override
     public JavaClass getComponentType() {
         if (!isArray()) {
             return null;
@@ -209,6 +211,7 @@ public class XJCJavaClassImpl implements JavaClass {
      *
      * @return the <code>JavaConstructor</code> with the signature matching parameterTypes.
      */
+    @Override
     public JavaConstructor getConstructor(JavaClass[] parameterTypes) {
         JType[] xjcParameterTypes = new JType[parameterTypes.length];
         for (int i = 0; i < parameterTypes.length; i++) {
@@ -234,6 +237,7 @@ public class XJCJavaClassImpl implements JavaClass {
      *
      * @return A <code>Collection</code> containing this <code>JavaClass'</code> <code>JavaConstructors</code>.
      */
+    @Override
     @SuppressWarnings("unchecked")
     public Collection<JavaConstructor> getConstructors() {
         ArrayList<JavaConstructor> constructors = new ArrayList<JavaConstructor>();
@@ -251,6 +255,7 @@ public class XJCJavaClassImpl implements JavaClass {
      *
      * @return A <code>Collection&lt;JavaClass&gt;</code> containing this <code>JavaClass'</code> inner classes.
      */
+    @Override
     public Collection<JavaClass> getDeclaredClasses() {
         ArrayList<JavaClass> declaredClasses = new ArrayList<JavaClass>();
 
@@ -277,6 +282,7 @@ public class XJCJavaClassImpl implements JavaClass {
      *
      * @return the <code>JavaConstructor</code> with the signature matching <code>parameterTypes</code>.
      */
+    @Override
     public JavaConstructor getDeclaredConstructor(JavaClass[] parameterTypes) {
         return getConstructor(parameterTypes);
     }
@@ -286,6 +292,7 @@ public class XJCJavaClassImpl implements JavaClass {
      *
      * @return A <code>Collection</code> containing this <code>JavaClass'</code> <code>JavaConstructors</code>.
      */
+    @Override
     public Collection<JavaConstructor> getDeclaredConstructors() {
         return getConstructors();
     }
@@ -298,6 +305,7 @@ public class XJCJavaClassImpl implements JavaClass {
      *
      * @return the <code>JavaField</code> named <code>fieldName</code> from this <code>JavaClass</code>.
      */
+    @Override
     public JavaField getDeclaredField(String fieldName) {
         JFieldVar xjcField = xjcClass.fields().get(fieldName);
 
@@ -309,6 +317,7 @@ public class XJCJavaClassImpl implements JavaClass {
      *
      * @return A <code>Collection</code> containing this <code>JavaClass'</code> <code>JavaFields</code>.
      */
+    @Override
     public Collection<JavaField> getDeclaredFields() {
         Collection<JFieldVar> xjcFields = xjcClass.fields().values();
         ArrayList<JavaField> fields = new ArrayList<JavaField>(xjcFields.size());
@@ -329,6 +338,7 @@ public class XJCJavaClassImpl implements JavaClass {
      *
      * @return the matching <code>JavaMethod</code> from this <code>JavaClass</code>.
      */
+    @Override
     public JavaMethod getDeclaredMethod(String name, JavaClass[] args) {
         return getMethod(name, args);
     }
@@ -338,6 +348,7 @@ public class XJCJavaClassImpl implements JavaClass {
      *
      * @return A <code>Collection</code> containing this <code>JavaClass'</code> <code>JavaMethods</code>.
      */
+    @Override
     public Collection<JavaMethod> getDeclaredMethods() {
         return getMethods();
     }
@@ -351,6 +362,7 @@ public class XJCJavaClassImpl implements JavaClass {
      *
      * @return the matching <code>JavaMethod</code> from this <code>JavaClass</code>.
      */
+    @Override
     public JavaMethod getMethod(String name, JavaClass[] args) {
         Collection<JMethod> xjcMethods = xjcClass.methods();
 
@@ -393,6 +405,7 @@ public class XJCJavaClassImpl implements JavaClass {
      *
      * @return A <code>Collection</code> containing this <code>JavaClass'</code> <code>JavaMethods</code>.
      */
+    @Override
     public Collection<JavaMethod> getMethods() {
         Collection<JMethod> xjcMethods = xjcClass.methods();
         ArrayList<JavaMethod> elinkMethods = new ArrayList<JavaMethod>(xjcMethods.size());
@@ -411,6 +424,7 @@ public class XJCJavaClassImpl implements JavaClass {
      *
      * @see java.lang.reflect.Modifier
      */
+    @Override
     public int getModifiers() {
         JMods xjcMods = null;
 
@@ -428,6 +442,7 @@ public class XJCJavaClassImpl implements JavaClass {
      *
      * @return the <code>String</code> name of this <code>JavaClass</code>.
      */
+    @Override
     public String getName() {
         return getQualifiedName();
     }
@@ -437,6 +452,7 @@ public class XJCJavaClassImpl implements JavaClass {
      *
      * @return the <code>JavaPackage</code> of this <code>JavaClass</code>.
      */
+    @Override
     public JavaPackage getPackage() {
         return new XJCJavaPackageImpl(xjcClass.getPackage(), dynamicClassLoader);
     }
@@ -446,6 +462,7 @@ public class XJCJavaClassImpl implements JavaClass {
      *
      * @return the <code>String</code> name of this <code>JavaClass'</code> <code>JavaPackage</code>.
      */
+    @Override
     public String getPackageName() {
         return xjcClass._package().name();
     }
@@ -455,6 +472,7 @@ public class XJCJavaClassImpl implements JavaClass {
      *
      * @return the <code>String</code> name of this <code>JavaClass</code>.
      */
+    @Override
     public String getQualifiedName() {
         if(isArray) {
             if(this.isPrimitive) {
@@ -503,6 +521,7 @@ public class XJCJavaClassImpl implements JavaClass {
      *
      * @return the <code>String</code> raw name of this <code>JavaClass</code>.
      */
+    @Override
     public String getRawName() {
         if(isArray) {
             return xjcClass.fullName() + "[]";
@@ -515,6 +534,7 @@ public class XJCJavaClassImpl implements JavaClass {
      *
      * @return <code>JavaClass</code> representing the super class of this <code>JavaClass</code>.
      */
+    @Override
     public JavaClass getSuperclass() {
         try {
             JClass superClass = (JClass) PrivilegedAccessHelper.getValueFromField(JDEFINEDCLASS_SUPERCLASS, xjcClass);
@@ -544,6 +564,7 @@ public class XJCJavaClassImpl implements JavaClass {
         return new Type[0];
     }
 
+    @Override
     public Type getGenericSuperclass() {
         return null;
     }
@@ -554,6 +575,7 @@ public class XJCJavaClassImpl implements JavaClass {
      *
      * @return <code>true</code> if this <code>JavaClass</code> is parameterized, otherwise <code>false</code>.
      */
+    @Override
     public boolean hasActualTypeArguments() {
         return xjcClass.typeParams().length > 0;
     }
@@ -563,6 +585,7 @@ public class XJCJavaClassImpl implements JavaClass {
      *
      * @return <code>true</code> if this <code>JavaClass</code> is <code>abstract</code>, otherwise <code>false</code>.
      */
+    @Override
     public boolean isAbstract() {
         return xjcClass.isAbstract();
     }
@@ -572,6 +595,7 @@ public class XJCJavaClassImpl implements JavaClass {
      *
      * @return <code>true</code> if this <code>JavaClass</code> is an <code>Annotation</code>, otherwise <code>false</code>.
      */
+    @Override
     public boolean isAnnotation() {
         return xjcClass.isAnnotationTypeDeclaration();
     }
@@ -581,6 +605,7 @@ public class XJCJavaClassImpl implements JavaClass {
      *
      * @return <code>true</code> if this <code>JavaClass</code> is an Array type, otherwise <code>false</code>.
      */
+    @Override
     public boolean isArray() {
         if (this.isArray) {
             return true;
@@ -599,6 +624,7 @@ public class XJCJavaClassImpl implements JavaClass {
      *
      * @see java.lang.Class#isAssignableFrom(Class)
      */
+    @Override
     public boolean isAssignableFrom(JavaClass javaClass) {
         if (javaClass == null) {
             return false;
@@ -615,6 +641,7 @@ public class XJCJavaClassImpl implements JavaClass {
      *
      * @return <code>true</code> if this <code>JavaClass</code> is an <code>enum</code>, otherwise <code>false</code>.
      */
+    @Override
     public boolean isEnum() {
         return xjcClass.getClassType().equals(ClassType.ENUM);
     }
@@ -624,6 +651,7 @@ public class XJCJavaClassImpl implements JavaClass {
      *
      * @return <code>true</code> if this <code>JavaClass</code> is <code>final</code>, otherwise <code>false</code>.
      */
+    @Override
     public boolean isFinal() {
         return Modifier.isFinal(getModifiers());
     }
@@ -633,6 +661,7 @@ public class XJCJavaClassImpl implements JavaClass {
      *
      * @return <code>true</code> if this <code>JavaClass</code> is an <code>interface</code>, otherwise <code>false</code>.
      */
+    @Override
     public boolean isInterface() {
         return xjcClass.isInterface();
     }
@@ -642,6 +671,7 @@ public class XJCJavaClassImpl implements JavaClass {
      *
      * @return <code>true</code> if this <code>JavaClass</code> is an inner <code>Class</code>, otherwise <code>false</code>.
      */
+    @Override
     public boolean isMemberClass() {
         return this.xjcClass.outer() != null;
     }
@@ -651,6 +681,7 @@ public class XJCJavaClassImpl implements JavaClass {
      *
      * @return <code>true</code> if this <code>JavaClass</code> represents a primitive type, otherwise <code>false</code>.
      */
+    @Override
     public boolean isPrimitive() {
         return false;
     }
@@ -660,6 +691,7 @@ public class XJCJavaClassImpl implements JavaClass {
      *
      * @return <code>true</code> if this <code>JavaClass</code> is <code>private</code>, otherwise <code>false</code>.
      */
+    @Override
     public boolean isPrivate() {
         return Modifier.isPrivate(getModifiers());
     }
@@ -669,6 +701,7 @@ public class XJCJavaClassImpl implements JavaClass {
      *
      * @return <code>true</code> if this <code>JavaClass</code> is <code>protected</code>, otherwise <code>false</code>.
      */
+    @Override
     public boolean isProtected() {
         return Modifier.isProtected(getModifiers());
     }
@@ -678,6 +711,7 @@ public class XJCJavaClassImpl implements JavaClass {
      *
      * @return <code>true</code> if this <code>JavaClass</code> is <code>public</code>, otherwise <code>false</code>.
      */
+    @Override
     public boolean isPublic() {
         return Modifier.isPublic(getModifiers());
     }
@@ -687,6 +721,7 @@ public class XJCJavaClassImpl implements JavaClass {
      *
      * @return <code>true</code> if this <code>JavaClass</code> is <code>static</code>, otherwise <code>false</code>.
      */
+    @Override
     public boolean isStatic() {
         return Modifier.isStatic(getModifiers());
     }
@@ -694,6 +729,7 @@ public class XJCJavaClassImpl implements JavaClass {
     /**
      * Not supported.
      */
+    @Override
     public boolean isSynthetic() {
         throw new UnsupportedOperationException("isSynthetic");
     }
@@ -711,6 +747,7 @@ public class XJCJavaClassImpl implements JavaClass {
      *
      * @return the <code>JavaAnnotation</code> represented by <code>aClass</code>, if one exists, otherwise return <code>null</code>.
      */
+    @Override
     @SuppressWarnings("unchecked")
     public JavaAnnotation getAnnotation(JavaClass aClass) {
         if (aClass != null) {
@@ -746,6 +783,7 @@ public class XJCJavaClassImpl implements JavaClass {
      *
      * @return A <code>Collection</code> containing this <code>JavaClass'</code> <code>JavaAnnotations</code>.
      */
+    @Override
     @SuppressWarnings("unchecked")
     public Collection<JavaAnnotation> getAnnotations() {
         ArrayList<JavaAnnotation> annotationsList = new ArrayList<JavaAnnotation>();
@@ -770,6 +808,7 @@ public class XJCJavaClassImpl implements JavaClass {
     /**
      * Not supported.
      */
+    @Override
     public JavaAnnotation getDeclaredAnnotation(JavaClass arg0) {
         return getAnnotation(arg0);
     }
@@ -777,6 +816,7 @@ public class XJCJavaClassImpl implements JavaClass {
     /**
      * Not supported.
      */
+    @Override
     public Collection<JavaAnnotation> getDeclaredAnnotations() {
         return getAnnotations();
     }

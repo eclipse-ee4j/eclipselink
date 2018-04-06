@@ -158,6 +158,7 @@ public abstract class AbstractFromClauseStateObject extends AbstractListHolderSt
     /**
      * {@inheritDoc}
      */
+    @Override
     public ListIterable<? extends VariableDeclarationStateObject> declarations() {
         return items();
     }
@@ -196,6 +197,7 @@ public abstract class AbstractFromClauseStateObject extends AbstractListHolderSt
     /**
      * {@inheritDoc}
      */
+    @Override
     public IManagedType getManagedType(StateObject stateObject) {
 
         for (VariableDeclarationStateObject declaration : declarations()) {

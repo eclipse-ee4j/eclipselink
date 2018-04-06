@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -45,6 +45,7 @@ public class SOAPAttachmentHandler implements XMLAttachmentMarshaller {
         return attachments;
     }
 
+    @Override
     public String addSwaRefAttachment(DataHandler data) {
         ++count;
         String name = "cid:ref" + count;
@@ -52,6 +53,7 @@ public class SOAPAttachmentHandler implements XMLAttachmentMarshaller {
         return name;
     }
 
+    @Override
     public String addSwaRefAttachment(byte[] data, int start, int length) {
         ++count;
         String name = "cid:ref" + count;
@@ -61,12 +63,14 @@ public class SOAPAttachmentHandler implements XMLAttachmentMarshaller {
         return name;
     }
 
+    @Override
     public String addMtomAttachment(DataHandler data, String elementName, String namespace) {
         String name = "cid:" + randomUUID().toString();
         attachments.put(name, data);
         return name;
     }
 
+    @Override
     public String addMtomAttachment(byte[] data, int start, int len, String mimeType,
         String elementName, String namespace) {
         String name = "cid:" + randomUUID().toString();
@@ -76,6 +80,7 @@ public class SOAPAttachmentHandler implements XMLAttachmentMarshaller {
         return name;
     }
 
+    @Override
     public boolean isXOPPackage() {
         return true;
     }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -66,6 +66,7 @@ public class RemoteValueHolder extends DatabaseValueHolder implements Externaliz
     /**
      * Only the id is checked for equality check.
      */
+    @Override
     public boolean equals(Object object) {
         if (!(object instanceof RemoteValueHolder)) {
             return false;
@@ -78,6 +79,7 @@ public class RemoteValueHolder extends DatabaseValueHolder implements Externaliz
      * This method is used to remove the RemoteValueHolder from the dispatcher on Garbage
      * collection from the client
      */
+    @Override
     public void finalize() {
         if ((this.session != null) && (this.session instanceof RemoteSession) && ((RemoteSession)this.session).shouldEnableDistributedIndirectionGarbageCollection()) {
             // This must be on the client
@@ -152,6 +154,7 @@ public class RemoteValueHolder extends DatabaseValueHolder implements Externaliz
     /**
      * Return the hashcode for id, because it is unqiue.
      */
+    @Override
     public int hashCode() {
         return getID().hashCode();
     }
@@ -159,6 +162,7 @@ public class RemoteValueHolder extends DatabaseValueHolder implements Externaliz
     /**
      * Return the object.
      */
+    @Override
     public synchronized Object instantiate() {
         Object valueOfServerValueHolder = null;
 
@@ -183,6 +187,7 @@ public class RemoteValueHolder extends DatabaseValueHolder implements Externaliz
      * Answers if this valueholder is easy to instantiate.
      * @return true if getValue() won't trigger a database read.
      */
+    @Override
     public boolean isEasilyInstantiated() {
         // Nothing is easily instantiated when on the client side.
         return this.isInstantiated || ((this.wrappedServerValueHolder != null)
@@ -198,6 +203,7 @@ public class RemoteValueHolder extends DatabaseValueHolder implements Externaliz
      * all fields can not be reset.
      * Note: This method is not thread-safe.  It must be used in a synchronizaed manner
      */
+    @Override
     public boolean isPessimisticLockingValueHolder() {
         // This abstract method needs to be implemented but is not meaningfull for
         // this subclass.
@@ -221,6 +227,7 @@ public class RemoteValueHolder extends DatabaseValueHolder implements Externaliz
      * and the query.
      * Note: This method is not thread-safe.  It must be used in a synchronizaed manner
      */
+    @Override
     public Object instantiateForUnitOfWorkValueHolder(UnitOfWorkValueHolder unitOfWorkValueHolder) {
         if ((getWrappedServerValueHolder() != null) && (getWrappedServerValueHolder() instanceof DatabaseValueHolder)) {
             DatabaseValueHolder wrapped = (DatabaseValueHolder)getWrappedServerValueHolder();
@@ -237,6 +244,7 @@ public class RemoteValueHolder extends DatabaseValueHolder implements Externaliz
      *  Note: Changed for bug 3145211.  We used to use the java.io.Serializable interface, but need to convert
      *  to Externalizable interface to avoid sending extra data through the superclass's serialization
      */
+    @Override
     public void readExternal(ObjectInput in) throws IOException, java.lang.ClassNotFoundException {
         this.id = (ObjID)in.readObject();
         this.targetObjectPrimaryKeys = in.readObject();
@@ -285,6 +293,7 @@ public class RemoteValueHolder extends DatabaseValueHolder implements Externaliz
     /**
      * Set the object.
      */
+    @Override
     public void setValue(Object theValue) {
         super.setValue(theValue);
         if (getWrappedServerValueHolder() != null) {
@@ -306,6 +315,7 @@ public class RemoteValueHolder extends DatabaseValueHolder implements Externaliz
      *  Note: Changed for bug 3145211.  We used to use the java.io.Serializable interface, but need to convert
      *  to Externalizable interface to avoid sending extra data through the superclass's serialization
      */
+    @Override
     public void writeExternal(ObjectOutput out) throws IOException {
         out.writeObject(id);
         out.writeObject(targetObjectPrimaryKeys);

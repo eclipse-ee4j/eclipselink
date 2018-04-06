@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -32,6 +32,7 @@ public class XRSessionConfigLoader extends XMLSessionConfigLoader {
         super(resourceName);
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public boolean load(SessionManager sessionManager, ClassLoader loader) {
         Document document = loadDocument(loader);

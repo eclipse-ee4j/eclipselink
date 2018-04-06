@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -189,6 +189,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      * INTERNAL:
      * Add the class name reference by class name, used by the MW.
      */
+    @Override
     public void addClassNameIndicator(String childClassName, Object typeValue) {
         getClassNameIndicatorMapping().put(childClassName, typeValue);
     }
@@ -215,6 +216,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      * required when building a row for an insert or an update of a concrete child
      * descriptor.
      */
+    @Override
     public void addClassIndicatorFieldToRow(AbstractRecord databaseRow) {
         if (hasClassExtractor()) {
             return;
@@ -388,6 +390,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      * INTERNAL:
      * Clone the policy
      */
+    @Override
     public Object clone() {
         InheritancePolicy clone = null;
 
@@ -654,6 +657,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      *
      * @see #setClassExtractor setClassExtractor for more information on the ClassExtractor class.
      */
+    @Override
     public void setClassExtractorName(String classExtractorName) {
         this.classExtractorName = classExtractorName;
     }
@@ -695,6 +699,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      * Return the class indicator field name.
      * This is the name of the field in the table that stores what type of object this is.
      */
+    @Override
     public String getClassIndicatorFieldName() {
         if (getClassIndicatorField() == null) {
             return null;
@@ -719,6 +724,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      * INTERNAL:
      * Return the mapping from class name to indicator, used by MW.
      */
+    @Override
     public Map getClassNameIndicatorMapping() {
         if (classNameIndicatorMapping.isEmpty() && classIndicatorMapping!=null && !classIndicatorMapping.isEmpty()) {
             Iterator keysEnum = classIndicatorMapping.keySet().iterator();
@@ -792,6 +798,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      * PUBLIC:
      * Return the parent class.
      */
+    @Override
     public Class getParentClass() {
         return parentClass;
     }
@@ -811,6 +818,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      * INTERNAL:
      * Return the parent descriptor.
      */
+    @Override
     public ClassDescriptor getParentDescriptor() {
         return parentDescriptor;
     }
@@ -914,6 +922,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
     /**
      * INTERNAL:
      */
+    @Override
     public boolean hasClassExtractor() {
         return getClassExtractor() != null;
     }
@@ -1134,6 +1143,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      * INTERNAL:
      * Return whether or not is root parent descriptor
      */
+    @Override
     public boolean isRootParentDescriptor() {
         return getParentDescriptor() == null;
     }
@@ -1678,6 +1688,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      * Set the parent class name, used by MW to avoid referencing the real class for
      * deployment XML generation.
      */
+    @Override
     public void setParentClassName(String parentClassName) {
         this.parentClassName = parentClassName;
     }
@@ -1719,6 +1730,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      * This is used with inheritance to configure the result of queries.
      * By default this is true for root inheritance descriptors, and false for all others.
      */
+    @Override
     public void setShouldReadSubclasses(Boolean shouldReadSubclasses) {
         this.shouldReadSubclasses = shouldReadSubclasses;
     }
@@ -1851,6 +1863,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
     /**
      * INTERNAL:
      */
+    @Override
     public String toString() {
         return Helper.getShortClassName(getClass()) + "(" + getDescriptor() + ")";
     }

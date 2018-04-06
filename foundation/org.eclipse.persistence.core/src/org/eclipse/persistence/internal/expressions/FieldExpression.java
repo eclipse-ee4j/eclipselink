@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -62,6 +62,7 @@ public class FieldExpression extends DataExpression {
      * This is used to allow dynamic expression's SQL to be cached.
      * This must be over written by each subclass.
      */
+    @Override
     public boolean equals(Object object) {
         if (this == object) {
             return true;
@@ -78,6 +79,7 @@ public class FieldExpression extends DataExpression {
      * Compute a consistent hash-code for the expression.
      * This is used to allow dynamic expression's SQL to be cached.
      */
+    @Override
     public int computeHashCode() {
         int hashCode = super.computeHashCode();
         if (getField() != null) {
@@ -89,6 +91,7 @@ public class FieldExpression extends DataExpression {
     /**
      * INTERNAL:
      */
+    @Override
     public void clearAliases() {
         super.clearAliases();
         aliasedField = null;
@@ -98,6 +101,7 @@ public class FieldExpression extends DataExpression {
      * INTERNAL:
      * Used for debug printing.
      */
+    @Override
     public String descriptionOfNodeType() {
         return "Field";
     }
@@ -106,6 +110,7 @@ public class FieldExpression extends DataExpression {
      * INTERNAL:
      * Return the field appropriately aliased
      */
+    @Override
     public DatabaseField getAliasedField() {
         if (aliasedField == null) {
             initializeAliasedField();
@@ -138,6 +143,7 @@ public class FieldExpression extends DataExpression {
      * INTERNAL:
      * If there are any fields associated with this expression, return them
      */
+    @Override
     public DatabaseField getClonedField() {
         return getField().clone();
     }
@@ -155,6 +161,7 @@ public class FieldExpression extends DataExpression {
     /**
      * INTERNAL:
      */
+    @Override
     public DatabaseField getField() {
         return field;
     }
@@ -163,6 +170,7 @@ public class FieldExpression extends DataExpression {
      * INTERNAL:
      * Return all the fields
      */
+    @Override
     public Vector getFields() {
         Vector result = new Vector(1);
         result.addElement(getField());
@@ -206,10 +214,12 @@ public class FieldExpression extends DataExpression {
     /**
      * INTERNAL:
      */
+    @Override
     public boolean isAttribute() {
         return true;
     }
 
+    @Override
     public boolean isFieldExpression() {
         return true;
     }
@@ -218,6 +228,7 @@ public class FieldExpression extends DataExpression {
      * INTERNAL:
      * Normalize the expression into a printable structure.
      */
+    @Override
     public Expression normalize(ExpressionNormalizer normalizer) {
         if (this.hasBeenNormalized) {
             return this;
@@ -235,6 +246,7 @@ public class FieldExpression extends DataExpression {
      * INTERNAL:
      * Print SQL onto the stream, using the ExpressionPrinter for context
      */
+    @Override
     public void printSQL(ExpressionSQLPrinter printer) {
         // to support custom types, print expressions derived from field expressions and direct query keys with their aliases
         // Note: This is also necessary for TableExpressions, but they are taken care of by their associated FieldExpression.
@@ -250,6 +262,7 @@ public class FieldExpression extends DataExpression {
      * INTERNAL:
      * Print java for project class generation
      */
+    @Override
     public void printJava(ExpressionJavaPrinter printer) {
         getBaseExpression().printJava(printer);
         printer.printString(".getField(\"" + getField().getQualifiedName() + "\")");
@@ -260,6 +273,7 @@ public class FieldExpression extends DataExpression {
      * This expression is built on a different base than the one we want. Rebuild it and
      * return the root of the new tree
      */
+    @Override
     public Expression rebuildOn(Expression newBase) {
         DatabaseField field = getField();
         ClassDescriptor descriptor = null;
@@ -317,6 +331,7 @@ public class FieldExpression extends DataExpression {
     /**
      * Do any required validation for this node. Throw an exception if it's incorrect.
      */
+    @Override
     public void validateNode() {
         DataExpression base = (DataExpression)getBaseExpression();
         if (getField().getTable().hasName()) {
@@ -332,6 +347,7 @@ public class FieldExpression extends DataExpression {
      * Return the value for in memory comparison.
      * This is only valid for valueable expressions.
      */
+    @Override
     public Object valueFromObject(Object object, AbstractSession session, AbstractRecord translationRow, int valueHolderPolicy, boolean isObjectUnregistered) {
         // Joins not supported.
         if (!getBaseExpression().isExpressionBuilder()) {
@@ -353,6 +369,7 @@ public class FieldExpression extends DataExpression {
      * INTERNAL:
      * Used to print a debug form of the expression tree.
      */
+    @Override
     public void writeDescriptionOn(BufferedWriter writer) throws IOException {
         writer.write(getField().toString());
     }
@@ -370,6 +387,7 @@ public class FieldExpression extends DataExpression {
         }
     }
 
+    @Override
     protected void writeField(ExpressionSQLPrinter printer, DatabaseField field, SQLSelectStatement statement) {
         if (this.field == field){
             //print ", " before each selected field except the first one

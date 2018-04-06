@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -86,6 +86,7 @@ public class XMLInteraction extends MappedInteraction {
     /**
      * Set the default record name from the descriptor.
      */
+    @Override
     public void prepare(AbstractSession session) {
         if (getInputRootElementName().length() == 0) {
             if ((getQuery() != null) && (getQuery().getDescriptor() instanceof EISDescriptor)) {
@@ -110,6 +111,7 @@ public class XMLInteraction extends MappedInteraction {
      * Create a DOM input record for this interaction.
      * Convert the database row or arguments into an XML DOM tree.
      */
+    @Override
     public Record createInputRecord(EISAccessor accessor) {
         Record record = accessor.getEISPlatform().createDOMRecord(getInputRecordName(), accessor);
         Element dom = createInputDOM(accessor);
@@ -171,6 +173,7 @@ public class XMLInteraction extends MappedInteraction {
     /**
      * Build a database row from the record returned from the interaction.
      */
+    @Override
     public AbstractRecord buildRow(Record record, EISAccessor accessor) {
         if (record == null) {
             return null;
@@ -195,6 +198,7 @@ public class XMLInteraction extends MappedInteraction {
     /**
      * Build a collection of database rows from the Record returned from the interaction.
      */
+    @Override
     public Vector buildRows(Record record, EISAccessor accessor) {
         Vector rows = null;
         if (record == null) {
@@ -217,6 +221,7 @@ public class XMLInteraction extends MappedInteraction {
     /**
      * Return the string for logging purposes.
      */
+    @Override
     public String getLogString(Accessor accessor) {
         StringWriter writer = new StringWriter();
         writer.write("Executing ");
@@ -238,6 +243,7 @@ public class XMLInteraction extends MappedInteraction {
     /**
      * INTERNAL:
      */
+    @Override
     protected DatabaseField createField(String fieldName) {
         if (getQuery().getDescriptor() != null) {
             return getQuery().getDescriptor().buildField(fieldName);

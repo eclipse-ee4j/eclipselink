@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -25,6 +25,7 @@ public class SequencedUnmarshalContext implements UnmarshalContext {
 
     private Setting currentSetting;
 
+    @Override
     public void startElement(UnmarshalRecord unmarshalRecord) {
         Setting parentSetting;
         if(null == currentSetting) {
@@ -49,6 +50,7 @@ public class SequencedUnmarshalContext implements UnmarshalContext {
         }
     }
 
+    @Override
     public void characters(UnmarshalRecord unmarshalRecord) {
         if(null == currentSetting || null == currentSetting.getName()) {
             currentSetting = new Setting(null, Constants.TEXT);
@@ -62,6 +64,7 @@ public class SequencedUnmarshalContext implements UnmarshalContext {
         }
     }
 
+    @Override
     public void endElement(UnmarshalRecord unmarshalRecord) {
         if(null == currentSetting) {
             return;
@@ -77,28 +80,33 @@ public class SequencedUnmarshalContext implements UnmarshalContext {
         }
     }
 
+    @Override
     public void setAttributeValue(UnmarshalRecord unmarshalRecord, Object value, Mapping mapping) {
         currentSetting.setMapping((CoreMapping) mapping);
         currentSetting.setObject(unmarshalRecord.getCurrentObject());
         currentSetting.setValue(value);
     }
 
+    @Override
     public void addAttributeValue(UnmarshalRecord unmarshalRecord, ContainerValue containerValue, Object value) {
         addAttributeValue(unmarshalRecord, containerValue, value, unmarshalRecord.getContainerInstance(containerValue));
     }
 
+    @Override
     public void addAttributeValue(UnmarshalRecord unmarshalRecord, ContainerValue containerValue, Object value, Object collection) {
         currentSetting.setMapping((CoreMapping) containerValue.getMapping());
         currentSetting.setObject(unmarshalRecord.getCurrentObject());
         currentSetting.addValue(value, true, collection);
     }
 
+    @Override
     public void reference(Reference reference) {
         currentSetting.setObject(reference.getSourceObject());
         currentSetting.setMapping((CoreMapping) reference.getMapping());
         reference.setSetting(currentSetting);
     }
 
+    @Override
     public void unmappedContent(UnmarshalRecord unmarshalRecord) {
         Setting parentSetting = currentSetting.getParent();
         if(null == parentSetting) {

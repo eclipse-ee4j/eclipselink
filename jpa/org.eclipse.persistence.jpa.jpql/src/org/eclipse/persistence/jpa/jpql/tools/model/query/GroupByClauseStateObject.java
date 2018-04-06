@@ -53,6 +53,7 @@ public class GroupByClauseStateObject extends AbstractListHolderStateObject<Stat
     /**
      * {@inheritDoc}
      */
+    @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }

@@ -201,6 +201,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * Add a field translation that maps from a field in the
      * source table to a field name in the aggregate descriptor.
      */
+    @Override
     public void addFieldTranslation(DatabaseField sourceField, String aggregateFieldName) {
         //AggregateObjectMapping does not seem to support Aggregates on multiple tables
         String unQualifiedAggregateFieldName = aggregateFieldName.substring(aggregateFieldName.lastIndexOf('.') + 1);// -1 is returned for no ".".
@@ -225,6 +226,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * unique based on the attribute name. It solves the case where multiple
      * nested embeddables have mappings to similarly named default columns.
      */
+    @Override
     public void addNestedFieldTranslation(String attributeName, DatabaseField sourceField, String aggregateFieldName) {
         // Aggregate field name is redundant here as we will look up the field
         // through the attribute name. This method signature is to  satisfy the

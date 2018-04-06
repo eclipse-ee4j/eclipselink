@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -87,6 +87,7 @@ public class MethodClassExtractor extends ClassExtractor {
      * INTERNAL:
      * Setup the default classExtractionMethod, or if one was specified by the user make sure it is valid.
      */
+    @Override
     public void initialize(ClassDescriptor descriptor, Session session) throws DescriptorException {
         setDescriptor(descriptor);
         Class[] declarationParameters = new Class[1];
@@ -119,6 +120,7 @@ public class MethodClassExtractor extends ClassExtractor {
      * Map is used as the public interface to database row, the key is the field name,
      * the value is the database value.
      */
+    @Override
     public Class extractClassFromRow(Record row, org.eclipse.persistence.sessions.Session session) {
         Class classForRow;
 

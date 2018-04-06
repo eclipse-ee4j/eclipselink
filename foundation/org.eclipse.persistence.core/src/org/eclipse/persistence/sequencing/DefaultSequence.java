@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -59,6 +59,7 @@ public class DefaultSequence extends Sequence {
         return size != 0;
     }
 
+    @Override
     public int getPreallocationSize() {
         if ((size != 0) || (getDefaultSequence() == null)) {
             return size;
@@ -67,6 +68,7 @@ public class DefaultSequence extends Sequence {
         }
     }
 
+    @Override
     public int getInitialValue() {
         if ((initialValue != 0) || (getDefaultSequence() == null)) {
             return initialValue;
@@ -75,6 +77,7 @@ public class DefaultSequence extends Sequence {
         }
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof DefaultSequence) {
             return equalNameAndSize(this, (DefaultSequence)obj);
@@ -96,6 +99,7 @@ public class DefaultSequence extends Sequence {
      * In default implementation, it is true for table sequencing and native
      * sequencing on Oracle platform, false for native sequencing on other platforms.
      */
+    @Override
     public boolean shouldAcquireValueAfterInsert() {
         return getDefaultSequence().shouldAcquireValueAfterInsert();
     }
@@ -104,6 +108,7 @@ public class DefaultSequence extends Sequence {
      * INTERNAL:
      * Indicates whether the existing pk value should always be overridden by the sequence.
      */
+    @Override
     public boolean shouldAlwaysOverrideExistingValue(String seqName) {
         return this.shouldAlwaysOverrideExistingValue || getDefaultSequence().shouldAlwaysOverrideExistingValue(seqName);
     }
@@ -116,6 +121,7 @@ public class DefaultSequence extends Sequence {
      * In default implementation, it is true for table sequencing and native
      * sequencing on Oracle platform, false for native sequencing on other platforms.
      */
+    @Override
     public boolean shouldUsePreallocation() {
         return getDefaultSequence().shouldUsePreallocation();
     }
@@ -127,6 +133,7 @@ public class DefaultSequence extends Sequence {
      * In default implementation, it is true for table sequencing and
      * false for native sequencing.
      */
+    @Override
     public boolean shouldUseTransaction() {
         return getDefaultSequence().shouldUseTransaction();
     }
@@ -144,6 +151,7 @@ public class DefaultSequence extends Sequence {
      * @param writeSession Session is a Session used for writing (either ClientSession or DatabaseSession);
      * @param seqName String is sequencing number field name
      */
+    @Override
     public Object getGeneratedValue(Accessor accessor, AbstractSession writeSession, String seqName) {
         return getDefaultSequence().getGeneratedValue(accessor, writeSession, seqName);
     }
@@ -162,6 +170,7 @@ public class DefaultSequence extends Sequence {
      * @param seqName String is sequencing number field name
      * @param size int number of values to preallocate (output Vector size).
      */
+    @Override
     public Vector getGeneratedVector(Accessor accessor, AbstractSession writeSession, String seqName, int size) {
         return getDefaultSequence().getGeneratedVector(accessor, writeSession, seqName, size);
     }
@@ -171,6 +180,7 @@ public class DefaultSequence extends Sequence {
      * This method is called when Sequencing object is created.
      * It's a chance to do initialization.
      */
+    @Override
     public void onConnect() {
         qualifier = getDefaultSequence().getQualifier();
     }
@@ -180,6 +190,7 @@ public class DefaultSequence extends Sequence {
      * This method is called when Sequencing object is destroyed..
      * It's a chance to do deinitialization.
      */
+    @Override
     public void onDisconnect() {
         qualifier = "";
     }
@@ -188,6 +199,7 @@ public class DefaultSequence extends Sequence {
      * PUBLIC:
      * Indicates that Sequence is connected.
      */
+    @Override
     public boolean isConnected() {
         return getDefaultSequence().isConnected();
     }
@@ -196,6 +208,7 @@ public class DefaultSequence extends Sequence {
      * INTERNAL:
      * Ignored, getDefaultSequence().getQualifier() used instead.
      */
+    @Override
     public void setQualifier(String qualifier) {
     }
 }

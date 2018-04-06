@@ -76,6 +76,7 @@ public class CompoundSelectionImpl extends SelectionImpl implements CompoundSele
      * Whether the selection item is a compound selection
      * @return boolean
      */
+    @Override
     public boolean isCompoundSelection(){
         return true;
     }
@@ -86,6 +87,7 @@ public class CompoundSelectionImpl extends SelectionImpl implements CompoundSele
      * @throws IllegalStateException if selection is not a compound
      *           selection
      */
+    @Override
     public List<Selection<?>> getCompoundSelectionItems(){
         return this.subSelections;
     }
@@ -98,6 +100,7 @@ public class CompoundSelectionImpl extends SelectionImpl implements CompoundSele
         return this.duplicateAliasNames;
     }
 
+    @Override
     public void findRootAndParameters(CommonAbstractCriteriaImpl criteriaQuery){
         for (Selection selection: getCompoundSelectionItems()){
             ((InternalSelection)selection).findRootAndParameters(criteriaQuery);

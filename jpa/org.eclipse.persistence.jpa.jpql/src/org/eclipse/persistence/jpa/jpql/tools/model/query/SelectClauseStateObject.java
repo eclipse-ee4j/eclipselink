@@ -76,6 +76,7 @@ public class SelectClauseStateObject extends AbstractSelectClauseStateObject
     /**
      * {@inheritDoc}
      */
+    @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
@@ -138,6 +139,7 @@ public class SelectClauseStateObject extends AbstractSelectClauseStateObject
     /**
      * {@inheritDoc}
      */
+    @Override
     public <S extends StateObject> S addItem(S item) {
         getChangeSupport().addItem(this, items, SELECT_ITEMS_LIST, parent(item));
         return item;
@@ -180,6 +182,7 @@ public class SelectClauseStateObject extends AbstractSelectClauseStateObject
     /**
      * {@inheritDoc}
      */
+    @Override
     public void addItems(List<? extends StateObject> items) {
         getChangeSupport().addItems(this, this.items, SELECT_ITEMS_LIST, parent(items));
     }
@@ -187,6 +190,7 @@ public class SelectClauseStateObject extends AbstractSelectClauseStateObject
     /**
      * {@inheritDoc}
      */
+    @Override
     public void addListChangeListener(String listName, IListChangeListener<StateObject> listener) {
         getChangeSupport().addListChangeListener(listName, listener);
     }
@@ -222,6 +226,7 @@ public class SelectClauseStateObject extends AbstractSelectClauseStateObject
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean canMoveDown(StateObject item) {
         return getChangeSupport().canMoveDown(items, item);
     }
@@ -229,6 +234,7 @@ public class SelectClauseStateObject extends AbstractSelectClauseStateObject
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean canMoveUp(StateObject item) {
         return getChangeSupport().canMoveUp(items, item);
     }
@@ -267,6 +273,7 @@ public class SelectClauseStateObject extends AbstractSelectClauseStateObject
     /**
      * {@inheritDoc}
      */
+    @Override
     public StateObject getItem(int index) {
         return items.get(index);
     }
@@ -282,6 +289,7 @@ public class SelectClauseStateObject extends AbstractSelectClauseStateObject
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean hasItems() {
         return items.size() > 0;
     }
@@ -315,6 +323,7 @@ public class SelectClauseStateObject extends AbstractSelectClauseStateObject
     /**
      * {@inheritDoc}
      */
+    @Override
     public ListIterable<StateObject> items() {
         return new SnapshotCloneListIterable<StateObject>(items);
     }
@@ -322,6 +331,7 @@ public class SelectClauseStateObject extends AbstractSelectClauseStateObject
     /**
      * {@inheritDoc}
      */
+    @Override
     public int itemsSize() {
         return items.size();
     }
@@ -329,6 +339,7 @@ public class SelectClauseStateObject extends AbstractSelectClauseStateObject
     /**
      * {@inheritDoc}
      */
+    @Override
     public StateObject moveDown(StateObject item) {
         getChangeSupport().moveDown(this, items, SELECT_ITEMS_LIST, item);
         return item;
@@ -337,6 +348,7 @@ public class SelectClauseStateObject extends AbstractSelectClauseStateObject
     /**
      * {@inheritDoc}
      */
+    @Override
     public StateObject moveUp(StateObject item) {
         getChangeSupport().moveUp(this, items, SELECT_ITEMS_LIST, item);
         return item;
@@ -354,6 +366,7 @@ public class SelectClauseStateObject extends AbstractSelectClauseStateObject
     /**
      * {@inheritDoc}
      */
+    @Override
     public void removeItem(StateObject stateObject) {
         getChangeSupport().removeItem(this, items, SELECT_ITEMS_LIST, stateObject);
     }
@@ -361,6 +374,7 @@ public class SelectClauseStateObject extends AbstractSelectClauseStateObject
     /**
      * {@inheritDoc}
      */
+    @Override
     public void removeItems(Collection<StateObject> items) {
         getChangeSupport().removeItems(this, this.items, SELECT_ITEMS_LIST, items);
     }
@@ -368,6 +382,7 @@ public class SelectClauseStateObject extends AbstractSelectClauseStateObject
     /**
      * {@inheritDoc}
      */
+    @Override
     public void removeListChangeListener(String listName, IListChangeListener<StateObject> listener) {
         getChangeSupport().removeListChangeListener(listName, listener);
     }

@@ -37,10 +37,12 @@ public class _RMIRemoteCommandConnection_Stub extends Stub implements RMIRemoteC
         "RMI:org.eclipse.persistence.internal.sessions.coordination.rmi.RMIRemoteCommandConnection:0000000000000000"
     };
     
+    @Override
     public String[] _ids() { 
         return _type_ids.clone();
     }
     
+    @Override
     public Object executeCommand(Command arg0) throws RemoteException {
         while(true) {
             if (!Util.isLocal(this)) {
@@ -84,6 +86,7 @@ public class _RMIRemoteCommandConnection_Stub extends Stub implements RMIRemoteC
         }
     }
     
+    @Override
     public Object executeCommand(byte[] arg0) throws RemoteException {
         while(true) {
             if (!Util.isLocal(this)) {

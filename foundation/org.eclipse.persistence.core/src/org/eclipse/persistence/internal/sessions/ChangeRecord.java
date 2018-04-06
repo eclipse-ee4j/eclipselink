@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -40,6 +40,7 @@ public abstract class ChangeRecord implements Serializable, org.eclipse.persiste
      * Returns the name of the attribute this ChangeRecord Represents
      * @return String
      */
+    @Override
     public String getAttribute() {
         return attribute;
     }
@@ -52,6 +53,7 @@ public abstract class ChangeRecord implements Serializable, org.eclipse.persiste
         return mapping;
     }
 
+    @Override
     public org.eclipse.persistence.sessions.changesets.ObjectChangeSet getOwner() {
         return owner;
     }
@@ -94,6 +96,7 @@ public abstract class ChangeRecord implements Serializable, org.eclipse.persiste
         owner = newOwner;
     }
 
+    @Override
     public String toString() {
         return this.getClass().getName() + "(" + getAttribute() + ")";
     }

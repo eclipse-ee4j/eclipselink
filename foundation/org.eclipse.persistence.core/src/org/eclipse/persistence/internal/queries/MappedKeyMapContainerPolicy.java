@@ -753,6 +753,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
      * INTERNAL:
      * Propagate the postDeleteEvent to any additional objects the query is aware of
      */
+    @Override
     public void propogatePreInsert(WriteObjectQuery query, Object object) {
         if (propagatesEventsToCollection()){
             ((AggregateObjectMapping)keyMapping).preInsertAttributeValue(query, ((Map.Entry)object).getKey());
@@ -776,6 +777,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
      * Aggregates need events propagated to them because they are not explicitly
      * deleted, updated or inserted
      */
+    @Override
     public boolean propagatesEventsToCollection() {
         return ((DatabaseMapping)keyMapping).isAggregateObjectMapping();
     }

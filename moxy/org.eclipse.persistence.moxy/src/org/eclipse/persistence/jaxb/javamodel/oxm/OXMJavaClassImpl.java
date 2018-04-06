@@ -104,6 +104,7 @@ public class OXMJavaClassImpl implements JavaClass {
      *
      * @return a <code>Collection</code> containing the actual type's <code>JavaClass</code>.
      */
+    @Override
     public Collection<JavaClass> getActualTypeArguments() {
         Object jType = null;
         if (this.javaType != null) {
@@ -151,6 +152,7 @@ public class OXMJavaClassImpl implements JavaClass {
      *
      * @return always returns <code>null</code>, as <code>JavaTypes</code> do not represent arrays.
      */
+    @Override
     public JavaClass getComponentType() {
         return null;
     }
@@ -163,6 +165,7 @@ public class OXMJavaClassImpl implements JavaClass {
      *
      * @return the <code>JavaConstructor</code> with the signature matching parameterTypes.
      */
+    @Override
     public JavaConstructor getConstructor(JavaClass[] parameterTypes) {
         return new OXMJavaConstructorImpl(this);
     }
@@ -172,6 +175,7 @@ public class OXMJavaClassImpl implements JavaClass {
      *
      * @return A <code>Collection</code> containing this <code>JavaClass'</code> <code>JavaConstructors</code>.
      */
+    @Override
     public Collection<JavaConstructor> getConstructors() {
         ArrayList<JavaConstructor> constructors = new ArrayList<JavaConstructor>(1);
         constructors.add(new OXMJavaConstructorImpl(this));
@@ -183,6 +187,7 @@ public class OXMJavaClassImpl implements JavaClass {
      *
      * @return always returns an empty <code>ArrayList</code> as <code>JavaTypes</code> do not represent inner classes.
      */
+    @Override
     public Collection<JavaClass> getDeclaredClasses() {
         return new ArrayList<JavaClass>();
     }
@@ -192,6 +197,7 @@ public class OXMJavaClassImpl implements JavaClass {
      *
      * @return the <code>JavaConstructor</code> for this <code>JavaClass</code>.
      */
+    @Override
     public JavaConstructor getDeclaredConstructor(JavaClass[] parameterTypes) {
         return new OXMJavaConstructorImpl(this);
     }
@@ -201,6 +207,7 @@ public class OXMJavaClassImpl implements JavaClass {
      *
      * @return A <code>Collection</code> containing this <code>JavaClass'</code> <code>JavaConstructors</code>.
      */
+    @Override
     public Collection<JavaConstructor> getDeclaredConstructors() {
         ArrayList<JavaConstructor> constructors = new ArrayList<JavaConstructor>(1);
         constructors.add(new OXMJavaConstructorImpl(this));
@@ -215,6 +222,7 @@ public class OXMJavaClassImpl implements JavaClass {
      *
      * @return the <code>JavaField</code> named <code>fieldName</code> from this <code>JavaClass</code>.
      */
+    @Override
     public JavaField getDeclaredField(String name) {
         Collection<JavaField> allFields = getDeclaredFields();
 
@@ -233,6 +241,7 @@ public class OXMJavaClassImpl implements JavaClass {
      *
      * @return A <code>Collection</code> containing this <code>JavaClass'</code> <code>JavaFields</code>.
      */
+    @Override
     public Collection<JavaField> getDeclaredFields() {
         List<JavaField> fieldsToReturn = new ArrayList<JavaField>();
 
@@ -312,6 +321,7 @@ public class OXMJavaClassImpl implements JavaClass {
      *
      * @return always returns <code>null</code>, as <code>JavaTypes</code> do not have methods.
      */
+    @Override
     public JavaMethod getDeclaredMethod(String name, JavaClass[] args) {
         return null;
     }
@@ -321,6 +331,7 @@ public class OXMJavaClassImpl implements JavaClass {
      *
      * @return always returns an empty <code>ArrayList</code>, as <code>JavaTypes</code> do not have methods.
      */
+    @Override
     public Collection<JavaMethod> getDeclaredMethods() {
         return new ArrayList<JavaMethod>();
     }
@@ -334,6 +345,7 @@ public class OXMJavaClassImpl implements JavaClass {
      *
      * @return always returns <code>null</code>, as <code>JavaTypes</code> do not have methods.
      */
+    @Override
     public JavaMethod getMethod(String name, JavaClass[] args) {
         return null;
     }
@@ -343,6 +355,7 @@ public class OXMJavaClassImpl implements JavaClass {
      *
      * @return always returns an empty <code>ArrayList</code>, as <code>JavaTypes</code> do not have methods.
      */
+    @Override
     public Collection<JavaMethod> getMethods() {
         return new ArrayList<JavaMethod>();
     }
@@ -354,6 +367,7 @@ public class OXMJavaClassImpl implements JavaClass {
      *
      * @see java.lang.reflect.Modifier
      */
+    @Override
     public int getModifiers() {
         return 0;
     }
@@ -363,6 +377,7 @@ public class OXMJavaClassImpl implements JavaClass {
      *
      * @return the <code>String</code> name of this <code>JavaClass</code>.
      */
+    @Override
     public String getName() {
         if (this.javaType != null) {
             return this.javaType.getName();
@@ -375,6 +390,7 @@ public class OXMJavaClassImpl implements JavaClass {
      *
      * @return the <code>JavaPackage</code> of this <code>JavaClass</code>.
      */
+    @Override
     public JavaPackage getPackage() {
         return new OXMJavaPackageImpl(getPackageName());
     }
@@ -384,6 +400,7 @@ public class OXMJavaClassImpl implements JavaClass {
      *
      * @return the <code>String</code> name of this <code>JavaClass'</code> <code>JavaPackage</code>.
      */
+    @Override
     public String getPackageName() {
         int lastDotIndex = getQualifiedName().lastIndexOf(DOT);
         if (lastDotIndex == -1) {
@@ -398,6 +415,7 @@ public class OXMJavaClassImpl implements JavaClass {
      *
      * @return the <code>String</code> name of this <code>JavaClass</code>.
      */
+    @Override
     public String getQualifiedName() {
         return getName();
     }
@@ -408,6 +426,7 @@ public class OXMJavaClassImpl implements JavaClass {
      *
      * @return the <code>String</code> raw name of this <code>JavaClass</code>.
      */
+    @Override
     public String getRawName() {
         return getName();
     }
@@ -417,6 +436,7 @@ public class OXMJavaClassImpl implements JavaClass {
      *
      * @return <code>JavaClass</code> representing the super class of this <code>JavaClass</code>.
      */
+    @Override
     public JavaClass getSuperclass() {
         if (this.javaModel == null) {
             return null;
@@ -434,6 +454,7 @@ public class OXMJavaClassImpl implements JavaClass {
         return new Type[0];
     }
 
+    @Override
     public Type getGenericSuperclass() {
         return null;
     }
@@ -444,6 +465,7 @@ public class OXMJavaClassImpl implements JavaClass {
      *
      * @return always returns <code>false</code> as <code>JavaTypes</code> are not parameterized.
      */
+    @Override
     public boolean hasActualTypeArguments() {
         return false;
     }
@@ -453,6 +475,7 @@ public class OXMJavaClassImpl implements JavaClass {
      *
      * @return always returns <code>false</code> as <code>JavaTypes</code> are never <code>abstract</code>.
      */
+    @Override
     public boolean isAbstract() {
         return false;
     }
@@ -462,6 +485,7 @@ public class OXMJavaClassImpl implements JavaClass {
      *
      * @return always returns <code>false</code> as <code>JavaTypes</code> are never <code>Annotations</code>.
      */
+    @Override
     public boolean isAnnotation() {
         return false;
     }
@@ -471,6 +495,7 @@ public class OXMJavaClassImpl implements JavaClass {
      *
      * @return always returns <code>false</code>, as <code>JavaTypes</code> do not represent arrays.
      */
+    @Override
     public boolean isArray() {
         return false;
     }
@@ -486,6 +511,7 @@ public class OXMJavaClassImpl implements JavaClass {
      *
      * @see java.lang.Class#isAssignableFrom(Class)
      */
+    @Override
     @SuppressWarnings("unchecked")
     public boolean isAssignableFrom(JavaClass arg0) {
         String thisJavaName = EMPTY_STRING;
@@ -517,6 +543,7 @@ public class OXMJavaClassImpl implements JavaClass {
      *
      * @return <code>true</code> if this <code>JavaClass</code> is an <code>enum</code>, otherwise <code>false</code>.
      */
+    @Override
     public boolean isEnum() {
         return this.enumValues != null;
     }
@@ -526,6 +553,7 @@ public class OXMJavaClassImpl implements JavaClass {
      *
      * @return <code>true</code> if this <code>JavaClass</code> is <code>final</code>, otherwise <code>false</code>.
      */
+    @Override
     public boolean isFinal() {
         return false;
     }
@@ -535,6 +563,7 @@ public class OXMJavaClassImpl implements JavaClass {
      *
      * @return <code>true</code> if this <code>JavaClass</code> is an <code>interface</code>, otherwise <code>false</code>.
      */
+    @Override
     public boolean isInterface() {
         return false;
     }
@@ -544,6 +573,7 @@ public class OXMJavaClassImpl implements JavaClass {
      *
      * @return <code>true</code> if this <code>JavaClass</code> is an inner <code>Class</code>, otherwise <code>false</code>.
      */
+    @Override
     public boolean isMemberClass() {
         return false;
     }
@@ -553,6 +583,7 @@ public class OXMJavaClassImpl implements JavaClass {
      *
      * @return <code>true</code> if this <code>JavaClass</code> represents a primitive type, otherwise <code>false</code>.
      */
+    @Override
     public boolean isPrimitive() {
         return false;
     }
@@ -562,6 +593,7 @@ public class OXMJavaClassImpl implements JavaClass {
      *
      * @return <code>true</code> if this <code>JavaClass</code> is <code>private</code>, otherwise <code>false</code>.
      */
+    @Override
     public boolean isPrivate() {
         return false;
     }
@@ -571,6 +603,7 @@ public class OXMJavaClassImpl implements JavaClass {
      *
      * @return <code>true</code> if this <code>JavaClass</code> is <code>protected</code>, otherwise <code>false</code>.
      */
+    @Override
     public boolean isProtected() {
         return false;
     }
@@ -580,6 +613,7 @@ public class OXMJavaClassImpl implements JavaClass {
      *
      * @return <code>true</code> if this <code>JavaClass</code> is <code>public</code>, otherwise <code>false</code>.
      */
+    @Override
     public boolean isPublic() {
         return false;
     }
@@ -589,6 +623,7 @@ public class OXMJavaClassImpl implements JavaClass {
      *
      * @return <code>true</code> if this <code>JavaClass</code> is <code>static</code>, otherwise <code>false</code>.
      */
+    @Override
     public boolean isStatic() {
         return false;
     }
@@ -596,6 +631,7 @@ public class OXMJavaClassImpl implements JavaClass {
     /**
      * Not supported.
      */
+    @Override
     public boolean isSynthetic() {
         throw new UnsupportedOperationException("isSynthetic");
     }
@@ -613,6 +649,7 @@ public class OXMJavaClassImpl implements JavaClass {
      *
      * @return always returns <code>null</code>, as <code>JavaTypes</code> do not have <code>Annotations</code>.
      */
+    @Override
     public JavaAnnotation getAnnotation(JavaClass aClass) {
         return null;
     }
@@ -622,6 +659,7 @@ public class OXMJavaClassImpl implements JavaClass {
      *
      * @return always returns an empty <code>ArrayList</code>, as <code>JavaTypes</code> do not have <code>Annotations</code>.
      */
+    @Override
     public Collection<JavaAnnotation> getAnnotations() {
         return new ArrayList<JavaAnnotation>();
     }
@@ -634,6 +672,7 @@ public class OXMJavaClassImpl implements JavaClass {
      *
      * @return always returns <code>null</code>, as <code>JavaTypes</code> do not have <code>Annotations</code>.
      */
+    @Override
     public JavaAnnotation getDeclaredAnnotation(JavaClass arg0) {
         return null;
     }
@@ -643,6 +682,7 @@ public class OXMJavaClassImpl implements JavaClass {
      *
      * @return always returns an empty <code>ArrayList</code>, as <code>JavaTypes</code> do not have <code>Annotations</code>.
      */
+    @Override
     public Collection<JavaAnnotation> getDeclaredAnnotations() {
         return new ArrayList<JavaAnnotation>();
     }

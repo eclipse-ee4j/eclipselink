@@ -235,6 +235,7 @@ public class EmbeddedAccessor extends MappingAccessor {
      * INTERNAL:
      * Process an embedded.
      */
+    @Override
     public void process() {
         // Build and aggregate object mapping and add it to the descriptor.
         AggregateMapping mapping = getOwningDescriptor().getClassDescriptor().newAggregateMapping();

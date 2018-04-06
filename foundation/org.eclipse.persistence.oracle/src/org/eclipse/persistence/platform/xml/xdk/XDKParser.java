@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -56,14 +56,17 @@ public class XDKParser implements XMLParser {
         setWhitespacePreserving(false);
     }
 
+    @Override
     public void setNamespaceAware(boolean isNamespaceAware) {
         documentBuilderFactory.setNamespaceAware(isNamespaceAware);
     }
 
+    @Override
     public void setWhitespacePreserving(boolean isWhitespacePreserving) {
         documentBuilderFactory.setIgnoringElementContentWhitespace(!isWhitespacePreserving);
     }
 
+    @Override
     public int getValidationMode() {
         if (!documentBuilderFactory.isValidating()) {
             return XMLParser.NONVALIDATING;
@@ -80,6 +83,7 @@ public class XDKParser implements XMLParser {
         return XMLParser.SCHEMA_VALIDATION;
     }
 
+    @Override
     public void setValidationMode(int validationMode) {
         switch (validationMode) {
         case XMLParser.NONVALIDATING: {
@@ -105,22 +109,27 @@ public class XDKParser implements XMLParser {
         }
     }
 
+    @Override
     public EntityResolver getEntityResolver() {
         return entityResolver;
     }
 
+    @Override
     public void setEntityResolver(EntityResolver entityResolver) {
         this.entityResolver = entityResolver;
     }
 
+    @Override
     public ErrorHandler getErrorHandler() {
         return errorHandler;
     }
 
+    @Override
     public void setErrorHandler(ErrorHandler errorHandler) {
         this.errorHandler = errorHandler;
     }
 
+    @Override
     public void setXMLSchema(URL url) throws XMLPlatformException {
         if (null == url) {
             return;
@@ -135,6 +144,7 @@ public class XDKParser implements XMLParser {
         }
     }
 
+    @Override
     public void setXMLSchemas(Object[] schemas) throws XMLPlatformException {
         if ((null == schemas) || (schemas.length == 0)) {
             return;
@@ -149,6 +159,7 @@ public class XDKParser implements XMLParser {
         }
     }
 
+    @Override
     public Document parse(InputSource inputSource) throws XMLPlatformException {
         try {
             return getDocumentBuilder().parse(inputSource);
@@ -159,6 +170,7 @@ public class XDKParser implements XMLParser {
         }
     }
 
+    @Override
     public Document parse(File file) throws XMLPlatformException {
         try {
             return getDocumentBuilder().parse(file);
@@ -171,6 +183,7 @@ public class XDKParser implements XMLParser {
         }
     }
 
+    @Override
     public Document parse(InputStream inputStream) throws XMLPlatformException {
         try {
             return getDocumentBuilder().parse(inputStream);
@@ -183,11 +196,13 @@ public class XDKParser implements XMLParser {
         }
     }
 
+    @Override
     public Document parse(Reader reader) throws XMLPlatformException {
         InputSource inputSource = new InputSource(reader);
         return parse(inputSource);
     }
 
+    @Override
     public Document parse(Source source) throws XMLPlatformException {
         XDKTransformer xformer = new XDKTransformer();
         DOMResult domResult = new DOMResult();
@@ -195,6 +210,7 @@ public class XDKParser implements XMLParser {
         return (Document)domResult.getNode();
     }
 
+    @Override
     public Document parse(URL url) throws XMLPlatformException {
         InputStream inputStream = null;
         try {
@@ -232,10 +248,12 @@ public class XDKParser implements XMLParser {
         }
     }
 
+    @Override
     public void setXMLSchema(Schema schema) {
         this.documentBuilderFactory.setSchema(schema);
     }
 
+    @Override
     public Schema getXMLSchema() {
         return documentBuilderFactory.getSchema();
     }

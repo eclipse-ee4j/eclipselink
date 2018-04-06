@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -65,16 +65,19 @@ public class SDOSequence implements Sequence {
         return valuesToSettings;
     }
 
+    @Override
     public void add(int index, int propertyIndex, Object value) {
         Property property = dataObject.getInstanceProperty(propertyIndex);
         add(index, property, value);
     }
 
+    @Override
     public boolean add(int propertyIndex, Object value) {
         Property property = dataObject.getInstanceProperty(propertyIndex);
         return add(property, value);
     }
 
+    @Override
     public void add(int index, Property property, Object value) {
         if (!isAllowedInSequence(property)) {
             return;
@@ -148,6 +151,7 @@ public class SDOSequence implements Sequence {
         return true;
     }
 
+    @Override
     public void add(int index, String propertyName, Object value) {
         Property property = dataObject.getInstanceProperty(propertyName);
         if (property == null) {
@@ -159,10 +163,12 @@ public class SDOSequence implements Sequence {
         add(index, property, value);
     }
 
+    @Override
     public void add(int index, String text) {
         addText(index, text);
     }
 
+    @Override
     public boolean add(Property property, Object value) {
         if (addSettingWithoutModifyingDataObject(property, value)) {
             if (property != null && property.isOpenContent() && dataObject.getType().isOpen()) {
@@ -182,6 +188,7 @@ public class SDOSequence implements Sequence {
         return false;
     }
 
+    @Override
     public boolean add(String propertyName, Object value) {
         Property property = dataObject.getInstanceProperty(propertyName);
         if (property == null) {
@@ -193,10 +200,12 @@ public class SDOSequence implements Sequence {
         return add(property, value);
     }
 
+    @Override
     public void add(String text) {
         addText(text);
     }
 
+    @Override
     public void addText(int index, String text) {
         // Trigger store of original sequence
         dataObject._setModified(true);
@@ -206,6 +215,7 @@ public class SDOSequence implements Sequence {
         settings.add(index, textSetting);
     }
 
+    @Override
     public void addText(String text) {
         // Trigger store of original sequence
         dataObject._setModified(true);
@@ -215,6 +225,7 @@ public class SDOSequence implements Sequence {
         settings.add(textSetting);
     }
 
+    @Override
     public SDOProperty getProperty(int index) {
         try {
             return getProperty(settings.get(index));
@@ -266,6 +277,7 @@ public class SDOSequence implements Sequence {
         return null;
     }
 
+    @Override
     public Object getValue(int index) {
         try {
             return getValue(settings.get(index));
@@ -289,6 +301,7 @@ public class SDOSequence implements Sequence {
         return getValue(setting.getChildren().get(0));
     }
 
+    @Override
     public void move(int toIndex, int fromIndex) {
         if (toIndex == fromIndex) {
             return;
@@ -318,6 +331,7 @@ public class SDOSequence implements Sequence {
         }
     }
 
+    @Override
     public void remove(int index) {
         Setting setting = settings.get(index);
         remove(setting);
@@ -375,6 +389,7 @@ public class SDOSequence implements Sequence {
         valuesToSettings.remove(new Key(getProperty(setting), getValue(setting)));
     }
 
+    @Override
     public Object setValue(int index, Object value) {
         return setValue(settings.get(index), value);
     }
@@ -415,6 +430,7 @@ public class SDOSequence implements Sequence {
         return oldValue;
     }
 
+    @Override
     public int size() {
         return settings.size();
     }
@@ -677,6 +693,7 @@ public class SDOSequence implements Sequence {
             return this.value;
         }
 
+        @Override
         public boolean equals(Object object) {
             try {
                 Key key = (Key) object;
@@ -687,6 +704,7 @@ public class SDOSequence implements Sequence {
 
         }
 
+        @Override
         public int hashCode() {
             if (value == null) {
                 return 0;

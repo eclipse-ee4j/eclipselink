@@ -193,6 +193,7 @@ public abstract class DirectAccessor extends MappingAccessor {
     /**
      * INTERNAL:
      */
+    @Override
     public abstract String getDefaultFetchType();
 
     /**
@@ -232,6 +233,7 @@ public abstract class DirectAccessor extends MappingAccessor {
      * INTERNAL:
      * Return the lob metadata for this accessor.
      */
+    @Override
     public LobMetadata getLob(boolean isForMapKey) {
         if (isForMapKey) {
             return super.getLob(isForMapKey);

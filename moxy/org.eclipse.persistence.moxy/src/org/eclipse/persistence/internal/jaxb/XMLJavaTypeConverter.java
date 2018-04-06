@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -117,6 +117,7 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
     /**
      * Wraps the XmlAdapter unmarshal method.
      */
+    @Override
     public Object convertDataValueToObjectValue(Object dataValue, Session session, XMLUnmarshaller unmarshaller) {
         try {
             XmlAdapter adapter = this.xmlAdapter;
@@ -163,6 +164,7 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
     /**
      * Wraps the XmlAdapter marshal method.
      */
+    @Override
     public Object convertObjectValueToDataValue(Object objectValue, Session session, XMLMarshaller marshaller) {
         try {
             XmlAdapter adapter = this.xmlAdapter;
@@ -230,6 +232,7 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
      * @param mapping
      * @param session
      */
+    @Override
     public void initialize(DatabaseMapping mapping, Session session) {
         // if the adapter class is null, try the adapter class name
         ClassLoader loader = session.getDatasourceLogin().getDatasourcePlatform().getConversionManager().getLoader();
@@ -301,6 +304,7 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
     /**
      * Satisfy the interface.
      */
+    @Override
     public boolean isMutable() {
         return false;
     }

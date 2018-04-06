@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -45,6 +45,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
         this.xmlCompositeDirectCollectionMapping = xmlCompositeDirectCollectionMapping;
     }
 
+    @Override
     public boolean isOwningNode(XPathFragment xPathFragment) {
          XPathFragment nextFragment = xPathFragment.getNextFragment();
          if (nextFragment == null || xmlCompositeDirectCollectionMapping.usesSingleNode()) {
@@ -58,6 +59,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
      * Override the method in XPathNode such that the marshaller can be set on the
      * marshalRecord - this is required for XMLConverter usage.
      */
+    @Override
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver) {
         if (xmlCompositeDirectCollectionMapping.isReadOnly()) {
             return false;
@@ -139,6 +141,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
         return true;
     }
 
+    @Override
     public void attribute(UnmarshalRecord unmarshalRecord, String namespaceURI, String localName, String value) {
         Object collection = unmarshalRecord.getContainerInstance(this);
         if (xmlCompositeDirectCollectionMapping.usesSingleNode()) {
@@ -151,6 +154,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
         }
     }
 
+    @Override
     public boolean startElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts) {
         Field xmlField = (Field) xmlCompositeDirectCollectionMapping.getField();
         XPathFragment lastXPathFragment = xmlField.getLastXPathFragment();
@@ -180,6 +184,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
         return true;
     }
 
+    @Override
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord) {
         Field xmlField = (Field) xmlCompositeDirectCollectionMapping.getField();
 
@@ -212,6 +217,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
         }
     }
 
+    @Override
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Object collection) {
         Field xmlField = (Field) xmlCompositeDirectCollectionMapping.getField();
 
@@ -269,22 +275,27 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
         unmarshalRecord.addAttributeValue(this, value, collection);
     }
 
+    @Override
     public Object getContainerInstance() {
         return getContainerPolicy().containerInstance();
     }
 
+    @Override
     public void setContainerInstance(Object object, Object containerInstance) {
         xmlCompositeDirectCollectionMapping.setAttributeValueInObject(object, containerInstance);
     }
 
+    @Override
     public CoreContainerPolicy getContainerPolicy() {
         return xmlCompositeDirectCollectionMapping.getContainerPolicy();
     }
 
+    @Override
     public boolean isContainerValue() {
         return true;
     }
 
+    @Override
     public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         value = xmlCompositeDirectCollectionMapping.convertObjectValueToDataValue(value, session, marshalRecord.getMarshaller());
 
@@ -345,14 +356,17 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
         return false;
     }
 
+    @Override
     public DirectCollectionMapping getMapping() {
         return xmlCompositeDirectCollectionMapping;
     }
 
+    @Override
     public boolean isWhitespaceAware() {
         return !xmlCompositeDirectCollectionMapping.getNullPolicy().isNullRepresentedByEmptyNode();
     }
 
+    @Override
     public boolean getReuseContainer() {
         return getMapping().getReuseContainer();
     }
@@ -361,6 +375,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
      *  INTERNAL:
      *  Used to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord
      */
+    @Override
     public void setIndex(int index){
         this.index = index;
     }
@@ -370,6 +385,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
      * Set to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord
      * Set during TreeObjectBuilder initialization
      */
+    @Override
     public int getIndex(){
         return index;
     }
@@ -380,6 +396,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
      * is no presence of the collection in the XML document.
      * @since EclipseLink 2.3.3
      */
+    @Override
     public boolean isDefaultEmptyContainer() {
         return getMapping().isDefaultEmptyContainer();
     }

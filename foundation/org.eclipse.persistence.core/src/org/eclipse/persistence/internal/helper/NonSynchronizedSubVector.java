@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -36,26 +36,32 @@ public class NonSynchronizedSubVector extends NonSynchronizedVector {
         size = toIndex - fromIndex;
     }
 
+    @Override
     public Object set(int index, Object element) {
         return l.set(index+offset, element);
     }
 
+    @Override
     public void setElementAt(Object obj, int index) {
         set(index, obj);
     }
 
+    @Override
     public Object elementAt(int index) {
         return get(index);
     }
 
+    @Override
     public Object firstElement() {
         return get(0);
     }
 
+    @Override
     public Object lastElement() {
         return get(size() - 1);
     }
 
+    @Override
     public int indexOf(Object elem, int index) {
         int size = size();
         if (elem == null) {
@@ -70,6 +76,7 @@ public class NonSynchronizedSubVector extends NonSynchronizedVector {
         return -1;
     }
 
+    @Override
     public int lastIndexOf(Object elem, int index) {
         int size = size();
         if (index >= size)
@@ -86,14 +93,17 @@ public class NonSynchronizedSubVector extends NonSynchronizedVector {
         return -1;
     }
 
+    @Override
     public Object get(int index) {
         return l.get(index+offset);
     }
 
+    @Override
     public int size() {
         return size;
     }
 
+    @Override
     public void add(int index, Object element) {
         if (index<0 || index>size)
             throw new IndexOutOfBoundsException();
@@ -102,6 +112,7 @@ public class NonSynchronizedSubVector extends NonSynchronizedVector {
         modCount++;
     }
 
+    @Override
     public Object remove(int index) {
         Object result = l.remove(index+offset);
         size--;
@@ -115,10 +126,12 @@ public class NonSynchronizedSubVector extends NonSynchronizedVector {
         modCount++;
     }*/
 
+    @Override
     public boolean addAll(Collection c) {
         return addAll(size, c);
     }
 
+    @Override
     public boolean addAll(int index, Collection c) {
         if (index<0 || index>size)
             throw new IndexOutOfBoundsException(
@@ -132,14 +145,17 @@ public class NonSynchronizedSubVector extends NonSynchronizedVector {
         return true;
     }
 
+    @Override
     public Enumeration elements() {
         return new Enumeration() {
             int count = 0;
 
+            @Override
             public boolean hasMoreElements() {
                 return count < size();
             }
 
+            @Override
             public Object nextElement() {
                 if (count < elementCount) {
                     return get(count++);
@@ -149,12 +165,14 @@ public class NonSynchronizedSubVector extends NonSynchronizedVector {
         };
     }
 
+    @Override
     public Object[] toArray() {
         Object[] result = new Object[size];
         System.arraycopy(l.toArray(), offset, result, 0, size);
         return result;
     }
 
+    @Override
     public Object[] toArray(Object a[]) {
         if (a.length < size)
             a = (Object[])java.lang.reflect.Array.newInstance(
@@ -168,10 +186,12 @@ public class NonSynchronizedSubVector extends NonSynchronizedVector {
         return a;
     }
 
+    @Override
     public Iterator iterator() {
         return listIterator();
     }
 
+    @Override
     public ListIterator listIterator(final int index) {
         if (index<0 || index>size)
             throw new IndexOutOfBoundsException(
@@ -180,10 +200,12 @@ public class NonSynchronizedSubVector extends NonSynchronizedVector {
         return new ListIterator() {
             private ListIterator i = l.listIterator(index+offset);
 
+            @Override
             public boolean hasNext() {
                 return nextIndex() < size;
             }
 
+            @Override
             public Object next() {
                 if (hasNext())
                     return i.next();
@@ -191,10 +213,12 @@ public class NonSynchronizedSubVector extends NonSynchronizedVector {
                     throw new NoSuchElementException();
             }
 
+            @Override
             public boolean hasPrevious() {
                 return previousIndex() >= 0;
             }
 
+            @Override
             public Object previous() {
                 if (hasPrevious())
                     return i.previous();
@@ -202,24 +226,29 @@ public class NonSynchronizedSubVector extends NonSynchronizedVector {
                     throw new NoSuchElementException();
             }
 
+            @Override
             public int nextIndex() {
                 return i.nextIndex() - offset;
             }
 
+            @Override
             public int previousIndex() {
                 return i.previousIndex() - offset;
             }
 
+            @Override
             public void remove() {
                 i.remove();
                 size--;
                 modCount++;
             }
 
+            @Override
             public void set(Object o) {
                 i.set(o);
             }
 
+            @Override
             public void add(Object o) {
                 i.add(o);
                 size++;

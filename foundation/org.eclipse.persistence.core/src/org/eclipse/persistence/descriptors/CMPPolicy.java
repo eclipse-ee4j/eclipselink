@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -338,6 +338,7 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
      * INTERNAL:
      * Clone the CMPPolicy
      */
+    @Override
     public CMPPolicy clone() {
        try {
             return (CMPPolicy) super.clone();
@@ -615,26 +616,32 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
             this.mapping = mapping;
         }
 
+        @Override
         public String getAttributeName() {
             return attributeName;
         }
 
+        @Override
         public DatabaseField getDatabaseField() {
             return this.databaseField;
         }
 
+        @Override
         public DatabaseMapping getMapping(){
             return this.mapping;
         }
 
+        @Override
         public Object getValue(Object object, AbstractSession session) {
             return object;
         }
 
+        @Override
         public boolean isNestedAccessor() {
             return false;
         }
 
+        @Override
         public void setValue(Object object, Object value) {
             // WIP - do nothing for now???
         }

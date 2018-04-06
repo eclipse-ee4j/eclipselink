@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -57,6 +57,7 @@ public class SessionEventManager extends CoreSessionEventManager<SessionEventLis
      * Also unit of works acquire from this session will inherit the listeners.
      * If session is a broker then its members add the listener, too.
      */
+    @Override
     public void addListener(SessionEventListener listener) {
         if (this.session != null) {
             if (this.session.isConnected()) {
@@ -90,6 +91,7 @@ public class SessionEventManager extends CoreSessionEventManager<SessionEventLis
      * INTERNAL:
      * Shallow clone the event manager.
      */
+    @Override
     public Object clone() {
         try {
             return super.clone();

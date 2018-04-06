@@ -110,6 +110,7 @@ public class AbstractMarshalRecordImpl<
         return returnList;
     }
 
+    @Override
     public boolean addXsiTypeAndClassIndicatorIfRequired(Descriptor descriptor, Descriptor referenceDescriptor, Field xmlField, boolean isRootElement) {
         ObjectBuilder objectBuilder = (ObjectBuilder) descriptor.getObjectBuilder();
         boolean xsiTypeIndicatorField = objectBuilder.isXsiTypeIndicatorField();
@@ -196,7 +197,8 @@ public class AbstractMarshalRecordImpl<
      * INTERNAL
      * @since EclipseLink 2.5.0
      */
-   public boolean addXsiTypeAndClassIndicatorIfRequired(Descriptor descriptor, Descriptor referenceDescriptor, Field xmlField,
+   @Override
+public boolean addXsiTypeAndClassIndicatorIfRequired(Descriptor descriptor, Descriptor referenceDescriptor, Field xmlField,
            Object originalObject, Object obj, boolean wasXMLRoot, boolean isRootElement) {
         if (wasXMLRoot) {
             XMLSchemaReference xmlRef = descriptor.getSchemaReference();
@@ -274,6 +276,7 @@ public class AbstractMarshalRecordImpl<
         }
     }
 
+    @Override
     public void attribute(String namespaceURI, String localName,
             String qualifiedName, String value) {
         if(null != realRecord) {
@@ -308,6 +311,7 @@ public class AbstractMarshalRecordImpl<
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public XPathQName getLeafElementType() {
         return leafElementType;
     }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -82,6 +82,7 @@ public class OracleArrayTypeMetadata extends OracleComplexTypeMetadata {
      * INTERNAL:
      * Build a runtime OracleArrayType from the meta-data.
      */
+    @Override
     public OracleArrayType process() {
         OracleArrayType array = new OracleArrayType();
         super.process(array);
@@ -101,6 +102,7 @@ public class OracleArrayTypeMetadata extends OracleComplexTypeMetadata {
      * Indicates an instance of OracleArrayTypeMetadata.
      * @return
      */
+    @Override
     public boolean isOracleArrayTypeMetadata() {
         return true;
     }

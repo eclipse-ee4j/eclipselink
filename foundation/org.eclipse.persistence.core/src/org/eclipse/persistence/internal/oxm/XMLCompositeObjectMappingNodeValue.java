@@ -130,10 +130,12 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
         return false;
     }
 
+    @Override
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver) {
         return marshal(xPathFragment, marshalRecord, object, session, namespaceResolver, ObjectMarshalContext.getInstance());
     }
 
+    @Override
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         if (xmlCompositeObjectMapping.isReadOnly()) {
             return false;
@@ -159,6 +161,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
         return false;
     }
 
+    @Override
     public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object objectValue, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         boolean isNilFlag = isNil(objectValue);
         objectValue = xmlCompositeObjectMapping.convertObjectValueToDataValue(objectValue, session, marshalRecord.getMarshaller());
@@ -293,6 +296,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
         return true;
     }
 
+    @Override
     public boolean startElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts) {
         try {
             unmarshalRecord.removeNullCapableValue(this);
@@ -390,6 +394,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
         return true;
     }
 
+    @Override
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord) {
         if(unmarshalRecord.isNil() && xmlCompositeObjectMapping.getNullPolicy().isNullRepresentedByXsiNil() && (unmarshalRecord.getChildRecord() == null)){
             unmarshalRecord.resetStringBuffer();
@@ -454,6 +459,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
 
     }
 
+    @Override
     public void endSelfNodeValue(UnmarshalRecord unmarshalRecord, UnmarshalRecord selfRecord, Attributes attributes) {
         if(xmlCompositeObjectMapping.getNullPolicy().valueIsNull(attributes)){
             xmlCompositeObjectMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), null);
@@ -527,6 +533,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
         }
     }
 
+    @Override
     public UnmarshalRecord buildSelfRecord(UnmarshalRecord unmarshalRecord, Attributes atts) {
         try {
             Descriptor xmlDescriptor = (Descriptor)xmlCompositeObjectMapping.getReferenceDescriptor();
@@ -578,10 +585,12 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
         }
     }
 
+    @Override
     public void setNullValue(Object object, CoreSession session) {
         xmlCompositeObjectMapping.setAttributeValueInObject(object, null);
     }
 
+    @Override
     public boolean isNullCapableValue() {
         if(xmlCompositeObjectMapping.getAttributeAccessor().isInstanceVariableAttributeAccessor() && !xmlCompositeObjectMapping.hasConverter()) {
             return false;
@@ -593,10 +602,12 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
         return xmlCompositeObjectMapping.getNullPolicy().getIsSetPerformedForAbsentNode();
     }
 
+    @Override
     public CompositeObjectMapping getMapping() {
         return xmlCompositeObjectMapping;
     }
 
+    @Override
     protected void setOrAddAttributeValue(UnmarshalRecord unmarshalRecord, Object value, XPathFragment xPathFragment, Object collection){
         unmarshalRecord.setAttributeValue(value, xmlCompositeObjectMapping);
     }

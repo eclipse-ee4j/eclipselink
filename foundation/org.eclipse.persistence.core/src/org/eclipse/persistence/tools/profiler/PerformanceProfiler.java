@@ -220,6 +220,7 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
         return summaries;
     }
 
+    @Override
     public PerformanceProfiler clone() {
         try {
             return (PerformanceProfiler)super.clone();
@@ -525,6 +526,7 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
         this.profileTime = profileTime;
     }
 
+    @Override
     public void setSession(org.eclipse.persistence.sessions.Session session) {
         this.session = (AbstractSession)session;
     }
@@ -546,6 +548,7 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
      * INTERNAL:
      * Start the operation timing.
      */
+    @Override
     public void startOperationProfile(String operationName) {
         getOperationStartTimes().put(operationName, Long.valueOf(System.nanoTime()));
     }
@@ -554,6 +557,7 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
      * INTERNAL:
      * Start the operation timing.
      */
+    @Override
     public void startOperationProfile(String operationName, DatabaseQuery query, int weight) {
         startOperationProfile(operationName);
     }
@@ -567,10 +571,12 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
         }
     }
 
+    @Override
     public int getProfileWeight() {
         return -1;
     }
 
+    @Override
     public void initialize() {
     }
 }

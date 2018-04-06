@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2018  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -36,23 +36,27 @@ public class MultitenantImpl extends MetadataImpl<MultitenantMetadata> implement
         getMetadata().setTenantDiscriminatorColumns(new ArrayList<TenantDiscriminatorColumnMetadata>());
     }
 
+    @Override
     public TenantDiscriminatorColumn addTenantDiscriminatorColumn() {
         TenantDiscriminatorColumnImpl tenantDiscriminatorColumn = new TenantDiscriminatorColumnImpl();
         getMetadata().getTenantDiscriminatorColumns().add(tenantDiscriminatorColumn.getMetadata());
         return tenantDiscriminatorColumn;
     }
 
+    @Override
     public Multitenant setIncludeCriteria(Boolean includeCriteria) {
         getMetadata().setIncludeCriteria(includeCriteria);
         return this;
     }
 
+    @Override
     public TenantTableDiscriminator setTenantTableDiscriminator() {
         TenantTableDiscriminatorImpl tenantTableDiscriminator = new TenantTableDiscriminatorImpl();
         getMetadata().setTenantTableDiscriminator(tenantTableDiscriminator.getMetadata());
         return tenantTableDiscriminator;
     }
 
+    @Override
     public Multitenant setType(String type) {
         getMetadata().setType(type);
         return this;

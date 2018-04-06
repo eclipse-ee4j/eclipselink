@@ -1,6 +1,6 @@
 /**
  * ****************************************************************************
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -43,6 +43,7 @@ public class Memoizer<A, V> implements LowLevelProcessor<A, V> {
             Future<V> f = cache.get(key);
             if (f == null) {
                 Callable<V> evaluation = new Callable<V>() {
+                    @Override
                     public V call() throws InterruptedException {
                         return c.compute(taskArg);
                     }

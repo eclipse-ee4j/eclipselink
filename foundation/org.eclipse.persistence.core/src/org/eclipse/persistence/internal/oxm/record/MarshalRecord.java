@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -45,6 +45,7 @@ public interface MarshalRecord<
 
     public void afterContainmentMarshal(Object object, Object value);
 
+    @Override
     public void attribute(String namespaceURI, String localPart,
             String qualifiedName, String value);
 
@@ -55,6 +56,7 @@ public interface MarshalRecord<
     public void attribute(XPathFragment xPathFragment,
             NAMESPACE_RESOLVER namespaceResolver, String value);
 
+    @Override
     public void attributeWithoutQName(String namespaceURI,
             String localName, String prefix, String value);
 
@@ -104,12 +106,15 @@ public interface MarshalRecord<
     public String getValueToWrite(QName schemaType, Object fieldValue,
             ConversionManager conversionManager);
 
+    @Override
     public boolean hasCustomNamespaceMapper();
 
     public boolean isWrapperAsCollectionName();
 
+    @Override
     public boolean isXOPPackage();
 
+    @Override
     public void namespaceDeclaration(String generatedPrefix, String namespaceURI);
 
     public void nilComplex(XPathFragment xPathFragment,
@@ -132,14 +137,17 @@ public interface MarshalRecord<
 
     public void pushAttributeGroup(CoreAttributeGroup group);
 
+    @Override
     public void removeExtraNamespacesFromNamespaceResolver(List<Namespace> extraNamespaces, CoreAbstractSession session);
 
     public void removeGroupingElement(XPathNode holderXPathNode);
 
     public void setGroupingElement(ArrayList<XPathNode> object);
 
+    @Override
     public void setLeafElementType(QName leafElementType);
 
+    @Override
     public void setMarshaller(MARSHALLER marshaller);
 
     public void startCollection();

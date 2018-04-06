@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -77,6 +77,7 @@ public class FormattedWriterRecord extends WriterRecord {
     }
 
 
+    @Override
     public void startDocument(String encoding, String version) {
         super.startDocument(encoding, version);
             builder.append(cr);
@@ -85,6 +86,7 @@ public class FormattedWriterRecord extends WriterRecord {
     /**
      * INTERNAL:
      */
+    @Override
     public void endDocument() {
             builder.append(cr);
     }
@@ -92,6 +94,7 @@ public class FormattedWriterRecord extends WriterRecord {
     /**
      * INTERNAL
      */
+    @Override
     public void writeHeader() {
             builder.append(getMarshaller().getXmlHeader());
             builder.append(cr);
@@ -100,6 +103,7 @@ public class FormattedWriterRecord extends WriterRecord {
     /**
      * INTERNAL:
      */
+    @Override
     public void openStartElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
         this.addPositionalNodes(xPathFragment, namespaceResolver);
             if (isStartElementOpen) {
@@ -126,6 +130,7 @@ public class FormattedWriterRecord extends WriterRecord {
     /**
      * INTERNAL:
      */
+    @Override
     public void element(XPathFragment frag) {
             isLastEventText = false;
             if (isStartElementOpen) {
@@ -142,6 +147,7 @@ public class FormattedWriterRecord extends WriterRecord {
     /**
      * INTERNAL:
      */
+    @Override
     public void endElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
             isLastEventText = false;
             numberOfTabs--;
@@ -165,6 +171,7 @@ public class FormattedWriterRecord extends WriterRecord {
     /**
      * INTERNAL:
      */
+    @Override
     public void characters(String value) {
         super.characters(value);
         isLastEventText = true;
@@ -174,6 +181,7 @@ public class FormattedWriterRecord extends WriterRecord {
     /**
      * INTERNAL:
      */
+    @Override
     public void cdata(String value) {
         //Format the CDATA on it's own line
             if(isStartElementOpen) {
@@ -190,6 +198,7 @@ public class FormattedWriterRecord extends WriterRecord {
      * @param namespaceResolver The NamespaceResolver can be used to resolve the
      * namespace URI/prefix of the node
      */
+    @Override
     public void node(Node node, NamespaceResolver namespaceResolver, String newNamespace, String newName) {
         if (node.getNodeType() == Node.ATTRIBUTE_NODE) {
             Attr attr = (Attr) node;
@@ -235,6 +244,7 @@ public class FormattedWriterRecord extends WriterRecord {
      */
     private class FormattedWriterRecordContentHandler extends WriterRecordContentHandler {
         // --------------------- CONTENTHANDLER METHODS --------------------- //
+        @Override
         public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
                 if (isStartElementOpen) {
                     builder.append('>');
@@ -256,6 +266,7 @@ public class FormattedWriterRecord extends WriterRecord {
                 writePrefixMappings();
         }
 
+        @Override
         public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
                 isLastEventText = false;
                 numberOfTabs--;
@@ -277,6 +288,7 @@ public class FormattedWriterRecord extends WriterRecord {
                 super.endElement(namespaceURI, localName, qName);
         }
 
+        @Override
         public void characters(char[] ch, int start, int length) throws SAXException {
             if (isProcessingCData) {
                 cdata(new String (ch, start, length));
@@ -291,6 +303,7 @@ public class FormattedWriterRecord extends WriterRecord {
         }
 
     // --------------------- LEXICALHANDLER METHODS --------------------- //
+    @Override
     public void comment(char[] ch, int start, int length) throws SAXException {
                 if (isStartElementOpen) {
                     builder.append('>');

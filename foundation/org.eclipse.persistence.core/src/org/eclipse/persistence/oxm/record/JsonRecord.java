@@ -52,6 +52,7 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
     /**
      * INTERNAL:
      */
+    @Override
     public void setMarshaller(XMLMarshaller marshaller) {
         super.setMarshaller(marshaller);
         attributePrefix = marshaller.getAttributePrefix();
@@ -62,6 +63,7 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
         characterEscapeHandler = marshaller.getCharacterEscapeHandler();
     }
 
+    @Override
     public void forceValueWrapper(){
         setComplex(position, true);
         isLastEventStart = false;
@@ -125,6 +127,7 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
      * @param openGrouping if grouping elements should be marshalled for empty collections
      * @return
      */
+    @Override
     public boolean emptyCollection(XPathFragment xPathFragment, NamespaceResolver namespaceResolver, boolean openGrouping) {
 
          if(marshaller.isMarshalEmptyCollections()){
@@ -167,6 +170,7 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
         position = (T)position.parentLevel;
     }
 
+    @Override
     public void startCollection() {
         if(position == null){
              isRootArray = true;
@@ -210,6 +214,7 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
         return keyName;
     }
 
+    @Override
     public void attribute(XPathFragment xPathFragment, NamespaceResolver namespaceResolver,  Object value, QName schemaType){
         if(xPathFragment.getNamespaceURI() != null && xPathFragment.getNamespaceURI() == javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI){
             return;
@@ -236,6 +241,7 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
      * The character used to separate the prefix and uri portions when namespaces are present
      * @since 2.4
      */
+    @Override
     public char getNamespaceSeparator(){
         return marshaller.getNamespaceSeparator();
     }
@@ -245,6 +251,7 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
      * The optional fragment used to wrap the text() mappings
      * @since 2.4
      */
+    @Override
     public XPathFragment getTextWrapperFragment() {
         return textWrapperFragment;
     }
@@ -467,6 +474,7 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
 
     }
 
+    @Override
     protected String getStringForQName(QName qName){
         if(null == qName) {
             return null;
@@ -479,19 +487,23 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
     /**
      * INTERNAL:
      */
-     public void namespaceDeclarations(NamespaceResolver namespaceResolver) {
+     @Override
+    public void namespaceDeclarations(NamespaceResolver namespaceResolver) {
      }
 
-     public void namespaceDeclaration(String prefix, String namespaceURI){
+     @Override
+    public void namespaceDeclaration(String prefix, String namespaceURI){
      }
 
-     public void defaultNamespaceDeclaration(String defaultNamespace){
+     @Override
+    public void defaultNamespaceDeclaration(String defaultNamespace){
      }
 
     /**
      * INTERNAL:
      */
-     public void nilComplex(XPathFragment xPathFragment, NamespaceResolver namespaceResolver){
+     @Override
+    public void nilComplex(XPathFragment xPathFragment, NamespaceResolver namespaceResolver){
          XPathFragment groupingFragment = openStartGroupingElements(namespaceResolver);
          closeStartGroupingElements(groupingFragment);
          openStartElement(xPathFragment, namespaceResolver);
@@ -502,7 +514,8 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
     /**
      * INTERNAL:
      */
-     public void nilSimple(NamespaceResolver namespaceResolver){
+     @Override
+    public void nilSimple(NamespaceResolver namespaceResolver){
          XPathFragment groupingFragment = openStartGroupingElements(namespaceResolver);
          characters(NULL);
          closeStartGroupingElements(groupingFragment);
@@ -512,11 +525,13 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
       * Used when an empty simple value should be written
       * @since EclipseLink 2.4
       */
-     public void emptySimple(NamespaceResolver namespaceResolver){
+     @Override
+    public void emptySimple(NamespaceResolver namespaceResolver){
          nilSimple(namespaceResolver);
      }
 
-     public void emptyAttribute(XPathFragment xPathFragment,NamespaceResolver namespaceResolver){
+     @Override
+    public void emptyAttribute(XPathFragment xPathFragment,NamespaceResolver namespaceResolver){
          XPathFragment groupingFragment = openStartGroupingElements(namespaceResolver);
          openStartElement(xPathFragment, namespaceResolver);
          characters(NULL);
@@ -528,7 +543,8 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
       * Used when an empty complex item should be written
       * @since EclipseLink 2.4
       */
-     public void emptyComplex(XPathFragment xPathFragment, NamespaceResolver namespaceResolver){
+     @Override
+    public void emptyComplex(XPathFragment xPathFragment, NamespaceResolver namespaceResolver){
          XPathFragment groupingFragment = openStartGroupingElements(namespaceResolver);
          closeStartGroupingElements(groupingFragment);
          openStartElement(xPathFragment, namespaceResolver);
@@ -551,40 +567,48 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
          }
 
          // --------------------- CONTENTHANDLER METHODS --------------------- //
-         public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
+         @Override
+        public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
                  XPathFragment xPathFragment = new XPathFragment(localName);
                  xPathFragment.setNamespaceURI(namespaceURI);
                  openStartElement(xPathFragment, namespaceResolver);
                  handleAttributes(atts);
          }
 
-         public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
+         @Override
+        public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
              XPathFragment xPathFragment = new XPathFragment(localName);
              xPathFragment.setNamespaceURI(namespaceURI);
 
              JsonRecord.this.endElement(xPathFragment, namespaceResolver);
          }
 
-         public void startPrefixMapping(String prefix, String uri) throws SAXException {
+         @Override
+        public void startPrefixMapping(String prefix, String uri) throws SAXException {
          }
 
-         public void characters(char[] ch, int start, int length) throws SAXException {
+         @Override
+        public void characters(char[] ch, int start, int length) throws SAXException {
              String characters = new String (ch, start, length);
              characters(characters);
          }
 
-         public void characters(CharSequence characters) throws SAXException {
+         @Override
+        public void characters(CharSequence characters) throws SAXException {
              JsonRecord.this.characters(characters.toString());
          }
 
          // --------------------- LEXICALHANDLER METHODS --------------------- //
-         public void comment(char[] ch, int start, int length) throws SAXException {
+         @Override
+        public void comment(char[] ch, int start, int length) throws SAXException {
          }
 
-         public void startCDATA() throws SAXException {
+         @Override
+        public void startCDATA() throws SAXException {
          }
 
-         public void endCDATA() throws SAXException {
+         @Override
+        public void endCDATA() throws SAXException {
          }
 
          // --------------------- CONVENIENCE METHODS --------------------- //
@@ -609,19 +633,30 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
              }
          }
          // --------------- SATISFY CONTENTHANDLER INTERFACE --------------- //
-         public void endPrefixMapping(String prefix) throws SAXException {}
-         public void processingInstruction(String target, String data) throws SAXException {}
-         public void setDocumentLocator(Locator locator) {}
-         public void startDocument() throws SAXException {}
-         public void endDocument() throws SAXException {}
-         public void skippedEntity(String name) throws SAXException {}
-         public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {}
+         @Override
+        public void endPrefixMapping(String prefix) throws SAXException {}
+         @Override
+        public void processingInstruction(String target, String data) throws SAXException {}
+         @Override
+        public void setDocumentLocator(Locator locator) {}
+         @Override
+        public void startDocument() throws SAXException {}
+         @Override
+        public void endDocument() throws SAXException {}
+         @Override
+        public void skippedEntity(String name) throws SAXException {}
+         @Override
+        public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {}
 
          // --------------- SATISFY LEXICALHANDLER INTERFACE --------------- //
-         public void startEntity(String name) throws SAXException {}
-         public void endEntity(String name) throws SAXException {}
-         public void startDTD(String name, String publicId, String systemId) throws SAXException {}
-         public void endDTD() throws SAXException {}
+         @Override
+        public void startEntity(String name) throws SAXException {}
+         @Override
+        public void endEntity(String name) throws SAXException {}
+         @Override
+        public void startDTD(String name, String publicId, String systemId) throws SAXException {}
+         @Override
+        public void endDTD() throws SAXException {}
          @Override
          public void setNil(boolean isNil) {}
 

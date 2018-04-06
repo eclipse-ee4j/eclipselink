@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -29,6 +29,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  * @since TOPLink/Java 1.0
  */
 public class DBasePlatform extends org.eclipse.persistence.platform.database.DatabasePlatform {
+    @Override
     protected Hashtable buildFieldTypes() {
         Hashtable fieldTypeMapping;
 
@@ -66,6 +67,7 @@ public class DBasePlatform extends org.eclipse.persistence.platform.database.Dat
      * INTERNAL
      * We support more primitive than JDBC does so we must do conversion before printing or binding.
      */
+    @Override
     public Object convertToDatabaseType(Object value) {
         Object databaseValue = super.convertToDatabaseType(value);
         if ((databaseValue instanceof java.sql.Time) || (databaseValue instanceof java.sql.Timestamp)) {
@@ -78,6 +80,7 @@ public class DBasePlatform extends org.eclipse.persistence.platform.database.Dat
      * INTERNAL:
      * DBase does not support Time/Timestamp so we must map to strings.
      */
+    @Override
     public void setParameterValueInDatabaseCall(Object parameter,
             PreparedStatement statement, int index, AbstractSession session) throws SQLException {
         Object databaseValue = super.convertToDatabaseType(parameter);
@@ -92,14 +95,17 @@ public class DBasePlatform extends org.eclipse.persistence.platform.database.Dat
      * returns the maximum number of characters that can be used in a field
      * name on this platform.
      */
+    @Override
     public int getMaxFieldNameSize() {
         return 10;
     }
 
+    @Override
     public String getSelectForUpdateString() {
         return " FOR UPDATE OF *";
     }
 
+    @Override
     public boolean isDBase() {
         return true;
     }
@@ -109,6 +115,7 @@ public class DBasePlatform extends org.eclipse.persistence.platform.database.Dat
      * might also be useful to end users attempting to sanitize values.
      * <p><b>NOTE</b>: BigInteger {@literal &} BigDecimal minimums are dependent upon their precision {@literal &} Scale
      */
+    @Override
     public Hashtable maximumNumericValues() {
         Hashtable values = new Hashtable();
 
@@ -128,6 +135,7 @@ public class DBasePlatform extends org.eclipse.persistence.platform.database.Dat
      * might also be useful to end users attempting to sanitize values.
      * <p><b>NOTE</b>: BigInteger {@literal &} BigDecimal minimums are dependent upon their precision {@literal &} Scale
      */
+    @Override
     public Hashtable minimumNumericValues() {
         Hashtable values = new Hashtable();
 
@@ -145,6 +153,7 @@ public class DBasePlatform extends org.eclipse.persistence.platform.database.Dat
     /**
      *    Append the receiver's field 'NOT NULL' constraint clause to a writer.
      */
+    @Override
     public void printFieldNotNullClause(Writer writer) {
         // Do nothing
     }
@@ -152,14 +161,17 @@ public class DBasePlatform extends org.eclipse.persistence.platform.database.Dat
     /**
      * JDBC defines and outer join syntax, many drivers do not support this. So we normally avoid it.
      */
+    @Override
     public boolean shouldUseJDBCOuterJoinSyntax() {
         return false;
     }
 
+    @Override
     public boolean supportsForeignKeyConstraints() {
         return false;
     }
 
+    @Override
     public boolean supportsPrimaryKeyConstraint() {
         return false;
     }

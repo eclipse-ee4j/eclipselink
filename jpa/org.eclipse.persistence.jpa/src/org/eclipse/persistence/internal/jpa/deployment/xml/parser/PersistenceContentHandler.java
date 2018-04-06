@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -58,21 +58,27 @@ public class PersistenceContentHandler implements ContentHandler {
         return persistenceUnits;
     }
 
+    @Override
     public void setDocumentLocator(Locator locator) {
     }
 
+    @Override
     public void startDocument() throws SAXException {
     }
 
+    @Override
     public void endDocument() throws SAXException {
     }
 
+    @Override
     public void startPrefixMapping(String prefix, String uri) throws SAXException {
     }
 
+    @Override
     public void endPrefixMapping(String prefix) throws SAXException {
     }
 
+    @Override
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
         if (NAMESPACE_URI.equals(namespaceURI) || NAMESPACE_URI_OLD.equals(namespaceURI)) {
             if (ELEMENT_PERSISTENCE_UNIT.equals(localName)) {
@@ -118,6 +124,7 @@ public class PersistenceContentHandler implements ContentHandler {
         }
     }
 
+    @Override
     public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
         String string = stringBuffer.toString().trim();
         stringBuffer.delete(0, stringBuffer.length());
@@ -169,18 +176,22 @@ public class PersistenceContentHandler implements ContentHandler {
         }
     }
 
+    @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
         if (readCharacters) {
             stringBuffer.append(ch, start, length);
         }
     }
 
+    @Override
     public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {
     }
 
+    @Override
     public void processingInstruction(String target, String data) throws SAXException {
     }
 
+    @Override
     public void skippedEntity(String name) throws SAXException {
     }
 }

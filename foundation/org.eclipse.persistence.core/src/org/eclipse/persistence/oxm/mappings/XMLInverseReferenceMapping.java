@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -94,6 +94,7 @@ public class XMLInverseReferenceMapping extends AggregateMapping implements Inve
         }
     }
 
+    @Override
     public void preInitialize(AbstractSession session){
         super.preInitialize(session);
         if(inlineMapping != null){
@@ -172,6 +173,7 @@ public class XMLInverseReferenceMapping extends AggregateMapping implements Inve
         return mappedBy;
     }
 
+    @Override
     public void setMappedBy(String mappedBy) {
         this.mappedBy = mappedBy;
     }
@@ -237,38 +239,47 @@ public class XMLInverseReferenceMapping extends AggregateMapping implements Inve
 
     // == ContainerPolicy methods =============================================
 
+    @Override
     public void setContainerPolicy(ContainerPolicy containerPolicy) {
         this.containerPolicy = containerPolicy;
     }
 
+    @Override
     public ContainerPolicy getContainerPolicy() {
         return this.containerPolicy;
     }
 
+    @Override
     public void useCollectionClass(Class concreteClass) {
         this.containerPolicy = new CollectionContainerPolicy(concreteClass);
     }
 
+    @Override
     public void useCollectionClassName(String concreteClass) {
         this.containerPolicy = new CollectionContainerPolicy(concreteClass);
     }
 
+    @Override
     public void useListClassName(String concreteClass) {
         this.containerPolicy = new ListContainerPolicy(concreteClass);
     }
 
+    @Override
     public void useMapClass(Class concreteClass, String methodName) {
         this.containerPolicy = new MapContainerPolicy(concreteClass);
     }
 
+    @Override
     public void useMapClassName(String concreteClass, String methodName) {
         this.containerPolicy = new MapContainerPolicy(concreteClass);
     }
 
+    @Override
     public DatabaseMapping getInlineMapping() {
         return inlineMapping;
     }
 
+    @Override
     public void setInlineMapping(DatabaseMapping inlineMapping) {
         this.inlineMapping = inlineMapping;
     }

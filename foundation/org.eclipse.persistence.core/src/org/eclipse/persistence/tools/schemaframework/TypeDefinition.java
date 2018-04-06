@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -77,6 +77,7 @@ public class TypeDefinition extends DatabaseObjectDefinition {
      * INTERNAL:
      * Return the create type statement.
      */
+    @Override
     public Writer buildCreationWriter(AbstractSession session, Writer writer) throws ValidationException {
         try {
             writer.write("CREATE TYPE " + getFullName() + " AS OBJECT (");
@@ -98,6 +99,7 @@ public class TypeDefinition extends DatabaseObjectDefinition {
      * INTERNAL:
      * Return the drop type statement.
      */
+    @Override
     public Writer buildDeletionWriter(AbstractSession session, Writer writer) throws ValidationException {
         try {
             writer.write("DROP TYPE " + getFullName());

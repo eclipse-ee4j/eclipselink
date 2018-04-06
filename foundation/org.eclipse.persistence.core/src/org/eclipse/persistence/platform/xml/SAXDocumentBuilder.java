@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -68,10 +68,12 @@ public class SAXDocumentBuilder implements ExtendedContentHandler {
         return document;
     }
 
+    @Override
     public void setDocumentLocator(Locator locator) {
         this.locator = locator;
     }
 
+    @Override
     public void startDocument() throws SAXException {
         try {
             document = xmlPlatform.createDocument();
@@ -81,10 +83,12 @@ public class SAXDocumentBuilder implements ExtendedContentHandler {
         }
     }
 
+    @Override
     public void endDocument() throws SAXException {
         nodes.remove(nodes.size() - 1);
     }
 
+    @Override
     public void startPrefixMapping(String prefix, String uri) throws SAXException {
         if(null == prefix) {
             prefix = Constants.EMPTY_STRING;
@@ -98,9 +102,11 @@ public class SAXDocumentBuilder implements ExtendedContentHandler {
         namespaceDeclarations.put(prefix, uri);
     }
 
+    @Override
     public void endPrefixMapping(String prefix) throws SAXException {
     }
 
+    @Override
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
         if (null != namespaceURI && namespaceURI.length() == 0) {
             namespaceURI = null;
@@ -159,6 +165,7 @@ public class SAXDocumentBuilder implements ExtendedContentHandler {
         }
     }
 
+    @Override
     public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
         Element endedElement = (Element)nodes.remove(nodes.size()-1);
         if (stringBuffer.length() > 0) {
@@ -168,23 +175,28 @@ public class SAXDocumentBuilder implements ExtendedContentHandler {
         }
     }
 
+    @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
         stringBuffer.append(ch, start, length);
     }
 
+    @Override
     public void characters(CharSequence characters) {
         stringBuffer.append(characters.toString());
     }
 
+    @Override
     public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {
     }
 
+    @Override
     public void processingInstruction(String target, String data) throws SAXException {
         ProcessingInstruction pi = getInitializedDocument().createProcessingInstruction(target, data);
         Node parentNode = nodes.get(nodes.size() -1);
         parentNode.appendChild(pi);
     }
 
+    @Override
     public void skippedEntity(String name) throws SAXException {
     }
 

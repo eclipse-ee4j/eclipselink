@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -36,6 +36,7 @@ public class AQTransaction implements LocalTransaction {
     /**
      * Record that a transaction has begun.
      */
+    @Override
     public void begin() {
         this.isInTransaction = true;
     }
@@ -50,6 +51,7 @@ public class AQTransaction implements LocalTransaction {
     /**
      * Write each of the transactional DOM records back to their files.
      */
+    @Override
     public void commit() throws ResourceException {
         try {
             this.connection.getDatabaseConnection().commit();
@@ -62,6 +64,7 @@ public class AQTransaction implements LocalTransaction {
     /**
      * Throw away each of the DOM records in the transactional cache.
      */
+    @Override
     public void rollback() throws ResourceException {
         try {
             this.connection.getDatabaseConnection().rollback();

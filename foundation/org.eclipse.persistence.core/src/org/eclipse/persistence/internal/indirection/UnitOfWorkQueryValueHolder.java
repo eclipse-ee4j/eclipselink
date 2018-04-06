@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -45,6 +45,7 @@ public class UnitOfWorkQueryValueHolder extends UnitOfWorkValueHolder {
     /**
      * Backup the clone attribute value.
      */
+    @Override
     protected Object buildBackupCloneFor(Object cloneAttributeValue) {
         return this.mapping.buildBackupCloneForPartObject(cloneAttributeValue, null, null, getUnitOfWork());
     }
@@ -52,6 +53,7 @@ public class UnitOfWorkQueryValueHolder extends UnitOfWorkValueHolder {
     /**
      * Clone the original attribute value.
      */
+    @Override
     public Object buildCloneFor(Object originalAttributeValue) {
         Integer refreshCascade = null;
         if (wrappedValueHolder instanceof QueryBasedValueHolder){
@@ -68,6 +70,7 @@ public class UnitOfWorkQueryValueHolder extends UnitOfWorkValueHolder {
     /**
      * Ensure that the backup value holder is populated.
      */
+    @Override
     public void setValue(Object theValue) {
         // Must force instantiation to be able to compare with the old value.
         if (!this.isInstantiated) {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -45,6 +45,7 @@ public class XMLAccessor extends DatasourceAccessor {
      * so use an object as a placeholder.
      * Subclasses can make use of their own connection.
      */
+    @Override
     protected void connectInternal(Login login, AbstractSession session) throws DatabaseException {
         setDatasourceConnection(new Object());
         setIsInTransaction(false);
@@ -54,6 +55,7 @@ public class XMLAccessor extends DatasourceAccessor {
     /**
      * Begin a transaction on the "data store".
      */
+    @Override
     public void basicBeginTransaction(AbstractSession session) {
         // do nothing
     }
@@ -61,6 +63,7 @@ public class XMLAccessor extends DatasourceAccessor {
     /**
      * Commit the transaction to the "data store".
      */
+    @Override
     public void basicCommitTransaction(AbstractSession session) {
         // do nothing
     }
@@ -68,16 +71,19 @@ public class XMLAccessor extends DatasourceAccessor {
     /**
      * Rollback the transaction on the "data store".
      */
+    @Override
     public void basicRollbackTransaction(AbstractSession session) {
         // do nothing
     }
 
+    @Override
     public Object basicExecuteCall(Call call, AbstractRecord translationRow, AbstractSession session) throws DatabaseException {
         //return null since this should never be called
         return null;
     }
 
     /* Close the connection to the "data source".*/
+    @Override
     protected void closeDatasourceConnection() {
         // do nothing
     }
@@ -85,6 +91,7 @@ public class XMLAccessor extends DatasourceAccessor {
     /**
      * Return if the connection to the "data source" is connected.
      */
+    @Override
     protected boolean isDatasourceConnected() {
         return isConnected;
     }
@@ -92,6 +99,7 @@ public class XMLAccessor extends DatasourceAccessor {
     /**
      * Log any driver level connection meta-data if available.
      */
+    @Override
     protected void buildConnectLog(AbstractSession session) {
     }
 
@@ -108,6 +116,7 @@ public class XMLAccessor extends DatasourceAccessor {
      * Call <code>#toString(PrintWriter)</code>, to allow subclasses to
      * insert additional information.
      */
+    @Override
     public String toString() {
         StringWriter sw = new StringWriter();
         PrintWriter writer = new PrintWriter(sw);

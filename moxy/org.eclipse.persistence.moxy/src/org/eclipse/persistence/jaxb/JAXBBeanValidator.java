@@ -405,6 +405,7 @@ class JAXBBeanValidator {
         assert iterator.hasNext(); // this method is to be called only if constraints violations are not empty
         ConstraintViolation<?> cv = iterator.next();
         Collection<ConstraintViolationInfo> violatedConstraints = new LinkedList<ConstraintViolationInfo>(){
+            @Override
             public String toString() {
                 Iterator<ConstraintViolationInfo> it = iterator();
                 StringBuilder sb = new StringBuilder();

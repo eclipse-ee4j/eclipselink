@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -40,10 +40,12 @@ public class URLArchive extends ArchiveBase implements Archive {
     }
 
 
+    @Override
     public Iterator<String> getEntries() {
         return Collections.EMPTY_LIST.iterator();
     }
 
+    @Override
     public InputStream getEntry(String entryPath) throws IOException {
         URL subEntry = new URL(rootURL, entryPath);
         InputStream is = null;
@@ -55,6 +57,7 @@ public class URLArchive extends ArchiveBase implements Archive {
         return is;
     }
 
+    @Override
     public URL getEntryAsURL(String entryPath) throws IOException {
         URL subEntry = new URL(rootURL, entryPath);
         try {
@@ -69,6 +72,7 @@ public class URLArchive extends ArchiveBase implements Archive {
         return subEntry;
     }
 
+    @Override
     public void close() {
         // nothing to close. it's caller's responsibility to close
         // any InputStream returned by getEntry().

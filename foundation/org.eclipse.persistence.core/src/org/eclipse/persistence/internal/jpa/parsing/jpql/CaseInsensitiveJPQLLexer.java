@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -23,6 +23,7 @@ import org.eclipse.persistence.internal.jpa.parsing.jpql.antlr.JPQLLexer;
  */
 public class CaseInsensitiveJPQLLexer extends JPQLLexer {
 
+    @Override
     public void match(String s) throws MismatchedTokenException {
         int i = 0;
         while ( i<s.length() ) {
@@ -44,6 +45,7 @@ public class CaseInsensitiveJPQLLexer extends JPQLLexer {
         }
     }
 
+    @Override
     public void match(int c) throws MismatchedTokenException {
         int currentChar = Character.toLowerCase(input.LA(1));
         int stringChar = Character.toLowerCase(c);
@@ -61,6 +63,7 @@ public class CaseInsensitiveJPQLLexer extends JPQLLexer {
         state.failed = false;
     }
 
+    @Override
     public void matchRange(int a, int b)
         throws MismatchedRangeException
     {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -150,6 +150,7 @@ public class ObjectTypeConverter implements Converter, ClassNameConversionRequir
      * that has been built with class names to a project with classes.
      * @param classLoader
      */
+    @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){
         if (dataTypeName != null) {
             dataType = loadClass(dataTypeName, classLoader);
@@ -205,6 +206,7 @@ public class ObjectTypeConverter implements Converter, ClassNameConversionRequir
      * INTERNAL:
      * Returns the corresponding attribute value for the specified field value.
      */
+    @Override
     public Object convertDataValueToObjectValue(Object fieldValue, Session session) {
         Object attributeValue = null;
 
@@ -327,6 +329,7 @@ public class ObjectTypeConverter implements Converter, ClassNameConversionRequir
      *  INTERNAL:
      *  Convert to the data value.
      */
+    @Override
     public Object convertObjectValueToDataValue(Object attributeValue, Session session) {
         Object fieldValue;
         if (attributeValue == null) {
@@ -428,6 +431,7 @@ public class ObjectTypeConverter implements Converter, ClassNameConversionRequir
      * INTERNAL:
      * Set the mapping.
      */
+    @Override
     public void initialize(DatabaseMapping mapping, Session session) {
         this.mapping = mapping;
         initializeFieldClassification(session);
@@ -517,6 +521,7 @@ public class ObjectTypeConverter implements Converter, ClassNameConversionRequir
      * a value that can have its' parts changed without being replaced,
      * then it must return false, serialization can be non-atomic.
      */
+    @Override
     public boolean isMutable() {
         return false;
     }

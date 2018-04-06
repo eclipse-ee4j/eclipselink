@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -54,6 +54,7 @@ public class ArrayRecord extends DatabaseRecord {
      * Add the field-value pair to the row.  Will not check,
      * will simply add to the end of the row
      */
+    @Override
     public void add(DatabaseField key, Object value) {
         checkValues();
         this.fieldsArray = null;
@@ -65,6 +66,7 @@ public class ArrayRecord extends DatabaseRecord {
      * PUBLIC:
      * Clear the contents of the row.
      */
+    @Override
     public void clear() {
         this.fieldsArray = null;
         this.valuesArray = null;
@@ -75,6 +77,7 @@ public class ArrayRecord extends DatabaseRecord {
      * INTERNAL:
      * Clone the row and its values.
      */
+    @Override
     public AbstractRecord clone() {
         checkValues();
         return super.clone();
@@ -84,6 +87,7 @@ public class ArrayRecord extends DatabaseRecord {
      * INTERNAL:
      * Check if the field is contained in the row.
      */
+    @Override
     public boolean containsKey(DatabaseField key) {
         if (this.fieldsArray != null) {
             // Optimize check.
@@ -109,6 +113,7 @@ public class ArrayRecord extends DatabaseRecord {
      * PUBLIC:
      * Check if the value is contained in the row.
      */
+    @Override
     public boolean containsValue(Object value) {
         if (this.valuesArray != null) {
             for (Object rowValue : this.valuesArray) {
@@ -126,6 +131,7 @@ public class ArrayRecord extends DatabaseRecord {
      * INTERNAL:
      * Retrieve the value for the field. If missing null is returned.
      */
+    @Override
     public Object get(DatabaseField key) {
         if (this.fieldsArray != null) {
             // Optimize check.
@@ -156,6 +162,7 @@ public class ArrayRecord extends DatabaseRecord {
      * INTERNAL:
      * Retrieve the value for the field. If missing DatabaseRow.noEntry is returned.
      */
+    @Override
     public Object getIndicatingNoEntry(DatabaseField key) {
         if (this.fieldsArray != null) {
             // Optimize check.
@@ -186,6 +193,7 @@ public class ArrayRecord extends DatabaseRecord {
      * INTERNAL:
      * Returns the row's field with the same name.
      */
+    @Override
     public DatabaseField getField(DatabaseField key) {
         if (this.fieldsArray != null) {
             // Optimize check.
@@ -211,6 +219,7 @@ public class ArrayRecord extends DatabaseRecord {
     /**
      * INTERNAL:
      */
+    @Override
     public Vector getFields() {
         checkValues();
         return super.getFields();
@@ -219,6 +228,7 @@ public class ArrayRecord extends DatabaseRecord {
     /**
      * INTERNAL:
      */
+    @Override
     public Vector getValues() {
         checkValues();
         return super.getValues();
@@ -228,6 +238,7 @@ public class ArrayRecord extends DatabaseRecord {
      * INTERNAL:
      * Add the field-value pair to the row.
      */
+    @Override
     public Object put(DatabaseField key, Object value) {
         checkValues();
         this.fieldsArray = null;
@@ -239,6 +250,7 @@ public class ArrayRecord extends DatabaseRecord {
      * INTERNAL:
      * Remove the field key from the row.
      */
+    @Override
     public Object remove(DatabaseField key) {
         checkValues();
         this.fieldsArray = null;
@@ -250,6 +262,7 @@ public class ArrayRecord extends DatabaseRecord {
      * INTERNAL:
      * replaces the value at index with value
      */
+    @Override
     public void replaceAt(Object value, int index) {
         if (this.valuesArray != null) {
             this.valuesArray[index] = value;
@@ -262,6 +275,7 @@ public class ArrayRecord extends DatabaseRecord {
      * INTERNAL:
      * replaces the value at field with value
      */
+    @Override
     public void replaceAt(Object value, DatabaseField key) {
         if (this.fieldsArray != null) {
             // Optimize check.
@@ -289,6 +303,7 @@ public class ArrayRecord extends DatabaseRecord {
         }
     }
 
+    @Override
     protected void setFields(Vector fields) {
         checkValues();
         this.fieldsArray = null;
@@ -296,6 +311,7 @@ public class ArrayRecord extends DatabaseRecord {
         super.setFields(fields);
     }
 
+    @Override
     protected void setValues(Vector values) {
         checkValues();
         this.fieldsArray = null;
@@ -307,6 +323,7 @@ public class ArrayRecord extends DatabaseRecord {
      * PUBLIC:
      * Return the number of field/value pairs in the row.
      */
+    @Override
     public int size() {
         if (this.fieldsArray == null) {
             return this.fields.size();

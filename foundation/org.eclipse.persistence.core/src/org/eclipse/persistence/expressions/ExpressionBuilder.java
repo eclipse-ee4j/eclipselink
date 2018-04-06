@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -84,6 +84,7 @@ public class ExpressionBuilder extends ObjectExpression {
      * Return if the expression is equal to the other.
      * This is used to allow dynamic expression's SQL to be cached.
      */
+    @Override
     public boolean equals(Object expression) {
         if (this == expression) {
             return true;
@@ -96,6 +97,7 @@ public class ExpressionBuilder extends ObjectExpression {
      * INTERNAL: Find the alias for a given table. Handle the special case where we are bogus
      * and it should be aliased against our derived tables instead.
      */
+    @Override
     public DatabaseTable aliasForTable(DatabaseTable table) {
         if (hasViewTable()) {
             return getAliasedViewTable();
@@ -120,6 +122,7 @@ public class ExpressionBuilder extends ObjectExpression {
      * and return the new value of  the counter , i.e. if initialValue is one
      * and I have tables ADDRESS and EMPLOYEE I will assign them t1 and t2 respectively, and return 3.
      */
+    @Override
     public int assignTableAliasesStartingAt(int initialValue) {
         if (hasBeenAliased()) {
             return initialValue;
@@ -153,6 +156,7 @@ public class ExpressionBuilder extends ObjectExpression {
      * INTERNAL:
      * Used for debug printing.
      */
+    @Override
     public String descriptionOfNodeType() {
         return "Base";
     }
@@ -183,6 +187,7 @@ public class ExpressionBuilder extends ObjectExpression {
      * Return the expression builder which is the ultimate base of this expression, or
      * null if there isn't one (shouldn't happen if we start from a root)
      */
+    @Override
     public ExpressionBuilder getBuilder() {
         return this;
     }
@@ -192,6 +197,7 @@ public class ExpressionBuilder extends ObjectExpression {
      * Only usable after the session and class have been set. Return the
      * descriptor for the class this node represents.
      */
+    @Override
     public ClassDescriptor getDescriptor() {
         if (descriptor == null) {
             if (getQueryClass() == null) {
@@ -218,6 +224,7 @@ public class ExpressionBuilder extends ObjectExpression {
     /**
      * INTERNAL:
      */
+    @Override
     public AbstractSession getSession() {
         return session;
     }
@@ -248,6 +255,7 @@ public class ExpressionBuilder extends ObjectExpression {
     /**
      * INTERNAL:
      */
+    @Override
     public boolean isExpressionBuilder() {
         return true;
     }
@@ -341,6 +349,7 @@ public class ExpressionBuilder extends ObjectExpression {
      * INTERNAL:
      * Print java
      */
+    @Override
     public void printJava(ExpressionJavaPrinter printer) {
         printer.printString(printer.getBuilderString());
     }
@@ -351,6 +360,7 @@ public class ExpressionBuilder extends ObjectExpression {
      * return the root of the new tree
      * This assumes that the original expression has only a single builder.
      */
+    @Override
     public Expression rebuildOn(Expression newBase) {
         return newBase;
     }
@@ -361,6 +371,7 @@ public class ExpressionBuilder extends ObjectExpression {
      * built using a builder that is not attached to the query.  This happens in case of an Exists
      * call using a new ExpressionBuilder().  This builder needs to be replaced with one from the query.
      */
+    @Override
     public void resetPlaceHolderBuilder(ExpressionBuilder queryBuilder){
         return;
     }
@@ -372,6 +383,7 @@ public class ExpressionBuilder extends ObjectExpression {
      * @see org.eclipse.persistence.expressions.Expression#cloneUsing(Expression)
      * @bug  2637484 INVALID QUERY KEY EXCEPTION THROWN USING BATCH READS AND PARALLEL EXPRESSIONS
      */
+    @Override
     protected Expression registerIn(Map alreadyDone) {
         // Here do a special check to see if this a cloneUsing(newBase) call.
         Object value = alreadyDone.get(alreadyDone);
@@ -476,6 +488,7 @@ public class ExpressionBuilder extends ObjectExpression {
      * INTERNAL:
      * The expression builder represent the entire object, just return it.
      */
+    @Override
     public Object valueFromObject(Object object, AbstractSession session, AbstractRecord translationRow, int valueHolderPolicy, boolean isObjectUnregistered) {
         return object;
     }
@@ -519,6 +532,7 @@ public class ExpressionBuilder extends ObjectExpression {
      * INTERNAL:
      * For debug printing purposes.
      */
+    @Override
     public void writeDescriptionOn(BufferedWriter writer) throws IOException {
         String className;
         if (getQueryClass() == null) {

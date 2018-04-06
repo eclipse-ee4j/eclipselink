@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -41,6 +41,7 @@ public class SingleResultQueryListMetadataSource implements MetadataSource {
         javaTypes.getJavaType().add(javaType);
     }
 
+    @Override
     public XmlBindings getXmlBindings(Map<String, ?> properties, ClassLoader classLoader) {
         return this.xmlBindings;
     }

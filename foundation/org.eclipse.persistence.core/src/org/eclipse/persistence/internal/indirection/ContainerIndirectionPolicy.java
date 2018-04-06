@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -57,6 +57,7 @@ public class ContainerIndirectionPolicy extends BasicIndirectionPolicy {
      * INTERNAL:
      *    Return a backup clone of the attribute.
      */
+    @Override
     public Object backupCloneAttribute(Object attributeValue, Object clone, Object backup, UnitOfWorkImpl unitOfWork) {
         IndirectContainer container = (IndirectContainer)attributeValue;
         ValueHolderInterface valueHolder = container.getValueHolder();
@@ -98,6 +99,7 @@ public class ContainerIndirectionPolicy extends BasicIndirectionPolicy {
      * TransparentIndirectionPolicy may wrap the valueholder in another object.
      */
 
+    @Override
     public Object buildIndirectObject(ValueHolderInterface valueHolder){
         return buildContainer(valueHolder);
     }
@@ -109,6 +111,7 @@ public class ContainerIndirectionPolicy extends BasicIndirectionPolicy {
      *  from a row as opposed to building the original from the row, putting it in
      *  the shared cache, and then cloning the original.
      */
+    @Override
     public Object cloneAttribute(Object attributeValue, Object original, CacheKey cacheKey, Object clone, Integer refreshCascade, AbstractSession cloningSession, boolean buildDirectlyFromRow) {
         IndirectContainer container = (IndirectContainer)attributeValue;
         ValueHolderInterface valueHolder = container.getValueHolder();
@@ -124,6 +127,7 @@ public class ContainerIndirectionPolicy extends BasicIndirectionPolicy {
      * the reference object.
      * Return null if the object has already been instantiated.
      */
+    @Override
     public AbstractRecord extractReferenceRow(Object referenceObject) {
         if (this.objectIsInstantiated(referenceObject)) {
             return null;
@@ -162,6 +166,7 @@ public class ContainerIndirectionPolicy extends BasicIndirectionPolicy {
      * INTERNAL:
      *    Return the original indirection object for a unit of work indirection object.
      */
+    @Override
     public Object getOriginalIndirectionObject(Object unitOfWorkIndirectionObject, AbstractSession session) {
         IndirectContainer container = (IndirectContainer)unitOfWorkIndirectionObject;
         if (container.getValueHolder() instanceof UnitOfWorkValueHolder) {
@@ -180,6 +185,7 @@ public class ContainerIndirectionPolicy extends BasicIndirectionPolicy {
      * INTERNAL:
      *    Return the original indirection object for a unit of work indirection object.
      */
+    @Override
     public Object getOriginalIndirectionObjectForMerge(Object unitOfWorkIndirectionObject, AbstractSession session) {
         IndirectContainer container = (IndirectContainer) getOriginalIndirectionObject(unitOfWorkIndirectionObject, session);
         DatabaseValueHolder holder = (DatabaseValueHolder)container.getValueHolder();
@@ -195,6 +201,7 @@ public class ContainerIndirectionPolicy extends BasicIndirectionPolicy {
      * Return the "real" attribute value, as opposed to any wrapper.
      * This will trigger the wrapper to instantiate the value.
      */
+    @Override
     public Object getRealAttributeValueFromObject(Object object, Object attribute) {
         return ((IndirectContainer)attribute).getValueHolder().getValue();
     }
@@ -204,6 +211,7 @@ public class ContainerIndirectionPolicy extends BasicIndirectionPolicy {
      * Ensure the container class implements IndirectContainer and that it
      * has a constructor which can be used.
      */
+    @Override
     public void initialize() {
         // Verify that the provided class implements IndirectContainer
         if (!ClassConstants.IndirectContainer_Class.isAssignableFrom(containerClass)) {
@@ -269,6 +277,7 @@ public class ContainerIndirectionPolicy extends BasicIndirectionPolicy {
      * INTERNAL:
      *    Iterate over the specified attribute value,
      */
+    @Override
     public void iterateOnAttributeValue(DescriptorIterator iterator, Object attributeValue) {
         super.iterateOnAttributeValue(iterator, ((IndirectContainer)attributeValue).getValueHolder());
     }
@@ -280,6 +289,7 @@ public class ContainerIndirectionPolicy extends BasicIndirectionPolicy {
      * placed in the object's attribute as a result.
      * In this case, return an empty ValueHolder.
      */
+    @Override
     public Object nullValueFromRow() {
         return buildContainer(new ValueHolder());
     }
@@ -287,6 +297,7 @@ public class ContainerIndirectionPolicy extends BasicIndirectionPolicy {
     /**
      * Reset the wrapper used to store the value.
      */
+    @Override
     public void reset(Object target) {
         getMapping().setAttributeValueInObject(target, buildContainer(new ValueHolder()));
     }
@@ -295,6 +306,7 @@ public class ContainerIndirectionPolicy extends BasicIndirectionPolicy {
      * INTERNAL:
      * Return whether the specified object is instantiated.
      */
+    @Override
     public boolean objectIsInstantiated(Object object) {
         return ((IndirectContainer)object).getValueHolder().isInstantiated();
     }
@@ -303,6 +315,7 @@ public class ContainerIndirectionPolicy extends BasicIndirectionPolicy {
      * INTERNAL:
      * Return whether the specified object can be instantiated without database access.
      */
+    @Override
     public boolean objectIsEasilyInstantiated(Object object) {
         ValueHolderInterface valueHolder = ((IndirectContainer)object).getValueHolder();
         if (valueHolder instanceof DatabaseValueHolder) {
@@ -331,6 +344,7 @@ public class ContainerIndirectionPolicy extends BasicIndirectionPolicy {
      *    Set the value of the appropriate attribute of target to attributeValue.
      * In this case, place the value inside the target's ValueHolder.
      */
+    @Override
     public void setRealAttributeValueInObject(Object target, Object attributeValue) {
         IndirectContainer container = (IndirectContainer)this.getMapping().getAttributeValueFromObject(target);
         container.getValueHolder().setValue(attributeValue);
@@ -343,6 +357,7 @@ public class ContainerIndirectionPolicy extends BasicIndirectionPolicy {
      * In this case, the type must either be assignable from IndirectContainer or
      * allow the conatinerClass to be assigned to it.
      */
+    @Override
     protected boolean typeIsValid(Class attributeType) {
         return ClassConstants.IndirectContainer_Class.isAssignableFrom(attributeType) || attributeType.isAssignableFrom(getContainerClass());
     }
@@ -354,6 +369,7 @@ public class ContainerIndirectionPolicy extends BasicIndirectionPolicy {
      * In this case, the attribute must be non-null and it must be a
      * ValueHolderInterface.
      */
+    @Override
     public Object validateAttributeOfInstantiatedObject(Object attributeValue) {
         if (!(getContainerClass().isInstance(attributeValue))) {
             throw DescriptorException.valueHolderInstantiationMismatch(attributeValue, this.getMapping());
@@ -367,6 +383,7 @@ public class ContainerIndirectionPolicy extends BasicIndirectionPolicy {
      *    This value is determined by the batchQuery.
      * In this case, wrap the query in a ValueHolder for later invocation.
      */
+    @Override
     public Object valueFromBatchQuery(ReadQuery batchQuery, AbstractRecord row, ObjectLevelReadQuery originalQuery, CacheKey parentCacheKey) {
         ValueHolderInterface valueHolder = (ValueHolderInterface)super.valueFromBatchQuery(batchQuery, row, originalQuery, parentCacheKey);
         return buildContainer(valueHolder);
@@ -379,6 +396,7 @@ public class ContainerIndirectionPolicy extends BasicIndirectionPolicy {
      * method on the object and passing it the row and session.
      * In this case, wrap the row in a ValueHolder for later use.
      */
+    @Override
     public Object valueFromMethod(Object object, AbstractRecord row, AbstractSession session) {
         ValueHolderInterface valueHolder = (ValueHolderInterface)super.valueFromMethod(object, row, session);
         return buildContainer(valueHolder);
@@ -390,6 +408,7 @@ public class ContainerIndirectionPolicy extends BasicIndirectionPolicy {
      *    This value is determined by the query.
      * In this case, wrap the query in a ValueHolder for later invocation.
      */
+    @Override
     public Object valueFromQuery(ReadQuery query, AbstractRecord row, AbstractSession session) {
         ValueHolderInterface valueHolder = (ValueHolderInterface)super.valueFromQuery(query, row, session);
         return buildContainer(valueHolder);
@@ -401,6 +420,7 @@ public class ContainerIndirectionPolicy extends BasicIndirectionPolicy {
      *    This value is determined by the row.
      * In this case, simply wrap the object in a ValueHolder.
      */
+    @Override
     public Object valueFromRow(Object object) {
         return buildContainer(new ValueHolder(object));
     }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -50,10 +50,12 @@ public class NonSynchronizedVector extends Vector {
         super(c);
     }
 
+    @Override
     public void copyInto(Object anArray[]) {
         System.arraycopy(elementData, 0, anArray, 0, elementCount);
     }
 
+    @Override
     public void trimToSize() {
         modCount++;
         int oldCapacity = elementData.length;
@@ -64,6 +66,7 @@ public class NonSynchronizedVector extends Vector {
         }
     }
 
+    @Override
     public void ensureCapacity(int minCapacity) {
         modCount++;
         ensureCapacityHelper(minCapacity);
@@ -83,6 +86,7 @@ public class NonSynchronizedVector extends Vector {
         }
     }
 
+    @Override
     public void setSize(int newSize) {
         modCount++;
         if (newSize > elementCount) {
@@ -95,30 +99,37 @@ public class NonSynchronizedVector extends Vector {
         elementCount = newSize;
     }
 
+    @Override
     public int capacity() {
         return elementData.length;
     }
 
+    @Override
     public Object clone() {
         return new NonSynchronizedVector(this);
     }
 
+    @Override
     public int size() {
         return elementCount;
     }
 
+    @Override
     public boolean isEmpty() {
         return elementCount == 0;
     }
 
+    @Override
     public Enumeration elements() {
         return new Enumeration() {
             int count = 0;
 
+            @Override
             public boolean hasMoreElements() {
                 return count < elementCount;
             }
 
+            @Override
             public Object nextElement() {
                 if (count < elementCount) {
                     return elementData[count++];
@@ -128,6 +139,7 @@ public class NonSynchronizedVector extends Vector {
         };
     }
 
+    @Override
     public int indexOf(Object elem, int index) {
         if (elem == null) {
             for (int i = index ; i < elementCount ; i++)
@@ -141,10 +153,12 @@ public class NonSynchronizedVector extends Vector {
         return -1;
     }
 
+    @Override
     public int lastIndexOf(Object elem) {
         return lastIndexOf(elem, elementCount-1);
     }
 
+    @Override
     public int lastIndexOf(Object elem, int index) {
         if (index >= elementCount)
             throw new IndexOutOfBoundsException(index + " >= "+ elementCount);
@@ -160,6 +174,7 @@ public class NonSynchronizedVector extends Vector {
         return -1;
     }
 
+    @Override
     public Object elementAt(int index) {
         if (index >= elementCount) {
             throw new ArrayIndexOutOfBoundsException(index + " >= " + elementCount);
@@ -167,6 +182,7 @@ public class NonSynchronizedVector extends Vector {
         return elementData[index];
     }
 
+    @Override
     public Object firstElement() {
         if (elementCount == 0) {
             throw new NoSuchElementException();
@@ -174,6 +190,7 @@ public class NonSynchronizedVector extends Vector {
         return elementData[0];
     }
 
+    @Override
     public Object lastElement() {
         if (elementCount == 0) {
             throw new NoSuchElementException();
@@ -181,6 +198,7 @@ public class NonSynchronizedVector extends Vector {
         return elementData[elementCount - 1];
     }
 
+    @Override
     public void setElementAt(Object obj, int index) {
         if (index >= elementCount) {
             throw new ArrayIndexOutOfBoundsException(index + " >= " +
@@ -189,6 +207,7 @@ public class NonSynchronizedVector extends Vector {
         elementData[index] = obj;
     }
 
+    @Override
     public void removeElementAt(int index) {
         modCount++;
         if (index >= elementCount) {
@@ -205,6 +224,7 @@ public class NonSynchronizedVector extends Vector {
         elementData[elementCount] = null; /* to let gc do its work */
     }
 
+    @Override
     public void insertElementAt(Object obj, int index) {
         modCount++;
         if (index > elementCount) {
@@ -217,12 +237,14 @@ public class NonSynchronizedVector extends Vector {
         elementCount++;
     }
 
+    @Override
     public void addElement(Object obj) {
         modCount++;
         ensureCapacityHelper(elementCount + 1);
         elementData[elementCount++] = obj;
     }
 
+    @Override
     public boolean removeElement(Object obj) {
         modCount++;
         int i = indexOf(obj);
@@ -233,6 +255,7 @@ public class NonSynchronizedVector extends Vector {
         return false;
     }
 
+    @Override
     public void removeAllElements() {
         modCount++;
         // Let gc do its work
@@ -242,12 +265,14 @@ public class NonSynchronizedVector extends Vector {
         elementCount = 0;
     }
 
+    @Override
     public Object[] toArray() {
         Object[] result = new Object[elementCount];
         System.arraycopy(elementData, 0, result, 0, elementCount);
         return result;
     }
 
+    @Override
     public Object[] toArray(Object a[]) {
         if (a.length < elementCount)
             a = (Object[])java.lang.reflect.Array.newInstance(
@@ -261,6 +286,7 @@ public class NonSynchronizedVector extends Vector {
         return a;
     }
 
+    @Override
     public Object get(int index) {
         if (index >= elementCount)
             throw new ArrayIndexOutOfBoundsException(index);
@@ -268,6 +294,7 @@ public class NonSynchronizedVector extends Vector {
         return elementData[index];
     }
 
+    @Override
     public Object set(int index, Object element) {
         if (index >= elementCount)
             throw new ArrayIndexOutOfBoundsException(index);
@@ -277,6 +304,7 @@ public class NonSynchronizedVector extends Vector {
         return oldValue;
     }
 
+    @Override
     public boolean add(Object o) {
         modCount++;
         ensureCapacityHelper(elementCount + 1);
@@ -284,6 +312,7 @@ public class NonSynchronizedVector extends Vector {
         return true;
     }
 
+    @Override
     public Object remove(int index) {
         modCount++;
         if (index >= elementCount)
@@ -299,6 +328,7 @@ public class NonSynchronizedVector extends Vector {
         return oldValue;
     }
 
+    @Override
     public boolean containsAll(Collection c) {
         Iterator e = c.iterator();
         while (e.hasNext())
@@ -308,6 +338,7 @@ public class NonSynchronizedVector extends Vector {
         return true;
     }
 
+    @Override
     public boolean addAll(Collection c) {
         modCount++;
             Object[] a = c.toArray();
@@ -318,6 +349,7 @@ public class NonSynchronizedVector extends Vector {
         return numNew != 0;
     }
 
+    @Override
     public boolean removeAll(Collection c) {
         boolean modified = false;
         Iterator e = iterator();
@@ -330,6 +362,7 @@ public class NonSynchronizedVector extends Vector {
         return modified;
     }
 
+    @Override
     public boolean retainAll(Collection c)  {
         boolean modified = false;
         Iterator e = iterator();
@@ -342,6 +375,7 @@ public class NonSynchronizedVector extends Vector {
         return modified;
     }
 
+    @Override
     public boolean addAll(int index, Collection c) {
         modCount++;
         if (index < 0 || index > elementCount)
@@ -361,6 +395,7 @@ public class NonSynchronizedVector extends Vector {
         return numNew != 0;
     }
 
+    @Override
     public boolean equals(Object o) {
         if (o == this)
             return true;
@@ -382,6 +417,7 @@ public class NonSynchronizedVector extends Vector {
         return true;
     }
 
+    @Override
     public int hashCode() {
         int hashCode = 1;
         int size = size();
@@ -392,6 +428,7 @@ public class NonSynchronizedVector extends Vector {
         return hashCode;
     }
 
+    @Override
     public String toString() {
         StringBuilder buf = new StringBuilder();
         Iterator e = iterator();
@@ -406,6 +443,7 @@ public class NonSynchronizedVector extends Vector {
         return buf.toString();
     }
 
+    @Override
     protected void removeRange(int fromIndex, int toIndex) {
         modCount++;
         int numMoved = elementCount - toIndex;
@@ -424,6 +462,7 @@ public class NonSynchronizedVector extends Vector {
         s.defaultWriteObject();
     }
 
+    @Override
     public List subList(int fromIndex, int toIndex) {
         return new NonSynchronizedSubVector(this, fromIndex, toIndex);
     }

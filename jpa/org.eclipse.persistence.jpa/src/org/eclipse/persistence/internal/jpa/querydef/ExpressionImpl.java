@@ -56,6 +56,7 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
         this.isLiteral = true;
     }
 
+    @Override
     public <T> Expression<T> as(Class<T> type) {
         Project project = ((MetamodelImpl)metamodel).getProject();
         if (project != null){
@@ -74,6 +75,7 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
         return (Expression<T>) this;
     }
 
+    @Override
     public Predicate in(Object... values) {
         List list = new ArrayList();
         list.add(this);
@@ -86,6 +88,7 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
      * @param values
      * @return predicate testing for membership
      */
+    @Override
     public Predicate in(Expression<?>... values) {
         if (values != null) {
             if (values.length == 1 && ((InternalExpression) values[0]).isParameter()
@@ -124,6 +127,7 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
      * @param values collection
      * @return predicate testing for membership
      */
+    @Override
     public Predicate in(Collection<?> values) {
         List list = new ArrayList();
         list.add(this);
@@ -135,6 +139,7 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
      * @param values expression corresponding to collection
      * @return predicate testing for membership
      */
+    @Override
     public Predicate in(Expression<Collection<?>> values) {
         List list = new ArrayList();
         list.add(values);
@@ -142,6 +147,7 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
         return new InImpl(metamodel, this, (ExpressionImpl)values, list);
     }
 
+    @Override
     public Predicate isNotNull() {
         List list = new ArrayList();
         list.add(this);
@@ -149,37 +155,46 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
     }
 
 
+    @Override
     public Predicate isNull() {
         List list = new ArrayList();
         list.add(this);
         return new CompoundExpressionImpl(this.metamodel, this.currentNode.isNull(), list, "is null");
     }
 
+    @Override
     public boolean isPredicate(){
         return false;
     }
 
+    @Override
     public boolean isSubquery(){
         return false;
     }
 
+    @Override
     public boolean isCompoundExpression(){
         return false;
     }
+    @Override
     public boolean isExpression(){
         return true;
     }
 
+    @Override
     public boolean isJunction(){
         return false;
     }
 
+    @Override
     public boolean isLiteral(){
         return this.isLiteral;
     }
+    @Override
     public boolean isParameter(){
         return false;
     }
+    @Override
     public void findRootAndParameters(CommonAbstractCriteriaImpl criteriaQuery){
         //no-op because an expression will have no root
     }

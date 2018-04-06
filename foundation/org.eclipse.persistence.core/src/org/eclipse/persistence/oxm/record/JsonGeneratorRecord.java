@@ -32,12 +32,14 @@ public class JsonGeneratorRecord extends JsonRecord<JsonRecord.Level> {
         this.rootKeyName = rootKeyName;
     }
 
+    @Override
     protected void startRootObject(){
         super.startRootObject();
         position.setKeyName(rootKeyName);
         setComplex(position, true);
     }
 
+    @Override
     protected void finishLevel(){
         if(!(position.isCollection && position.isEmptyCollection() && position.getKeyName() == null)){
             jsonGenerator.writeEnd();
@@ -45,6 +47,7 @@ public class JsonGeneratorRecord extends JsonRecord<JsonRecord.Level> {
         super.finishLevel();
     }
 
+    @Override
     protected void startRootLevelCollection(){
         if(rootKeyName != null){
             jsonGenerator.writeStartArray(rootKeyName);
@@ -58,6 +61,7 @@ public class JsonGeneratorRecord extends JsonRecord<JsonRecord.Level> {
         finishLevel();
     }
 
+    @Override
     protected void setComplex(Level level, boolean complex){
         boolean isAlreadyComplex = level.isComplex;
         super.setComplex(level, complex);
@@ -74,15 +78,18 @@ public class JsonGeneratorRecord extends JsonRecord<JsonRecord.Level> {
         }
     }
 
+    @Override
     protected void startEmptyCollection(){
        jsonGenerator.writeStartArray(position.keyName);
     }
 
+    @Override
     protected void writeEmptyCollection(Level level, String keyName){
         jsonGenerator.writeStartArray(keyName);
         jsonGenerator.writeEnd();
     }
 
+    @Override
     protected void addValueToObject(Level level, String keyName, Object value, QName schemaType){
 
         if(value == NULL){
@@ -120,6 +127,7 @@ public class JsonGeneratorRecord extends JsonRecord<JsonRecord.Level> {
         }
     }
 
+    @Override
     protected void addValueToArray(Level level, Object value, QName schemaType){
         if(value == NULL){
             jsonGenerator.writeNull();

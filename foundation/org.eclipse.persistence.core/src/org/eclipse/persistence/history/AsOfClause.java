@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -85,6 +85,7 @@ public class AsOfClause implements Serializable {
      * Equality of asOf clauses is complex (with subclasses),
      * so only use identity.
      */
+    @Override
     public boolean equals(Object object) {
         return this == object;
     }
@@ -143,6 +144,7 @@ public class AsOfClause implements Serializable {
         return false;
     }
 
+    @Override
     public String toString() {
         StringWriter writer = new StringWriter();
         writer.write(Helper.getShortClassName(getClass()));

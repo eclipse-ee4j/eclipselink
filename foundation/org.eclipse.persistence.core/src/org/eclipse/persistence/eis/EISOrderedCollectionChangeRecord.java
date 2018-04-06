@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -118,6 +118,7 @@ public class EISOrderedCollectionChangeRecord extends CollectionChangeRecord imp
      * Return the indexes into the new collection of
      * the elements that were added.
      */
+    @Override
     public int[] getAddIndexes() {
         if (addIndexes == null) {
             addIndexes = new int[0];
@@ -131,6 +132,7 @@ public class EISOrderedCollectionChangeRecord extends CollectionChangeRecord imp
      * The contents of this collection is determined by the mapping that
      * populated it
      */
+    @Override
     public List getAdds() {
         if (adds == null) {
             adds = new ArrayList(2);// keep it as small as possible
@@ -185,6 +187,7 @@ public class EISOrderedCollectionChangeRecord extends CollectionChangeRecord imp
      * of the object in the new collection. These two indexes
      * can be equal.
      */
+    @Override
     public int[][] getMoveIndexPairs() {
         if (moveIndexPairs == null) {
             moveIndexPairs = new int[0][0];
@@ -199,6 +202,7 @@ public class EISOrderedCollectionChangeRecord extends CollectionChangeRecord imp
      * The contents of this collection is determined by the mapping that
      * populated it
      */
+    @Override
     public List getMoves() {
         if (moves == null) {
             moves = new ArrayList(2);// keep it as small as possible
@@ -234,6 +238,7 @@ public class EISOrderedCollectionChangeRecord extends CollectionChangeRecord imp
      * The contents of this collection is determined by the mapping that
      * populated it
      */
+    @Override
     public List getNewCollection() {
         int newSize = getNewCollectionSize();
         List newCollection = new ArrayList(newSize);
@@ -286,6 +291,7 @@ public class EISOrderedCollectionChangeRecord extends CollectionChangeRecord imp
      * Return the indexes into the old collection of
      * the elements that were removed.
      */
+    @Override
     public int[] getRemoveIndexes() {
         if (removeIndexes == null) {
             removeIndexes = new int[0];
@@ -299,6 +305,7 @@ public class EISOrderedCollectionChangeRecord extends CollectionChangeRecord imp
      * The contents of this collection is determined by the mapping that
      * populated it
      */
+    @Override
     public List getRemoves() {
         if (removes == null) {
             removes = new ArrayList(2);// keep it as small as possible
@@ -328,6 +335,7 @@ public class EISOrderedCollectionChangeRecord extends CollectionChangeRecord imp
     /**
      * Return whether any changes have been recorded with the change record.
      */
+    @Override
     public boolean hasChanges() {
         if (this.hasAdds() || this.hasRemoves() || this.getOwner().isNew()) {
             return true;

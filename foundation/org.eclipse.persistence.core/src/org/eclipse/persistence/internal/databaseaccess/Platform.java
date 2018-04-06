@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -48,6 +48,7 @@ public interface Platform extends CorePlatform<ConversionManager>, Serializable,
      * @exception - ConversionException, all exceptions will be thrown as this type.
      * @return - the newly converted object
      */
+    @Override
     public Object convertObject(Object sourceObject, Class javaClass) throws ConversionException;
 
     /**

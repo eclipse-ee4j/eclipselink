@@ -203,6 +203,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
      * INTERNAL:
      * The mapping clones itself to create deep copy.
      */
+    @Override
     public Object clone() {
         RelationTableMechanism clone;
         try {

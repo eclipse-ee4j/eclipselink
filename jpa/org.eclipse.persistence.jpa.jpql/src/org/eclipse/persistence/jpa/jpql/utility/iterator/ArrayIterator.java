@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -78,6 +78,7 @@ public class ArrayIterator<E> implements Iterator<E> {
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean hasNext() {
         return nextIndex < maxIndex;
     }
@@ -85,6 +86,7 @@ public class ArrayIterator<E> implements Iterator<E> {
     /**
      * {@inheritDoc}
      */
+    @Override
     public E next() {
 
         if (hasNext()) {
@@ -97,6 +99,7 @@ public class ArrayIterator<E> implements Iterator<E> {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void remove() {
         throw new UnsupportedOperationException("An ArrayIterator is read-only.");
     }

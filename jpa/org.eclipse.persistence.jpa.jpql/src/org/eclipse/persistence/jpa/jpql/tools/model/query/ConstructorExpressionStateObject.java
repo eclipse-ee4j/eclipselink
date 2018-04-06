@@ -155,6 +155,7 @@ public class ConstructorExpressionStateObject extends AbstractListHolderStateObj
     /**
      * {@inheritDoc}
      */
+    @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }

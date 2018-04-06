@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -62,6 +62,7 @@ public class JarFileArchive extends ArchiveBase implements Archive {
     }
 
 
+    @Override
     public Iterator<String> getEntries() {
         Enumeration<JarEntry> jarEntries = jarFile.entries();
         ArrayList<String> result = new ArrayList<String>();
@@ -74,6 +75,7 @@ public class JarFileArchive extends ArchiveBase implements Archive {
         return result.iterator();
     }
 
+    @Override
     public InputStream getEntry(String entryPath) throws IOException {
         InputStream is = null;
         final ZipEntry entry = jarFile.getEntry(entryPath);
@@ -83,11 +85,13 @@ public class JarFileArchive extends ArchiveBase implements Archive {
         return is;
     }
 
+    @Override
     public URL getEntryAsURL(String entryPath) throws IOException {
         return jarFile.getEntry(entryPath)!= null ?
                 new URL("jar:"+new File(jarFile.getName()).toURI().toURL()+"!/"+entryPath) : null; // NOI18N
     }
 
+    @Override
     public void close() {
         try {
             jarFile.close();

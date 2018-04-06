@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -178,6 +178,7 @@ public abstract class UnitOfWorkValueHolder extends DatabaseValueHolder implemen
      * Answers if this valueholder is easy to instantiate.
      * @return true if getValue() won't trigger a database read.
      */
+    @Override
     public boolean isEasilyInstantiated() {
         return this.isInstantiated || ((this.wrappedValueHolder != null)
                 && (!(this.wrappedValueHolder instanceof DatabaseValueHolder) || ((DatabaseValueHolder)this.wrappedValueHolder).isEasilyInstantiated()));
@@ -191,6 +192,7 @@ public abstract class UnitOfWorkValueHolder extends DatabaseValueHolder implemen
      * instantiated it may have to be instantiated again, and once instantatiated
      * all fields can not be reset.
      */
+    @Override
     public boolean isPessimisticLockingValueHolder() {
         // This abstract method needs to be implemented but is not meaningfull for
         // this subclass.
@@ -213,6 +215,7 @@ public abstract class UnitOfWorkValueHolder extends DatabaseValueHolder implemen
      * Used to determine if this is a remote uow value holder that was serialized to the server.
      * It has no reference to its wrapper value holder, so must find its original object to be able to instantiate.
      */
+    @Override
     public boolean isSerializedRemoteUnitOfWorkValueHolder() {
         return (this.remoteUnitOfWork != null) && (this.remoteUnitOfWork.getParent() != null) && (this.wrappedValueHolder == null);
     }
@@ -221,6 +224,7 @@ public abstract class UnitOfWorkValueHolder extends DatabaseValueHolder implemen
      * Get the value from the wrapped value holder, instantiating it
      * if necessary, and clone it.
      */
+    @Override
     protected Object instantiate() {
         Object originalAttributeValue;
         Object cloneAttributeValue;
@@ -252,6 +256,7 @@ public abstract class UnitOfWorkValueHolder extends DatabaseValueHolder implemen
      * i.e. it may be a batchValueHolder, and it stores all the info like the row
      * and the query.
      */
+    @Override
     public Object instantiateForUnitOfWorkValueHolder(UnitOfWorkValueHolder unitOfWorkValueHolder) {
         // This abstract method needs to be implemented but is not meaningful for
         // this subclass.
@@ -276,6 +281,7 @@ public abstract class UnitOfWorkValueHolder extends DatabaseValueHolder implemen
     /**
      * Reset all the fields that are not needed after instantiation.
      */
+    @Override
     protected void resetFields() {
         //do nothing.  nothing should be reset to null;
     }
@@ -313,6 +319,7 @@ public abstract class UnitOfWorkValueHolder extends DatabaseValueHolder implemen
      * Return if add/remove should trigger instantiation or avoid.
      * Current instantiation is avoided is using change tracking.
      */
+    @Override
     public boolean shouldAllowInstantiationDeferral() {
         return ((WeavedAttributeValueHolderInterface)this.wrappedValueHolder).shouldAllowInstantiationDeferral();
     }

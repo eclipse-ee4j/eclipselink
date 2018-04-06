@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -97,6 +97,7 @@ public class DeleteAllQuery extends ModifyAllQuery {
      * PUBLIC:
      * Return if this is a delete all query.
      */
+    @Override
     public boolean isDeleteAllQuery() {
         return true;
     }
@@ -108,6 +109,7 @@ public class DeleteAllQuery extends ModifyAllQuery {
      * should be started early and execute on parent if remote (dataModify case).
      * A modify query is NEVER executed on the parent, unless remote session.
      */
+    @Override
     public Object executeInUnitOfWork(UnitOfWorkImpl unitOfWork, AbstractRecord translationRow) throws DatabaseException {
         if (this.objects != null) {
             if (unitOfWork.isAfterWriteChangesButBeforeCommit()) {
@@ -132,6 +134,7 @@ public class DeleteAllQuery extends ModifyAllQuery {
      * @exception  DatabaseException - an error has occurred on the database.
      * @return Integer the number of objects (rows) deleted.
      */
+    @Override
     public Object executeDatabaseQuery() throws DatabaseException {
         // CR# 4286
         if (this.objects != null) {
@@ -227,6 +230,7 @@ public class DeleteAllQuery extends ModifyAllQuery {
      * Returns the specific default redirector for this query type.  There are numerous default query redirectors.
      * See ClassDescriptor for their types.
      */
+    @Override
     protected QueryRedirector getDefaultRedirector(){
         // 364001 - Do not return redirector if objects list is null.
         if (objects == null) {
@@ -249,6 +253,7 @@ public class DeleteAllQuery extends ModifyAllQuery {
      * INTERNAL:
      * Prepare the receiver for execution in a session.
      */
+    @Override
     protected void prepare() throws QueryException {
         super.prepare();
 

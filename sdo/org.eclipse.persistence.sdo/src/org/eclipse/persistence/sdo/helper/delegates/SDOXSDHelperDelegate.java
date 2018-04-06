@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -75,6 +75,7 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
      * @param type to return local name for.
      * @return the local name as declared in the XSD.
      */
+    @Override
     public String getLocalName(Type type) {
         if (type == null) {
             return null;
@@ -87,6 +88,7 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
      * @param property to return local name for.
      * @return the local name as declared in the XSD.
      */
+    @Override
     public String getLocalName(Property property) {
         if (property == null) {
             return null;
@@ -99,6 +101,7 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
      * @param type to return namespace URI for.
      * @return the namespace URI as declared in the XSD.
      */
+    @Override
     public String getNamespaceURI(Type type) {
         if (type == null) {
             return null;
@@ -111,6 +114,7 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
      * @param property to return namespace URI for.
      * @return the namespace URI as declared in the XSD.
      */
+    @Override
     public String getNamespaceURI(Property property) {
         if (property == null) {
             return null;
@@ -138,6 +142,7 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
      * @param property to identify if an attribute.
      * @return true if the property is declared as an attribute in the XSD.
      */
+    @Override
     public boolean isAttribute(Property property) {
         if (property == null) {
             return false;
@@ -169,6 +174,7 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
      * @param property to identify if an element.
      * @return true if the property is declared as an element in the XSD.
      */
+    @Override
     public boolean isElement(Property property) {
         if (property == null) {
             return false;
@@ -194,6 +200,7 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
      * @param type to identify if mixed content.
      * @return true if the Type is declared to contain mixed content.
      */
+    @Override
     public boolean isMixed(Type type) {
         if (type == null) {
             return false;
@@ -206,6 +213,7 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
      * @param type the type.
      * @return true if this helper contains XSD information for the specified type.
      */
+    @Override
     public boolean isXSD(Type type) {
         if (type == null) {
             return false;
@@ -222,11 +230,13 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
      * @return the Property defined by the named global element or attribute
      *    in the targetNamespace uri, or null if not found.
      */
+    @Override
     public Property getGlobalProperty(String uri, String propertyName, boolean isElement) {
         QName qname = new QName(uri, propertyName);
         return getGlobalProperty(qname, isElement);
     }
 
+    @Override
     public Property getGlobalProperty(QName qname, boolean isElement) {
         if (isElement) {
             return (Property)getGlobalElements().get(qname);
@@ -245,6 +255,7 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
      * @param source the source of the appinfo declaration.
      * @return the appinfo declared for this Type and source.
      */
+    @Override
     public String getAppinfo(Type type, String source) {
         if (type == null) {
             throw SDOException.noAppInfoForNull();
@@ -267,6 +278,7 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
      * @param source the source of the appinfo declaration.
      * @return the appinfo declared for this Property and source.
      */
+    @Override
     public String getAppinfo(Property property, String source) {
         if (property == null) {
             throw SDOException.noAppInfoForNull();
@@ -285,6 +297,7 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
      * @return the defined Types.
      * @throws IllegalArgumentException if the Types could not be defined.
      */
+    @Override
     public synchronized List define(String xsd) {
         StringReader reader = new StringReader(xsd);
         SchemaResolver schemaResolver = new DefaultSchemaResolver();
@@ -300,6 +313,7 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
      * @return the defined Types.
      * @throws IllegalArgumentException if the Types could not be defined.
      */
+    @Override
     public synchronized List define(Reader xsdReader, String schemaLocation) {
         DefaultSchemaResolver schemaResolver = new DefaultSchemaResolver();
         schemaResolver.setBaseSchemaLocation(schemaLocation);
@@ -320,6 +334,7 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
         return define(new StreamSource(xsdReader), schemaResolver);
     }
 
+    @Override
     public synchronized List define(Source xsdSource, SchemaResolver schemaResolver) {
         return new SDOTypesGenerator(aHelperContext).define(xsdSource, schemaResolver);
     }
@@ -333,6 +348,7 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
      * @return the defined Types.
      * @throws IllegalArgumentException if the Types could not be defined.
      */
+    @Override
     public synchronized List define(InputStream xsdInputStream, String schemaLocation) {
         InputStreamReader xsdReader = new InputStreamReader(xsdInputStream);
         return define(xsdReader, schemaLocation);
@@ -345,6 +361,7 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
      * @return a String containing the generated XSD.
      * @throws IllegalArgumentException if the XSD could not be generated.
      */
+    @Override
     public String generate(List types) {
         HashMap map = null;
         return generate(types, map);
@@ -370,10 +387,12 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
      * @return a String containing the generated XSD.
      * @throws IllegalArgumentException if the XSD could not be generated.
      */
+    @Override
     public String generate(List types, Map namespaceToSchemaLocation) {
         return new SDOSchemaGenerator(aHelperContext).generate(types, namespaceToSchemaLocation);
     }
 
+    @Override
     public String generate(List types, SchemaLocationResolver schemaLocationResolver) {
         return new SDOSchemaGenerator(aHelperContext).generate(types, schemaLocationResolver);
     }
@@ -432,6 +451,7 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
     /**
       * INTERNAL:
       */
+    @Override
     public Map buildAppInfoMap(List appInfoElements) {
         HashMap appInfoMap = new HashMap();
 
@@ -455,16 +475,19 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
         return appInfoMap;
     }
 
+    @Override
     public void reset() {
         globalAttributes = new HashMap();
         initOpenProps();
         globalElements = new HashMap();
     }
 
+    @Override
     public HelperContext getHelperContext() {
         return aHelperContext;
     }
 
+    @Override
     public void setHelperContext(HelperContext helperContext) {
         aHelperContext = helperContext;
     }
@@ -484,6 +507,7 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
       * @param isElement
       * Register the given property with the given qname.
       */
+    @Override
     public void addGlobalProperty(QName qname, Property prop, boolean isElement) {
         ((SDOProperty)prop).setUri(qname.getNamespaceURI());
         if (isElement) {

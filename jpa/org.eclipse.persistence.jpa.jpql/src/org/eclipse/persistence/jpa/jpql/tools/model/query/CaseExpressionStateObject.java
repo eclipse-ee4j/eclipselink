@@ -121,6 +121,7 @@ public class CaseExpressionStateObject extends AbstractListHolderStateObject<Whe
     /**
      * {@inheritDoc}
      */
+    @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }

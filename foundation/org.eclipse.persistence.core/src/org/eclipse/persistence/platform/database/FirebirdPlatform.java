@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -103,6 +103,7 @@ public class FirebirdPlatform extends DatabasePlatform {
      * INTERNAL:
      * Returns sql used to create sequence object in the database.
      */
+    @Override
     public Writer buildSequenceObjectCreationWriter(Writer writer, String fullSeqName, int increment, int start) throws IOException {
         writer.write("CREATE GENERATOR ");
         writer.write(fullSeqName);
@@ -113,6 +114,7 @@ public class FirebirdPlatform extends DatabasePlatform {
      * INTERNAL:
      * Returns sql used to delete sequence object from the database.
      */
+    @Override
     public Writer buildSequenceObjectDeletionWriter(Writer writer, String fullSeqName) throws IOException {
         writer.write("DROP GENERATOR ");
         writer.write(fullSeqName);
@@ -364,6 +366,7 @@ public class FirebirdPlatform extends DatabasePlatform {
     /**
      * WITH LOCK is required on FB to hold the lock.
      */
+    @Override
     public String getSelectForUpdateString() {
         return " WITH LOCK";
     }

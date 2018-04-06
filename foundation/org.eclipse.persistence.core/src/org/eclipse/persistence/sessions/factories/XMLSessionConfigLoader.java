@@ -379,14 +379,17 @@ public class XMLSessionConfigLoader {
      * @author Guy Pelletier
      */
     public class XMLSessionConfigLoaderErrorHandler implements ErrorHandler {
+        @Override
         public void warning(SAXParseException e) throws SAXException {
             getExceptionStore().add(SessionLoaderException.failedToParseXML(ExceptionLocalization.buildMessage("parsing_warning"), e.getLineNumber(), e.getColumnNumber(), e));
         }
 
+        @Override
         public void error(SAXParseException e) throws SAXException {
             getExceptionStore().add(e);
         }
 
+        @Override
         public void fatalError(SAXParseException e) throws SAXException {
             getExceptionStore().add(e);
         }

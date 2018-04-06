@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -46,6 +46,7 @@ public abstract class BaseExpression extends Expression {
      * Return the expression builder which is the ultimate base of this expression, or
      * null if there isn't one (shouldn't happen if we start from a root).
      */
+    @Override
     public ExpressionBuilder getBuilder() {
         if ((this.builder == null) && (baseExpression != null)) {
             this.builder = baseExpression.getBuilder();
@@ -57,6 +58,7 @@ public abstract class BaseExpression extends Expression {
      * INTERNAL:
      * Used for cloning.
      */
+    @Override
     protected void postCopyIn(Map alreadyDone) {
         super.postCopyIn(alreadyDone);
         if (this.baseExpression != null) {
@@ -70,6 +72,7 @@ public abstract class BaseExpression extends Expression {
      * built using a builder that is not attached to the query.  This happens in case of an Exists
      * call using a new ExpressionBuilder().  This builder needs to be replaced with one from the query.
      */
+    @Override
     public void resetPlaceHolderBuilder(ExpressionBuilder queryBuilder){
         if (this.baseExpression != null){
             this.baseExpression.resetPlaceHolderBuilder(queryBuilder);
@@ -90,6 +93,7 @@ public abstract class BaseExpression extends Expression {
      * INTERNAL:
      * Clear the builder when cloning.
      */
+    @Override
     public Expression shallowClone() {
         BaseExpression clone = (BaseExpression)super.shallowClone();
         clone.builder = null;

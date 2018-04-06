@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -66,6 +66,7 @@ public class DefaultConnector implements Connector {
      * INTERNAL:
      * Clone the connector.
      */
+    @Override
     public Object clone() {
         try {
             return super.clone();
@@ -79,6 +80,7 @@ public class DefaultConnector implements Connector {
      * Connect with the specified properties and session. Return the Connection.
      * @return java.sql.Connection
      */
+    @Override
     public Connection connect(Properties properties, Session session) throws DatabaseException {
         // if driver class name is given, ensure the driver has been loaded and registered
         if (this.driverClassName != null && this.driverClass == null) {
@@ -188,6 +190,7 @@ public class DefaultConnector implements Connector {
      * Provide the details of my connection information. This is primarily for JMX runtime services.
      * @return java.lang.String
      */
+    @Override
     public String getConnectionDetails() {
         return this.getConnectionString();
     }
@@ -303,6 +306,7 @@ public class DefaultConnector implements Connector {
      * PUBLIC:
      * Print connection string.
      */
+    @Override
     public String toString() {
         return Helper.getShortClassName(getClass()) + "(" + getConnectionString() + ")";
     }
@@ -311,6 +315,7 @@ public class DefaultConnector implements Connector {
      * INTERNAL:
      * Print something useful on the log.
      */
+    @Override
     public void toString(PrintWriter writer) {
         writer.println(ToStringLocalization.buildMessage("datasource_URL", (Object[])null) + "=> \"" + this.getConnectionString() + "\"");
     }

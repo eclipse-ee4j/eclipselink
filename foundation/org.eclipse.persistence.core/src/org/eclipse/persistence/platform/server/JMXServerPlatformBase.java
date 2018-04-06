@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010, 2017 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 2010, 2018 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -206,6 +206,7 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
                     try {
                         mBeanServerList = (List<MBeanServer>) AccessController.doPrivileged(
                             new PrivilegedExceptionAction() {
+                                @Override
                                 public List<MBeanServer> run() {
                                     return MBeanServerFactory.findMBeanServer(null);
                                 }
@@ -294,6 +295,7 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
      * @see #disableRuntimeServices()
      * @see #registerMBean()
      */
+    @Override
     public void serverSpecificRegisterMBean() {
         // get and cache module and application name during registration
         MBeanServer mBeanServerRuntime = getMBeanServer();
@@ -377,6 +379,7 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
      * @see #isRuntimeServicesEnabled()
      * @see #disableRuntimeServices()
      */
+    @Override
     public void serverSpecificUnregisterMBean() {
         MBeanServer mBeanServerRuntime = getMBeanServer();
         ObjectName name = null;

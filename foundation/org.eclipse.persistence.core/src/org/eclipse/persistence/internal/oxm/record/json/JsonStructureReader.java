@@ -459,6 +459,7 @@ public class JsonStructureReader extends XMLReaderAdapter {
 
     }
 
+    @Override
     public boolean isNullRepresentedByXsiNil(AbstractNullPolicy nullPolicy) {
         return true;
     }
@@ -471,6 +472,7 @@ public class JsonStructureReader extends XMLReaderAdapter {
         isInCollection = false;
     }
 
+    @Override
     public boolean isInCollection() {
         return isInCollection;
     }
@@ -576,6 +578,7 @@ public class JsonStructureReader extends XMLReaderAdapter {
             }
         }
 
+        @Override
         public int getIndex(String uri, String localName) {
             if (null == localName) {
                 return -1;

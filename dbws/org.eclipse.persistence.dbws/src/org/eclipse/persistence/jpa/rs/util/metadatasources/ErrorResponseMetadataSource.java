@@ -25,6 +25,7 @@ public class ErrorResponseMetadataSource implements MetadataSource {
         javaTypes.getJavaType().add(javaType);
     }
 
+    @Override
     public XmlBindings getXmlBindings(Map<String, ?> properties, ClassLoader classLoader) {
         return this.xmlBindings;
     }

@@ -184,6 +184,7 @@ public class InExpressionStateObject extends AbstractListHolderStateObject<State
     /**
      * {@inheritDoc}
      */
+    @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }

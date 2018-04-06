@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -139,6 +139,7 @@ public class StoredProcedureDefinition extends DatabaseObjectDefinition {
     /**
      * INTERNAL: Return the create table statement.
      */
+    @Override
     public Writer buildCreationWriter(AbstractSession session, Writer writer) throws ValidationException {
         try {
             DatabasePlatform platform = session.getPlatform();
@@ -211,6 +212,7 @@ public class StoredProcedureDefinition extends DatabaseObjectDefinition {
     /**
      * INTERNAL: Return the drop table statement.
      */
+    @Override
     public Writer buildDeletionWriter(AbstractSession session, Writer writer) throws ValidationException {
         try {
             writer.write(getDeletionHeader() + getFullName());

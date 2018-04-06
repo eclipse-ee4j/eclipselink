@@ -139,6 +139,7 @@ public class XMLUnmarshaller extends org.eclipse.persistence.internal.oxm.XMLUnm
      * @since 2.4
      * @param mediaType
      */
+    @Override
     public void setMediaType(MediaType mediaType) {
         super.setMediaType(mediaType);
     }
@@ -186,6 +187,7 @@ public class XMLUnmarshaller extends org.eclipse.persistence.internal.oxm.XMLUnm
         super.setIDResolver(idResolver);
     }
 
+    @Override
     protected void initialize(Map<String, Boolean> parserFeatures) {
         super.initialize(parserFeatures);
 

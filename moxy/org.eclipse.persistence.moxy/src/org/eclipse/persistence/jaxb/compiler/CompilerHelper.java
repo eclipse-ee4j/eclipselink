@@ -408,14 +408,17 @@ public class CompilerHelper {
                                         Type parameterizedType = new ParameterizedType() {
                                             Type[] typeArgs = { itemType };
 
+                                            @Override
                                             public Type[] getActualTypeArguments() {
                                                 return typeArgs;
                                             }
 
+                                            @Override
                                             public Type getOwnerType() {
                                                 return null;
                                             }
 
+                                            @Override
                                             public Type getRawType() {
                                                 return tmiType;
                                             }
@@ -455,14 +458,17 @@ public class CompilerHelper {
                         Type parameterizedType = new ParameterizedType() {
                             Type[] typeArgs = { itemType };
 
+                            @Override
                             public Type[] getActualTypeArguments() {
                                 return typeArgs;
                             }
 
+                            @Override
                             public Type getOwnerType() {
                                 return null;
                             }
 
+                            @Override
                             public Type getRawType() {
                                 return tmiType;
                             }

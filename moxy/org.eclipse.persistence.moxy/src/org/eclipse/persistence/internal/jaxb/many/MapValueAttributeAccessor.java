@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -44,6 +44,7 @@ public class MapValueAttributeAccessor extends AttributeAccessor {
         this.classLoader = classLoader;
     }
 
+    @Override
     public Object getAttributeValueFromObject(Object object)throws DescriptorException {
         Object value = nestedAccessor.getAttributeValueFromObject(object);
         if(null == value) {
@@ -69,6 +70,7 @@ public class MapValueAttributeAccessor extends AttributeAccessor {
         return results;
     }
 
+    @Override
     public void setAttributeValueInObject(Object object, Object value) throws DescriptorException {
 
         Map mapValue = null;;
@@ -91,6 +93,7 @@ public class MapValueAttributeAccessor extends AttributeAccessor {
         nestedAccessor.setAttributeValueInObject(object, mapValue);
     }
 
+    @Override
     public void initializeAttributes(Class theJavaClass) throws DescriptorException {
         nestedAccessor.initializeAttributes(theJavaClass);
 

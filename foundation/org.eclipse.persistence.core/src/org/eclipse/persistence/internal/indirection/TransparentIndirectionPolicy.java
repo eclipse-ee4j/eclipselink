@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -70,6 +70,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      * INTERNAL:
      *    Return a backup clone of the attribute.
      */
+    @Override
     public Object backupCloneAttribute(Object attributeValue, Object clone, Object backup, UnitOfWorkImpl unitOfWork) {
         // delay instantiation until absolutely necessary
         if ((!(attributeValue instanceof IndirectContainer)) || objectIsInstantiated(attributeValue)) {
@@ -134,6 +135,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      * TransparentIndirectionPolicy may wrap the valueholder in another object.
      */
 
+    @Override
     public Object buildIndirectObject(ValueHolderInterface valueHolder){
         return buildIndirectContainer(valueHolder);
     }
@@ -143,6 +145,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      * from a row as opposed to building the original from the row, putting it in
      * the shared cache, and then cloning the original.
      */
+    @Override
     public Object cloneAttribute(Object attributeValue, Object original, CacheKey cacheKey, Object clone, Integer refreshCascade, AbstractSession cloningSession, boolean buildDirectlyFromRow) {
         ValueHolderInterface valueHolder = null;
         Object container = null;
@@ -251,6 +254,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      * the reference object.
      * Return null if the object has already been instantiated.
      */
+    @Override
     public AbstractRecord extractReferenceRow(Object referenceObject) {
         if (this.objectIsInstantiated(referenceObject)) {
             return null;
@@ -265,6 +269,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      * Replace the transient attributes of the remote value holders
      * with client-side objects.
      */
+    @Override
     public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
         Object container = getMapping().getAttributeValueFromObject(object);
         if (container instanceof IndirectContainer && ((((IndirectContainer) container).getValueHolder() instanceof RemoteValueHolder)) ) {
@@ -377,6 +382,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      * Return the "real" attribute value, as opposed to any wrapper.
      * This will trigger the wrapper to instantiate the value.
      */
+    @Override
     public Object getRealAttributeValueFromObject(Object object, Object attribute) {
         // PERF: do not instantiate - this.getContainerPolicy().sizeFor(object);// forgive me for this hack: but we have to do something to trigger the database read
         return attribute;
@@ -386,6 +392,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      * INTERNAL:
      * Trigger the instantiation of the value.
      */
+    @Override
     public void instantiateObject(Object object, Object attribute) {
         getContainerPolicy().sizeFor(attribute);
     }
@@ -413,6 +420,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      * Extract and return the appropriate value from the
      * specified remote value holder.
      */
+    @Override
     public Object getValueFromRemoteValueHolder(RemoteValueHolder remoteValueHolder) {
         Object result = remoteValueHolder.getServerIndirectionObject();
         this.getContainerPolicy().sizeFor(result);// forgive me for this hack: but we have to do something to trigger the database read
@@ -425,6 +433,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      * If the Target has yet to be instantiated then we need to instantiate the target to ensure that
      * the backup clone is instantiated for comparison.
      */
+    @Override
     public void setRealAttributeValueInObject(Object target, Object attributeValue) {
 
         /*
@@ -448,6 +457,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      * INTERNAL:
      * set the source object into QueryBasedValueHolder.
      */
+    @Override
     public void setSourceObject(Object sourceObject, Object attributeValue) {
         if( attributeValue instanceof IndirectContainer) {
             ValueHolderInterface valueHolder = ((IndirectContainer)attributeValue).getValueHolder();
@@ -489,6 +499,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      * INTERNAL:
      * Iterate over the specified attribute value.
      */
+    @Override
     public void iterateOnAttributeValue(DescriptorIterator iterator, Object attributeValue) {
         if (attributeValue instanceof IndirectContainer) {
             iterator.iterateIndirectContainerForMapping((IndirectContainer)attributeValue, this.getMapping());
@@ -502,6 +513,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      * Replace the client value holder with the server value holder,
      * after copying some of the settings from the client value holder.
      */
+    @Override
     public void mergeRemoteValueHolder(Object clientSideDomainObject, Object serverSideDomainObject, MergeManager mergeManager) {
         // This will always be a transparent with a remote.
         IndirectContainer serverContainer = (IndirectContainer)getMapping().getAttributeValueFromObject(serverSideDomainObject);
@@ -518,6 +530,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      * placed in the object's attribute as a result.
      * OneToOneMappings should not be using transparent direction.
      */
+    @Override
     public Object nullValueFromRow() {
         throw DescriptorException.invalidUseOfTransparentIndirection(this.getMapping());
     }
@@ -526,6 +539,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      * INTERNAL:
      * Return whether the specified object is instantiated.
      */
+    @Override
     public boolean objectIsInstantiated(Object object) {
         if (object instanceof IndirectContainer) {
             return ((IndirectContainer)object).isInstantiated();
@@ -538,6 +552,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      * INTERNAL:
      * Return whether the specified object can be instantiated without database access.
      */
+    @Override
     public boolean objectIsEasilyInstantiated(Object object) {
         if (object instanceof IndirectContainer) {
             ValueHolderInterface valueHolder = ((IndirectContainer)object).getValueHolder();
@@ -552,6 +567,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      * INTERNAL:
      * Return whether the specified object is instantiated, or if it has changes.
      */
+    @Override
     public boolean objectIsInstantiatedOrChanged(Object object) {
         return objectIsInstantiated(object) || ((object instanceof IndirectCollection) && ((IndirectCollection)object).hasDeferredChanges());
     }
@@ -588,6 +604,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      * INTERNAL:
      * Return whether the indirection policy uses transparent indirection.
      */
+    @Override
     public boolean usesTransparentIndirection(){
         return true;
     }
@@ -600,6 +617,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      * subclass or implementor of the container type.
      * If the value is null return a new indirection object to be used for the attribute.
      */
+    @Override
     public Object validateAttributeOfInstantiatedObject(Object attributeValue) {
         // PERF: If the value is null, create a new value holder instance for the attribute value,
         // this allows for indirection attributes to not be instantiated in the constructor as they
@@ -616,6 +634,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      * indirection policy. If it is incorrect, add an exception to the
      * integrity checker.
      */
+    @Override
     public void validateContainerPolicy(IntegrityChecker checker) throws DescriptorException {
         super.validateContainerPolicy(checker);
         if (!this.containerPolicyIsValid()) {
@@ -636,6 +655,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      * In this case, the attribute type MUST be
      * compatible with the one specified by the ContainerPolicy.
      */
+    @Override
     public void validateDeclaredAttributeType(Class attributeType, IntegrityChecker checker) throws DescriptorException {
         super.validateDeclaredAttributeType(attributeType, checker);
         if (!this.typeIsValid(attributeType)) {
@@ -651,6 +671,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      * In this case, the attribute type MUST be
      * compatible with the one specified by the ContainerPolicy.
      */
+    @Override
     public void validateGetMethodReturnType(Class returnType, IntegrityChecker checker) throws DescriptorException {
         super.validateGetMethodReturnType(returnType, checker);
         if (!this.typeIsValid(returnType)) {
@@ -666,6 +687,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      * In this case, the attribute type MUST be
      * compatible with the one specified by the ContainerPolicy.
      */
+    @Override
     public void validateSetMethodParameterType(Class parameterType, IntegrityChecker checker) throws DescriptorException {
         super.validateSetMethodParameterType(parameterType, checker);
         if (!this.typeIsValid(parameterType)) {
@@ -687,6 +709,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      *    This value is determined by the batchQuery.
      * In this case, wrap the query in an IndirectContainer for later invocation.
      */
+    @Override
     public Object valueFromBatchQuery(ReadQuery batchQuery, AbstractRecord row, ObjectLevelReadQuery originalQuery, CacheKey parentCacheKey) {
         return this.buildIndirectContainer(new BatchValueHolder(batchQuery, row, getForeignReferenceMapping(), originalQuery, parentCacheKey));
     }
@@ -698,6 +721,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      * method on the object and passing it the row and session.
      * TransformationMappings should not be using transparent direction.
      */
+    @Override
     public Object valueFromMethod(Object object, AbstractRecord row, AbstractSession session) {
         throw DescriptorException.invalidUseOfTransparentIndirection(this.getMapping());
     }
@@ -708,6 +732,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      * This value is determined by the query.
      * In this case, wrap the query in an IndirectContainer for later invocation.
      */
+    @Override
     public Object valueFromQuery(ReadQuery query, AbstractRecord row, AbstractSession session) {
         return this.buildIndirectContainer(new QueryBasedValueHolder(query, row, session));
     }
@@ -718,6 +743,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      * Sometimes the attribute is known (joining) but we still need to hang on
      * to the query (pessimistic locking).
      */
+    @Override
     public Object valueFromQuery(ReadQuery query, AbstractRecord row, Object object, AbstractSession session) {
         return this.buildIndirectContainer(new QueryBasedValueHolder(query, object, row, session));
     }
@@ -727,6 +753,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      * Return the value to be stored in the object's attribute.
      * This allows wrapping of the real value, none is required for transparent.
      */
+    @Override
     public Object valueFromRow(Object object) {
         return object;
     }

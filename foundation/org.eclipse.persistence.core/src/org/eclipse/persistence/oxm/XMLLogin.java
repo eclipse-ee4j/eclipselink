@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -62,6 +62,7 @@ public class XMLLogin extends DatasourceLogin implements Login<Platform> {
      * Returns the appropriate accessor
      * @return an instance of org.eclipse.persistence.internal.oxm.XMLAccessor
      */
+    @Override
     public Accessor buildAccessor() {
         return new org.eclipse.persistence.internal.oxm.XMLAccessor();
     }
@@ -70,6 +71,7 @@ public class XMLLogin extends DatasourceLogin implements Login<Platform> {
      * Return a String representation of the object.
      * @return a string representation of the receiver
      */
+    @Override
     public String toString() {
         return Helper.getShortClassName(this) + "(" + this.getUserName() + ")\n\t( " + this.getPlatformClassName() + ")";
     }

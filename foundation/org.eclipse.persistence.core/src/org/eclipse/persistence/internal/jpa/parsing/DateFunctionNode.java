@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -43,6 +43,7 @@ public class DateFunctionNode extends FunctionalExpressionNode {
      * INTERNAL
      * Apply this node to the passed query
      */
+    @Override
     public void applyToQuery(ObjectLevelReadQuery theQuery, GenerationContext context) {
         if (theQuery.isReportQuery()){
             ReportQuery reportQuery = (ReportQuery)theQuery;
@@ -54,6 +55,7 @@ public class DateFunctionNode extends FunctionalExpressionNode {
      * INTERNAL
      * Validate node and calculate its type.
      */
+    @Override
     public void validate(ParseTreeContext context) {
         setType(type);
     }
@@ -62,6 +64,7 @@ public class DateFunctionNode extends FunctionalExpressionNode {
      * INTERNAL
      * Generate the EclipseLink expression for this node
      */
+    @Override
     public Expression generateExpression(GenerationContext context) {
         Expression expr = context.getBaseExpression();
         if (expr == null) {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -30,14 +30,17 @@ public final class CORBARemoteSessionControllerHolder implements org.omg.CORBA.p
         value = initialValue;
     }
 
+    @Override
     public void _read(org.omg.CORBA.portable.InputStream i) {
         value = org.eclipse.persistence.sessions.remote.corba.sun.CORBARemoteSessionControllerHelper.read(i);
     }
 
+    @Override
     public void _write(org.omg.CORBA.portable.OutputStream o) {
         org.eclipse.persistence.sessions.remote.corba.sun.CORBARemoteSessionControllerHelper.write(o, value);
     }
 
+    @Override
     public org.omg.CORBA.TypeCode _type() {
         return org.eclipse.persistence.sessions.remote.corba.sun.CORBARemoteSessionControllerHelper.type();
     }

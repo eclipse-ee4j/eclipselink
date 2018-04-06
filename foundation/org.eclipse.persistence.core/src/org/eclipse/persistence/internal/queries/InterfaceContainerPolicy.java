@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -76,6 +76,7 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
      * By default if they are the same class, they are considered equal.
      * This is used for query parse caching.
      */
+    @Override
     public boolean equals(Object object) {
         return super.equals(object) && getContainerClass().equals(((InterfaceContainerPolicy)object).getContainerClass());
     }
@@ -199,6 +200,7 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
         return containerClass;
     }
 
+    @Override
     public String getContainerClassName() {
         if ((containerClassName == null) && (containerClass != null)) {
             containerClassName = containerClass.getName();
@@ -300,6 +302,7 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
         initializeConstructor();
     }
 
+    @Override
     public void setContainerClassName(String containerClassName) {
         this.containerClassName = containerClassName;
     }

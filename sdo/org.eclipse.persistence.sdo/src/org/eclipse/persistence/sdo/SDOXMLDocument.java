@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -65,6 +65,7 @@ public class SDOXMLDocument extends XMLRoot implements XMLDocument {
      * Return the root DataObject for the XMLDocument.
      * @return root DataObject for the XMLDocument.
      */
+    @Override
     public DataObject getRootObject() {
         return (DataObject)rootObject;
     }
@@ -76,6 +77,7 @@ public class SDOXMLDocument extends XMLRoot implements XMLDocument {
      *   with a type compatible to the DataObject.
      * @return the targetNamespace URI for the root element.
      */
+    @Override
     public String getRootElementURI() {
         return super.getNamespaceURI();
     }
@@ -86,6 +88,7 @@ public class SDOXMLDocument extends XMLRoot implements XMLDocument {
      *   with a type compatible to the DataObject.
      * @return the name of the root element.
      */
+    @Override
     public String getRootElementName() {
         return super.getLocalName();
     }
@@ -96,6 +99,7 @@ public class SDOXMLDocument extends XMLRoot implements XMLDocument {
      * Specification of other values is implementation-dependent.
      * @return the XML encoding of the document, or null if not specified.
      */
+    @Override
     public String getEncoding() {
         return encoding;
     }
@@ -104,6 +108,7 @@ public class SDOXMLDocument extends XMLRoot implements XMLDocument {
      * Set the XML encoding of the document, or null if not specified.
      * @param encoding
      */
+    @Override
     public void setEncoding(String encoding) {
         this.encoding = encoding;
     }
@@ -116,6 +121,7 @@ public class SDOXMLDocument extends XMLRoot implements XMLDocument {
      * The default value is true.
      * @return the XML declaration of the document.
      */
+    @Override
     public boolean isXMLDeclaration() {
         return xmlDeclaration;
     }
@@ -124,6 +130,7 @@ public class SDOXMLDocument extends XMLRoot implements XMLDocument {
       * Set the XML declaration version of the document.
       * @param xmlDeclaration the XML declaration version of the document.
       */
+    @Override
     public void setXMLDeclaration(boolean xmlDeclaration) {
         this.xmlDeclaration = xmlDeclaration;
     }
@@ -134,6 +141,7 @@ public class SDOXMLDocument extends XMLRoot implements XMLDocument {
      * Specification of other values is implementation-dependent.
      * @return the XML version of the document, or null if not specified.
      */
+    @Override
     public String getXMLVersion() {
         return xmlVersion;
     }
@@ -142,6 +150,7 @@ public class SDOXMLDocument extends XMLRoot implements XMLDocument {
      * Set the XML version of the document, or null if not specified.
      * @param xmlVersion the XML version of the document, or null if not specified.
      */
+    @Override
     public void setXMLVersion(String xmlVersion) {
         this.xmlVersion = xmlVersion;
     }
@@ -153,6 +162,7 @@ public class SDOXMLDocument extends XMLRoot implements XMLDocument {
      * @return the value of the schemaLocation declaration,
      *  or null if not present.
      */
+    @Override
     public String getSchemaLocation() {
         return schemaLocation;
     }
@@ -163,6 +173,7 @@ public class SDOXMLDocument extends XMLRoot implements XMLDocument {
      * root element, or null if it should not be present.
      * @param schemaLocation the value of the schemaLocation declaration, or null.
      */
+    @Override
     public void setSchemaLocation(String schemaLocation) {
         this.schemaLocation = schemaLocation;
 
@@ -175,6 +186,7 @@ public class SDOXMLDocument extends XMLRoot implements XMLDocument {
      * @return the value of the noNamespaceSchemaLocation declaration,
      *  or null if not present.
      */
+    @Override
     public String getNoNamespaceSchemaLocation() {
         return noNamespaceSchemaLocation;
     }
@@ -185,6 +197,7 @@ public class SDOXMLDocument extends XMLRoot implements XMLDocument {
      * root element, or null if it should not be present.
      * @param schemaLocation the value of the noNamespaceSchemaLocation declaration, or null.
      */
+    @Override
     public void setNoNamespaceSchemaLocation(String schemaLocation) {
         noNamespaceSchemaLocation = schemaLocation;
     }

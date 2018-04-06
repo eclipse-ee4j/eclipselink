@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -49,6 +49,7 @@ public class ParameterNode extends Node {
     /**
      * INTERNAL
      */
+    @Override
     public void validateParameter(ParseTreeContext context, Object contextType) {
         context.defineParameterType(name, contextType, getLine(), getColumn());
         setType(context.getParameterType(name));
@@ -58,6 +59,7 @@ public class ParameterNode extends Node {
      * Generate the result expression, must use the base builder
      * to avoid getting multiple builders.
      */
+    @Override
     public Expression generateExpression(GenerationContext context) {
         Expression whereClause = context.getBaseExpression().getParameter(getParameterName(), getType());
         return whereClause;
@@ -67,6 +69,7 @@ public class ParameterNode extends Node {
      * INTERNAL
      * Return the parameterName
      */
+    @Override
     public String getAsString() {
         return getParameterName();
     }
@@ -88,6 +91,7 @@ public class ParameterNode extends Node {
      * INTERNAL
      * Yes this is a Parameter node
      */
+    @Override
     public boolean isParameterNode() {
         return true;
     }

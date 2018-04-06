@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -50,6 +50,7 @@ public class RemoteCursoredStream extends CursoredStream {
      * Close the wrapped cursored stream
      * This should be performed whenever the user has finished with the stream.
      */
+    @Override
     public void close() throws DatabaseException {
         if (isClosed()) {
             return;
@@ -62,6 +63,7 @@ public class RemoteCursoredStream extends CursoredStream {
      * INTERNAL:
      * Retreive the size of the wrapped cursored stream.
      */
+    @Override
     protected int getCursorSize() {
         return (((DistributedSession)getSession()).getRemoteConnection()).cursoredStreamSize(getID());
     }
@@ -78,6 +80,7 @@ public class RemoteCursoredStream extends CursoredStream {
      * INTERNAL:
      * Return if the stream is closed.
      */
+    @Override
     public boolean isClosed() {
         return isClosed;
     }
@@ -85,6 +88,7 @@ public class RemoteCursoredStream extends CursoredStream {
     /**
      * Read the next page of objects from the server.
      */
+    @Override
     protected Object retrieveNextPage() throws DatabaseException {
         if (isClosed()) {
             return null;

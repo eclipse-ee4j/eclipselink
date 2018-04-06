@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -53,6 +53,7 @@ public class RecordMetaData implements CompositeObject {
     }
 
     /** getter for record name */
+    @Override
     public String getName() {
         return myName;
     }
@@ -63,16 +64,19 @@ public class RecordMetaData implements CompositeObject {
     }
 
     /** getter for myFields */
+    @Override
     public Vector getFields() {
         return myFields;
     }
 
     /** setter for myFields */
+    @Override
     public void setFields(Vector newFields) {
         myFields = newFields;
     }
 
     /** adds the field to the collection */
+    @Override
     public void addField(FieldMetaData newField) {
         myFields.addElement(newField);
     }
@@ -83,6 +87,7 @@ public class RecordMetaData implements CompositeObject {
     }
 
     /** retrieves the <code>FieldMetaData</code> with the corresponding name if it exists */
+    @Override
     public FieldMetaData getFieldNamed(String fieldName) {
         Enumeration fieldsEnum = getFields().elements();
         while (fieldsEnum.hasMoreElements()) {

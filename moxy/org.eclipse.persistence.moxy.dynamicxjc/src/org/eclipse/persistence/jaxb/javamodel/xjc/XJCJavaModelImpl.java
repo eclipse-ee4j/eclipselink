@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -68,6 +68,7 @@ public class XJCJavaModelImpl implements JavaModel {
      *
      * @return the <code>JavaClass</code> corresponding to <code>jClass</code>.
      */
+    @Override
     public JavaClass getClass(Class<?> jClass) {
         if (jClass == null) {
             return null;
@@ -98,6 +99,7 @@ public class XJCJavaModelImpl implements JavaModel {
      *
      * @return the <code>JavaClass</code> corresponding to <code>className</code>.
      */
+    @Override
     public JavaClass getClass(String className) {
         JavaClass cachedClass = this.javaModelClasses.get(className);
         if (cachedClass != null) {
@@ -136,6 +138,7 @@ public class XJCJavaModelImpl implements JavaModel {
      *
      * @return a Java <code>Annotation</code> representation of the given <code>JavaAnnotation</code>.
      */
+    @Override
     public Annotation getAnnotation(JavaAnnotation annotation, Class<?> jClass) {
         return ((XJCJavaAnnotationImpl) annotation).getJavaAnnotation();
     }
@@ -163,6 +166,7 @@ public class XJCJavaModelImpl implements JavaModel {
      *
      * @return the <code>ClassLoader</code> used by this <code>JavaModel</code>.
      */
+    @Override
     public ClassLoader getClassLoader() {
         return this.dynamicClassLoader;
     }

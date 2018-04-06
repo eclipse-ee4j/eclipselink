@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -74,6 +74,7 @@ public class TimestampLockingPolicy extends VersionLockingPolicy {
      *  NullPointerException if the passed value is null;
      *  ClassCastException if the passed value is of a wrong type.
      */
+    @Override
     public int compareWriteLockValues(Object value1, Object value2) {
         java.sql.Timestamp timestampValue1 = (java.sql.Timestamp)value1;
         java.sql.Timestamp timestampValue2 = (java.sql.Timestamp)value2;
@@ -84,6 +85,7 @@ public class TimestampLockingPolicy extends VersionLockingPolicy {
      * INTERNAL:
      * Return the default timestamp locking filed java type, default is Timestamp.
      */
+    @Override
     protected Class getDefaultLockingFieldType() {
         return ClassConstants.TIMESTAMP;
     }
@@ -93,6 +95,7 @@ public class TimestampLockingPolicy extends VersionLockingPolicy {
      * This is the base value that is older than all other values, it is used in the place of
      * null in some situations.
      */
+    @Override
     public Object getBaseValue(){
         return new Timestamp(0);
     }
@@ -101,6 +104,7 @@ public class TimestampLockingPolicy extends VersionLockingPolicy {
      * INTERNAL:
      * returns the initial locking value
      */
+    @Override
     protected Object getInitialWriteValue(AbstractSession session) {
         if (usesLocalTime()) {
             return new Timestamp(System.currentTimeMillis());
@@ -121,6 +125,7 @@ public class TimestampLockingPolicy extends VersionLockingPolicy {
      * INTERNAL:
      * Returns the new Timestamp value.
      */
+    @Override
     public Object getNewLockValue(ModifyQuery query) {
         return getInitialWriteValue(query.getSession());
     }
@@ -130,6 +135,7 @@ public class TimestampLockingPolicy extends VersionLockingPolicy {
      * Return the value that should be stored in the identity map.  If the value
      * is stored in the object, then return a null.
      */
+    @Override
     public Object getValueToPutInCache(AbstractRecord row, AbstractSession session) {
         if (isStoredInCache()) {
             return session.getDatasourcePlatform().convertObject(row.get(getWriteLockField()), ClassConstants.TIMESTAMP);
@@ -191,6 +197,7 @@ public class TimestampLockingPolicy extends VersionLockingPolicy {
      * INTERNAL:
      * Return an expression that updates the write lock
      */
+    @Override
     public Expression getWriteLockUpdateExpression(ExpressionBuilder builder, AbstractSession session) {
         return builder.value(getInitialWriteValue(session));
     }
@@ -199,6 +206,7 @@ public class TimestampLockingPolicy extends VersionLockingPolicy {
      * INTERNAL:
      * Timestamp versioning should not be able to do this.  Override the superclass behavior.
      */
+    @Override
     protected Number incrementWriteLockValue(Number numberValue) {
         return null;
     }
@@ -244,6 +252,7 @@ public class TimestampLockingPolicy extends VersionLockingPolicy {
      * Compares two values.
      * Will return true if the firstLockFieldValue is newer than the secondWriteLockFieldValue.
      */
+    @Override
     public boolean isNewerVersion(Object firstLockFieldValue, Object secondWriteLockFieldValue) {
         java.sql.Timestamp firstValue = (java.sql.Timestamp)firstLockFieldValue;
         java.sql.Timestamp secondValue = (java.sql.Timestamp)secondWriteLockFieldValue;

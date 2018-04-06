@@ -239,6 +239,7 @@ public abstract class AbstractIdentificationVariableDeclarationStateObject exten
     /**
      * {@inheritDoc}
      */
+    @Override
     public ListIterable<IdentificationVariableStateObject> identificationVariables() {
         List<IdentificationVariableStateObject> stateObjects = new ArrayList<IdentificationVariableStateObject>();
         stateObjects.add(rangeVariableDeclaration.getIdentificationVariableStateObject());

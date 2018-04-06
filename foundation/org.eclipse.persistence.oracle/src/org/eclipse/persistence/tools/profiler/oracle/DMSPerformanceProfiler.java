@@ -161,6 +161,7 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
      * INTERNAL:
      * Api for changing dms weight dynamically.
      */
+    @Override
     public void setProfileWeight(int newWeight) {
         if (newWeight != this.weight) {
             getSession().setIsInProfile(!(newWeight == DMSConsole.NONE));
@@ -181,6 +182,7 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
      * INTERNAL:
      * Initialize TopLink noun tree by default (DMSConsole.getSensorWeight())
      */
+    @Override
     public void initialize() {
         weight = DMSConsole.NONE;
         initializeNounTree(DMSConsole.getSensorWeight());
@@ -192,6 +194,7 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
      * INTERNAL:
      * Return current TopLink dms weight.
      */
+    @Override
     public int getProfileWeight() {
         return weight;
     }
@@ -200,6 +203,7 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
      * INTERNAL:
      * Link to the dms PhaseEvent api start().
      */
+    @Override
     public void startOperationProfile(String operationName) {
         //due to DMS bug3242994 can't set DMS weight to NONE
         //shortcut for NORMAL weight since no operation profiles are every done for this level.
@@ -217,6 +221,7 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
      * INTERNAL:
      * Link to the dms PhaseEvent api start().  Intended to be used for query profiling.
      */
+    @Override
     public void startOperationProfile(String operationName, DatabaseQuery query, int weight) {
         //due to DMS bug3242994 can't set DMS weight to NONE
         //shortcut for NORMAL weight since no operation profiles are every done for this level.
@@ -242,6 +247,7 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
      * INTERNAL:
      * Link to the dms PhaseEvent api stop().
      */
+    @Override
     public void endOperationProfile(String operationName) {
         //due to DMS bug3242994 can't set DMS weight to NONE
         //shortcut for NORMAL weight since no operation profiles are every done for this level.
@@ -259,6 +265,7 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
      * INTERNAL:
      * Link to the dms PhaseEvent api stop().  Intended to be used for query profiling.
      */
+    @Override
     public void endOperationProfile(String operationName, DatabaseQuery query, int weight) {
         //due to DMS bug3242994 can't set DMS weight to NONE
         //shortcut for NORMAL weight since no operation profiles are every done for this level.
@@ -285,6 +292,7 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
      * INTERNAL:
      * Link to the dms State api update().
      */
+    @Override
     public void update(String operationName, Object value) {
         Sensor state = getSensorByName(operationName);
         if (state != null) {
@@ -296,6 +304,7 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
      * INTERNAL:
      * Link to the dms Event api occurred().
      */
+    @Override
     public void occurred(String operationName, AbstractSession session) {
         Sensor event = getSensorByName(operationName);
         if (event != null) {
@@ -307,6 +316,7 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
      * INTERNAL:
      * Increase DMS Event sensor occurrence.(DMS)
      */
+    @Override
     public void occurred(String operationName, DatabaseQuery query, AbstractSession session) {
         Sensor event = getSensorByName(operationName);
         if (event != null) {
@@ -724,10 +734,12 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
         }
     }
 
+    @Override
     public void setSession(Session session) {
         this.session = (AbstractSession)session;
     }
 
+    @Override
     public Object profileExecutionOfQuery(DatabaseQuery query, Record row, AbstractSession session) {
         //This is to profile the query execution and no operation name is given
         startOperationProfile(null, query, DMSConsole.HEAVY);

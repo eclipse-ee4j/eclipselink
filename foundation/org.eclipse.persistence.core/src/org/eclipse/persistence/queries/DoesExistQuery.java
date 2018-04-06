@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -222,6 +222,7 @@ public class DoesExistQuery extends DatabaseQuery {
      * Check if existence can be determined without going to the database.
      * Note that custom query check is not require for does exist as the custom is always used.
      */
+    @Override
     public Object checkEarlyReturn(AbstractSession session, AbstractRecord translationRow) {
         return checkEarlyReturn(getObject(), getPrimaryKey(), session, translationRow);
     }
@@ -233,6 +234,7 @@ public class DoesExistQuery extends DatabaseQuery {
      * If using optimistic locking, check that the value matches.
      * @exception  DatabaseException - an error has occurred on the database.
      */
+    @Override
     public Object executeDatabaseQuery() throws DatabaseException {
         // Get the required fields for does exist check.
         DatabaseField field = getDoesExistField();
@@ -279,6 +281,7 @@ public class DoesExistQuery extends DatabaseQuery {
     /**
      * Return the domain class associated with this query.
      */
+    @Override
     public Class getReferenceClass() {
         if (getObject() == null) {
             return null;
@@ -292,6 +295,7 @@ public class DoesExistQuery extends DatabaseQuery {
      * Note: Although the API is designed to avoid requirement of classes being on the classpath,
      * this is not a user defined query type, so it is ok to access the class.
      */
+    @Override
     public String getReferenceClassName() {
         return getReferenceClass().getName();
     }
@@ -300,6 +304,7 @@ public class DoesExistQuery extends DatabaseQuery {
      * INTERNAL:
      * Prepare the receiver for execution in a session.
      */
+    @Override
     protected void prepare() throws QueryException {
 
         if (getObject() != null) {// Prepare can be called without the object set yet.
@@ -336,6 +341,7 @@ public class DoesExistQuery extends DatabaseQuery {
      * INTERNAL:
      * Prepare the receiver for execution in a session.
      */
+    @Override
     public void prepareForExecution() throws QueryException {
         super.prepareForExecution();
 

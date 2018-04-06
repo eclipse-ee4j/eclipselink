@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -38,6 +38,7 @@ public class WebLogicTransactionController11 extends JTA11TransactionController 
      * INTERNAL:
      * Obtain and return the JTA TransactionManager on this platform
      */
+    @Override
     protected TransactionManager acquireTransactionManager() throws Exception {
         return (TransactionManager)jndiLookup(WebLogicTransactionController.JNDI_TRANSACTION_MANAGER_NAME);
     }

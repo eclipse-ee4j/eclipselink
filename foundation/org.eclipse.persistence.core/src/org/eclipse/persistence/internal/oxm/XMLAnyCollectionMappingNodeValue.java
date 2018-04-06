@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -56,10 +56,12 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
         this.xmlAnyCollectionMapping = xmlAnyCollectionMapping;
     }
 
+    @Override
     public boolean isOwningNode(XPathFragment xPathFragment) {
         return null == xPathFragment;
     }
 
+    @Override
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver) {
         if (xmlAnyCollectionMapping.isReadOnly()) {
             return false;
@@ -206,6 +208,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
          return null;
     }
 
+    @Override
     public boolean startElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts) {
         try {
             // Mixed Content
@@ -251,11 +254,13 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
         return true;
     }
 
+    @Override
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord) {
         endElement(xPathFragment, unmarshalRecord, null);
     }
 
 
+    @Override
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Object collection) {
         UnmarshalRecord childRecord = unmarshalRecord.getChildRecord();
         if (null != childRecord) {
@@ -306,6 +311,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
         }
     }
 
+    @Override
     protected void setOrAddAttributeValue(UnmarshalRecord unmarshalRecord, Object value, XPathFragment xPathFragment, Object collection){
         if (!xmlAnyCollectionMapping.usesXMLRoot() || xPathFragment.getLocalName() == null || (xmlAnyCollectionMapping.isMixedContent() && unmarshalRecord.getTextWrapperFragment() != null && unmarshalRecord.getTextWrapperFragment().equals(xPathFragment))) {
             unmarshalRecord.addAttributeValue(this, value);
@@ -319,18 +325,22 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
         }
     }
 
+    @Override
     public Object getContainerInstance() {
         return getContainerPolicy().containerInstance();
     }
 
+    @Override
     public void setContainerInstance(Object object, Object containerInstance) {
         xmlAnyCollectionMapping.setAttributeValueInObject(object, containerInstance);
     }
 
+    @Override
     public CoreContainerPolicy getContainerPolicy() {
         return xmlAnyCollectionMapping.getContainerPolicy();
     }
 
+    @Override
     public boolean isContainerValue() {
         return true;
     }
@@ -353,6 +363,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
         return generatedNamespace;
     }
 
+    @Override
     public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         if (null == value) {
             return false;
@@ -499,10 +510,12 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
         }
     }
 
+    @Override
     public AnyCollectionMapping getMapping() {
         return xmlAnyCollectionMapping;
     }
 
+    @Override
     public boolean isWhitespaceAware() {
         return this.xmlAnyCollectionMapping.isMixedContent() && this.xmlAnyCollectionMapping.isWhitespacePreservedForMixedContent();
     }
@@ -512,10 +525,12 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
         return false;
     }
 
+    @Override
     public boolean isAnyMappingNodeValue() {
         return true;
     }
 
+    @Override
     public boolean getReuseContainer() {
         return getMapping().getReuseContainer();
     }
@@ -524,6 +539,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
      * INTERNAL:
      * Return true if this is the node value representing mixed content.
      */
+    @Override
     public boolean isMixedContentNodeValue() {
         return this.xmlAnyCollectionMapping.isMixedContent();
     }
@@ -532,6 +548,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
      *  INTERNAL:
      *  Used to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord
      */
+    @Override
     public void setIndex(int index){
         this.index = index;
     }
@@ -541,6 +558,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
      * Set to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord
      * Set during TreeObjectBuilder initialization
      */
+    @Override
     public int getIndex(){
         return index;
     }
@@ -551,6 +569,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
      * is no presence of the collection in the XML document.
      * @since EclipseLink 2.3.3
      */
+    @Override
     public boolean isDefaultEmptyContainer() {
         return getMapping().isDefaultEmptyContainer();
     }

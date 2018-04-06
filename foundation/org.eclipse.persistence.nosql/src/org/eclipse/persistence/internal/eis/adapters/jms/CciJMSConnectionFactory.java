@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -40,6 +40,7 @@ public class CciJMSConnectionFactory implements javax.resource.cci.ConnectionFac
      * @return the CCI connection
      * @throws EISException
      */
+    @Override
     public javax.resource.cci.Connection getConnection() throws EISException {
         return getConnection(new CciJMSConnectionSpec());
     }
@@ -50,6 +51,7 @@ public class CciJMSConnectionFactory implements javax.resource.cci.ConnectionFac
      * @return the CCI connection
      * @throws EISException
      */
+    @Override
     public javax.resource.cci.Connection getConnection(ConnectionSpec spec) throws EISException {
         CciJMSConnectionSpec jmsSpec = null;
         Session session = null;
@@ -95,6 +97,7 @@ public class CciJMSConnectionFactory implements javax.resource.cci.ConnectionFac
      *
      * @return the adapter metadata
      */
+    @Override
     public ResourceAdapterMetaData getMetaData() {
         return new CciJMSAdapterMetaData();
     }
@@ -104,6 +107,7 @@ public class CciJMSConnectionFactory implements javax.resource.cci.ConnectionFac
      *
      * @return the CciJMSRecordFactory
      */
+    @Override
     public RecordFactory getRecordFactory() {
         return new CciJMSRecordFactory();
     }
@@ -113,6 +117,7 @@ public class CciJMSConnectionFactory implements javax.resource.cci.ConnectionFac
      *
      * @return reference
      */
+    @Override
     public Reference getReference() {
         return new Reference(getClass().getName());
     }
@@ -122,6 +127,7 @@ public class CciJMSConnectionFactory implements javax.resource.cci.ConnectionFac
      *
      * @param reference
      */
+    @Override
     public void setReference(Reference reference) {
     }
 }

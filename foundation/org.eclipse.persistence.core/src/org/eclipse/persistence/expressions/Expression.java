@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -897,6 +897,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * INTERNAL:
      * Clone the expression maintaining clone identity in the inter-connected expression graph.
      */
+    @Override
     public Object clone() {
         // 2612538 - the default size of Map (32) is appropriate
         Map alreadyDone = new IdentityHashMap();
@@ -1072,6 +1073,7 @@ public abstract class Expression implements Serializable, Cloneable {
      */
     public Expression convertToUseOuterJoin() {
         ExpressionIterator iterator = new ExpressionIterator() {
+            @Override
             public void iterate(Expression each) {
                 each.convertNodeToUseOuterJoin();
             }
@@ -1401,6 +1403,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * Two expressions should be considered equal if they have the same "parameterized" SQL.
      * This must be over written by each subclass.
      */
+    @Override
     public boolean equals(Object expression) {
         return (this == expression) || ((expression != null) && getClass().equals(expression.getClass()) && (hashCode() == expression.hashCode()));
     }
@@ -1412,6 +1415,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * Two expressions should have the same hashCode if they have the same "parameterized" SQL.
      * This should be over written by each subclass to provide a consistent value.
      */
+    @Override
     public int hashCode() {
         if (this.hashCode == 0) {
             this.hashCode = computeHashCode();
@@ -4288,6 +4292,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * PUBLIC:
      * Print a debug form of the expression tree.
      */
+    @Override
     public String toString() {
         try {
             StringWriter innerWriter = new StringWriter();

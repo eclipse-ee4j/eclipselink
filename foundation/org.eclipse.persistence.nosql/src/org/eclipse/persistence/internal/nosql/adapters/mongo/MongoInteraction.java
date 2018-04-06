@@ -59,6 +59,7 @@ public class MongoInteraction implements Interaction {
     /**
      * Output records are not supported/required.
      */
+    @Override
     public boolean execute(InteractionSpec spec, Record input, Record output) throws ResourceException {
         if (!(spec instanceof MongoInteractionSpec)) {
             throw EISException.invalidInteractionSpecType();
@@ -98,6 +99,7 @@ public class MongoInteraction implements Interaction {
      * Execute the interaction and return output record.
      * The spec is either GET, PUT or DELETE interaction.
      */
+    @Override
     public Record execute(InteractionSpec spec, Record record) throws ResourceException {
         if (!(spec instanceof MongoInteractionSpec)) {
             throw EISException.invalidInteractionSpecType();

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -31,6 +31,7 @@ public class SunCORBATransportManager extends CORBATransportManager {
      * Overwrite super method and return the default local URL .
      * i.e iiop://66.178.2.33:9090
      */
+    @Override
     public String getDefaultLocalUrl() {
         try {
             // Look up the local host name and paste it in a default URL
@@ -41,6 +42,7 @@ public class SunCORBATransportManager extends CORBATransportManager {
         }
     }
 
+    @Override
     public String getDefaultInitialContextFactoryName() {
         return "com.sun.jndi.cosnaming.CNCtxFactory";
     }
@@ -50,6 +52,7 @@ public class SunCORBATransportManager extends CORBATransportManager {
      * Implement abstract method that delegates the narrow call to the generated <code>SunCORBAConnectionHelper</code> class.
      *
      */
+    @Override
     public CORBAConnection narrow(org.omg.CORBA.Object object) {
         return (CORBAConnection)SunCORBAConnectionHelper.narrow(object);
     }
@@ -60,6 +63,7 @@ public class SunCORBATransportManager extends CORBATransportManager {
      * <code>CORBAConnection</code> interface.
      *
      */
+    @Override
     public CORBAConnection buildCORBAConnection() {
         return new SunCORBAConnectionImpl(rcm);
     }

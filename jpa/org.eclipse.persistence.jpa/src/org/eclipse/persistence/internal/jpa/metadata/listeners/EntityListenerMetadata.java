@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -113,6 +113,7 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
      * INTERNAL:
      * This method should be called when dealing with default listeners.
      */
+    @Override
     public Object clone() {
         try {
             return super.clone();

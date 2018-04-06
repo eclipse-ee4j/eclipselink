@@ -129,6 +129,7 @@ public class TrimExpressionStateObject extends AbstractSingleEncapsulatedExpress
     /**
      * {@inheritDoc}
      */
+    @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }

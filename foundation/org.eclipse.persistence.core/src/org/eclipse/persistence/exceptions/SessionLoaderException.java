@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -177,6 +177,7 @@ public class SessionLoaderException extends EclipseLinkException {
      * PUBLIC:
      * Iterate through the exception list printing out the stack traces.
      */
+    @Override
     public void printStackTrace(PrintWriter writer) {
         super.printStackTrace(writer);
         if (getExceptionList() != null) {
@@ -193,6 +194,7 @@ public class SessionLoaderException extends EclipseLinkException {
         writer.flush();
     }
 
+    @Override
     public String toString() {
         if (getErrorCode() == FINAL_EXCEPTION) {
             StringBuffer buffer = new StringBuffer();

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -83,6 +83,7 @@ public class DeleteObjectQuery extends ObjectLevelModifyQuery {
      * This is done before the query is copied and prepared/executed.
      * null means there is none.
      */
+    @Override
     protected DatabaseQuery checkForCustomQuery(AbstractSession session, AbstractRecord translationRow) {
         checkDescriptor(session);
 
@@ -107,6 +108,7 @@ public class DeleteObjectQuery extends ObjectLevelModifyQuery {
      * @throws org.eclipse.persistence.exceptions.DatabaseException
      * @throws org.eclipse.persistence.exceptions.OptimisticLockException
      */
+    @Override
     protected Object executeInUnitOfWorkObjectLevelModifyQuery(UnitOfWorkImpl unitOfWork, AbstractRecord translationRow) throws DatabaseException, OptimisticLockException {
         Object result = unitOfWork.processDeleteObjectQuery(this);
         if (result != null) {
@@ -124,6 +126,7 @@ public class DeleteObjectQuery extends ObjectLevelModifyQuery {
      * Returns the specific default redirector for this query type.  There are numerous default query redirectors.
      * See ClassDescriptor for their types.
      */
+    @Override
     protected QueryRedirector getDefaultRedirector(){
         return descriptor.getDefaultDeleteObjectQueryRedirector();
     }
@@ -133,6 +136,7 @@ public class DeleteObjectQuery extends ObjectLevelModifyQuery {
      * Perform the work to delete an object.
      * @return object - the object being deleted.
      */
+    @Override
     public Object executeDatabaseQuery() throws DatabaseException, OptimisticLockException {
         AbstractSession session = getSession();
         CommitManager commitManager = session.getCommitManager();
@@ -272,6 +276,7 @@ public class DeleteObjectQuery extends ObjectLevelModifyQuery {
      * PUBLIC:
      * Return if this is a delete object query.
      */
+    @Override
     public boolean isDeleteObjectQuery() {
         return true;
     }
@@ -323,6 +328,7 @@ public class DeleteObjectQuery extends ObjectLevelModifyQuery {
      * INTERNAL:
      * Prepare the receiver for execution in a session.
      */
+    @Override
     protected void prepare() {
         super.prepare();
         this.usesOptimisticLocking = shouldUseOptimisticLocking(this.object);
@@ -338,6 +344,7 @@ public class DeleteObjectQuery extends ObjectLevelModifyQuery {
      * A custom query is set by the user, or used by default to allow caching of the prepared query.
      * In a unit of work the custom query is used directly, so this step is bypassed.
      */
+    @Override
     protected void prepareCustomQuery(DatabaseQuery customQuery) {
         DeleteObjectQuery customDeleteQuery = (DeleteObjectQuery)customQuery;
         customDeleteQuery.setObject(getObject());
@@ -351,6 +358,7 @@ public class DeleteObjectQuery extends ObjectLevelModifyQuery {
      * Prepare the receiver for execution in a session. In particular,
      * verify that the object is not null and contains a valid primary key.
      */
+    @Override
     public void prepareForExecution() throws QueryException {
         super.prepareForExecution();
 

@@ -234,6 +234,7 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
      * ADVANCED:
      * This method returns the list of added objects.
      */
+    @Override
     public Vector getAddObjectList(){
         Vector vector = new Vector();
         for (Iterator iterator = getAddObjectMap().keySet().iterator(); iterator.hasNext();){
@@ -271,6 +272,7 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
      * ADVANCED:
      * This method returns the list of removed objects.
      */
+    @Override
     public Vector getRemoveObjectList(){
         Vector vector = new Vector();
         for (Iterator iterator = getRemoveObjectMap().keySet().iterator(); iterator.hasNext();){
@@ -306,6 +308,7 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
     /**
      * This method will be used to merge one record into another.
      */
+    @Override
     public void mergeRecord(ChangeRecord mergeFromRecord, UnitOfWorkChangeSet mergeToChangeSet, UnitOfWorkChangeSet mergeFromChangeSet) {
         if (((DeferrableChangeRecord)mergeFromRecord).isDeferred()){
             if (this.hasChanges()){
@@ -368,6 +371,7 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
     /**
      * This method will be used to update the objectsChangeSets references
      */
+    @Override
     public void updateReferences(UnitOfWorkChangeSet mergeToChangeSet, UnitOfWorkChangeSet mergeFromChangeSet) {
         //nothing for this record type to do as it does not reference any changesets
     }
@@ -376,6 +380,7 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
         // This is a placeholder for null instances.
         public NULL(){
         }
+        @Override
         public boolean equals(Object object){
             return object instanceof NULL;
         }
@@ -417,7 +422,8 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
    /**
     * Recreates the original state of the collection.
     */
-  public void internalRecreateOriginalCollection(Object currentCollection, AbstractSession session) {
+  @Override
+public void internalRecreateOriginalCollection(Object currentCollection, AbstractSession session) {
       ContainerPolicy cp = this.mapping.getContainerPolicy();
        if(this.removeObjectMap != null) {
            Iterator it = this.removeObjectMap.entrySet().iterator();
@@ -453,7 +459,8 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
    /**
     * Clears info about added / removed objects set by change tracker.
     */
-   public void clearChanges() {
+   @Override
+public void clearChanges() {
        if(this.removeObjectMap != null) {
            this.removeObjectMap.clear();
        }

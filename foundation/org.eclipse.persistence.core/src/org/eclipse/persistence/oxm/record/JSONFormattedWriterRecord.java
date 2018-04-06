@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -85,6 +85,7 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
         return tab;
     }
 
+    @Override
     public void startDocument(String encoding, String version) {
         super.startDocument(encoding, version);
         numberOfTabs++;;
@@ -111,6 +112,7 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
     /**
      * INTERNAL:
      */
+    @Override
     public void openStartElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
         try {
             if(level.isFirst()) {
@@ -169,14 +171,17 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
     /**
      * INTERNAL:
      */
+    @Override
     public void element(XPathFragment frag) {
     }
 
+    @Override
     protected void writeListSeparator() throws IOException{
         super.writeListSeparator();
         writer.write(' ');
     }
 
+    @Override
     protected void writeSeparator() throws IOException{
         writer.write(' ');
         writer.write(Constants.COLON);
@@ -186,6 +191,7 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
     /**
      * INTERNAL:
      */
+    @Override
     public void endElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
         isLastEventText = false;
         numberOfTabs--;
@@ -223,6 +229,7 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
     /**
      * INTERNAL:
      */
+    @Override
     public void characters(String value) {
         super.characters(value);
         isLastEventText = true;
@@ -234,6 +241,7 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
      * @param namespaceResolver The NamespaceResolver can be used to resolve the
      * namespace URI/prefix of the node
      */
+    @Override
     public void node(Node node, NamespaceResolver namespaceResolver) {
         if (node.getNodeType() == Node.ATTRIBUTE_NODE) {
             Attr attr = (Attr) node;
@@ -289,6 +297,7 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
      */
     private class JSONFormattedWriterRecordContentHandler extends JSONWriterRecordContentHandler {
         // --------------------- CONTENTHANDLER METHODS --------------------- //
+        @Override
         public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
             XPathFragment xPathFragment = new XPathFragment(localName);
             xPathFragment.setNamespaceURI(namespaceURI);

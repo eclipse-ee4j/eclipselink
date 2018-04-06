@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -72,6 +72,7 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
      * Unprepare the call if required.
      * Clone and unprepare stored procedure calls, so they can be reprepared with possible different optional arguments.
      */
+    @Override
     public void unprepare() {
         DatabaseQuery query = this.query;
         if (hasMultipleCalls()) {
@@ -104,6 +105,7 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
      * This query is copied for concurrency so this prepare can only setup things that
      * will apply to any future execution of this query.
      */
+    @Override
     public void prepareCall() throws QueryException {
         DatabaseQuery query = this.query;
         AbstractSession executionSession = query.getExecutionSession();
@@ -176,6 +178,7 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
     /**
      * Pre-build configure the SQL call.
      */
+    @Override
     public void prepareCursorSelectAllRows() throws QueryException {
         getCall().returnCursor();
 
@@ -206,6 +209,7 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
     /**
      * Pre-build configure the SQL call.
      */
+    @Override
     public void prepareDeleteAll() {
         if (hasMultipleCalls()) {
             for (Enumeration callsEnum = getCalls().elements(); callsEnum.hasMoreElements();) {
@@ -222,6 +226,7 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
     /**
      * Pre-build configure the SQL call.
      */
+    @Override
     public void prepareDeleteObject() {
         boolean usesOptimisticLocking = ((DeleteObjectQuery)getQuery()).usesOptimisticLocking();
         if (hasMultipleCalls()) {
@@ -244,6 +249,7 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
     /**
      * Pre-build configure the SQL call.
      */
+    @Override
     public void prepareDoesExist(DatabaseField field) {
         getCall().returnOneRow();
         Vector fields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
@@ -255,6 +261,7 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
     /**
      * Pre-build configure the SQL call for an execute call.
      */
+    @Override
     public void prepareExecute() {
         DatabaseCall call = getDatabaseCall();
         call.setExecuteUpdate();
@@ -265,6 +272,7 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
     /**
      * Pre-build configure the SQL call.
      */
+    @Override
     public void prepareExecuteSelect() {
         if (hasMultipleCalls()) {
             for (Enumeration callsEnum = getCalls().elements(); callsEnum.hasMoreElements();) {
@@ -283,6 +291,7 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
     /**
      * Pre-build configure the SQL call.
      */
+    @Override
     public void prepareSelectAllRows() {
         if (hasMultipleCalls()) {
             for (Enumeration callsEnum = getCalls().elements(); callsEnum.hasMoreElements();) {
@@ -322,6 +331,7 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
     /**
      * Pre-build configure the SQL call.
      */
+    @Override
     public void prepareSelectOneRow() {
         if (hasMultipleCalls()) {
             for (Enumeration callsEnum = getCalls().elements(); callsEnum.hasMoreElements();) {
@@ -352,6 +362,7 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
     /**
      * Pre-build configure the SQL call.
      */
+    @Override
     public void prepareUpdateObject() {
         if (hasMultipleCalls()) {
             int size = this.calls.size();
@@ -397,6 +408,7 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
      * This must always be dynamic as it is called within an insert query and is really part of the insert
      * and does not fire update events or worry about locking.
      */
+    @Override
     protected void updateForeignKeyFieldAfterInsert(WriteObjectQuery writeQuery) {
         ClassDescriptor descriptor = getDescriptor();
         for (DatabaseTable table : descriptor.getTables()) {

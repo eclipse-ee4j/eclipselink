@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -122,6 +122,7 @@ public class JAXBValueStore implements ValueStore {
     /**
      * Initialize the value store with its associated DataObject.
      */
+    @Override
     public void initialize(DataObject aDataObject) {
         this.dataObject = (SDODataObject) aDataObject;
     }
@@ -130,6 +131,7 @@ public class JAXBValueStore implements ValueStore {
      * Get the value from the wrapped POJO, wrapping in DataObjects as
      * necessary.
      */
+    @Override
     public Object getDeclaredProperty(int propertyIndex) {
         SDOProperty declaredProperty = (SDOProperty) dataObject.getType().getDeclaredProperties().get(propertyIndex);
         if(declaredProperty.getType().isChangeSummaryType()) {
@@ -159,6 +161,7 @@ public class JAXBValueStore implements ValueStore {
     /**
      * Set the value on the underlying POJO, unwrapping values as necessary.
      */
+    @Override
     public void setDeclaredProperty(int propertyIndex, Object value) {
         SDOProperty declaredProperty = (SDOProperty) dataObject.getType().getDeclaredProperties().get(propertyIndex);
         if(declaredProperty.getType().isChangeSummaryType()) {
@@ -212,6 +215,7 @@ public class JAXBValueStore implements ValueStore {
      * For isMany=false properties return true if not null. For collection properties
      * return true if the collection is not empty.
      */
+    @Override
     public boolean isSetDeclaredProperty(int propertyIndex) {
         SDOProperty declaredProperty = (SDOProperty) dataObject.getType().getDeclaredProperties().get(propertyIndex);
         if(declaredProperty.getType().isChangeSummaryType()) {
@@ -233,6 +237,7 @@ public class JAXBValueStore implements ValueStore {
      * For isMany=false properties set the value to null. For isMany=true set
      * the value to an empty container of the appropriate type.
      */
+    @Override
     public void unsetDeclaredProperty(int propertyIndex) {
         SDOProperty declaredProperty = (SDOProperty) dataObject.getType().getDeclaredProperties().get(propertyIndex);
         Mapping mapping = this.getJAXBMappingForProperty(declaredProperty);
@@ -277,25 +282,31 @@ public class JAXBValueStore implements ValueStore {
         }
     }
 
+    @Override
     public Object getOpenContentProperty(Property property) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void setOpenContentProperty(Property property, Object value) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public boolean isSetOpenContentProperty(Property property) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void unsetOpenContentProperty(Property property) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void setManyProperty(Property property, Object value) {
     }
 
+    @Override
     public ValueStore copy() {
         AbstractSession session = ((JAXBContext) jaxbHelperContext.getJAXBContext()).getXMLContext().getSession(entity);
         Object originalEntity = entity;

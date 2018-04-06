@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -62,6 +62,7 @@ public class TablePerMultitenantPolicy implements MultitenantPolicy, Cloneable {
     /**
      * INTERNAL:
      */
+    @Override
     public void addFieldsToRow(AbstractRecord row, AbstractSession session) {
         // No fields to add in table per tenant policy.
     }
@@ -69,6 +70,7 @@ public class TablePerMultitenantPolicy implements MultitenantPolicy, Cloneable {
     /**
      * INTERNAL:
      */
+    @Override
     public void addToTableDefinition(TableDefinition tableDefinition) {
         // Nothing to do here. Called during DDL generation.
     }
@@ -77,6 +79,7 @@ public class TablePerMultitenantPolicy implements MultitenantPolicy, Cloneable {
      * INTERNAL:
      * Multitenant policies are cloned per inheritance subclass.
      */
+    @Override
     public MultitenantPolicy clone(ClassDescriptor descriptor) {
         TablePerMultitenantPolicy clonedPolicy = null;
 
@@ -144,6 +147,7 @@ public class TablePerMultitenantPolicy implements MultitenantPolicy, Cloneable {
     /**
      * INTERNAL:
      */
+    @Override
     public void initialize(AbstractSession session) throws DescriptorException {
         // Add the context property to the session set.
         session.addMultitenantContextProperty(contextProperty);
@@ -168,6 +172,7 @@ public class TablePerMultitenantPolicy implements MultitenantPolicy, Cloneable {
     /**
      * INTERNAL:
      */
+    @Override
     public boolean isSingleTableMultitenantPolicy() {
         return false;
     }
@@ -191,6 +196,7 @@ public class TablePerMultitenantPolicy implements MultitenantPolicy, Cloneable {
     /**
      * INTERNAL:
      */
+    @Override
     public boolean isTablePerMultitenantPolicy() {
         return true;
     }
@@ -198,6 +204,7 @@ public class TablePerMultitenantPolicy implements MultitenantPolicy, Cloneable {
     /**
      * INTERNAL:
      */
+    @Override
     public void postInitialize(AbstractSession session) {
         // Nothing to do here.
     }
@@ -205,6 +212,7 @@ public class TablePerMultitenantPolicy implements MultitenantPolicy, Cloneable {
     /**
      * INTERNAL:
      */
+    @Override
     public void preInitialize(AbstractSession session) throws DescriptorException {
         // Nothing to do here.
     }

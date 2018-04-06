@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -86,6 +86,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      * Add update fields for template row.
      * These are any unmapped fields required to write in an update.
      */
+    @Override
     public void addLockFieldsToUpdateRow(AbstractRecord databaseRow, AbstractSession session) {
         if (isStoredInCache()) {
             databaseRow.put(getWriteLockField(), null);
@@ -98,6 +99,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      * passed in query. depending on the storage flag, the value is
      * either retrieved from the cache of the object.
      */
+    @Override
     public void addLockValuesToTranslationRow(ObjectLevelModifyQuery query) {
         Object value;
         if (isStoredInCache()) {
@@ -125,6 +127,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      * the optimistic locking values included.  The values are taken from the
      * passed in database row.  This expression will be used in a delete call.
      */
+    @Override
     public Expression buildDeleteExpression(DatabaseTable table, Expression mainExpression, AbstractRecord row) {
         //use the same expression as update
         return buildUpdateExpression(table, mainExpression, row, null);
@@ -148,6 +151,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      * from the passed in database row.  This expression will be used in
      * an update call.
      */
+    @Override
     public Expression buildUpdateExpression(DatabaseTable table, Expression mainExpression, AbstractRecord row, AbstractRecord row2) {
         if (cachedExpression == null) {
             cachedExpression = buildExpression();
@@ -162,6 +166,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      * INTERNAL:
      * Clone the policy
      */
+    @Override
     public Object clone() {
         try {
             return super.clone();
@@ -174,6 +179,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      * INTERNAL:
      * Indicates that compareWriteLockValues method is supported by the policy.
      */
+    @Override
     public boolean supportsWriteLockValuesComparison() {
         return true;
     }
@@ -190,6 +196,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      *  NullPointerException if the passed value is null;
      *  ClassCastException if the passed value is of a wrong type.
      */
+    @Override
     public int compareWriteLockValues(Object value1, Object value2) {
         long longValue1 = ((Number)value1).longValue();
         long longValue2 = ((Number)value2).longValue();
@@ -214,6 +221,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      * This is the base value that is older than all other values, it is used in the place of
      * null in some situations.
      */
+    @Override
     public Object getBaseValue() {
         return Long.valueOf(0);
     }
@@ -240,6 +248,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      * Unfortunately this locking policy can not enforce an optimistic write lock unless a FK or DTF field
      * has changed so this type returns LockOnChange.NONE
      */
+    @Override
     public LockOnChange getLockOnChangeMode(){
         return this.lockOnChangeMode;
     }
@@ -287,6 +296,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      * Return the value that should be stored in the identity map.
      * If the value is stored in the object, then return a null.
      */
+    @Override
     public Object getValueToPutInCache(AbstractRecord row, AbstractSession session) {
         if (isStoredInCache()) {
             return row.get(getWriteLockField());
@@ -303,6 +313,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      * @param primaryKeys a vector containing the primary keys of the domainObject
      * @param session the session to be used with the comparison
      */
+    @Override
     public int getVersionDifference(Object currentValue, Object domainObject, Object primaryKeys, AbstractSession session) {
         Number writeLockFieldValue;
         Number newWriteLockFieldValue = (Number)currentValue;
@@ -327,6 +338,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      * INTERNAL:
      * Return the write lock field.
      */
+    @Override
     public DatabaseField getWriteLockField() {
         return writeLockField;
     }
@@ -343,6 +355,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      * INTERNAL:
      * Retrun an expression that updates the write lock
      */
+    @Override
     public Expression getWriteLockUpdateExpression(ExpressionBuilder builder, AbstractSession session) {
         return ExpressionMath.add(builder.getField(writeLockField.getName()), 1);
     }
@@ -351,6 +364,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      * INTERNAL:
      * This method will return the optimistic lock value for the object
      */
+    @Override
     public Object getWriteLockValue(Object domainObject, Object primaryKey, AbstractSession session) {
         Number writeLockFieldValue;
         if (isStoredInCache()) {
@@ -376,6 +390,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      * INTERNAL:
      * It is responsible for initializing the policy;
      */
+    @Override
     public void initialize(AbstractSession session) {
         DatabaseMapping mapping = this.descriptor.getObjectBuilder().getMappingForField(getWriteLockField());
         if (mapping == null) {
@@ -407,6 +422,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      * INTERNAL:
      * It is responsible for initializing the policy properties;
      */
+    @Override
     public void initializeProperties() {
         DatabaseField dbField = getWriteLockField();
         dbField = descriptor.buildField(dbField);
@@ -427,6 +443,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      * PUBLIC:
      * Return true if the policy uses cascade locking.
      */
+    @Override
     public boolean isCascaded() {
         return isCascaded;
     }
@@ -436,6 +453,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      * Compares the value with the value from the object (or cache).
      * Will return true if the currentValue is newer than the domainObject.
      */
+    @Override
     public boolean isNewerVersion(Object currentValue, Object domainObject, Object primaryKey, AbstractSession session) {
         Number writeLockFieldValue;
         Number newWriteLockFieldValue = (Number)currentValue;
@@ -454,6 +472,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      * Compares the value from the row and from the object (or cache).
      * Will return true if the row is newer than the object.
      */
+    @Override
     public boolean isNewerVersion(AbstractRecord databaseRow, Object domainObject, Object primaryKey, AbstractSession session) {
         Number writeLockFieldValue;
         Number newWriteLockFieldValue = (Number)databaseRow.get(getWriteLockField());
@@ -495,6 +514,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      * PUBLIC:
      * Return true if the lock value is stored in the cache.
      */
+    @Override
     public boolean isStoredInCache() {
         return lockValueStored == IN_CACHE;
     }
@@ -537,6 +557,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      * INTERNAL:
      * Only applicable when the value is stored in the cache.  Will merge with the parent unit of work.
      */
+    @Override
     public void mergeIntoParentCache(UnitOfWorkImpl uow, Object primaryKey, Object object) {
         if (isStoredInCache()) {
             Object parentValue = uow.getParentIdentityMapSession(descriptor, false, false).getIdentityMapAccessorInstance().getWriteLockValue(primaryKey, object.getClass(), getDescriptor());
@@ -550,6 +571,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      *
      * #see this method in VersionLockingPolicy
      */
+    @Override
     public void mergeIntoParentCache(CacheKey unitOfWorkCacheKey, CacheKey parentSessionCacheKey){
         if (isStoredInCache() && unitOfWorkCacheKey != null && parentSessionCacheKey != null) {
             unitOfWorkCacheKey.setWriteLockValue(parentSessionCacheKey.getWriteLockValue());
@@ -559,6 +581,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
     /**
      * INTERNAL:
      */
+    @Override
     public void setDescriptor(ClassDescriptor descriptor) {
         this.descriptor = descriptor;
     }
@@ -592,6 +615,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      * This method must be included in any locking policy.
      * Put the initial writelock value into the modifyRow.
      */
+    @Override
     public void setupWriteFieldsForInsert(ObjectLevelModifyQuery query) {
         Object lockValue = getInitialWriteValue(query.getSession());
         ObjectChangeSet objectChangeSet = query.getObjectChangeSet();
@@ -616,6 +640,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      * INTERNAL:
      * Returns true if the policy has been set to set an optimistic read lock when a owning mapping changes.
      */
+    @Override
     public boolean shouldUpdateVersionOnOwnedMappingChange(){
         return this.lockOnChangeMode == LockOnChange.OWNING;
     }
@@ -624,6 +649,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      * INTERNAL:
      * Returns true if the policy has been set to set an optimistic read lock when any mapping changes.
      */
+    @Override
     public boolean shouldUpdateVersionOnMappingChange(){
         return this.lockOnChangeMode == LockOnChange.ALL;
     }
@@ -678,6 +704,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      * Sets the LockOnChange mode for this policy.  This mode specifies if a
      * Optimistic Write lock should be enforced on this entity when set of mappings are changed.
      */
+    @Override
     public void setLockOnChangeMode(LockOnChange lockOnChangeMode){
         this.lockOnChangeMode = lockOnChangeMode;
     }
@@ -729,6 +756,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      * This method updates the modify row, and the domain object
      * with the new lock value.
      */
+    @Override
     public void updateRowAndObjectForUpdate(ObjectLevelModifyQuery query, Object domainObject) {
         Object lockValue = getNewLockValue(query);
         if (isStoredInCache()) {
@@ -753,6 +781,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      * INTERNAL:
      * Check the row count for lock failure.
      */
+    @Override
     public void validateDelete(int rowCount, Object object, DeleteObjectQuery query) {
         if (rowCount <= 0) {
             // Mark the object as invalid in the session cache, only if version is the same as in query.
@@ -774,6 +803,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      * INTERNAL:
      * Check the row count for lock failure.
      */
+    @Override
     public void validateUpdate(int rowCount, Object object, WriteObjectQuery query) {
         if (rowCount <= 0) {
             // Mark the object as invalid in the session cache, only if version is the same as in query.

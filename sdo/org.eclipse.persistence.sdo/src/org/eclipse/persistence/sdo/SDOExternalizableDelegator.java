@@ -51,6 +51,7 @@ public class SDOExternalizableDelegator extends AbstractExternalizableDelegator 
         }
     }
 
+    @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         // This function is indirectly called by InputStream.readExternalData().
         // We reset the static helperContext set in the default constructor during is.readObject()

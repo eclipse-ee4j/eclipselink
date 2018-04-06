@@ -71,6 +71,7 @@ public class PredicateImpl extends CompoundExpressionImpl implements Predicate {
      *
      * @return list boolean expressions forming the predicate
      */
+    @Override
     public List<Expression<Boolean>> getExpressions(){
         return this.expressions;
     }
@@ -80,6 +81,7 @@ public class PredicateImpl extends CompoundExpressionImpl implements Predicate {
      *
      * @return the negated predicate
      */
+    @Override
     public Predicate not(){
         PredicateImpl predicateImpl = null;
         if (isJunction()) {
@@ -101,6 +103,7 @@ public class PredicateImpl extends CompoundExpressionImpl implements Predicate {
     /**
      * @param operator the operator to set
      */
+    @Override
     public void setOperator(BooleanOperator operator) {
         this.booloperator = operator;
     }

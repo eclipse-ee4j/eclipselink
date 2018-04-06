@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -234,6 +234,7 @@ public class ReturningPolicy implements Serializable, Cloneable {
      * Normally cloned when not yet initialized.
      * If initialized ReturningPolicy cloned then the clone should be re-initialized.
      */
+    @Override
     public Object clone() {
         try {
             return super.clone();
@@ -448,6 +449,7 @@ public class ReturningPolicy implements Serializable, Cloneable {
         /**
          * INTERNAL:
          */
+        @Override
         public Object clone() {
             try {
                 return super.clone();
@@ -456,6 +458,7 @@ public class ReturningPolicy implements Serializable, Cloneable {
             }
         }
 
+        @Override
         public boolean equals(Object objectToCompare) {
             if (objectToCompare instanceof Info) {
                 return equals((Info)objectToCompare);

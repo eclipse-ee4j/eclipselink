@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2018  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -28,36 +28,43 @@ public class StoredProcedureParameterImpl extends MetadataImpl<StoredProcedurePa
         super(new StoredProcedureParameterMetadata());
     }
 
+    @Override
     public StoredProcedureParameter setJdbcType(Integer jdbcType) {
         getMetadata().setJdbcType(jdbcType);
         return this;
     }
 
+    @Override
     public StoredProcedureParameter setJdbcTypeName(String jdbcTypeName) {
         getMetadata().setJdbcTypeName(jdbcTypeName);
         return this;
     }
 
+    @Override
     public StoredProcedureParameter setMode(String mode) {
         getMetadata().setMode(mode);
         return this;
     }
 
+    @Override
     public StoredProcedureParameter setName(String name) {
         getMetadata().setName(name);
         return this;
     }
 
+    @Override
     public StoredProcedureParameter setOptional(Boolean optional) {
         getMetadata().setOptional(optional);
         return this;
     }
 
+    @Override
     public StoredProcedureParameter setQueryParameter(String queryParameter) {
         getMetadata().setQueryParameter(queryParameter);
         return this;
     }
 
+    @Override
     public StoredProcedureParameter setType(String type) {
         getMetadata().setTypeName(type);
         return this;

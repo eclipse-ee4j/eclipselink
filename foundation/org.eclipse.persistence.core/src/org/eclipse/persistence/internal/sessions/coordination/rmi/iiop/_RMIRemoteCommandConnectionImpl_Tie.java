@@ -39,18 +39,22 @@ public class _RMIRemoteCommandConnectionImpl_Tie extends org.omg.CORBA_2_3.porta
         "RMI:org.eclipse.persistence.internal.sessions.coordination.rmi.RMIRemoteCommandConnection:0000000000000000"
     };
 
+    @Override
     public void setTarget(Remote target) {
         this.target = (RMIRemoteCommandConnectionImpl) target;
     }
 
+    @Override
     public Remote getTarget() {
         return target;
     }
 
+    @Override
     public org.omg.CORBA.Object thisObject() {
         return this;
     }
 
+    @Override
     public void deactivate() {
         if (orb != null) {
             orb.disconnect(this);
@@ -58,14 +62,17 @@ public class _RMIRemoteCommandConnectionImpl_Tie extends org.omg.CORBA_2_3.porta
         }
     }
 
+    @Override
     public ORB orb() {
         return _orb();
     }
 
+    @Override
     public void orb(ORB orb) {
         orb.connect(this);
     }
 
+    @Override
     public void _set_delegate(Delegate del) {
         super._set_delegate(del);
         if (del != null)
@@ -74,10 +81,12 @@ public class _RMIRemoteCommandConnectionImpl_Tie extends org.omg.CORBA_2_3.porta
             orb = null;
     }
 
+    @Override
     public String[] _ids() { 
         return _type_ids.clone();
     }
 
+    @Override
     public OutputStream _invoke(String method, InputStream _in, ResponseHandler reply) throws SystemException {
         try {
             org.omg.CORBA_2_3.portable.InputStream in = 

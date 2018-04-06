@@ -92,6 +92,7 @@ public class OneToOneAccessor extends ObjectAccessor {
      * INTERNAL:
      * Return the logging context for this accessor.
      */
+    @Override
     protected String getLoggingContext() {
         return MetadataLogger.ONE_TO_ONE_MAPPING_REFERENCE_CLASS;
     }

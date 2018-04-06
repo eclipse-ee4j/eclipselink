@@ -74,6 +74,7 @@ public class ConcatExpressionStateObject extends AbstractListHolderStateObject<S
     /**
      * {@inheritDoc}
      */
+    @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }

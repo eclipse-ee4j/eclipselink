@@ -213,6 +213,7 @@ public class XPathNode {
         return hasTypeChild;
     }
 
+    @Override
     public boolean equals(Object object) {
         try {
             XPathFragment perfNodeXPathFragment = ((XPathNode)object).getXPathFragment();

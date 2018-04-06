@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -59,6 +59,7 @@ public class ReportQueryResultCollection implements PageableCollection<ReportQue
      *
      * @param link the link to add
      */
+    @Override
     public void addLink(LinkV2 link) {
         if (links == null) {
             links = new ArrayList<LinkV2>();
@@ -66,50 +67,62 @@ public class ReportQueryResultCollection implements PageableCollection<ReportQue
         links.add(link);
     }
 
+    @Override
     public List<ReportQueryResultListItem> getItems() {
         return items;
     }
 
+    @Override
     public void setItems(List<ReportQueryResultListItem> items) {
         this.items = items;
     }
 
+    @Override
     public List<LinkV2> getLinks() {
         return links;
     }
 
+    @Override
     public void setLinks(List<LinkV2> links) {
         this.links = links;
     }
 
+    @Override
     public Integer getOffset() {
         return offset;
     }
 
+    @Override
     public void setOffset(Integer offset) {
         this.offset = offset;
     }
 
+    @Override
     public Integer getLimit() {
         return limit;
     }
 
+    @Override
     public void setLimit(Integer limit) {
         this.limit = limit;
     }
 
+    @Override
     public Integer getCount() {
         return count;
     }
 
+    @Override
     public void setCount(Integer count) {
         this.count = count;
     }
 
+    @Override
     public void setHasMore(Boolean hasMore) {
         this.hasMore = hasMore;
     }
 
+    @Override
     public Boolean getHasMore() {
         return hasMore;
     }

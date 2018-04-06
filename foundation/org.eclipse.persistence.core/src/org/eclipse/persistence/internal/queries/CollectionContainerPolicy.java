@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -59,6 +59,7 @@ public class CollectionContainerPolicy extends InterfaceContainerPolicy {
      * Add element into a container which implements the Collection interface.
      * @return boolean indicating whether the container changed.
      */
+    @Override
     public boolean addInto(Object key, Object element, Object container, AbstractSession session) {
         Object elementToAdd = element;
         // PERF: Using direct access.
@@ -80,6 +81,7 @@ public class CollectionContainerPolicy extends InterfaceContainerPolicy {
      * INTERNAL:
      * Return a container populated with the contents of the specified Vector.
      */
+    @Override
     public Object buildContainerFromVector(Vector vector, AbstractSession session) {
         if ((getContainerClass() == vector.getClass()) && (!hasElementDescriptor())) {
             return vector;
@@ -94,6 +96,7 @@ public class CollectionContainerPolicy extends InterfaceContainerPolicy {
      *
      * @param container java.lang.Object
      */
+    @Override
     public void clear(Object container) {
         try {
             ((Collection)container).clear();
@@ -130,10 +133,12 @@ public class CollectionContainerPolicy extends InterfaceContainerPolicy {
      * @param container java.lang.Object
      * @return boolean true if container 'contains' element
      */
+    @Override
     protected boolean contains(Object element, Object container) {
         return ((Collection)container).contains(element);
     }
 
+    @Override
     public Class getInterfaceType() {
         return ClassConstants.Collection_Class;
     }
@@ -143,6 +148,7 @@ public class CollectionContainerPolicy extends InterfaceContainerPolicy {
      * Return whether the collection has order.
      * SortedSets cannot be indexed, but they are order-sensitive.
      */
+    @Override
     public boolean hasOrder() {
         return Helper.classImplementsInterface(this.getContainerClass(), ClassConstants.SortedSet_Class);
     }
@@ -151,11 +157,13 @@ public class CollectionContainerPolicy extends InterfaceContainerPolicy {
      * INTERNAL:
      * Validate the container type.
      */
+    @Override
     public boolean isValidContainer(Object container) {
         // PERF: Use instanceof which is inlined, not isAssignable which is very inefficent.
         return container instanceof Collection;
     }
 
+    @Override
     public boolean isCollectionPolicy() {
         return true;
     }
@@ -167,6 +175,7 @@ public class CollectionContainerPolicy extends InterfaceContainerPolicy {
      * @param container java.lang.Object
      * @return java.util.Enumeration/java.util.Iterator
      */
+    @Override
     public Object iteratorFor(Object container) {
         return ((Collection)container).iterator();
     }
@@ -179,6 +188,7 @@ public class CollectionContainerPolicy extends InterfaceContainerPolicy {
      * @param element java.lang.Object
      * @param container java.lang.Object
      */
+    @Override
     protected boolean removeFrom(Object key, Object element, Object container) {
         try {
             return ((Collection)container).remove(element);
@@ -194,6 +204,7 @@ public class CollectionContainerPolicy extends InterfaceContainerPolicy {
      * @param anObject java.lang.Object
      * @return int The size of the container.
      */
+    @Override
     public int sizeFor(Object container) {
         return ((Collection)container).size();
     }

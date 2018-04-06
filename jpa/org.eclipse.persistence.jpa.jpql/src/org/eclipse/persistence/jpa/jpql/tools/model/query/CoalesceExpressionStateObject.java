@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -111,6 +111,7 @@ public class CoalesceExpressionStateObject extends AbstractEncapsulatedExpressio
     /**
      * {@inheritDoc}
      */
+    @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
@@ -127,6 +128,7 @@ public class CoalesceExpressionStateObject extends AbstractEncapsulatedExpressio
     /**
      * {@inheritDoc}
      */
+    @Override
     public <S extends StateObject> S addItem(S item) {
         getChangeSupport().addItem(this, items, STATE_OBJECTS_LIST, parent(item));
         return item;
@@ -135,6 +137,7 @@ public class CoalesceExpressionStateObject extends AbstractEncapsulatedExpressio
     /**
      * {@inheritDoc}
      */
+    @Override
     public void addItems(List<? extends StateObject> items) {
         getChangeSupport().addItems(this, this.items, STATE_OBJECTS_LIST, parent(items));
     }
@@ -142,6 +145,7 @@ public class CoalesceExpressionStateObject extends AbstractEncapsulatedExpressio
     /**
      * {@inheritDoc}
      */
+    @Override
     public void addListChangeListener(String listName, IListChangeListener<StateObject> listener) {
         getChangeSupport().addListChangeListener(listName, listener);
     }
@@ -177,6 +181,7 @@ public class CoalesceExpressionStateObject extends AbstractEncapsulatedExpressio
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean canMoveDown(StateObject item) {
         return getChangeSupport().canMoveDown(items, item);
     }
@@ -184,6 +189,7 @@ public class CoalesceExpressionStateObject extends AbstractEncapsulatedExpressio
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean canMoveUp(StateObject item) {
         return getChangeSupport().canMoveUp(items, item);
     }
@@ -207,6 +213,7 @@ public class CoalesceExpressionStateObject extends AbstractEncapsulatedExpressio
     /**
      * {@inheritDoc}
      */
+    @Override
     public StateObject getItem(int index) {
         return items.get(index);
     }
@@ -214,6 +221,7 @@ public class CoalesceExpressionStateObject extends AbstractEncapsulatedExpressio
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean hasItems() {
         return !items.isEmpty();
     }
@@ -239,6 +247,7 @@ public class CoalesceExpressionStateObject extends AbstractEncapsulatedExpressio
     /**
      * {@inheritDoc}
      */
+    @Override
     public ListIterable<StateObject> items() {
         return new SnapshotCloneListIterable<StateObject>(items);
     }
@@ -246,6 +255,7 @@ public class CoalesceExpressionStateObject extends AbstractEncapsulatedExpressio
     /**
      * {@inheritDoc}
      */
+    @Override
     public int itemsSize() {
         return items.size();
     }
@@ -253,6 +263,7 @@ public class CoalesceExpressionStateObject extends AbstractEncapsulatedExpressio
     /**
      * {@inheritDoc}
      */
+    @Override
     public StateObject moveDown(StateObject item) {
         getChangeSupport().moveDown(this, items, STATE_OBJECTS_LIST, item);
         return item;
@@ -261,6 +272,7 @@ public class CoalesceExpressionStateObject extends AbstractEncapsulatedExpressio
     /**
      * {@inheritDoc}
      */
+    @Override
     public StateObject moveUp(StateObject item) {
         getChangeSupport().moveUp(this, items, STATE_OBJECTS_LIST, item);
         return item;
@@ -319,6 +331,7 @@ public class CoalesceExpressionStateObject extends AbstractEncapsulatedExpressio
     /**
      * {@inheritDoc}
      */
+    @Override
     public void removeItem(StateObject item) {
         getChangeSupport().removeItem(this, items, STATE_OBJECTS_LIST, item);
     }
@@ -326,6 +339,7 @@ public class CoalesceExpressionStateObject extends AbstractEncapsulatedExpressio
     /**
      * {@inheritDoc}
      */
+    @Override
     public void removeItems(Collection<StateObject> items) {
         getChangeSupport().removeItems(this, this.items, STATE_OBJECTS_LIST, items);
     }
@@ -333,6 +347,7 @@ public class CoalesceExpressionStateObject extends AbstractEncapsulatedExpressio
     /**
      * {@inheritDoc}
      */
+    @Override
     public void removeListChangeListener(String listName, IListChangeListener<StateObject> listener) {
         getChangeSupport().removeListChangeListener(listName, listener);
     }

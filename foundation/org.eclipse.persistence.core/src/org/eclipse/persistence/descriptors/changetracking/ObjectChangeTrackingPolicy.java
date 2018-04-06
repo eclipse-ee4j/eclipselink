@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -42,6 +42,7 @@ public class ObjectChangeTrackingPolicy extends DeferredChangeDetectionPolicy {
      * INTERNAL:
      * This method is used to disable changetracking temporarily
      */
+    @Override
     public void dissableEventProcessing(Object changeTracker) {
         ObjectChangeListener listener = (ObjectChangeListener)((ChangeTracker)changeTracker)._persistence_getPropertyChangeListener();
         if (listener != null) {
@@ -53,6 +54,7 @@ public class ObjectChangeTrackingPolicy extends DeferredChangeDetectionPolicy {
      * INTERNAL:
      * This method is used to enable changetracking temporarily
      */
+    @Override
     public void enableEventProcessing(Object changeTracker) {
         ObjectChangeListener listener = (ObjectChangeListener)((ChangeTracker)changeTracker)._persistence_getPropertyChangeListener();
         if (listener != null) {
@@ -69,6 +71,7 @@ public class ObjectChangeTrackingPolicy extends DeferredChangeDetectionPolicy {
      * @param unitOfWork the active unitOfWork
      * @param descriptor the descriptor for the current object
      */
+    @Override
     public boolean shouldCompareExistingObjectForChange(Object object, UnitOfWorkImpl unitOfWork, ClassDescriptor descriptor) {
         //PERF: Breakdown the logic to have the most likely scenario checked first
         ObjectChangeListener listener = (ObjectChangeListener)((ChangeTracker)object)._persistence_getPropertyChangeListener();
@@ -95,6 +98,7 @@ public class ObjectChangeTrackingPolicy extends DeferredChangeDetectionPolicy {
      * This may cause a property change event to be raised to a listner in the case that a listener exists.
      * If there is no listener then this call is a no-op
      */
+    @Override
     public void raiseInternalPropertyChangeEvent(Object source, String propertyName, Object oldValue, Object newValue) {
         ObjectChangeListener listener = (ObjectChangeListener)((ChangeTracker)source)._persistence_getPropertyChangeListener();
         if (listener != null) {
@@ -106,6 +110,7 @@ public class ObjectChangeTrackingPolicy extends DeferredChangeDetectionPolicy {
      * INTERNAL:
      * Assign ChangeListener to an aggregate object
      */
+    @Override
     public void setAggregateChangeListener(Object parent, Object aggregate, UnitOfWorkImpl uow, ClassDescriptor descriptor, String mappingAttribute) {
         ((ChangeTracker)aggregate)._persistence_setPropertyChangeListener(new AggregateObjectChangeListener((ObjectChangeListener)((ChangeTracker)parent)._persistence_getPropertyChangeListener(), mappingAttribute));
     }
@@ -114,6 +119,7 @@ public class ObjectChangeTrackingPolicy extends DeferredChangeDetectionPolicy {
      * INTERNAL:
      * Assign ObjectChangeListener to PropertyChangeListener
      */
+    @Override
     public PropertyChangeListener setChangeListener(Object clone, UnitOfWorkImpl uow, ClassDescriptor descriptor) {
         ObjectChangeListener listener = new ObjectChangeListener();
         ((ChangeTracker)clone)._persistence_setPropertyChangeListener(listener);
@@ -124,6 +130,7 @@ public class ObjectChangeTrackingPolicy extends DeferredChangeDetectionPolicy {
      * INTERNAL:
      * Clear the changes in the ObjectChangeListener
      */
+    @Override
     public void clearChanges(Object clone, UnitOfWorkImpl uow, ClassDescriptor descriptor, boolean forRefresh) {
         ObjectChangeListener listener = (ObjectChangeListener)((ChangeTracker)clone)._persistence_getPropertyChangeListener();
         if (listener != null) {
@@ -155,6 +162,7 @@ public class ObjectChangeTrackingPolicy extends DeferredChangeDetectionPolicy {
      * INTERNAL:
      * initialize the Policy
      */
+    @Override
     public void initialize(AbstractSession session, ClassDescriptor descriptor) {
         //3934266 If changePolicy is ObjectChangeTrackingPolicy or AttributeChangeTrackingPolicy, the class represented
         //by the descriptor must implement ChangeTracker interface.  Otherwise throw an exception.
@@ -167,6 +175,7 @@ public class ObjectChangeTrackingPolicy extends DeferredChangeDetectionPolicy {
     /**
      * Used to track instances of the change policies without doing an instance of check
      */
+    @Override
     public boolean isDeferredChangeDetectionPolicy(){
         return false;
     }
@@ -174,6 +183,7 @@ public class ObjectChangeTrackingPolicy extends DeferredChangeDetectionPolicy {
     /**
      * Used to track instances of the change policies without doing an instance of check
      */
+    @Override
     public boolean isObjectChangeTrackingPolicy() {
         return true;
     }

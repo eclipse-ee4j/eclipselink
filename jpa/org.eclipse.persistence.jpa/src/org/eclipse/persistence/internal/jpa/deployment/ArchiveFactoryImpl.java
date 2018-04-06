@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -54,10 +54,12 @@ public class ArchiveFactoryImpl implements ArchiveFactory {
         this.logger = logger;
     }
 
+    @Override
     public Archive createArchive(URL rootUrl, Map properties) throws URISyntaxException, IOException {
         return createArchive(rootUrl, null, properties);
     }
 
+    @Override
     public Archive createArchive(URL rootUrl, String descriptorLocation, Map properties) throws URISyntaxException, IOException {
         logger.entering("ArchiveFactoryImpl", "createArchive", new Object[]{rootUrl, descriptorLocation});
 

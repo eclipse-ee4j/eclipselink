@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -43,6 +43,7 @@ public class CciJMSInteraction implements Interaction {
      * @param input - the input record
      * @throws EISException
      */
+    @Override
     public Record execute(InteractionSpec spec, Record input) throws EISException {
         CciJMSRecord record = new CciJMSRecord();
         execute(spec, input, record);
@@ -59,6 +60,7 @@ public class CciJMSInteraction implements Interaction {
      * @param output - the output record
      * @throws EISException
      */
+    @Override
     public boolean execute(InteractionSpec spec, Record input, Record output) throws EISException {
         if (!(spec instanceof CciJMSInteractionSpec)) {
             throw EISException.invalidInteractionSpecType();
@@ -294,6 +296,7 @@ public class CciJMSInteraction implements Interaction {
      *
      * @return the cci connection
      */
+    @Override
     public javax.resource.cci.Connection getConnection() {
         return connection;
     }
@@ -301,6 +304,7 @@ public class CciJMSInteraction implements Interaction {
     /**
      * Resource warnings are not supported.
      */
+    @Override
     public ResourceWarning getWarnings() {
         return null;
     }
@@ -308,12 +312,14 @@ public class CciJMSInteraction implements Interaction {
     /**
      * Resource warnings are not supported.
      */
+    @Override
     public void clearWarnings() {
     }
 
     /**
      * Satisfy the Interaction interface.
      */
+    @Override
     public void close() {
     }
 }

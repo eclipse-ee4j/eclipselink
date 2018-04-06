@@ -137,6 +137,7 @@ public abstract class PluralAttributeImpl<X, C, V> extends AttributeImpl<X, C> i
      * represented entity or attribute is returned.
      * @return Java type
      */
+    @Override
     public Class<V> getBindableJavaType() {
         // For PLURAL_ATTRIBUTE - return the java element type
         return elementType.getJavaType();
@@ -146,6 +147,7 @@ public abstract class PluralAttributeImpl<X, C, V> extends AttributeImpl<X, C> i
      *  Return the bindable type of the represented object.
      *  @return bindable type
      */
+    @Override
     public BindableType getBindableType() {
         return Bindable.BindableType.PLURAL_ATTRIBUTE;
     }
@@ -163,6 +165,7 @@ public abstract class PluralAttributeImpl<X, C, V> extends AttributeImpl<X, C> i
      * Return the collection type.
      * @return collection type
      */
+    @Override
     public abstract CollectionType getCollectionType();
 
     /**
@@ -170,6 +173,7 @@ public abstract class PluralAttributeImpl<X, C, V> extends AttributeImpl<X, C> i
      * collection.
      * @return element type
      */
+    @Override
     public Type<V> getElementType() {
         return this.elementType;
     }

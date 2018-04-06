@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -39,6 +39,7 @@ public class JAXBUnmarshallerHandler extends SAXDocumentBuilder implements Unmar
     /**
      * Event that is called at the end of processing the document.
      */
+    @Override
     public void endDocument() throws SAXException {
         endDocumentTriggered = true;
         super.endDocument();
@@ -47,6 +48,7 @@ public class JAXBUnmarshallerHandler extends SAXDocumentBuilder implements Unmar
     /**
      * Event that is called at the start of processing the document.
      */
+    @Override
     public void startDocument() throws SAXException {
         endDocumentTriggered = false;
         super.startDocument();
@@ -56,6 +58,7 @@ public class JAXBUnmarshallerHandler extends SAXDocumentBuilder implements Unmar
      * Return the unmarhalled document.  If the document is null or the endDocument
      * was never called then an IllegalStateExcpetion will be thrown.
      */
+    @Override
     public Object getResult() throws JAXBException, IllegalStateException {
         Document document = getDocument();
 

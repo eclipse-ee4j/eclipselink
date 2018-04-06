@@ -438,6 +438,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         // remove the aliases that used by DataExpressions
         // with baseExpression NOT the expressionBuilder used by the statement
         ExpressionIterator expIterator = new ExpressionIterator() {
+            @Override
             public void iterate(Expression each) {
                 if(each instanceof DataExpression) {
                     DataExpression dataExpression = (DataExpression)each;
@@ -449,6 +450,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                     }
                 }
             }
+            @Override
             public boolean shouldIterateOverSubSelects() {
                 return true;
             }
@@ -1039,6 +1041,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
     /**
      * The statement is no longer require after prepare so can be released.
      */
+    @Override
     public void clearStatement() {
         // Only clear the statement if it is an expression query, otherwise the statement may still be needed.
         setSQLStatement(null);
@@ -1049,6 +1052,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
      * Clone the mechanism for the specified query clone.
      * Should not try to clone statements.
      */
+    @Override
     public DatabaseQueryMechanism clone(DatabaseQuery queryClone) {
         DatabaseQueryMechanism clone = (DatabaseQueryMechanism)clone();
         clone.setQuery(queryClone);
@@ -1068,6 +1072,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
     /**
      * Return the selection criteria of the query.
      */
+    @Override
     public Expression getSelectionCriteria() {
         return selectionCriteria;
     }
@@ -1106,6 +1111,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
     /**
      * Return true if this is an expression query mechanism.
      */
+    @Override
     public boolean isExpressionQueryMechanism() {
         return true;
     }
@@ -1113,6 +1119,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
     /**
      * Return true if this is a statement query mechanism
      */
+    @Override
     public boolean isStatementQueryMechanism() {
         return false;
     }
@@ -1120,6 +1127,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
     /**
      * Override super to do nothing.
      */
+    @Override
     public void prepare() throws QueryException {
         // Do nothing.
     }
@@ -1127,6 +1135,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
     /**
      * Pre-build the SQL statement from the expression.
      */
+    @Override
     public void prepareCursorSelectAllRows() {
         if (getQuery().isReportQuery()) {
             SQLSelectStatement statement = buildReportQuerySelectStatement(false);
@@ -1146,6 +1155,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
     /**
      * Pre-build the SQL statement from the expression.
      */
+    @Override
     public void prepareDeleteAll() {
         prepareDeleteAll(null, false);
     }
@@ -1631,6 +1641,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
     /**
      * Pre-build the SQL statement from the expression.
      */
+    @Override
     public void prepareDeleteObject() {
         ClassDescriptor descriptor = getDescriptor();
         if (descriptor.usesFieldLocking() && (getTranslationRow() == null)) {
@@ -1662,6 +1673,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
     /**
      * Pre-build the SQL statement from the expression.
      */
+    @Override
     public void prepareDoesExist(DatabaseField field) {
         setSQLStatement(buildSelectStatementForDoesExist(field));
 
@@ -1671,6 +1683,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
     /**
      * Pre-build the SQL statement from the expression.
      */
+    @Override
     public void prepareInsertObject() {
         // Require modify row to prepare.
         if (getModifyRow() == null) {
@@ -1695,6 +1708,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
     /**
      * Pre-build the SQL statement from the expression.
      */
+    @Override
     public void prepareReportQuerySelectAllRows() {
         SQLSelectStatement statement = buildReportQuerySelectStatement(false);
         setSQLStatement(statement);
@@ -1710,6 +1724,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
      * Pre-build the SQL statement from the expression.
      * This is used for subselects, so does not normalize or generate the SQL as it needs the outer expression for this.
      */
+    @Override
     public void prepareReportQuerySubSelect() {
         setSQLStatement(buildReportQuerySelectStatement(true));
         // The expression is no longer require so can be released.
@@ -1719,6 +1734,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
     /**
      * Pre-build the SQL statement from the expression.
      */
+    @Override
     public void prepareSelectAllRows() {
         // Check for multiple table inheritance which may require multiple queries.
         if (!getDescriptor().hasInheritance() || !getDescriptor().getInheritancePolicy().requiresMultipleTableSubclassRead()){
@@ -1746,6 +1762,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
     /**
      * Pre-build the SQL statement from the expression.
      */
+    @Override
     public void prepareSelectOneRow() {
         // Check for multiple table inheritance which may require multiple queries.
         if (!getDescriptor().hasInheritance() || !getDescriptor().getInheritancePolicy().requiresMultipleTableSubclassRead()){
@@ -1773,6 +1790,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
     /**
      * Pre-build the SQL statement from the expression.
      */
+    @Override
     public void prepareUpdateObject() {
         // Require modify row to prepare.
         if (getModifyRow() == null) {
@@ -1836,6 +1854,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
     /**
      * Pre-build the SQL statement from the expressions.
      */
+    @Override
     public void prepareUpdateAll() {
         ExpressionBuilder builder = ((UpdateAllQuery)getQuery()).getExpressionBuilder();
         HashMap updateClauses = ((UpdateAllQuery)getQuery()).getUpdateClauses();
@@ -2009,6 +2028,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         // Before iterating the table is set into result,
         // if expression requiring select is found, then resul set to null.
         ExpressionIterator expRequiresSelectIterator = new ExpressionIterator() {
+            @Override
             public void iterate(Expression each) {
                 if(getResult() == null) {
                     return;
@@ -2038,6 +2058,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                     }
                 }
             }
+            @Override
             public boolean shouldIterateOverSubSelects() {
                 return true;
             }
@@ -2116,6 +2137,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             // This ExpressionIterator will be used for collecting fields from
             // selection criteria and assigned expressions.
             ExpressionIterator expIterator = new ExpressionIterator() {
+                @Override
                 public void iterate(Expression each) {
                     if(each instanceof DataExpression) {
                         DataExpression dataExpression = (DataExpression)each;
@@ -2125,6 +2147,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                         }
                     }
                 }
+                @Override
                 public boolean shouldIterateOverSubSelects() {
                     return true;
                 }
@@ -2676,6 +2699,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
      * @return Vector containing the database rows.
      * @exception  DatabaseException - an error has occurred on the database.
      */
+    @Override
     public Vector selectAllReportQueryRows() throws DatabaseException {
         return selectAllRowsFromTable();
     }
@@ -2685,6 +2709,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
      * @return Vector containing the database rows.
      * @exception  DatabaseException - an error has occurred on the database.
      */
+    @Override
     public Vector selectAllRows() throws DatabaseException {
         // Check for multiple table inheritance which may require multiple queries.
         if (!((ObjectLevelReadQuery)this.query).shouldOuterJoinSubclasses()) {
@@ -2748,6 +2773,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
      * use it to create an SQL command string, and delegate row building
      * responsibility to the accessor.
      */
+    @Override
     public AbstractRecord selectOneRow() throws DatabaseException {
         // Check for multiple table inheritance which may require multiple queries.
         if (!getReadObjectQuery().shouldOuterJoinSubclasses()) {

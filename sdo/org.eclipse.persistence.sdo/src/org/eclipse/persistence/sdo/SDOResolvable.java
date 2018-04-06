@@ -147,6 +147,7 @@ public class SDOResolvable implements ExternalizableDelegator.Resolvable {
      * recently deserialized object retrieved from the ObjectInputStream.
      * Here there is an opportunity to replace the object with a Singleton version
      */
+    @Override
     public Object readResolve() throws ObjectStreamException {
         // return object previously constructed in readExternal()
         return theSDODataObject;
@@ -160,6 +161,7 @@ public class SDOResolvable implements ExternalizableDelegator.Resolvable {
      * Prerequisites: An object has already been constructed and associated with
      * the theSDODataObject member
      */
+    @Override
     public void writeExternal(ObjectOutput objectOutput) throws IOException {
         GZIPOutputStream aGZIPOutputStream = null;
         ByteArrayOutputStream aByteOutputStream = null;
@@ -238,6 +240,7 @@ public class SDOResolvable implements ExternalizableDelegator.Resolvable {
      * The deserialized object will be returned later in a call from the
      * ObjectInputStream to readResolve()
      */
+    @Override
     public void readExternal(ObjectInput objectInput) throws IOException, ClassNotFoundException {
         ByteArrayInputStream aByteInputStream = null;
         GZIPInputStream aGZIPInputStream = null;

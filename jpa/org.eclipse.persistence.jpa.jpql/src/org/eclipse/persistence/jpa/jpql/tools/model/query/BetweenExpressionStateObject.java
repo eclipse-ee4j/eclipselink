@@ -180,6 +180,7 @@ public class BetweenExpressionStateObject extends AbstractStateObject {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }

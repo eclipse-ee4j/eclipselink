@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -45,6 +45,7 @@ public class RMIConnection extends RemoteConnection {
      * @param command RemoteCOmmand Contains a command that will be executed on the remote session
      * @see org.eclipse.persistence.internal.sessions.remote.RemoteCommand
      */
+    @Override
     public void processCommand(RemoteCommand command) {
         try {
             Transporter transporter = new Transporter();
@@ -62,6 +63,7 @@ public class RMIConnection extends RemoteConnection {
      * INTERNAL:
      * Begin a transaction on the database.
      */
+    @Override
     public void beginTransaction() {
         try {
             Transporter transporter = getRemoteSessionController().beginTransaction();
@@ -77,6 +79,7 @@ public class RMIConnection extends RemoteConnection {
      * INTERNAL:
      * Begin an early unit of work transaction.
      */
+    @Override
     public void beginEarlyTransaction() {
         try {
             Transporter transporter = getRemoteSessionController().beginEarlyTransaction();
@@ -92,6 +95,7 @@ public class RMIConnection extends RemoteConnection {
      * INTERNAL:
      * Commit root unit of work from the client side to the server side.
      */
+    @Override
     public RemoteUnitOfWork commitRootUnitOfWork(RemoteUnitOfWork theRemoteUnitOfWork) {
         try {
             Transporter transporter = new Transporter();
@@ -113,6 +117,7 @@ public class RMIConnection extends RemoteConnection {
      * INTERNAL:
      * Commit a transaction on the database.
      */
+    @Override
     public void commitTransaction() {
         try {
             Transporter transporter = getRemoteSessionController().commitTransaction();
@@ -128,6 +133,7 @@ public class RMIConnection extends RemoteConnection {
      * PUBLIC:
      * Returns a remote session.
      */
+    @Override
     public org.eclipse.persistence.sessions.Session createRemoteSession() {
         return new RemoteSession(this);
     }
@@ -135,6 +141,7 @@ public class RMIConnection extends RemoteConnection {
     /**
      * Used for closing cursored streams across RMI.
      */
+    @Override
     public void cursoredStreamClose(ObjID remoteCursoredStreamOid) {
         Transporter transporter = null;
         try {
@@ -150,6 +157,7 @@ public class RMIConnection extends RemoteConnection {
     /**
      * Retrieve next page size of objects from the remote cursored stream
      */
+    @Override
     public Vector cursoredStreamNextPage(RemoteCursoredStream remoteCursoredStream, ReadQuery query, DistributedSession session, int pageSize) {
         Transporter transporter = null;
         try {
@@ -188,6 +196,7 @@ public class RMIConnection extends RemoteConnection {
     /**
      * Return the cursored stream size
      */
+    @Override
     public int cursoredStreamSize(ObjID remoteCursoredStreamID) {
         Transporter transporter = null;
         try {
@@ -206,6 +215,7 @@ public class RMIConnection extends RemoteConnection {
      * INTERNAL:
      * Returns remote cursor stream
      */
+    @Override
     public RemoteCursoredStream cursorSelectObjects(CursoredStreamPolicy policy, DistributedSession session) {
         try {
             Transporter transporter = getRemoteSessionController().cursorSelectObjects(new Transporter(policy));
@@ -230,6 +240,7 @@ public class RMIConnection extends RemoteConnection {
      * INTERNAL:
      * Returns remote cursor stream
      */
+    @Override
     public RemoteScrollableCursor cursorSelectObjects(ScrollableCursorPolicy policy, DistributedSession session) {
         try {
             Transporter transporter = getRemoteSessionController().cursorSelectObjects(new Transporter(policy));
@@ -251,6 +262,7 @@ public class RMIConnection extends RemoteConnection {
      * INTERNAL
      * Return the read-only classes
      */
+    @Override
     public Vector getDefaultReadOnlyClasses() {
         try {
             Transporter transporter = getRemoteSessionController().getDefaultReadOnlyClasses();
@@ -268,6 +280,7 @@ public class RMIConnection extends RemoteConnection {
      * INTERNAL:
      * Return the table descriptor specified for the class.
      */
+    @Override
     public ClassDescriptor getDescriptor(Class domainClass) {
         try {
             Transporter transporter = getRemoteSessionController().getDescriptor(new Transporter(domainClass));
@@ -285,6 +298,7 @@ public class RMIConnection extends RemoteConnection {
      * INTERNAL:
      * Return the table descriptor specified for the alias.
      */
+    @Override
     public ClassDescriptor getDescriptorForAlias(String alias) {
         try {
             Transporter transporter = getRemoteSessionController().getDescriptorForAlias(new Transporter(alias));
@@ -302,6 +316,7 @@ public class RMIConnection extends RemoteConnection {
      * INTERNAL:
      * Return the table descriptor specified for the class.
      */
+    @Override
     public Login getLogin() {
         try {
             Transporter transporter = getRemoteSessionController().getLogin();
@@ -327,6 +342,7 @@ public class RMIConnection extends RemoteConnection {
      * INTERNAL:
      * Perform remote function call
      */
+    @Override
     public Object getSequenceNumberNamed(Object remoteFunctionCall) {
         try {
             Transporter transporter = getRemoteSessionController().getSequenceNumberNamed(new Transporter(remoteFunctionCall));
@@ -346,6 +362,7 @@ public class RMIConnection extends RemoteConnection {
      * INTERNAL:
      * Reset the cache on the server-side session.
      */
+    @Override
     public void initializeIdentityMapsOnServerSession() {
         try {
             Transporter transporter = getRemoteSessionController().initializeIdentityMapsOnServerSession();
@@ -361,6 +378,7 @@ public class RMIConnection extends RemoteConnection {
      * INTERNAL:
      * Instantiate remote value holder on the server
      */
+    @Override
     public Transporter instantiateRemoteValueHolderOnServer(RemoteValueHolder remoteValueHolder) {
         try {
             Transporter transporter = new Transporter();
@@ -381,6 +399,7 @@ public class RMIConnection extends RemoteConnection {
      * INTERNAL:
      * Execute the query on the server.
      */
+    @Override
     public Transporter remoteExecute(DatabaseQuery query) {
         try {
             Transporter transporter = new Transporter();
@@ -401,6 +420,7 @@ public class RMIConnection extends RemoteConnection {
      * INTERNAL:
      * Execute query remotely.
      */
+    @Override
     public Transporter remoteExecuteNamedQuery(String name, Class javaClass, Vector arguments) {
         try {
             Transporter transporter = getRemoteSessionController().executeNamedQuery(new Transporter(name), new Transporter(javaClass), new Transporter(arguments));
@@ -417,6 +437,7 @@ public class RMIConnection extends RemoteConnection {
      * INTERNAL:
      * Rollback a transaction on the database.
      */
+    @Override
     public void rollbackTransaction() {
         try {
             Transporter transporter = getRemoteSessionController().rollbackTransaction();
@@ -431,6 +452,7 @@ public class RMIConnection extends RemoteConnection {
     /**
      * Moves the cursor to the given row number in the result set
      */
+    @Override
     public boolean scrollableCursorAbsolute(ObjID remoteScrollableCursorOid, int rows) {
         Transporter transporter = null;
         try {
@@ -452,6 +474,7 @@ public class RMIConnection extends RemoteConnection {
     /**
      * Moves the cursor to the end of the result set, just after the last row.
      */
+    @Override
     public void scrollableCursorAfterLast(ObjID remoteScrollableCursorOid) {
         Transporter transporter = null;
         try {
@@ -467,6 +490,7 @@ public class RMIConnection extends RemoteConnection {
     /**
      * Moves the cursor to the front of the result set, just before the first row
      */
+    @Override
     public void scrollableCursorBeforeFirst(ObjID remoteScrollableCursorOid) {
         Transporter transporter = null;
         try {
@@ -482,6 +506,7 @@ public class RMIConnection extends RemoteConnection {
     /**
      * Used for closing scrollable cursor across RMI.
      */
+    @Override
     public void scrollableCursorClose(ObjID remoteScrollableCursorOid) {
         Transporter transporter = null;
         try {
@@ -497,6 +522,7 @@ public class RMIConnection extends RemoteConnection {
     /**
      * Retrieves the current row index number
      */
+    @Override
     public int scrollableCursorCurrentIndex(ObjID remoteScrollableCursorOid) {
         Transporter transporter = null;
         try {
@@ -517,6 +543,7 @@ public class RMIConnection extends RemoteConnection {
     /**
      * Moves the cursor to the first row in the result set
      */
+    @Override
     public boolean scrollableCursorFirst(ObjID remoteScrollableCursorOid) {
         Transporter transporter = null;
         try {
@@ -538,6 +565,7 @@ public class RMIConnection extends RemoteConnection {
     /**
      * Indicates whether the cursor is after the last row in the result set.
      */
+    @Override
     public boolean scrollableCursorIsAfterLast(ObjID remoteScrollableCursorOid) {
         Transporter transporter = null;
         try {
@@ -558,6 +586,7 @@ public class RMIConnection extends RemoteConnection {
     /**
      * Indicates whether the cursor is before the first row in the result set.
      */
+    @Override
     public boolean scrollableCursorIsBeforeFirst(ObjID remoteScrollableCursorOid) {
         Transporter transporter = null;
         try {
@@ -580,6 +609,7 @@ public class RMIConnection extends RemoteConnection {
     /**
      * Indicates whether the cursor is on the first row of the result set.
      */
+    @Override
     public boolean scrollableCursorIsFirst(ObjID remoteScrollableCursorOid) {
         Transporter transporter = null;
         try {
@@ -601,6 +631,7 @@ public class RMIConnection extends RemoteConnection {
     /**
      * Indicates whether the cursor is on the last row of the result set.
      */
+    @Override
     public boolean scrollableCursorIsLast(ObjID remoteScrollableCursorOid) {
         Transporter transporter = null;
         try {
@@ -622,6 +653,7 @@ public class RMIConnection extends RemoteConnection {
     /**
      * Moves the cursor to the last row in the result set
      */
+    @Override
     public boolean scrollableCursorLast(ObjID remoteScrollableCursorOid) {
         Transporter transporter = null;
         try {
@@ -643,6 +675,7 @@ public class RMIConnection extends RemoteConnection {
     /**
      * Retrieve next object from the remote scrollable cursor
      */
+    @Override
     public Object scrollableCursorNextObject(ObjID remoteScrollableCursorOid, ReadQuery query, DistributedSession session) {
         Transporter transporter = null;
         try {
@@ -674,6 +707,7 @@ public class RMIConnection extends RemoteConnection {
     /**
      * Retrieve previous object from the remote scrollable cursor
      */
+    @Override
     public Object scrollableCursorPreviousObject(ObjID remoteScrollableCursorOid, ReadQuery query, DistributedSession session) {
         Transporter transporter = null;
         try {
@@ -706,6 +740,7 @@ public class RMIConnection extends RemoteConnection {
     /**
      * Moves the cursor to the given row number in the result set
      */
+    @Override
     public boolean scrollableCursorRelative(ObjID remoteScrollableCursorOid, int rows) {
         Transporter transporter = null;
         try {
@@ -727,6 +762,7 @@ public class RMIConnection extends RemoteConnection {
     /**
      * Return the scrollable cursor size
      */
+    @Override
     public int scrollableCursorSize(ObjID cursorId) {
         Transporter transporter = null;
         try {

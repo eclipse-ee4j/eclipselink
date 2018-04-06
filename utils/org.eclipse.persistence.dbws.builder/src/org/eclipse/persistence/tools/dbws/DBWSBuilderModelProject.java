@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -422,12 +422,14 @@ public class DBWSBuilderModelProject extends Project {
         statementsMapping.setField(f1);
         // need to setup a custom accessor to convert to/from a List and an '\n' separated string
         statementsMapping.setAttributeAccessor(new AttributeAccessor() {
+            @Override
             public void setAttributeValueInObject(Object object, Object value) throws DescriptorException {
                 String rawBatchStatements = (String) value;
                 String[] batchStatements = rawBatchStatements.split("\n");
                 List<String> listOfStatements = Arrays.asList(batchStatements);
                 ((BatchSQLOperationModel)object).setBatchSql(listOfStatements);
             }
+            @Override
             public Object getAttributeValueFromObject(Object object) throws DescriptorException {
                 return ((BatchSQLOperationModel)object).getBatchSql();
             }

@@ -140,6 +140,7 @@ public class CollectionMemberDeclarationStateObject extends AbstractStateObject
     /**
      * {@inheritDoc}
      */
+    @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
@@ -199,6 +200,7 @@ public class CollectionMemberDeclarationStateObject extends AbstractStateObject
     /**
      * {@inheritDoc}
      */
+    @Override
     public IManagedType getManagedType(StateObject stateObject) {
 
         if (identificationVariable.isEquivalent(stateObject)) {
@@ -238,6 +240,7 @@ public class CollectionMemberDeclarationStateObject extends AbstractStateObject
     /**
      * {@inheritDoc}
      */
+    @Override
     public ListIterable<IdentificationVariableStateObject> identificationVariables() {
         return new SingleElementListIterable<IdentificationVariableStateObject>(identificationVariable);
     }

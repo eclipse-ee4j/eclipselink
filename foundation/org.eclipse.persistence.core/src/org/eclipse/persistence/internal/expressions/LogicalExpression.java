@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -35,6 +35,7 @@ public class LogicalExpression extends CompoundExpression {
      * INTERNAL:
      * Used for debug printing.
      */
+    @Override
     public String descriptionOfNodeType() {
         return "Logical";
     }
@@ -45,6 +46,7 @@ public class LogicalExpression extends CompoundExpression {
      * This is used for in-memory querying.
      * If the expression in not able to determine if the object conform throw a not supported exception.
      */
+    @Override
     public boolean doesConform(Object object, AbstractSession session, AbstractRecord translationRow, int valueHolderPolicy, boolean objectIsUnregistered) {
         // This should always be and or or.
         if (this.operator.getSelector() == ExpressionOperator.And) {
@@ -120,6 +122,7 @@ public class LogicalExpression extends CompoundExpression {
     /**
      * INTERNAL:
      */
+    @Override
     public boolean isLogicalExpression() {
         return true;
     }

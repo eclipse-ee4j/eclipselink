@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -70,6 +70,7 @@ public class XMLEventReaderReader extends XMLReaderAdapter {
         }
     }
 
+    @Override
     public Locator getLocator(){
         if(locator == null){
             locator = new  EventReaderLocator();
@@ -291,6 +292,7 @@ public class XMLEventReaderReader extends XMLReaderAdapter {
         /**
          * Returns the public ID of this Locator.
          */
+        @Override
         public String getPublicId() {
             if (this.event == null) {
                 return null;
@@ -301,6 +303,7 @@ public class XMLEventReaderReader extends XMLReaderAdapter {
         /**
          * Returns the system ID of this Locator.
          */
+        @Override
         public String getSystemId() {
             if (this.event == null) {
                 return null;
@@ -311,6 +314,7 @@ public class XMLEventReaderReader extends XMLReaderAdapter {
         /**
          * Returns the line number of this Locator.
          */
+        @Override
         public int getLineNumber() {
             if (this.event == null) {
                 return -1;
@@ -321,6 +325,7 @@ public class XMLEventReaderReader extends XMLReaderAdapter {
         /**
          * Returns the column number of this Locator.
          */
+        @Override
         public int getColumnNumber() {
             if (this.event == null) {
                 return -1;
@@ -328,10 +333,12 @@ public class XMLEventReaderReader extends XMLReaderAdapter {
             return this.event.getLocation().getColumnNumber();
         }
 
+        @Override
         public String getXMLVersion() {
             return null;
         }
 
+        @Override
         public String getEncoding() {
             return null;
         }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -73,6 +73,7 @@ public class EISCollectionChangeRecord extends CollectionChangeRecord implements
      * The contents of this collection is determined by the mapping that
      * populated it
      */
+    @Override
     public List getAdds() {
         if (adds == null) {
             adds = new ArrayList(2);// keep it as small as possible
@@ -86,6 +87,7 @@ public class EISCollectionChangeRecord extends CollectionChangeRecord implements
      * The contents of this collection is determined by the mapping that
      * populated it
      */
+    @Override
     public List getChangedMapKeys() {
         if (changedMapKeys == null) {
             changedMapKeys = new ArrayList(2);// keep it as small as possible
@@ -99,6 +101,7 @@ public class EISCollectionChangeRecord extends CollectionChangeRecord implements
      * The contents of this collection is determined by the mapping that
      * populated it
      */
+    @Override
     public List getRemoves() {
         if (removes == null) {
             removes = new ArrayList(2);// keep it as small as possible
@@ -125,6 +128,7 @@ public class EISCollectionChangeRecord extends CollectionChangeRecord implements
     /**
      * Return whether any changes have been recorded with the change record.
      */
+    @Override
     public boolean hasChanges() {
         return hasAdds() || hasRemoves() || hasChangedMapKeys() || getOwner().isNew();
     }

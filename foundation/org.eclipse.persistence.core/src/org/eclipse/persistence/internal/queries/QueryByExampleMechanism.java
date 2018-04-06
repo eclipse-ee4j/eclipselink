@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -60,6 +60,7 @@ public class QueryByExampleMechanism extends ExpressionQueryMechanism {
      * In the case of EJBQL or query by example, an expression needs to be
      * generated. Build the required expression.
      */
+    @Override
     public void buildSelectionCriteria(AbstractSession session) {
         if (isParsed() || (getExampleObject() == null)) {
             return;
@@ -120,6 +121,7 @@ public class QueryByExampleMechanism extends ExpressionQueryMechanism {
     /**
      * Return true if this is a query by example mechanism
      */
+    @Override
     public boolean isQueryByExampleMechanism() {
         return true;
     }

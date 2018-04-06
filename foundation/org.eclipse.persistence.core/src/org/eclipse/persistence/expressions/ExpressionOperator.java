@@ -290,6 +290,7 @@ public class ExpressionOperator implements Serializable {
      * INTERNAL:
      * Return if the operator is equal to the other.
      */
+    @Override
     public boolean equals(Object object) {
         if (this == object) {
             return true;
@@ -309,6 +310,7 @@ public class ExpressionOperator implements Serializable {
      * INTERNAL:
      * Return the hash-code based on the unique selector.
      */
+    @Override
     public int hashCode() {
         return getSelector();
     }
@@ -2993,6 +2995,7 @@ public class ExpressionOperator implements Serializable {
     /**
      * Print a debug representation of this operator.
      */
+    @Override
     public String toString() {
         if ((getDatabaseStrings() == null) || (getDatabaseStrings().length == 0)) {
             //CR#... Print a useful name for the missing platform operator.

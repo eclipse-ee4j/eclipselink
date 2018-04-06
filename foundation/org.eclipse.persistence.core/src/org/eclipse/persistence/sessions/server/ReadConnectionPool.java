@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -62,6 +62,7 @@ public class ReadConnectionPool extends ConnectionPool {
      * INTERNAL:
      * Wait until a connection is available and allocate the connection for the client.
      */
+    @Override
     public synchronized Accessor acquireConnection() throws ConcurrencyException {
         // Check for dead database and fail-over.
         if (this.isDead) {
@@ -137,6 +138,7 @@ public class ReadConnectionPool extends ConnectionPool {
      * INTERNAL:
      * Concurrent reads are supported.
      */
+    @Override
     public boolean hasConnectionAvailable() {
         return true;
     }
@@ -145,6 +147,7 @@ public class ReadConnectionPool extends ConnectionPool {
      * INTERNAL:
      * Because connections are not exclusive nothing is required.
      */
+    @Override
     public synchronized void releaseConnection(Accessor connection) throws DatabaseException {
         if (this.owner.shouldLog(SessionLog.FINEST, SessionLog.CONNECTION)) {
             Object[] args = new Object[1];

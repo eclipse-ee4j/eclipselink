@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -73,6 +73,7 @@ public abstract class DataExpression extends BaseExpression {
         derivedTables.add(addThis);
     }
 
+    @Override
     public Expression asOf(AsOfClause clause) {
         asOfClause = clause;
         return this;
@@ -176,6 +177,7 @@ public abstract class DataExpression extends BaseExpression {
         return null;
     }
 
+    @Override
     public AsOfClause getAsOfClause() {
         return asOfClause;
     }

@@ -301,6 +301,7 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
      * INTERNAL:
      * This method returns a reference to the collection.
      */
+    @Override
     public Map<ObjectChangeSet, ObjectChangeSet> getAllChangeSets() {
         if (this.allChangeSets == null) {
             // 2612538 - the default size of Map (32) is appropriate
@@ -410,6 +411,7 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
      * INTERNAL:
      * This method returns the reference to the deleted objects from the changeSet.
      */
+    @Override
     public Map<ObjectChangeSet, ObjectChangeSet> getDeletedObjects() {
         if (this.deletedObjects == null) {
             // 2612538 - the default size of Map (32) is appropriate
@@ -458,6 +460,7 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
      * Get ChangeSet for a particular clone
      * @return ObjectChangeSet the changeSet that represents a particular clone
      */
+    @Override
     public org.eclipse.persistence.sessions.changesets.ObjectChangeSet getObjectChangeSetForClone(Object clone) {
         if ((clone == null) || (this.cloneToObjectChangeSet == null)) {
             return null;
@@ -483,6 +486,7 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
      * This method returns the Clone for a particular changeSet
      * @return Object the clone represented by the changeSet
      */
+    @Override
     public Object getUOWCloneForObjectChangeSet(org.eclipse.persistence.sessions.changesets.ObjectChangeSet changeSet) {
         if ((changeSet == null) || (this.objectChangeSetToUOWClone == null)) {
             return null;
@@ -494,6 +498,7 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
      * INTERNAL:
      * Returns true if the Unit Of Work change Set has changes
      */
+    @Override
     public boolean hasChanges() {
         // All of the object change sets were empty (none contained changes)
         // The this.hasChanges variable is set in addObjectChangeSet

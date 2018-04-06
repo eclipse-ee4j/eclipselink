@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -55,6 +55,7 @@ public class RMITransportManager extends TransportManager {
      * INTERNAL:
      * Create and return an RMI remote connection to the specified service
      */
+    @Override
     public RemoteConnection createConnection(ServiceId connectionServiceId) {
         RemoteConnection connection = null;
 
@@ -124,6 +125,7 @@ public class RMITransportManager extends TransportManager {
      * Create the local command connection for this transport in a naming service and
      * return it.
      */
+    @Override
     public void createLocalConnection() {
         if (namingServiceType == REGISTRY_NAMING_SERVICE) {
             createLocalConnectionInRegistry();
@@ -224,6 +226,7 @@ public class RMITransportManager extends TransportManager {
      * INTERNAL:
      * Initialize default properties for RMI.
      */
+    @Override
     public void initialize() {
         super.initialize();
         // URL is not required when in a cluster, do not default.
@@ -239,6 +242,7 @@ public class RMITransportManager extends TransportManager {
      * RMI registry, un-exports it from the RMI runtime, and sets it to null.
      * This method is invoked internally by EclipseLink when the RCM is shutdown and should not be invoked by user's application.
      */
+    @Override
     public void removeLocalConnection() {
         String unbindName = null;
         try {

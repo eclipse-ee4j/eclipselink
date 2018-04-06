@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -46,6 +46,7 @@ public class AggregateAttributeChangeListener extends AttributeChangeListener {
      * oldValue are identical.  If they are identical, do not create PropertyChangeEvent
      * and call this method.
      */
+    @Override
     public void internalPropertyChange(PropertyChangeEvent evt) {
         super.internalPropertyChange(evt);
         // Also need to raise the event in the parent, to create a change set for it.

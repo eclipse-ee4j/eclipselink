@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -47,6 +47,7 @@ public class ObjectArrayMapping extends AbstractCompositeCollectionMapping {
      * Return the name of the structure.
      * This is the name of the user defined data type as defined on the database.
      */
+    @Override
     public String getStructureName() {
         return structureName;
     }
