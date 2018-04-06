@@ -60,7 +60,7 @@ public class DBWSBuilderModelProject extends Project {
         addDescriptor(buildBindingModelDescriptor());
         addDescriptor(buildBatchSQLOperationModelDescriptor());
 
-        for (Iterator descriptors = getDescriptors().values().iterator(); descriptors.hasNext();) {
+        for (Iterator<ClassDescriptor> descriptors = getDescriptors().values().iterator(); descriptors.hasNext();) {
             XMLDescriptor descriptor = (XMLDescriptor)descriptors.next();
             descriptor.setNamespaceResolver(ns);
         }

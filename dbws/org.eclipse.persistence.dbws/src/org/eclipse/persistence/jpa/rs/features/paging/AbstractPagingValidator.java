@@ -29,8 +29,6 @@ abstract class AbstractPagingValidator {
     private int offset;
     private int limit;
 
-    private final UriInfo uri;
-
     final Map<String, Object> queryParameters;
 
     /**
@@ -40,7 +38,6 @@ abstract class AbstractPagingValidator {
      */
     AbstractPagingValidator(UriInfo uri) {
         queryParameters = AbstractResource.getQueryParameters(uri);
-        this.uri = uri;
     }
 
     /**

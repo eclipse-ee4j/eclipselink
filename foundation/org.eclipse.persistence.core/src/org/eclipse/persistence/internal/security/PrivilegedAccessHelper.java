@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -25,7 +25,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -170,19 +169,6 @@ public class PrivilegedAccessHelper {
      */
     public static ClassLoader getClassLoaderForClass(final Class clazz) {
         return clazz.getClassLoader();
-    }
-
-    /**
-     * Gets the class loader for a given class.  Wraps the call in a privileged block if necessary
-     * @deprecated Will be removed in next version.
-     */
-    @Deprecated
-    public static ClassLoader privilegedGetClassLoaderForClass(final Class clazz) {
-        try{
-            return AccessController.doPrivileged(new PrivilegedGetClassLoaderForClass(clazz));
-        }catch (PrivilegedActionException ex){
-            throw (RuntimeException) ex.getCause();
-        }
     }
 
     /**

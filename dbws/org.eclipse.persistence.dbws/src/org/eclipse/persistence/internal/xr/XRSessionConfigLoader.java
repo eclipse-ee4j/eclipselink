@@ -33,7 +33,6 @@ public class XRSessionConfigLoader extends XMLSessionConfigLoader {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public boolean load(SessionManager sessionManager, ClassLoader loader) {
         Document document = loadDocument(loader);
 

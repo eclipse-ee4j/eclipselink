@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015 Oracle. All rights reserved.
+ * Copyright (c) 2013, 2018 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -96,7 +96,7 @@ public class PagingResponseBuilder extends FeatureResponseBuilderImpl {
         return result;
     }
 
-    private PageableCollection populatePagedCollectionLinks(Map<String, Object> queryParams, UriInfo uriInfo, PageableCollection resultCollection) {
+    private PageableCollection<?> populatePagedCollectionLinks(Map<String, Object> queryParams, UriInfo uriInfo, PageableCollection<?> resultCollection) {
         // populate links for entire response
         final ItemLinksBuilder itemLinksBuilder = new ItemLinksBuilder();
 
@@ -161,7 +161,7 @@ public class PagingResponseBuilder extends FeatureResponseBuilderImpl {
         ReportQueryResultCollection response = new ReportQueryResultCollection();
         for (Object result : results) {
             ReportQueryResultListItem queryResultListItem = new ReportQueryResultListItem();
-            List<JAXBElement> jaxbFields = createShellJAXBElementList(reportItems, result);
+            List<JAXBElement<?>> jaxbFields = createShellJAXBElementList(reportItems, result);
             // We don't have a way of determining self links for the report query responses
             // so, no links array will be inserted into individual items in the response
             queryResultListItem.setFields(jaxbFields);

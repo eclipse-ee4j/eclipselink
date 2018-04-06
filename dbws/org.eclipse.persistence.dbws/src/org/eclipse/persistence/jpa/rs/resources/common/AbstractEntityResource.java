@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -179,7 +179,6 @@ public abstract class AbstractEntityResource extends AbstractResource {
         }
     }
 
-    @SuppressWarnings("rawtypes")
     protected Response createInternal(String version, String persistenceUnit, String type, HttpHeaders headers, UriInfo uriInfo, InputStream in) {
         JPARSLogger.entering(CLASS_NAME, "createInternal", new Object[] { "PUT", headers.getMediaType(), version, persistenceUnit, type, uriInfo.getRequestUri().toASCIIString() });
         try {
@@ -247,7 +246,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
                                             inverseMapping.setAttributeValueInObject(obj, entity);
                                         }
                                     } else if (attributeValue instanceof Collection) {
-                                        final Collection collection = (Collection) attributeValue;
+                                        final Collection<?> collection = (Collection<?>) attributeValue;
                                         if (!collection.isEmpty()) {
                                             for (Object obj : collection) {
                                                 inverseMapping.setAttributeValueInObject(obj, entity);
@@ -291,7 +290,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
                                                 return false;
                                             }
                                         } else if (value instanceof Collection) {
-                                            if (!(((Collection) value).isEmpty())) {
+                                            if (!(((Collection<?>) value).isEmpty())) {
                                                 return false;
                                             }
                                         }

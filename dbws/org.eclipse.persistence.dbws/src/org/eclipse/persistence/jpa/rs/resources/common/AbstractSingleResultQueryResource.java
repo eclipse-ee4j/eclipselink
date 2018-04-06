@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -68,7 +68,7 @@ public abstract class AbstractSingleResultQueryResource extends AbstractResource
 
                 if (response != null && response instanceof SingleResultQuery) {
                     final SingleResultQuery singleResultQuery = (SingleResultQuery) response;
-                    final List<JAXBElement> item = singleResultQuery.getFields();
+                    final List<JAXBElement<?>> item = singleResultQuery.getFields();
                     if ((item != null) && (item.size() == 1)) {
                         // Fix for Bug 393320 - JPA-RS: Respect the Accept Header for a singleResultQuery
                         // If there is only one item in the select clause and if value of that item is binary, we will create a response with

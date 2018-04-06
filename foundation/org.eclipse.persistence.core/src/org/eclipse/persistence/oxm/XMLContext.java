@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.oxm;
 
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -39,6 +41,7 @@ import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedGetClassLoaderForClass;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.CollectionMapping;
@@ -99,7 +102,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
      *            A single session name or multiple session names separated by a :
      */
     public XMLContext(String sessionNames) {
-        this(sessionNames, PrivilegedAccessHelper.privilegedGetClassLoaderForClass(XMLContext.class));
+        this(sessionNames, privilegedGetClassLoaderForClass(XMLContext.class));
     }
 
     /**
@@ -127,7 +130,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
      *            and load sessions.
      */
     public XMLContext(String sessionNames, String xmlResource) {
-        this(sessionNames, PrivilegedAccessHelper.privilegedGetClassLoaderForClass(XMLContext.class), xmlResource);
+        this(sessionNames, privilegedGetClassLoaderForClass(XMLContext.class), xmlResource);
     }
 
     /**
@@ -767,7 +770,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
             if (classLoader != null) {
                 dbSession = (DatabaseSession) SessionManager.getManager().getSession(sessionLoader, sessionName, classLoader, false, true);
             } else {
-                dbSession = (DatabaseSession) SessionManager.getManager().getSession(sessionLoader, sessionName, PrivilegedAccessHelper.privilegedGetClassLoaderForClass(this.getClass()), false, false, false);
+                dbSession = (DatabaseSession) SessionManager.getManager().getSession(sessionLoader, sessionName, privilegedGetClassLoaderForClass(this.getClass()), false, false, false);
             }
             if ((dbSession.getDatasourceLogin() == null) || !(dbSession.getDatasourceLogin().getDatasourcePlatform() instanceof XMLPlatform)) {
                 XMLPlatform platform = new SAXPlatform();
@@ -972,6 +975,17 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
         }
 
         return null;
+    }
+
+    private static ClassLoader privilegedGetClassLoaderForClass(final Class clazz) {
+        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+            try {
+                return AccessController.doPrivileged(new PrivilegedGetClassLoaderForClass(clazz));
+            } catch (PrivilegedActionException ex) {
+                throw (RuntimeException) ex.getCause();
+            }
+        }
+        return PrivilegedAccessHelper.getClassLoaderForClass(clazz);
     }
 
 }

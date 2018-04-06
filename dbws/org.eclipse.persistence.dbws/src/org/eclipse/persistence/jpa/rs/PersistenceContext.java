@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -133,8 +133,7 @@ public class PersistenceContext {
     public static final String CLASS_NAME = PersistenceContext.class.getName();
     public static final String SESSION_VERSION_PROPERTY = "jaxb.context.version";
 
-    @SuppressWarnings("rawtypes")
-    protected List<XmlAdapter> adapters = null;
+    protected List<XmlAdapter<?, ?>> adapters = null;
 
     /**
      * The name of the persistence context is used to look it up. By default it will be the
@@ -553,7 +552,7 @@ public class PersistenceContext {
      * @return the object
      *
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({"rawtypes" })
     public Object removeAttribute(Map<String, String> tenantId, String entityName, Object id, String attribute, String listItemId, Object entity, String partner)
     {
         EntityManager em = getEmf().createEntityManager(tenantId);
@@ -1185,7 +1184,6 @@ public class PersistenceContext {
      * the actual objects in the relationships
      * @throws JAXBException
      */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     public void marshall(Object object, MediaType mediaType, OutputStream output, boolean sendRelationships) throws JAXBException {
         marshall(object, mediaType, output, sendRelationships, null);
     }
@@ -1215,7 +1213,7 @@ public class PersistenceContext {
         marshaller.setAdapter(new LinkAdapter(getBaseURI().toString(), this));
         marshaller.setAdapter(new RelationshipLinkAdapter(getBaseURI().toString(), this));
 
-        for (XmlAdapter adapter : getAdapters()) {
+        for (XmlAdapter<?, ?> adapter : getAdapters()) {
             marshaller.setAdapter(adapter);
         }
 
@@ -1368,11 +1366,11 @@ public class PersistenceContext {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    protected List<XmlAdapter> getAdapters() throws JPARSException {
+    protected List<XmlAdapter<?, ?>> getAdapters() throws JPARSException {
         if (adapters != null) {
             return adapters;
         }
-        adapters = new ArrayList<XmlAdapter>();
+        adapters = new ArrayList<XmlAdapter<?, ?>>();
         try {
             final ClassLoader cl = getServerSession().getDatasourcePlatform().getConversionManager().getLoader();
 
@@ -1516,7 +1514,7 @@ public class PersistenceContext {
         pageableQueries = new HashMap<String, RestPageableQuery>();
 
         // Iterate on all entity classes
-        for (Class clazz : getServerSession().getProject().getDescriptors().keySet()) {
+        for (Class<?> clazz : getServerSession().getProject().getDescriptors().keySet()) {
             if (clazz.isAnnotationPresent(RestPageableQueries.class)) {
                 final RestPageableQueries restPageableQueries = (RestPageableQueries) clazz.getAnnotation(RestPageableQueries.class);
 

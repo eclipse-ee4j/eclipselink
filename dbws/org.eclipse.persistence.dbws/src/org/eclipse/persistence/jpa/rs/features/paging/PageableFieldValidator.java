@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2015  Oracle. All rights reserved.
+ * Copyright (c) 2014, 2018  Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -26,7 +26,7 @@ import java.lang.reflect.Field;
  * @author Dmitry Kornilov
  */
 public final class PageableFieldValidator extends AbstractPagingValidator {
-    private final Class entityClass;
+    private final Class<?> entityClass;
     private final String fieldName;
 
     /**
@@ -36,7 +36,7 @@ public final class PageableFieldValidator extends AbstractPagingValidator {
      * @param fieldName   field name to validate.
      * @param uri         request URI.
      */
-    public PageableFieldValidator(Class entityClass, String fieldName, UriInfo uri) {
+    public PageableFieldValidator(Class<?> entityClass, String fieldName, UriInfo uri) {
         super(uri);
         this.entityClass = entityClass;
         this.fieldName = fieldName;
