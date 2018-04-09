@@ -22,8 +22,10 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Table;
 
 @Entity
+@Table(name="CONCURR_USER")
 public class User {
 
     @Id private int id;
