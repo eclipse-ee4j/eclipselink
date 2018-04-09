@@ -2528,31 +2528,20 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
 
     /**
      * INTERNAL:
-     * Returns clone of InsertObjectQuery from the reference descriptor, if it is not set - create it.
+     * Returns a clone of InsertObjectQuery from the ClassDescriptor's DescriptorQueryManager or a new one
      */
     protected InsertObjectQuery getInsertObjectQuery(AbstractSession session, ClassDescriptor desc) {
-        DescriptorQueryManager queryManager = desc.getQueryManager();
-        if (!queryManager.hasInsertQuery()) {
-            synchronized (queryManager) {
-                if (!queryManager.hasInsertQuery()) {
-                    queryManager.setInsertQuery(new InsertObjectQuery());
-                }
-            }
+        InsertObjectQuery insertQuery = desc.getQueryManager().getInsertQuery();
+        if (insertQuery == null) {
+            insertQuery = new InsertObjectQuery();
+            insertQuery.setDescriptor(desc);
+            insertQuery.checkPrepare(session, insertQuery.getTranslationRow());
+        } else {
+            // Ensure the query has been prepared.
+            insertQuery.checkPrepare(session, insertQuery.getTranslationRow());
+            insertQuery = (InsertObjectQuery)insertQuery.clone();
         }
-        InsertObjectQuery insertQuery = queryManager.getInsertQuery();
-        if (insertQuery.getModifyRow() == null) {
-            AbstractRecord modifyRow = new DatabaseRecord();
-            for (int i = 0; i < getTargetForeignKeyFields().size(); i++) {
-                DatabaseField field = getTargetForeignKeyFields().elementAt(i);
-                modifyRow.put(field, null);
-            }
-            desc.getObjectBuilder().buildTemplateInsertRow(session, modifyRow);
-            getContainerPolicy().addFieldsForMapKey(modifyRow);
-            if(this.listOrderField != null) {
-                modifyRow.put(this.listOrderField, null);
-            }
-            insertQuery.setModifyRow(modifyRow);
-        }
+        insertQuery.setIsExecutionClone(true);
         return insertQuery;
     }
 
@@ -2563,10 +2552,8 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     public InsertObjectQuery getAndPrepareModifyQueryForInsert(ObjectLevelModifyQuery originalQuery, Object object) {
         AbstractSession session = originalQuery.getSession();
         ClassDescriptor objReferenceDescriptor = getReferenceDescriptor(object.getClass(), session);
-        InsertObjectQuery insertQueryFromDescriptor = getInsertObjectQuery(session, objReferenceDescriptor);
-        insertQueryFromDescriptor.checkPrepare(session, insertQueryFromDescriptor.getModifyRow());
+        InsertObjectQuery insertQuery = getInsertObjectQuery(session, objReferenceDescriptor);
 
-        InsertObjectQuery insertQuery = (InsertObjectQuery)insertQueryFromDescriptor.clone();
         insertQuery.setObject(object);
         insertQuery.setDescriptor(objReferenceDescriptor);
 
