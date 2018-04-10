@@ -15,6 +15,7 @@
 package org.eclipse.persistence.testing.models.aggregate;
 
 import java.io.*;
+import java.util.Collection;
 import java.util.Vector;
 import org.eclipse.persistence.indirection.*;
 import org.eclipse.persistence.tools.schemaframework.*;
@@ -22,29 +23,29 @@ import org.eclipse.persistence.tools.schemaframework.*;
 public class ProjectDescription implements Serializable {
     public Number id;
     public String description;
-    public ValueHolderInterface computer;
-    public ValueHolderInterface languages;
-    public ValueHolderInterface responsibilities;
+    public ValueHolderInterface<Computer> computer;
+    public ValueHolderInterface<Collection<Language>> languages;
+    public ValueHolderInterface<Collection<Responsibility>> responsibilities;
 
     public ProjectDescription() {
-        computer = new ValueHolder();
-        responsibilities = new ValueHolder();
-        languages = new ValueHolder();
+        computer = new ValueHolder<>();
+        responsibilities = new ValueHolder<>();
+        languages = new ValueHolder<>();
     }
 
     public static ProjectDescription example1(Employee anEmployee) {
         ProjectDescription example = new ProjectDescription();
-        Vector responsibilities = new Vector();
-        Vector languages = new Vector();
+        Vector<Responsibility> responsibilities = new Vector<>();
+        Vector<Language> languages = new Vector<>();
         PopulationManager manger = PopulationManager.getDefaultManager();
 
         responsibilities.addElement(Responsibility.example1(anEmployee));
         responsibilities.addElement(Responsibility.example2(anEmployee));
 
-        languages.addElement(manger.getObject((new Language()).getClass(), "example1"));
-        languages.addElement(manger.getObject((new Language()).getClass(), "example2"));
-        languages.addElement(manger.getObject((new Language()).getClass(), "example3"));
-        languages.addElement(manger.getObject((new Language()).getClass(), "example4"));
+        languages.addElement((Language) manger.getObject((new Language()).getClass(), "example1"));
+        languages.addElement((Language) manger.getObject((new Language()).getClass(), "example2"));
+        languages.addElement((Language) manger.getObject((new Language()).getClass(), "example3"));
+        languages.addElement((Language) manger.getObject((new Language()).getClass(), "example4"));
 
         example.setDescription("TOPLink");
         example.getComputer().setValue(Computer.example1());
@@ -56,15 +57,15 @@ public class ProjectDescription implements Serializable {
 
     public static ProjectDescription example2(Employee anEmployee) {
         ProjectDescription example = new ProjectDescription();
-        Vector responsibilities = new Vector();
-        Vector languages = new Vector();
+        Vector<Responsibility> responsibilities = new Vector<Responsibility>();
+        Vector<Language> languages = new Vector<>();
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         responsibilities.addElement(Responsibility.example3(anEmployee));
         responsibilities.addElement(Responsibility.example4(anEmployee));
 
-        languages.addElement(manager.getObject((new Language()).getClass(), "example3"));
-        languages.addElement(manager.getObject((new Language()).getClass(), "example4"));
+        languages.addElement((Language) manager.getObject((new Language()).getClass(), "example3"));
+        languages.addElement((Language) manager.getObject((new Language()).getClass(), "example4"));
 
         example.setDescription("Course Development");
         example.getComputer().setValue(Computer.example2());
@@ -76,15 +77,15 @@ public class ProjectDescription implements Serializable {
 
     public static ProjectDescription example3(Employee anEmployee) {
         ProjectDescription example = new ProjectDescription();
-        Vector responsibilities = new Vector();
-        Vector languages = new Vector();
+        Vector<Responsibility> responsibilities = new Vector<Responsibility>();
+        Vector<Language>  languages= new Vector<>();
         PopulationManager manger = PopulationManager.getDefaultManager();
 
         responsibilities.addElement(Responsibility.example5(anEmployee));
         responsibilities.addElement(Responsibility.example6(anEmployee));
 
-        languages.addElement(manger.getObject((new Language()).getClass(), "example5"));
-        languages.addElement(manger.getObject((new Language()).getClass(), "example6"));
+        languages.addElement((Language) manger.getObject((new Language()).getClass(), "example5"));
+        languages.addElement((Language) manger.getObject((new Language()).getClass(), "example6"));
 
         example.setDescription("Network Administration");
         example.getComputer().setValue(Computer.example3());
@@ -94,7 +95,7 @@ public class ProjectDescription implements Serializable {
         return example;
     }
 
-    public ValueHolderInterface getComputer() {
+    public ValueHolderInterface<Computer> getComputer() {
         return computer;
     }
 
@@ -102,11 +103,11 @@ public class ProjectDescription implements Serializable {
         return description;
     }
 
-    public ValueHolderInterface getLanguages() {
+    public ValueHolderInterface<Collection<Language>> getLanguages() {
         return languages;
     }
 
-    public ValueHolderInterface getResponsibilities() {
+    public ValueHolderInterface<Collection<Responsibility>> getResponsibilities() {
         return responsibilities;
     }
 

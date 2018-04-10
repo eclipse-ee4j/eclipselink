@@ -94,7 +94,7 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
     private volatile Set<E> delegate;
 
     /** Delegate indirection behavior to a value holder */
-    private volatile ValueHolderInterface valueHolder;
+    private volatile ValueHolderInterface<?> valueHolder;
 
     /** Change tracking listener. */
     private transient PropertyChangeListener changeListener = null;
@@ -458,13 +458,14 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
      */
     @Override
     public ValueHolderInterface getValueHolder() {
-        ValueHolderInterface vh = this.valueHolder;
+
+        ValueHolderInterface<?> vh = this.valueHolder;
         // PERF: lazy initialize value holder and vector as are normally set after creation.
         if (vh == null) {
             synchronized(this){
                 vh = this.valueHolder;
                 if (vh == null) {
-                    this.valueHolder = vh = new ValueHolder(new HashSet(initialCapacity, loadFactor));
+                    this.valueHolder = vh = new ValueHolder<>(new HashSet(initialCapacity, loadFactor));
                 }
             }
         }

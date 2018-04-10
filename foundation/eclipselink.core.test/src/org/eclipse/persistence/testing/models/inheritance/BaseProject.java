@@ -23,11 +23,11 @@ import org.eclipse.persistence.indirection.*;
 public class BaseProject {
     private long id;
     private String name;
-    private ValueHolderInterface teamLeader;
+    private ValueHolderInterface<ProjectWorker> teamLeader;
 
     public BaseProject() {
         this.name = "";
-        this.teamLeader = new ValueHolder();
+        this.teamLeader = new ValueHolder<>();
     }
 
     public long getId() {
@@ -39,7 +39,7 @@ public class BaseProject {
     }
 
     public ProjectWorker getTeamLeader() {
-        return (ProjectWorker)teamLeader.getValue();
+        return teamLeader.getValue();
     }
 
     public void setName(String name) {

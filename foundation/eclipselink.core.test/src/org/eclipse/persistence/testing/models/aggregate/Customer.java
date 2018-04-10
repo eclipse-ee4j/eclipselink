@@ -22,16 +22,16 @@ public class Customer {
     private java.lang.String name;
     private java.math.BigDecimal id;
     private int income;
-    private ValueHolderInterface dependants;
-    private ValueHolderInterface company;
+    private ValueHolderInterface<Vector<Dependant>> dependants;
+    private ValueHolderInterface<Company> company;
 
     /**
      * PhoneAgg constructor comment.
      */
     public Customer() {
         super();
-        dependants = new ValueHolder(new Vector());
-        company = new ValueHolder();
+        dependants = new ValueHolder<>(new Vector<>());
+        company = new ValueHolder<>();
     }
 
     public void addDependant(Dependant dependant) {
@@ -44,7 +44,7 @@ public class Customer {
         example1.setName("Bob Smith");
         example1.setIncome(94320);
         example1.setCompany(Company.example1());
-        Vector dependants = new Vector(2);
+        Vector<Dependant> dependants = new Vector<>(2);
         dependants.addElement(Dependant.example1());
         dependants.addElement(Dependant.example2());
         example1.setDependants(dependants);
@@ -57,7 +57,7 @@ public class Customer {
         example2.setName("Jack Johnson");
         example2.setIncome(773388);
         example2.setCompany(Company.example2());
-        Vector dependants = new Vector(1);
+        Vector<Dependant> dependants = new Vector<Dependant>(1);
         dependants.addElement(Dependant.example3());
         example2.setDependants(dependants);
         return example2;
@@ -69,7 +69,7 @@ public class Customer {
         example3.setName("Linda Lindros");
         example3.setIncome(38338);
         example3.setCompany(Company.example3());
-        Vector dependants = new Vector(2);
+        Vector<Dependant> dependants = new Vector<>(2);
         dependants.addElement(Dependant.example4());
         dependants.addElement(Dependant.example5());
         example3.setDependants(dependants);
@@ -78,15 +78,15 @@ public class Customer {
     }
 
     public Company getCompany() {
-        return (Company)company.getValue();
+        return company.getValue();
     }
 
-    public org.eclipse.persistence.indirection.ValueHolderInterface getCompanyValueHolder() {
+    public ValueHolderInterface<Company> getCompanyValueHolder() {
         return company;
     }
 
-    public Vector getDependants() {
-        return (Vector)dependants.getValue();
+    public Vector<Dependant> getDependants() {
+        return dependants.getValue();
     }
 
     public ValueHolderInterface getDependantValueHolder() {
@@ -118,7 +118,7 @@ public class Customer {
         company.setValue(newCompany);
     }
 
-    public void setCompanyValueHolder(ValueHolderInterface newCompany) {
+    public void setCompanyValueHolder(ValueHolderInterface<Company> newCompany) {
         company = newCompany;
     }
 
@@ -126,7 +126,7 @@ public class Customer {
         getDependantValueHolder().setValue(dependants);
     }
 
-    public void setDependantValueHolder(ValueHolderInterface dependants) {
+    public void setDependantValueHolder(ValueHolderInterface<Vector<Dependant>> dependants) {
         this.dependants = dependants;
     }
 

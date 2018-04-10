@@ -28,7 +28,7 @@ public interface WrappingValueHolder {
     /**
      * Returns the valueholder that is wrapped by this ValueHolder
      */
-    public ValueHolderInterface getWrappedValueHolder();
+    public ValueHolderInterface<?> getWrappedValueHolder();
 
 
 }

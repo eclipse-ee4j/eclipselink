@@ -21,10 +21,10 @@ import org.eclipse.persistence.indirection.*;
 public class Responsibility implements Serializable {
     public Number id;
     public String responsibility;
-    public ValueHolderInterface employee;
+    public ValueHolderInterface<Employee> employee;
 
     public Responsibility() {
-        employee = new ValueHolder();
+        employee = new ValueHolder<Employee>();
     }
 
     public static Responsibility example1(Employee anEmployee) {
@@ -75,7 +75,7 @@ public class Responsibility implements Serializable {
         return example;
     }
 
-    public ValueHolderInterface getEmployee() {
+    public ValueHolderInterface<Employee> getEmployee() {
         return employee;
     }
 

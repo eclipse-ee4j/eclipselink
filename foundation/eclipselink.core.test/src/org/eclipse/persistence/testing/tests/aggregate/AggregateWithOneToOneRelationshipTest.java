@@ -57,7 +57,7 @@ public class AggregateWithOneToOneRelationshipTest extends AutoVerifyTestCase {
             while (iterator.hasNext()) {
                 Employee employee = (Employee) iterator.next();
                 // traverse Aggregate, 1:1 relationships
-                Address addressFromDB = (Address) employee.getAddressDescription().getAddress().getValue();
+                Address addressFromDB = employee.getAddressDescription().getAddress().getValue();
                 assertNotNull(addressFromDB);
             }
         } catch (QueryException qe) {

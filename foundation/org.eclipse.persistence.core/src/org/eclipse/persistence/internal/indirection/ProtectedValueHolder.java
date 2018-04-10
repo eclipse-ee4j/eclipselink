@@ -30,10 +30,10 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
  */
 public class ProtectedValueHolder extends DatabaseValueHolder implements WrappingValueHolder{
 
-    protected transient ValueHolderInterface wrappedValueHolder;
+    protected transient ValueHolderInterface<?> wrappedValueHolder;
     protected transient DatabaseMapping mapping;
 
-    public ProtectedValueHolder(ValueHolderInterface attributeValue, DatabaseMapping mapping, AbstractSession cloningSession) {
+    public ProtectedValueHolder(ValueHolderInterface<?> attributeValue, DatabaseMapping mapping, AbstractSession cloningSession) {
         this.wrappedValueHolder = attributeValue;
         this.mapping = mapping;
         this.session = cloningSession;
@@ -69,7 +69,7 @@ public class ProtectedValueHolder extends DatabaseValueHolder implements Wrappin
     }
 
     @Override
-    public ValueHolderInterface getWrappedValueHolder() {
+    public ValueHolderInterface<?> getWrappedValueHolder() {
         return wrappedValueHolder;
     }
 

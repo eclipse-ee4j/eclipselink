@@ -29,9 +29,9 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 public class BackupValueHolder extends DatabaseValueHolder {
 
     /** Stores the original uow clone's value holder. */
-    protected ValueHolderInterface unitOfWorkValueHolder;
+    protected ValueHolderInterface<?> unitOfWorkValueHolder;
 
-    public BackupValueHolder(ValueHolderInterface unitOfWorkValueHolder) {
+    public BackupValueHolder(ValueHolderInterface<?> unitOfWorkValueHolder) {
         this.unitOfWorkValueHolder = unitOfWorkValueHolder;
     }
 
@@ -68,7 +68,7 @@ public class BackupValueHolder extends DatabaseValueHolder {
     /**
      * Return the original uow clone's value holder.
      */
-    public ValueHolderInterface getUnitOfWorkValueHolder() {
+    public ValueHolderInterface<?> getUnitOfWorkValueHolder() {
         return unitOfWorkValueHolder;
     }
 }

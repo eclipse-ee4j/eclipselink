@@ -60,7 +60,7 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
     protected volatile Hashtable<K, V> delegate;
 
     /** Delegate indirection behavior to a value holder */
-    protected volatile ValueHolderInterface valueHolder;
+    protected volatile ValueHolderInterface<?> valueHolder;
 
     /** Change tracking listener. */
     private transient PropertyChangeListener changeListener;
@@ -454,13 +454,13 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
       */
     @Override
      public ValueHolderInterface getValueHolder() {
-         ValueHolderInterface vh = this.valueHolder;
+         ValueHolderInterface<?> vh = this.valueHolder;
          // PERF: lazy initialize value holder and vector as are normally set after creation.
          if (vh == null) {
              synchronized(this){
                 vh = this.valueHolder;
                  if (vh == null) {
-                     this.valueHolder = vh = new ValueHolder(new Hashtable<>(initialCapacity, loadFactor));
+                     this.valueHolder = vh = new ValueHolder<>(new Hashtable<>(initialCapacity, loadFactor));
                  }
              }
          }

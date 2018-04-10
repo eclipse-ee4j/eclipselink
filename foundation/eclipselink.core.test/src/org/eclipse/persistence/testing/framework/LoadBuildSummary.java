@@ -42,8 +42,8 @@ public class LoadBuildSummary {
     public int fatalErrors;
     public DatabaseLogin databaseLogin;
     public Timestamp timestamp;
-    protected ValueHolderInterface summaries = new ValueHolder();
-    protected ValueHolderInterface results = new ValueHolder();
+    protected ValueHolderInterface<Vector<TestResultsSummary>> summaries = new ValueHolder<>();
+    protected ValueHolderInterface<Vector<TestResult>> results = new ValueHolder<>();
 
     /**
      * LoadBuildSummary constructor comment.
@@ -88,9 +88,9 @@ public class LoadBuildSummary {
      */
     public void addResult(TestResult result) {
         if (results == null) {
-            results = new ValueHolder(new Vector());
+            results = new ValueHolder<>(new Vector<>());
         } else if (results.getValue() == null) {
-            results.setValue(new Vector());
+            results.setValue(new Vector<>());
         }
         getResults().addElement(result);
     }
@@ -101,12 +101,12 @@ public class LoadBuildSummary {
      */
     public void addSummary(TestResultsSummary summary) {
         if (summaries == null) {
-            summaries = new ValueHolder(new Vector());
+            summaries = new ValueHolder<>(new Vector<>());
         } else if (summaries.getValue() == null) {
-            summaries.setValue(new Vector());
+            summaries.setValue(new Vector<>());
         }
-        for (Enumeration enumtr = getSummaries().elements(); enumtr.hasMoreElements();) {
-            TestResultsSummary element = (TestResultsSummary)enumtr.nextElement();
+        for (Enumeration<TestResultsSummary> enumtr = getSummaries().elements(); enumtr.hasMoreElements();) {
+            TestResultsSummary element = enumtr.nextElement();
             if (element.getName().equals(summary.getName())) {
                 getSummaries().removeElement(element);
             }
@@ -119,25 +119,25 @@ public class LoadBuildSummary {
      * @return int
      */
     public void computeNumberOfTestsAndErrors() {
-        Vector rootSummaries = new Vector();
+        Vector<TestResultsSummary> rootSummaries = new Vector<>();
         numberOfTests = 0;
         errors = 0;
         fatalErrors = 0;
-        for (Enumeration enumtr = getSummaries().elements(); enumtr.hasMoreElements();) {
-            TestResultsSummary summary = (TestResultsSummary)enumtr.nextElement();
+        for (Enumeration<TestResultsSummary> enumtr = getSummaries().elements(); enumtr.hasMoreElements();) {
+            TestResultsSummary summary = enumtr.nextElement();
             if (summary.getParent() == null) {
                 rootSummaries.addElement(summary);
             }
         }
-        for (Enumeration enumtr = rootSummaries.elements(); enumtr.hasMoreElements();) {
-            TestResultsSummary summary = (TestResultsSummary)enumtr.nextElement();
+        for (Enumeration<TestResultsSummary> enumtr = rootSummaries.elements(); enumtr.hasMoreElements();) {
+            TestResultsSummary summary = enumtr.nextElement();
             numberOfTests += summary.getTotalTests();
             errors += summary.getErrors();
             fatalErrors += summary.getFatalErrors();
         }
 
-        for (Enumeration enumtr = getResults().elements(); enumtr.hasMoreElements();) {
-            TestResult result = (TestResult)enumtr.nextElement();
+        for (Enumeration<TestResult> enumtr = getResults().elements(); enumtr.hasMoreElements();) {
+            TestResult result = enumtr.nextElement();
             if (result.hasError()) {
                 errors++;
             } else if (result.hasFatalError()) {
@@ -151,42 +151,42 @@ public class LoadBuildSummary {
      *
      * @return java.util.Vector
      */
-    public Vector getResults() {
+    public Vector<TestResult> getResults() {
         if (results == null) {
-            results = new ValueHolder(new Vector());
+            results = new ValueHolder<>(new Vector<>());
         } else if (results.getValue() == null) {
-            results.setValue(new Vector());
+            results.setValue(new Vector<>());
         }
-        return (Vector)results.getValue();
+        return results.getValue();
     }
 
-    public ValueHolderInterface getResultsHolder() {
+    public ValueHolderInterface<? extends Vector<TestResult>> getResultsHolder() {
         return results;
     }
 
-    public Vector getSummaries() {
+    public Vector<TestResultsSummary> getSummaries() {
         if (summaries == null) {
-            summaries = new ValueHolder(new Vector());
+            summaries = new ValueHolder<>(new Vector<TestResultsSummary>());
         } else if (summaries.getValue() == null) {
-            summaries.setValue(new Vector());
+            summaries.setValue(new Vector<>());
         }
-        return (Vector)summaries.getValue();
+        return summaries.getValue();
     }
 
-    public ValueHolderInterface getSummariesHolder() {
+    public ValueHolderInterface<? extends Vector<TestResultsSummary>> getSummariesHolder() {
         return summaries;
     }
 
     public void initializeLoadBuild() {
         if (getResults() != null) {
-            for (Enumeration enumtr = getResults().elements(); enumtr.hasMoreElements();) {
-                TestResult result = (TestResult)enumtr.nextElement();
+            for (Enumeration<TestResult> enumtr = getResults().elements(); enumtr.hasMoreElements();) {
+                TestResult result = enumtr.nextElement();
                 result.setLoadBuildSummary(this);
             }
         }
         if (getSummaries() != null) {
-            for (Enumeration enum1 = getSummaries().elements(); enum1.hasMoreElements();) {
-                TestResultsSummary summary = (TestResultsSummary)enum1.nextElement();
+            for (Enumeration<TestResultsSummary> enum1 = getSummaries().elements(); enum1.hasMoreElements();) {
+                TestResultsSummary summary = enum1.nextElement();
                 summary.setLoadBuildSummary(this);
                 for (Enumeration enum2 = summary.getResults().elements(); enum2.hasMoreElements();) {
                     TestResult result = (TestResult)enum2.nextElement();
@@ -197,7 +197,7 @@ public class LoadBuildSummary {
 
         // remove test result that belongs to a testSummary
         for (int i = 0; i < getResults().size(); i++) {
-            if (((TestResult)getResults().elementAt(i)).getSummary() != null) {
+            if ((getResults().elementAt(i)).getSummary() != null) {
                 getResults().removeElementAt(i);
                 i--;
             }
@@ -214,14 +214,14 @@ public class LoadBuildSummary {
 
     public void setLoadBuildSummaryForTests() {
         if (getResults() != null) {
-            for (Enumeration enumtr = getResults().elements(); enumtr.hasMoreElements();) {
-                TestResult result = (TestResult)enumtr.nextElement();
+            for (Enumeration<TestResult> enumtr = getResults().elements(); enumtr.hasMoreElements();) {
+                TestResult result = enumtr.nextElement();
                 result.setLoadBuildSummary(this);
             }
         }
         if (getSummaries() != null) {
-            for (Enumeration enum1 = getSummaries().elements(); enum1.hasMoreElements();) {
-                TestResultsSummary summary = (TestResultsSummary)enum1.nextElement();
+            for (Enumeration<TestResultsSummary> enum1 = getSummaries().elements(); enum1.hasMoreElements();) {
+                TestResultsSummary summary = enum1.nextElement();
                 summary.setLoadBuildSummary(this);
                 for (Enumeration enum2 = summary.getResults().elements(); enum2.hasMoreElements();) {
                     TestResult result = (TestResult)enum2.nextElement();
@@ -232,18 +232,18 @@ public class LoadBuildSummary {
 
         // remove test result that belongs to a testSummary
         for (int i = 0; i < getResults().size(); i++) {
-            if (((TestResult)getResults().elementAt(i)).getSummary() != null) {
+            if ((getResults().elementAt(i)).getSummary() != null) {
                 getResults().removeElementAt(i);
                 i--;
             }
         }
     }
 
-    public void setResults(Vector theResults) {
+    public void setResults(Vector<TestResult> theResults) {
         results.setValue(theResults);
     }
 
-    public void setResultsHolder(ValueHolderInterface holder) {
+    public void setResultsHolder(ValueHolderInterface<Vector<TestResult>> holder) {
         results = holder;
     }
 
@@ -251,11 +251,11 @@ public class LoadBuildSummary {
      *
      * @return java.util.Vector
      */
-    public void setSummaries(Vector theSummaries) {
+    public void setSummaries(Vector<TestResultsSummary> theSummaries) {
         summaries.setValue(theSummaries);
     }
 
-    public void setSummariesHolder(ValueHolderInterface holder) {
+    public void setSummariesHolder(ValueHolderInterface<Vector<TestResultsSummary>> holder) {
         summaries = holder;
     }
 }
