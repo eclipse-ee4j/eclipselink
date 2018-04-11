@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2017 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -39,10 +39,12 @@
  *       - 456067 : Added support for defining query timeout units
  *     09/28/2015 - Will Dazey
  *       - 478331 : Added support for defining local or server as the default locale for obtaining timestamps
- *     12/03/2015-2.6 Dalia Abo Sheasha
- *       - 483582: Add the javax.persistence.sharedCache.mode property
- *     09/14/2017-2.6 Will Dazey
- *       - 522312: Add the eclipselink.sequencing.start-sequence-at-nextval property
+ *     12/03/2015 - 2.6 Dalia Abo Sheasha
+ *       - 483582 : Add the javax.persistence.sharedCache.mode property
+ *     09/14/2017 - 2.6 Will Dazey
+ *       - 522312 : Add the eclipselink.sequencing.start-sequence-at-nextval property
+ *     04/11/2018 - Will Dazey
+ *       - 533148 : Add the eclipselink.jpa.sql-call-deferral property
  ******************************************************************************/
 package org.eclipse.persistence.config;
 
@@ -3765,7 +3767,7 @@ public class PersistenceUnitProperties {
      * {@link EntityManager} to be created even in the event that an application
      * has invalid JPQL statements declared in annotations or xml.
      * <p>
-     * <b>Allowed Values</b> (case sensitive String)<b>:</b>
+     * <b>Allowed Values</b> (String)<b>:</b>
      * <ul>
      * <li>"<code>false</code>" (DEFAULT)
      * <li>"<code>true</code>"
@@ -3777,13 +3779,26 @@ public class PersistenceUnitProperties {
      * The "<code>eclipselink.locking.timestamp.local</code>" property defines if locking policies
      * should default to local time(true) or server time(false).
      * <p>
-     * <b>Allowed Values</b> (case sensitive String)<b>:</b>
+     * <b>Allowed Values</b> (String)<b>:</b>
      * <ul>
      * <li>"<code>false</code>" (DEFAULT)
      * <li>"<code>true</code>"
      * </ul>
      */
     public static final String USE_LOCAL_TIMESTAMP = "eclipselink.locking.timestamp.local." + PersistenceUnitProperties.DEFAULT;
+
+    /**
+     * The "<code>eclipselink.jpa.sqlcall.deferral.default</code>" property defines if SQL calls should be deferred to end of
+     * transaction by default or not. When setting this property to <code>false</code>, the application assumes the responsibility 
+     * of ordering the SQL statements and must therefore be aware of any interdependencies between entities. 
+     * <p>
+     * <b>Allowed Values</b> (String)<b>:</b>
+     * <ul>
+     * <li>"<code>true</code>" (DEFAULT)
+     * <li>"<code>false</code>"
+     * </ul>
+     */
+    public static final String SQL_CALL_DEFERRAL = "eclipselink.jpa.sql-call-deferral";
 
     /**
      * INTERNAL: The following properties will not be displayed through logging

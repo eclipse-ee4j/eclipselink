@@ -2834,6 +2834,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             updateQueryTimeout(m);
             updateQueryTimeoutUnit(m);
             updateLockingTimestampDefault(m);
+            updateSQLCallDeferralDefault(m);
             if (!session.hasBroker()) {
                 updateCacheCoordination(m, loader);
             }
@@ -3629,6 +3630,20 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             }
         } catch (NumberFormatException exception) {
             this.session.handleException(ValidationException.invalidValueForProperty(local, PersistenceUnitProperties.USE_LOCAL_TIMESTAMP, exception));
+        }
+    }
+
+    //Bug #333100: Added support for turning off SQL deferral default behavior
+    private void updateSQLCallDeferralDefault(Map persistenceProperties) {
+        String defer = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.SQL_CALL_DEFERRAL, persistenceProperties, this.session);
+        if (defer != null) {
+            if (defer.equalsIgnoreCase("true")) {
+                this.session.getProject().setAllowSQLDeferral(true);
+            } else if (defer.equalsIgnoreCase("false")) {
+                this.session.getProject().setAllowSQLDeferral(false);
+            } else {
+                this.session.handleException(ValidationException.invalidBooleanValueForProperty(defer, PersistenceUnitProperties.SQL_CALL_DEFERRAL));
+            }
         }
     }
 
