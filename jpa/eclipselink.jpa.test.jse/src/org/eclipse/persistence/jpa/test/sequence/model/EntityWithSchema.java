@@ -19,6 +19,8 @@ import javax.persistence.*;
 @Table(name="ENTITY_WITH_SCHEMA", schema=EntityWithSchema.CUSTOM_SCHEMA_NAME)
 public class EntityWithSchema implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     public static final String CUSTOM_SCHEMA_NAME = "CUSTOM_SCHEMA";
     public static final String CUSTOM_SEQUENCE_NAME = "CUSTOM_SEQUENCE";
 
