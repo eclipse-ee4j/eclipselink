@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -22,6 +22,8 @@
  *       - 489794 : Add support for WebSphere EJBEmbeddable platform.
  *     08/29/2016 Jody Grassel
  *       - 500441: Eclipselink core has System.getProperty() calls that are not potentially executed under doPriv()
+ *     04/11/2018 - Will Dazey
+ *       - 533148 : Add the eclipselink.jpa.sql-call-deferral property
  ******************************************************************************/
 package org.eclipse.persistence.internal.sessions;
 
@@ -229,6 +231,7 @@ public class PropertiesHandler {
             //Enhancement
             addProp(new QueryTimeoutUnitProp());
             addProp(new BooleanProp(PersistenceUnitProperties.USE_LOCAL_TIMESTAMP, "false"));
+            addProp(new BooleanProp(PersistenceUnitProperties.SQL_CALL_DEFERRAL, "true"));
         }
 
         Prop(String name) {
