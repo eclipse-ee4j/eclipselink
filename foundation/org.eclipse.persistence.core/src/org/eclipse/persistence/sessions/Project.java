@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -33,6 +33,8 @@
  *       - 381196: Multitenant persistence units with a dedicated emf should allow for DDL generation.
  *     08/11/2012-2.5 Guy Pelletier  
  *       - 393867: Named queries do not work when using EM level Table Per Tenant Multitenancy.
+ *     04/11/2018 - Will Dazey
+ *       - 533148 : Add the eclipselink.jpa.sql-call-deferral property
  ******************************************************************************/  
 package org.eclipse.persistence.sessions;
 
@@ -137,6 +139,9 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     
     /** Flag that allows DDL generation of table per tenant multitenant descriptors */
     protected boolean allowTablePerMultitenantDDLGeneration = false;
+    
+    /** Flag that allows call deferral to be disabled */
+    protected boolean allowSQLDeferral = true;
     
     /**
      * Mapped Superclasses (JPA 2) collection of parent non-relational descriptors keyed on MetadataClass
@@ -1273,7 +1278,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     public boolean allowTablePerMultitenantDDLGeneration() {
         return this.allowTablePerMultitenantDDLGeneration;
     }
-    
+
     /**
      * INTERNAL:
      * Return true if native sql is allowed on this project.
@@ -1281,7 +1286,15 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     public boolean allowNativeSQLQueries() {
         return this.allowNativeSQLQueries;
     }
-    
+
+    /**
+     * INTERNAL:
+     * Return true if SQL calls can defer to EOT on this project.
+     */
+    public boolean allowSQLDeferral() {
+        return this.allowSQLDeferral;
+    }
+
     /**
      * PUBLIC:
      * Return the descriptor for  the alias
@@ -1301,7 +1314,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     public void setAliasDescriptors(Map aHashtable) {
         aliasDescriptors = aHashtable;
     }
-    
+
     /**
      * INTERNAL:
      * Set whether ddl generation should allowed for table per tenant 
@@ -1312,7 +1325,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     public void setAllowTablePerMultitenantDDLGeneration(boolean allowTablePerMultitenantDDLGeneration) {
         this.allowTablePerMultitenantDDLGeneration = allowTablePerMultitenantDDLGeneration;
     }
-    
+
     /**
      * INTERNAL:
      * Set whether native sql is allowed on this project.
@@ -1320,7 +1333,15 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     public void setAllowNativeSQLQueries(boolean allowNativeSQLQueries) {
         this.allowNativeSQLQueries = allowNativeSQLQueries;
     }
-    
+
+    /**
+     * INTERNAL:
+     * Set whether sql deferral is allowed on this project
+     */
+    public void setAllowSQLDeferral(boolean allowSQLDeferral) {
+        this.allowSQLDeferral = allowSQLDeferral;
+    }
+
     /**
      * INTERNAL:
      * Indicates whether there is at least one descriptor that has at least on mapping that
@@ -1329,7 +1350,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     public boolean hasMappingsPostCalculateChangesOnDeleted() {
         return hasMappingsPostCalculateChangesOnDeleted;
     }
-    
+
     /**
      * INTERNAL:
      * Indicates whether there is at least one descriptor that has at least on mapping that
@@ -1338,7 +1359,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     public void setHasMappingsPostCalculateChangesOnDeleted(boolean hasMappingsPostCalculateChangesOnDeleted) {
         this.hasMappingsPostCalculateChangesOnDeleted = hasMappingsPostCalculateChangesOnDeleted;
     }
-    
+
     /**
      * INTERNAL:
      * Return whether there any mappings that are mapped superclasses.
@@ -1348,7 +1369,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     public boolean hasMappedSuperclasses() {
         return (null != this.mappedSuperclassDescriptors && !this.mappedSuperclassDescriptors.isEmpty());
     }
-    
+
     /**
      * INTERNAL:
      * Return whether the given class is mapped as superclass.

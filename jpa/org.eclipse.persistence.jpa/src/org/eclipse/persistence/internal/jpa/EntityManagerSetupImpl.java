@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2017 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -74,6 +74,8 @@
  *       - 483582: Add the javax.persistence.sharedCache.mode property
  *     09/14/2017-2.6 Will Dazey
  *       - 522312: Add the eclipselink.sequencing.start-sequence-at-nextval property
+ *     04/11/2018 - Will Dazey
+ *       - 533148 : Add the eclipselink.jpa.sql-call-deferral property
  *****************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
@@ -2802,6 +2804,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             updateQueryTimeout(m);
             updateQueryTimeoutUnit(m);
             updateLockingTimestampDefault(m);
+            updateSQLCallDeferralDefault(m);
             if (!session.hasBroker()) {
                 updateCacheCoordination(m, loader);
             }
@@ -3594,6 +3597,20 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             }
         } catch (NumberFormatException exception) {
             this.session.handleException(ValidationException.invalidValueForProperty(local, PersistenceUnitProperties.USE_LOCAL_TIMESTAMP, exception));
+        }
+    }
+
+    //Bug #333100: Added support for turning off SQL deferral default behavior
+    private void updateSQLCallDeferralDefault(Map persistenceProperties) {
+        String defer = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.SQL_CALL_DEFERRAL, persistenceProperties, this.session);
+        if (defer != null) {
+            if (defer.equalsIgnoreCase("true")) {
+                this.session.getProject().setAllowSQLDeferral(true);
+            } else if (defer.equalsIgnoreCase("false")) {
+                this.session.getProject().setAllowSQLDeferral(false);
+            } else {
+                this.session.handleException(ValidationException.invalidBooleanValueForProperty(defer, PersistenceUnitProperties.SQL_CALL_DEFERRAL));
+            }
         }
     }
 

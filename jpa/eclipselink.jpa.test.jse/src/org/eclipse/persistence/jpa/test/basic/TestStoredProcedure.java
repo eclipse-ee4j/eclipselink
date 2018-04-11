@@ -76,7 +76,7 @@ public class TestStoredProcedure {
             spq.registerStoredProcedureParameter("dogid", Integer.class, ParameterMode.IN);
             spq.setParameter("dogid", dogList.get(0).getId());
 
-            List res = spq.getResultList();
+            List<?> res = spq.getResultList();
             assertNotNull(res);
             assertEquals(1, res.size());
         } catch (Exception e) {
