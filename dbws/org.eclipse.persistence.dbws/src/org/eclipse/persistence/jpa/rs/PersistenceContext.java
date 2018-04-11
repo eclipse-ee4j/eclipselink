@@ -1516,7 +1516,7 @@ public class PersistenceContext {
         // Iterate on all entity classes
         for (Class<?> clazz : getServerSession().getProject().getDescriptors().keySet()) {
             if (clazz.isAnnotationPresent(RestPageableQueries.class)) {
-                final RestPageableQueries restPageableQueries = (RestPageableQueries) clazz.getAnnotation(RestPageableQueries.class);
+                final RestPageableQueries restPageableQueries = clazz.getAnnotation(RestPageableQueries.class);
 
                 // Process each RestPageableQuery annotation in the list
                 for (RestPageableQuery restPageableQuery : restPageableQueries.value()) {

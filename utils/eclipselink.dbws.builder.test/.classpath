@@ -5,7 +5,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.dbws"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.eclipse.persistence.dbws.builder"/>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="var" path="MYSQL_JDBC_LIB"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/utils/plugins/javax.wsdl_1.6.2.v201012040545.jar" sourcepath="/ECLIPSELINK_HOME/utils/plugins/wsdl4j-src-1.6.2.zip"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.moxy"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.servlet_2.4.0.v200806031604.jar"/>
