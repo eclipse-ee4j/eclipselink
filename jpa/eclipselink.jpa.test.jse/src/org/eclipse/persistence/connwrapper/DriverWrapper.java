@@ -92,7 +92,7 @@ public class DriverWrapper implements Driver {
     public static String defaultNewConnectionsBrokenExceptionString =  "DriverWrapper: new connections are broken";
 
     // all created ConnectionWrappers are cached
-    static HashSet<ConnectionWrapper> connections = new HashSet();
+    static HashSet<ConnectionWrapper> connections = new HashSet<>();
 
     // register with DriverManager
     static {
