@@ -251,7 +251,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      * @return
      */
     protected String buildFirstRowsHint(int max){
-        return HINT_START + HINT_END;
+        return HINT_START + "(" + max + ")" + HINT_END;
     }
 
     /**
