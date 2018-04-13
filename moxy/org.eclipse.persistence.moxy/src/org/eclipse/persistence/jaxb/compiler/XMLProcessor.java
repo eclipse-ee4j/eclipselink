@@ -98,10 +98,10 @@ public class XMLProcessor {
     private JavaModelInput jModelInput;
     private AnnotationsProcessor aProcessor;
     private JAXBMetadataLogger logger;
-    private static final String COLON = ":";
-    private static final String SLASH = "/";
+    private static final char COLON = ':';
+    private static final char SLASH = '/';
     private static final String SELF = ".";
-    private static final String OPEN_BRACKET =  "[";
+    private static final char OPEN_BRACKET =  '[';
     private static final String IS_STR = "is";
     private static final String GET_STR = "get";
     private static final String SET_STR = "set";
@@ -1965,7 +1965,7 @@ public class XMLProcessor {
         if (idx >= 0 && path.length() > 1) {
             name = path.substring(idx+1);
             // may have a prefix
-            StringTokenizer stok = new StringTokenizer(name, COLON);
+            StringTokenizer stok = new StringTokenizer(name, Character.toString(COLON));
             if (stok.countTokens() == 2) {
                 // first token is prefix
                 stok.nextToken();
@@ -1992,7 +1992,7 @@ public class XMLProcessor {
     }
 
     private void processObjectFactory(TypeInfo tInfo){
-          int index = tInfo.getJavaClassName().lastIndexOf(".");
+          int index = tInfo.getJavaClassName().lastIndexOf('.');
           if(index > -1){
             String objectFactoryClassName = tInfo.getJavaClassName().substring(0, index) + ".ObjectFactory";
             aProcessor.findAndProcessObjectFactory(objectFactoryClassName);

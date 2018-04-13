@@ -13,9 +13,13 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.expressions;
 
-import java.io.*;
-import java.util.*;
-import org.eclipse.persistence.expressions.*;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.util.Map;
+import java.util.Vector;
+
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -180,7 +184,7 @@ public class LiteralExpression extends Expression {
      */
     @Override
     public void writeDescriptionOn(BufferedWriter writer) throws IOException {
-        writer.write(getValue().toString());
+        writer.write(getValue());
     }
 
     /**

@@ -25,13 +25,13 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.sessions;
 
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 
 import org.eclipse.persistence.annotations.IdValidation;
 import org.eclipse.persistence.config.BatchWriting;
@@ -540,11 +540,11 @@ public class PropertiesHandler {
 
     protected static class CommitOrderProp extends Prop {
         CommitOrderProp() {
-            super(EntityManagerProperties.PERSISTENCE_CONTEXT_COMMIT_ORDER, CommitOrderType.None.toString());
+            super(EntityManagerProperties.PERSISTENCE_CONTEXT_COMMIT_ORDER, CommitOrderType.None);
             valueArray = new Object[] {
-                    CommitOrderType.Id.toString(),
-                    CommitOrderType.Changes.toString(),
-                    CommitOrderType.None.toString()
+                    CommitOrderType.Id,
+                    CommitOrderType.Changes,
+                    CommitOrderType.None
             };
         }
     }

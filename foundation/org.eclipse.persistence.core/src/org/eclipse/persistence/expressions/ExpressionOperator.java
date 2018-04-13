@@ -17,14 +17,31 @@
  ******************************************************************************/
 package org.eclipse.persistence.expressions;
 
+import java.io.IOException;
+import java.io.Serializable;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
-import java.util.*;
-import java.io.*;
-import org.eclipse.persistence.internal.expressions.*;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.exceptions.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
+import java.util.Vector;
+
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.internal.expressions.ArgumentListFunctionExpression;
+import org.eclipse.persistence.internal.expressions.ExpressionJavaPrinter;
+import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
+import org.eclipse.persistence.internal.expressions.FunctionExpression;
+import org.eclipse.persistence.internal.expressions.LogicalExpression;
+import org.eclipse.persistence.internal.expressions.ObjectExpression;
+import org.eclipse.persistence.internal.expressions.RelationExpression;
 import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.helper.JavaPlatform;
+import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 
@@ -706,11 +723,11 @@ public class ExpressionOperator implements Serializable {
             throw QueryException.cannotConformExpression();
         }
         String likeString = (String)right;
-        if (likeString.indexOf("_") != -1) {
+        if (likeString.indexOf('_') != -1) {
             throw QueryException.cannotConformExpression();
         }
         String value = (String)left;
-        if (likeString.indexOf("%") == -1) {
+        if (likeString.indexOf('%') == -1) {
             // No % symbols
             return left.equals(right);
         }

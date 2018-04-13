@@ -16,6 +16,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
 import java.util.Collection;
 import java.util.List;
 import java.util.StringTokenizer;
+
 import org.eclipse.persistence.jpa.jpql.WordParser;
 
 /**
@@ -136,11 +137,10 @@ public final class Join extends AbstractExpression {
     protected void addOrderedChildrenTo(List<Expression> children) {
 
         String join = getText();
-        String space = " ";
 
         // Break the identifier into multiple identifiers
-        if (join.indexOf(space) != -1) {
-            StringTokenizer tokenizer = new StringTokenizer(join, space, true);
+        if (join.indexOf(SPACE) != -1) {
+            StringTokenizer tokenizer = new StringTokenizer(join, " ", true);
 
             while (tokenizer.hasMoreTokens()) {
                 String token = tokenizer.nextToken();
@@ -440,7 +440,7 @@ public final class Join extends AbstractExpression {
         else {
             String path = wordParser.word();
 
-            if (path.indexOf(".") == -1) {
+            if (path.indexOf('.') == -1) {
                 joinAssociationPath = new AbstractSchemaName(this, path);
                 joinAssociationPath.parse(wordParser, tolerant);
             }

@@ -12,7 +12,9 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.codegen;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * INTERNAL:
@@ -139,7 +141,7 @@ public abstract class CodeDefinition {
     }
 
     private static String packageName(String typeName) {
-        int lastPeriod = typeName.lastIndexOf(".");
+        int lastPeriod = typeName.lastIndexOf('.');
 
         if (lastPeriod == -1) {
             return "";
@@ -157,7 +159,7 @@ public abstract class CodeDefinition {
      * (e.g. int -> int, java.util.Vector -> Vector, java.lang.Boolean[] -> Boolean, etc.)
      */
     private static String shortName(String typeName) {
-        int shortNameStartIndex = typeName.lastIndexOf(".") + 1;
+        int shortNameStartIndex = typeName.lastIndexOf('.') + 1;
         int searchIndex = shortNameStartIndex;
 
         boolean stillLookingForEnd = true;

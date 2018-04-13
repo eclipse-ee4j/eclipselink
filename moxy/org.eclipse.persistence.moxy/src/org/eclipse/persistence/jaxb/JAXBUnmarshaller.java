@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -288,7 +288,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
             return jaxbContext.createJAXBElement(new QName(""), obj.getClass(), obj);
         }
         String rootNamespaceUri = null;
-        int idx = rootName.indexOf(":");
+        int idx = rootName.indexOf(':');
         if (idx != -1) {
             rootNamespaceUri = desc.getNamespaceResolver().resolveNamespacePrefix(rootName.substring(0, idx));
             rootName = rootName.substring(idx + 1);

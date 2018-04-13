@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -16,12 +16,13 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.sdo.SDOConstants;
-import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
+import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.sdo.SDOConstants;
+import org.eclipse.persistence.sdo.SDODataObject;
+
 import commonj.sdo.DataObject;
 import commonj.sdo.Property;
 import commonj.sdo.Sequence;
@@ -376,8 +377,8 @@ public class XPathEngine {
             int firstQuoteIndex = query.indexOf('\'');
             int lastQuoteIndex = query.lastIndexOf('\'');
             if ((firstQuoteIndex == -1) && (lastQuoteIndex == -1)) {// !! note: case: [number=1'23'] is assume not to happen !!
-                firstQuoteIndex = query.indexOf("\"");
-                lastQuoteIndex = query.lastIndexOf("\"");
+                firstQuoteIndex = query.indexOf('\"');
+                lastQuoteIndex = query.lastIndexOf('\"');
             }
             if ((firstQuoteIndex != -1) && (lastQuoteIndex != -1) && (firstQuoteIndex < lastQuoteIndex)) {// quoted string existed
                 value = query.substring(firstQuoteIndex + 1, lastQuoteIndex);

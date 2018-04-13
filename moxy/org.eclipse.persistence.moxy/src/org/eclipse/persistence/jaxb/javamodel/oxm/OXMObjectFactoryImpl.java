@@ -21,7 +21,15 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
-import org.eclipse.persistence.jaxb.javamodel.*;
+import org.eclipse.persistence.jaxb.javamodel.AnnotationProxy;
+import org.eclipse.persistence.jaxb.javamodel.JavaAnnotation;
+import org.eclipse.persistence.jaxb.javamodel.JavaClass;
+import org.eclipse.persistence.jaxb.javamodel.JavaClassInstanceOf;
+import org.eclipse.persistence.jaxb.javamodel.JavaConstructor;
+import org.eclipse.persistence.jaxb.javamodel.JavaField;
+import org.eclipse.persistence.jaxb.javamodel.JavaMethod;
+import org.eclipse.persistence.jaxb.javamodel.JavaModel;
+import org.eclipse.persistence.jaxb.javamodel.JavaPackage;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaAnnotationImpl;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlRegistry;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlRegistry.XmlElementDecl;
@@ -309,7 +317,7 @@ public class OXMObjectFactoryImpl implements JavaClass {
     }
 
     private static String EMPTY_STRING = "";
-    private static String DOT = ".";
+    private static char DOT = '.';
     private static String JAVA_LANG_OBJECT = "java.lang.Object";
     private static String NAME = "name";
     private static String NAMESPACE = "namespace";

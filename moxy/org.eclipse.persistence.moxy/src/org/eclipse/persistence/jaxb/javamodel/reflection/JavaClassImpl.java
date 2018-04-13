@@ -12,10 +12,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.jaxb.javamodel.reflection;
 
-import org.eclipse.persistence.exceptions.JAXBException;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.jaxb.javamodel.*;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
@@ -30,6 +26,16 @@ import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import org.eclipse.persistence.exceptions.JAXBException;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.jaxb.javamodel.JavaAnnotation;
+import org.eclipse.persistence.jaxb.javamodel.JavaClass;
+import org.eclipse.persistence.jaxb.javamodel.JavaClassInstanceOf;
+import org.eclipse.persistence.jaxb.javamodel.JavaConstructor;
+import org.eclipse.persistence.jaxb.javamodel.JavaField;
+import org.eclipse.persistence.jaxb.javamodel.JavaMethod;
+import org.eclipse.persistence.jaxb.javamodel.JavaPackage;
 
 /**
  * INTERNAL:
@@ -342,7 +348,7 @@ public class JavaClassImpl implements JavaClass {
             }
             String className = nonInnerClass.getCanonicalName();
             if(className !=null){
-                int index = className.lastIndexOf(".");
+                int index = className.lastIndexOf('.');
                 if(index > -1){
                     return className.substring(0, index);
                 }

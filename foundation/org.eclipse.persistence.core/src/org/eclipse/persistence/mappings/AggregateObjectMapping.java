@@ -30,34 +30,62 @@
 package org.eclipse.persistence.mappings;
 
 import java.beans.PropertyChangeListener;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
 import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackingPolicy;
 import org.eclipse.persistence.descriptors.changetracking.DeferredChangeDetectionPolicy;
 import org.eclipse.persistence.descriptors.changetracking.ObjectChangeTrackingPolicy;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
+import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
+import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.EntityFetchGroup;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
-import org.eclipse.persistence.internal.sessions.*;
-import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
-import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
-import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.AggregateChangeRecord;
+import org.eclipse.persistence.internal.sessions.ChangeRecord;
+import org.eclipse.persistence.internal.sessions.MergeManager;
+import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
 import org.eclipse.persistence.mappings.foundation.MapKeyMapping;
 import org.eclipse.persistence.mappings.querykeys.DirectQueryKey;
 import org.eclipse.persistence.mappings.querykeys.QueryKey;
-import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.queries.DataReadQuery;
+import org.eclipse.persistence.queries.DeleteObjectQuery;
+import org.eclipse.persistence.queries.FetchGroup;
+import org.eclipse.persistence.queries.FetchGroupTracker;
+import org.eclipse.persistence.queries.ObjectBuildingQuery;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.queries.ReadQuery;
+import org.eclipse.persistence.queries.WriteObjectQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.Project;
 
@@ -1106,7 +1134,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     public Map extractIdentityFieldsForQuery(Object object, AbstractSession session){
         Map keyFields = new HashMap();
         ClassDescriptor descriptor =getReferenceDescriptor();
-        boolean usePrimaryKeyFields = (descriptor.getPrimaryKeyFields() != null && ! descriptor.getPrimaryKeyFields().isEmpty()) ? true : false;
+        boolean usePrimaryKeyFields = descriptor.getPrimaryKeyFields() != null && ! descriptor.getPrimaryKeyFields().isEmpty();
         Iterator <DatabaseMapping> i = descriptor.getMappings().iterator();
         while (i.hasNext()){
             DatabaseMapping mapping = i.next();
@@ -1437,9 +1465,10 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
 
             ClassDescriptor desc = clonedDescriptor;
 
-            while (attr.contains(".")) {
-                desc = desc.getMappingForAttributeName(attr.substring(0, attr.indexOf("."))).getReferenceDescriptor();
-                attr = attr.substring(attr.indexOf(".") + 1);
+            int idx;
+            while ((idx = attr.indexOf('.')) > -1) {
+                desc = desc.getMappingForAttributeName(attr.substring(0, idx)).getReferenceDescriptor();
+                attr = attr.substring(idx + 1);
             }
 
             DatabaseMapping mapping = desc.getMappingForAttributeName(attr);
@@ -1973,8 +2002,8 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         for (Entry<String, Object[]> translations : this.nestedFieldTranslations.entrySet()) {
             String attributeName = translations.getKey();
             DatabaseMapping mapping = null;
-            String currentAttributeName = attributeName.substring(0, attributeName.indexOf("."));
-            String remainingAttributeName = attributeName.substring(attributeName.indexOf(".")+ 1);
+            String currentAttributeName = attributeName.substring(0, attributeName.indexOf('.'));
+            String remainingAttributeName = attributeName.substring(attributeName.indexOf('.')+ 1);
             mapping = clonedDescriptor.getMappingForAttributeName(currentAttributeName);
             if (mapping.isAggregateObjectMapping()) {
                 if (remainingAttributeName != null && remainingAttributeName.contains(".")){

@@ -14,8 +14,10 @@ package org.eclipse.persistence.sdo.helper;
 
 import java.net.URI;
 import java.net.URL;
+
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
+
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.xml.sax.InputSource;
 
@@ -74,7 +76,7 @@ public class DefaultSchemaResolver implements SchemaResolver {
                     if (baseUri.isOpaque() && baseUri.getScheme().equals("jar")) {
                         // Example - jar:file:/C:/schema.jar!/my.xsd
                         // Strip off anything after the last '/' character (base location could represent a file)
-                        schemaUrl = new URI(baseLoc.substring(0, baseLoc.lastIndexOf("/") + 1) + schemaLocation).toURL();
+                        schemaUrl = new URI(baseLoc.substring(0, baseLoc.lastIndexOf('/') + 1) + schemaLocation).toURL();
                     } else {
                         schemaUrl = new URI(baseLoc).resolve(schemaUri).toURL();
                     }

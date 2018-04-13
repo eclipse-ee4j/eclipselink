@@ -25,7 +25,14 @@ import javax.xml.bind.JAXBElement;
 
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.jaxb.compiler.XMLProcessor;
-import org.eclipse.persistence.jaxb.javamodel.*;
+import org.eclipse.persistence.jaxb.javamodel.JavaAnnotation;
+import org.eclipse.persistence.jaxb.javamodel.JavaClass;
+import org.eclipse.persistence.jaxb.javamodel.JavaClassInstanceOf;
+import org.eclipse.persistence.jaxb.javamodel.JavaConstructor;
+import org.eclipse.persistence.jaxb.javamodel.JavaField;
+import org.eclipse.persistence.jaxb.javamodel.JavaMethod;
+import org.eclipse.persistence.jaxb.javamodel.JavaModel;
+import org.eclipse.persistence.jaxb.javamodel.JavaPackage;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaAttribute;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaType;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaType.JavaAttributes;
@@ -402,7 +409,7 @@ public class OXMJavaClassImpl implements JavaClass {
      */
     @Override
     public String getPackageName() {
-        int lastDotIndex = getQualifiedName().lastIndexOf(DOT);
+        int lastDotIndex = getQualifiedName().lastIndexOf('.');
         if (lastDotIndex == -1) {
             return EMPTY_STRING;
         }

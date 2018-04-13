@@ -13,18 +13,18 @@
 package org.eclipse.persistence.oxm.schema;
 
 import java.net.URL;
-import org.w3c.dom.Document;
-import org.xml.sax.ErrorHandler;
 
-import org.eclipse.persistence.platform.xml.XMLPlatform;
-import org.eclipse.persistence.platform.xml.XMLPlatformException;
-import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
+import javax.xml.namespace.QName;
+
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
-
-import javax.xml.namespace.QName;
+import org.eclipse.persistence.platform.xml.XMLPlatform;
+import org.eclipse.persistence.platform.xml.XMLPlatformException;
+import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
+import org.w3c.dom.Document;
+import org.xml.sax.ErrorHandler;
 
 /**
  * Provides a way for a descriptor's reference to its schema to be specified.
@@ -146,7 +146,7 @@ public abstract class XMLSchemaReference implements org.eclipse.persistence.plat
         }
 
         if (schemaContextAsQName == null) {
-            int idx = schemaContext.lastIndexOf("/");
+            int idx = schemaContext.lastIndexOf('/');
             String type = schemaContext.substring(idx + 1);
             idx = type.indexOf(Constants.COLON);
             if (idx != -1) {
@@ -183,7 +183,7 @@ public abstract class XMLSchemaReference implements org.eclipse.persistence.plat
      */
     public boolean isGlobalDefinition() {
         // more than one occurance of "/" indicates a local definition
-        return schemaContext.lastIndexOf("/") <= 0;
+        return schemaContext.lastIndexOf('/') <= 0;
     }
 
     /**

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -17,11 +17,6 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.Validator;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.xml.sax.ErrorHandler;
-
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.Root;
 import org.eclipse.persistence.internal.oxm.XMLObjectBuilder;
@@ -32,6 +27,10 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.documentpreservation.DocumentPreservationPolicy;
 import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.platform.xml.XMLTransformer;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.xml.sax.ErrorHandler;
 
 /**
  * PUBLIC:
@@ -294,7 +293,7 @@ public class XMLBinder {
             return xmlRoot;
         }
         String rootNamespaceUri = null;
-        int idx = rootName.indexOf(":");
+        int idx = rootName.indexOf(':');
         if (idx != -1) {
             rootNamespaceUri = desc.getNamespaceResolver().resolveNamespacePrefix(rootName.substring(0, idx));
             rootName = rootName.substring(idx + 1);

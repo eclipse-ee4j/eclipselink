@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -200,9 +200,9 @@ public class MetadataHelper {
             packageSuffix = packageSuffix + ".";
         }
 
-        if (qualifiedName.indexOf(".") > -1) {
-            String canonicalName = getCanonicalName(qualifiedName.substring(qualifiedName.lastIndexOf(".") + 1), properties);
-            String pkg = qualifiedName.substring(0, qualifiedName.lastIndexOf(".") + 1);
+        if (qualifiedName.indexOf('.') > -1) {
+            String canonicalName = getCanonicalName(qualifiedName.substring(qualifiedName.lastIndexOf('.') + 1), properties);
+            String pkg = qualifiedName.substring(0, qualifiedName.lastIndexOf('.') + 1);
 
             return pkg + packageSuffix + canonicalName;
         } else {

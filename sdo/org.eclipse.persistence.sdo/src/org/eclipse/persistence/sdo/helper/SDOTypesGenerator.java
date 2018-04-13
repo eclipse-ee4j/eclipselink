@@ -302,11 +302,9 @@ public class SDOTypesGenerator {
             processedSimpleTypes.putAll(generator.processedSimpleTypes);
             processedElements.putAll(generator.processedElements);
             processedAttributes.putAll(generator.processedAttributes);
-            if (null != importedTypes) {
-                for (int i = 0, size = importedTypes.size(); i < size; i++) {
-                    SDOType nextType = (SDOType) importedTypes.get(i);
-                    getGeneratedTypes().put(nextType.getQName(), nextType);
-                }
+            for (int i = 0, size = importedTypes.size(); i < size; i++) {
+                SDOType nextType = (SDOType) importedTypes.get(i);
+                getGeneratedTypes().put(nextType.getQName(), nextType);
             }
 
             //copy over any global properties
@@ -549,7 +547,7 @@ public class SDOTypesGenerator {
 
         String groupName = group.getRef();
         if (groupName != null) {
-            int idx = groupName.indexOf(":");
+            int idx = groupName.indexOf(':');
             String prefix = null;
             String localName = null;
             String uri = null;
@@ -594,7 +592,7 @@ public class SDOTypesGenerator {
     private void processAttributeGroup(String targetNamespace, String defaultNamespace, SDOType owningType, AttributeGroup attributeGroup) {
         String attributeGroupName = attributeGroup.getRef();
         if (attributeGroupName != null) {
-            int idx = attributeGroupName.indexOf(":");
+            int idx = attributeGroupName.indexOf(':');
             String prefix = null;
             String localName = null;
             String uri = null;

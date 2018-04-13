@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2017 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -285,7 +285,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
             updatePrimaryKeyField(aggregatesAccessor, overrideField);
         }
 
-        if (overrideName.indexOf(".") > -1) {
+        if (overrideName.indexOf('.') > -1) {
             // Set the nested field name translation on the mapping. Nested
             // (dot notation) overrides are initialized slightly different then
             // core field name translations which are based on column names. In
@@ -401,7 +401,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
                 String name = associationOverride.getName();
                 String attributeName = name;
                 String overrideName = name;
-                int indexOfFirstDot = name.indexOf(".");
+                int indexOfFirstDot = name.indexOf('.');
 
                 if (indexOfFirstDot > -1) {
                     attributeName = name.substring(0, indexOfFirstDot);
@@ -487,7 +487,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
                 String name = attributeOverride.getName();
                 String attributeName = name;
                 String overrideName = name;
-                int indexOfFirstDot = name.indexOf(".");
+                int indexOfFirstDot = name.indexOf('.');
 
                 if (indexOfFirstDot > -1) {
                     attributeName = name.substring(0, indexOfFirstDot);

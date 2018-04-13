@@ -282,9 +282,8 @@ public class ConversionManager extends CoreConversionManager implements Serializ
             int intValue = ((Number)sourceObject).intValue();
             if (intValue != 0) {
                 return Boolean.TRUE;
-            } else if (intValue == 0) {
-                return Boolean.FALSE;
             }
+            return Boolean.FALSE;
         }
         throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.BOOLEAN);
     }

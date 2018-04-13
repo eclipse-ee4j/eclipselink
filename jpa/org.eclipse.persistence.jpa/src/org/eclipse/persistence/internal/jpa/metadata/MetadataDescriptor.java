@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -906,9 +906,10 @@ public class MetadataDescriptor {
 
         if (accessor == null) {
             // Traverse any dot notation (nested embeddables) if specified.
-            if (fieldOrPropertyName.contains(".")) {
-                String attributeName = fieldOrPropertyName.substring(0, fieldOrPropertyName.indexOf("."));
-                String subAttributeName = fieldOrPropertyName.substring(fieldOrPropertyName.indexOf(".") + 1);
+            int idx = fieldOrPropertyName.indexOf('.');
+            if (idx > -1) {
+                String attributeName = fieldOrPropertyName.substring(0, idx);
+                String subAttributeName = fieldOrPropertyName.substring(idx + 1);
 
                 MappingAccessor embeddedAccessor = m_mappingAccessors.get(attributeName);
 
@@ -932,7 +933,7 @@ public class MetadataDescriptor {
                     // the embeddables)
                     String subAttributeName = fieldOrPropertyName;
                     if (subAttributeName.contains(".")) {
-                       subAttributeName = subAttributeName.substring(fieldOrPropertyName.indexOf(".") + 1);
+                       subAttributeName = subAttributeName.substring(fieldOrPropertyName.indexOf('.') + 1);
                     }
 
                     accessor = embeddableDescriptor.getMappingAccessor(fieldOrPropertyName, checkForMethodName);

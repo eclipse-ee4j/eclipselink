@@ -253,8 +253,8 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
             jpaModuleName = getModuleOrApplicationName(WLS_MODULE_NAME_GET_METHOD_NAME);
 
             // If we are running a version of WebLogic 10.3 that does not support ExecuteThreadRuntime (from 10.3+) then use the ClassLoader
-            if(null != jpaModuleName && jpaModuleName.indexOf("@") != -1) {
-                setModuleName(jpaModuleName.substring(jpaModuleName.indexOf("@") + 1));
+            if(null != jpaModuleName && jpaModuleName.indexOf('@') != -1) {
+                setModuleName(jpaModuleName.substring(jpaModuleName.indexOf('@') + 1));
             } else {
                 setModuleName(jpaModuleName);
             }
@@ -271,8 +271,8 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
              }
 
             // If we are running a version of WebLogic 10.3 that does not support ExecuteThreadRuntime (from 10.3+) then use the ClassLoader
-            if(null != jpaApplicationName && jpaApplicationName.indexOf("@") > -1) {
-                setApplicationName(jpaApplicationName.substring(jpaApplicationName.indexOf("@") + 1));
+            if(null != jpaApplicationName && jpaApplicationName.indexOf('@') > -1) {
+                setApplicationName(jpaApplicationName.substring(jpaApplicationName.indexOf('@') + 1));
             } else {
                 setApplicationName(jpaApplicationName);
             }

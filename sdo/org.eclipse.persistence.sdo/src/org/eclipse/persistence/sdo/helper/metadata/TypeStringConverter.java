@@ -65,7 +65,7 @@ public class TypeStringConverter implements XMLConverter {
         }
 
         String typeString = (String)value;
-        int poundIndex = typeString.indexOf("#");
+        int poundIndex = typeString.indexOf('#');
         String URI = typeString.substring(0, poundIndex);
         String name = typeString.substring(poundIndex + 1);
         SDOType type = (SDOType)this.typeHelper.getType(URI, name);

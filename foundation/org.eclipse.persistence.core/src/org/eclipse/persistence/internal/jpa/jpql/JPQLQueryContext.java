@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -653,7 +654,7 @@ final class JPQLQueryContext {
     Class<?> getEnumType(String enumTypeName) {
 
         // Get the position of the last dot so we can remove the constant
-        int lastDotIndex = enumTypeName.lastIndexOf(".");
+        int lastDotIndex = enumTypeName.lastIndexOf('.');
 
         if (lastDotIndex == -1) {
             return null;
@@ -955,7 +956,7 @@ final class JPQLQueryContext {
 
     private Class<?> loadInnerType(String typeName) {
 
-        int index = typeName.lastIndexOf(".");
+        int index = typeName.lastIndexOf('.');
 
         if (index == -1) {
             return null;

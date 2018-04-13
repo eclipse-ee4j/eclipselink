@@ -22,6 +22,13 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.databaseaccess;
 
+import java.io.CharArrayWriter;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -33,13 +40,6 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
 import org.eclipse.persistence.queries.Call;
 import org.eclipse.persistence.queries.DatabaseQuery;
-
-import java.io.CharArrayWriter;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * INTERNAL:
@@ -382,7 +382,7 @@ public abstract class DatasourceCall implements Call {
     public void translateCustomQuery() {
         if (this.shouldProcessTokenInQuotes) {
             if (getQueryString().indexOf(this.query.getParameterDelimiter()) == -1) {
-                if (this.getQuery().shouldBindAllParameters() && getQueryString().indexOf("?") == -1) {
+                if (this.getQuery().shouldBindAllParameters() && getQueryString().indexOf('?') == -1) {
                     return;
                 }
                 translatePureSQLCustomQuery();

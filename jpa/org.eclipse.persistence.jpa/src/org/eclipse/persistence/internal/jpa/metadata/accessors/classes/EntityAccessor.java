@@ -110,8 +110,23 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
-import java.lang.reflect.Modifier;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ACCESS_FIELD;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ACCESS_PROPERTY;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_CONVERT;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_CONVERTS;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_DISCRIMINATOR_COLUMN;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_DISCRIMINATOR_VALUE;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ENTITY;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ENTITY_GRAPH;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ENTITY_GRAPHS;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_INHERITANCE;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PRIMARY_KEY_JOIN_COLUMN;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PRIMARY_KEY_JOIN_COLUMNS;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_SECONDARY_TABLE;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_SECONDARY_TABLES;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_TABLE;
 
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -122,51 +137,29 @@ import org.eclipse.persistence.annotations.Index;
 import org.eclipse.persistence.annotations.Indexes;
 import org.eclipse.persistence.annotations.VirtualAccessMethods;
 import org.eclipse.persistence.exceptions.ValidationException;
-
-import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
-
+import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
+import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
-
 import org.eclipse.persistence.internal.jpa.metadata.columns.DiscriminatorColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyForeignKeyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.ConvertMetadata;
-
 import org.eclipse.persistence.internal.jpa.metadata.graphs.NamedEntityGraphMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.inheritance.InheritanceMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityClassListenerMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.mappings.AccessMethodsMetadata;
-
-import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
-import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
-
 import org.eclipse.persistence.internal.jpa.metadata.tables.IndexMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.tables.SecondaryTableMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.tables.TableMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
-
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ACCESS_FIELD;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ACCESS_PROPERTY;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_CONVERT;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_CONVERTS;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ENTITY;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_DISCRIMINATOR_COLUMN;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_DISCRIMINATOR_VALUE;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_INHERITANCE;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PRIMARY_KEY_JOIN_COLUMN;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PRIMARY_KEY_JOIN_COLUMNS;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_SECONDARY_TABLE;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_SECONDARY_TABLES;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_TABLE;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ENTITY_GRAPH;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ENTITY_GRAPHS;
 
 /**
  * An entity accessor.
@@ -929,10 +922,10 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      */
     public void processConvert(ConvertMetadata convert) {
         if (convert.hasAttributeName()) {
-            if (convert.getAttributeName().indexOf(".") > -1) {
+            if (convert.getAttributeName().indexOf('.') > -1) {
                 // We have a dot notation name.
                 String dotNotationName = convert.getAttributeName();
-                int dotIndex = dotNotationName.indexOf(".");
+                int dotIndex = dotNotationName.indexOf('.');
                 String attributeName = dotNotationName.substring(0, dotIndex);
                 String remainder = dotNotationName.substring(dotIndex + 1);
                 // Update the convert attribute name for correct convert processing.

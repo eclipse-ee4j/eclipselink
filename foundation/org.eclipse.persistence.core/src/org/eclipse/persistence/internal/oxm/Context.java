@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -198,7 +198,7 @@ public abstract class Context<
                 if (null != defaultRootName) {
                     int index = defaultRootName.indexOf(':');
                     String defaultRootLocalName = defaultRootName.substring(index + 1);
-                    if(defaultRootLocalName != null && !(defaultRootLocalName.equals(Constants.EMPTY_STRING))){
+                    if (!defaultRootLocalName.isEmpty()) {
                         if (index > -1) {
                             String defaultRootPrefix = defaultRootName.substring(0, index);
                             String defaultRootNamespaceURI = descriptor.getNamespaceResolver().resolveNamespacePrefix(defaultRootPrefix);
