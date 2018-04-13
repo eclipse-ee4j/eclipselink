@@ -278,7 +278,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
     @Override
     public Object clone() {
         OneToManyMapping clone = (OneToManyMapping)super.clone();
-        clone.setTargetForeignKeysToSourceKeys(new HashMap(getTargetForeignKeysToSourceKeys()));
+        clone.setTargetForeignKeysToSourceKeys(new HashMap<>(getTargetForeignKeysToSourceKeys()));
 
         if (addTargetQuery != null){
             clone.addTargetQuery = (DataModifyQuery) this.addTargetQuery.clone();
@@ -474,7 +474,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      */
     public Map<DatabaseField, DatabaseField> getTargetForeignKeysToSourceKeys() {
         if (targetForeignKeysToSourceKeys == null) {
-            targetForeignKeysToSourceKeys = new HashMap(2);
+            targetForeignKeysToSourceKeys = new HashMap<>(2);
         }
         return targetForeignKeysToSourceKeys;
     }
@@ -484,7 +484,9 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * Maintain for backward compatibility.
      * This is 'public' so StoredProcedureGenerator
      * does not have to use the custom query expressions.
+     * @deprecated since 2.7 replaced by {@link #getTargetForeignKeysToSourceKeys()}
      */
+    @Deprecated
     public Map getTargetForeignKeyToSourceKeys() {
         return getTargetForeignKeysToSourceKeys();
     }
