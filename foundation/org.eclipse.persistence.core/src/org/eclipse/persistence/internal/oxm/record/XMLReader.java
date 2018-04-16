@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -26,6 +26,7 @@ import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.ext.LexicalHandler;
 
+import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.validation.ValidatorHandler;
 
@@ -329,10 +330,11 @@ public class XMLReader implements org.xml.sax.XMLReader {
     }
 
     private boolean hasAttributes(Attributes attributes) {
-        QName nilAttrName = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, Constants.SCHEMA_NIL_ATTRIBUTE);
+        QName nilAttrName = new QName(XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, Constants.SCHEMA_NIL_ATTRIBUTE);
         for (int i = 0; i < attributes.getLength(); i++) {
             if (!(nilAttrName.getNamespaceURI().equals(attributes.getURI(i)) &&
-                    nilAttrName.getLocalPart().equals(attributes.getLocalName(i)))) {
+                    nilAttrName.getLocalPart().equals(attributes.getLocalName(i))) &&
+                    !XMLConstants.XMLNS_ATTRIBUTE_NS_URI.equals(attributes.getURI(i))) {
                 return true;
             }
         }
