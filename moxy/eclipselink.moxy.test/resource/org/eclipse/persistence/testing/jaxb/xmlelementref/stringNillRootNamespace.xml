@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PRE:optFoo-Root xmlns:PRE="NS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <PRE:bar xsi:nil="true"/>
+</PRE:optFoo-Root>
