@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -365,7 +365,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
                     xmlReader.setLexicalHandler(aHandler);
                 }
             } else {
-                if(unmarshalRecord.getXMLReader().isNullRecord(nullPolicy, atts, unmarshalRecord)){
+                if(unmarshalRecord.getXMLReader().isNullRecord(nullPolicy, atts, unmarshalRecord) && nullPolicy.ignoreAttributesForNil()){
                     xmlCompositeObjectMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), null);
                 } else {
                     Field xmlFld = (Field)this.xmlCompositeObjectMapping.getField();
