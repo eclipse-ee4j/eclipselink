@@ -9,14 +9,11 @@
     <option name="pathToConfigFileJava" value="$PROJECT_DIR$/project-admin/EclipseLink-Eclipse-Format.xml" />
     <option name="selectedJavaProfile" value="EclipseLink" />
   </component>
-  <component name="EntryPointsManager">
-    <entry_points version="2.0" />
-  </component>
   <component name="FrameworkDetectionExcludesConfiguration">
     <file type="web" url="file://$PROJECT_DIR$/jsonb" />
   </component>
   <component name="IdProvider" IDEtalkID="D25D12225615E907E53EC1D416DAF86F" />
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="false" assert-keyword="true" jdk-15="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="false" project-jdk-name="8.0" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/out" />
   </component>
 </project>
