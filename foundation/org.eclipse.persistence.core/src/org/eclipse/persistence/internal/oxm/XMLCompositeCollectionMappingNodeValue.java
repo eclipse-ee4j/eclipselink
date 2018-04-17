@@ -94,10 +94,10 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
             XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
             marshalRecord.closeStartGroupingElements(groupingFragment);
             marshalRecord.startCollection();
-            while (cp.hasNext(iterator)) {
+            do {
                 Object objectValue = cp.next(iterator, session);
                 marshalSingleValue(xPathFragment, marshalRecord, object, objectValue, session, namespaceResolver, ObjectMarshalContext.getInstance());
-            }
+            } while (cp.hasNext(iterator));
             marshalRecord.endCollection();
             return true;
         }
