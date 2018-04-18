@@ -3499,11 +3499,18 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
 
         if (pessimisticLockTimeout != null) {
             try {
-                session.setPessimisticLockTimeoutDefault(Integer.parseInt(pessimisticLockTimeout));
+                session.setPessimisticLockTimeoutDefault(convertTimeMillisToSeconds(pessimisticLockTimeout));
             } catch (NumberFormatException invalid) {
                 session.handleException(ValidationException.invalidValueForProperty(pessimisticLockTimeout, PersistenceUnitProperties.PESSIMISTIC_LOCK_TIMEOUT, invalid));
             }
         }
+    }
+    
+    /**
+     * Convert time from MilliSeconds to Seconds
+     */
+    protected int convertTimeMillisToSeconds(String pessimisticLockTimeout) {
+        return (int)TimeUnit.MILLISECONDS.toSeconds(Integer.parseInt(pessimisticLockTimeout));
     }
 
     /**
