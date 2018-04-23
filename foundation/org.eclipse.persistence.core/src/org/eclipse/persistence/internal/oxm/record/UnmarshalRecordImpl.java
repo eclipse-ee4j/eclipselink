@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -841,9 +841,11 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
                 unmarshalContext.startElement(this);
                 levelIndex++;
 
-                String xsiNilValue = atts.getValue(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, Constants.SCHEMA_NIL_ATTRIBUTE);
-                if(xsiNilValue != null){
-                    setNil(xsiNilValue.equals(Constants.BOOLEAN_STRING_TRUE) || xsiNilValue.equals("1"));
+                if(xmlReader.getMediaType().isApplicationXML()) {
+                    String xsiNilValue = atts.getValue(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, Constants.SCHEMA_NIL_ATTRIBUTE);
+                    if (xsiNilValue != null) {
+                        setNil(xsiNilValue.equals(Constants.BOOLEAN_STRING_TRUE) || xsiNilValue.equals("1"));
+                    }
                 }
 
                 if(node.getNullCapableValue() != null){
