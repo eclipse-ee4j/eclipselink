@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -87,6 +87,7 @@ public abstract class AbstractListHolderStateObject<T extends StateObject> exten
     /**
      * {@inheritDoc}
      */
+    @Override
     public <S extends T> S addItem(S item) {
         getChangeSupport().addItem(this, this.items, listName(), parent(item));
         return item;
@@ -95,6 +96,7 @@ public abstract class AbstractListHolderStateObject<T extends StateObject> exten
     /**
      * {@inheritDoc}
      */
+    @Override
     public void addItems(List<? extends T> items) {
         getChangeSupport().addItems(this, this.items, listName(), parent(items));
     }
@@ -102,6 +104,7 @@ public abstract class AbstractListHolderStateObject<T extends StateObject> exten
     /**
      * {@inheritDoc}
      */
+    @Override
     public void addListChangeListener(String listName, IListChangeListener<T> listener) {
         getChangeSupport().addListChangeListener(listName, listener);
     }
@@ -137,6 +140,7 @@ public abstract class AbstractListHolderStateObject<T extends StateObject> exten
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean canMoveDown(T stateObject) {
         return getChangeSupport().canMoveDown(items, stateObject);
     }
@@ -144,6 +148,7 @@ public abstract class AbstractListHolderStateObject<T extends StateObject> exten
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean canMoveUp(T stateObject) {
         return getChangeSupport().canMoveUp(items, stateObject);
     }
@@ -151,6 +156,7 @@ public abstract class AbstractListHolderStateObject<T extends StateObject> exten
     /**
      * {@inheritDoc}
      */
+    @Override
     public T getItem(int index) {
         return items.get(index);
     }
@@ -158,6 +164,7 @@ public abstract class AbstractListHolderStateObject<T extends StateObject> exten
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean hasItems() {
         return !items.isEmpty();
     }
@@ -174,6 +181,7 @@ public abstract class AbstractListHolderStateObject<T extends StateObject> exten
     /**
      * {@inheritDoc}
      */
+    @Override
     public ListIterable<? extends T> items() {
         return new SnapshotCloneListIterable<T>(items);
     }
@@ -181,6 +189,7 @@ public abstract class AbstractListHolderStateObject<T extends StateObject> exten
     /**
      * {@inheritDoc}
      */
+    @Override
     public int itemsSize() {
         return items.size();
     }
@@ -195,6 +204,7 @@ public abstract class AbstractListHolderStateObject<T extends StateObject> exten
     /**
      * {@inheritDoc}
      */
+    @Override
     public T moveDown(T item) {
         getChangeSupport().moveDown(this, items, listName(), item);
         return item;
@@ -203,6 +213,7 @@ public abstract class AbstractListHolderStateObject<T extends StateObject> exten
     /**
      * {@inheritDoc}
      */
+    @Override
     public T moveUp(T item) {
         getChangeSupport().moveUp(this, items, listName(), item);
         return item;
@@ -211,6 +222,7 @@ public abstract class AbstractListHolderStateObject<T extends StateObject> exten
     /**
      * {@inheritDoc}
      */
+    @Override
     public void removeItem(T stateObject) {
         getChangeSupport().removeItem(this, items, listName(), stateObject);
     }
@@ -218,6 +230,7 @@ public abstract class AbstractListHolderStateObject<T extends StateObject> exten
     /**
      * {@inheritDoc}
      */
+    @Override
     public void removeItems(Collection<T> items) {
         getChangeSupport().removeItems(this, this.items, listName(), items);
     }
@@ -225,6 +238,7 @@ public abstract class AbstractListHolderStateObject<T extends StateObject> exten
     /**
      * {@inheritDoc}
      */
+    @Override
     public void removeListChangeListener(String listName, IListChangeListener<T> listener) {
         getChangeSupport().removeListChangeListener(listName, listener);
     }

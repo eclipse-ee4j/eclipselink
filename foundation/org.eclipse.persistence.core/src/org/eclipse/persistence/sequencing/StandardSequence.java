@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -42,20 +42,25 @@ public abstract class StandardSequence extends Sequence {
         super(name, size, initialValue);
     }
 
+    @Override
     public void onConnect() {
         // does nothing
     }
 
+    @Override
     public void onDisconnect() {
         // does nothing
     }
 
     protected abstract Number updateAndSelectSequence(Accessor accessor, AbstractSession writeSession, String seqName, int size);
 
+    @Override
     public abstract boolean shouldAcquireValueAfterInsert();
 
+    @Override
     public abstract boolean shouldUseTransaction();
 
+    @Override
     public Object getGeneratedValue(Accessor accessor, AbstractSession writeSession, String seqName) {
         if (shouldUsePreallocation()) {
             return null;
@@ -68,6 +73,7 @@ public abstract class StandardSequence extends Sequence {
         }
     }
 
+    @Override
     public Vector getGeneratedVector(Accessor accessor, AbstractSession writeSession, String seqName, int size) {
         if (shouldUsePreallocation()) {
             Number value = updateAndSelectSequence(accessor, writeSession, seqName, size);
@@ -132,6 +138,7 @@ public abstract class StandardSequence extends Sequence {
         return sequencesForName;
     }
 
+    @Override
     public void setInitialValue(int initialValue) {
         // sequence value should be positive
         if (initialValue <= 0) {

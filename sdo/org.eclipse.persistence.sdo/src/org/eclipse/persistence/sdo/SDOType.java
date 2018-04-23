@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -158,10 +158,12 @@ public class SDOType implements Type, Serializable {
         this.qName = qName;
     }
 
+    @Override
     public String getName() {
         return qName.getLocalPart();
     }
 
+    @Override
     public String getURI() {
         String uri = qName.getNamespaceURI();
         if("".equals(uri)) {
@@ -171,6 +173,7 @@ public class SDOType implements Type, Serializable {
         }
     }
 
+    @Override
     public Class getInstanceClass() {
         if ((javaClass == null) && (javaClassName != null)) {
             try {
@@ -253,6 +256,7 @@ public class SDOType implements Type, Serializable {
         return true;
     }
 
+    @Override
     public boolean isInstance(Object object) {
         if ((!isDataType()) && (object instanceof DataObject)) {
             Type doType = ((DataObject)object).getType();
@@ -270,6 +274,7 @@ public class SDOType implements Type, Serializable {
         return false;
     }
 
+    @Override
     public List getProperties() {
         if (allProperties == null) {
             allProperties = new ArrayList();
@@ -277,6 +282,7 @@ public class SDOType implements Type, Serializable {
         return allProperties;
     }
 
+    @Override
     public SDOProperty getProperty(String propertyName) {
         SDOProperty queriedProperty = (SDOProperty)getDeclaredPropertiesMap().get(propertyName);
         if (null == queriedProperty && isSubType()) {
@@ -290,22 +296,27 @@ public class SDOType implements Type, Serializable {
         return queriedProperty;
     }
 
+    @Override
     public boolean isDataType() {
         return isDataType;
     }
 
+    @Override
     public boolean isOpen() {
         return open;
     }
 
+    @Override
     public boolean isSequenced() {
         return xmlDescriptor.isSequencedObject();
     }
 
+    @Override
     public boolean isAbstract() {
         return isAbstract;
     }
 
+    @Override
     public List getBaseTypes() {
         if (baseTypes == null) {
             baseTypes = new ArrayList();
@@ -321,6 +332,7 @@ public class SDOType implements Type, Serializable {
         return !(null == baseTypes || baseTypes.isEmpty());
     }
 
+    @Override
     public List getDeclaredProperties() {
         if (declaredProperties == null) {
             declaredProperties = new ArrayList();
@@ -328,6 +340,7 @@ public class SDOType implements Type, Serializable {
         return declaredProperties;
     }
 
+    @Override
     public List getAliasNames() {
         if (aliasNames == null) {
             aliasNames = new ArrayList();
@@ -946,6 +959,7 @@ public class SDOType implements Type, Serializable {
         return javaImplClass;
     }
 
+    @Override
     public Object get(Property property) {
         if(null == propertyValues) {
             return null;
@@ -953,6 +967,7 @@ public class SDOType implements Type, Serializable {
         return propertyValues.get(property);
     }
 
+    @Override
     public List getInstanceProperties() {
         if(null == propertyValues) {
             return Collections.EMPTY_LIST;
@@ -1200,6 +1215,7 @@ public class SDOType implements Type, Serializable {
             sdoType = type;
         }
 
+        @Override
         public Object buildNewInstance() throws DescriptorException {
             return sdoType.getHelperContext().getDataFactory().create(sdoType);
         }

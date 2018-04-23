@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2018  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -34,17 +34,20 @@ public class FetchGroupImpl extends MetadataImpl<FetchGroupMetadata> implements 
         getMetadata().setFetchAttributes(new ArrayList<FetchAttributeMetadata>());
     }
 
+    @Override
     public FetchAttribute addAttribute() {
         FetchAttributeImpl attribute = new FetchAttributeImpl();
         getMetadata().getFetchAttributes().add(attribute.getMetadata());
         return attribute;
     }
 
+    @Override
     public FetchGroup setLoad(Boolean load) {
         getMetadata().setLoad(load);
         return this;
     }
 
+    @Override
     public FetchGroup setName(String name) {
         getMetadata().setName(name);
         return this;

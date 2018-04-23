@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -65,6 +65,7 @@ public class DirectReadQuery extends DataReadQuery {
      * Return the converter on the query.
      * A converter can be used to convert between the result value and database value.
      */
+    @Override
     public Converter getValueConverter() {
         return valueConverter;
     }
@@ -82,6 +83,7 @@ public class DirectReadQuery extends DataReadQuery {
      * PUBLIC:
      * Return if this is a direct read query.
      */
+    @Override
     public boolean isDirectReadQuery() {
         return true;
     }

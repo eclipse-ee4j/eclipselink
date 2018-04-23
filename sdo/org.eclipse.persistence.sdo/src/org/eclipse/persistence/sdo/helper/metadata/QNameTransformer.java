@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -39,12 +39,14 @@ public class QNameTransformer implements AttributeTransformer, FieldTransformer 
         this.xPath = new XMLField(xPath);
     }
 
+    @Override
     public void initialize(AbstractTransformationMapping mapping) {
         transformationMapping = mapping;
         NamespaceResolver namespaceResolver = ((XMLDescriptor) mapping.getDescriptor()).getNamespaceResolver();
         xPath.setNamespaceResolver(namespaceResolver);
     }
 
+    @Override
     public Object buildAttributeValue(Record record, Object object, Session session) {
         if (null == record) {
             return null;
@@ -75,6 +77,7 @@ public class QNameTransformer implements AttributeTransformer, FieldTransformer 
         }
     }
 
+    @Override
     public Object buildFieldValue(Object instance, String fieldName, Session session) {
         if (null == instance) {
             return null;

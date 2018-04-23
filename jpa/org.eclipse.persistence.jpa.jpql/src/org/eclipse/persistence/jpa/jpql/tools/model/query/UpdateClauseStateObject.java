@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -24,7 +24,6 @@ import org.eclipse.persistence.jpa.jpql.tools.model.IListChangeListener;
 import org.eclipse.persistence.jpa.jpql.utility.iterable.ListIterable;
 import org.eclipse.persistence.jpa.jpql.utility.iterable.SnapshotCloneListIterable;
 import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
-import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
 /**
  * This is the <code><b>UPDATE</b></code> clause of the <code><b>UPDATE</b></code> statement.
@@ -68,6 +67,7 @@ public class UpdateClauseStateObject extends AbstractModifyClauseStateObject
     /**
      * {@inheritDoc}
      */
+    @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
@@ -201,6 +201,7 @@ public class UpdateClauseStateObject extends AbstractModifyClauseStateObject
     /**
      * {@inheritDoc}
      */
+    @Override
     @SuppressWarnings("unchecked")
     public UpdateItemStateObject addItem(UpdateItemStateObject item) {
         getChangeSupport().addItem(this, items, UPDATE_ITEMS_LIST, parent(item));
@@ -210,6 +211,7 @@ public class UpdateClauseStateObject extends AbstractModifyClauseStateObject
     /**
      * {@inheritDoc}
      */
+    @Override
     public void addItems(List<? extends UpdateItemStateObject> items) {
         getChangeSupport().addItems(this, this.items, UPDATE_ITEMS_LIST, parent(items));
     }
@@ -217,6 +219,7 @@ public class UpdateClauseStateObject extends AbstractModifyClauseStateObject
     /**
      * {@inheritDoc}
      */
+    @Override
     public void addListChangeListener(String listName, IListChangeListener<UpdateItemStateObject> listener) {
         getChangeSupport().addListChangeListener(listName, listener);
     }
@@ -252,6 +255,7 @@ public class UpdateClauseStateObject extends AbstractModifyClauseStateObject
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean canMoveDown(UpdateItemStateObject item) {
         return getChangeSupport().canMoveDown(items, item);
     }
@@ -259,6 +263,7 @@ public class UpdateClauseStateObject extends AbstractModifyClauseStateObject
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean canMoveUp(UpdateItemStateObject item) {
         return getChangeSupport().canMoveUp(items, item);
     }
@@ -282,6 +287,7 @@ public class UpdateClauseStateObject extends AbstractModifyClauseStateObject
     /**
      * {@inheritDoc}
      */
+    @Override
     public UpdateItemStateObject getItem(int index) {
         return items.get(index);
     }
@@ -297,6 +303,7 @@ public class UpdateClauseStateObject extends AbstractModifyClauseStateObject
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean hasItems() {
         return !items.isEmpty();
     }
@@ -332,6 +339,7 @@ public class UpdateClauseStateObject extends AbstractModifyClauseStateObject
     /**
      * {@inheritDoc}
      */
+    @Override
     public ListIterable<UpdateItemStateObject> items() {
         return new SnapshotCloneListIterable<UpdateItemStateObject>(items);
     }
@@ -339,6 +347,7 @@ public class UpdateClauseStateObject extends AbstractModifyClauseStateObject
     /**
      * {@inheritDoc}
      */
+    @Override
     public int itemsSize() {
         return items.size();
     }
@@ -346,6 +355,7 @@ public class UpdateClauseStateObject extends AbstractModifyClauseStateObject
     /**
      * {@inheritDoc}
      */
+    @Override
     public UpdateItemStateObject moveDown(UpdateItemStateObject item) {
         getChangeSupport().moveDown(this, items, UPDATE_ITEMS_LIST, item);
         return item;
@@ -354,6 +364,7 @@ public class UpdateClauseStateObject extends AbstractModifyClauseStateObject
     /**
      * {@inheritDoc}
      */
+    @Override
     public UpdateItemStateObject moveUp(UpdateItemStateObject item) {
         getChangeSupport().moveUp(this, items, UPDATE_ITEMS_LIST, item);
         return item;
@@ -373,6 +384,7 @@ public class UpdateClauseStateObject extends AbstractModifyClauseStateObject
     /**
      * {@inheritDoc}
      */
+    @Override
     public void removeItem(UpdateItemStateObject stateObject) {
         getChangeSupport().removeItem(this, this.items, UPDATE_ITEMS_LIST, stateObject);
     }
@@ -380,6 +392,7 @@ public class UpdateClauseStateObject extends AbstractModifyClauseStateObject
     /**
      * {@inheritDoc}
      */
+    @Override
     public void removeItems(Collection<UpdateItemStateObject> items) {
         getChangeSupport().removeItems(this, this.items, UPDATE_ITEMS_LIST, items);
     }
@@ -387,6 +400,7 @@ public class UpdateClauseStateObject extends AbstractModifyClauseStateObject
     /**
      * {@inheritDoc}
      */
+    @Override
     public void removeListChangeListener(String listName, IListChangeListener<UpdateItemStateObject> listener) {
         getChangeSupport().removeListChangeListener(listName, listener);
     }

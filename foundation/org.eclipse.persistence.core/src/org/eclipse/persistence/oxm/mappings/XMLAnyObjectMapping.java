@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -174,6 +174,7 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
     * INTERNAL:
     * Clone the attribute from the clone and assign it to the backup.
     */
+    @Override
     public void buildBackupClone(Object clone, Object backup, UnitOfWorkImpl unitOfWork) {
         throw DescriptorException.invalidMappingOperation(this, "buildBackupClone");
     }
@@ -187,6 +188,7 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
         throw DescriptorException.invalidMappingOperation(this, "buildClone");
     }
 
+    @Override
     public void buildCloneFromRow(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object clone, CacheKey sharedCacheKey, ObjectBuildingQuery sourceQuery, UnitOfWorkImpl unitOfWork, AbstractSession executionSession) {
         throw DescriptorException.invalidMappingOperation(this, "buildCloneFromRow");
     }
@@ -195,6 +197,7 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
      * INTERNAL:
      * Cascade perform delete through mappings that require the cascade
      */
+    @Override
     public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
         //objects referenced by this mapping are not registered as they have
         // no identity, this is a no-op.
@@ -204,10 +207,12 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade
      */
+    @Override
     public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
         //Our current XML support does not make use of the UNitOfWork.
     }
 
+    @Override
     public Object clone() {
         // Bug 3037701 - clone the AttributeAccessor
         XMLAnyCollectionMapping mapping = null;
@@ -222,6 +227,7 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
     * This method was created in VisualAge.
     * @return prototype.changeset.ChangeRecord
     */
+    @Override
     public ChangeRecord compareForChange(Object clone, Object backup, ObjectChangeSet owner, AbstractSession session) {
         throw DescriptorException.invalidMappingOperation(this, "compareForChange");
     }
@@ -230,6 +236,7 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
     * INTERNAL:
     * Compare the attributes belonging to this mapping for the objects.
     */
+    @Override
     public boolean compareObjects(Object firstObject, Object secondObject, AbstractSession session) {
         throw DescriptorException.invalidMappingOperation(this, "compareObjects");
     }
@@ -240,10 +247,12 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
     * Replace the transient attributes of the remote value holders
     * with client-side objects.
     */
+    @Override
     public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
         throw DescriptorException.invalidMappingOperation(this, "fixObjectReferences");
     }
 
+    @Override
     public DatabaseField getField() {
         return field;
     }
@@ -252,6 +261,7 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
     * INTERNAL:
     * Iterate on the appropriate attribute value.
     */
+    @Override
     public void iterate(DescriptorIterator iterator) {
         throw DescriptorException.invalidMappingOperation(this, "iterate");
     }
@@ -278,10 +288,12 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
         throw DescriptorException.invalidMappingOperation(this, "mergeIntoObject");
     }
 
+    @Override
     public void setField(DatabaseField field) {
         this.field = (XMLField) field;
     }
 
+    @Override
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected, Boolean[] wasCacheUsed) throws DatabaseException {
         XMLRecord record = (XMLRecord) row;
 
@@ -389,6 +401,7 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
         writeSingleValue(attributeValue, object, (XMLRecord) row, session);
     }
 
+    @Override
     public void writeSingleValue(Object value, Object parent, XMLRecord row, AbstractSession session) {
         DOMRecord record = (DOMRecord) row;
         Node root = record.getDOM();
@@ -481,6 +494,7 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
         return null;
     }
 
+    @Override
     public void initialize(AbstractSession session) throws DescriptorException {
         if (getField() != null) {
             setField(getDescriptor().buildField(getField()));
@@ -490,18 +504,22 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
         }
     }
 
+    @Override
     public boolean isXMLMapping() {
         return true;
     }
 
+    @Override
     public Vector getFields() {
         return this.collectFields();
     }
 
+    @Override
     public void setUseXMLRoot(boolean useXMLRoot) {
         this.useXMLRoot = useXMLRoot;
     }
 
+    @Override
     public boolean usesXMLRoot() {
         return useXMLRoot;
     }
@@ -631,14 +649,17 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
         return converter;
     }
 
+    @Override
     public void setConverter(XMLConverter converter) {
         this.converter = converter;
     }
 
+    @Override
     public boolean isMixedContent() {
         return this.isMixedContent;
     }
 
+    @Override
     public void setMixedContent(boolean mixed) {
         this.isMixedContent = mixed;
     }
@@ -647,6 +668,7 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
      * INTERNAL
      * @since EclipseLink 2.5.0
      */
+    @Override
     public Object convertObjectValueToDataValue(Object value, Session session, XMLMarshaller marshaller) {
         if (null != converter) {
             return converter.convertObjectValueToDataValue(value, session, marshaller);
@@ -658,6 +680,7 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
      * INTERNAL
      * @since EclipseLink 2.5.0
      */
+    @Override
     public Object convertDataValueToObjectValue(Object fieldValue, Session session, XMLUnmarshaller unmarshaller) {
         if (null != converter) {
             return converter.convertDataValueToObjectValue(fieldValue, session, unmarshaller);

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -77,6 +77,7 @@ public class XJCJavaPackageImpl implements JavaPackage {
      *
      * @return the <code>JavaAnnotation</code> represented by <code>aClass</code>, if one exists, otherwise return <code>null</code>.
      */
+    @Override
     @SuppressWarnings("unchecked")
     public JavaAnnotation getAnnotation(JavaClass aClass) {
         if (aClass != null) {
@@ -110,6 +111,7 @@ public class XJCJavaPackageImpl implements JavaPackage {
      *
      * @return A <code>Collection</code> containing this <code>JavaPackage's</code> <code>JavaAnnotations</code>.
      */
+    @Override
     @SuppressWarnings("unchecked")
     public Collection<JavaAnnotation> getAnnotations() {
         ArrayList<JavaAnnotation> annotationsList = new ArrayList<JavaAnnotation>();
@@ -149,6 +151,7 @@ public class XJCJavaPackageImpl implements JavaPackage {
      *
      * @return the <code>String</code> name of this <code>JavaPackage</code>.
      */
+    @Override
     public String getQualifiedName() {
         return getName();
     }
@@ -156,6 +159,7 @@ public class XJCJavaPackageImpl implements JavaPackage {
     /**
      * Not supported.
      */
+    @Override
     public JavaAnnotation getDeclaredAnnotation(JavaClass arg0) {
         throw new UnsupportedOperationException("getDeclaredAnnotation");
     }
@@ -163,6 +167,7 @@ public class XJCJavaPackageImpl implements JavaPackage {
     /**
      * Not supported.
      */
+    @Override
     public Collection<JavaAnnotation> getDeclaredAnnotations() {
         throw new UnsupportedOperationException("getDeclaredAnnotations");
     }

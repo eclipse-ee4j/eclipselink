@@ -806,7 +806,7 @@ public class DatasourcePlatform implements Platform {
             return getDefaultSequence();
         } else {
             if (this.sequences != null) {
-                return (Sequence)this.sequences.get(seqName);
+                return this.sequences.get(seqName);
             } else {
                 return null;
             }
@@ -829,7 +829,7 @@ public class DatasourcePlatform implements Platform {
     public Sequence removeSequence(String seqName) {
         if (this.sequences != null) {
             synchronized(sequencesLock) {
-                return (Sequence)this.sequences.remove(seqName);
+                return this.sequences.remove(seqName);
             }
         } else {
             return null;

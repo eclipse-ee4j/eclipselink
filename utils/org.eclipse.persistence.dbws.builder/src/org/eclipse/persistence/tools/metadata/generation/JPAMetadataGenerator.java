@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -970,7 +970,6 @@ public class JPAMetadataGenerator {
      * findAll, findByPk, update and delete) for a given Entity if
      * required, i.e. generateCRUDOps is true.
      */
-    @SuppressWarnings("rawtypes")
     protected void generateCRUDMetadata(EntityAccessor entity) {
         if (generateCRUDOps) {
             // don't blow away the Entity's query metadata
@@ -1102,10 +1101,9 @@ public class JPAMetadataGenerator {
      * @return DatabasePlatform loaded for the given platformClassname, or Oracle11Platform if not found
      * @see org.eclipse.persistence.platform.database.oracle.Oracle11Platform
      */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     public static DatabasePlatform loadDatabasePlatform(String platformClassName) {
         DatabasePlatform dbPlatform = null;
-        Class platformClass = null;
+        Class<?> platformClass = null;
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 platformClass = AccessController.doPrivileged(new PrivilegedClassForName(platformClassName));

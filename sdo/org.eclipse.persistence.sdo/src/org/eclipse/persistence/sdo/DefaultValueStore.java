@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -37,6 +37,7 @@ public class DefaultValueStore implements ValueStore {
     public DefaultValueStore() {
     }
 
+    @Override
     public Object getDeclaredProperty(int propertyIndex) {
         if (typePropertyValues != null) {
             return typePropertyValues[propertyIndex];
@@ -44,19 +45,23 @@ public class DefaultValueStore implements ValueStore {
         return null;
     }
 
+    @Override
     public Object getOpenContentProperty(Property property) {
         return getOpenContentValues().get(property);
     }
 
+    @Override
     public void setDeclaredProperty(int propertyIndex, Object value) {
         getTypePropertyValues()[propertyIndex] = value;
         getTypePropertiesIsSetStatus()[propertyIndex] = true;
     }
 
+    @Override
     public void setOpenContentProperty(Property property, Object value) {
         getOpenContentValues().put(property, value);
     }
 
+    @Override
     public boolean isSetDeclaredProperty(int propertyIndex) {
         boolean[] typePropertiesIsSetStatus = getTypePropertiesIsSetStatus();
         if(propertyIndex >= typePropertiesIsSetStatus.length) {
@@ -68,10 +73,12 @@ public class DefaultValueStore implements ValueStore {
         return typePropertiesIsSetStatus[propertyIndex];
     }
 
+    @Override
     public boolean isSetOpenContentProperty(Property property) {
         return getOpenContentValues().containsKey(property);
     }
 
+    @Override
     public void unsetDeclaredProperty(int propertyIndex) {
         Property prop = ((SDODataObject)dataObject).getInstanceProperty(propertyIndex);
         if (!prop.isMany()) {
@@ -80,6 +87,7 @@ public class DefaultValueStore implements ValueStore {
         getTypePropertiesIsSetStatus()[propertyIndex] = false;
     }
 
+    @Override
     public void unsetOpenContentProperty(Property property) {
         getOpenContentValues().remove(property);
     }
@@ -93,6 +101,7 @@ public class DefaultValueStore implements ValueStore {
       *
       * @param aDataObject
       */
+    @Override
     public void initialize(DataObject aDataObject) {
         dataObject = aDataObject;
         setTypePropertiesIsSetStatus(new boolean[aDataObject.getType().getProperties().size()]);
@@ -151,6 +160,7 @@ public class DefaultValueStore implements ValueStore {
     }
 
     //  Do not implement this function unless the valueStore handles its own object wrapping
+    @Override
     public void setManyProperty(Property property, Object value) {
     }
 
@@ -159,6 +169,7 @@ public class DefaultValueStore implements ValueStore {
       * Changes made to the copy must not impact the original ValueStore
       * @return ValueStore
       */
+    @Override
     public ValueStore copy() {
 
         /**
@@ -204,6 +215,7 @@ public class DefaultValueStore implements ValueStore {
      *      - open content property values
      *      - property isSet values
      */
+    @Override
     public boolean equals(Object obj) {
         DefaultValueStore dvs;
         try {

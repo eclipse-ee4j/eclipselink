@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -50,6 +50,7 @@ public final class ANTLRQueryBuilder implements JPAQueryBuilder {
      * @param level
      *            The validation levels are defined in ParserValidationType
      */
+    @Override
     public void setValidationLevel(String level) {
         // Not supported.
     }
@@ -73,6 +74,7 @@ public final class ANTLRQueryBuilder implements JPAQueryBuilder {
     /**
      * {@inheritDoc}
      */
+    @Override
     public DatabaseQuery buildQuery(CharSequence jpqlQuery, AbstractSession session) {
         // TODO - must set class loader
 
@@ -89,6 +91,7 @@ public final class ANTLRQueryBuilder implements JPAQueryBuilder {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Expression buildSelectionCriteria(String entityName, String additionalCriteria, AbstractSession session) {
 
         StringBuilder jpqlQuery = new StringBuilder();
@@ -102,6 +105,7 @@ public final class ANTLRQueryBuilder implements JPAQueryBuilder {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void populateQuery(CharSequence jpqlQuery, DatabaseQuery query, AbstractSession session) {
         new JPQLParserFactory().populateQuery(jpqlQuery.toString(), (ObjectLevelReadQuery) query, session);
     }

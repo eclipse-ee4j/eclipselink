@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -183,6 +183,7 @@ public class CommandPropagator implements Runnable {
      * This is the execution method of the async propagation thread.  It will create
      * other threads, one each for the remote connections, to propagate the command.
      */
+    @Override
     public void run() {
         // If the connection is set then we are an async connection thread
         if (this.connection != null) {

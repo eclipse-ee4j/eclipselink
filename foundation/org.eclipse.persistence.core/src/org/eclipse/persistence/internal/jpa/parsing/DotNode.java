@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -37,6 +37,7 @@ public class DotNode extends LogicalOperatorNode implements AliasableNode {
      * INTERNAL
      * Apply this node to the passed query
      */
+    @Override
     public void applyToQuery(ObjectLevelReadQuery theQuery, GenerationContext context) {
         if (theQuery.isReportQuery()){
             ReportQuery reportQuery = (ReportQuery)theQuery;
@@ -51,6 +52,7 @@ public class DotNode extends LogicalOperatorNode implements AliasableNode {
      * delegates to the left most expression of multi-navigation path
      * expression.
      */
+    @Override
     public Node qualifyAttributeAccess(ParseTreeContext context) {
         if (getLeft() != null) {
             setLeft(getLeft().qualifyAttributeAccess(context));
@@ -63,6 +65,7 @@ public class DotNode extends LogicalOperatorNode implements AliasableNode {
      * Validate node and calculate its type.
      * Check for enum literals.
      */
+    @Override
     public void validate(ParseTreeContext context) {
         TypeHelper typeHelper = context.getTypeHelper();
         String name = ((AttributeNode)right).getAttributeName();
@@ -161,6 +164,7 @@ public class DotNode extends LogicalOperatorNode implements AliasableNode {
      * left and right nodes
      * "emp.address.city" = builder.get("address").get("city")
      */
+    @Override
     public Expression generateExpression(GenerationContext context) {
         Node right = getRight();
 
@@ -191,6 +195,7 @@ public class DotNode extends LogicalOperatorNode implements AliasableNode {
      * INTERNAL
      * Yes, this is a dot node
      */
+    @Override
     public boolean isDotNode() {
         return true;
     }
@@ -243,6 +248,7 @@ public class DotNode extends LogicalOperatorNode implements AliasableNode {
      * Answer the name of the attribute which is represented by the receiver's
      * right node.
      */
+    @Override
     public String resolveAttribute() {
         return ((AttributeNode)getRight()).getAttributeName();
     }
@@ -251,6 +257,7 @@ public class DotNode extends LogicalOperatorNode implements AliasableNode {
      * INTERNAL
      * Answer the mapping resulting from traversing the receiver's nodes
      */
+    @Override
     public DatabaseMapping resolveMapping(GenerationContext context) {
         Class leftClass = getLeft().resolveClass(context);
         return getRight().resolveMapping(context, leftClass);
@@ -259,6 +266,7 @@ public class DotNode extends LogicalOperatorNode implements AliasableNode {
     /**
     * resolveClass: Answer the class which results from traversing the mappings for the receiver's nodes
     */
+    @Override
     public Class resolveClass(GenerationContext context) {
         Class leftClass = getLeft().resolveClass(context);
         return getRight().resolveClass(context, leftClass);
@@ -268,6 +276,7 @@ public class DotNode extends LogicalOperatorNode implements AliasableNode {
      * INTERNAL
      * Get the string representation of this node.
      */
+    @Override
     public String getAsString() {
         return left.getAsString() + "." + right.getAsString();
     }
@@ -314,6 +323,7 @@ public class DotNode extends LogicalOperatorNode implements AliasableNode {
         return type;
     }
 
+    @Override
     public boolean isAliasableNode(){
         return true;
     }

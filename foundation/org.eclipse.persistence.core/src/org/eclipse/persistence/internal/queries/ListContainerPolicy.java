@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -31,7 +31,6 @@ import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.queries.ReadAllQuery;
-import org.eclipse.persistence.sessions.DatabaseRecord;
 
 /**
  * <p><b>Purpose</b>: A ListContainerPolicy is ContainerPolicy whose container class
@@ -206,6 +205,7 @@ public class ListContainerPolicy extends CollectionContainerPolicy {
      * This method is used to load a relationship from a list of PKs. This list
      * may be available if the relationship has been cached.
      */
+    @Override
     public Object valueFromPKList(Object[] pks, AbstractRecord foreignKeys, ForeignReferenceMapping mapping, AbstractSession session){
 
         Object result = containerInstance(pks.length);

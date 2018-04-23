@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -26,6 +26,7 @@ public class PersistenceObjectAttributeAccessor extends InstanceVariableAttribut
     /**
      * Returns the value of the attribute on the specified object.
      */
+    @Override
     public Object getAttributeValueFromObject(Object object) {
         return ((PersistenceObject)object)._persistence_get(this.attributeName);
     }
@@ -33,6 +34,7 @@ public class PersistenceObjectAttributeAccessor extends InstanceVariableAttribut
     /**
      * Allow any initialization to be performed with the descriptor class.
      */
+    @Override
     public void initializeAttributes(Class descriptorClass) throws DescriptorException {
         this.attributeName = attributeName.intern();
         super.initializeAttributes(descriptorClass);
@@ -42,6 +44,7 @@ public class PersistenceObjectAttributeAccessor extends InstanceVariableAttribut
     /**
      * Sets the value of the instance variable in the object to the value.
      */
+    @Override
     public void setAttributeValueInObject(Object object, Object value) {
         ((PersistenceObject)object)._persistence_set(this.attributeName, value);
     }

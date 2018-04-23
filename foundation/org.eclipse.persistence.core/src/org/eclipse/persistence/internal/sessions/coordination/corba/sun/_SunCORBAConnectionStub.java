@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -20,6 +20,7 @@ package org.eclipse.persistence.internal.sessions.coordination.corba.sun;
 * Tuesday, March 30, 2004 2:00:14 PM EST
 */
 public class _SunCORBAConnectionStub extends org.omg.CORBA.portable.ObjectImpl implements org.eclipse.persistence.internal.sessions.coordination.corba.sun.SunCORBAConnection {
+    @Override
     public byte[] executeCommand(byte[] commandData) {
         org.omg.CORBA.portable.InputStream $in = null;
         try {
@@ -43,6 +44,7 @@ public class _SunCORBAConnectionStub extends org.omg.CORBA.portable.ObjectImpl i
     // Type-specific CORBA::Object operations
     private static String[] __ids = { "IDL:org/eclipse/persistence/internal/remotecommand/corba/sun/SunCORBAConnection:1.0" };
 
+    @Override
     public String[] _ids() {
         return __ids.clone();
     }

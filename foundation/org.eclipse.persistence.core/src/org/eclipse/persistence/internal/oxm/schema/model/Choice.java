@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -38,6 +38,7 @@ public class Choice extends TypeDefParticle implements NestedParticle {
         }
     }
 
+    @Override
     public void setSequences(java.util.List sequences) {
         if ((sequences != null) && (sequences.size() > 0)) {
             for (int i = 0; i < sequences.size(); i++) {
@@ -48,6 +49,7 @@ public class Choice extends TypeDefParticle implements NestedParticle {
         }
     }
 
+    @Override
     public void setChoices(java.util.List choices) {
         if ((choices != null) && (choices.size() > 0)) {
             for (int i = 0; i < choices.size(); i++) {
@@ -69,35 +71,42 @@ public class Choice extends TypeDefParticle implements NestedParticle {
         }
     }
 
+    @Override
     public void addSequence(Sequence sequence) {
         orderedElements.add(sequence);
         sequence.setOwner(this);
     }
 
+    @Override
     public void addChoice(Choice choice) {
         orderedElements.add(choice);
         choice.setOwner(this);
     }
 
+    @Override
     public void addElement(Element elem) {
         orderedElements.add(elem);
         getElements().add(elem);
     }
 
+    @Override
     public void addAny(Any any) {
         orderedElements.add(any);
 
     }
 
+    @Override
     public void setElements(java.util.List elements) {
         orderedElements.addAll(elements);
         getElements().addAll(elements);
     }
 
+    @Override
     public void setAnys(java.util.List anys) {
         orderedElements.addAll(anys);
     }
 
+    @Override
     public boolean hasAny() {
         for (int i = 0; i < orderedElements.size(); i++) {
             Object next = orderedElements.get(i);
@@ -109,10 +118,12 @@ public class Choice extends TypeDefParticle implements NestedParticle {
 
     }
 
+    @Override
     public boolean isEmpty() {
         return !(orderedElements.size() > 0);
     }
 
+    @Override
     public void setOwner(TypeDefParticleOwner owner) {
         super.setOwner(owner);
         for (int i = 0; i < orderedElements.size(); i++) {

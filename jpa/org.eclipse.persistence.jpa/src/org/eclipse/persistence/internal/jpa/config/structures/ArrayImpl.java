@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2018  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -30,17 +30,20 @@ public class ArrayImpl extends AbstractDirectMappingImpl<ArrayAccessor, Array> i
         super(new ArrayAccessor());
     }
 
+    @Override
     public Column setColumn() {
         ColumnImpl column = new ColumnImpl();
         getMetadata().setColumn(column.getMetadata());
         return column;
     }
 
+    @Override
     public Array setDatabaseType(String databaseType) {
         getMetadata().setDatabaseType(databaseType);
         return this;
     }
 
+    @Override
     public Array setTargetClass(String targetClass) {
         getMetadata().setTargetClassName(targetClass);
         return this;

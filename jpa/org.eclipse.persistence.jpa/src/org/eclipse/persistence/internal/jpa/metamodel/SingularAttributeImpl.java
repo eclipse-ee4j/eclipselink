@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -138,6 +138,7 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
      * represented entity or attribute is returned.
      * @return Java type
      */
+    @Override
     public Class<T> getBindableJavaType() {
         // In SingularAttribute our BindableType is SINGLE_ATTRIBUTE - return the java type of the represented entity
         return this.elementType.getJavaType();
@@ -147,6 +148,7 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
      *  Is the attribute an id attribute.
      *  @return boolean indicating whether or not attribute is an id
      */
+    @Override
     public boolean isId() {
         if(this.getManagedTypeImpl().isMappedSuperclass()) {
             // The field on the mapping is the same field in the pkFields list on the descriptor
@@ -163,6 +165,7 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
      *  @return boolean indicating whether or not the attribute can
      *          be null
      */
+    @Override
     public boolean isOptional() {
         return getMapping().isOptional();
     }
@@ -183,6 +186,7 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
      *  @return boolean indicating whether or not attribute is
      *          a version attribute
      */
+    @Override
     public boolean isVersion() {
         if (getDescriptor().usesOptimisticLocking() && getMapping().isDirectToFieldMapping()) {
             OptimisticLockingPolicy policy = getDescriptor().getOptimisticLockingPolicy();
@@ -192,6 +196,7 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
         return false;
     }
 
+    @Override
     public Bindable.BindableType getBindableType() {
         return Bindable.BindableType.SINGULAR_ATTRIBUTE;
     }
@@ -233,6 +238,7 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
      * Return the type that represents the type of the attribute.
      * @return type of attribute
      */
+    @Override
     public Type<T> getType() {
         return elementType;
     }

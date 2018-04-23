@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -26,6 +26,7 @@ public class CloudscapePlatform extends org.eclipse.persistence.platform.databas
     /**
      * seems compatible with informix
      */
+    @Override
     protected Hashtable buildFieldTypes() {
         Hashtable fieldTypeMapping;
 
@@ -61,6 +62,7 @@ public class CloudscapePlatform extends org.eclipse.persistence.platform.databas
     /**
      * Answers whether platform is CloudScape
      */
+    @Override
     public boolean isCloudscape() {
         return true;
     }
@@ -68,6 +70,7 @@ public class CloudscapePlatform extends org.eclipse.persistence.platform.databas
     /**
      * JDBC defines an outer join syntax which many drivers do not support. So we normally avoid it.
      */
+    @Override
     public boolean shouldUseJDBCOuterJoinSyntax() {
         return false;// not sure if cloudscape likes this or not. Still investigating.
     }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -255,6 +255,7 @@ public class JMSTopicRemoteConnection extends BroadcastRemoteConnection implemen
      * Note that it may take a while: the listening thread waits until subscriber.receive method either
      * returns a message or throws an exception.
      */
+    @Override
     protected boolean areAllResourcesFreedOnClose() {
         return !isLocal();
     }
@@ -266,6 +267,7 @@ public class JMSTopicRemoteConnection extends BroadcastRemoteConnection implemen
      * (but not always see comment to areAllResourcesFreedOnClose method)
      * frees all the resources.
      */
+    @Override
     protected void closeInternal() throws JMSException {
         //this method should be a no-op now that external connections open/close TopicConnection when needed.  Close on Local
         //connections will eventually cause topicConnection.close() in their listening thread, so it should not be called here
@@ -295,6 +297,7 @@ public class JMSTopicRemoteConnection extends BroadcastRemoteConnection implemen
      * or by trasportManager.removeLocalConnection() call
      * (which calls connection.close(), which sets isActive to false).
      */
+    @Override
     public void run() {
         JMSTopicTransportManager tm = (JMSTopicTransportManager)rcm.getTransportManager();
         rcm.logDebug("broadcast_connection_start_listening", getInfo());
@@ -392,6 +395,7 @@ public class JMSTopicRemoteConnection extends BroadcastRemoteConnection implemen
      * INTERNAL:
      * Used for debug logging
      */
+    @Override
     protected void createDisplayString() {
         super.createDisplayString();
         displayString = (isLocal() ? "Local " : "External ") + displayString;
@@ -404,6 +408,7 @@ public class JMSTopicRemoteConnection extends BroadcastRemoteConnection implemen
      * This should take place (return true) for a JMSTopicRemoteConnection.
      * @return boolean
      */
+    @Override
     protected boolean shouldCheckServiceId() {
         return true;
     }
@@ -506,6 +511,7 @@ public class JMSTopicRemoteConnection extends BroadcastRemoteConnection implemen
             this.message = message;
         }
 
+        @Override
         public void run() {
             onMessage(message);
         }

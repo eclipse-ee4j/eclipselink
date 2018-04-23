@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -84,6 +84,7 @@ public class JNDIConnector implements Connector {
      * INTERNAL:
      * Clone the connector.
      */
+    @Override
     public Object clone() {
         try {
             return super.clone();
@@ -96,6 +97,7 @@ public class JNDIConnector implements Connector {
      * INTERNAL:
      * Connect with the specified properties and return the Connection.
      */
+    @Override
     public Connection connect(Properties properties, Session session) throws DatabaseException, ValidationException {
         String user = properties.getProperty("user");
         DataSource dataSource = getDataSource();
@@ -184,6 +186,7 @@ public class JNDIConnector implements Connector {
      * Provide the details of my connection information. This is primarily for JMX runtime services.
      * @return java.lang.String
      */
+    @Override
     public String getConnectionDetails() {
         return getName();
     }
@@ -218,6 +221,7 @@ public class JNDIConnector implements Connector {
      *             {@link org.eclipse.persistence.platform.server.ServerPlatform#getJNDIConnectorLookupType()}
      * @param lookupType
      */
+    @Deprecated
     public void setLookupType(int lookupType) {
         this.lookupType = lookupType;
     }
@@ -226,6 +230,7 @@ public class JNDIConnector implements Connector {
      * @deprecated As of 2.6.0, replaced by configuration provided by
      *             {@link org.eclipse.persistence.platform.server.ServerPlatform#getJNDIConnectorLookupType()}
      */
+    @Deprecated
     public int getLookupType() {
         return lookupType;
     }
@@ -234,6 +239,7 @@ public class JNDIConnector implements Connector {
      * PUBLIC:
      * Print data source info.
      */
+    @Override
     public String toString() {
         return Helper.getShortClassName(getClass()) + ToStringLocalization.buildMessage("datasource_name", (Object[])null) + "=>" + getName();
     }
@@ -242,6 +248,7 @@ public class JNDIConnector implements Connector {
      * INTERNAL:
      * Print something useful on the log.
      */
+    @Override
     public void toString(java.io.PrintWriter writer) {
         writer.print(ToStringLocalization.buildMessage("connector", (Object[])null) + "=>" + Helper.getShortClassName(getClass()));
         writer.print(" ");

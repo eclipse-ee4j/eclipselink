@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -69,6 +69,7 @@ public class FromSubSelectExpression extends TableExpression {
      * This is used by sub-selects in the from clause to define a virtual table,
      * 'get' allows one of the sub-selected attributes to be aliased without using the field name.
      */
+    @Override
     public Expression get(String alias) {
         FromAliasExpression aliasExpression = new FromAliasExpression(alias, this);
         return aliasExpression;

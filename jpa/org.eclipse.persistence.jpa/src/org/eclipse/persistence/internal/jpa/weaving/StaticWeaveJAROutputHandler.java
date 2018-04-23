@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -37,6 +37,7 @@ public class StaticWeaveJAROutputHandler extends AbstractStaticWeaveOutputHandle
      * @param dirPath
      * @throws IOException
      */
+    @Override
     public void addDirEntry(String dirPath)throws IOException {
         // no need to specifically add a directory entry.  directories will be created
         // as files are added
@@ -48,6 +49,7 @@ public class StaticWeaveJAROutputHandler extends AbstractStaticWeaveOutputHandle
      * @param entryBytes
      * @throws IOException
      */
+    @Override
     public void addEntry(JarEntry targetEntry,byte[] entryBytes)throws IOException{
         outputStreamHolder.putNextEntry(targetEntry);
         if(entryBytes!=null){
@@ -62,6 +64,7 @@ public class StaticWeaveJAROutputHandler extends AbstractStaticWeaveOutputHandle
      * @param entry
      * @throws IOException
      */
+    @Override
     public void addEntry(InputStream jis,JarEntry entry) throws IOException,URISyntaxException {
         outputStreamHolder.putNextEntry(entry);
         if(!entry.isDirectory()){

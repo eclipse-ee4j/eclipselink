@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -72,6 +72,7 @@ public class XPathQName {
         this(qname.getNamespaceURI(), qname.getLocalPart(), namespaceAware);
     }
 
+    @Override
     public int hashCode() {
         if(null == localName) {
             return 1;
@@ -80,6 +81,7 @@ public class XPathQName {
         }
     }
 
+    @Override
     public boolean equals(Object obj){
         if(obj == null || !(obj instanceof XPathQName)){
             return false;

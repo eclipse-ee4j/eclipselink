@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -104,6 +104,7 @@ public class XMLMetadataSource extends MetadataSourceAdapter {
      *
      * @return XMLEntityMappings - object representation of the EclipseLink-orm.xml for this repository
      */
+    @Override
     public XMLEntityMappings getEntityMappings(Map<String, Object> properties, ClassLoader classLoader, SessionLog log) {
         Reader reader = getEntityMappingsReader(properties, classLoader, log);
         if (reader == null) {
@@ -151,6 +152,7 @@ public class XMLMetadataSource extends MetadataSourceAdapter {
      *
      * @since EclipseLink 2.4
      */
+    @Override
     public Map<String, Object> getPropertyOverrides(Map<String, Object> properties, ClassLoader classLoader, SessionLog log) {
         String propertiesFileName = (String)getConfigPropertyLogDebug(
                 PersistenceUnitProperties.METADATA_SOURCE_PROPERTIES_FILE,

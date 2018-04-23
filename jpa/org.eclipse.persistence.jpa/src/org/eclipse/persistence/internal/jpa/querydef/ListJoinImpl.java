@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -58,18 +58,22 @@ public class ListJoinImpl<Z, X>  extends JoinImpl<Z, X> implements ListJoin<Z, X
     * @return metamodel type representing the Collection that is
     * the target of the join
     */
+    @Override
     public javax.persistence.metamodel.ListAttribute<? super Z, X> getModel(){
         return (javax.persistence.metamodel.ListAttribute<? super Z, X>)this.modelArtifact;
     }
 
+    @Override
     public Expression<Integer> index() {
         return new ExpressionImpl<Integer>(this.metamodel, ClassConstants.INTEGER, this.currentNode.index());
     }
 
+    @Override
     public ListJoinImpl<Z, X> on(Expression<Boolean> restriction) {
         return (ListJoinImpl<Z, X>)super.on(restriction);
     }
 
+    @Override
     public ListJoinImpl<Z, X> on(Predicate... restrictions) {
         return (ListJoinImpl<Z, X>)super.on(restrictions);
     }

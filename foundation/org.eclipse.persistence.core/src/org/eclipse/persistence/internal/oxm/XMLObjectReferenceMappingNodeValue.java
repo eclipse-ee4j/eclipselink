@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -85,6 +85,7 @@ public class XMLObjectReferenceMappingNodeValue extends MappingNodeValue {
      * is stored on the ReferenceResolver associated with the UnmarshalRecord's
      * session.
      */
+    @Override
     public void attribute(UnmarshalRecord unmarshalRecord, String namespaceURI, String localName, String value) {
         if (value != null) {
             Object realValue = unmarshalRecord.getXMLReader().convertValueBasedOnSchemaType(xmlField, value, (ConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager(),unmarshalRecord);
@@ -105,6 +106,7 @@ public class XMLObjectReferenceMappingNodeValue extends MappingNodeValue {
      * is stored on the ReferenceResolver associated with the UnmarshalRecord's
      * session.
      */
+    @Override
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord) {
         if (!xmlField.getLastXPathFragment().nameIsText()) {
             return;
@@ -126,6 +128,7 @@ public class XMLObjectReferenceMappingNodeValue extends MappingNodeValue {
     /**
      * Indicate if the XPathFragment is an attribute or text() node.
      */
+    @Override
     public boolean isOwningNode(XPathFragment xPathFragment) {
         return xPathFragment.isAttribute() || xPathFragment.nameIsText();
     }
@@ -136,6 +139,7 @@ public class XMLObjectReferenceMappingNodeValue extends MappingNodeValue {
      * (in the XMLObjectReferenceMapping's source-target key field association list)
      * is retrieved and written out.
      */
+    @Override
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver) {
         return marshal(xPathFragment, marshalRecord, object, session, namespaceResolver, ObjectMarshalContext.getInstance());
     }
@@ -146,6 +150,7 @@ public class XMLObjectReferenceMappingNodeValue extends MappingNodeValue {
      * (in the XMLObjectReferenceMapping's source-target key field association list)
      * is retrieved and written out.
      */
+    @Override
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         if (xmlObjectReferenceMapping.isReadOnly()) {
             return false;
@@ -154,6 +159,7 @@ public class XMLObjectReferenceMappingNodeValue extends MappingNodeValue {
         return this.marshalSingleValue(xPathFragment, marshalRecord, object, targetObject, session, namespaceResolver, marshalContext);
     }
 
+    @Override
     public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object targetObject, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         Object fieldValue = xmlObjectReferenceMapping.buildFieldValue(targetObject, xmlField, session);
         if (fieldValue == null) {
@@ -184,6 +190,7 @@ public class XMLObjectReferenceMappingNodeValue extends MappingNodeValue {
         return true;
     }
 
+    @Override
     public ObjectReferenceMapping getMapping() {
         return xmlObjectReferenceMapping;
     }

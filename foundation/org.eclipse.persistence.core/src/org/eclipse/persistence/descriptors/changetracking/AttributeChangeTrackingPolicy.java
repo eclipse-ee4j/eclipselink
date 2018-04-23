@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -44,6 +44,7 @@ public class AttributeChangeTrackingPolicy extends ObjectChangeTrackingPolicy {
      * PERF: Calculate change for the existing object, avoids check for new since already know.
      * Avoid backup clone, as not used.
      */
+    @Override
     public ObjectChangeSet calculateChangesForExistingObject(Object clone, UnitOfWorkChangeSet changeSet, UnitOfWorkImpl unitOfWork, ClassDescriptor descriptor, boolean shouldRaiseEvent) {
         return calculateChanges(clone, null, false, changeSet, unitOfWork, descriptor, shouldRaiseEvent);
     }
@@ -52,6 +53,7 @@ public class AttributeChangeTrackingPolicy extends ObjectChangeTrackingPolicy {
      * INTERNAL:
      * Create ObjectChangeSet
      */
+    @Override
     public ObjectChangeSet createObjectChangeSet(Object clone, Object backUp, org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet changeSet, boolean isNew, AbstractSession session, ClassDescriptor descriptor) {
         ObjectChangeSet changes = null;
         if (!isNew) {
@@ -109,6 +111,7 @@ public class AttributeChangeTrackingPolicy extends ObjectChangeTrackingPolicy {
     /**
      * Used to track instances of the change policies without doing an instance of check
      */
+    @Override
     public boolean isAttributeChangeTrackingPolicy(){
         return true;
     }
@@ -117,6 +120,7 @@ public class AttributeChangeTrackingPolicy extends ObjectChangeTrackingPolicy {
      * INTERNAL:
      * Clear the change set in the change event listener.
      */
+    @Override
     public void updateWithChanges(Object object, ObjectChangeSet changeSet, UnitOfWorkImpl uow, ClassDescriptor descriptor) {
         clearChanges(object, uow, descriptor, false);
     }
@@ -126,6 +130,7 @@ public class AttributeChangeTrackingPolicy extends ObjectChangeTrackingPolicy {
      * In cases where a relationship with detached or new entities is merged into itself previous changes may have been recorded for
      * the detached/new entity that need to be updated.
      */
+    @Override
     public void updateListenerForSelfMerge(ObjectChangeListener listener, ForeignReferenceMapping mapping, Object source, Object target, UnitOfWorkImpl unitOfWork){
         ChangeRecord record = (ChangeRecord) ((AttributeChangeListener)listener).getObjectChangeSet().getChangesForAttributeNamed(mapping.getAttributeName());
         mapping.updateChangeRecordForSelfMerge(record, source, target, (UnitOfWorkChangeSet) ((AttributeChangeListener)listener).getObjectChangeSet().getUOWChangeSet(), unitOfWork);
@@ -135,6 +140,7 @@ public class AttributeChangeTrackingPolicy extends ObjectChangeTrackingPolicy {
      * INTERNAL:
      * Clear the change set in the change event listener.
      */
+    @Override
     public void revertChanges(Object clone, ClassDescriptor descriptor, UnitOfWorkImpl uow, Map cloneMapping, boolean forRefresh) {
         clearChanges(clone, uow, descriptor, forRefresh);
         cloneMapping.put(clone, clone);
@@ -144,6 +150,7 @@ public class AttributeChangeTrackingPolicy extends ObjectChangeTrackingPolicy {
      * INTERNAL:
      * Assign ChangeListener to an aggregate object
      */
+    @Override
     public void setAggregateChangeListener(Object parent, Object aggregate, UnitOfWorkImpl uow, ClassDescriptor descriptor, String mappingAttribute){
         ((ChangeTracker)aggregate)._persistence_setPropertyChangeListener(new AggregateAttributeChangeListener(descriptor, uow, (AttributeChangeListener)((ChangeTracker)parent)._persistence_getPropertyChangeListener(), mappingAttribute, aggregate));
 
@@ -165,6 +172,7 @@ public class AttributeChangeTrackingPolicy extends ObjectChangeTrackingPolicy {
      * INTERNAL:
      * Assign AttributeChangeListener to PropertyChangeListener
      */
+    @Override
     public PropertyChangeListener setChangeListener(Object clone, UnitOfWorkImpl uow, ClassDescriptor descriptor) {
         AttributeChangeListener listener = new AttributeChangeListener(descriptor, uow, clone);
         ((ChangeTracker)clone)._persistence_setPropertyChangeListener(listener);
@@ -175,6 +183,7 @@ public class AttributeChangeTrackingPolicy extends ObjectChangeTrackingPolicy {
      * INTERNAL:
      * Set the ObjectChangeSet on the Listener, initially used for aggregate support
      */
+    @Override
     public void setChangeSetOnListener(ObjectChangeSet objectChangeSet, Object clone){
         ((AttributeChangeListener)((ChangeTracker)clone)._persistence_getPropertyChangeListener()).setObjectChangeSet(objectChangeSet);
     }
@@ -183,6 +192,7 @@ public class AttributeChangeTrackingPolicy extends ObjectChangeTrackingPolicy {
      * INTERNAL:
      * Only build backup clone
      */
+    @Override
     public Object buildBackupClone(Object clone, ObjectBuilder builder, UnitOfWorkImpl uow) {
         return clone;
     }

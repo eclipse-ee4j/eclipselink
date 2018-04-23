@@ -21,14 +21,17 @@ public class ObjectGraphImpl extends AttributeNodeImpl implements ObjectGraph, S
         this.attributeGroup = group;
         this.attributeNodes = new HashMap<String, AttributeNode>();
     }
+    @Override
     public Class getClassType() {
         return attributeGroup.getType();
     }
 
+    @Override
     public String getName() {
         return attributeGroup.getName();
     }
 
+    @Override
     public void addAttributeNodes(String... attributeName) {
         for(String attribute:attributeName) {
             AttributeNodeImpl impl = new AttributeNodeImpl(attribute);
@@ -37,6 +40,7 @@ public class ObjectGraphImpl extends AttributeNodeImpl implements ObjectGraph, S
         }
     }
 
+    @Override
     public Subgraph addSubgraph(String attribute) {
         CoreAttributeGroup group = new CoreAttributeGroup();
         if(attributeGroup.getItem(attribute) == null) {
@@ -48,6 +52,7 @@ public class ObjectGraphImpl extends AttributeNodeImpl implements ObjectGraph, S
         return new ObjectGraphImpl(group);
     }
 
+    @Override
     public Subgraph addSubgraph(String attribute, Class type) {
         CoreAttributeGroup group = new CoreAttributeGroup(null, type, true);
         if(attributeGroup.getItem(attribute) == null) {
@@ -59,6 +64,7 @@ public class ObjectGraphImpl extends AttributeNodeImpl implements ObjectGraph, S
         return new ObjectGraphImpl(group);
     }
 
+    @Override
     public List<AttributeNode> getAttributeNodes() {
         ArrayList<AttributeNode> nodes = new ArrayList<AttributeNode>();
         for(AttributeNode next:this.attributeNodes.values()) {

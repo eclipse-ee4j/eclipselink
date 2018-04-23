@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -58,6 +58,7 @@ public class NodeFactoryImpl implements NodeFactory {
     // ------------------------------------------
 
     /** */
+    @Override
     public Object newSelectStatement(int line, int column,
                                      Object select, Object from,
                                      Object where, Object groupBy,
@@ -76,6 +77,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newUpdateStatement(int line, int column,
                                      Object update, Object set, Object where) {
         QueryNode queryNode = (QueryNode)update;
@@ -89,6 +91,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newDeleteStatement(int line, int column,
                                      Object delete, Object where) {
         QueryNode queryNode = (QueryNode)delete;
@@ -104,11 +107,13 @@ public class NodeFactoryImpl implements NodeFactory {
     // Major nodes
     // ------------------------------------------
 
+    @Override
     public Object newSelectClause(int line, int column,
                                     boolean distinct, List selectExprs) {
         return newSelectClause(line, column, distinct, selectExprs, null);
     }
 
+    @Override
     public Object newSelectClause(int line, int column, boolean distinct, List selectExprs, List identifiers) {
         SelectNode node = new SelectNode();
         node.setContext(context);
@@ -127,6 +132,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newFromClause(int line, int column, List decls) {
         FromNode node = new FromNode();
         node.setContext(context);
@@ -136,6 +142,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newWhereClause(int line, int column, Object condition) {
         WhereNode node = new WhereNode();
         node.setContext(context);
@@ -145,6 +152,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newGroupByClause(int line, int column, List items) {
         GroupByNode node = new GroupByNode();
         node.setContext(context);
@@ -154,6 +162,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newHavingClause(int line, int column, Object arg) {
         HavingNode node = new HavingNode();
         node.setContext(context);
@@ -163,6 +172,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newOrderByClause(int line, int column, List items) {
         OrderByNode node = new OrderByNode();
         node.setContext(context);
@@ -172,6 +182,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newUpdateClause(int line, int column,
                                   String schema, String variable) {
         UpdateNode node = new UpdateNode();
@@ -184,6 +195,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newDeleteClause(int line, int column,
                                   String schema, String variable) {
         DeleteNode node = new DeleteNode();
@@ -200,6 +212,7 @@ public class NodeFactoryImpl implements NodeFactory {
     // ------------------------------------------
 
     /** */
+    @Override
     public Object newRangeVariableDecl(int line, int column,
                                        String schema, String variable) {
         RangeDeclNode node = new RangeDeclNode();
@@ -212,6 +225,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newJoinVariableDecl(int line, int column, boolean outerJoin,
                                       Object path, String variable, Object downcast) {
         DotNode dotNode = (DotNode)path;
@@ -232,6 +246,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newFetchJoin(int line, int column,
                                boolean outerJoin, Object path) {
         DotNode dotNode = (DotNode)path;
@@ -247,6 +262,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newCollectionMemberVariableDecl(int line, int column,
                                                   Object path, String variable) {
         DotNode dotNode = (DotNode)path;
@@ -263,6 +279,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newVariableDecl(int line, int column,
                                   Object path, String variable) {
         DotNode dotNode = (DotNode)path;
@@ -280,6 +297,7 @@ public class NodeFactoryImpl implements NodeFactory {
     // ------------------------------------------
 
     /** */
+    @Override
     public Object newDot(int line, int column, Object left, Object right) {
         DotNode node = new DotNode();
         node.setLeft((Node)left);
@@ -289,6 +307,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newVariableAccessOrTypeConstant(int line, int column, String identifier) {
         VariableNode node = new VariableNode(identifier);
         setPosition(node, line, column);
@@ -296,6 +315,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newAttribute(int line, int column, String identifier) {
         AttributeNode node = new AttributeNode(identifier);
         setPosition(node, line, column);
@@ -303,6 +323,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newQualifiedAttribute(int line, int column,
                                         String variable, String attribute) {
         Object varNode = newVariableAccessOrTypeConstant(line, column, variable);
@@ -315,6 +336,7 @@ public class NodeFactoryImpl implements NodeFactory {
     // ------------------------------------------
 
     /** */
+    @Override
     public Object newAvg(int line, int column, boolean distinct, Object arg) {
         AvgNode node = new AvgNode();
         node.setLeft((Node)arg);
@@ -324,6 +346,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newMax(int line, int column, boolean distinct, Object arg) {
         MaxNode node = new MaxNode();
         node.setLeft((Node)arg);
@@ -333,6 +356,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newMin(int line, int column, boolean distinct, Object arg) {
         MinNode node = new MinNode();
         node.setLeft((Node)arg);
@@ -342,6 +366,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newSum(int line, int column, boolean distinct, Object arg) {
         SumNode node = new SumNode();
         node.setLeft((Node)arg);
@@ -351,6 +376,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newCount(int line, int column, boolean distinct, Object arg) {
         CountNode node = new CountNode();
         node.setLeft((Node)arg);
@@ -364,6 +390,7 @@ public class NodeFactoryImpl implements NodeFactory {
     // ------------------------------------------
 
     /** */
+    @Override
     public Object newOr(int line, int column, Object left, Object right) {
         OrNode node = new OrNode();
         node.setLeft((Node)left);
@@ -373,6 +400,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newAnd(int line, int column, Object left, Object right) {
         AndNode node = new AndNode();
         node.setLeft((Node)left);
@@ -382,6 +410,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newEquals(int line, int column, Object left, Object right) {
         EqualsNode node = new EqualsNode();
         node.setLeft((Node)left);
@@ -391,6 +420,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newNotEquals(int line, int column, Object left, Object right) {
         NotEqualsNode node = new NotEqualsNode();
         node.setLeft((Node)left);
@@ -400,6 +430,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newGreaterThan(int line, int column,
                                  Object left, Object right) {
         GreaterThanNode node = new GreaterThanNode();
@@ -410,6 +441,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newGreaterThanEqual(int line, int column,
                                       Object left, Object right) {
         GreaterThanEqualToNode node = new GreaterThanEqualToNode();
@@ -420,6 +452,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newLessThan(int line, int column, Object left, Object right) {
         LessThanNode node = new LessThanNode();
         node.setLeft((Node)left);
@@ -429,6 +462,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newLessThanEqual(int line, int column,
                                    Object left, Object right) {
         LessThanEqualToNode node = new LessThanEqualToNode();
@@ -439,6 +473,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newPlus(int line, int column, Object left, Object right) {
         PlusNode node = new PlusNode();
         node.setLeft((Node)left);
@@ -448,6 +483,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newMinus(int line, int column, Object left, Object right) {
         MinusNode node = new MinusNode();
         node.setLeft((Node)left);
@@ -457,6 +493,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newMultiply(int line, int column, Object left, Object right) {
         MultiplyNode node = new MultiplyNode();
         node.setLeft((Node)left);
@@ -470,6 +507,7 @@ public class NodeFactoryImpl implements NodeFactory {
     // ------------------------------------------
 
     /** */
+    @Override
     public Object newBetween(int line, int column, boolean not, Object arg,
                              Object lower, Object upper) {
         BetweenNode node = new BetweenNode();
@@ -481,6 +519,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newDivide(int line, int column, Object left, Object right) {
         DivideNode node = new DivideNode();
         node.setLeft((Node)left);
@@ -494,11 +533,13 @@ public class NodeFactoryImpl implements NodeFactory {
     // ------------------------------------------
 
     /** */
+    @Override
     public Object newUnaryPlus(int line, int column, Object arg) {
         return arg;
     }
 
     /** */
+    @Override
     public Object newUnaryMinus(int line, int column, Object arg) {
         UnaryMinus node = new UnaryMinus();
         node.setLeft((Node)arg);
@@ -507,6 +548,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newNot(int line, int column, Object arg) {
         NotNode node = new NotNode();
         node.setLeft((Node)arg);
@@ -519,6 +561,7 @@ public class NodeFactoryImpl implements NodeFactory {
     // ------------------------------------------
 
     /** */
+    @Override
     public Object newLike(int line, int column, boolean not, Object string,
                           Object pattern, Object escape)  {
         LikeNode node = new LikeNode();
@@ -530,6 +573,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newEscape(int line, int column, Object arg) {
         EscapeNode node = new EscapeNode();
         node.setLeft((Node)arg);
@@ -538,6 +582,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newIn(int line, int column,
                         boolean not, Object expr, List items) {
         InNode node = new InNode();
@@ -549,6 +594,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newIsNull(int line, int column, boolean not, Object expr) {
         NullComparisonNode node = new NullComparisonNode();
         node.setLeft((Node)expr);
@@ -557,6 +603,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newIsEmpty(int line, int column, boolean not, Object expr)  {
         EmptyCollectionComparisonNode node =
             new EmptyCollectionComparisonNode();
@@ -567,6 +614,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newMemberOf(int line, int column,
                               boolean not, Object expr, Object collection)  {
         MemberOfNode node = new MemberOfNode();
@@ -582,6 +630,7 @@ public class NodeFactoryImpl implements NodeFactory {
     // ------------------------------------------
 
     /** */
+    @Override
     public Object newPositionalParameter(int line, int column, String position) {
         ParameterNode node = new ParameterNode(position);
         context.addParameter(position);
@@ -590,6 +639,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newNamedParameter(int line, int column, String name) {
         ParameterNode node = new ParameterNode(name);
         context.addParameter(name);
@@ -602,6 +652,7 @@ public class NodeFactoryImpl implements NodeFactory {
     // ------------------------------------------
 
     /** */
+    @Override
     public Object newBooleanLiteral(int line, int column, Object value) {
         BooleanLiteralNode node = new BooleanLiteralNode();
         node.setLiteral(value);
@@ -610,6 +661,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newIntegerLiteral(int line, int column, Object value) {
         IntegerLiteralNode node = new IntegerLiteralNode();
         node.setLiteral(value);
@@ -618,6 +670,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newLongLiteral(int line, int column, Object value) {
         LongLiteralNode node = new LongLiteralNode();
         node.setLiteral(value);
@@ -626,6 +679,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newFloatLiteral(int line, int column, Object value) {
         FloatLiteralNode node = new FloatLiteralNode();
         node.setLiteral(value);
@@ -634,6 +688,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newDoubleLiteral(int line, int column, Object value) {
         DoubleLiteralNode node = new DoubleLiteralNode();
         node.setLiteral(value);
@@ -642,6 +697,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newStringLiteral(int line, int column, Object value) {
         StringLiteralNode node = new StringLiteralNode();
         node.setLiteral(value);
@@ -650,6 +706,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newNullLiteral(int line, int column) {
         LiteralNode node = new LiteralNode();
         node.setLiteral(null);
@@ -662,6 +719,7 @@ public class NodeFactoryImpl implements NodeFactory {
     // ------------------------------------------
 
     /** */
+    @Override
     public Object newConcat(int line, int column, List objects) {
         ConcatNode node = new ConcatNode();
         node.setObjects(objects);
@@ -670,6 +728,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newSubstring(int line, int column,
                                Object string, Object start, Object length) {
         SubstringNode node = new SubstringNode();
@@ -681,6 +740,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newTrim(int line, int column, TrimSpecification trimSpec,
                           Object trimChar, Object string) {
         TrimNode node = new TrimNode();
@@ -702,6 +762,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newLower(int line, int column, Object arg) {
         LowerNode node = new LowerNode();
         node.setLeft((Node)arg);
@@ -710,6 +771,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newUpper(int line, int column, Object arg) {
         UpperNode node = new UpperNode();
         node.setLeft((Node)arg);
@@ -722,6 +784,7 @@ public class NodeFactoryImpl implements NodeFactory {
     // ------------------------------------------
 
     /** */
+    @Override
     public Object newLocate(int line, int column,
                             Object pattern, Object arg, Object startPos) {
         LocateNode node = new LocateNode();
@@ -733,6 +796,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newLength(int line, int column, Object arg) {
         LengthNode node = new LengthNode();
         node.setLeft((Node)arg);
@@ -741,6 +805,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newAbs(int line, int column, Object arg) {
         AbsNode node = new AbsNode();
         node.setLeft((Node)arg);
@@ -749,6 +814,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newSqrt(int line, int column, Object arg) {
         SqrtNode node = new SqrtNode();
         node.setLeft((Node)arg);
@@ -757,6 +823,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newMod(int line, int column, Object left, Object right) {
         ModNode node = new ModNode();
         node.setLeft((Node)left);
@@ -766,6 +833,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newSize(int line, int column, Object arg) {
         SizeNode node = new SizeNode();
         node.setLeft((Node)arg);
@@ -778,6 +846,7 @@ public class NodeFactoryImpl implements NodeFactory {
     // ------------------------------------------
 
     /** */
+    @Override
     public Object newCurrentDate(int line, int column) {
         DateFunctionNode node = new DateFunctionNode();
         node.useCurrentDate();
@@ -786,6 +855,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newCurrentTime(int line, int column) {
         DateFunctionNode node = new DateFunctionNode();
         node.useCurrentTime();
@@ -795,6 +865,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newCurrentTimestamp(int line, int column) {
         DateFunctionNode node = new DateFunctionNode();
         node.useCurrentTimestamp();
@@ -807,6 +878,7 @@ public class NodeFactoryImpl implements NodeFactory {
     // ------------------------------------------
 
     /** */
+    @Override
     public Object newFunc(int line, int column, String name, List parameters) {
         FuncNode node = new FuncNode();
         if(name.startsWith("'") && name.endsWith("'")) {
@@ -823,6 +895,7 @@ public class NodeFactoryImpl implements NodeFactory {
     // ------------------------------------------
 
     /** */
+    @Override
     public Object newSubquery(int line, int column,
                               Object select, Object from, Object where,
                               Object groupBy, Object having) {
@@ -842,6 +915,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newExists(int line, int column, boolean not, Object subquery) {
         ExistsNode node = new ExistsNode();
         if (not) node.indicateNot();
@@ -851,6 +925,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newIn(int line, int column,
                         boolean not, Object expr, Object subquery) {
         InNode node = new InNode();
@@ -863,6 +938,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newAll(int line, int column, Object subquery) {
         AllNode node = new AllNode();
         node.setLeft((Node)subquery);
@@ -871,6 +947,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newAny(int line, int column, Object subquery) {
         AnyNode node = new AnyNode();
         node.setLeft((Node)subquery);
@@ -879,6 +956,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newSome(int line, int column, Object subquery) {
         SomeNode node = new SomeNode();
         node.setLeft((Node)subquery);
@@ -891,6 +969,7 @@ public class NodeFactoryImpl implements NodeFactory {
     // ------------------------------------------
 
     /** */
+    @Override
     public Object newAscOrdering(int line, int column, Object arg) {
         OrderByItemNode node = new OrderByItemNode();
         SortDirectionNode sortDirection = new SortDirectionNode();
@@ -902,6 +981,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newDescOrdering(int line, int column, Object arg) {
         OrderByItemNode node = new OrderByItemNode();
         SortDirectionNode sortDirection = new SortDirectionNode();
@@ -913,6 +993,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newConstructor(int line, int column,
                                  String className, List args) {
         ConstructorNode node = new ConstructorNode(className);
@@ -922,6 +1003,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newSetClause(int line, int column, List assignments) {
         SetNode node = new SetNode();
         node.setAssignmentNodes(assignments);
@@ -930,6 +1012,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     /** */
+    @Override
     public Object newSetAssignmentClause(int line, int column,
                                          Object target, Object value) {
         EqualsAssignmentNode node = new EqualsAssignmentNode();
@@ -966,6 +1049,7 @@ public class NodeFactoryImpl implements NodeFactory {
             IdentificationVariableDeclNode.calculateCanonicalName(name);
     }
 
+    @Override
     public Object newKey(int line, int column, Object left){
         MapKeyNode node = new MapKeyNode();
         node.setLeft((Node)left);
@@ -973,6 +1057,7 @@ public class NodeFactoryImpl implements NodeFactory {
         return node;
     }
 
+    @Override
     public Object newMapEntry(int line, int column, Object arg){
         MapEntryNode node = new MapEntryNode();
         node.setLeft((Node)arg);
@@ -980,6 +1065,7 @@ public class NodeFactoryImpl implements NodeFactory {
         return node;
     }
 
+    @Override
     public Object newType(int line, int column, Object left){
         ClassForInheritanceNode node = new ClassForInheritanceNode();
         node.setLeft((Node)left);
@@ -987,6 +1073,7 @@ public class NodeFactoryImpl implements NodeFactory {
         return node;
     }
 
+    @Override
     public Object newCaseClause(int line, int column, Object base, List whenClauses, Object elseClause){
         CaseNode node = new CaseNode();
         node.setWhenClauses(whenClauses);
@@ -998,6 +1085,7 @@ public class NodeFactoryImpl implements NodeFactory {
         return node;
     }
 
+    @Override
     public Object newCoalesceClause(int line, int column, List clauses){
         CoalesceNode node = new CoalesceNode();
         node.setClauses(clauses);
@@ -1005,6 +1093,7 @@ public class NodeFactoryImpl implements NodeFactory {
         return node;
     }
 
+    @Override
     public Object newNullIfClause(int line, int column, Object left, Object right){
         NullIfNode node = new NullIfNode();
         node.setLeft((Node)left);
@@ -1013,6 +1102,7 @@ public class NodeFactoryImpl implements NodeFactory {
         return node;
     }
 
+    @Override
     public Object newWhenClause(int line, int column, Object conditionClause, Object thenClause){
         WhenThenNode node = new WhenThenNode();
         node.setLeft((Node)conditionClause);
@@ -1021,6 +1111,7 @@ public class NodeFactoryImpl implements NodeFactory {
         return node;
     }
 
+    @Override
     public Object newIndex(int line, int column, Object object){
         IndexNode node = new IndexNode();
         node.setLeft((Node)object);
@@ -1028,6 +1119,7 @@ public class NodeFactoryImpl implements NodeFactory {
         return node;
     }
 
+    @Override
     public Object newDateLiteral(int line, int column, Object value){
         TemporalLiteralNode node = new TemporalLiteralNode(TemporalType.DATE);
         node.setLiteral(value);
@@ -1035,6 +1127,7 @@ public class NodeFactoryImpl implements NodeFactory {
         return node;
     }
 
+    @Override
     public Object newTimeLiteral(int line, int column, Object value){
         TemporalLiteralNode node = new TemporalLiteralNode(TemporalType.TIME);
         node.setLiteral(value);
@@ -1042,6 +1135,7 @@ public class NodeFactoryImpl implements NodeFactory {
         return node;
     }
 
+    @Override
     public Object newTimeStampLiteral(int line, int column, Object value){
         TemporalLiteralNode node = new TemporalLiteralNode(TemporalType.TIMESTAMP);
         node.setLiteral(value);

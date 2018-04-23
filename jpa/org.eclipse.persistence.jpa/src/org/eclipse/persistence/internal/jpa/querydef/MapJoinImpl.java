@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -64,10 +64,12 @@ public class MapJoinImpl<Z, K, V>  extends JoinImpl<Z, V> implements MapJoin<Z, 
     * @return metamodel type representing the Collection that is
     * the target of the join
     */
+    @Override
     public javax.persistence.metamodel.MapAttribute<? super Z, K, V> getModel(){
         return (javax.persistence.metamodel.MapAttribute<? super Z, K, V>)this.modelArtifact;
     }
 
+    @Override
     public Expression<Map.Entry<K, V>> entry() {
         return new ExpressionImpl(this.metamodel, ClassConstants.Map_Entry_Class, this.currentNode.mapEntry());
     }
@@ -83,6 +85,7 @@ public class MapJoinImpl<Z, K, V>  extends JoinImpl<Z, V> implements MapJoin<Z, 
         return new JoinImpl(this, (ManagedType)this.getModel().getKeyType(), metamodel, this.getModel().getKeyJavaType(), this.currentNode.mapKey(), this.getModel());
     }
 
+    @Override
     public Path<K> key() {
         if (this.getModel().getKeyType().getPersistenceType().equals(PersistenceType.BASIC)){
             return new PathImpl(this, metamodel, ((MapAttribute)this.modelArtifact).getKeyJavaType(), this.currentNode.mapKey(), this.getModel());
@@ -90,14 +93,17 @@ public class MapJoinImpl<Z, K, V>  extends JoinImpl<Z, V> implements MapJoin<Z, 
         return new JoinImpl(this, (ManagedType)this.getModel().getKeyType(), metamodel, this.getModel().getKeyJavaType(), this.currentNode.mapKey(), this.getModel());
     }
 
+    @Override
     public Path<V> value() {
         return this;
     }
 
+    @Override
     public MapJoinImpl<Z, K, V> on(Expression<Boolean> restriction) {
         return (MapJoinImpl<Z, K, V>)super.on(restriction);
     }
 
+    @Override
     public MapJoinImpl<Z, K, V> on(Predicate... restrictions) {
         return (MapJoinImpl<Z, K, V>)super.on(restrictions);
     }

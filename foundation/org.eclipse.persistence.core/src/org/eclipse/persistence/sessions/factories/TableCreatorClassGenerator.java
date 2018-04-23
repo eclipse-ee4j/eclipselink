@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,13 +12,23 @@
  ******************************************************************************/
 package org.eclipse.persistence.sessions.factories;
 
-import java.io.*;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.internal.codegen.*;
-import org.eclipse.persistence.tools.schemaframework.*;
-import org.eclipse.persistence.sequencing.TableSequence;;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.StringWriter;
+import java.io.Writer;
+
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.codegen.ClassDefinition;
+import org.eclipse.persistence.internal.codegen.CodeGenerator;
+import org.eclipse.persistence.internal.codegen.NonreflectiveMethodDefinition;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.sequencing.TableSequence;
+import org.eclipse.persistence.sessions.DatabaseLogin;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
+import org.eclipse.persistence.tools.schemaframework.ForeignKeyConstraint;
+import org.eclipse.persistence.tools.schemaframework.TableCreator;
+import org.eclipse.persistence.tools.schemaframework.TableDefinition;;
 
 /**
  * <p><b>Purpose</b>: Allow for a class storing a TopLink table creator's tables (meta-data) to be generated.
@@ -354,7 +364,7 @@ public class TableCreatorClassGenerator {
      * This can be qualified or unqualified name and will set the file name to match.
      */
     public void setClassName(String newClassName) {
-        int lastDotIndex = newClassName.lastIndexOf(".");
+        int lastDotIndex = newClassName.lastIndexOf('.');
         if (lastDotIndex >= 0) {
             className = newClassName.substring(lastDotIndex + 1, newClassName.length());
             setPackageName(newClassName.substring(0, lastDotIndex));

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -366,6 +366,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      * Return the object from the local identity map with the primary and class.
      * This avoids checking the parent cache for the unit of work.
      */
+    @Override
     public Object getFromLocalIdentityMap(Object primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
         return getFromIdentityMap(primaryKey, null, theClass, shouldReturnInvalidatedObjects, descriptor);
     }
@@ -472,6 +473,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      * INTERNAL:
      * Returns the single write Lock manager for this session
      */
+    @Override
     public WriteLockManager getWriteLockManager() {
         // As there should only be one write lock manager per server session
         // get the one from the parent.
@@ -638,6 +640,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      * The object must always be registered with its version number if optimistic locking is used.
      * The readTime may also be included in the cache key as it is constructed.
      */
+    @Override
     public CacheKey internalPutInIdentityMap(Object domainObject, Object key, Object writeLockValue, long readTime, ClassDescriptor descriptor) {
         //no need to unwrap as the put will unwrap later anyway
         if (!descriptor.getCachePolicy().isSharedIsolation()) {

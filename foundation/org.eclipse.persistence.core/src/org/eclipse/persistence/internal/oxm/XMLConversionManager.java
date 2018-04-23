@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -264,7 +264,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
             return convertObjectToSQLTime(sourceObject, schemaTypeQName);
         } else if (javaClass ==  CoreClassConstants.TIMESTAMP) {
             return convertObjectToTimestamp(sourceObject, schemaTypeQName);
-        } else if ((javaClass == Constants.QNAME_CLASS) && (sourceObject != null)) {
+        } else if (javaClass == Constants.QNAME_CLASS) {
             return convertObjectToQName(sourceObject);
         } else if (javaClass == CoreClassConstants.STRING) {
             return convertObjectToString(sourceObject, schemaTypeQName);
@@ -1905,7 +1905,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     private String appendNanos(String string, Timestamp ts) {
         StringBuilder strBldr = new StringBuilder(string);
         int nanos = ts.getNanos();
-        strBldr.append(nanos==0 ? "" : '.' + Helper.buildZeroPrefixAndTruncTrailZeros(nanos, TOTAL_NS_DIGITS)).toString();
+        strBldr.append(nanos==0 ? "" : '.' + Helper.buildZeroPrefixAndTruncTrailZeros(nanos, TOTAL_NS_DIGITS));
         return strBldr.toString();
     }
 
@@ -1924,7 +1924,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
             // adjust for negative time values, i.e. before Epoch
             msns = msns + 1000;
         }
-        strBldr.append(msns==0 ? "" : '.' + Helper.buildZeroPrefixAndTruncTrailZeros(msns, TOTAL_MS_DIGITS)).toString();
+        strBldr.append(msns==0 ? "" : '.' + Helper.buildZeroPrefixAndTruncTrailZeros(msns, TOTAL_MS_DIGITS));
         return strBldr.toString();
     }
 

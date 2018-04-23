@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -42,6 +42,7 @@ public class JMSTopicTransportManager extends JMSPublishingTransportManager {
      * JMSTopicTransportManager may have only two connections: one local and one external.
      * In case the local connection doesn't exist, this method creates it.
      */
+    @Override
     public synchronized void createLocalConnection() {
         if(localConnection == null) {
             try {
@@ -62,11 +63,13 @@ public class JMSTopicTransportManager extends JMSPublishingTransportManager {
      * attempts to create local connection in a separate thread.
      * Returns clone of the original map.
      */
+    @Override
     public Map<String, RemoteConnection> getConnectionsToExternalServicesForCommandPropagation() {
         if (this.localConnection == null && !this.rcm.isStopped()) {
             // It's a good time to create localConnection,
             // in a new thread - to return externalConnections promptly.
             this.rcm.getServerPlatform().launchContainerRunnable(new Runnable() {
+                @Override
                 public void run() {
                     try {
                         createLocalConnection();
@@ -84,6 +87,7 @@ public class JMSTopicTransportManager extends JMSPublishingTransportManager {
      * INTERNAL:
      * caches local connection, set localConnection to null, closes the cached connection in a new thread.
      */
+    @Override
     public void removeLocalConnection() {
         JMSTopicRemoteConnection connectionToRemove = (JMSTopicRemoteConnection)localConnection;
         synchronized(this) {

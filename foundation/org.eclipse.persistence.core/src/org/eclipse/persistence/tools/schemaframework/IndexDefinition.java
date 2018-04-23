@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -65,6 +65,7 @@ public class IndexDefinition extends DatabaseObjectDefinition {
      * INTERNAL:
      * Return the create type statement.
      */
+    @Override
     public Writer buildCreationWriter(AbstractSession session, Writer writer) throws ValidationException {
         try {
             writer.write(session.getPlatform().buildCreateIndex(getTargetTable(), getName(), getQualifier(), isUnique(), this.fields.toArray(new String[0])));
@@ -78,6 +79,7 @@ public class IndexDefinition extends DatabaseObjectDefinition {
      * INTERNAL:
      * Return the drop type statement.
      */
+    @Override
     public Writer buildDeletionWriter(AbstractSession session, Writer writer) throws ValidationException {
         try {
             writer.write(session.getPlatform().buildDropIndex(getTargetTable(), getName(), getQualifier()));

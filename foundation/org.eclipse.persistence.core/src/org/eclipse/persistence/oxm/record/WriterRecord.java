@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -87,6 +87,7 @@ public class WriterRecord extends MarshalRecord<XMLMarshaller> {
     /**
      * INTERNAL:
      */
+    @Override
     public void startDocument(String encoding, String version) {
             builder.append("<?xml version=\"");
             builder.append(version);
@@ -102,6 +103,7 @@ public class WriterRecord extends MarshalRecord<XMLMarshaller> {
     /**
      * INTERNAL
      */
+    @Override
     public void writeHeader() {
             builder.append(getMarshaller().getXmlHeader());
     }
@@ -109,11 +111,13 @@ public class WriterRecord extends MarshalRecord<XMLMarshaller> {
     /**
      * INTERNAL:
      */
+    @Override
     public void endDocument() {}
 
     /**
      * INTERNAL:
      */
+    @Override
     public void openStartElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
         super.openStartElement(xPathFragment, namespaceResolver);
             if (isStartElementOpen) {
@@ -130,6 +134,7 @@ public class WriterRecord extends MarshalRecord<XMLMarshaller> {
     /**
      * INTERNAL:
      */
+    @Override
     public void element(XPathFragment frag) {
             if (isStartElementOpen) {
                 builder.append('>');
@@ -144,6 +149,7 @@ public class WriterRecord extends MarshalRecord<XMLMarshaller> {
     /**
      * INTERNAL:
      */
+    @Override
     public void attribute(XPathFragment xPathFragment, NamespaceResolver namespaceResolver, String value) {
         attribute(null, xPathFragment.getLocalName(), getNameForFragment(xPathFragment), value);
     }
@@ -152,12 +158,14 @@ public class WriterRecord extends MarshalRecord<XMLMarshaller> {
      * INTERNAL:
      * override so we don't iterate over namespaces when startPrefixMapping doesn't do anything
      */
+    @Override
     public void startPrefixMappings(NamespaceResolver namespaceResolver) {
     }
 
     /**
      * INTERNAL:
      */
+    @Override
     public void attribute(String namespaceURI, String localName, String qName, String value) {
             builder.append(' ');
             builder.append(qName);
@@ -170,11 +178,13 @@ public class WriterRecord extends MarshalRecord<XMLMarshaller> {
     /**
      * INTERNAL:
      */
+    @Override
     public void closeStartElement() {}
 
     /**
      * INTERNAL:
      */
+    @Override
     public void endElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
             if (isStartElementOpen) {
                 builder.append('/');
@@ -192,6 +202,7 @@ public class WriterRecord extends MarshalRecord<XMLMarshaller> {
     /**
      * INTERNAL:
      */
+    @Override
     public void characters(String value) {
             if (isStartElementOpen) {
                 isStartElementOpen = false;
@@ -203,6 +214,7 @@ public class WriterRecord extends MarshalRecord<XMLMarshaller> {
     /**
      * INTERNAL:
      */
+    @Override
     public void cdata(String value) {
             if(isStartElementOpen) {
                 isStartElementOpen = false;
@@ -312,6 +324,7 @@ public class WriterRecord extends MarshalRecord<XMLMarshaller> {
      * @param namespaceResolver The NamespaceResolver can be used to resolve the
      * namespace URI/prefix of the node
      */
+    @Override
     public void node(Node node, NamespaceResolver namespaceResolver, String newNamespace, String newName) {
         if (node.getNodeType() == Node.ATTRIBUTE_NODE) {
             Attr attr = (Attr) node;
@@ -362,6 +375,7 @@ public class WriterRecord extends MarshalRecord<XMLMarshaller> {
         }
 
         // --------------------- CONTENTHANDLER METHODS --------------------- //
+        @Override
         public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
                 if (isStartElementOpen) {
                     builder.append('>');
@@ -376,6 +390,7 @@ public class WriterRecord extends MarshalRecord<XMLMarshaller> {
                 writePrefixMappings();
         }
 
+        @Override
         public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
                 if (isStartElementOpen) {
                     builder.append('/');
@@ -389,6 +404,7 @@ public class WriterRecord extends MarshalRecord<XMLMarshaller> {
                 isStartElementOpen = false;
         }
 
+        @Override
         public void startPrefixMapping(String prefix, String uri) throws SAXException {
             String namespaceUri = getNamespaceResolver().resolveNamespacePrefix(prefix);
             if(namespaceUri == null || !namespaceUri.equals(uri)) {
@@ -396,11 +412,13 @@ public class WriterRecord extends MarshalRecord<XMLMarshaller> {
             }
         }
 
+        @Override
         public void characters(char[] ch, int start, int length) throws SAXException {
             String characters = new String (ch, start, length);
             characters(characters);
         }
 
+        @Override
         public void characters(CharSequence characters) throws SAXException {
             if (isProcessingCData) {
                 cdata(characters.toString());
@@ -415,6 +433,7 @@ public class WriterRecord extends MarshalRecord<XMLMarshaller> {
         }
 
         // --------------------- LEXICALHANDLER METHODS --------------------- //
+        @Override
         public void comment(char[] ch, int start, int length) throws SAXException {
                 if (isStartElementOpen) {
                     builder.append('>');
@@ -423,10 +442,12 @@ public class WriterRecord extends MarshalRecord<XMLMarshaller> {
                 writeComment(ch, start, length);
         }
 
+        @Override
         public void startCDATA() throws SAXException {
             isProcessingCData = true;
         }
 
+        @Override
         public void endCDATA() throws SAXException {
             isProcessingCData = false;
         }
@@ -486,18 +507,29 @@ public class WriterRecord extends MarshalRecord<XMLMarshaller> {
                 }
         }
         // --------------- SATISFY CONTENTHANDLER INTERFACE --------------- //
+        @Override
         public void endPrefixMapping(String prefix) throws SAXException {}
+        @Override
         public void processingInstruction(String target, String data) throws SAXException {}
+        @Override
         public void setDocumentLocator(Locator locator) {}
+        @Override
         public void startDocument() throws SAXException {}
+        @Override
         public void endDocument() throws SAXException {}
+        @Override
         public void skippedEntity(String name) throws SAXException {}
+        @Override
         public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {}
 
         // --------------- SATISFY LEXICALHANDLER INTERFACE --------------- //
+        @Override
         public void startEntity(String name) throws SAXException {}
+        @Override
         public void endEntity(String name) throws SAXException {}
+        @Override
         public void startDTD(String name, String publicId, String systemId) throws SAXException {}
+        @Override
         public void endDTD() throws SAXException {}
         @Override
         public void setNil(boolean isNil) {}

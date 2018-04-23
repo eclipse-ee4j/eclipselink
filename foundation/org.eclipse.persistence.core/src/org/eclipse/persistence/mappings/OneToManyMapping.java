@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -190,6 +190,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * Verifies listOrderField's table: it must be the same table that contains all target foreign keys.
      * Precondition: listOrderField != null.
      */
+    @Override
     protected void buildListOrderField() {
         if(this.listOrderField.hasTableName()) {
             if(!this.targetForeignKeyTable.equals(this.listOrderField.getTable())) {
@@ -277,7 +278,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
     @Override
     public Object clone() {
         OneToManyMapping clone = (OneToManyMapping)super.clone();
-        clone.setTargetForeignKeysToSourceKeys(new HashMap(getTargetForeignKeysToSourceKeys()));
+        clone.setTargetForeignKeysToSourceKeys(new HashMap<>(getTargetForeignKeysToSourceKeys()));
 
         if (addTargetQuery != null){
             clone.addTargetQuery = (DataModifyQuery) this.addTargetQuery.clone();
@@ -292,6 +293,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * INTERNAL
      * Called when a DatabaseMapping is used to map the key in a collection.  Returns the key.
      */
+    @Override
     public Object createMapComponentFromRow(AbstractRecord dbRow, ObjectBuildingQuery query, CacheKey parentCacheKey, AbstractSession session, boolean isTargetProtected){
         return session.executeQuery(getSelectionQuery(), dbRow);
     }
@@ -383,6 +385,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
     /**
      * Overrides CollectionMappig because this mapping requires a DeleteAllQuery instead of a ModifyQuery.
      */
+    @Override
     protected ModifyQuery getDeleteAllQuery() {
         if (deleteAllQuery == null) {
             deleteAllQuery = new DeleteAllQuery();//this is casted to a DeleteAllQuery
@@ -437,6 +440,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * INTERNAL:
      * Primary keys of targetForeignKeyTable.
      */
+    @Override
     public List<DatabaseField> getTargetPrimaryKeyFields() {
         return this.targetPrimaryKeyFields;
     }
@@ -470,7 +474,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      */
     public Map<DatabaseField, DatabaseField> getTargetForeignKeysToSourceKeys() {
         if (targetForeignKeysToSourceKeys == null) {
-            targetForeignKeysToSourceKeys = new HashMap(2);
+            targetForeignKeysToSourceKeys = new HashMap<>(2);
         }
         return targetForeignKeysToSourceKeys;
     }
@@ -480,7 +484,9 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * Maintain for backward compatibility.
      * This is 'public' so StoredProcedureGenerator
      * does not have to use the custom query expressions.
+     * @deprecated since 2.7 replaced by {@link #getTargetForeignKeysToSourceKeys()}
      */
+    @Deprecated
     public Map getTargetForeignKeyToSourceKeys() {
         return getTargetForeignKeysToSourceKeys();
     }
@@ -593,6 +599,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * INTERNAL:
      * Initialize changeOrderTargetQuery.
      */
+    @Override
     protected void initializeChangeOrderTargetQuery(AbstractSession session) {
         boolean hasChangeOrderTargetQuery = changeOrderTargetQuery != null;
         if(!hasChangeOrderTargetQuery) {
@@ -759,6 +766,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * Added here initialization of target foreign keys and target primary keys so that they are ready when
      * CollectionMapping.initialize initializes listOrderField.
      */
+    @Override
     protected void initializeReferenceDescriptor(AbstractSession session) throws DescriptorException {
         super.initializeReferenceDescriptor(session);
         if (!isSourceKeySpecified()) {

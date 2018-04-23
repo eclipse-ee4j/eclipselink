@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -118,6 +118,7 @@ public class NoIdentityMap extends AbstractIdentityMap {
     /**
      * Return an empty enumerator.
      */
+    @Override
     public Enumeration<CacheKey> keys(boolean checkReadLocks) {
         return Collections.<CacheKey>emptyEnumeration();
     }
@@ -126,6 +127,7 @@ public class NoIdentityMap extends AbstractIdentityMap {
      * Notify the cache that a lazy relationship has been triggered in the object
      * and the cache may need to be updated
      */
+    @Override
     public void lazyRelationshipLoaded(Object object, ValueHolderInterface valueHolder, ForeignReferenceMapping mapping){
         //NO-OP
     }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -32,6 +32,7 @@ public class AttunityPlatform extends org.eclipse.persistence.platform.database.
      *  data types.
      *  @return java.util.Hashtable
      */
+    @Override
     protected Hashtable buildFieldTypes() {
         Hashtable fieldTypeMapping;
 
@@ -68,11 +69,13 @@ public class AttunityPlatform extends org.eclipse.persistence.platform.database.
     /**
     * Initialize any platform-specific operators
     */
+    @Override
     protected void initializePlatformOperators() {
         super.initializePlatformOperators();
         addOperator(ExpressionOperator.simpleTwoArgumentFunction(ExpressionOperator.Concat, "CONCAT"));
     }
 
+    @Override
     public boolean isAttunity() {
         return true;
     }
@@ -82,6 +85,7 @@ public class AttunityPlatform extends org.eclipse.persistence.platform.database.
      *  syntax.
      *  @return boolean false
      */
+    @Override
     public boolean supportsPrimaryKeyConstraint() {
         return false;
     }
@@ -91,6 +95,7 @@ public class AttunityPlatform extends org.eclipse.persistence.platform.database.
      *  syntax.
      *  @return boolean false.
      */
+    @Override
     public boolean supportsForeignKeyConstraints() {
         return false;
     }

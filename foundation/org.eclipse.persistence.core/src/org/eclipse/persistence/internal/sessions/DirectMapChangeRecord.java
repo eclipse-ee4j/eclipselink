@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -42,6 +42,7 @@ public class DirectMapChangeRecord extends DeferrableChangeRecord {
     /**
      * This method will be used to merge one record into another.
      */
+    @Override
     public void mergeRecord(ChangeRecord mergeFromRecord, UnitOfWorkChangeSet mergeToChangeSet, UnitOfWorkChangeSet mergeFromChangeSet) {
         if (((DeferrableChangeRecord)mergeFromRecord).isDeferred()){
             if (this.hasChanges()){
@@ -185,6 +186,7 @@ public class DirectMapChangeRecord extends DeferrableChangeRecord {
     /**
      * This method will be used to update the objectsChangeSets references.
      */
+    @Override
     public void updateReferences(UnitOfWorkChangeSet mergeToChangeSet, UnitOfWorkChangeSet mergeFromChangeSet) {
         // Nothing for this record type to do as it does not reference any changesets.
     }
@@ -192,7 +194,8 @@ public class DirectMapChangeRecord extends DeferrableChangeRecord {
    /**
     * Recreates the original state of the collection.
     */
-  public void internalRecreateOriginalCollection(Object currentMap, AbstractSession session) {
+  @Override
+public void internalRecreateOriginalCollection(Object currentMap, AbstractSession session) {
       ContainerPolicy cp = this.mapping.getContainerPolicy();
        if(this.removeObjectsList != null) {
            Iterator it = this.removeObjectsList.entrySet().iterator();
@@ -213,7 +216,8 @@ public class DirectMapChangeRecord extends DeferrableChangeRecord {
   /**
    * Clears info about added / removed objects set by change tracker.
    */
-  public void clearChanges() {
+  @Override
+public void clearChanges() {
       if(this.removeObjectsList != null) {
           this.removeObjectsList.clear();
       }

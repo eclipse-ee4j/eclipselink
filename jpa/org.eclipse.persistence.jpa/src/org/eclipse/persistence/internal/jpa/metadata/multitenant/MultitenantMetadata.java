@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -335,9 +335,9 @@ public class MultitenantMetadata extends ORMetadata {
         // Future: add a default tenant table discrimintor (pu defaults or
         // entity mappings level. See how implemented for tenant discriminator columns)
         if (m_tenantTableDiscriminator != null) {
-            m_tenantTableDiscriminator.process(descriptor, (TablePerMultitenantPolicy) policy);
+            m_tenantTableDiscriminator.process(descriptor, policy);
         } else {
-            new TenantTableDiscriminatorMetadata(descriptor.getClassAccessor()).process(descriptor, (TablePerMultitenantPolicy) policy);
+            new TenantTableDiscriminatorMetadata(descriptor.getClassAccessor()).process(descriptor, policy);
         }
     }
 

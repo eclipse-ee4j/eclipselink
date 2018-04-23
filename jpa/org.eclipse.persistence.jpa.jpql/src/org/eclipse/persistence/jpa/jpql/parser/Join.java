@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -16,6 +16,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
 import java.util.Collection;
 import java.util.List;
 import java.util.StringTokenizer;
+
 import org.eclipse.persistence.jpa.jpql.WordParser;
 
 /**
@@ -104,6 +105,7 @@ public final class Join extends AbstractExpression {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
@@ -111,6 +113,7 @@ public final class Join extends AbstractExpression {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void acceptChildren(ExpressionVisitor visitor) {
         getJoinAssociationPath().accept(visitor);
         getIdentificationVariable().accept(visitor);
@@ -134,11 +137,10 @@ public final class Join extends AbstractExpression {
     protected void addOrderedChildrenTo(List<Expression> children) {
 
         String join = getText();
-        String space = " ";
 
         // Break the identifier into multiple identifiers
-        if (join.indexOf(space) != -1) {
-            StringTokenizer tokenizer = new StringTokenizer(join, space, true);
+        if (join.indexOf(SPACE) != -1) {
+            StringTokenizer tokenizer = new StringTokenizer(join, " ", true);
 
             while (tokenizer.hasMoreTokens()) {
                 String token = tokenizer.nextToken();
@@ -277,6 +279,7 @@ public final class Join extends AbstractExpression {
     /**
      * {@inheritDoc}
      */
+    @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(JoinBNF.ID);
     }
@@ -437,7 +440,7 @@ public final class Join extends AbstractExpression {
         else {
             String path = wordParser.word();
 
-            if (path.indexOf(".") == -1) {
+            if (path.indexOf('.') == -1) {
                 joinAssociationPath = new AbstractSchemaName(this, path);
                 joinAssociationPath.parse(wordParser, tolerant);
             }

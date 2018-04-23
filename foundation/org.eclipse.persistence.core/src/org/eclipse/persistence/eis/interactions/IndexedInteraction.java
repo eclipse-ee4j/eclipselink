@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -62,6 +62,7 @@ public class IndexedInteraction extends EISInteraction {
      * This must be called in the order of the output arguments in the result indexed record.
      * The argumentFieldName is the field or argument name in the descriptor that maps to the indexed value.
      */
+    @Override
     public void addOutputArgument(String argumentFieldName) {
         getOutputArguments().addElement(new DatabaseField(argumentFieldName));
     }
@@ -69,6 +70,7 @@ public class IndexedInteraction extends EISInteraction {
     /**
      * The arguments are the values in order of occurance in the record.
      */
+    @Override
     public Vector getArguments() {
         return super.getArguments();
     }
@@ -76,6 +78,7 @@ public class IndexedInteraction extends EISInteraction {
     /**
      * The output arguments in order of occurance in the record.
      */
+    @Override
     public Vector getOutputArguments() {
         return super.getOutputArguments();
     }
@@ -83,6 +86,7 @@ public class IndexedInteraction extends EISInteraction {
     /**
      * The arguments are the values in order of occurance in the record.
      */
+    @Override
     public void setArguments(Vector arguments) {
         super.setArguments(arguments);
     }
@@ -90,6 +94,7 @@ public class IndexedInteraction extends EISInteraction {
     /**
      * The output arguments in order of occurance in the record.
      */
+    @Override
     public void setOutputArguments(Vector outputArguments) {
         super.setOutputArguments(outputArguments);
     }
@@ -98,6 +103,7 @@ public class IndexedInteraction extends EISInteraction {
      * Create an indexed input record for this interaction.
      * Populate the data into the record from this interaction's arguments.
      */
+    @Override
     public Record createInputRecord(EISAccessor accessor) {
         try {
             IndexedRecord record = accessor.getRecordFactory().createIndexedRecord(getInputRecordName());
@@ -117,6 +123,7 @@ public class IndexedInteraction extends EISInteraction {
      * Build a database row from the record returned from the interaction.
      * Also handles MappedRecords for case of input being indexed but mapped ouput.
      */
+    @Override
     public AbstractRecord buildRow(Record record, EISAccessor accessor) {
         AbstractRecord row = null;
         if (record instanceof IndexedRecord) {

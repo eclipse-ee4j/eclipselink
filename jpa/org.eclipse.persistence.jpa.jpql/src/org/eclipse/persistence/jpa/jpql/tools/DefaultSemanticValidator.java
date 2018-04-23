@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -1081,7 +1081,7 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
                     if (ExpressionTools.stringIsNotEmpty(stateFieldValue)) {
 
                         // State field without a dot
-                        if (stateFieldValue.indexOf(".") == -1) {
+                        if (stateFieldValue.indexOf('.') == -1) {
                             Object mapping = helper.getMappingNamed(entity, stateFieldValue);
 
                              if (mapping == null) {

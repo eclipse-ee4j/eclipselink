@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -131,6 +131,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
      * This value is mandatory for all root objects
      * @return the default root element specified on this ClassDescriptor
      */
+    @Override
     public String getDefaultRootElement() {
         if (getTables().isEmpty()) {
             return null;
@@ -145,6 +146,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
      * By default unmapped data is not preserved.
      * @return if this descriptor should preserve unmapped data
      */
+    @Override
     public boolean shouldPreserveDocument() {
         return this.shouldPreserveDocument;
     }
@@ -167,6 +169,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
     * This value is stored in place of a table name
     * @param rootElementName a root element to specify on this Descriptor
     */
+    @Override
     public void addRootElement(String rootElementName) {
         if (rootElementName != null) {
             if (!getTableNames().contains(rootElementName)) {
@@ -182,6 +185,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
     * This value is mandatory for all root objects
     * @param newDefaultRootElement the default root element to specify on this ClassDescriptor
     */
+    @Override
     public void setDefaultRootElement(String newDefaultRootElement) {
         if(setDefaultRootElementField(newDefaultRootElement)) {
             int index = getTableNames().indexOf(newDefaultRootElement);
@@ -206,10 +210,12 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
     * @return the NamespaceResolver associated with this descriptor
     * @see org.eclipse.persistence.oxm.NamespaceResolver
     */
+    @Override
     public NamespaceResolver getNamespaceResolver() {
         return namespaceResolver;
     }
 
+    @Override
     public NamespaceResolver getNonNullNamespaceResolver() {
         if (namespaceResolver == null) {
             namespaceResolver = new NamespaceResolver();
@@ -225,6 +231,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
      * Calling this on a descriptor that does not use inheritance will cause problems, #hasInheritance() must always first be called.
      * @return the InheritancePolicy associated with this descriptor
      */
+    @Override
     public InheritancePolicy getInheritancePolicy() {
         if (inheritancePolicy == null) {
             // Lazy initialize to conserve space in non-inherited classes.
@@ -239,6 +246,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
     * @param newNamespaceResolver the NamespaceResolver to associate with this descriptor
     * @see org.eclipse.persistence.oxm.NamespaceResolver
     */
+    @Override
     public void setNamespaceResolver(NamespaceResolver newNamespaceResolver) {
         namespaceResolver = newNamespaceResolver;
     }
@@ -249,6 +257,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
     * @return the SchemaReference associated with this descriptor
     * @see org.eclipse.persistence.oxm.schema
     */
+    @Override
     public XMLSchemaReference getSchemaReference() {
         return schemaReference;
     }
@@ -259,6 +268,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
      * @param newSchemaReference the SchemaReference to associate with this descriptor
      * @see org.eclipse.persistence.oxm.schema
      */
+    @Override
     public void setSchemaReference(XMLSchemaReference newSchemaReference) {
         schemaReference = newSchemaReference;
     }
@@ -276,6 +286,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
      * If true, the descriptor may be lazily initialized.  This is useful if the
      * descriptor may not get used.
      */
+    @Override
     public boolean isLazilyInitialized() {
         return lazilyInitialized;
     }
@@ -296,6 +307,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
         return super.getPrimaryKeyFieldNames();
     }
 
+    @Override
     protected void validateMappingType(DatabaseMapping mapping) {
         if (!(mapping.isXMLMapping())) {
             throw DescriptorException.invalidMappingType(mapping);
@@ -317,6 +329,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
     * Build(if necessary) and return the nested XMLRecord from the specified field value.
     * The field value should be an XMLRecord or and XMLElement
     */
+    @Override
     public AbstractRecord buildNestedRowFromFieldValue(Object fieldValue) {
         if (fieldValue instanceof XMLRecord) {
             return (XMLRecord) fieldValue;
@@ -344,6 +357,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
     * Build(if necessary) and return a Vector of the nested XMLRecords from the specified field value.
     * The field value should be a Vector, an XMLRecord, or an XMLElement
     */
+    @Override
     public Vector buildNestedRowsFromFieldValue(Object fieldValue, AbstractSession session) {
         // BUG#2667762 - If the tag was empty this could be a string of whitespace.
         if (!(fieldValue instanceof Vector)) {
@@ -396,6 +410,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
     * with the designated instance variable.
     * @return The newly created DatabaseMapping is returned.
     */
+    @Override
     public DatabaseMapping addDirectMapping(String attributeName, String xpathString) {
         XMLDirectMapping mapping = new XMLDirectMapping();
 
@@ -412,6 +427,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
     * the receiver describes maps in  the default manner for its type to the indicated
     * database field.
     */
+    @Override
     public DatabaseMapping addDirectMapping(String attributeName, String getMethodName, String setMethodName, String xpathString) {
         XMLDirectMapping mapping = new XMLDirectMapping();
 
@@ -466,6 +482,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
      * Return them in a vector.
      * The field value could be a vector or could be a text value if only a single value.
      */
+    @Override
     public Vector buildDirectValuesFromFieldValue(Object fieldValue) throws DatabaseException {
         if (!(fieldValue instanceof Vector)) {
             Vector fieldValues = new Vector(1);
@@ -481,6 +498,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
      * set of direct values.
      * The database better be expecting a Vector.
      */
+    @Override
     public Object buildFieldValueFromDirectValues(Vector directValues, String elementDataTypeName, AbstractSession session) throws DatabaseException {
         return directValues;
     }
@@ -490,6 +508,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
      * Build and return the appropriate field value for the specified
      * set of nested rows.
      */
+    @Override
     public Object buildFieldValueFromNestedRows(Vector nestedRows, String structureName, AbstractSession session) throws DatabaseException {
         return nestedRows;
     }
@@ -498,6 +517,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
      * INTERNAL:
      * A DatabaseField is built from the given field name.
      */
+    @Override
     public DatabaseField buildField(String fieldName) {
         XMLField xmlField = new XMLField(fieldName);
         xmlField.setNamespaceResolver(this.getNamespaceResolver());
@@ -509,6 +529,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
      * INTERNAL:
      * This is used only in initialization.
      */
+    @Override
     public DatabaseField buildField(DatabaseField field) {
         try {
             XMLField xmlField = (XMLField) field;
@@ -525,6 +546,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
      * This is needed by regular aggregate descriptors (because they require review);
      * but not by XML aggregate descriptors.
      */
+    @Override
     public void initializeAggregateInheritancePolicy(AbstractSession session) {
         // do nothing, since the parent descriptor was already modified during pre-initialize
     }
@@ -541,6 +563,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
      * INTERNAL:
      * Sets the tables
      */
+    @Override
     public void setTables(Vector<DatabaseTable> theTables) {
          super.setTables(theTables);
     }
@@ -549,6 +572,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
      * INTERNAL:
      * Allow the descriptor to initialize any dependencies on this session.
      */
+    @Override
     public void preInitialize(AbstractSession session) throws DescriptorException {
         // Avoid repetitive initialization (this does not solve loops)
         if (isInitialized(PREINITIALIZED)) {
@@ -620,6 +644,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
      * INTERNAL:
      * Post initializations after mappings are initialized.
      */
+    @Override
     public void postInitialize(AbstractSession session) throws DescriptorException {
         // Avoid repetitive initialization (this does not solve loops)
         if (isInitialized(POST_INITIALIZED) || isInvalid()) {
@@ -683,6 +708,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
      * Initialize the mappings as a separate step.
      * This is done as a separate step to ensure that inheritance has been first resolved.
      */
+    @Override
     public void initialize(AbstractSession session) throws DescriptorException {
         if (this.hasInheritance()) {
             ((org.eclipse.persistence.internal.oxm.QNameInheritancePolicy) this.getInheritancePolicy()).setNamespaceResolver(this.getNamespaceResolver());
@@ -811,6 +837,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
     /**
      * Aggregates use a dummy table as default.
      */
+    @Override
     protected DatabaseTable extractDefaultTable() {
         return new DatabaseTable();
     }
@@ -827,6 +854,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
      * @param unmarshalRecord
      * @return object
      */
+    @Override
     public Object wrapObjectInXMLRoot(UnmarshalRecord unmarshalRecord, boolean forceWrap) {
         String elementLocalName = unmarshalRecord.getLocalName();
         String elementNamespaceUri = unmarshalRecord.getRootElementNamespaceUri();
@@ -862,6 +890,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
       * @param elementPrefix
       * @return object
       */
+    @Override
     public Object wrapObjectInXMLRoot(Object object, String elementNamespaceUri, String elementLocalName, String elementPrefix, boolean forceWrap, boolean isNamespaceAware, XMLUnmarshaller xmlUnmarshaller) {
 
         if (forceWrap || shouldWrapObject(object, elementNamespaceUri, elementLocalName, elementPrefix, isNamespaceAware)) {
@@ -883,6 +912,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
      * INTERNAL:
      * @return
      */
+    @Override
     public Object wrapObjectInXMLRoot(Object object, String elementNamespaceUri, String elementLocalName, String elementPrefix, String encoding, String version, boolean forceWrap, boolean isNamespaceAware, XMLUnmarshaller unmarshaller) {
         if (forceWrap || shouldWrapObject(object, elementNamespaceUri, elementLocalName, elementPrefix, isNamespaceAware)) {
             // if the DOMRecord element != descriptor's default
@@ -944,6 +974,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
         return true;
     }
 
+    @Override
     public XMLField getDefaultRootElementField() {
         return defaultRootElementField;
     }
@@ -968,6 +999,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
         defaultRootElementField = xmlField;
     }
 
+    @Override
     public QName getDefaultRootElementType() {
         if (defaultRootElementField != null) {
             return defaultRootElementField.getLeafElementType();
@@ -993,6 +1025,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
      * <p>Indicates if the Object mapped by this descriptor is a sequenced data object
      * and should be marshalled accordingly.
      */
+    @Override
     public boolean isSequencedObject() {
         return sequencedObject;
     }
@@ -1001,6 +1034,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
         this.sequencedObject = isSequenced;
     }
 
+    @Override
     public boolean isWrapper() {
         return isWrapper;
     }
@@ -1009,10 +1043,12 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
         this.isWrapper = value;
     }
 
+    @Override
     public boolean isResultAlwaysXMLRoot() {
         return resultAlwaysXMLRoot;
     }
 
+    @Override
     public void setResultAlwaysXMLRoot(boolean resultAlwaysXMLRoot) {
         this.resultAlwaysXMLRoot = resultAlwaysXMLRoot;
     }
@@ -1086,6 +1122,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
      * INTERNAL:
      * Returns this Descriptor's location accessor, if one is defined.
      */
+    @Override
     public AttributeAccessor getLocationAccessor() {
         return locationAccessor;
     }
@@ -1094,6 +1131,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
      * INTERNAL:
      * Set this Descriptor's location accessor.
      */
+    @Override
     public void setLocationAccessor(AttributeAccessor value) {
         this.locationAccessor = value;
     }

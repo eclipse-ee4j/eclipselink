@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -53,6 +53,7 @@ public abstract class AbstractEclipseLinkParameterTypeVisitor extends ParameterT
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(AsOfClause expression) {
         type = Object.class;
     }
@@ -60,6 +61,7 @@ public abstract class AbstractEclipseLinkParameterTypeVisitor extends ParameterT
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(CastExpression expression) {
         type = Object.class;
     }
@@ -67,6 +69,7 @@ public abstract class AbstractEclipseLinkParameterTypeVisitor extends ParameterT
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(ConnectByClause expression) {
         type = Object.class;
     }
@@ -74,6 +77,7 @@ public abstract class AbstractEclipseLinkParameterTypeVisitor extends ParameterT
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(DatabaseType expression) {
         type = Object.class;
     }
@@ -81,6 +85,7 @@ public abstract class AbstractEclipseLinkParameterTypeVisitor extends ParameterT
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(ExtractExpression expression) {
         type = Object.class;
     }
@@ -88,6 +93,7 @@ public abstract class AbstractEclipseLinkParameterTypeVisitor extends ParameterT
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(HierarchicalQueryClause expression) {
         type = Object.class;
     }
@@ -95,6 +101,7 @@ public abstract class AbstractEclipseLinkParameterTypeVisitor extends ParameterT
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(OrderSiblingsByClause expression) {
         type = Object.class;
     }
@@ -102,6 +109,7 @@ public abstract class AbstractEclipseLinkParameterTypeVisitor extends ParameterT
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(RegexpExpression expression) {
 
         Expression patternValue = expression.getPatternValue();
@@ -118,6 +126,7 @@ public abstract class AbstractEclipseLinkParameterTypeVisitor extends ParameterT
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(StartWithClause expression) {
         type = Object.class;
     }
@@ -125,6 +134,7 @@ public abstract class AbstractEclipseLinkParameterTypeVisitor extends ParameterT
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(TableExpression expression) {
         type = Object.class;
     }
@@ -132,6 +142,7 @@ public abstract class AbstractEclipseLinkParameterTypeVisitor extends ParameterT
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(TableVariableDeclaration expression) {
         type = Object.class;
     }
@@ -139,6 +150,7 @@ public abstract class AbstractEclipseLinkParameterTypeVisitor extends ParameterT
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(UnionClause expression) {
         type = Object.class;
     }

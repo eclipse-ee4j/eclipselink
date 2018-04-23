@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -595,13 +595,12 @@ public class DBWSBuilder extends DBWSBuilderModel {
         properties.put(URL_KEY, url);
     }
 
-    @SuppressWarnings({"unchecked"})
     public Connection getConnection() {
         if (conn == null ) {
             String driverClassName = getDriver();
             try {
                 @SuppressWarnings("unused")
-                Class driverClass = null;
+                Class<?> driverClass = null;
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     driverClass = AccessController.doPrivileged(
                         new PrivilegedClassForName(driverClassName));
@@ -688,12 +687,11 @@ public class DBWSBuilder extends DBWSBuilderModel {
         properties.put(PLATFORM_CLASSNAME_KEY, platformClassname);
 
     }
-    @SuppressWarnings({"unchecked"})
     public DatabasePlatform getDatabasePlatform() {
         if (databasePlatform == null) {
             String platformClassname = getPlatformClassname();
             try {
-                Class platformClass = null;
+                Class<?> platformClass = null;
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     platformClass = AccessController.doPrivileged(
                         new PrivilegedClassForName(platformClassname));

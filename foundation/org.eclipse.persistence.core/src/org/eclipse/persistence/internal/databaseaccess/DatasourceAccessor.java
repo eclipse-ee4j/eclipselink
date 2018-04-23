@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -162,6 +162,7 @@ public abstract class DatasourceAccessor implements Accessor {
     /**
      * Clone the accessor.
      */
+    @Override
     public Object clone() {
         try {
             DatasourceAccessor accessor = (DatasourceAccessor)super.clone();
@@ -180,6 +181,7 @@ public abstract class DatasourceAccessor implements Accessor {
      * Final sql calls could be sent through the connection by this method
      * before it closes the connection.
      */
+    @Override
     public void closeJTSConnection() {
         if (usesExternalTransactionController()) {
             this.isInTransaction = false;
@@ -200,6 +202,7 @@ public abstract class DatasourceAccessor implements Accessor {
      * This should be set to false if a communication failure occurred during a call execution.
      * In the case of an invalid accessor the Accessor will not be returned to the pool.
      */
+    @Override
     public void setIsValid(boolean isValid){
         this.isValid = isValid;
     }
@@ -207,6 +210,7 @@ public abstract class DatasourceAccessor implements Accessor {
     /**
      * Return the transaction status of the receiver.
      */
+    @Override
     public boolean isInTransaction() {
         return isInTransaction;
     }
@@ -216,6 +220,7 @@ public abstract class DatasourceAccessor implements Accessor {
      * failure occurred during a call execution.  In the case of an invalid accessor the Accessor
      * will not be returned to the pool.
      */
+    @Override
     public boolean isValid(){
         return this.isValid;
     }
@@ -231,6 +236,7 @@ public abstract class DatasourceAccessor implements Accessor {
     /**
      * Return true if some external connection pool is in use.
      */
+    @Override
     public boolean usesExternalConnectionPooling() {
         return usesExternalConnectionPooling;
     }
@@ -238,6 +244,7 @@ public abstract class DatasourceAccessor implements Accessor {
     /**
      *    Begin a transaction on the database. If not using managed transaction begin a local transaction.
      */
+    @Override
     public void beginTransaction(AbstractSession session) throws DatabaseException {
         if (usesExternalTransactionController()) {
             if (session.isExclusiveConnectionRequired() && !this.isInTransaction && this.usesExternalConnectionPooling) {
@@ -278,6 +285,7 @@ public abstract class DatasourceAccessor implements Accessor {
     /**
      * Used for load balancing and external pooling.
      */
+    @Override
     public synchronized void decrementCallCount() {
         int count = this.callCount;
         // Avoid decrementing count if already zero, (failure before increment).
@@ -297,6 +305,7 @@ public abstract class DatasourceAccessor implements Accessor {
     /**
      * Used for load balancing and external pooling.
      */
+    @Override
     public synchronized void incrementCallCount(AbstractSession session) {
         this.callCount++;
 
@@ -331,6 +340,7 @@ public abstract class DatasourceAccessor implements Accessor {
     /**
      * Reset statement count.
      */
+    @Override
     public void reset() {
         this.readStatementsCount = 0;
         this.writeStatementsCount = 0;
@@ -372,6 +382,7 @@ public abstract class DatasourceAccessor implements Accessor {
     /**
      * Used for load balancing and external pooling.
      */
+    @Override
     public int getCallCount() {
         return callCount;
     }
@@ -379,6 +390,7 @@ public abstract class DatasourceAccessor implements Accessor {
     /**
      * Commit a transaction on the database. If using non-managed transaction commit the local transaction.
      */
+    @Override
     public void commitTransaction(AbstractSession session) throws DatabaseException {
         if (usesExternalTransactionController()) {
             // if there is no external TX controller, then that means we are currently not synchronized
@@ -419,6 +431,7 @@ public abstract class DatasourceAccessor implements Accessor {
      * Connect to the datasource.  Through using a CCI ConnectionFactory.
      * Catch exceptions and re-throw as EclipseLink exceptions.
      */
+    @Override
     public void connect(Login login, AbstractSession session) throws DatabaseException {
         session.startOperationProfile(SessionProfiler.ConnectionManagement);
         session.incrementProfile(SessionProfiler.Connects);
@@ -484,6 +497,7 @@ public abstract class DatasourceAccessor implements Accessor {
     /**
      * Disconnect from the datasource.
      */
+    @Override
     public void disconnect(AbstractSession session) throws DatabaseException {
         session.log(SessionLog.CONFIG, SessionLog.CONNECTION, "disconnect", (Object[])null, this);
 
@@ -507,6 +521,7 @@ public abstract class DatasourceAccessor implements Accessor {
      * This is used only for external connection pooling
      * when it is intended for the connection to be reconnected in the future.
      */
+    @Override
     public void closeConnection() {
         try {
             if (this.datasourceConnection != null) {
@@ -533,6 +548,7 @@ public abstract class DatasourceAccessor implements Accessor {
      * Execute the call.
      * @return depending of the type either the row count, row or vector of rows.
      */
+    @Override
     public Object executeCall(Call call, AbstractRecord translationRow, AbstractSession session) throws DatabaseException {
         // If the login is null, then this accessor has never been connected.
         if (this.login == null) {
@@ -555,6 +571,7 @@ public abstract class DatasourceAccessor implements Accessor {
      * Because the messages can take a long time to build,
      * pre-check whether messages should be logged.
      */
+    @Override
     public void reestablishConnection(AbstractSession session) throws DatabaseException {
         if (session.shouldLog(SessionLog.CONFIG, SessionLog.CONNECTION)) {// Avoid printing if no logging required.
             Object[] args = { getLogin() };
@@ -603,6 +620,7 @@ public abstract class DatasourceAccessor implements Accessor {
     /**
      * Return the driver level connection.
      */
+    @Override
     public Object getDatasourceConnection() {
         return datasourceConnection;
     }
@@ -611,6 +629,7 @@ public abstract class DatasourceAccessor implements Accessor {
      * Helper method to return the JDBC connection for DatabaseAccessor.
      * Was going to deprecate this, but since most clients are JDBC this is useful.
      */
+    @Override
     public java.sql.Connection getConnection() {
         return (java.sql.Connection)this.datasourceConnection;
     }
@@ -619,6 +638,7 @@ public abstract class DatasourceAccessor implements Accessor {
      * Return column information for the specified
      * database objects.
      */
+    @Override
     public Vector getColumnInfo(String catalog, String schema, String tableName, String columnName, AbstractSession session) throws DatabaseException {
         return new Vector();
     }
@@ -648,6 +668,7 @@ public abstract class DatasourceAccessor implements Accessor {
      * Return table information for the specified
      * database objects.
      */
+    @Override
     public Vector getTableInfo(String catalog, String schema, String tableName, String[] types, AbstractSession session) throws DatabaseException {
         return new Vector();
     }
@@ -662,6 +683,7 @@ public abstract class DatasourceAccessor implements Accessor {
     /**
      * Rollback the transaction on the datasource. If not using managed transaction rollback the local transaction.
      */
+    @Override
     public void rollbackTransaction(AbstractSession session) throws DatabaseException {
         if (usesExternalTransactionController()) {
             // if there is no external TX controller, then that means we are currently not synchronized
@@ -697,6 +719,7 @@ public abstract class DatasourceAccessor implements Accessor {
     /**
      * Return true if some external transaction service is controlling transactions.
      */
+    @Override
     public boolean usesExternalTransactionController() {
         if (this.login == null) {
             throw DatabaseException.databaseAccessorNotConnected();
@@ -708,6 +731,7 @@ public abstract class DatasourceAccessor implements Accessor {
      * Return true if the accessor is currently connected to a data source.
      * Return false otherwise.
      */
+    @Override
     public boolean isConnected() {
         if ((this.datasourceConnection == null) && (this.login == null)) {
             return false;
@@ -732,6 +756,7 @@ public abstract class DatasourceAccessor implements Accessor {
      * Added as a result of Bug 2804663 - satisfy the Accessor interface
      * implementation.
      */
+    @Override
     public void flushSelectCalls(AbstractSession session) {
         // By default do nothing.
     }
@@ -742,6 +767,7 @@ public abstract class DatasourceAccessor implements Accessor {
      * from commitTransaction and may be called from writeChanges.   Its main
      * purpose is to ensure that the batched statements have been executed
      */
+    @Override
     public void writesCompleted(AbstractSession session) {
         //this is a no-op in this method as we do not batch on this accessor
     }
@@ -749,6 +775,7 @@ public abstract class DatasourceAccessor implements Accessor {
     /**
      * Return sequencing callback.
      */
+    @Override
     public SequencingCallback getSequencingCallback(SequencingCallbackFactory sequencingCallbackFactory) {
         if(sequencingCallback == null) {
             sequencingCallback = sequencingCallbackFactory.createSequencingCallback();
@@ -765,6 +792,7 @@ public abstract class DatasourceAccessor implements Accessor {
      * compared with the existing one and if they are not equal (don't produce identical customization)
      * then the new customizer set onto accessor, caching the old customizer so that it could be restored later.
      */
+    @Override
     public void createCustomizer(AbstractSession session) {
         ConnectionCustomizer newCustomizer;
         if(customizer == null) {
@@ -841,6 +869,7 @@ public abstract class DatasourceAccessor implements Accessor {
      * the latter is no longer required, typically before releasing the accessor.
      * Ignored if there's no customizer.
      */
+    @Override
     public void releaseCustomizer() {
         if(customizer != null) {
             if(customizer.isActive()) {
@@ -859,7 +888,8 @@ public abstract class DatasourceAccessor implements Accessor {
     * otherwise the customizer (created by ConnectionPool) is kept.
     * Ignored if there's no customizer.
     */
-   public void releaseCustomizer(AbstractSession session) {
+   @Override
+public void releaseCustomizer(AbstractSession session) {
        if(customizer != null) {
            if(customizer.getSession() == session) {
                if(customizer.isActive()) {
@@ -902,14 +932,16 @@ public abstract class DatasourceAccessor implements Accessor {
    /**
     * Return the associated connection pool this connection was obtained from.
     */
-   public ConnectionPool getPool() {
+   @Override
+public ConnectionPool getPool() {
        return pool;
    }
 
    /**
     * Set the associated connection pool this connection was obtained from.
     */
-   public void setPool(ConnectionPool pool) {
+   @Override
+public void setPool(ConnectionPool pool) {
        this.pool = pool;
    }
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -53,6 +53,7 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
      * The profiler can be registered with a session to log performance information on queries.
      * @deprecated replaced by PerformanceProfiler()
      */
+    @Deprecated
     public PerformanceProfiler(org.eclipse.persistence.sessions.Session session) {
         this(session, true);
     }
@@ -63,6 +64,7 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
      * The profiler can be registered with a session to log performance information on queries.
      * @deprecated replaced by PerformanceProfiler()
      */
+    @Deprecated
     public PerformanceProfiler(org.eclipse.persistence.sessions.Session session, boolean shouldLogProfile) {
         super();
         this.profiles = new Vector();
@@ -218,6 +220,7 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
         return summaries;
     }
 
+    @Override
     public PerformanceProfiler clone() {
         try {
             return (PerformanceProfiler)super.clone();
@@ -523,6 +526,7 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
         this.profileTime = profileTime;
     }
 
+    @Override
     public void setSession(org.eclipse.persistence.sessions.Session session) {
         this.session = (AbstractSession)session;
     }
@@ -544,6 +548,7 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
      * INTERNAL:
      * Start the operation timing.
      */
+    @Override
     public void startOperationProfile(String operationName) {
         getOperationStartTimes().put(operationName, Long.valueOf(System.nanoTime()));
     }
@@ -552,6 +557,7 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
      * INTERNAL:
      * Start the operation timing.
      */
+    @Override
     public void startOperationProfile(String operationName, DatabaseQuery query, int weight) {
         startOperationProfile(operationName);
     }
@@ -565,10 +571,12 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
         }
     }
 
+    @Override
     public int getProfileWeight() {
         return -1;
     }
 
+    @Override
     public void initialize() {
     }
 }

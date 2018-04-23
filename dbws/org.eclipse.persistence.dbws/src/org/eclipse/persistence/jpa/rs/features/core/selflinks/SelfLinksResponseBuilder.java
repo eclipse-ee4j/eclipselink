@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015 Oracle. All rights reserved.
+ * Copyright (c) 2013, 2018 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -39,7 +39,6 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -49,7 +48,7 @@ import java.util.Map;
  * @author gonural, Dmitry Kornilov
  * @since EclipseList 2.6.0
  */
-@SuppressWarnings({ "unchecked", "rawtypes" })
+@SuppressWarnings({ "unchecked"})
 public class SelfLinksResponseBuilder extends FeatureResponseBuilderImpl {
 
     /**
@@ -68,7 +67,7 @@ public class SelfLinksResponseBuilder extends FeatureResponseBuilderImpl {
         ReportQueryResultCollection response = new ReportQueryResultCollection();
         for (Object result : results) {
             ReportQueryResultListItem queryResultListItem = new ReportQueryResultListItem();
-            List<JAXBElement> jaxbFields = createShellJAXBElementList(items, result);
+            List<JAXBElement<?>> jaxbFields = createShellJAXBElementList(items, result);
             generateLinksInElementsList(context, jaxbFields);
             queryResultListItem.setFields(jaxbFields);
             response.addItem(queryResultListItem);
@@ -83,7 +82,7 @@ public class SelfLinksResponseBuilder extends FeatureResponseBuilderImpl {
     @Override
     public Object buildSingleResultQueryResponse(PersistenceContext context, Map<String, Object> queryParams, Object result, List<ReportItem> items, UriInfo uriInfo) {
         final SingleResultQueryResult response = new SingleResultQueryResult();
-        final List<JAXBElement> fields = createShellJAXBElementList(items, result);
+        final List<JAXBElement<?>> fields = createShellJAXBElementList(items, result);
 
         // If there are entities in fields insert links there
         generateLinksInElementsList(context, fields);
@@ -154,8 +153,8 @@ public class SelfLinksResponseBuilder extends FeatureResponseBuilderImpl {
         return results;
     }
 
-    private void generateLinksInElementsList(PersistenceContext context, List<JAXBElement> fields) {
-        for (JAXBElement field : fields) {
+    private void generateLinksInElementsList(PersistenceContext context, List<JAXBElement<?>> fields) {
+        for (JAXBElement<?> field : fields) {
             if (field.getValue() instanceof PersistenceWeavedRest) {
                 final PersistenceWeavedRest entity = (PersistenceWeavedRest) field.getValue();
                 final ClassDescriptor classDescriptor = context.getServerSession().getProject().getDescriptor(entity.getClass());

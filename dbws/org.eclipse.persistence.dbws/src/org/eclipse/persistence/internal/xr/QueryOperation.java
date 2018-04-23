@@ -403,9 +403,9 @@ public class QueryOperation extends Operation {
             // where before we'd expect an int value (typically 1) - need to handle this
             if (result != null && (result.getType() == INT_QNAME || result.getType().equals(SXF_QNAME))) {
                 if (value instanceof ArrayList && ((ArrayList<?>) value).isEmpty()) {
-                    ((ArrayList) value).add(1);
+                    ((ArrayList<Integer>) value).add(1);
                 } else  if (value instanceof Vector && ((Vector<?>) value).isEmpty()) {
-                    ((Vector) value).add(1);
+                    ((Vector<Integer>) value).add(1);
                 }
             }
 

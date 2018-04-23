@@ -37,7 +37,6 @@ import java.util.Vector;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.DescriptorEventManager;
-import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackingPolicy;
 import org.eclipse.persistence.descriptors.changetracking.DeferredChangeDetectionPolicy;
 import org.eclipse.persistence.descriptors.changetracking.ObjectChangeTrackingPolicy;
@@ -241,6 +240,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * Maps a field name in the aggregate descriptor
      * to a field in the source table.
      */
+    @Override
     public void addFieldTranslation(DatabaseField sourceField, String aggregateField) {
         aggregateToSourceFields.put(aggregateField, sourceField);
     }
@@ -269,6 +269,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * Map the name of an attribute of the reference descriptor mapped with AggregateCollectionMapping to aggregateToSourceFieldNames
      * that should be applied to this mapping.
      */
+    @Override
     public void addNestedFieldTranslation(String attributeName, DatabaseField sourceField, String aggregateFieldName) {
         Map<String, DatabaseField> attributeFieldNameTranslation = nestedAggregateToSourceFields.get(attributeName);
 
@@ -438,6 +439,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * In case Query By Example is used, this method builds and returns an expression that
      * corresponds to a single attribute and it's value.
      */
+    @Override
     public Expression buildExpression(Object queryObject, QueryByExamplePolicy policy, Expression expressionBuilder, Map processedObjects, AbstractSession session) {
         if (policy.shouldValidateExample()){
             throw QueryException.unsupportedMappingQueryByExample(queryObject.getClass().getName(), this);

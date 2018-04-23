@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -39,6 +39,7 @@ public class DirectToFieldChangeRecord extends ChangeRecord implements org.eclip
      * ADVANCED:
      * Returns the new value assigned during the change.
      */
+    @Override
     public Object getNewValue() {
         return newValue;
     }
@@ -47,6 +48,7 @@ public class DirectToFieldChangeRecord extends ChangeRecord implements org.eclip
      * INTERNAL:
      * This method will be used to merge one record into another.
      */
+    @Override
     public void mergeRecord(ChangeRecord mergeFromRecord, UnitOfWorkChangeSet mergeToChangeSet, UnitOfWorkChangeSet mergeFromChangeSet) {
         this.newValue = ((DirectToFieldChangeRecord)mergeFromRecord).getNewValue();
     }
@@ -63,6 +65,7 @@ public class DirectToFieldChangeRecord extends ChangeRecord implements org.eclip
      * INTERNAL:
      * used by the record to update the new value ignores the value in the default implementation
      */
+    @Override
     public void updateChangeRecordWithNewValue(Object newValue) {
         setNewValue(newValue);
     }
@@ -71,6 +74,7 @@ public class DirectToFieldChangeRecord extends ChangeRecord implements org.eclip
      * INTERNAL:
      * This method will be used to update the objectsChangeSets references
      */
+    @Override
     public void updateReferences(UnitOfWorkChangeSet mergeToChangeSet, UnitOfWorkChangeSet mergeFromChangeSet) {
     }
 
@@ -78,6 +82,7 @@ public class DirectToFieldChangeRecord extends ChangeRecord implements org.eclip
      * ADVANCED:
      * Return the old value of the attribute represented by this ChangeRecord.
      */
+    @Override
     public Object getOldValue() {
         return oldValue;
     }

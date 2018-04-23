@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -254,6 +254,7 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
     /**
      * INTERNAL:
      */
+    @Override
     public boolean isXMLMapping() {
         return true;
     }
@@ -262,6 +263,7 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
      * INTERNAL:
      * Initialize the mapping.
      */
+    @Override
     public void initialize(AbstractSession session) throws DescriptorException {
         super.initialize(session);
         if (this.getField() instanceof XMLField) {
@@ -289,6 +291,7 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
      * Set the Mapping field name attribute to the given XPath String
      * @param xpathString String
      */
+    @Override
     public void setXPath(String xpathString) {
         if ((xpathString.indexOf(XMLConstants.ATTRIBUTE) == -1) && (!xpathString.endsWith(XMLConstants.TEXT))) {
             xpathString += '/' + XMLConstants.TEXT;
@@ -304,6 +307,7 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
         return getFieldName();
     }
 
+    @Override
     public void useCollectionClassName(String concreteContainerClassName) {
         this.setContainerPolicy(new CollectionContainerPolicy(concreteContainerClassName));
     }
@@ -312,6 +316,7 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
      * INTERNAL:
      * Build the nested collection from the database row.
      */
+    @Override
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected, Boolean[] wasCacheUsed) throws DatabaseException {
         ContainerPolicy cp = this.getContainerPolicy();
 
@@ -413,27 +418,33 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
         row.put(this.getField(), fieldValue);
     }
 
+    @Override
     public void writeSingleValue(Object value, Object parent, XMLRecord record, AbstractSession session) {
         Object element = convertObjectValueToDataValue(value, session, record.getMarshaller());
         record.add(this.getField(), element);
     }
 
+    @Override
     public void setIsCDATA(boolean CDATA) {
         isCDATA = CDATA;
     }
 
+    @Override
     public boolean isCDATA() {
         return isCDATA;
     }
 
+    @Override
     public void setIsWriteOnly(boolean b) {
         this.isWriteOnly = b;
     }
 
+    @Override
     public boolean isWriteOnly() {
         return isWriteOnly;
     }
 
+    @Override
     public void setAttributeValueInObject(Object object, Object value) throws DescriptorException {
         if (isWriteOnly()) {
             return;
@@ -441,16 +452,19 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
         super.setAttributeValueInObject(object, value);
     }
 
+    @Override
     public void preInitialize(AbstractSession session) throws DescriptorException {
         getAttributeAccessor().setIsWriteOnly(this.isWriteOnly());
         getAttributeAccessor().setIsReadOnly(this.isReadOnly());
         super.preInitialize(session);
     }
 
+    @Override
     public AbstractNullPolicy getNullPolicy() {
         return this.nullPolicy;
     }
 
+    @Override
     public void setNullPolicy(AbstractNullPolicy value) {
         this.nullPolicy = value;
     }
@@ -460,6 +474,7 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
      * present.  If it is not present then the container policy will be used to
      * create the container.
      */
+    @Override
     public boolean getReuseContainer() {
         return reuseContainer;
     }
@@ -469,6 +484,7 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
      * present.  If it is not present then the container policy will be used to
      * create the container.
      */
+    @Override
     public void setReuseContainer(boolean reuseContainer) {
         this.reuseContainer = reuseContainer;
     }
@@ -479,6 +495,7 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
      * them to the collection. Normalize replaces any CR, LF or Tab characters with a
      * single space character.
      */
+    @Override
     public boolean isNormalizingStringValues() {
         return this.isNormalizingStringValues;
     }
@@ -490,6 +507,7 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
      * single space character.
      * @param normalize
      */
+    @Override
     public void setNormalizingStringValues(boolean normalize) {
         this.isNormalizingStringValues = normalize;
     }
@@ -502,6 +520,7 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
      * any sequence of whitespace characters with a single space.
      * @param collapse
      */
+    @Override
     public void setCollapsingStringValues(boolean collapse) {
         this.isCollapsingStringValues = collapse;
     }
@@ -512,6 +531,7 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
      * to the collection. Collapse removes leading and trailing whitespaces, and replaces
      * any sequence of whitespace characters with a single space.
      */
+    @Override
     public boolean isCollapsingStringValues() {
         return this.isCollapsingStringValues;
     }
@@ -522,6 +542,7 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
      * is no presence of the collection in the XML document.
      * @since EclipseLink 2.3.3
      */
+    @Override
     public boolean isDefaultEmptyContainer() {
         return isDefaultEmptyContainer;
     }
@@ -532,14 +553,17 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
      * field/property if the collection is not present in the XML document.
      * @since EclipseLink 2.3.3
      */
+    @Override
     public void setDefaultEmptyContainer(boolean defaultEmptyContainer) {
         this.isDefaultEmptyContainer = defaultEmptyContainer;
     }
 
+    @Override
     public AbstractNullPolicy getWrapperNullPolicy() {
         return this.wrapperNullPolicy;
     }
 
+    @Override
     public void setWrapperNullPolicy(AbstractNullPolicy policy) {
         this.wrapperNullPolicy = policy;
     }
@@ -548,6 +572,7 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
      * INTERNAL
      * @since EclipseLink 2.5.0
      */
+    @Override
     public Object convertObjectValueToDataValue(Object value, Session session, XMLMarshaller marshaller) {
         if (hasValueConverter()) {
             if (valueConverter instanceof XMLConverter) {
@@ -563,6 +588,7 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
      * INTERNAL
      * @since EclipseLink 2.5.0
      */
+    @Override
     public Object convertDataValueToObjectValue(Object value, Session session, XMLUnmarshaller unmarshaller) {
         if (hasValueConverter()) {
             if (valueConverter instanceof XMLConverter) {
@@ -581,6 +607,7 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
      * are not allowed by the application (such as in primitives).
      * Note: the default value for NULL is used on reads, writes, and query SQL generation
      */
+    @Override
     public Object getNullValue() {
         return nullValue;
     }
@@ -592,6 +619,7 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
      * are not allowed by the application (such as in primitives).
      * Note: the default value for NULL is used on reads
      */
+    @Override
     public void setNullValue(Object nullValue) {
         this.nullValue = nullValue;
     }

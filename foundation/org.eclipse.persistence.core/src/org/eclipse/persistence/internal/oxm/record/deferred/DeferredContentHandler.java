@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -70,16 +70,19 @@ public abstract class DeferredContentHandler implements ExtendedContentHandler, 
         }
     }
 
+    @Override
     public void startPrefixMapping(String prefix, String uri) throws SAXException {
         StartPrefixMappingEvent event = new StartPrefixMappingEvent(prefix, uri);
         events.add(event);
     }
 
+    @Override
     public void endPrefixMapping(String prefix) throws SAXException {
         EndPrefixMappingEvent event = new EndPrefixMappingEvent(prefix);
         events.add(event);
     }
 
+    @Override
     public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
         levelIndex++;
 
@@ -112,6 +115,7 @@ public abstract class DeferredContentHandler implements ExtendedContentHandler, 
         return attributes;
     }
 
+    @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
         levelIndex--;
         EndElementEvent event = new EndElementEvent(uri, localName, qName);
@@ -136,78 +140,93 @@ public abstract class DeferredContentHandler implements ExtendedContentHandler, 
         }
     }
 
+    @Override
     public void setDocumentLocator(Locator locator) {
         DocumentLocatorEvent event = new DocumentLocatorEvent(locator);
         events.add(event);
     }
 
+    @Override
     public void startDocument() throws SAXException {
         StartDocumentEvent event = new StartDocumentEvent();
         events.add(event);
     }
 
+    @Override
     public void endDocument() throws SAXException {
         EndDocumentEvent event = new EndDocumentEvent();
         events.add(event);
     }
 
+    @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
         charactersOccurred = true;
         CharactersEvent event = new CharactersEvent(ch, start, length);
         events.add(event);
     }
 
+    @Override
     public void characters(CharSequence characters) {
         charactersOccurred = true;
         CharactersEvent event = new CharactersEvent(characters);
         events.add(event);
     }
 
+    @Override
     public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {
         IgnorableWhitespaceEvent event = new IgnorableWhitespaceEvent(ch, start, length);
         events.add(event);
     }
 
+    @Override
     public void processingInstruction(String target, String data) throws SAXException {
         ProcessingInstructionEvent event = new ProcessingInstructionEvent(target, data);
         events.add(event);
     }
 
+    @Override
     public void skippedEntity(String name) throws SAXException {
         SkippedEntityEvent event = new SkippedEntityEvent(name);
         events.add(event);
     }
 
+    @Override
     public void startDTD(String name, String publicId, String systemId) throws SAXException {
         StartDTDEvent event = new StartDTDEvent(name, publicId, systemId);
         events.add(event);
     }
 
+    @Override
     public void endDTD() throws SAXException {
         EndDTDEvent event = new EndDTDEvent();
         events.add(event);
     }
 
+    @Override
     public void startEntity(String name) throws SAXException {
         StartEntityEvent event = new StartEntityEvent(name);
         events.add(event);
     }
 
+    @Override
     public void endEntity(String name) throws SAXException {
         EndEntityEvent event = new EndEntityEvent(name);
         events.add(event);
     }
 
+    @Override
     public void startCDATA() throws SAXException {
         StartCDATAEvent event = new StartCDATAEvent();
         events.add(event);
     }
 
+    @Override
     public void endCDATA() throws SAXException {
         EndCDATAEvent event = new EndCDATAEvent();
         events.add(event);
     }
 
+    @Override
     public void comment(char[] ch, int start, int length) throws SAXException {
         CommentEvent event = new CommentEvent(ch, start, length);
         events.add(event);
@@ -250,10 +269,12 @@ public abstract class DeferredContentHandler implements ExtendedContentHandler, 
           values[index] = value;
         }
 
+        @Override
         public String getQName(int index) {
             return qNames.get(index);
         }
 
+        @Override
         public String getType(String namespaceUri, String localName) {
 
             for(int i=0;i <localNames.length; i++){
@@ -272,18 +293,22 @@ public abstract class DeferredContentHandler implements ExtendedContentHandler, 
 
         }
 
+        @Override
         public String getType(int index) {
           return types[index];
         }
 
+        @Override
         public String getType(String qname) {
           return types[getIndex(qname)];
         }
 
+        @Override
         public int getIndex(String qname) {
             return qNames.indexOf(qname);
         }
 
+        @Override
         public int getIndex(String uri, String localName) {
 
              for(int i=0;i <localNames.length; i++){
@@ -301,26 +326,32 @@ public abstract class DeferredContentHandler implements ExtendedContentHandler, 
             return -1;
         }
 
+        @Override
         public int getLength() {
             return localNames.length;
         }
 
+        @Override
         public String getLocalName(int index) {
             return localNames[index];
         }
 
+        @Override
         public String getURI(int index) {
             return uris[index];
         }
 
+        @Override
         public String getValue(int index) {
                return values[index];
         }
 
+        @Override
         public String getValue(String qname) {
           return values[getIndex(qname)];
         }
 
+        @Override
         public String getValue(String uri, String localName) {
          for(int i=0;i <localNames.length; i++){
              String nextLocalName = localNames[i];

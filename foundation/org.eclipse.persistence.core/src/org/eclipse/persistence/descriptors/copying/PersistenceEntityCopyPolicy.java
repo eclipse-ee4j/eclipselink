@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,18 +27,22 @@ public class PersistenceEntityCopyPolicy extends AbstractCopyPolicy {
         super();
     }
 
+    @Override
     public Object buildWorkingCopyClone(Object object, Session session) throws DescriptorException {
         return ((PersistenceObject)object)._persistence_shallow_clone();
     }
 
+    @Override
     public Object buildClone(Object object, Session session) throws DescriptorException {
         return ((PersistenceObject)object)._persistence_shallow_clone();
     }
 
+    @Override
     public boolean buildsNewInstance() {
         return false;
     }
 
+    @Override
     public String toString() {
         return Helper.getShortClassName(this) + "()";
     }

@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -37,6 +37,7 @@ public class UnmarshalNamespaceContext implements UnmarshalNamespaceResolver {
         this.prefixes = new HashSet(4);
     }
 
+    @Override
     public String getNamespaceURI(String prefix) {
         if(null == prefix) {
             prefix = Constants.EMPTY_STRING;
@@ -52,6 +53,7 @@ public class UnmarshalNamespaceContext implements UnmarshalNamespaceResolver {
         }
     }
 
+    @Override
     public String getPrefix(String namespaceURI) {
         return xmlStreamReader.getNamespaceContext().getPrefix(namespaceURI);
     }
@@ -60,6 +62,7 @@ public class UnmarshalNamespaceContext implements UnmarshalNamespaceResolver {
      * The underlying NamespaceContext is responsible for maintaining the
      * appropriate prefix/URI associations.
      */
+    @Override
     public void push(String prefix, String namespaceURI) {
         prefixes.add(prefix);
     }
@@ -68,12 +71,14 @@ public class UnmarshalNamespaceContext implements UnmarshalNamespaceResolver {
      * The underlying NamespaceContext is responsible for maintaining the
      * appropriate prefix/URI associations.
      */
+    @Override
     public void pop(String prefix) {
         if(null!= getNamespaceURI(prefix)) {
             prefixes.remove(prefix);
         }
     }
 
+    @Override
     public Set<String> getPrefixes() {
         return prefixes;
     }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -62,6 +62,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder implements ObjectBuilder
         this.cloningMappings = new ArrayList(descriptorMappingsSize);
     }
 
+    @Override
     public XPathNode getRootXPathNode() {
         return xPathObjectBuilder.getRootXPathNode();
     }
@@ -74,22 +75,27 @@ public class TreeObjectBuilder extends XMLObjectBuilder implements ObjectBuilder
         return primaryKeyMappings;
     }
 
+    @Override
     public List getTransformationMappings() {
         return xPathObjectBuilder.getTransformationMappings();
     }
 
+    @Override
     public List getContainerValues() {
         return xPathObjectBuilder.getContainerValues();
     }
 
+    @Override
     public List getNullCapableValues() {
         return xPathObjectBuilder.getNullCapableValues();
     }
 
+    @Override
     public List getDefaultEmptyContainerValues() {
         return xPathObjectBuilder.getDefaultEmptyContainerValues();
     }
 
+    @Override
     public void initialize(org.eclipse.persistence.internal.sessions.AbstractSession session) {
         super.initialize(session);
         Descriptor xmlDescriptor = (Descriptor)getDescriptor();
@@ -114,10 +120,12 @@ public class TreeObjectBuilder extends XMLObjectBuilder implements ObjectBuilder
         return (AbstractRecord) buildRow((XMLRecord) record, object, session, null, null);
     }
 
+    @Override
     public org.eclipse.persistence.internal.oxm.record.XMLRecord buildRow(org.eclipse.persistence.internal.oxm.record.XMLRecord record, Object object, CoreAbstractSession session, XMLMarshaller marshaller, XPathFragment rootFragment) {
         return xPathObjectBuilder.buildRow(record, object, session, marshaller, rootFragment);
     }
 
+    @Override
     public boolean marshalAttributes(MarshalRecord marshalRecord, Object object, CoreAbstractSession session) {
         return xPathObjectBuilder.marshalAttributes(marshalRecord, object, session);
     }
@@ -126,6 +134,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder implements ObjectBuilder
      * Create a new row/record for the object builder.
      * This allows subclasses to define different record types.
      */
+    @Override
     public AbstractRecord createRecord(AbstractSession session) {
         xPathObjectBuilder.lazyInitialize();
         org.eclipse.persistence.internal.oxm.record.UnmarshalRecordImpl uRec = new org.eclipse.persistence.internal.oxm.record.UnmarshalRecordImpl(this);
@@ -137,6 +146,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder implements ObjectBuilder
      * Create a new row/record for the object builder with the given name.
      * This allows subclasses to define different record types.
      */
+    @Override
     public AbstractMarshalRecord createRecord(String rootName, AbstractSession session) {
         NodeRecord nRec = new NodeRecord(rootName, getNamespaceResolver());
         nRec.setSession(session);
@@ -147,6 +157,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder implements ObjectBuilder
      * Create a new row/record for the object builder with the given name.
      * This allows subclasses to define different record types.
      */
+    @Override
     public AbstractMarshalRecord createRecord(String rootName, Node parent, AbstractSession session) {
         NodeRecord nRec = new NodeRecord(rootName, getNamespaceResolver(), parent);
         nRec.setSession(session);
@@ -157,6 +168,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder implements ObjectBuilder
      * Create a new row/record for the object builder.
      * This allows subclasses to define different record types.
      */
+    @Override
     public AbstractRecord createRecord(int size, AbstractSession session) {
         return createRecord(session);
     }

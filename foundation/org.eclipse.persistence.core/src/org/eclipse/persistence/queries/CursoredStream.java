@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -130,6 +130,7 @@ public class CursoredStream extends Cursor {
      * INTERNAL:
      * Retrieve the size of the open cursor by executing a count on the same query as the cursor.
      */
+    @Override
     protected int getCursorSize() throws DatabaseException, QueryException {
         ValueReadQuery query;
         if (!((CursoredStreamPolicy)this.policy).hasSizeQuery()) {
@@ -214,6 +215,7 @@ public class CursoredStream extends Cursor {
      * INTERNAL:
      * Return the page size for the stream.
      */
+    @Override
     public int getPageSize() {
         return ((CursoredStreamPolicy)this.policy).getPageSize();
     }
@@ -222,6 +224,7 @@ public class CursoredStream extends Cursor {
      * INTERNAL:
      * Return the position of the stream inside the object collection
      */
+    @Override
     public int getPosition() {
         return position;
     }
@@ -230,6 +233,7 @@ public class CursoredStream extends Cursor {
      * PUBLIC:
      * Return whether the cursored stream has any more elements.
      */
+    @Override
     public boolean hasMoreElements() {
         return !atEnd();
     }
@@ -238,6 +242,7 @@ public class CursoredStream extends Cursor {
      * PUBLIC:
      * Return whether the cursored stream has any more elements.
      */
+    @Override
     public boolean hasNext() {
         return !atEnd();
     }
@@ -271,6 +276,7 @@ public class CursoredStream extends Cursor {
      * Return the next object from the collection, if beyond the read limit read from the cursor.
      * @return the next object in stream
      */
+    @Override
     public Object nextElement() {
         return read();
     }
@@ -280,6 +286,7 @@ public class CursoredStream extends Cursor {
      * Return the next object from the collection, if beyond the read limit read from the cursor.
      * @return the next object in stream
      */
+    @Override
     public Object next() {
         return read();
     }
@@ -366,6 +373,7 @@ public class CursoredStream extends Cursor {
       * This should be performed when reading in a large collection of
       * objects in order to preserve memory.
       */
+    @Override
     public void clear() {
         super.clear();
         if (this.position == 0) {
@@ -394,6 +402,7 @@ public class CursoredStream extends Cursor {
         this.position = this.marker;
     }
 
+    @Override
     protected Object retrieveNextObject() throws DatabaseException {
         while (true) {
             AbstractRecord row = null;

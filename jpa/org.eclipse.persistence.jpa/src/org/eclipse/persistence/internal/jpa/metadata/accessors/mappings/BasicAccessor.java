@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -263,6 +263,7 @@ public class BasicAccessor extends DirectAccessor {
      * Return the column from xml if there is one, otherwise look for an
      * annotation.
      */
+    @Override
     protected ColumnMetadata getColumn(String loggingCtx) {
         return m_field == null ? (m_column == null ? super.getColumn(loggingCtx) : m_column) : m_field;
     }
@@ -270,6 +271,7 @@ public class BasicAccessor extends DirectAccessor {
     /**
      * INTERNAL:
      */
+    @Override
     public String getDefaultFetchType() {
         return JPA_FETCH_EAGER;
     }
@@ -397,6 +399,7 @@ public class BasicAccessor extends DirectAccessor {
      * INTERNAL:
      * Process a basic accessor.
      */
+    @Override
     public void process() {
         // Process a DirectToFieldMapping, that is a Basic that could
         // be used in conjunction with a Lob, Temporal, Enumerated

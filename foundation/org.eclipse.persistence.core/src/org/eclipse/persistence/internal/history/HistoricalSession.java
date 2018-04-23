@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -69,6 +69,7 @@ public class HistoricalSession extends AbstractSession {
      * INTERNAL:
      * Acquires a special historical session for reading objects as of a past time.
      */
+    @Override
     public org.eclipse.persistence.sessions.Session acquireHistoricalSession(org.eclipse.persistence.history.AsOfClause clause) throws ValidationException {
         throw ValidationException.cannotAcquireHistoricalSession();
     }
@@ -77,6 +78,7 @@ public class HistoricalSession extends AbstractSession {
      * INTERNAL:
      * A UnitOfWork can not be acquired from a Historical Session.
      */
+    @Override
     public UnitOfWorkImpl acquireUnitOfWork() {
         throw ValidationException.operationNotSupported(Helper.getShortClassName(getClass()) + ".acquireUnitOfWork");
     }
@@ -85,6 +87,7 @@ public class HistoricalSession extends AbstractSession {
      * INTERNAL:
      * No transactions should be used inside a HistoricalSession.
      */
+    @Override
     public void beginTransaction() throws DatabaseException, ConcurrencyException {
         throw ValidationException.operationNotSupported(Helper.getShortClassName(getClass()) + ".beginTransaction");
     }
@@ -93,6 +96,7 @@ public class HistoricalSession extends AbstractSession {
      * INTERNAL:
      * No transactions should be used inside a HistoricalSession.
      */
+    @Override
     public void commitTransaction() throws DatabaseException, ConcurrencyException {
         throw ValidationException.operationNotSupported(Helper.getShortClassName(getClass()) + ".commitTransaction");
     }
@@ -112,6 +116,7 @@ public class HistoricalSession extends AbstractSession {
      * @return a session with a live accessor
      * @param query may store session name or reference class for brokers case
      */
+    @Override
     public AbstractSession getExecutionSession(DatabaseQuery query) {
         return getParent().getExecutionSession(query);
     }
@@ -121,6 +126,7 @@ public class HistoricalSession extends AbstractSession {
      * Answers a read-only data object, which knows whether it is
      * a wall-clock time or a system change number.
      */
+    @Override
     public AsOfClause getAsOfClause() {
         return asOfClause;
     }
@@ -138,6 +144,7 @@ public class HistoricalSession extends AbstractSession {
      * INTERNAL:
      * Returns the parent Session.
      */
+    @Override
     public AbstractSession getParent() {
         return parent;
     }
@@ -148,6 +155,7 @@ public class HistoricalSession extends AbstractSession {
      * accessing the server platform from within TopLink's other sessions types
      * (ie not DatabaseSession)
      */
+    @Override
     public ServerPlatform getServerPlatform(){
         return getParent().getServerPlatform();
     }
@@ -168,6 +176,7 @@ public class HistoricalSession extends AbstractSession {
      * the arguments should be a database row with raw data values.
      * No modify queries are allowed through a HistoricalSession.
      */
+    @Override
     public Object internalExecuteQuery(DatabaseQuery query, AbstractRecord databaseRow) throws DatabaseException {
         if (!query.isReadQuery()) {
             throw QueryException.invalidQueryOnHistoricalSession(query);
@@ -180,6 +189,7 @@ public class HistoricalSession extends AbstractSession {
      * INTERNAL:
      * Historical session are never in a transaction.
      */
+    @Override
     public boolean isInTransaction() {
         return false;
     }
@@ -188,6 +198,7 @@ public class HistoricalSession extends AbstractSession {
      * INTERNAL:
      * Return if this session is a historical session.
      */
+    @Override
     public boolean isHistoricalSession() {
         return true;
     }
@@ -200,6 +211,7 @@ public class HistoricalSession extends AbstractSession {
      * meaning that if this method needs to clone the query then the caller will
      * determine that it doesn't need to clone the query twice.
      */
+    @Override
     public DatabaseQuery prepareDatabaseQuery(DatabaseQuery query) {
         DatabaseQuery clonedQuery = (DatabaseQuery)query.clone();
         clonedQuery.setIsExecutionClone(true);
@@ -211,10 +223,12 @@ public class HistoricalSession extends AbstractSession {
      * INTERNAL:
      * No transactions should be used inside a HistoricalSession.
      */
+    @Override
     public void rollbackTransaction() throws DatabaseException, ConcurrencyException {
         throw ValidationException.operationNotSupported(Helper.getShortClassName(getClass()) + ".rollbackTransaction");
     }
 
+    @Override
     public String toString() {
         StringWriter writer = new StringWriter();
         writer.write(getSessionTypeString());

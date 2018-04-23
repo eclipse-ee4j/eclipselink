@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -56,18 +56,22 @@ public class OXMJavaFieldImpl implements JavaField {
         this.owningClass = owner;
     }
 
+    @Override
     public JavaAnnotation getAnnotation(JavaClass aClass) {
         return null;
     }
 
+    @Override
     public Collection<JavaAnnotation> getAnnotations() {
         return null;
     }
 
+    @Override
     public int getModifiers() {
         return Modifier.PUBLIC;
     }
 
+    @Override
     public String getName() {
         return this.fieldName;
     }
@@ -76,30 +80,37 @@ public class OXMJavaFieldImpl implements JavaField {
         return this.owningClass;
     }
 
+    @Override
     public JavaClass getResolvedType() {
         return ((OXMJavaClassImpl) this.owningClass).getJavaModel().getClass(this.fieldTypeName);
     }
 
+    @Override
     public boolean isFinal() {
         return Modifier.isFinal(getModifiers());
     }
 
+    @Override
     public boolean isAbstract() {
         return Modifier.isAbstract(getModifiers());
     }
 
+    @Override
     public boolean isPrivate() {
         return Modifier.isPrivate(getModifiers());
     }
 
+    @Override
     public boolean isProtected() {
         return Modifier.isProtected(getModifiers());
     }
 
+    @Override
     public boolean isPublic() {
         return Modifier.isPublic(getModifiers());
     }
 
+    @Override
     public boolean isStatic() {
         return Modifier.isStatic(getModifiers());
     }
@@ -107,18 +118,22 @@ public class OXMJavaFieldImpl implements JavaField {
     /**
      * Not supported.
      */
+    @Override
     public boolean isSynthetic() {
         throw new UnsupportedOperationException("isSynthetic");
     }
 
+    @Override
     public boolean isEnumConstant() {
         return getOwningClass().isEnum();
     }
 
+    @Override
     public JavaAnnotation getDeclaredAnnotation(JavaClass aClass) {
         return getAnnotation(aClass);
     }
 
+    @Override
     public Collection<JavaAnnotation> getDeclaredAnnotations() {
         return getAnnotations();
     }

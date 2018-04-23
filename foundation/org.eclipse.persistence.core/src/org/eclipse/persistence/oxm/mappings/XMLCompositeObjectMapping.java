@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -332,6 +332,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
     }
 
 
+    @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){
         if(XMLConstants.UNKNOWN_OR_TRANSIENT_CLASS.equals(referenceClassName)){
             return;
@@ -345,6 +346,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
      * The mapping is initialized with the given session. This mapping is fully initialized
      * after this.
      */
+    @Override
     public void initialize(AbstractSession session) throws DescriptorException {
         //modified so that reference class on composite mappings is no longer mandatory
         String referenceClassName = getReferenceClassName();
@@ -384,6 +386,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
      *
      * @param aNullPolicy
      */
+    @Override
     public void setNullPolicy(AbstractNullPolicy aNullPolicy) {
         nullPolicy = aNullPolicy;
     }
@@ -394,6 +397,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
      * The default policy is NullPolicy.<br>
      * @return
      */
+    @Override
     public AbstractNullPolicy getNullPolicy() {
         return nullPolicy;
     }
@@ -401,6 +405,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
     /**
      * INTERNAL:
      */
+    @Override
     public boolean isXMLMapping() {
         return true;
     }
@@ -417,6 +422,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
      * Set the Mapping field name attribute to the given XPath String
      * @param xpathString String
      */
+    @Override
     public void setXPath(String xpathString) {
         this.setField(new XMLField(xpathString));
     }
@@ -466,6 +472,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
         return objectBuilder.buildObject(query, nestedRow, joinManager);
     }
 
+    @Override
     public Object readFromRowIntoObject(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object targetObject, CacheKey parentCacheKey, ObjectBuildingQuery sourceQuery, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
 
         Object fieldValue = databaseRow.getIndicatingNoEntry(getField());
@@ -549,7 +556,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
                     // no xsi:type attribute - look for type indicator on the field
                     QName leafElementType = ((XMLField) getField()).getLeafElementType();
                     if (leafElementType != null) {
-                        XPathQName leafElementXPathQName = new XPathQName(leafElementType, ((XMLRecord) nestedRow).isNamespaceAware());
+                        XPathQName leafElementXPathQName = new XPathQName(leafElementType, nestedRow.isNamespaceAware());
                         Object indicator = aDescriptor.getInheritancePolicy().getClassIndicatorMapping().get(leafElementXPathQName);
                         if(indicator != null) {
                             classValue = (Class) indicator;
@@ -610,6 +617,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
         return toReturn;
     }
 
+    @Override
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected, Boolean[] wasCacheUsed) throws DatabaseException {
         Object fieldValue = row.get(this.getField());
         // BUG#2667762 there could be whitespace in the row instead of null
@@ -637,6 +645,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
         writeSingleValue(attributeValue, object, (XMLRecord) databaseRow, session);
     }
 
+    @Override
     public void writeSingleValue(Object value, Object parent, XMLRecord record, AbstractSession session) {
         Object attributeValue = convertObjectValueToDataValue(value, session, record.getMarshaller());
         // handle "self" xpath
@@ -725,6 +734,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
 
     }
 
+    @Override
     protected ClassDescriptor getReferenceDescriptor(Class theClass, AbstractSession session) {
         if ((getReferenceDescriptor() != null) && getReferenceDescriptor().getJavaClass().equals(theClass)) {
             return getReferenceDescriptor();
@@ -738,10 +748,12 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
         }
     }
 
+    @Override
     public UnmarshalKeepAsElementPolicy getKeepAsElementPolicy() {
         return keepAsElementPolicy;
     }
 
+    @Override
     public void setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy keepAsElementPolicy) {
         this.keepAsElementPolicy = keepAsElementPolicy;
     }
@@ -760,20 +772,24 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
         return xmlDescriptor;
     }
 
+    @Override
     public void setIsWriteOnly(boolean b) {
         isWriteOnly = b;
     }
 
+    @Override
     public boolean isWriteOnly() {
         return isWriteOnly;
     }
 
+    @Override
     public void preInitialize(AbstractSession session) throws DescriptorException {
         getAttributeAccessor().setIsWriteOnly(this.isWriteOnly());
         getAttributeAccessor().setIsReadOnly(this.isReadOnly());
         super.preInitialize(session);
     }
 
+    @Override
     public void setAttributeValueInObject(Object object, Object value) throws DescriptorException {
         if(isWriteOnly()) {
             return;
@@ -781,6 +797,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
         super.setAttributeValueInObject(object, value);
     }
 
+    @Override
     public XMLInverseReferenceMapping getInverseReferenceMapping() {
         return inverseReferenceMapping;
     }
@@ -793,6 +810,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
      * INTERNAL
      * @since EclipseLink 2.5.0
      */
+    @Override
     public Object convertObjectValueToDataValue(Object value, Session session, XMLMarshaller marshaller) {
         if (hasConverter()) {
             if (converter instanceof XMLConverter) {
@@ -808,6 +826,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
      * INTERNAL
      * @since EclipseLink 2.5.0
      */
+    @Override
     public Object convertDataValueToObjectValue(Object fieldValue, Session session, XMLUnmarshaller unmarshaller) {
         if (hasConverter()) {
             if (converter instanceof XMLConverter) {

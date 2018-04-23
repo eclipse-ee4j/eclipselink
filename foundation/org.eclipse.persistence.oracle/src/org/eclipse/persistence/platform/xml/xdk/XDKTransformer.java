@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -58,30 +58,37 @@ public class XDKTransformer implements XMLTransformer {
         setFormattedOutput(true);
     }
 
+    @Override
     public String getEncoding() {
         return encoding;
     }
 
+    @Override
     public void setEncoding(String encoding) {
         this.encoding = encoding;
     }
 
+    @Override
     public boolean isFormattedOutput() {
         return formattedOutput;
     }
 
+    @Override
     public void setFormattedOutput(boolean shouldFormat) {
         formattedOutput = shouldFormat;
     }
 
+    @Override
     public String getVersion() {
         return version;
     }
 
+    @Override
     public void setVersion(String version) {
         this.version = version;
     }
 
+    @Override
     public void transform(Node sourceNode, OutputStream resultOutputStream) throws XMLPlatformException {
         try {
             OutputStreamWriter resultWriter = new OutputStreamWriter(resultOutputStream, getEncoding());
@@ -91,6 +98,7 @@ public class XDKTransformer implements XMLTransformer {
         }
     }
 
+    @Override
     public void transform(Node sourceNode, ContentHandler resultContentHandler) throws XMLPlatformException {
         try {
             XMLNode xmlNode = (XMLNode)sourceNode;
@@ -100,11 +108,13 @@ public class XDKTransformer implements XMLTransformer {
         }
     }
 
+    @Override
     public void transform(Node sourceNode, Result result) throws XMLPlatformException {
         DOMSource source = new DOMSource(sourceNode);
         transform(source, result);
     }
 
+    @Override
     public void transform(Node sourceNode, Writer resultWriter) throws XMLPlatformException {
         try {
             XMLDocument xmlDocument;
@@ -135,6 +145,7 @@ public class XDKTransformer implements XMLTransformer {
         }
     }
 
+    @Override
     public void transform(Source source, Result result) throws XMLPlatformException {
         try {
             JXTransformer transformer = new JXTransformer();
@@ -157,6 +168,7 @@ public class XDKTransformer implements XMLTransformer {
         }
     }
 
+    @Override
     public void transform(Document sourceDocument, Node resultParentNode, URL stylesheet) throws XMLPlatformException {
         try {
             XSLProcessor xslProcessor = new XSLProcessor();
@@ -169,10 +181,12 @@ public class XDKTransformer implements XMLTransformer {
         }
     }
 
+    @Override
     public void setFragment(boolean fragment) {
         this.fragment = fragment;
     }
 
+    @Override
     public boolean isFragment() {
         return fragment;
     }

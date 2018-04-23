@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -79,6 +79,7 @@ public class ValuePartitioningPolicy extends FieldPartitioningPolicy {
      * This method is used when converting a project that has been  built with
      * class names to a project with classes.
      */
+    @Override
     public void convertClassNamesToClasses(ClassLoader classLoader) {
         if (partitionValueType == null && partitionValueTypeName != null) {
             try {
@@ -187,6 +188,7 @@ public class ValuePartitioningPolicy extends FieldPartitioningPolicy {
      * INTERNAL:
      * Get a connection from one of the pools in a round robin rotation fashion.
      */
+    @Override
     public List<Accessor> getConnectionsForQuery(AbstractSession session, DatabaseQuery query, AbstractRecord arguments) {
         Object value = arguments.get(this.partitionField);
         if (value == null) {

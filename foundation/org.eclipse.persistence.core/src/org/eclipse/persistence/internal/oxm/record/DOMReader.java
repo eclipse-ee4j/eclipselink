@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,7 +12,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.oxm.record;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -24,7 +23,6 @@ import org.eclipse.persistence.internal.oxm.Unmarshaller;
 import org.eclipse.persistence.internal.oxm.mappings.Login;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.record.namespaces.StackUnmarshalNamespaceResolver;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.oxm.documentpreservation.DocumentPreservationPolicy;
 
 import org.w3c.dom.Attr;
@@ -382,6 +380,7 @@ public class DOMReader extends XMLReaderAdapter {
             attrs.add(attribute);
         }
 
+        @Override
         public String getQName(int index) {
             try {
                 Attr item = attrs.get(index);
@@ -394,18 +393,22 @@ public class DOMReader extends XMLReaderAdapter {
             }
         }
 
+        @Override
         public String getType(String namespaceUri, String localName) {
             return Constants.CDATA;
         }
 
+        @Override
         public String getType(int index) {
             return Constants.CDATA;
         }
 
+        @Override
         public String getType(String qname) {
             return Constants.CDATA;
         }
 
+        @Override
         public int getIndex(String qname) {
             for (int i=0, size = attrs.size(); i<size; i++) {
                 if (attrs.get(i).getName().equals(qname)) {
@@ -415,6 +418,7 @@ public class DOMReader extends XMLReaderAdapter {
             return -1;
         }
 
+        @Override
         public int getIndex(String uri, String localName) {
             for (int i=0, size = attrs.size(); i<size; i++) {
                 Attr item = attrs.get(i);
@@ -427,10 +431,12 @@ public class DOMReader extends XMLReaderAdapter {
             return -1;
         }
 
+        @Override
         public int getLength() {
             return attrs.size();
         }
 
+        @Override
         public String getLocalName(int index) {
             try {
                 Attr item = attrs.get(index);
@@ -443,6 +449,7 @@ public class DOMReader extends XMLReaderAdapter {
             }
         }
 
+        @Override
         public String getURI(int index) {
             String uri = attrs.get(index).getNamespaceURI();
             if(uri == null) {
@@ -451,10 +458,12 @@ public class DOMReader extends XMLReaderAdapter {
             return uri;
         }
 
+        @Override
         public String getValue(int index) {
             return (attrs.get(index)).getValue();
         }
 
+        @Override
         public String getValue(String qname) {
             for (int i=0, size = attrs.size(); i<size; i++) {
                 Attr item = attrs.get(i);
@@ -465,6 +474,7 @@ public class DOMReader extends XMLReaderAdapter {
             return null;
         }
 
+        @Override
         public String getValue(String uri, String localName) {
             for (int i=0, size = attrs.size(); i<size; i++) {
                 Attr item = attrs.get(i);
@@ -499,27 +509,33 @@ public class DOMReader extends XMLReaderAdapter {
             version = "1.0";
         }
 
+        @Override
         public String getEncoding() {
             return encoding;
         }
 
+        @Override
         public int getColumnNumber() {
             //not supported here
             return 0;
         }
 
+        @Override
         public String getSystemId() {
             return Constants.EMPTY_STRING;
         }
 
+        @Override
         public String getPublicId() {
             return Constants.EMPTY_STRING;
         }
 
+        @Override
         public String getXMLVersion() {
             return version;
         }
 
+        @Override
         public int getLineNumber() {
             //not supported
             return 0;

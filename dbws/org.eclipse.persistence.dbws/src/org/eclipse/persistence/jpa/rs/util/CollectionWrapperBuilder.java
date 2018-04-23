@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2015  Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2018  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -53,7 +53,7 @@ public class CollectionWrapperBuilder {
      */
     public void wrapCollections(Object object) {
         if (object instanceof PageableCollection) {
-            for (Object o : ((PageableCollection) object).getItems()) {
+            for (Object o : ((PageableCollection<?>) object).getItems()) {
                 wrapCollectionsForEntity(o);
             }
         } else {
@@ -87,7 +87,7 @@ public class CollectionWrapperBuilder {
                 try {
                     // No proxy for weaved fields and null fields
                     if (!field.getName().startsWith("_") && field.get(entity) != null) {
-                        CollectionProxy proxy = getRestCollectionProxy((Collection) field.get(entity), entity.getClass().getName(), field.getName());
+                        CollectionProxy proxy = getRestCollectionProxy((Collection<?>) field.get(entity), entity.getClass().getName(), field.getName());
                         proxy.setLinks(links);
                         field.set(entity, field.getType().cast(proxy));
                     }
@@ -103,7 +103,7 @@ public class CollectionWrapperBuilder {
         }
     }
 
-    private CollectionProxy getRestCollectionProxy(final Collection toProxy, final String entityName, final String fieldname) {
+    private CollectionProxy getRestCollectionProxy(final Collection<?> toProxy, final String entityName, final String fieldname) {
         try {
             final DynamicClassLoader classLoader = (DynamicClassLoader)context.getServerSession().getDatasourcePlatform().getConversionManager().getLoader();
             final CollectionProxyClassWriter writer = new CollectionProxyClassWriter(toProxy.getClass().getName(), entityName, fieldname);
@@ -113,9 +113,9 @@ public class CollectionWrapperBuilder {
                 classLoader.addClass(proxyClassName, writer);
             }
 
-            final Class referenceAdaptorClass = Class.forName(proxyClassName, true, classLoader);
-            final Class[] argTypes = {Collection.class};
-            final Constructor referenceAdaptorConstructor = referenceAdaptorClass.getDeclaredConstructor(argTypes);
+            final Class<?> referenceAdaptorClass = Class.forName(proxyClassName, true, classLoader);
+            final Class<?>[] argTypes = {Collection.class};
+            final Constructor<?> referenceAdaptorConstructor = referenceAdaptorClass.getDeclaredConstructor(argTypes);
             final Object[] args = new Object[]{toProxy};
 
             return (CollectionProxy)referenceAdaptorConstructor.newInstance(args);

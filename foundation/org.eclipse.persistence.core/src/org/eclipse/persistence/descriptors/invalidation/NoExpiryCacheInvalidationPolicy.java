@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -29,6 +29,7 @@ public class NoExpiryCacheInvalidationPolicy extends CacheInvalidationPolicy {
      * INTERNAL:
      * Since this policy implements no expiry, this will always return NO_EXPIRY
      */
+    @Override
     public long getExpiryTimeInMillis(CacheKey key) {
         return NO_EXPIRY;
     }
@@ -38,6 +39,7 @@ public class NoExpiryCacheInvalidationPolicy extends CacheInvalidationPolicy {
      * Return the remaining life of this object
      * Override the default implementation.
      */
+    @Override
     public long getRemainingValidTime(CacheKey key) {
         return NO_EXPIRY;
     }
@@ -46,6 +48,7 @@ public class NoExpiryCacheInvalidationPolicy extends CacheInvalidationPolicy {
      * INTERNAL:
      * This will return true if the object is set to be invalid, false otherwise.
      */
+    @Override
     public boolean isInvalidated(CacheKey key) {
         return key.getInvalidationState() == CacheKey.CACHE_KEY_INVALID;
     }
@@ -54,6 +57,7 @@ public class NoExpiryCacheInvalidationPolicy extends CacheInvalidationPolicy {
      * INTERNAL:
      * This will return true if the object is set to be invalid, false otherwise.
      */
+    @Override
     public boolean isInvalidated(CacheKey key, long currentTimeMillis) {
         return key.getInvalidationState() == CacheKey.CACHE_KEY_INVALID;
     }

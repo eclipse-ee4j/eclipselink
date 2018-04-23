@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -50,6 +50,7 @@ public class ArrayListContainerPolicy extends ListContainerPolicy {
      * INTERNAL:
      * Return a clone of the specified container.
      */
+    @Override
     public Object cloneFor(Object container) {
         if (container == null) {
             return null;
@@ -66,6 +67,7 @@ public class ArrayListContainerPolicy extends ListContainerPolicy {
      * INTERNAL:
      * Return an ArrayList from the Vector.
      */
+    @Override
     public Object buildContainerFromVector(Vector vector, AbstractSession session) {
         return new ArrayList(vector);
     }
@@ -74,6 +76,7 @@ public class ArrayListContainerPolicy extends ListContainerPolicy {
      * INTERNAL:
      * Return a new ArrayList.
      */
+    @Override
     public Object containerInstance() {
         return new ArrayList();
     }
@@ -82,6 +85,7 @@ public class ArrayListContainerPolicy extends ListContainerPolicy {
      * INTERNAL:
      * Return a new ArrayList.
      */
+    @Override
     public Object containerInstance(int initialCapacity) {
         return new ArrayList(initialCapacity);
     }

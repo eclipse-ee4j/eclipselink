@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -60,6 +60,7 @@ public class StoredFunctionCall extends StoredProcedureCall {
      * INTERNAL:
      * Return call header for the call string.
      */
+    @Override
     public String getCallHeader(DatabasePlatform platform) {
         return platform.getFunctionCallHeader();
     }
@@ -69,6 +70,7 @@ public class StoredFunctionCall extends StoredProcedureCall {
      * Return the first index of parameter to be placed inside brackets
      * in the call string.
      */
+    @Override
     public int getFirstParameterIndexForCallString() {
         return 1;
     }
@@ -76,6 +78,7 @@ public class StoredFunctionCall extends StoredProcedureCall {
     /**
      * INTERNAL:
      */
+    @Override
     public boolean isStoredFunctionCall() {
         return true;
     }
@@ -83,6 +86,7 @@ public class StoredFunctionCall extends StoredProcedureCall {
     /**
      * INTERNAL:
      */
+    @Override
     public void prepareInternal(AbstractSession session) {
         if (session.getPlatform().supportsStoredFunctions()) {
             super.prepareInternal(session);

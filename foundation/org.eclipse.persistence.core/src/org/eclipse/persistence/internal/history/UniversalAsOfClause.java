@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -35,6 +35,7 @@ public class UniversalAsOfClause extends AsOfClause {
      * INTERNAL:
      * Prints the as of clause for an expression inside of the FROM clause.
      */
+    @Override
     public void printSQL(ExpressionSQLPrinter printer) {
         ((AsOfClause)super.getValue()).printSQL(printer);
     }
@@ -47,10 +48,12 @@ public class UniversalAsOfClause extends AsOfClause {
         return (AsOfClause)super.getValue();
     }
 
+    @Override
     public Object getValue() {
         return getAsOfClause().getValue();
     }
 
+    @Override
     public boolean isUniversal() {
         return true;
     }

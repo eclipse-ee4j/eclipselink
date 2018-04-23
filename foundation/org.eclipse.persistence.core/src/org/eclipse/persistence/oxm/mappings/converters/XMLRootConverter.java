@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -42,16 +42,19 @@ public class XMLRootConverter implements XMLConverter {
         this.associatedField = associatedField;
     }
 
+    @Override
     public Object convertDataValueToObjectValue(Object dataValue,
             Session session, XMLUnmarshaller unmarshaller) {
         return convertDataValueToObjectValue(dataValue, session);
     }
 
+    @Override
     public Object convertObjectValueToDataValue(Object objectValue,
             Session session, XMLMarshaller marshaller) {
         return convertObjectValueToDataValue(objectValue, session);
     }
 
+    @Override
     public Object convertDataValueToObjectValue(Object dataValue,
             Session session) {
         XMLRoot root = new XMLRoot();
@@ -73,6 +76,7 @@ public class XMLRootConverter implements XMLConverter {
         return root;
     }
 
+    @Override
     public Object convertObjectValueToDataValue(Object objectValue,
             Session session) {
         if(objectValue instanceof XMLRoot) {
@@ -82,6 +86,7 @@ public class XMLRootConverter implements XMLConverter {
         }
     }
 
+    @Override
     public void initialize(DatabaseMapping mapping, Session session) {
         XPathFragment fragment = associatedField.getXPathFragment();
         while(fragment.getNextFragment() != null && !(fragment.getNextFragment().nameIsText())) {
@@ -95,6 +100,7 @@ public class XMLRootConverter implements XMLConverter {
         this.mapping = mapping;
     }
 
+    @Override
     public boolean isMutable() {
         return false;
     }

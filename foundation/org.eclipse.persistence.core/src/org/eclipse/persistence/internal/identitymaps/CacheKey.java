@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -124,6 +124,7 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
     /**
      * Acquire the lock on the cache key object.
      */
+    @Override
     public void acquire() {
         if (this.isIsolated) {
             this.depth++;
@@ -136,6 +137,7 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
      * Acquire the lock on the cache key object. For the merge process
      * called with true from the merge process, if true then the refresh will not refresh the object
      */
+    @Override
     public void acquire(boolean forMerge) {
         if (this.isIsolated) {
             this.depth++;
@@ -148,6 +150,7 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
      * Acquire the lock on the cache key object. But only if the object has no lock on it
      * Added for CR 2317
      */
+    @Override
     public boolean acquireNoWait() {
         if (this.isIsolated) {
             this.depth++;
@@ -178,6 +181,7 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
      * Added for CR 2317
      * called with true from the merge process, if true then the refresh will not refresh the object
      */
+    @Override
     public boolean acquireNoWait(boolean forMerge) {
         if (this.isIsolated) {
             this.depth++;
@@ -191,6 +195,7 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
      * Added for CR 2317
      * called with true from the merge process, if true then the refresh will not refresh the object
      */
+    @Override
     public boolean acquireWithWait(boolean forMerge, int wait) {
         if (this.isIsolated) {
             this.depth++;
@@ -202,6 +207,7 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
     /**
      * Acquire the deferred lock.
      */
+    @Override
     public void acquireDeferredLock() {
         if (this.isIsolated) {
             this.depth++;
@@ -248,6 +254,7 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
      * This can be called to ensure the cache key has a valid built object.
      * It does not hold a lock, so the object could be refreshed afterwards.
      */
+    @Override
     public void checkReadLock() {
         if (this.isIsolated) {
             return;
@@ -260,6 +267,7 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
      * This can be called to ensure the cache key has a valid built object.
      * It does not hold a lock, so the object could be refreshed afterwards.
      */
+    @Override
     public void checkDeferredLock() {
         if (this.isIsolated) {
             return;
@@ -270,6 +278,7 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
     /**
      * Acquire the read lock on the cache key object.
      */
+    @Override
     public void acquireReadLock() {
         if (this.isIsolated) {
             return;
@@ -280,6 +289,7 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
     /**
      * Acquire the read lock on the cache key object.  Return true if acquired.
      */
+    @Override
     public boolean acquireReadLockNoWait() {
         if (this.isIsolated) {
             return true;
@@ -291,6 +301,7 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
      * INTERNAL:
      * Clones itself.
      */
+    @Override
     public Object clone() {
         Object object = null;
 
@@ -308,6 +319,7 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
      * If anObject is a CacheKey, do further comparison, otherwise, return false.
      * @see CacheKey#equals(CacheKey)
      */
+    @Override
     public boolean equals(Object object) {
         try {
             return equals((CacheKey)object);
@@ -345,6 +357,7 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
     /**
      * Return the active thread.
      */
+    @Override
     public Thread getActiveThread() {
         if (this.isIsolated) {
             if (this.depth > 0) {
@@ -395,6 +408,7 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
     /**
      * Overrides hashCode() in Object to use the primaryKey's hashCode for storage in data structures.
      */
+    @Override
     public int hashCode() {
         return this.key.hashCode();
     }
@@ -446,6 +460,7 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
     /**
      * Release the lock on the cache key object.
      */
+    @Override
     public void release() {
         if (this.isIsolated) {
             this.depth--;
@@ -457,6 +472,7 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
     /**
      * Release the deferred lock
      */
+    @Override
     public void releaseDeferredLock() {
         if (this.isIsolated) {
             this.depth--;
@@ -468,6 +484,7 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
     /**
      * Release the read lock on the cache key object.
      */
+    @Override
     public void releaseReadLock() {
         if (this.isIsolated) {
             return;
@@ -544,6 +561,7 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
         this.writeLockValue = writeLockValue;
     }
 
+    @Override
     public String toString() {
         int hashCode = 0;
         if (getObject() != null) {

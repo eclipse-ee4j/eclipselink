@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -141,6 +141,7 @@ public class DatabaseLogin extends DatasourceLogin {
      * Build and return an appropriate Accessor.
      * The default is a DatabaseAccessor.
      */
+    @Override
     public Accessor buildAccessor() {
         return new DatabaseAccessor();
     }
@@ -330,6 +331,7 @@ public class DatabaseLogin extends DatasourceLogin {
      * Return the datasource platform specific information.
      * This allows EclipseLink to configure certain advanced features for the datasource desired.
      */
+    @Override
     public Platform getDatasourcePlatform() {
         if (this.platform == null) {
             this.platform = new DatabasePlatform();
@@ -817,6 +819,7 @@ public class DatabaseLogin extends DatasourceLogin {
      * on a per-class basis.
      * Example: login.setDefaultNullValue(long.class, new Long(0))
      */
+    @Override
     public void setDefaultNullValue(Class type, Object value) {
         getPlatform().getConversionManager().setDefaultNullValue(type, value);
     }
@@ -956,6 +959,7 @@ public class DatabaseLogin extends DatasourceLogin {
      * This can be the creator of the table or database name the table exists on.
      * This is required by some databases such as Oracle and DB2.
      */
+    @Override
     public void setTableQualifier(String qualifier) {
         getPlatform().setTableQualifier(qualifier);
     }
@@ -1181,6 +1185,7 @@ public class DatabaseLogin extends DatasourceLogin {
      * PUBLIC:
      * Print all of the connection information.
      */
+    @Override
     public String toString() {
         StringWriter stringWriter = new StringWriter();
         PrintWriter writer = new PrintWriter(stringWriter);
@@ -1385,6 +1390,7 @@ public class DatabaseLogin extends DatasourceLogin {
      * @see #dontUseExternalConnectionPooling()
      * @see #shouldUseExternalConnectionPooling()
      */
+    @Override
     public void useExternalConnectionPooling() {
         setUsesExternalConnectionPooling(true);
     }
@@ -1396,6 +1402,7 @@ public class DatabaseLogin extends DatasourceLogin {
      * @see #dontUseExternalTransactionController()
      * @see #shouldUseExternalTransactionController()
      */
+    @Override
     public void useExternalTransactionController() {
         setUsesExternalTransactionController(true);
     }
@@ -1864,6 +1871,7 @@ public class DatabaseLogin extends DatasourceLogin {
      * By default (null) connection health is validate if the query does not have a timeout, and there is a ping string.
      * Setting to true or false overrides this.
      */
+    @Override
     public boolean isConnectionHealthValidatedOnError() {
         if (this.connectionHealthValidatedOnError == null) {
             return (getPingSQL() != null);

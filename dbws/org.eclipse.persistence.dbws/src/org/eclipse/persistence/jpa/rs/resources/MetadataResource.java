@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2016  Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2018  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -411,7 +411,7 @@ public class MetadataResource extends AbstractResource {
         }
     }
 
-    private Property buildProperty(PersistenceContext context, Class clazz) {
+    private Property buildProperty(PersistenceContext context, Class<?> clazz) {
         final Property property = new Property();
         if (context.getServerSession().getDescriptorForAlias(clazz.getSimpleName()) != null) {
             property.setRef(HrefHelper.buildEntityMetadataHref(context, clazz.getSimpleName()) + "#");
@@ -432,8 +432,8 @@ public class MetadataResource extends AbstractResource {
         return property;
     }
 
-    private Class getCollectionGenericClass(DatabaseMapping mapping) {
-        Class collectionName = null;
+    private Class<?> getCollectionGenericClass(DatabaseMapping mapping) {
+        Class<?> collectionName = null;
         if (mapping.isEISMapping()) {
             final EISCompositeCollectionMapping collectionMapping = (EISCompositeCollectionMapping) mapping;
             if (collectionMapping.getReferenceClass() != null) {

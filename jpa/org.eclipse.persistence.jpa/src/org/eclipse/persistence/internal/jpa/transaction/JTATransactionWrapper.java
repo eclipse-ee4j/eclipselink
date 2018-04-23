@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -48,6 +48,7 @@ public class JTATransactionWrapper extends TransactionWrapperImpl implements Tra
      * If this method returns without exception then a transaction exists.
      * This method must be called before accessing the localUOW.
      */
+    @Override
     public Object checkForTransaction(boolean validateExistence){
         Object transaction = this.txnController.getTransaction();
         if (validateExistence && (transaction == null)){
@@ -60,6 +61,7 @@ public class JTATransactionWrapper extends TransactionWrapperImpl implements Tra
      * INTERNAL:
      * Internal clear the underlying data structures that this transaction owns.
      */
+    @Override
     public void clear(){
         this.localUOW.release();
         this.localUOW = null;
@@ -69,6 +71,7 @@ public class JTATransactionWrapper extends TransactionWrapperImpl implements Tra
      *  An ENtityTransaction cannot be used at the same time as a JTA transaction
      *  throw an exception
      */
+    @Override
     public EntityTransaction getTransaction(){
       throw new IllegalStateException(TransactionException.entityTransactionWithJTANotAllowed().getMessage());
     }
@@ -80,6 +83,7 @@ public class JTATransactionWrapper extends TransactionWrapperImpl implements Tra
     * rolled back.
     * This is an internal method and if the txn is not active will do nothing
     */
+    @Override
     public void setRollbackOnlyInternal() {
         if(txnController.getTransaction() != null) {
             txnController.markTransactionForRollback();
@@ -94,6 +98,7 @@ public class JTATransactionWrapper extends TransactionWrapperImpl implements Tra
         throw new TransactionRequiredException(TransactionException.externalTransactionNotActive().getMessage());
     }
 
+    @Override
     public boolean isJoinedToTransaction(UnitOfWorkImpl uow) {
         if (this.entityManager.hasActivePersistenceContext()) {
             return uow.getParent().hasExternalTransactionController() && uow.isSynchronized();
@@ -103,6 +108,7 @@ public class JTATransactionWrapper extends TransactionWrapperImpl implements Tra
         return isJoined;
     }
 
+    @Override
     public void registerIfRequired(UnitOfWorkImpl uow){
         //EM already validated that there is a JTA transaction.
         if (this.entityManager.hasActivePersistenceContext()) {
@@ -135,7 +141,9 @@ public class JTATransactionWrapper extends TransactionWrapperImpl implements Tra
             try {
                 ((Transaction)txn).registerSynchronization(new Synchronization() {
 
+                    @Override
                     public void beforeCompletion() {}
+                    @Override
                     public void afterCompletion(int status) {
                         //let the wrapper know the listener is no longer registered to an active transaction
                         isJoined = false;

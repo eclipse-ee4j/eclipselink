@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -288,6 +288,7 @@ public class SDOHelperContext implements HelperContext {
     /**
      * Return the CopyHelper instance for this helper context.
      */
+    @Override
     public CopyHelper getCopyHelper() {
         return copyHelper;
     }
@@ -295,6 +296,7 @@ public class SDOHelperContext implements HelperContext {
     /**
      * Return the DataFactory instance for this helper context.
      */
+    @Override
     public DataFactory getDataFactory() {
         return dataFactory;
     }
@@ -302,6 +304,7 @@ public class SDOHelperContext implements HelperContext {
     /**
      * Return the DataHelper instance for this helper context.
      */
+    @Override
     public DataHelper getDataHelper() {
         return dataHelper;
     }
@@ -309,6 +312,7 @@ public class SDOHelperContext implements HelperContext {
     /**
      * Return the EqualityHelper instance for this helper context.
      */
+    @Override
     public EqualityHelper getEqualityHelper() {
         return equalityHelper;
     }
@@ -316,6 +320,7 @@ public class SDOHelperContext implements HelperContext {
     /**
      * Return the TypeHelper instance for this helper context.
      */
+    @Override
     public TypeHelper getTypeHelper() {
         return typeHelper;
     }
@@ -323,6 +328,7 @@ public class SDOHelperContext implements HelperContext {
     /**
      * Return the XMLHelper instance for this helper context.
      */
+    @Override
     public XMLHelper getXMLHelper() {
         return xmlHelper;
     }
@@ -330,6 +336,7 @@ public class SDOHelperContext implements HelperContext {
     /**
      * Return the XSDHelper instance for this helper context.
      */
+    @Override
     public XSDHelper getXSDHelper() {
         return xsdHelper;
     }
@@ -980,6 +987,7 @@ public class SDOHelperContext implements HelperContext {
             this.appName = appName;
         }
 
+        @Override
         public void handleNotification(Notification notification, Object handback) {
             switch (server) {
             case 0: {  // handle WebLogic notification

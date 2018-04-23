@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -85,7 +85,7 @@ public class FeatureResponseBuilderImpl implements FeatureResponseBuilder {
     @Override
     public Object buildSingleResultQueryResponse(PersistenceContext context, Map<String, Object> queryParams, Object result, List<ReportItem> items, UriInfo uriInfo) {
         final SingleResultQueryList response = new SingleResultQueryList();
-        final List<JAXBElement> fields = new FeatureResponseBuilderImpl().createShellJAXBElementList(items, result);
+        final List<JAXBElement<?>> fields = new FeatureResponseBuilderImpl().createShellJAXBElementList(items, result);
         response.setFields(fields);
         return response;
     }
@@ -102,7 +102,7 @@ public class FeatureResponseBuilderImpl implements FeatureResponseBuilder {
         ReportQueryResultList response = new ReportQueryResultList();
         for (Object result : results) {
             ReportQueryResultListItem queryResultListItem = new ReportQueryResultListItem();
-            List<JAXBElement> jaxbFields = createShellJAXBElementList(reportItems, result);
+            List<JAXBElement<?>> jaxbFields = createShellJAXBElementList(reportItems, result);
             queryResultListItem.setFields(jaxbFields);
             response.addItem(queryResultListItem);
         }
@@ -116,12 +116,12 @@ public class FeatureResponseBuilderImpl implements FeatureResponseBuilder {
      * @param record the record
      * @return the list. Returns an empty list if reportItems is null or empty.
      */
-    public List<JAXBElement> createShellJAXBElementList(List<ReportItem> reportItems, Object record) {
+    public List<JAXBElement<?>> createShellJAXBElementList(List<ReportItem> reportItems, Object record) {
         if (reportItems == null || reportItems.size() == 0) {
             return Collections.emptyList();
         }
 
-        List<JAXBElement> jaxbElements = new ArrayList<>(reportItems.size());
+        List<JAXBElement<?>> jaxbElements = new ArrayList<>(reportItems.size());
         for (int index = 0; index < reportItems.size(); index++) {
             ReportItem reportItem = reportItems.get(index);
             Object reportItemValue = record;

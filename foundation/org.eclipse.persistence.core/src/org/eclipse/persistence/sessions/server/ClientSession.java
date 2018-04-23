@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -343,6 +343,7 @@ public class ClientSession extends AbstractSession {
      * Release (if required) connection after call.
      * @param query
      */
+    @Override
     public void releaseConnectionAfterCall(DatabaseQuery query) {
         if ((!isInTransaction() || (query.isObjectLevelReadQuery() && ((ObjectLevelReadQuery)query).isReadOnly())) && !isExclusiveIsolatedClientSession() ) {
             this.parent.releaseConnectionAfterCall(query);
@@ -412,6 +413,7 @@ public class ClientSession extends AbstractSession {
      * ADVANCED:
      * Return all registered descriptors.
      */
+    @Override
     public Map<Class, ClassDescriptor> getDescriptors() {
         // descriptors from the project may have been modified (for table per
         // tenants so make sure to return the updated ones)

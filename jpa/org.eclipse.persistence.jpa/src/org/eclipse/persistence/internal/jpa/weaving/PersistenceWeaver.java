@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -16,8 +16,6 @@ package org.eclipse.persistence.internal.jpa.weaving;
 
 // J2SE imports
 import java.lang.instrument.IllegalClassFormatException;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.security.ProtectionDomain;
 import java.util.Map;
 
@@ -30,7 +28,6 @@ import org.eclipse.persistence.internal.libraries.asm.ClassVisitor;
 import org.eclipse.persistence.internal.libraries.asm.ClassWriter;
 import org.eclipse.persistence.internal.libraries.asm.commons.SerialVersionUIDAdder;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedGetClassLoaderFromCurrentThread;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.Session;
@@ -53,6 +50,7 @@ public class PersistenceWeaver implements ClassTransformer {
      * @param classDetailsMap Class name to {@link ClassDetails} map.
      * @deprecated Session instance is no longer needed for logging. Will be removed in 2.8.
      */
+    @Deprecated
     public PersistenceWeaver(final Session session, final Map<String, ClassDetails> classDetailsMap) {
         this.classDetailsMap = classDetailsMap;
     }

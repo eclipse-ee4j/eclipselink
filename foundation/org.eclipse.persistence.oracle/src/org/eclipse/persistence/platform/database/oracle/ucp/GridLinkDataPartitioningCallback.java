@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -38,6 +38,7 @@ public class GridLinkDataPartitioningCallback extends UCPDataPartitioningCallbac
     /**
      * Registration only occurs once in WLS (against all data sources), so must be static registered.
      */
+    @Override
     public void register(DataSource datSource, Session session) {
         if (isRegistered) {
             return;
@@ -71,10 +72,12 @@ public class GridLinkDataPartitioningCallback extends UCPDataPartitioningCallbac
     /**
      * Set the partition id for this thread.
      */
+    @Override
     public void setPartitionId(int id) {
         partitionId.set(id);
     }
 
+    @Override
     public int getPartitionId() {
         Integer id = (Integer)partitionId.get();
         if (id == null) {

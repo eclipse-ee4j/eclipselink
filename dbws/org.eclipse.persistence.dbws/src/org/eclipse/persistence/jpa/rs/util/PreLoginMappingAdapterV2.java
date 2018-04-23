@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2015  Oracle. All rights reserved.
+ * Copyright (c) 2014, 2018  Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -15,7 +15,6 @@ package org.eclipse.persistence.jpa.rs.util;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.jaxb.SessionEventListener;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.ItemLinks;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.weaving.PersistenceWeavedRest;
 import org.eclipse.persistence.jaxb.DefaultXMLNameTransformer;
 import org.eclipse.persistence.oxm.XMLDescriptor;
@@ -39,6 +38,7 @@ public class PreLoginMappingAdapterV2 extends SessionEventListener {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void preLogin(SessionEvent event) {
         final Project project = event.getSession().getProject();
         final DefaultXMLNameTransformer xmlNameTransformer = new DefaultXMLNameTransformer();

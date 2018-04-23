@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2015  Oracle. All rights reserved.
+ * Copyright (c) 2014, 2018 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,6 +12,11 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.util.xmladapters;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.CollectionWrapper;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.LinkV2;
@@ -23,10 +28,6 @@ import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
 import org.eclipse.persistence.jpa.rs.util.CollectionProxy;
 import org.eclipse.persistence.jpa.rs.util.IdHelper;
 import org.eclipse.persistence.mappings.DatabaseMapping;
-
-import javax.xml.bind.annotation.adapters.XmlAdapter;
-import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * Collections adapter used in JPARS V2. Collections are wrapped into CollectionWrapper which has 'links'.
@@ -109,7 +110,7 @@ public class RestCollectionAdapter<T extends PersistenceWeavedRest> extends XmlA
     private Collection loadItems(String href) throws Exception {
         String uri = href.replace("\\/", "/");
         uri = uri.substring(uri.indexOf("entity/"));
-        uri = uri.substring(uri.indexOf("/") + 1);
+        uri = uri.substring(uri.indexOf('/') + 1);
 
         final String[] uriItems = uri.split("/");
         final String entityType = uriItems[0];

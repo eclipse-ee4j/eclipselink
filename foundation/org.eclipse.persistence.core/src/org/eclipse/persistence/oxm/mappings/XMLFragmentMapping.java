@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -78,6 +78,7 @@ public class XMLFragmentMapping extends XMLDirectMapping implements FragmentMapp
         writeSingleValue(attributeValue, object, (XMLRecord)row, session);
     }
 
+    @Override
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected, Boolean[] wasCacheUsed) {
         DOMRecord domRecord = (DOMRecord) row;
         Object value = domRecord.getIndicatingNoEntry(this.getField(), true);
@@ -90,6 +91,7 @@ public class XMLFragmentMapping extends XMLDirectMapping implements FragmentMapp
         return value;
     }
 
+    @Override
     public void writeSingleValue(Object attributeValue, Object parent, XMLRecord row, AbstractSession session) {
         if (((XMLField)this.getField()).getLastXPathFragment().nameIsText()) {
             if (attributeValue instanceof Text) {
@@ -99,10 +101,12 @@ public class XMLFragmentMapping extends XMLDirectMapping implements FragmentMapp
         row.put(getField(), attributeValue);
     }
 
+    @Override
     public void setXPath(String xpathString) {
         setField(new XMLField(xpathString));
     }
 
+    @Override
     public boolean isAbstractDirectMapping() {
         return false;
     }

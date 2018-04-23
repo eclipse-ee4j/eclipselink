@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -96,6 +96,7 @@ public class ContentHandlerRecord extends MarshalRecord {
     /**
      * INTERNAL:
      */
+    @Override
     public void startDocument(String encoding, String version) {
         try {
             contentHandler.startDocument();
@@ -107,6 +108,7 @@ public class ContentHandlerRecord extends MarshalRecord {
     /**
      * INTERNAL:
      */
+    @Override
     public void endDocument() {
         try {
             contentHandler.endDocument();
@@ -122,6 +124,7 @@ public class ContentHandlerRecord extends MarshalRecord {
     /**
      * INTERNAL:
      */
+    @Override
     public void startPrefixMapping(String prefix, String namespaceURI) {
         try {
             contentHandler.startPrefixMapping(prefix, namespaceURI);
@@ -142,6 +145,7 @@ public class ContentHandlerRecord extends MarshalRecord {
      * @param namespaceResolver The NamespaceResolver contains the namespace
      * prefix and URI pairings that need to be declared.
      */
+    @Override
     public void namespaceDeclarations(NamespaceResolver namespaceResolver) {
         if (namespaceResolver == null) {
             return;
@@ -162,6 +166,7 @@ public class ContentHandlerRecord extends MarshalRecord {
     /**
      * INTERNAL:
      */
+    @Override
     public void endPrefixMapping(String prefix) {
         try {
             contentHandler.endPrefixMapping(prefix);
@@ -197,6 +202,7 @@ public class ContentHandlerRecord extends MarshalRecord {
     /**
      * INTERNAL:
      */
+    @Override
     public void openStartElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
         super.openStartElement(xPathFragment, namespaceResolver);
         currentLevelPrefixMappings = null;
@@ -214,6 +220,7 @@ public class ContentHandlerRecord extends MarshalRecord {
     /**
      * INTERNAL:
      */
+    @Override
     public void element(XPathFragment frag) {
         if (isStartElementOpen) {
             openAndCloseStartElement();
@@ -237,6 +244,7 @@ public class ContentHandlerRecord extends MarshalRecord {
     /**
      * INTERNAL:
      */
+    @Override
     public void attribute(XPathFragment xPathFragment, NamespaceResolver namespaceResolver, String value) {
         String namespaceURI = resolveNamespacePrefix(xPathFragment, namespaceResolver);
         attribute(namespaceURI, xPathFragment.getLocalName(), getNameForFragment(xPathFragment), value);
@@ -245,6 +253,7 @@ public class ContentHandlerRecord extends MarshalRecord {
     /**
      * INTERNAL:
      */
+    @Override
     public void attribute(String namespaceURI, String localName, String qName, String value) {
         if(namespaceURI == javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI) {
             if(localName == javax.xml.XMLConstants.XMLNS_ATTRIBUTE) {
@@ -259,6 +268,7 @@ public class ContentHandlerRecord extends MarshalRecord {
     /**
      * INTERNAL:
      */
+    @Override
     public void closeStartElement() {
         // do nothing - the openAndCloseStartElement call results in a
         // complete start element
@@ -267,6 +277,7 @@ public class ContentHandlerRecord extends MarshalRecord {
     /**
      * INTERNAL:
      */
+    @Override
     public void endElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
         if (isStartElementOpen) {
             openAndCloseStartElement();
@@ -293,6 +304,7 @@ public class ContentHandlerRecord extends MarshalRecord {
     /**
      * INTERNAL:
      */
+    @Override
     public void characters(String value) {
         if (isStartElementOpen) {
             openAndCloseStartElement();
@@ -309,6 +321,7 @@ public class ContentHandlerRecord extends MarshalRecord {
     /**
      * INTERNAL:
      */
+    @Override
     public void cdata(String value) {
         //No specific support for CDATA in a ContentHandler. Just treat as regular
         //Character data as a SAX parser would.
@@ -335,6 +348,7 @@ public class ContentHandlerRecord extends MarshalRecord {
      * @param namespaceResolver The NamespaceResolver can be used to resolve the
      * namespace URI/prefix of the node
      */
+    @Override
     public void node(Node node, NamespaceResolver namespaceResolver, String uri, String name) {
         if (node.getNodeType() == Node.ATTRIBUTE_NODE) {
             Attr attr = (Attr) node;
@@ -386,6 +400,7 @@ public class ContentHandlerRecord extends MarshalRecord {
         return resolved;
     }
 
+    @Override
     public String resolveNamespacePrefix(String s) {
         String resolved = super.resolveNamespacePrefix(s);
         if (resolved == null) {

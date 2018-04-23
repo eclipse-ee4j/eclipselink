@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2018  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -39,63 +39,75 @@ public class TableGeneratorImpl extends MetadataImpl<TableGeneratorMetadata> imp
         getMetadata().setUniqueConstraints(new ArrayList<UniqueConstraintMetadata>());
     }
 
+    @Override
     public Index addIndex() {
         IndexImpl index = new IndexImpl();
         getMetadata().getIndexes().add(index.getMetadata());
         return index;
     }
 
+    @Override
     public UniqueConstraint addUniqueConstraint() {
         UniqueConstraintImpl uniqueConstraint = new UniqueConstraintImpl();
         getMetadata().getUniqueConstraints().add(uniqueConstraint.getMetadata());
         return uniqueConstraint;
     }
 
+    @Override
     public TableGenerator setAllocationSize(Integer allocationSize) {
         getMetadata().setAllocationSize(allocationSize);
         return this;
     }
 
+    @Override
     public TableGenerator setCatalog(String catalog) {
         getMetadata().setCatalog(catalog);
         return this;
     }
 
+    @Override
     public TableGenerator setCreationSuffix(String creationSuffix) {
         getMetadata().setCreationSuffix(creationSuffix);
         return this;
     }
 
+    @Override
     public TableGenerator setInitialValue(Integer initialValue) {
         getMetadata().setInitialValue(initialValue);
         return this;
     }
 
+    @Override
     public TableGenerator setName(String name) {
         getMetadata().setGeneratorName(name);
         return this;
     }
 
+    @Override
     public TableGenerator setPKColumnName(String pkColumnName) {
         getMetadata().setPkColumnName(pkColumnName);
         return this;
     }
 
+    @Override
     public TableGenerator setPKColumnValue(String pkColumnValue) {
         getMetadata().setPkColumnValue(pkColumnValue);
         return this;
     }
 
+    @Override
     public TableGenerator setSchema(String schema) {
         getMetadata().setSchema(schema);
         return this;
     }
 
+    @Override
     public TableGenerator setTable(String table) {
         getMetadata().setName(table);
         return this;
     }
 
+    @Override
     public TableGenerator setValueColumnName(String valueColumnName) {
         getMetadata().setValueColumnName(valueColumnName);
         return this;

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -88,12 +88,15 @@ public abstract class CloneListIterable<E>
     //********** default mutator **********
 
     protected class DefaultMutator implements CloneListIterator.Mutator<E> {
+        @Override
         public void add(int index, E element) {
             CloneListIterable.this.add(index, element);
         }
+        @Override
         public void remove(int index) {
             CloneListIterable.this.remove(index);
         }
+        @Override
         public void set(int index, E element) {
             CloneListIterable.this.set(index, element);
         }

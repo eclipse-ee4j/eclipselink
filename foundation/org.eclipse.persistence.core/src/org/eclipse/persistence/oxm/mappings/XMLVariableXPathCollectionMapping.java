@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -47,6 +47,7 @@ public class XMLVariableXPathCollectionMapping extends XMLCompositeCollectionMap
 
     private boolean isAttribute;
 
+    @Override
     public void initialize(AbstractSession session) throws DescriptorException {
        super.initialize(session);
 
@@ -74,6 +75,7 @@ public class XMLVariableXPathCollectionMapping extends XMLCompositeCollectionMap
         this.setContainerPolicy(policy);
     }
 
+    @Override
     protected void initializeMapContainerPolicy(AbstractSession session, MapContainerPolicy cp){
            super.initializeMapContainerPolicy(session, cp);
            if(variableAttributeName != null){
@@ -94,6 +96,7 @@ public class XMLVariableXPathCollectionMapping extends XMLCompositeCollectionMap
         return NO_FIELDS;
     }
 
+@Override
 public Vector getFields() {
     return collectFields();
 }
@@ -103,6 +106,7 @@ public Vector getFields() {
         //return NO_FIELDS;
     // }
 
+    @Override
     protected void initializeReferenceDescriptorAndField(AbstractSession session){
          if (getReferenceClass() == null) {
              throw DescriptorException.referenceClassNotSpecified(this);
@@ -127,6 +131,7 @@ public Vector getFields() {
          }
    }
 
+    @Override
     public boolean isAbstractCompositeCollectionMapping(){
         return false;
     }
@@ -135,6 +140,7 @@ public Vector getFields() {
         return variableAttributeName;
     }
 
+    @Override
     public void setVariableAttributeName(String variableAttributeName) {
         this.variableAttributeName = variableAttributeName;
     }
@@ -143,6 +149,7 @@ public Vector getFields() {
         return variableGetMethodName;
     }
 
+    @Override
     public void setVariableGetMethodName(String variableGetMethodName) {
         this.variableGetMethodName = variableGetMethodName;
     }
@@ -151,22 +158,26 @@ public Vector getFields() {
         return variableSetMethodName;
     }
 
+    @Override
     public void setVariableSetMethodName(String variableSetMethodName) {
         this.variableSetMethodName = variableSetMethodName;
     }
 
 
+    @Override
     public AttributeAccessor getVariableAttributeAccessor() {
         return variableAttributeAccessor;
     }
 
+    @Override
     public void setVariableAttributeAccessor(
             AttributeAccessor variableAttributeAccessor) {
         this.variableAttributeAccessor = variableAttributeAccessor;
     }
 
 
-     public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session, WriteType writeType) throws DescriptorException {
+     @Override
+    public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session, WriteType writeType) throws DescriptorException {
           if (this.isReadOnly()) {
                 return;
             }
@@ -196,7 +207,8 @@ public Vector getFields() {
          return buildCompositeRowForDescriptor(classDesc, attributeValue, session, (XMLRecord)parentRow, writeType);
     }
 
-     public XPathFragment getXPathFragmentForValue(Object obj, NamespaceResolver nr, boolean isNamespaceAware,char sep) {
+     @Override
+    public XPathFragment getXPathFragmentForValue(Object obj, NamespaceResolver nr, boolean isNamespaceAware,char sep) {
             Object value = getVariableAttributeAccessor().getAttributeValueFromObject(obj);
             if(value == null){
                 throw XMLMarshalException.nullValueNotAllowed(getVariableAttributeName(), getReferenceClassName());
@@ -233,14 +245,17 @@ public Vector getFields() {
             return frag;
         }
 
+        @Override
         public boolean isAttribute() {
             return isAttribute;
         }
 
+        @Override
         public void setAttribute(boolean isAttribute) {
             this.isAttribute = isAttribute;
         }
 
+        @Override
         public void useMapClassName(String concreteContainerClassName, String methodName) {
             // the reference class has to be specified before coming here
             if (this.getReferenceClassName() == null) {

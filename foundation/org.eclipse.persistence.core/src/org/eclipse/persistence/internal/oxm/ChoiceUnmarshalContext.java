@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -33,34 +33,42 @@ public class ChoiceUnmarshalContext implements UnmarshalContext {
         this.converter = converter;
     }
 
+    @Override
     public void addAttributeValue(UnmarshalRecord unmarshalRecord, ContainerValue containerValue, Object value) {
         this.unmarshalContext.addAttributeValue(unmarshalRecord, containerValue, getValue(value, unmarshalRecord));
     }
 
+    @Override
     public void addAttributeValue(UnmarshalRecord unmarshalRecord, ContainerValue containerValue, Object value, Object collection) {
         this.unmarshalContext.addAttributeValue(unmarshalRecord, containerValue, getValue(value, unmarshalRecord), collection);
     }
 
+    @Override
     public void characters(UnmarshalRecord unmarshalRecord) {
         unmarshalContext.characters(unmarshalRecord);
     }
 
+    @Override
     public void endElement(UnmarshalRecord unmarshalRecord) {
         unmarshalContext.endElement(unmarshalRecord);
     }
 
+    @Override
     public void reference(Reference reference) {
         unmarshalContext.reference(reference);
     }
 
+    @Override
     public void setAttributeValue(UnmarshalRecord unmarshalRecord, Object value, Mapping mapping) {
         unmarshalContext.setAttributeValue(unmarshalRecord, getValue(value, unmarshalRecord), mapping);
     }
 
+    @Override
     public void startElement(UnmarshalRecord unmarshalRecord) {
         unmarshalContext.startElement(unmarshalRecord);
     }
 
+    @Override
     public void unmappedContent(UnmarshalRecord unmarshalRecord) {
         unmarshalContext.unmappedContent(unmarshalRecord);
     }

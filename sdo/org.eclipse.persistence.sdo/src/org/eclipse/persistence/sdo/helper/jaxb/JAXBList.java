@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -50,6 +50,7 @@ public class JAXBList implements List {
         this.jaxbValueStore = aJAXBValueStore;
     }
 
+    @Override
     public void add(int index, Object element) {
         Object container = getContainer();
         if(container instanceof List) {
@@ -67,6 +68,7 @@ public class JAXBList implements List {
         }
     }
 
+    @Override
     public boolean add(Object e) {
         if(!property.getType().isDataType()) {
             e = jaxbValueStore.getJAXBHelperContext().unwrap((DataObject) e);
@@ -74,6 +76,7 @@ public class JAXBList implements List {
         return containerPolicy.addInto(e, getContainer(), session);
     }
 
+    @Override
     public boolean addAll(Collection c) {
         boolean modified = false;
         for(Object o : c) {
@@ -82,6 +85,7 @@ public class JAXBList implements List {
         return modified;
     }
 
+    @Override
     public boolean addAll(int index, Collection c) {
         Object container = getContainer();
         if(container instanceof List) {
@@ -95,10 +99,12 @@ public class JAXBList implements List {
         }
     }
 
+    @Override
     public void clear() {
         containerPolicy.clear(getContainer());
     }
 
+    @Override
     public boolean contains(Object o) {
         if(!property.getType().isDataType()) {
             o = jaxbValueStore.getJAXBHelperContext().unwrap((DataObject) o);
@@ -106,6 +112,7 @@ public class JAXBList implements List {
         return containerPolicy.contains(o, getContainer(), session);
     }
 
+    @Override
     public boolean containsAll(Collection collection) {
         for(Object o : collection) {
             if(!property.getType().isDataType()) {
@@ -118,34 +125,42 @@ public class JAXBList implements List {
         return true;
     }
 
+    @Override
     public Object get(int index) {
         return getList().get(index);
     }
 
+    @Override
     public int indexOf(Object o) {
         return getList().indexOf(o);
     }
 
+    @Override
     public boolean isEmpty() {
         return containerPolicy.isEmpty(getContainer());
     }
 
+    @Override
     public Iterator iterator() {
         return getList().iterator();
     }
 
+    @Override
     public int lastIndexOf(Object o) {
         return getList().lastIndexOf(o);
     }
 
+    @Override
     public ListIterator listIterator() {
         return getList().listIterator();
     }
 
+    @Override
     public ListIterator listIterator(int index) {
         return getList().listIterator(index);
     }
 
+    @Override
     public Object remove(int index) {
         Object container = getContainer();
         if(container instanceof List) {
@@ -156,6 +171,7 @@ public class JAXBList implements List {
         }
     }
 
+    @Override
     public boolean remove(Object o) {
         if(!property.getType().isDataType()) {
             o = jaxbValueStore.getJAXBHelperContext().unwrap((DataObject) o);
@@ -163,6 +179,7 @@ public class JAXBList implements List {
         return containerPolicy.removeFrom(o, getContainer(), session);
     }
 
+    @Override
     public boolean removeAll(Collection c) {
         boolean modified = false;
         for(Object o : c) {
@@ -171,26 +188,32 @@ public class JAXBList implements List {
         return modified;
     }
 
+    @Override
     public boolean retainAll(Collection c) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public Object set(int index, Object element) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public int size() {
         return containerPolicy.sizeFor(getContainer());
     }
 
+    @Override
     public List subList(int fromIndex, int toIndex) {
         return getList().subList(fromIndex, toIndex);
     }
 
+    @Override
     public Object[] toArray() {
         return getList().toArray();
     }
 
+    @Override
     public Object[] toArray(Object[] a) {
         return getList().toArray(a);
     }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -68,6 +68,7 @@ public class ListChangeEvent<T> implements IListChangeEvent<T> {
     /**
      * {@inheritDoc}
      */
+    @Override
     public int getEndIndex() {
         return endIndex;
     }
@@ -75,6 +76,7 @@ public class ListChangeEvent<T> implements IListChangeEvent<T> {
     /**
      * {@inheritDoc}
      */
+    @Override
     public EventType getEventType() {
         return eventType;
     }
@@ -82,6 +84,7 @@ public class ListChangeEvent<T> implements IListChangeEvent<T> {
     /**
      * {@inheritDoc}
      */
+    @Override
     @SuppressWarnings("unchecked")
     public List<T> getList() {
         return (List<T>) list;
@@ -90,6 +93,7 @@ public class ListChangeEvent<T> implements IListChangeEvent<T> {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getListName() {
         return listName;
     }
@@ -97,6 +101,7 @@ public class ListChangeEvent<T> implements IListChangeEvent<T> {
     /**
      * {@inheritDoc}
      */
+    @Override
     @SuppressWarnings("unchecked")
     public <S extends ListHolderStateObject<? extends T>> S getSource() {
         return (S) source;
@@ -105,6 +110,7 @@ public class ListChangeEvent<T> implements IListChangeEvent<T> {
     /**
      * {@inheritDoc}
      */
+    @Override
     public int getStartIndex() {
         return startIndex;
     }
@@ -112,6 +118,7 @@ public class ListChangeEvent<T> implements IListChangeEvent<T> {
     /**
      * {@inheritDoc}
      */
+    @Override
     public ListIterable<T> items() {
         return new SnapshotCloneListIterable<T>(items);
     }
@@ -119,6 +126,7 @@ public class ListChangeEvent<T> implements IListChangeEvent<T> {
     /**
      * {@inheritDoc}
      */
+    @Override
     public int itemsSize() {
         return items.size();
     }

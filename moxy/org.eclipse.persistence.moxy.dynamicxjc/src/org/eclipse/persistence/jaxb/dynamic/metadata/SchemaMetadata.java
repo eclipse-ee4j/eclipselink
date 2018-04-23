@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -151,6 +151,7 @@ public class SchemaMetadata extends Metadata {
         schemaCompiler.parseSchema(DEFAULT_SYSTEM_ID, element);
     }
 
+    @Override
     public JavaModelInput getJavaModelInput() throws JAXBException {
         S2JJAXBModel model = schemaCompiler.bind();
 
@@ -248,18 +249,22 @@ public class SchemaMetadata extends Metadata {
 
     private class XJCErrorListener implements ErrorListener {
 
+        @Override
         public void error(SAXParseException arg0) {
             throw org.eclipse.persistence.exceptions.JAXBException.errorCreatingDynamicJAXBContext(arg0);
         }
 
+        @Override
         public void fatalError(SAXParseException arg0) {
             throw org.eclipse.persistence.exceptions.JAXBException.errorCreatingDynamicJAXBContext(arg0);
         }
 
+        @Override
         public void info(SAXParseException arg0) {
             throw org.eclipse.persistence.exceptions.JAXBException.errorCreatingDynamicJAXBContext(arg0);
         }
 
+        @Override
         public void warning(SAXParseException arg0) {
             throw org.eclipse.persistence.exceptions.JAXBException.errorCreatingDynamicJAXBContext(arg0);
         }

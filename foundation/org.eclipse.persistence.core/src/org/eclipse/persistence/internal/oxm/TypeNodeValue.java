@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -21,6 +21,7 @@ import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 
 public class TypeNodeValue extends NodeValue {
 
+    @Override
     public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object objectValue, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         return false;
     }
@@ -30,6 +31,7 @@ public class TypeNodeValue extends NodeValue {
         return false;
     }
 
+    @Override
     public void attribute(UnmarshalRecord unmarshalRecord, String namespaceURI, String localName, String value) {
         //assume this is being called for xsi:type field
         if (value != null) {

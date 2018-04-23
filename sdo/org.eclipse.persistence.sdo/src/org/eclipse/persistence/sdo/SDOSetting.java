@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -45,6 +45,7 @@ public class SDOSetting implements commonj.sdo.ChangeSummary.Setting, XMLSetting
     /**
      * @return The TopLink OXM mapping associated with this setting
      */
+    @Override
     public XMLMapping getMapping() {
         return (XMLMapping)property.getXmlMapping();
     }
@@ -53,6 +54,7 @@ public class SDOSetting implements commonj.sdo.ChangeSummary.Setting, XMLSetting
      * Returns the property of the setting.
      * @return the setting property.
      */
+    @Override
     public SDOProperty getProperty() {
         return property;
     }
@@ -70,6 +72,7 @@ public class SDOSetting implements commonj.sdo.ChangeSummary.Setting, XMLSetting
      * Returns the value of the setting.
      * @return the setting value.
      */
+    @Override
     public Object getValue() {
         return value;
     }
@@ -87,6 +90,7 @@ public class SDOSetting implements commonj.sdo.ChangeSummary.Setting, XMLSetting
      * Returns whether or not the property is set.
      * @return <code>true</code> if the property is set.
      */
+    @Override
     public boolean isSet() {
         return isSet;
     }
@@ -104,6 +108,7 @@ public class SDOSetting implements commonj.sdo.ChangeSummary.Setting, XMLSetting
      * INTERNAL:
      * Print out a String representation of this object
      */
+    @Override
     public String toString() {
         StringBuffer aBuffer = new StringBuffer();
         aBuffer.append(getClass().getName());

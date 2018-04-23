@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -120,6 +120,7 @@ public class SDOCopyHelper implements CopyHelper {
      * @param dataObject to be copied
      * @return copy of dataObject
      */
+    @Override
     public DataObject copyShallow(DataObject dataObject) {
         if (null == dataObject) {
             return null;
@@ -199,6 +200,7 @@ public class SDOCopyHelper implements CopyHelper {
      * @throws IllegalArgumentException if any referenced DataObject
      *   is not part of the containment tree.
      */
+    @Override
     public DataObject copy(DataObject dataObject) throws IllegalArgumentException {
         return copy(dataObject, null);
     }

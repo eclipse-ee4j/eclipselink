@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -43,6 +43,7 @@ public abstract class SelectionImpl<X> implements Selection<X>, InternalSelectio
      * Returns the current EclipseLink expression at this node in the criteria expression tree
      * @return the currentNode
      */
+    @Override
     public Expression getCurrentNode() {
         return currentNode;
     }
@@ -61,16 +62,19 @@ public abstract class SelectionImpl<X> implements Selection<X>, InternalSelectio
      * @param name
      *            alias
      */
+    @Override
     public Selection<X> alias(String name) {
         this.alias = name;
         return this;
     }
 
 
+    @Override
     public String getAlias() {
         return this.alias;
     }
 
+    @Override
     public Class<? extends X> getJavaType() {
         return this.javaType;
     }
@@ -80,6 +84,7 @@ public abstract class SelectionImpl<X> implements Selection<X>, InternalSelectio
      * @throws IllegalStateException if selection is not a compound
      *           selection
      */
+    @Override
     public List<Selection<?>> getCompoundSelectionItems(){
         throw new IllegalStateException(ExceptionLocalization.buildMessage("CRITERIA_NOT_A_COMPOUND_SELECTION"));
     }
@@ -88,16 +93,20 @@ public abstract class SelectionImpl<X> implements Selection<X>, InternalSelectio
      * Whether the selection item is a compound selection
      * @return boolean
      */
+    @Override
     public boolean isCompoundSelection(){
         return false;
     }
 
+    @Override
     public boolean isFrom(){
         return false;
     }
+    @Override
     public boolean isRoot(){
         return false;
     }
+    @Override
     public boolean isConstructor(){
         return false;
     }

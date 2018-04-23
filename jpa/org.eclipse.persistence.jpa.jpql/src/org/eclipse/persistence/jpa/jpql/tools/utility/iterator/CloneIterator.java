@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -102,16 +102,19 @@ public class CloneIterator<E>
 
     // ********** Iterator implementation **********
 
+    @Override
     public boolean hasNext() {
         return this.iterator.hasNext();
     }
 
+    @Override
     public E next() {
         this.current = this.nestedNext();
         this.removeAllowed = true;
         return this.current;
     }
 
+    @Override
     public void remove() {
         if ( ! this.removeAllowed) {
             throw new IllegalStateException();
@@ -174,6 +177,7 @@ public class CloneIterator<E>
                 super();
             }
             // remove is not supported
+            @Override
             public void remove(Object element) {
                 throw new UnsupportedOperationException();
             }

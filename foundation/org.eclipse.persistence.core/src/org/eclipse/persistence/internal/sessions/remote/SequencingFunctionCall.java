@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -23,12 +23,14 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  */
 public class SequencingFunctionCall {
     public static class DoesExist extends SimpleFunctionCall {
+        @Override
         protected Object execute(AbstractSession session) {
             return Boolean.valueOf(session.getSequencing() != null);
         }
     }
 
     public static class WhenShouldAcquireValueForAll extends SimpleFunctionCall {
+        @Override
         protected Object execute(AbstractSession session) {
             return Integer.valueOf(session.getSequencing().whenShouldAcquireValueForAll());
         }
@@ -41,6 +43,7 @@ public class SequencingFunctionCall {
 
         protected Class cls;
 
+        @Override
         protected Object execute(AbstractSession session) {
             return session.getSequencing().getNextValue(cls);
         }

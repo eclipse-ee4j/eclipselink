@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -38,6 +38,7 @@ public class ReflectiveMethodDefinition extends MethodDefinition {
         getArgumentTypes().addElement(argumentType);
     }
 
+    @Override
     protected boolean argumentsEqual(MethodDefinition methodDefinition) {
         Object[] args1 = this.getArgumentTypes().toArray();
         Object[] args2 = methodDefinition.getArgumentTypes().toArray();
@@ -54,6 +55,7 @@ public class ReflectiveMethodDefinition extends MethodDefinition {
         return true;
     }
 
+    @Override
     protected Vector getArgumentTypeNames() {
         Vector argumentTypeNames = new Vector();
 
@@ -64,10 +66,12 @@ public class ReflectiveMethodDefinition extends MethodDefinition {
         return argumentTypeNames;
     }
 
+    @Override
     public Vector getArgumentTypes() {
         return this.argumentTypes;
     }
 
+    @Override
     protected void writeArguments(CodeGenerator generator) {
         boolean isFirst = true;
         for (int index = 0; index < getArgumentTypes().size(); ++index) {
@@ -108,6 +112,7 @@ public class ReflectiveMethodDefinition extends MethodDefinition {
         this.type = type;
     }
 
+    @Override
     public String getReturnType() {
         if (getReturnTypeClass() != null) {
             if (getReturnTypeClass().isArray()) {

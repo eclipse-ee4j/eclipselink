@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -59,6 +59,7 @@ public class SDOXMLHelperDelegator extends AbstractHelperDelegator implements SD
      * The specified TimeZone will be used for all String to date object
      * conversions.  By default the TimeZone from the JVM is used.
      */
+    @Override
     public void setTimeZone(TimeZone timeZone) {
         getXMLHelperDelegate().setTimeZone(timeZone);
     }
@@ -68,106 +69,132 @@ public class SDOXMLHelperDelegator extends AbstractHelperDelegator implements SD
      * the XML schema types time and dateTime will be qualified by a time zone.
      * By default time information is not time zone qualified.
      */
+    @Override
     public void setTimeZoneQualified(boolean timeZoneQualified) {
         getXMLHelperDelegate().setTimeZoneQualified(timeZoneQualified);
     }
 
+    @Override
     public XMLDocument load(String inputString) {
         return getXMLHelperDelegate().load(inputString);
     }
 
+    @Override
     public XMLDocument load(InputStream inputStream) throws IOException {
         return getXMLHelperDelegate().load(inputStream);
     }
 
+    @Override
     public XMLDocument load(InputStream inputStream, String locationURI, Object options) throws IOException {
         return getXMLHelperDelegate().load(inputStream, locationURI, options);
     }
 
+    @Override
     public XMLDocument load(InputSource inputSource, String locationURI, Object options) throws IOException {
         return getXMLHelperDelegate().load(inputSource, locationURI, options);
     }
 
+    @Override
     public XMLDocument load(Reader inputReader, String locationURI, Object options) throws IOException {
         return getXMLHelperDelegate().load(inputReader, locationURI, options);
     }
 
+    @Override
     public XMLDocument load(Source source, String locationURI, Object options) throws IOException {
         return getXMLHelperDelegate().load(source, locationURI, options);
     }
 
+    @Override
     public String save(DataObject dataObject, String rootElementURI, String rootElementName) {
         return getXMLHelperDelegate().save(dataObject, rootElementURI, rootElementName);
     }
 
+    @Override
     public void save(DataObject dataObject, String rootElementURI, String rootElementName, OutputStream outputStream) throws IOException {
         getXMLHelperDelegate().save(dataObject, rootElementURI, rootElementName, outputStream);
     }
 
+    @Override
     public void save(XMLDocument xmlDocument, OutputStream outputStream, Object options) throws IOException {
         getXMLHelperDelegate().save(xmlDocument, outputStream, options);
     }
 
+    @Override
     public void save(XMLDocument xmlDocument, Writer outputWriter, Object options) throws IOException {
         getXMLHelperDelegate().save(xmlDocument, outputWriter, options);
     }
 
+    @Override
     public void save(XMLDocument xmlDocument, Result result, Object options) throws IOException {
         getXMLHelperDelegate().save(xmlDocument, result, options);
     }
 
+    @Override
     public void serialize(XMLDocument xmlDocument, OutputStream outputStream, Object options) throws IOException {
         getXMLHelperDelegate().serialize(xmlDocument, outputStream, options);
     }
 
+    @Override
     public XMLDocument createDocument(DataObject dataObject, String rootElementURI, String rootElementName) {
         return getXMLHelperDelegate().createDocument(dataObject, rootElementURI, rootElementName);
     }
 
+    @Override
     public void setLoader(SDOClassLoader loader) {
         getXMLHelperDelegate().setLoader(loader);
     }
 
+    @Override
     public SDOClassLoader getLoader() {
         return getXMLHelperDelegate().getLoader();
     }
 
+    @Override
     public void setXmlContext(XMLContext xmlContext) {
         getXMLHelperDelegate().setXmlContext(xmlContext);
     }
 
+    @Override
     public XMLContext getXmlContext() {
         return getXMLHelperDelegate().getXmlContext();
     }
 
+    @Override
     public void addDescriptors(List descriptors) {
         getXMLHelperDelegate().addDescriptors(descriptors);
     }
 
+    @Override
     public void setTopLinkProject(Project toplinkProject) {
         getXMLHelperDelegate().setTopLinkProject(toplinkProject);
     }
 
+    @Override
     public void initializeDescriptor(XMLDescriptor descriptor) {
         getXMLHelperDelegate().initializeDescriptor(descriptor);
     }
 
+    @Override
     public Project getTopLinkProject() {
         return getXMLHelperDelegate().getTopLinkProject();
     }
 
+    @Override
     public void setXmlMarshaller(XMLMarshaller xmlMarshaller) {
         getXMLHelperDelegate().setXmlMarshaller(xmlMarshaller);
     }
 
+    @Override
     public XMLMarshaller getXmlMarshaller() {
         return getXMLHelperDelegate().getXmlMarshaller();
     }
 
+    @Override
     public void setXmlUnmarshaller(XMLUnmarshaller xmlUnmarshaller) {
         getXMLHelperDelegate().setXmlUnmarshaller(xmlUnmarshaller);
     }
 
+    @Override
     public XMLUnmarshaller getXmlUnmarshaller() {
         return getXMLHelperDelegate().getXmlUnmarshaller();
     }
@@ -176,10 +203,12 @@ public class SDOXMLHelperDelegator extends AbstractHelperDelegator implements SD
         return (SDOXMLHelperDelegate) SDOHelperContext.getHelperContext().getXMLHelper();
     }
 
+    @Override
     public void reset() {
         getXMLHelperDelegate().reset();
     }
 
+    @Override
     public XMLConversionManager getXmlConversionManager() {
         return getXMLHelperDelegate().getXmlConversionManager();
     }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -180,6 +180,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
      * It will cause the original to be cached in the query results if the query
      * is set to do so.
      */
+    @Override
     public void cacheResult(Object object) {
         Object cachableObject = object;
         if (object == null) {
@@ -230,6 +231,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
      * INTERNAL:
      * Ensure that the descriptor has been set.
      */
+    @Override
     public void checkDescriptor(AbstractSession session) throws QueryException {
         if (this.descriptor == null) {
             if (getReferenceClass() == null) {
@@ -253,6 +255,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
      * INTERNAL:
      * The cache check is done before the prepare as a hit will not require the work to be done.
      */
+    @Override
     protected Object checkEarlyReturnLocal(AbstractSession session, AbstractRecord translationRow) {
         if (shouldCheckCache() && shouldMaintainCache() && (!shouldRefreshIdentityMapResult() && (!shouldRetrieveBypassCache()))
                 && (!(session.isRemoteSession() && (shouldRefreshRemoteIdentityMapResult() || this.descriptor.shouldDisableCacheHitsOnRemote())))
@@ -423,6 +426,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
      * @return An object or vector, the result of executing the query.
      * @exception DatabaseException - an error has occurred on the database
      */
+    @Override
     public Object execute(AbstractSession session, AbstractRecord row) throws DatabaseException {
         if (shouldCacheQueryResults()) {
             if (shouldConformResultsInUnitOfWork()) {
@@ -452,6 +456,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
      * @exception  DatabaseException - an error has occurred on the database
      * @return object - the first object found or null if none.
      */
+    @Override
     protected Object executeObjectLevelReadQuery() throws DatabaseException {
         if (this.descriptor.isDescriptorForInterface()  || this.descriptor.hasTablePerClassPolicy()) {
             Object returnValue = this.descriptor.getInterfacePolicy().selectOneObjectUsingMultipleTableSubclassRead(this);
@@ -601,6 +606,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
      * @exception  DatabaseException - an error has occurred on the database
      * @return object - the first object found or null if none.
      */
+    @Override
     protected Object executeObjectLevelReadQueryFromResultSet() throws DatabaseException {
         AbstractSession session = this.session;
         DatabasePlatform platform = session.getPlatform();
@@ -652,6 +658,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
      * INTERNAL:
      * Extract the correct query result from the transporter.
      */
+    @Override
     public Object extractRemoteResult(Transporter transporter) {
         return ((DistributedSession)getSession()).getObjectCorrespondingTo(transporter.getObject(), transporter.getObjectDescriptors(), new IdentityHashMap(), this);
     }
@@ -661,6 +668,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
      * Returns the specific default redirector for this query type.  There are numerous default query redirectors.
      * See ClassDescriptor for their types.
      */
+    @Override
     protected QueryRedirector getDefaultRedirector(){
         return descriptor.getDefaultReadObjectQueryRedirector();
     }
@@ -700,6 +708,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
      * PUBLIC:
      * Return if this is a read object query.
      */
+    @Override
     public boolean isReadObjectQuery() {
         return true;
     }
@@ -708,6 +717,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
      * INTERNAL:
      * Return if the query is by primary key.
      */
+    @Override
     public boolean isPrimaryKeyQuery() {
         return (this.selectionId != null) || (this.selectionObject != null);
     }
@@ -731,6 +741,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
      * By default this calls prepareFromQuery, but additional properties may be required
      * to be copied as prepareFromQuery only copies properties that affect the SQL.
      */
+    @Override
     public void copyFromQuery(DatabaseQuery query) {
         super.copyFromQuery(query);
         if (query.isReadObjectQuery()) {
@@ -745,6 +756,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
      * INTERNAL:
      * Prepare the receiver for execution in a session.
      */
+    @Override
     protected void prepare() throws QueryException {
         if (prepareFromCachedQuery()) {
             return;
@@ -801,6 +813,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
      * This is used only for primary key queries, as the descriptor query manager
      * stores a predefined query for this query to avoid having to re-prepare and allow for customization.
      */
+    @Override
     protected void prepareCustomQuery(DatabaseQuery customQuery) {
         super.prepareCustomQuery(customQuery);
         ReadObjectQuery customReadQuery = (ReadObjectQuery)customQuery;
@@ -830,6 +843,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
      * INTERNAL:
      * Prepare the receiver for execution in a session.
      */
+    @Override
     public void prepareForExecution() throws QueryException {
         super.prepareForExecution();
 
@@ -860,6 +874,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
      * INTERNAL:
      * Prepare the receiver for execution in a session.
      */
+    @Override
     protected void prePrepare() throws QueryException {
         super.prePrepare();
         //Bug#3947714  In case getSelectionObject() is proxy
@@ -886,6 +901,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
      * a registered result from raw database rows.
      * @return the final (conformed, refreshed, wrapped) UnitOfWork query result
      */
+    @Override
     public Object registerResultInUnitOfWork(Object result, UnitOfWorkImpl unitOfWork, AbstractRecord arguments, boolean buildDirectlyFromRows) {
         if (result == null) {
             return null;
@@ -907,6 +923,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
         return clone;
     }
 
+    @Override
     protected Object remoteExecute() {
         // Do a cache lookup.
         checkDescriptor(session);
@@ -931,6 +948,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
      * INTERNAL:
      * replace the value holders in the specified result object(s)
      */
+    @Override
     public Map replaceValueHoldersIn(Object object, RemoteSessionController controller) {
         return controller.replaceValueHoldersIn(object);
     }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -31,6 +31,7 @@ public class ObjectPersistenceWorkbenchXMLProject extends EclipseLinkObjectPersi
         super();
     }
 
+    @Override
     protected ClassDescriptor buildAggregateMappingDescriptor() {
         ClassDescriptor descriptor = super.buildAggregateMappingDescriptor();
 
@@ -42,6 +43,7 @@ public class ObjectPersistenceWorkbenchXMLProject extends EclipseLinkObjectPersi
         return descriptor;
     }
 
+    @Override
     protected ClassDescriptor buildForeignReferenceMappingDescriptor() {
         ClassDescriptor descriptor = super.buildForeignReferenceMappingDescriptor();
 
@@ -53,6 +55,7 @@ public class ObjectPersistenceWorkbenchXMLProject extends EclipseLinkObjectPersi
         return descriptor;
     }
 
+    @Override
     protected ClassDescriptor buildInheritancePolicyDescriptor() {
         ClassDescriptor descriptor = super.buildInheritancePolicyDescriptor();
 
@@ -64,6 +67,7 @@ public class ObjectPersistenceWorkbenchXMLProject extends EclipseLinkObjectPersi
         return descriptor;
     }
 
+    @Override
     protected ClassDescriptor buildInstantiationPolicyDescriptor() {
         ClassDescriptor descriptor = super.buildInstantiationPolicyDescriptor();
 
@@ -75,6 +79,7 @@ public class ObjectPersistenceWorkbenchXMLProject extends EclipseLinkObjectPersi
         return descriptor;
     }
 
+    @Override
     protected ClassDescriptor buildInterfacePolicyDescriptor() {
         ClassDescriptor descriptor = super.buildInterfacePolicyDescriptor();
 
@@ -91,6 +96,7 @@ public class ObjectPersistenceWorkbenchXMLProject extends EclipseLinkObjectPersi
         return descriptor;
     }
 
+    @Override
     protected ClassDescriptor buildInterfaceContainerPolicyDescriptor() {
         ClassDescriptor descriptor = super.buildInterfaceContainerPolicyDescriptor();
 
@@ -102,6 +108,7 @@ public class ObjectPersistenceWorkbenchXMLProject extends EclipseLinkObjectPersi
         return descriptor;
     }
 
+    @Override
     protected ClassDescriptor buildSortedCollectionContainerPolicyDescriptor() {
         ClassDescriptor descriptor = super.buildSortedCollectionContainerPolicyDescriptor();
 
@@ -114,6 +121,7 @@ public class ObjectPersistenceWorkbenchXMLProject extends EclipseLinkObjectPersi
     }
 
 
+    @Override
     protected ClassDescriptor buildMethodBaseQueryRedirectorDescriptor() {
         ClassDescriptor descriptor = super.buildMethodBaseQueryRedirectorDescriptor();
 
@@ -125,6 +133,7 @@ public class ObjectPersistenceWorkbenchXMLProject extends EclipseLinkObjectPersi
         return descriptor;
     }
 
+    @Override
     protected ClassDescriptor buildObjectLevelReadQueryDescriptor() {
         ClassDescriptor descriptor = super.buildObjectLevelReadQueryDescriptor();
 
@@ -136,6 +145,7 @@ public class ObjectPersistenceWorkbenchXMLProject extends EclipseLinkObjectPersi
         return descriptor;
     }
 
+    @Override
     protected ClassDescriptor buildQueryArgumentDescriptor() {
         ClassDescriptor descriptor = super.buildQueryArgumentDescriptor();
 
@@ -147,6 +157,7 @@ public class ObjectPersistenceWorkbenchXMLProject extends EclipseLinkObjectPersi
         return descriptor;
     }
 
+    @Override
     protected ClassDescriptor buildRelationshipQueryKeyDescriptor() {
         ClassDescriptor descriptor = super.buildRelationshipQueryKeyDescriptor();
 
@@ -158,6 +169,7 @@ public class ObjectPersistenceWorkbenchXMLProject extends EclipseLinkObjectPersi
         return descriptor;
     }
 
+    @Override
     protected ClassDescriptor buildReturningFieldInfoDescriptor() {
         ClassDescriptor descriptor = super.buildReturningFieldInfoDescriptor();
 
@@ -169,6 +181,7 @@ public class ObjectPersistenceWorkbenchXMLProject extends EclipseLinkObjectPersi
         return descriptor;
     }
 
+    @Override
     protected ClassDescriptor buildClassDescriptorDescriptor() {
         ClassDescriptor descriptor = super.buildClassDescriptorDescriptor();
 
@@ -185,6 +198,7 @@ public class ObjectPersistenceWorkbenchXMLProject extends EclipseLinkObjectPersi
         return descriptor;
     }
 
+    @Override
     protected ClassDescriptor buildTypedAssociationDescriptor() {
         ClassDescriptor descriptor = super.buildTypedAssociationDescriptor();
 
@@ -196,6 +210,7 @@ public class ObjectPersistenceWorkbenchXMLProject extends EclipseLinkObjectPersi
         return descriptor;
     }
 
+    @Override
     protected ClassDescriptor buildTypeConversionConverterDescriptor() {
         ClassDescriptor descriptor = super.buildTypeConversionConverterDescriptor();
 
@@ -212,6 +227,7 @@ public class ObjectPersistenceWorkbenchXMLProject extends EclipseLinkObjectPersi
         return descriptor;
     }
 
+    @Override
     protected ClassDescriptor buildAbstractDirectMappingDescriptor() {
         ClassDescriptor descriptor = super.buildAbstractDirectMappingDescriptor();
 
@@ -223,6 +239,7 @@ public class ObjectPersistenceWorkbenchXMLProject extends EclipseLinkObjectPersi
         return descriptor;
     }
 
+    @Override
     protected ClassDescriptor buildAbstractTransformationMappingDescriptor() {
         ClassDescriptor descriptor = super.buildAbstractTransformationMappingDescriptor();
 
@@ -234,6 +251,7 @@ public class ObjectPersistenceWorkbenchXMLProject extends EclipseLinkObjectPersi
         return descriptor;
     }
 
+    @Override
     protected ClassDescriptor buildTransformerBasedFieldTransformationDescriptor() {
         ClassDescriptor descriptor = super.buildTransformerBasedFieldTransformationDescriptor();
 

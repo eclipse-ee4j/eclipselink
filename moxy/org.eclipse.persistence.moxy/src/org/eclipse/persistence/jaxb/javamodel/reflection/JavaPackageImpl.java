@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -55,6 +55,7 @@ public class JavaPackageImpl implements JavaPackage {
     /**
      * Assumes JavaType is a JavaClassImpl instance
      */
+    @Override
     public JavaAnnotation getAnnotation(JavaClass arg0) {
         if (arg0 != null && !isMetadataComplete) {
             Class annotationClass = ((JavaClassImpl) arg0).getJavaClass();
@@ -65,6 +66,7 @@ public class JavaPackageImpl implements JavaPackage {
         return null;
     }
 
+    @Override
     public Collection getAnnotations() {
         ArrayList<JavaAnnotation> annotationCollection = new ArrayList<JavaAnnotation>();
         if(jPkg != null && !isMetadataComplete){
@@ -84,6 +86,7 @@ public class JavaPackageImpl implements JavaPackage {
         }
     }
 
+    @Override
     public String getQualifiedName() {
         if(jPkg != null){
             return jPkg.getName();
@@ -97,10 +100,12 @@ public class JavaPackageImpl implements JavaPackage {
     }
 
 //  ---------------- unimplemented methods ----------------//
+    @Override
     public JavaAnnotation getDeclaredAnnotation(JavaClass arg0) {
         return null;
     }
 
+    @Override
     public Collection getDeclaredAnnotations() {
         return null;
     }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -62,6 +62,7 @@ public class DomHandlerConverter implements XMLConverter {
         this.domHandlerClassName = domHandlerClassName;
     }
 
+    @Override
     public void initialize(DatabaseMapping mapping, Session session) {
         try {
             ConversionManager cMgr = session.getDatasourcePlatform().getConversionManager();
@@ -82,6 +83,7 @@ public class DomHandlerConverter implements XMLConverter {
         }
     }
 
+    @Override
     public Object convertDataValueToObjectValue(Object dataValue, Session session, XMLUnmarshaller unmarshaller) {
         if(dataValue instanceof org.w3c.dom.Element) {
             ErrorHandler handler = unmarshaller.getErrorHandler();
@@ -101,6 +103,7 @@ public class DomHandlerConverter implements XMLConverter {
         return dataValue;
     }
 
+    @Override
     public Object convertObjectValueToDataValue(Object objectValue, Session session, XMLMarshaller marshaller) {
         if (objectValue != null && elementClass.isAssignableFrom(objectValue.getClass())) {
             ErrorHandler handler = marshaller.getErrorHandler();
@@ -127,14 +130,17 @@ public class DomHandlerConverter implements XMLConverter {
         return objectValue;
     }
 
+    @Override
     public boolean isMutable() {
         return true;
     }
 
+    @Override
     public Object convertDataValueToObjectValue(Object dataValue, Session session) {
         return convertDataValueToObjectValue(dataValue, session, null);
     }
 
+    @Override
     public Object convertObjectValueToDataValue(Object objectValue, Session session) {
         return convertObjectValueToDataValue(objectValue, session, null);
     }

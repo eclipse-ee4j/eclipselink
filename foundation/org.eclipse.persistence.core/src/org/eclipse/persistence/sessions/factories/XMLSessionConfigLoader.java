@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -14,7 +14,6 @@ package org.eclipse.persistence.sessions.factories;
 
 import java.io.File;
 import java.net.URL;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
@@ -380,14 +379,17 @@ public class XMLSessionConfigLoader {
      * @author Guy Pelletier
      */
     public class XMLSessionConfigLoaderErrorHandler implements ErrorHandler {
+        @Override
         public void warning(SAXParseException e) throws SAXException {
             getExceptionStore().add(SessionLoaderException.failedToParseXML(ExceptionLocalization.buildMessage("parsing_warning"), e.getLineNumber(), e.getColumnNumber(), e));
         }
 
+        @Override
         public void error(SAXParseException e) throws SAXException {
             getExceptionStore().add(e);
         }
 
+        @Override
         public void fatalError(SAXParseException e) throws SAXException {
             getExceptionStore().add(e);
         }

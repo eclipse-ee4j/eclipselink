@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -42,6 +42,7 @@ public class SDOMethodAttributeAccessor extends MethodAttributeAccessor {
     /**
       * Return the return type of the method accessor.
       */
+    @Override
     public Class getAttributeClass() {
         if (attributeClass != null) {
             return attributeClass;
@@ -52,6 +53,7 @@ public class SDOMethodAttributeAccessor extends MethodAttributeAccessor {
     /**
      * Gets the value of an instance variable in the object.
      */
+    @Override
     public Object getAttributeValueFromObject(Object anObject) throws DescriptorException {
 
         boolean isSet = ((DataObject)anObject).isSet(getProperty());
@@ -66,6 +68,7 @@ public class SDOMethodAttributeAccessor extends MethodAttributeAccessor {
      * Set get and set method after creating these methods by using
      * get and set method names
      */
+    @Override
     public void initializeAttributes(Class theJavaClass) throws DescriptorException {
         if (getAttributeName() == null) {
             throw DescriptorException.attributeNameNotSpecified();
@@ -75,6 +78,7 @@ public class SDOMethodAttributeAccessor extends MethodAttributeAccessor {
     /**
      * INTERNAL:
      */
+    @Override
     public boolean isMethodAttributeAccessor() {
         return true;
     }
@@ -82,6 +86,7 @@ public class SDOMethodAttributeAccessor extends MethodAttributeAccessor {
     /**
      * Sets the value of the instance variable in the object to the value.
      */
+    @Override
     public void setAttributeValueInObject(Object domainObject, Object attributeValue) throws DescriptorException {
         ((SDODataObject)domainObject).setInternal(property, attributeValue, false);
 
@@ -101,10 +106,12 @@ public class SDOMethodAttributeAccessor extends MethodAttributeAccessor {
         return property;
     }
 
+    @Override
     public Class getGetMethodReturnType() {
         return attributeClass;
     }
 
+    @Override
     public Class getSetMethodParameterType() {
         return attributeClass;
     }

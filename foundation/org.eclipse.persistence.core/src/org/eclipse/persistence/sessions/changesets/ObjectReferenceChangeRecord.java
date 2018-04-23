@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -32,5 +32,6 @@ public interface ObjectReferenceChangeRecord extends ChangeRecord {
      * Return the old value of the object reference.
      * This is used during the commit for private-owned references.
      */
+    @Override
     public Object getOldValue();
 }

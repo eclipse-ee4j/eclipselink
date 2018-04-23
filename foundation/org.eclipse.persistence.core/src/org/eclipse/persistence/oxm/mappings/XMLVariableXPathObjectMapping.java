@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -46,6 +46,7 @@ public class XMLVariableXPathObjectMapping extends XMLCompositeObjectMapping  im
 
     private boolean isAttribute;
 
+    @Override
     public void initialize(AbstractSession session) throws DescriptorException {
         //modified so that reference class on composite mappings is no longer mandatory
         String referenceClassName = getReferenceClassName();
@@ -101,10 +102,12 @@ public class XMLVariableXPathObjectMapping extends XMLCompositeObjectMapping  im
             return NO_FIELDS;
         }
 
+    @Override
     public Vector getFields() {
         return collectFields();
     }
 
+    @Override
     protected void initializeReferenceDescriptorAndField(AbstractSession session){
          if (getReferenceClass() == null) {
              throw DescriptorException.referenceClassNotSpecified(this);
@@ -122,6 +125,7 @@ public class XMLVariableXPathObjectMapping extends XMLCompositeObjectMapping  im
          }
    }
 
+    @Override
     public boolean isAbstractCompositeObjectMapping(){
         return false;
     }
@@ -130,6 +134,7 @@ public class XMLVariableXPathObjectMapping extends XMLCompositeObjectMapping  im
         return variableAttributeName;
     }
 
+    @Override
     public void setVariableAttributeName(String variableAttributeName) {
         this.variableAttributeName = variableAttributeName;
     }
@@ -138,6 +143,7 @@ public class XMLVariableXPathObjectMapping extends XMLCompositeObjectMapping  im
         return variableGetMethodName;
     }
 
+    @Override
     public void setVariableGetMethodName(String variableGetMethodName) {
         this.variableGetMethodName = variableGetMethodName;
     }
@@ -146,19 +152,23 @@ public class XMLVariableXPathObjectMapping extends XMLCompositeObjectMapping  im
         return variableSetMethodName;
     }
 
+    @Override
     public void setVariableSetMethodName(String variableSetMethodName) {
         this.variableSetMethodName = variableSetMethodName;
     }
 
+    @Override
     public AttributeAccessor getVariableAttributeAccessor() {
         return variableAttributeAccessor;
     }
 
+    @Override
     public void setVariableAttributeAccessor(
             AttributeAccessor variableAttributeAccessor) {
         this.variableAttributeAccessor = variableAttributeAccessor;
     }
 
+    @Override
     public void writeSingleValue(Object value, Object parent, XMLRecord xmlRow, AbstractSession session) {
         Object attributeValue = convertObjectValueToDataValue(value, session, xmlRow.getMarshaller());
 
@@ -174,7 +184,8 @@ public class XMLVariableXPathObjectMapping extends XMLCompositeObjectMapping  im
          return buildCompositeRowForDescriptor(classDesc, attributeValue, session, (XMLRecord)parentRow, writeType);
     }
 
-     public XPathFragment getXPathFragmentForValue(Object obj, NamespaceResolver nr, boolean isNamespaceAware, char namespaceSep) {
+     @Override
+    public XPathFragment getXPathFragmentForValue(Object obj, NamespaceResolver nr, boolean isNamespaceAware, char namespaceSep) {
             Object value = getVariableAttributeAccessor().getAttributeValueFromObject(obj);
             String returnString;
             String uri = null;
@@ -206,10 +217,12 @@ public class XMLVariableXPathObjectMapping extends XMLCompositeObjectMapping  im
         }
 
 
+        @Override
         public boolean isAttribute() {
             return isAttribute;
         }
 
+        @Override
         public void setAttribute(boolean isAttribute) {
             this.isAttribute = isAttribute;
         }

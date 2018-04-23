@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -58,6 +58,7 @@ public class SingleElementListIterator<E> implements ListIterator<E> {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void add(E item) {
         throw new UnsupportedOperationException("This SingleElementListIterator is read-only.");
     }
@@ -65,6 +66,7 @@ public class SingleElementListIterator<E> implements ListIterator<E> {
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean hasNext() {
         return next == element;
     }
@@ -72,6 +74,7 @@ public class SingleElementListIterator<E> implements ListIterator<E> {
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean hasPrevious() {
         return next == END;
     }
@@ -86,6 +89,7 @@ public class SingleElementListIterator<E> implements ListIterator<E> {
     /**
      * {@inheritDoc}
      */
+    @Override
     @SuppressWarnings("unchecked")
     public E next() {
 
@@ -100,6 +104,7 @@ public class SingleElementListIterator<E> implements ListIterator<E> {
     /**
      * {@inheritDoc}
      */
+    @Override
     public int nextIndex() {
         return (next == element) ? 0 : 1;
     }
@@ -107,6 +112,7 @@ public class SingleElementListIterator<E> implements ListIterator<E> {
     /**
      * {@inheritDoc}
      */
+    @Override
     public E previous() {
 
         if (next == element) {
@@ -120,6 +126,7 @@ public class SingleElementListIterator<E> implements ListIterator<E> {
     /**
      * {@inheritDoc}
      */
+    @Override
     public int previousIndex() {
         return (next == END) ? 0 : -1;
     }
@@ -127,6 +134,7 @@ public class SingleElementListIterator<E> implements ListIterator<E> {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void remove() {
         throw new UnsupportedOperationException("This SingleElementListIterator is read-only.");
     }
@@ -134,6 +142,7 @@ public class SingleElementListIterator<E> implements ListIterator<E> {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void set(E item) {
         throw new UnsupportedOperationException("This SingleElementListIterator is read-only.");
     }

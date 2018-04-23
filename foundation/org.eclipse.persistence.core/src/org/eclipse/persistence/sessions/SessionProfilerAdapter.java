@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -29,6 +29,7 @@ public abstract class SessionProfilerAdapter implements SessionProfiler {
      * INTERNAL:
      * End the operation timing.
      */
+    @Override
     public void endOperationProfile(String operationName) {
 
     }
@@ -37,6 +38,7 @@ public abstract class SessionProfilerAdapter implements SessionProfiler {
      * INTERNAL:
      * End the operation timing.
      */
+    @Override
     public void endOperationProfile(String operationName, DatabaseQuery query, int weight) {
 
     }
@@ -49,6 +51,7 @@ public abstract class SessionProfilerAdapter implements SessionProfiler {
      *
      * @return the execution result of the query.
      */
+    @Override
     public Object profileExecutionOfQuery(DatabaseQuery query, Record row, AbstractSession session) {
         return session.internalExecuteQuery(query, (AbstractRecord)row);
     }
@@ -57,6 +60,7 @@ public abstract class SessionProfilerAdapter implements SessionProfiler {
      * INTERNAL:
      * Set the session.
      */
+    @Override
     public void setSession(Session session) {
 
     }
@@ -65,6 +69,7 @@ public abstract class SessionProfilerAdapter implements SessionProfiler {
      * INTERNAL:
      * Start the operation timing.
      */
+    @Override
     public void startOperationProfile(String operationName) {
 
     }
@@ -73,6 +78,7 @@ public abstract class SessionProfilerAdapter implements SessionProfiler {
      * INTERNAL:
      * Start the operation timing.
      */
+    @Override
     public void startOperationProfile(String operationName, DatabaseQuery query, int weight) {
 
     }
@@ -81,6 +87,7 @@ public abstract class SessionProfilerAdapter implements SessionProfiler {
      * INTERNAL:
      * Update the value of the State sensor.(DMS)
      */
+    @Override
     public void update(String operationName, Object value) {
 
     }
@@ -89,6 +96,7 @@ public abstract class SessionProfilerAdapter implements SessionProfiler {
      * INTERNAL:
      * Increase DMS Event sensor occurrence.(DMS)
      */
+    @Override
     public void occurred(String operationName, AbstractSession session) {
 
     }
@@ -97,6 +105,7 @@ public abstract class SessionProfilerAdapter implements SessionProfiler {
      * INTERNAL:
      * Increase DMS Event sensor occurrence.(DMS)
      */
+    @Override
     public void occurred(String operationName, DatabaseQuery query, AbstractSession session) {
 
     }
@@ -105,6 +114,7 @@ public abstract class SessionProfilerAdapter implements SessionProfiler {
      * INTERNAL:
      * Set DMS sensor weight(DMS)
      */
+    @Override
     public void setProfileWeight(int weight) {
 
     }
@@ -113,6 +123,7 @@ public abstract class SessionProfilerAdapter implements SessionProfiler {
      * INTERNAL:
      * Return DMS sensor weight(DMS)
      */
+    @Override
     public int getProfileWeight() {
         return SessionProfiler.HEAVY;
     }
@@ -121,6 +132,7 @@ public abstract class SessionProfilerAdapter implements SessionProfiler {
      * INTERNAL:
      * Initialize EclipseLink noun tree(DMS)
      */
+    @Override
     public void initialize() {
 
     }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -57,6 +57,7 @@ public class SubqueryNode extends Node {
      * The method checks the clauses of the subquery for unqualified fields
      * accesses.
      */
+    @Override
     public Node qualifyAttributeAccess(ParseTreeContext context) {
         subqueryParseTree.getFromNode().qualifyAttributeAccess(context);
         subqueryParseTree.getQueryNode().qualifyAttributeAccess(context);
@@ -76,6 +77,7 @@ public class SubqueryNode extends Node {
      * INTERNAL
      * Validate node and calculate its type.
      */
+    @Override
     public void validate(ParseTreeContext context) {
         subqueryParseTree.validate(context);
         outerVars = context.getOuterScopeVariables();
@@ -89,6 +91,7 @@ public class SubqueryNode extends Node {
      * INTERNAL
      * Generate the EclipseLink expression for this node
      */
+    @Override
     public Expression generateExpression(GenerationContext context) {
         Expression base = context.getBaseExpression();
         ReportQuery innerQuery = getReportQuery(context);
@@ -99,6 +102,7 @@ public class SubqueryNode extends Node {
      * INTERNAL
      * Is this node a SubqueryNode
      */
+    @Override
     public boolean isSubqueryNode() {
         return true;
     }

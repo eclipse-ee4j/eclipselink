@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -87,6 +87,7 @@ public class ManyToOneAccessor extends ObjectAccessor {
      * INTERNAL:
      * Return the logging context for this accessor.
      */
+    @Override
     protected String getLoggingContext() {
         return MetadataLogger.MANY_TO_ONE_MAPPING_REFERENCE_CLASS;
     }
@@ -117,6 +118,7 @@ public class ManyToOneAccessor extends ObjectAccessor {
      * INTERNAL:
      * Process a many to one setting into an EclipseLink OneToOneMapping.
      */
+    @Override
     public void process() {
         super.process();
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -110,6 +110,7 @@ public class AbstractMarshalRecordImpl<
         return returnList;
     }
 
+    @Override
     public boolean addXsiTypeAndClassIndicatorIfRequired(Descriptor descriptor, Descriptor referenceDescriptor, Field xmlField, boolean isRootElement) {
         ObjectBuilder objectBuilder = (ObjectBuilder) descriptor.getObjectBuilder();
         boolean xsiTypeIndicatorField = objectBuilder.isXsiTypeIndicatorField();
@@ -196,7 +197,8 @@ public class AbstractMarshalRecordImpl<
      * INTERNAL
      * @since EclipseLink 2.5.0
      */
-   public boolean addXsiTypeAndClassIndicatorIfRequired(Descriptor descriptor, Descriptor referenceDescriptor, Field xmlField,
+   @Override
+public boolean addXsiTypeAndClassIndicatorIfRequired(Descriptor descriptor, Descriptor referenceDescriptor, Field xmlField,
            Object originalObject, Object obj, boolean wasXMLRoot, boolean isRootElement) {
         if (wasXMLRoot) {
             XMLSchemaReference xmlRef = descriptor.getSchemaReference();
@@ -274,6 +276,7 @@ public class AbstractMarshalRecordImpl<
         }
     }
 
+    @Override
     public void attribute(String namespaceURI, String localName,
             String qualifiedName, String value) {
         if(null != realRecord) {
@@ -308,6 +311,7 @@ public class AbstractMarshalRecordImpl<
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public XPathQName getLeafElementType() {
         return leafElementType;
     }
@@ -384,7 +388,7 @@ public class AbstractMarshalRecordImpl<
         }
 
          for (int i = 0; i < extraNamespaces.size(); i++) {
-             Namespace nextExtraNamespace = (Namespace)extraNamespaces.get(i);
+             Namespace nextExtraNamespace = extraNamespaces.get(i);
              String uri = namespaceResolver.resolveNamespacePrefix(nextExtraNamespace.getPrefix());
              if ((uri != null) && uri.equals(nextExtraNamespace.getNamespaceURI())) {
                 namespaceResolver.removeNamespace(nextExtraNamespace.getPrefix());

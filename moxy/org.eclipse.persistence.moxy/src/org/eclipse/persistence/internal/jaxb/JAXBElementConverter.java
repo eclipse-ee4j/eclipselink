@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -51,16 +51,19 @@ public class JAXBElementConverter implements XMLConverter {
         this.nestedConverter = nestedConverter;
     }
 
+    @Override
     public Object convertDataValueToObjectValue(Object dataValue,
             Session session, XMLUnmarshaller unmarshaller) {
         return convertDataValueToObjectValue(dataValue, session);
     }
 
+    @Override
     public Object convertObjectValueToDataValue(Object objectValue,
             Session session, XMLMarshaller marshaller) {
         return convertObjectValueToDataValue(objectValue, session);
     }
 
+    @Override
     public Object convertDataValueToObjectValue(Object dataValue, Session session) {
         QName name = new QName(rootFragment.getNamespaceURI(), rootFragment.getLocalName());
 
@@ -87,6 +90,7 @@ public class JAXBElementConverter implements XMLConverter {
         }
     }
 
+    @Override
     public Object convertObjectValueToDataValue(Object objectValue, Session session) {
         if(objectValue instanceof JAXBElement) {
             ClassDescriptor desc = session.getDescriptor(objectValue);
@@ -102,7 +106,8 @@ public class JAXBElementConverter implements XMLConverter {
         return objectValue;
     }
 
-     public void initialize(DatabaseMapping mapping, Session session) {
+     @Override
+    public void initialize(DatabaseMapping mapping, Session session) {
         if(null != nestedConverter) {
             nestedConverter.initialize(mapping, session);
         }
@@ -118,6 +123,7 @@ public class JAXBElementConverter implements XMLConverter {
         this.mapping = mapping;
     }
 
+    @Override
     public boolean isMutable() {
         return false;
     }

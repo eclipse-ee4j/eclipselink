@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -42,6 +42,7 @@ public class EntityTransactionWrapper extends TransactionWrapperImpl implements 
      * If this method returns without exception then a transaction exists.
      * This method must be called before accessing the localUOW.
      */
+    @Override
     public Object checkForTransaction(boolean validateExistence){
         if (entityTransaction != null && entityTransaction.isActive()) {
             return entityTransaction;
@@ -60,6 +61,7 @@ public class EntityTransactionWrapper extends TransactionWrapperImpl implements 
      * Lazy initialize the EntityTransaction.
      * There can only be one EntityTransaction at a time.
      */
+    @Override
     public EntityTransaction getTransaction(){
         if (entityTransaction == null){
             entityTransaction = new EntityTransactionImpl(this);
@@ -67,6 +69,7 @@ public class EntityTransactionWrapper extends TransactionWrapperImpl implements 
         return entityTransaction;
     }
 
+    @Override
     public boolean isJoinedToTransaction(UnitOfWorkImpl uow){
         return (entityTransaction != null) && entityTransaction.isActive();
     }
@@ -77,7 +80,8 @@ public class EntityTransactionWrapper extends TransactionWrapperImpl implements 
      * rolled back.
      * This is an internal method and if the txn is not active will do nothing
      */
-     public void setRollbackOnlyInternal(){
+     @Override
+    public void setRollbackOnlyInternal(){
          if (this.getTransaction().isActive()){
              this.getTransaction().setRollbackOnly();
          }
@@ -87,6 +91,7 @@ public class EntityTransactionWrapper extends TransactionWrapperImpl implements 
         throw new TransactionRequiredException(TransactionException.transactionNotActive().getMessage());
     }
 
+    @Override
     public void registerIfRequired(UnitOfWorkImpl uow){
         throw new TransactionRequiredException(ExceptionLocalization.buildMessage("join_trans_called_on_entity_trans"));// no JTA transactions availab
     }

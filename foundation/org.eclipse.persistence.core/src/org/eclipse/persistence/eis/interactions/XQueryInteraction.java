@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -71,6 +71,7 @@ public class XQueryInteraction extends XMLInteraction implements QueryStringCall
      * INTERNAL:
      * Return the query string.
      */
+    @Override
     public String getQueryString() {
         return getXQueryString();
     }
@@ -79,6 +80,7 @@ public class XQueryInteraction extends XMLInteraction implements QueryStringCall
      * INTERNAL:
      * Set the query string.
      */
+    @Override
     public void setQueryString(String queryString) {
         setXQueryString(queryString);
     }
@@ -87,6 +89,7 @@ public class XQueryInteraction extends XMLInteraction implements QueryStringCall
      * INTERNAL:
      * Allow the call to translate the XQuery arguments.
      */
+    @Override
     public void translate(AbstractRecord translationRow, AbstractRecord modifyRow, AbstractSession session) {
         // may need to set the session on the translation row
         if (translationRow != EmptyRecord.getEmptyRecord() && getQuery() != null && getQuery().getDescriptor() != null) {
@@ -101,6 +104,7 @@ public class XQueryInteraction extends XMLInteraction implements QueryStringCall
      * Convert the database row or arguments into an XML DOM tree.
      * Handles arguments different as the XQuery and input can both have parameters.
      */
+    @Override
     public Element createInputDOM(EISAccessor accessor) {
         // The input record can either be build from the interaction arguments,
         // or the modify row.
@@ -120,6 +124,7 @@ public class XQueryInteraction extends XMLInteraction implements QueryStringCall
      * INTERNAL:
      * Translate the custom query markers.
      */
+    @Override
     public void prepare(AbstractSession session) {
         if (isPrepared()) {
             return;
@@ -132,6 +137,7 @@ public class XQueryInteraction extends XMLInteraction implements QueryStringCall
     /**
      * Return the string for logging purposes.
      */
+    @Override
     public String getLogString(Accessor accessor) {
         StringWriter writer = new StringWriter();
         writer.write("Executing ");
@@ -166,6 +172,7 @@ public class XQueryInteraction extends XMLInteraction implements QueryStringCall
      * Return the character to use for the argument marker.
      * ? is used in SQL, however other query languages such as XQuery need to use other markers.
      */
+    @Override
     protected char argumentMarker() {
         return '#';
     }
@@ -174,10 +181,12 @@ public class XQueryInteraction extends XMLInteraction implements QueryStringCall
      * INTERNAL:
      * Return the characters that represent non-arguments names.
      */
+    @Override
     protected String whitespace() {
         return ",;\"'< \n\t";
     }
 
+    @Override
     public boolean isQueryStringCall() {
         return true;
     }

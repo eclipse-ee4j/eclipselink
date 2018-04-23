@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -36,6 +36,7 @@ public class GreaterThanEqualToNode extends BinaryOperatorNode {
      * INTERNAL
      * Validate the current node and calculates its type.
      */
+    @Override
     public void validate(ParseTreeContext context) {
         super.validate(context);
         TypeHelper typeHelper = context.getTypeHelper();
@@ -51,6 +52,7 @@ public class GreaterThanEqualToNode extends BinaryOperatorNode {
      * 4. Generate the expression for the right side and use it as the parameter for the .greaterThanEqualTo()
      * 5. Return the completed where clause to the caller
      */
+    @Override
     public Expression generateExpression(GenerationContext context) {
         Expression whereClause = getLeft().generateExpression(context);
         whereClause = whereClause.greaterThanEqual(getRight().generateExpression(context));
@@ -61,6 +63,7 @@ public class GreaterThanEqualToNode extends BinaryOperatorNode {
      * INTERNAL
      * Get the string representation of this node.
      */
+    @Override
     public String getAsString() {
         return left.getAsString() + " >= " + right.getAsString();
     }

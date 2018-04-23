@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -21,7 +21,6 @@ import javax.resource.cci.InteractionSpec;
 import javax.resource.cci.MappedRecord;
 import javax.resource.cci.Record;
 
-import org.bson.types.Binary;
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.eis.EISAccessor;
 import org.eclipse.persistence.eis.EISDescriptor;
@@ -29,7 +28,6 @@ import org.eclipse.persistence.eis.EISException;
 import org.eclipse.persistence.eis.EISPlatform;
 import org.eclipse.persistence.eis.interactions.EISInteraction;
 import org.eclipse.persistence.eis.interactions.MappedInteraction;
-import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
@@ -290,6 +288,7 @@ public class MongoPlatform extends EISPlatform {
      * Override this method to throw an exception by default.
      * Platforms that support dynamic querying can override this to generate an EISInteraction.
      */
+    @Override
     public DatasourceCall buildCallFromStatement(SQLStatement statement, DatabaseQuery query, AbstractSession session) {
         if (query.isObjectLevelReadQuery()) {
             ObjectLevelReadQuery readQuery = (ObjectLevelReadQuery)query;

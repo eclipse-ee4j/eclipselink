@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016 IBM Corporation. All rights reserved.
+ * Copyright (c) 2016, 2018 IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -36,6 +36,7 @@ public class WebSphere_EJBEmbeddable_Platform extends WebSphere_7_Platform {
      * @see org.eclipse.persistence.platform.server.ServerPlatformBase#disableJTA()
      * @see org.eclipse.persistence.platform.server.ServerPlatformBase#initializeExternalTransactionController()
      */
+    @Override
     public Class getExternalTransactionControllerClass() {
         if (externalTransactionControllerClass == null) {
             externalTransactionControllerClass = WebSphereEJBEmbeddableTransactionController.class;

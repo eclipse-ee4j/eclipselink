@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2018  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,26 +27,31 @@ public class JoinColumnImpl extends AbstractRelationalColumnImpl<JoinColumnMetad
         super(new JoinColumnMetadata());
     }
 
+    @Override
     public JoinColumn setInsertable(Boolean insertable) {
         getMetadata().setInsertable(insertable);
         return this;
     }
 
+    @Override
     public JoinColumn setNullable(Boolean nullable) {
         getMetadata().setNullable(nullable);
         return this;
     }
 
+    @Override
     public JoinColumn setTable(String table) {
         getMetadata().setTable(table);
         return this;
     }
 
+    @Override
     public JoinColumn setUpdatable(Boolean updatable) {
         getMetadata().setUpdatable(updatable);
         return this;
     }
 
+    @Override
     public JoinColumn setUnique(Boolean unique) {
         getMetadata().setUnique(unique);
         return this;

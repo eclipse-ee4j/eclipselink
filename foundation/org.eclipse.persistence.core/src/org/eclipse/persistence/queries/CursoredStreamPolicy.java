@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -60,6 +60,7 @@ public class CursoredStreamPolicy extends CursorPolicy {
      * INTERNAL:
      * Execute the cursored select and build the stream.
      */
+    @Override
     public Object execute() {
         DatabaseCall call = getQuery().getQueryMechanism().cursorSelectAllRows();
 
@@ -92,6 +93,7 @@ public class CursoredStreamPolicy extends CursorPolicy {
         return sizeQuery != null;
     }
 
+    @Override
     public boolean isCursoredStreamPolicy() {
         return true;
     }
@@ -100,6 +102,7 @@ public class CursoredStreamPolicy extends CursorPolicy {
      * INTERNAL:
      * Prepare and validate.
      */
+    @Override
     public void prepare(DatabaseQuery query, AbstractSession session) throws QueryException {
         super.prepare(query, session);
     }
@@ -108,6 +111,7 @@ public class CursoredStreamPolicy extends CursorPolicy {
      * INTERNAL:
      * Execute the cursored select and build the stream.
      */
+    @Override
     public Object remoteExecute() {
         return ((DistributedSession)getQuery().getSession()).cursorSelectObjects(this);
     }

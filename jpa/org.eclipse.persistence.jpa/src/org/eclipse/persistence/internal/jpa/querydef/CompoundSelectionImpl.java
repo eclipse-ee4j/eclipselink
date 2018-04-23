@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -76,6 +76,7 @@ public class CompoundSelectionImpl extends SelectionImpl implements CompoundSele
      * Whether the selection item is a compound selection
      * @return boolean
      */
+    @Override
     public boolean isCompoundSelection(){
         return true;
     }
@@ -86,8 +87,9 @@ public class CompoundSelectionImpl extends SelectionImpl implements CompoundSele
      * @throws IllegalStateException if selection is not a compound
      *           selection
      */
+    @Override
     public List<Selection<?>> getCompoundSelectionItems(){
-        return (List<Selection<?>>)this.subSelections;
+        return this.subSelections;
     }
 
     /**
@@ -98,6 +100,7 @@ public class CompoundSelectionImpl extends SelectionImpl implements CompoundSele
         return this.duplicateAliasNames;
     }
 
+    @Override
     public void findRootAndParameters(CommonAbstractCriteriaImpl criteriaQuery){
         for (Selection selection: getCompoundSelectionItems()){
             ((InternalSelection)selection).findRootAndParameters(criteriaQuery);

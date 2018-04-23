@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -56,6 +56,7 @@ public abstract class AbstractCompositeObjectMapping extends AggregateMapping {
      * INTERNAL:
      * Cascade perform delete through mappings that require the cascade
      */
+    @Override
     public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
         //objects referenced by this mapping are not registered as they have
         // no identity, however mappings from the referenced object may need cascading.
@@ -74,6 +75,7 @@ public abstract class AbstractCompositeObjectMapping extends AggregateMapping {
      * INTERNAL:
      * Cascade discover and persist new objects during commit.
      */
+    @Override
     public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow, Set cascadeErrors) {
         Object objectReferenced = getRealAttributeValueFromObject(object, uow);
         if (objectReferenced != null) {
@@ -86,6 +88,7 @@ public abstract class AbstractCompositeObjectMapping extends AggregateMapping {
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade
      */
+    @Override
     public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
         //aggregate objects are not registered but their mappings should be.
         Object objectReferenced = getRealAttributeValueFromObject(object, uow);
@@ -102,6 +105,7 @@ public abstract class AbstractCompositeObjectMapping extends AggregateMapping {
     /**
      * Return the fields mapped by the mapping.
      */
+    @Override
     protected Vector collectFields() {
         Vector fields = new Vector(1);
         fields.addElement(this.getField());
@@ -121,6 +125,7 @@ public abstract class AbstractCompositeObjectMapping extends AggregateMapping {
      * INTERNAL:
      * The aggregate object is held in a single field.
      */
+    @Override
     public DatabaseField getField() {
         return field;
     }
@@ -136,6 +141,7 @@ public abstract class AbstractCompositeObjectMapping extends AggregateMapping {
     /**
      * INTERNAL:
      */
+    @Override
     public boolean isAbstractCompositeObjectMapping() {
         return true;
     }
@@ -144,6 +150,7 @@ public abstract class AbstractCompositeObjectMapping extends AggregateMapping {
      * INTERNAL:
      * Initialize the mapping.
      */
+    @Override
     public void initialize(AbstractSession session) throws DescriptorException {
         super.initialize(session);
 
@@ -163,6 +170,7 @@ public abstract class AbstractCompositeObjectMapping extends AggregateMapping {
      * INTERNAL:
      * Set the value of the attribute mapped by this mapping.
      */
+    @Override
     public void setAttributeValueInObject(Object object, Object value) throws DescriptorException {
         // PERF: Direct variable access.
         try {
@@ -193,6 +201,7 @@ public abstract class AbstractCompositeObjectMapping extends AggregateMapping {
      * INTERNAL:
      * Extract and return value of the field from the object
      */
+    @Override
     public Object valueFromObject(Object object, DatabaseField field, AbstractSession session) throws DescriptorException {
         Object attributeValue = this.getAttributeValueFromObject(object);
         if(this.getConverter() != null) {
@@ -210,6 +219,7 @@ public abstract class AbstractCompositeObjectMapping extends AggregateMapping {
      * Extract and return the aggregate object from
      * the specified row.
      */
+    @Override
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected, Boolean[] wasCacheUsed) throws DatabaseException {
         if (this.descriptor.getCachePolicy().isProtectedIsolation()) {
             if (this.isCacheable && isTargetProtected && cacheKey != null) {
@@ -268,6 +278,7 @@ public abstract class AbstractCompositeObjectMapping extends AggregateMapping {
      * instantiating a working copy clone can be built without placing it in
      * the shared cache (no concern over cycles).
      */
+    @Override
     public void buildShallowOriginalFromRow(AbstractRecord row, Object original, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) {
         Object fieldValue = row.get(this.getField());
 
@@ -326,6 +337,7 @@ public abstract class AbstractCompositeObjectMapping extends AggregateMapping {
      * In case Query By Example is used, this method builds and returns an expression that
      * corresponds to a single attribute and it's value.
      */
+    @Override
     public Expression buildExpression(Object queryObject, QueryByExamplePolicy policy, Expression expressionBuilder, Map processedObjects, AbstractSession session) {
         if (policy.shouldValidateExample()){
             throw QueryException.unsupportedMappingQueryByExample(queryObject.getClass().getName(), this);
@@ -365,6 +377,7 @@ public abstract class AbstractCompositeObjectMapping extends AggregateMapping {
      * INTERNAL:
      * Write fields needed for insert into the template for with null values.
      */
+    @Override
     public void writeInsertFieldsIntoRow(AbstractRecord record, AbstractSession session) {
         if (this.isReadOnly()) {
             return;

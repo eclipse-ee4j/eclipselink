@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -128,6 +128,7 @@ public class DatabaseTable implements CoreTable, Cloneable, Serializable {
     /**
      * Return a shallow copy of the receiver.
      */
+    @Override
     public DatabaseTable clone() {
         try {
             return (DatabaseTable)super.clone();
@@ -141,6 +142,7 @@ public class DatabaseTable implements CoreTable, Cloneable, Serializable {
      * or their names are equal and one does not have a qualifier assigned.
      * This allows an unqualified table to equal the same fully qualified one.
      */
+    @Override
     public boolean equals(Object object) {
         if (object instanceof DatabaseTable) {
             return equals((DatabaseTable)object);
@@ -278,6 +280,7 @@ public class DatabaseTable implements CoreTable, Cloneable, Serializable {
     /**
      * Return the hashcode of the name, because it is fairly unique.
      */
+    @Override
     public int hashCode() {
         return getName().hashCode();
     }
@@ -403,6 +406,7 @@ public class DatabaseTable implements CoreTable, Cloneable, Serializable {
         resetQualifiedName();
     }
 
+    @Override
     public String toString() {
         return "DatabaseTable(" + getQualifiedName() + ")";
     }

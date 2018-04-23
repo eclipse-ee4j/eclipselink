@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -302,11 +302,9 @@ public class SDOTypesGenerator {
             processedSimpleTypes.putAll(generator.processedSimpleTypes);
             processedElements.putAll(generator.processedElements);
             processedAttributes.putAll(generator.processedAttributes);
-            if (null != importedTypes) {
-                for (int i = 0, size = importedTypes.size(); i < size; i++) {
-                    SDOType nextType = (SDOType) importedTypes.get(i);
-                    getGeneratedTypes().put(nextType.getQName(), nextType);
-                }
+            for (int i = 0, size = importedTypes.size(); i < size; i++) {
+                SDOType nextType = (SDOType) importedTypes.get(i);
+                getGeneratedTypes().put(nextType.getQName(), nextType);
             }
 
             //copy over any global properties
@@ -549,7 +547,7 @@ public class SDOTypesGenerator {
 
         String groupName = group.getRef();
         if (groupName != null) {
-            int idx = groupName.indexOf(":");
+            int idx = groupName.indexOf(':');
             String prefix = null;
             String localName = null;
             String uri = null;
@@ -594,7 +592,7 @@ public class SDOTypesGenerator {
     private void processAttributeGroup(String targetNamespace, String defaultNamespace, SDOType owningType, AttributeGroup attributeGroup) {
         String attributeGroupName = attributeGroup.getRef();
         if (attributeGroupName != null) {
-            int idx = attributeGroupName.indexOf(":");
+            int idx = attributeGroupName.indexOf(':');
             String prefix = null;
             String localName = null;
             String uri = null;
@@ -2299,7 +2297,7 @@ public class SDOTypesGenerator {
         String uri = null;
 
         for (int i = namespaceResolvers.size() - 1; i >= 0; i--) {
-            NamespaceResolver next = (NamespaceResolver) namespaceResolvers.get(i);
+            NamespaceResolver next = namespaceResolvers.get(i);
             uri = next.resolveNamespacePrefix(prefix);
             if ((uri != null) && !uri.equals(SDOConstants.EMPTY_STRING)) {
                 break;

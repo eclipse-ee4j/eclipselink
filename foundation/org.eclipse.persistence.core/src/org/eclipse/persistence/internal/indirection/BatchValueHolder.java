@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -54,6 +54,7 @@ public class BatchValueHolder extends QueryBasedValueHolder {
      * Concurrency must be maintained across all of the value holders,
      * since they all share the same query, the extractResultFromBatchQuery method must be synchronized.
      */
+    @Override
     protected Object instantiate(AbstractSession session) throws EclipseLinkException {
         return this.mapping.extractResultFromBatchQuery(this.query, this.parentCacheKey, this.row, session, this.originalQuery);
     }
@@ -71,6 +72,7 @@ public class BatchValueHolder extends QueryBasedValueHolder {
      * The batch value holder must use a batch query relative to the unit of work,
      * as the batch is local to the unit of work.
      */
+    @Override
     public Object instantiateForUnitOfWorkValueHolder(UnitOfWorkValueHolder unitOfWorkValueHolder) {
         UnitOfWorkImpl unitOfWork = unitOfWorkValueHolder.getUnitOfWork();
         ReadQuery localQuery = unitOfWork.getBatchQueries().get(this.query);
@@ -86,6 +88,7 @@ public class BatchValueHolder extends QueryBasedValueHolder {
      * Answers if this valueholder is easy to instantiate.
      * @return true if getValue() won't trigger a database read.
      */
+    @Override
     public boolean isEasilyInstantiated() {
         return this.isInstantiated;
     }
@@ -93,6 +96,7 @@ public class BatchValueHolder extends QueryBasedValueHolder {
     /**
      * Reset all the fields that are not needed after instantiation.
      */
+    @Override
     protected void resetFields() {
         super.resetFields();
         this.mapping = null;

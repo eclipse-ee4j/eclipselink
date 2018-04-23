@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2015  Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2018  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -29,7 +29,7 @@ import java.util.List;
  */
 @XmlRootElement(name = ReservedWords.JPARS_LIST_ITEM_NAME)
 public class SingleResultQueryResult implements SingleResultQuery {
-    private List<JAXBElement> fields;
+    private List<JAXBElement<?>> fields;
     private List<LinkV2> links;
 
     /**
@@ -40,12 +40,12 @@ public class SingleResultQueryResult implements SingleResultQuery {
 
     @Override
     @XmlAnyElement(lax = true)
-    public List<JAXBElement> getFields() {
+    public List<JAXBElement<?>> getFields() {
         return fields;
     }
 
     @Override
-    public void setFields(List<JAXBElement> fields) {
+    public void setFields(List<JAXBElement<?>> fields) {
         this.fields = fields;
     }
 

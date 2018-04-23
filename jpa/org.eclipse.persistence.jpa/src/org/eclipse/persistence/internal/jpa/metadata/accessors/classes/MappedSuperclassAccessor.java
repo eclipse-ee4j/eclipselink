@@ -939,7 +939,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
             } else {
                 // Set the cacheable setting on the descriptor.
                 if (m_cacheable == null) {
-                    m_cacheable = (Boolean) getAnnotation(JPA_CACHEABLE).getAttributeBooleanDefaultTrue("value");
+                    m_cacheable = getAnnotation(JPA_CACHEABLE).getAttributeBooleanDefaultTrue("value");
                 }
 
                 getDescriptor().setCacheable(m_cacheable);
@@ -1351,7 +1351,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         // Process the named query annotations.
         // Look for a @NamedQueries.
         if (isAnnotationPresent(JPA_NAMED_QUERIES)) {
-            for (Object namedQuery : (Object[]) getAnnotation(JPA_NAMED_QUERIES).getAttributeArray("value")) {
+            for (Object namedQuery : getAnnotation(JPA_NAMED_QUERIES).getAttributeArray("value")) {
                 getProject().addQuery(new NamedQueryMetadata((MetadataAnnotation) namedQuery, this));
             }
         }

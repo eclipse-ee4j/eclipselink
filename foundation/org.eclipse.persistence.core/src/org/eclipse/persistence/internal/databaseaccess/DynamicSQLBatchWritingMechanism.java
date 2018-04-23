@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -73,6 +73,7 @@ public class DynamicSQLBatchWritingMechanism extends BatchWritingMechanism {
      * being batched.  This call may result in the Mechanism executing the batched statements and
      * possibly, switching out the mechanisms
      */
+    @Override
     public void appendCall(AbstractSession session, DatabaseCall dbCall) {
         if (!dbCall.hasParameters()) {
             if ((this.batchSize + dbCall.getSQLString().length()) > this.maxBatchSize) {
@@ -105,6 +106,7 @@ public class DynamicSQLBatchWritingMechanism extends BatchWritingMechanism {
      * This method is used to clear the batched statements without the need to execute the statements first
      * This is used in the case of rollback.
      */
+    @Override
     public void clear() {
         //Bug#419326 : A clone may be holding a reference to this.parameters.
         //So, instead of clearing the parameters, just initialize with a new reference.
@@ -121,6 +123,7 @@ public class DynamicSQLBatchWritingMechanism extends BatchWritingMechanism {
      * This method is used by the DatabaseAccessor to execute and clear the batched statements in the
      * case that a non batchable statement is being executed
      */
+    @Override
     public void executeBatchedStatements(AbstractSession session) {
         if (this.sqlStrings.isEmpty()) {
             return;

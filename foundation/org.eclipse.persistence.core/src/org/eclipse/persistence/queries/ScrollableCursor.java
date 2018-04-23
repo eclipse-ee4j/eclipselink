@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -82,6 +82,7 @@ public class ScrollableCursor extends Cursor implements ListIterator {
      * PUBLIC:
      * Add is not support for scrollable cursors.
      */
+    @Override
     public void add(Object object) throws QueryException {
         QueryException.invalidOperation("add");
     }
@@ -175,6 +176,7 @@ public class ScrollableCursor extends Cursor implements ListIterator {
      * INTERNAL:
      * Retrieve the size of the open cursor by executing a count on the same query as the cursor.
      */
+    @Override
     protected int getCursorSize() throws DatabaseException {
         if (getKnownCursorSize() != -1) {
             return getKnownCursorSize();
@@ -233,6 +235,7 @@ public class ScrollableCursor extends Cursor implements ListIterator {
      * @return the current row number; 0 if there is no current row
      * @exception DatabaseException if a database access error occurs
      */
+    @Override
     public int getPosition() throws DatabaseException {
         try {
             if (this.position == -1) {
@@ -262,6 +265,7 @@ public class ScrollableCursor extends Cursor implements ListIterator {
      * PUBLIC:
      * Indicates whether the cursor can move to the the next row
      */
+    @Override
     public boolean hasMoreElements() throws DatabaseException {
         return hasNext();
     }
@@ -270,6 +274,7 @@ public class ScrollableCursor extends Cursor implements ListIterator {
      * PUBLIC:
      * Indicates whether the cursor can move to the the next row
      */
+    @Override
     public boolean hasNext() throws DatabaseException {
         if (isClosed()) {
             return false;
@@ -290,6 +295,7 @@ public class ScrollableCursor extends Cursor implements ListIterator {
      * PUBLIC:
      * Indicates whether the cursor can move to the the previous row
      */
+    @Override
     public boolean hasPrevious() throws DatabaseException {
         if (isClosed()) {
             return false;
@@ -433,6 +439,7 @@ public class ScrollableCursor extends Cursor implements ListIterator {
      * @return - next object in stream
      * @throws DatabaseException if read pass end of stream
      */
+    @Override
     public Object next() throws DatabaseException, QueryException {
         loadNext();
         if (this.nextObject == null) {
@@ -466,6 +473,7 @@ public class ScrollableCursor extends Cursor implements ListIterator {
      * Return the next object from the collection, if beyond the read limit read from the cursor.
      * @return next object in stream
      */
+    @Override
     public Object nextElement() throws DatabaseException, QueryException {
         return next();
     }
@@ -474,6 +482,7 @@ public class ScrollableCursor extends Cursor implements ListIterator {
      * PUBLIC:
      * Retrieves the next row index (against the current row)
      */
+    @Override
     public int nextIndex() throws DatabaseException {
         return currentIndex() + 1;
     }
@@ -485,6 +494,7 @@ public class ScrollableCursor extends Cursor implements ListIterator {
      * @return - previous object in stream
      * @throws DatabaseException if read pass first of stream
      */
+    @Override
     public Object previous() throws DatabaseException, QueryException {
         loadPrevious();
         if (this.previousObject == null) {
@@ -499,6 +509,7 @@ public class ScrollableCursor extends Cursor implements ListIterator {
      * PUBLIC:
      * Retrieves the previous row index (against the current row)
      */
+    @Override
     public int previousIndex() throws DatabaseException {
         return currentIndex() - 1;
     }
@@ -546,6 +557,7 @@ public class ScrollableCursor extends Cursor implements ListIterator {
      * INTERNAL:
      * Read the next row from the result set.
      */
+    @Override
     protected Object retrieveNextObject() throws DatabaseException {
         while (true) {
             int currentPosition = getPosition();
@@ -654,6 +666,7 @@ public class ScrollableCursor extends Cursor implements ListIterator {
      * PUBLIC:
      * Set is not supported for scrollable cursors.
      */
+    @Override
     public void set(Object object) throws QueryException {
         QueryException.invalidOperation("set");
     }

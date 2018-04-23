@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -37,6 +37,7 @@ public class OracleNoSQLTransaction implements LocalTransaction {
     /**
      * Record that a transaction has begun.
      */
+    @Override
     public void begin() {
         this.isInTransaction = true;
     }
@@ -51,6 +52,7 @@ public class OracleNoSQLTransaction implements LocalTransaction {
     /**
      * Rollback.  Not currently supported.
      */
+    @Override
     public void commit() throws ResourceException {
         try {
             //this.connection.getDatabaseConnection().commit();
@@ -63,6 +65,7 @@ public class OracleNoSQLTransaction implements LocalTransaction {
     /**
      * Rollback.  Not currently supported.
      */
+    @Override
     public void rollback() throws ResourceException {
         try {
             //this.connection.getDatabaseConnection().rollback();

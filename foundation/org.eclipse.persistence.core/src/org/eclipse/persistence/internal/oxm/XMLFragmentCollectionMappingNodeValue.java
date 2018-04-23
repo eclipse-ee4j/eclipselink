@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -47,6 +47,7 @@ public class XMLFragmentCollectionMappingNodeValue extends NodeValue implements 
      * Override the method in XPathNode such that the marshaller can be set on the
      * marshalRecord - this is required for XMLConverter usage.
      */
+    @Override
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver) {
         if (xmlFragmentCollectionMapping.isReadOnly()) {
             return false;
@@ -71,6 +72,7 @@ public class XMLFragmentCollectionMappingNodeValue extends NodeValue implements 
         return true;
     }
 
+    @Override
     public boolean startElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts) {
         SAXFragmentBuilder builder = unmarshalRecord.getFragmentBuilder();
         builder.setOwningRecord(unmarshalRecord);
@@ -98,28 +100,34 @@ public class XMLFragmentCollectionMappingNodeValue extends NodeValue implements 
         return true;
     }
 
+    @Override
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord) {
         SAXFragmentBuilder builder = unmarshalRecord.getFragmentBuilder();
         Object value = builder.getNodes().remove(builder.getNodes().size() -1);
         unmarshalRecord.addAttributeValue(this, value);
     }
 
+    @Override
     public Object getContainerInstance() {
         return getContainerPolicy().containerInstance();
     }
 
+    @Override
     public void setContainerInstance(Object object, Object containerInstance) {
         xmlFragmentCollectionMapping.setAttributeValueInObject(object, containerInstance);
     }
 
+    @Override
     public CoreContainerPolicy getContainerPolicy() {
         return xmlFragmentCollectionMapping.getContainerPolicy();
     }
 
+    @Override
     public boolean isContainerValue() {
         return true;
     }
 
+    @Override
     public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         if (value instanceof Node) {
             marshalRecord.node((org.w3c.dom.Node)value, namespaceResolver);
@@ -127,10 +135,12 @@ public class XMLFragmentCollectionMappingNodeValue extends NodeValue implements 
         return true;
     }
 
+    @Override
     public FragmentCollectionMapping getMapping() {
         return xmlFragmentCollectionMapping;
     }
 
+    @Override
     public boolean getReuseContainer() {
         return getMapping().getReuseContainer();
     }
@@ -139,6 +149,7 @@ public class XMLFragmentCollectionMappingNodeValue extends NodeValue implements 
      *  INTERNAL:
      *  Used to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord
      */
+    @Override
     public void setIndex(int index){
         this.index = index;
     }
@@ -148,6 +159,7 @@ public class XMLFragmentCollectionMappingNodeValue extends NodeValue implements 
      * Set to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord
      * Set during TreeObjectBuilder initialization
      */
+    @Override
     public int getIndex(){
         return index;
     }
@@ -158,6 +170,7 @@ public class XMLFragmentCollectionMappingNodeValue extends NodeValue implements 
      * is no presence of the collection in the XML document.
      * @since EclipseLink 2.3.3
      */
+    @Override
     public boolean isDefaultEmptyContainer() {
         return getMapping().isDefaultEmptyContainer();
     }

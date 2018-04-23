@@ -1587,11 +1587,13 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             String poolName = "default";
             String attribute = null;
             try {
-                if (entry.getKey().indexOf(".") == -1) {
+                int dotIdx = entry.getKey().indexOf('.');
+                if (dotIdx == -1) {
                     attribute = entry.getKey();
                 } else {
-                    poolName = entry.getKey().substring(0, entry.getKey().indexOf("."));
-                    attribute = entry.getKey().substring(entry.getKey().indexOf(".") + 1, entry.getKey().length());
+                    String key = entry.getKey();
+                    poolName = key.substring(0, dotIdx);
+                    attribute = key.substring(dotIdx + 1, key.length());
                 }
                 ConnectionPool pool = null;
                 if (poolName.equals("write")) {

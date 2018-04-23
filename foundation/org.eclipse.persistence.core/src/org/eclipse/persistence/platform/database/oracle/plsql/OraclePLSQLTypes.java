@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -119,9 +119,11 @@ public enum OraclePLSQLTypes implements SimpleDatabaseType, OraclePLSQLType {
             sb.append(" ");
             sb.append(getTypeName());
         }
+        @Override
         public int getSqlCode() {
             return 2007;
         }
+        @Override
         public int getConversionCode() {
             return getSqlCode();
         }
@@ -134,22 +136,27 @@ public enum OraclePLSQLTypes implements SimpleDatabaseType, OraclePLSQLType {
         this.typeName = typeName;
     }
 
+    @Override
     public boolean isComplexDatabaseType() {
         return false;
     }
+    @Override
     public int getSqlCode() {
         return OTHER;
     }
 
+    @Override
     public int getConversionCode() {
         // widest compatible type java.sql.Types.NUMERIC <-> BigDecimal
         return NUMERIC_TYPE.getConversionCode();
     }
 
+    @Override
     public String getTypeName() {
         return typeName;
     }
 
+    @Override
     public boolean isJDBCType() {
         return false;
     }
@@ -158,6 +165,7 @@ public enum OraclePLSQLTypes implements SimpleDatabaseType, OraclePLSQLType {
      * INTERNAL:
      * Return the parameter index for the IN parameter.
      */
+    @Override
     public int computeInIndex(PLSQLargument inArg, int newIndex,
         ListIterator<PLSQLargument> i) {
         return databaseTypeHelper.computeInIndex(inArg, newIndex);
@@ -167,6 +175,7 @@ public enum OraclePLSQLTypes implements SimpleDatabaseType, OraclePLSQLType {
      * INTERNAL:
      * Return the parameter index for the OUT parameter.
      */
+    @Override
     public int computeOutIndex(PLSQLargument outArg, int newIndex,
         ListIterator<PLSQLargument> i) {
         return databaseTypeHelper.computeOutIndex(outArg, newIndex);
@@ -176,6 +185,7 @@ public enum OraclePLSQLTypes implements SimpleDatabaseType, OraclePLSQLType {
      * INTERNAL:
      * Append the variable declaration for the type.
      */
+    @Override
     public void buildInDeclare(StringBuilder sb, PLSQLargument inArg) {
         databaseTypeHelper.declareTarget(sb, inArg, this);
         sb.append(" := :");
@@ -188,6 +198,7 @@ public enum OraclePLSQLTypes implements SimpleDatabaseType, OraclePLSQLType {
      * INTERNAL:
      * Append the variable declaration for the type.
      */
+    @Override
     public void buildOutDeclare(StringBuilder sb, PLSQLargument outArg) {
         databaseTypeHelper.declareTarget(sb, outArg, this);
         sb.append(";");
@@ -198,6 +209,7 @@ public enum OraclePLSQLTypes implements SimpleDatabaseType, OraclePLSQLType {
      * INTERNAL:
      * Append any code or translation required for the type.
      */
+    @Override
     public void buildBeginBlock(StringBuilder sb, PLSQLargument arg, PLSQLStoredProcedureCall call) {
         // nothing to do for simple types
     }
@@ -206,6 +218,7 @@ public enum OraclePLSQLTypes implements SimpleDatabaseType, OraclePLSQLType {
      * INTERNAL:
      * Append any code or translation for assigning the output value.
      */
+    @Override
     public void buildOutAssignment(StringBuilder sb, PLSQLargument arg, PLSQLStoredProcedureCall call) {
         databaseTypeHelper.buildOutAssignment(sb, arg, call);
     }
@@ -214,6 +227,7 @@ public enum OraclePLSQLTypes implements SimpleDatabaseType, OraclePLSQLType {
      * INTERNAL:
      * Translate the argument value from the query translation row to call translation row.
      */
+    @Override
     public void translate(PLSQLargument arg, AbstractRecord translationRow,
             AbstractRecord copyOfTranslationRow, List<DatabaseField> copyOfTranslationFields,
             List<DatabaseField> translationRowFields, List translationRowValues, StoredProcedureCall call) {
@@ -225,6 +239,7 @@ public enum OraclePLSQLTypes implements SimpleDatabaseType, OraclePLSQLType {
      * INTERNAL:
      * Build the query output row from the call output row.
      */
+    @Override
     public void buildOutputRow(PLSQLargument outArg, AbstractRecord outputRow,
             DatabaseRecord newOutputRow, List<DatabaseField> outputRowFields, List outputRowValues) {
         databaseTypeHelper.buildOutputRow(outArg, outputRow,
@@ -235,6 +250,7 @@ public enum OraclePLSQLTypes implements SimpleDatabaseType, OraclePLSQLType {
      * INTERNAL:
      * Append the parameter for logging purposes.
      */
+    @Override
     public void logParameter(StringBuilder sb, Integer direction, PLSQLargument arg,
             AbstractRecord translationRow, DatabasePlatform platform) {
         databaseTypeHelper.logParameter(sb, direction, arg, translationRow, platform);

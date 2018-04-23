@@ -41,6 +41,7 @@ public class AggregateChangeRecord extends ChangeRecord implements org.eclipse.p
      * ADVANCED:
      * This method is used to return the ObjectChangeSet representing the changed Aggregate.
      */
+    @Override
     public org.eclipse.persistence.sessions.changesets.ObjectChangeSet getChangedObject() {
         return changedObject;
     }
@@ -49,6 +50,7 @@ public class AggregateChangeRecord extends ChangeRecord implements org.eclipse.p
      * INTERNAL:
      * This method will be used to merge one record into another
      */
+    @Override
     public void mergeRecord(ChangeRecord mergeFromRecord, UnitOfWorkChangeSet mergeToChangeSet, UnitOfWorkChangeSet mergeFromChangeSet) {
         if (this.changedObject == null) {
             this.changedObject = ((AggregateChangeRecord)mergeFromRecord).getChangedObject();
@@ -88,6 +90,7 @@ public class AggregateChangeRecord extends ChangeRecord implements org.eclipse.p
      * Check to see if it exists here already to prevent us from creating a little
      * extra garbage.
      */
+    @Override
     public void updateReferences(UnitOfWorkChangeSet mergeToChangeSet, UnitOfWorkChangeSet mergeFromChangeSet) {
         Object localChangeSet = mergeToChangeSet.getUOWCloneForObjectChangeSet(this.changedObject);
         if (localChangeSet == null) {
@@ -100,6 +103,7 @@ public class AggregateChangeRecord extends ChangeRecord implements org.eclipse.p
      * If the owning UnitOfWork has shouldChangeRecordKeepOldValue set to true,
      * then return the old value of the attribute represented by this ChangeRecord.
      */
+    @Override
     public Object getOldValue() {
         if (oldValue == NULL) {
             return null;

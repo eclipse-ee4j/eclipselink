@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -39,6 +39,7 @@ public abstract class CompoundExpression extends Expression {
      * Return if the expression is equal to the other.
      * This is used to allow dynamic expression's SQL to be cached.
      */
+    @Override
     public boolean equals(Object object) {
         if (this == object) {
             return true;
@@ -57,6 +58,7 @@ public abstract class CompoundExpression extends Expression {
      * Compute a consistent hash-code for the expression.
      * This is used to allow dynamic expression's SQL to be cached.
      */
+    @Override
     public int computeHashCode() {
         int hashCode = super.computeHashCode();
         if (this.operator != null) {
@@ -75,6 +77,7 @@ public abstract class CompoundExpression extends Expression {
      * INTERNAL:
      * Find the alias for a given table from the first or second child in the additionalOuterJoinCriteria
      */
+    @Override
     public DatabaseTable aliasForTable(DatabaseTable table) {
         DatabaseTable alias = null;
         if (this.firstChild != null) {
@@ -88,15 +91,18 @@ public abstract class CompoundExpression extends Expression {
         return alias;
     }
 
+    @Override
     public Expression asOf(AsOfClause clause) {
         final AsOfClause finalClause = clause;
         ExpressionIterator iterator = new ExpressionIterator() {
+            @Override
             public void iterate(Expression each) {
                 if (each.isDataExpression()) {
                     each.asOf(finalClause);
                 }
             }
 
+            @Override
             public boolean shouldIterateOverSubSelects() {
                 return true;
             }
@@ -108,6 +114,7 @@ public abstract class CompoundExpression extends Expression {
     /**
      * INTERNAL:
      */
+    @Override
     public Expression create(Expression base, Object singleArgument, ExpressionOperator operator) {
         setFirstChild(base);
         Expression argument = Expression.from(singleArgument, base);
@@ -133,6 +140,7 @@ public abstract class CompoundExpression extends Expression {
      * INTERNAL:
      * Used for debug printing.
      */
+    @Override
     public String descriptionOfNodeType() {
         return "Compound Expression";
     }
@@ -141,6 +149,7 @@ public abstract class CompoundExpression extends Expression {
      * Return the expression builder which is the ultimate base of this expression, or
      * null if there isn't one (shouldn't happen if we start from a root)
      */
+    @Override
     public ExpressionBuilder getBuilder() {
         // PERF: Cache builder.
         if (this.builder == null) {
@@ -156,6 +165,7 @@ public abstract class CompoundExpression extends Expression {
         return firstChild;
     }
 
+    @Override
     public ExpressionOperator getOperator() {
         return operator;
     }
@@ -185,6 +195,7 @@ public abstract class CompoundExpression extends Expression {
         }
     }
 
+    @Override
     public boolean isCompoundExpression() {
         return true;
     }
@@ -193,6 +204,7 @@ public abstract class CompoundExpression extends Expression {
      * INTERNAL:
      * For iterating using an inner class
      */
+    @Override
     public void iterateOn(ExpressionIterator iterator) {
         super.iterateOn(iterator);
         if (this.firstChild != null) {
@@ -208,6 +220,7 @@ public abstract class CompoundExpression extends Expression {
      * Normalize into a structure that is printable.
      * Also compute printing information such as outer joins.
      */
+    @Override
     public Expression normalize(ExpressionNormalizer normalizer) {
         validateNode();
         boolean previous = normalizer.isAddAdditionalExpressionsWithinCurrrentExpressionContext();
@@ -249,6 +262,7 @@ public abstract class CompoundExpression extends Expression {
      * Do any required validation for this node. Throw an exception if it's incorrect.
      * Ensure that both sides are not data expressions.
      */
+    @Override
     public void validateNode() {
         if (this.firstChild != null) {
             if (this.firstChild.isDataExpression() || this.firstChild.isConstantExpression()) {
@@ -266,6 +280,7 @@ public abstract class CompoundExpression extends Expression {
      * INTERNAL:
      * Used for cloning.
      */
+    @Override
     protected void postCopyIn(Map alreadyDone) {
         super.postCopyIn(alreadyDone);
         if (this.firstChild != null) {
@@ -280,6 +295,7 @@ public abstract class CompoundExpression extends Expression {
      * INTERNAL:
      * Print SQL
      */
+    @Override
     public void printSQL(ExpressionSQLPrinter printer) {
         ExpressionOperator realOperator = getPlatformOperator(printer.getPlatform());
         printer.printString("(");
@@ -291,6 +307,7 @@ public abstract class CompoundExpression extends Expression {
      * INTERNAL:
      * Print java for project class generation
      */
+    @Override
     public void printJava(ExpressionJavaPrinter printer) {
         ExpressionOperator realOperator = getPlatformOperator(printer.getPlatform());
         realOperator.printJavaDuo(this.firstChild, this.secondChild, printer);
@@ -301,6 +318,7 @@ public abstract class CompoundExpression extends Expression {
      * This expression is built on a different base than the one we want. Rebuild it and
      * return the root of the new tree
      */
+    @Override
     public Expression rebuildOn(Expression newBase) {
         Vector arguments;
 
@@ -320,6 +338,7 @@ public abstract class CompoundExpression extends Expression {
      * built using a builder that is not attached to the query.  This happens in case of an Exists
      * call using a new ExpressionBuilder().  This builder needs to be replaced with one from the query.
      */
+    @Override
     public void resetPlaceHolderBuilder(ExpressionBuilder queryBuilder){
         this.firstChild.resetPlaceHolderBuilder(queryBuilder);
         if (this.secondChild != null){
@@ -365,6 +384,7 @@ public abstract class CompoundExpression extends Expression {
      * INTERNAL:
      * Used to print a debug form of the expression tree.
      */
+    @Override
     public void writeDescriptionOn(BufferedWriter writer) throws IOException {
         writer.write(operator.toString());
     }
@@ -373,6 +393,7 @@ public abstract class CompoundExpression extends Expression {
      * INTERNAL:
      * Used for toString for debugging only.
      */
+    @Override
     public void writeSubexpressionsTo(BufferedWriter writer, int indent) throws IOException {
         if (this.firstChild != null) {
             this.firstChild.toString(writer, indent);
@@ -386,6 +407,7 @@ public abstract class CompoundExpression extends Expression {
      * INTERNAL:
      * Clear the builder when cloning.
      */
+    @Override
     public Expression shallowClone() {
         CompoundExpression clone = (CompoundExpression)super.shallowClone();
         clone.builder = null;

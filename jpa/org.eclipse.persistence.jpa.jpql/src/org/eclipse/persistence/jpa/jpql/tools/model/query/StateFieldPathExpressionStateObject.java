@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -64,6 +64,7 @@ public class StateFieldPathExpressionStateObject extends AbstractPathExpressionS
     /**
      * {@inheritDoc}
      */
+    @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
@@ -147,12 +148,14 @@ public class StateFieldPathExpressionStateObject extends AbstractPathExpressionS
         /**
          * {@inheritDoc}
          */
+        @Override
         public void accept(IManagedTypeVisitor visitor) {
         }
 
         /**
          * {@inheritDoc}
          */
+        @Override
         public int compareTo(IManagedType managedType) {
             return getType().getName().compareTo(managedType.getType().getName());
         }
@@ -160,6 +163,7 @@ public class StateFieldPathExpressionStateObject extends AbstractPathExpressionS
         /**
          * {@inheritDoc}
          */
+        @Override
         public IMapping getMappingNamed(String name) {
             return null;
         }
@@ -167,6 +171,7 @@ public class StateFieldPathExpressionStateObject extends AbstractPathExpressionS
         /**
          * {@inheritDoc}
          */
+        @Override
         public IManagedTypeProvider getProvider() {
             return provider;
         }
@@ -174,6 +179,7 @@ public class StateFieldPathExpressionStateObject extends AbstractPathExpressionS
         /**
          * {@inheritDoc}
          */
+        @Override
         public IType getType() {
             return mapType;
         }
@@ -181,6 +187,7 @@ public class StateFieldPathExpressionStateObject extends AbstractPathExpressionS
         /**
          * {@inheritDoc}
          */
+        @Override
         public Iterable<IMapping> mappings() {
             return EmptyIterable.instance();
         }

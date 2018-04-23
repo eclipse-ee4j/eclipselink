@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2018  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -33,27 +33,32 @@ public class ObjectTypeConverterImpl extends MetadataImpl<ObjectTypeConverterMet
         getMetadata().setConversionValues(new ArrayList<ConversionValueMetadata>());
     }
 
+    @Override
     public ConversionValue addConversionValue() {
         ConversionValueImpl conversionValue = new ConversionValueImpl();
         getMetadata().getConversionValues().add(conversionValue.getMetadata());
         return conversionValue;
     }
 
+    @Override
     public ObjectTypeConverter setDataType(String dataType) {
         getMetadata().setDataTypeName(dataType);
         return this;
     }
 
+    @Override
     public ObjectTypeConverter setDefaultObjectValue(String defaultObjectValue) {
         getMetadata().setDefaultObjectValue(defaultObjectValue);
         return this;
     }
 
+    @Override
     public ObjectTypeConverter setName(String name) {
         getMetadata().setName(name);
         return this;
     }
 
+    @Override
     public ObjectTypeConverter setObjectType(String objectType) {
         getMetadata().setObjectTypeName(objectType);
         return this;

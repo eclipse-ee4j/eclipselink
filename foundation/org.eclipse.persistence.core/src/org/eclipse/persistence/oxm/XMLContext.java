@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.oxm;
 
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -39,6 +41,7 @@ import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedGetClassLoaderForClass;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.CollectionMapping;
@@ -99,7 +102,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
      *            A single session name or multiple session names separated by a :
      */
     public XMLContext(String sessionNames) {
-        this(sessionNames, PrivilegedAccessHelper.privilegedGetClassLoaderForClass(XMLContext.class));
+        this(sessionNames, privilegedGetClassLoaderForClass(XMLContext.class));
     }
 
     /**
@@ -127,7 +130,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
      *            and load sessions.
      */
     public XMLContext(String sessionNames, String xmlResource) {
-        this(sessionNames, PrivilegedAccessHelper.privilegedGetClassLoaderForClass(XMLContext.class), xmlResource);
+        this(sessionNames, privilegedGetClassLoaderForClass(XMLContext.class), xmlResource);
     }
 
     /**
@@ -238,6 +241,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
      *
      * @return An XMLUnmarshaller based on this XMLContext
      */
+    @Override
     public XMLUnmarshaller createUnmarshaller() {
         return new XMLUnmarshaller(this);
     }
@@ -277,6 +281,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
      *
      * @return An XMLMarshaller based on this XMLContext
      */
+    @Override
     public XMLMarshaller createMarshaller() {
         return new XMLMarshaller(this);
     }
@@ -353,6 +358,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
      * object may be mapped by more that one of the projects used to create the
      * XML Context, this method will return the first match.
      */
+    @Override
     public AbstractSession getSession(Object object) {
         return super.getSession(object);
     }
@@ -362,6 +368,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
      * may be mapped by more that one of the projects used to create the XML
      * Context, this method will return the first match.
      */
+    @Override
     public AbstractSession getSession(Class clazz) {
         return super.getSession(clazz);
     }
@@ -371,6 +378,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
      * the class may be mapped by more that one of the projects used to create
      * the XML Context, this method will return the first match.
      */
+    @Override
     public AbstractSession getSession(XMLDescriptor xmlDescriptor) {
         return super.getSession(xmlDescriptor);
     }
@@ -386,6 +394,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
      * INTERNAL: Return the XMLDescriptor with the default root mapping matching
      * the QName parameter.
      */
+    @Override
     public XMLDescriptor getDescriptor(QName qName) {
         return super.getDescriptor(qName);
     }
@@ -394,6 +403,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
      * INTERNAL: Return the XMLDescriptor with the default root mapping matching
      * the QName parameter.
      */
+    @Override
     public XMLDescriptor getDescriptor(XPathQName xpathQName) {
         return super.getDescriptor(xpathQName);
     }
@@ -406,6 +416,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
      * INTERNAL: Return the XMLDescriptor mapped to the global type matching the
      * XPathFragment parameter.
      */
+    @Override
     public XMLDescriptor getDescriptorByGlobalType(XPathFragment xPathFragment) {
         return super.getDescriptorByGlobalType(xPathFragment);
     }
@@ -433,6 +444,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
      * Return true if any session held onto by this context has a document preservation
      * policy that requires unmarshalling from a Node.
      */
+    @Override
     public boolean hasDocumentPreservation() {
         return getXMLContextState().hasDocumentPreservation();
     }
@@ -559,6 +571,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
      * @param returnType The return type.
      * @return The object corresponding to the XPath or null if no result was found.
      */
+    @Override
     public <T> T getValueByXPath(Object object, String xPath, NamespaceResolver namespaceResolver, Class<T> returnType) {
         return super.getValueByXPath(object, xPath, namespaceResolver, returnType);
     }
@@ -591,6 +604,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
      * @param namespaceResolver A NamespaceResolver containing the prefix/URI pairings from the XPath statement.
      * @param value The value to be set.
      */
+    @Override
     public void setValueByXPath(Object object, String xPath, NamespaceResolver namespaceResolver, Object value) {
         super.setValueByXPath(object, xPath, namespaceResolver, value);
     }
@@ -649,6 +663,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
      *      An instance of the Java class mapped to the supplied XML type, or null
      *      if no result was found.
      */
+    @Override
     public <T> T createByXPath(Object parentObject, String xPath, NamespaceResolver namespaceResolver, Class<T> returnType) {
         return super.createByXPath(parentObject, xPath, namespaceResolver, returnType);
     }
@@ -755,7 +770,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
             if (classLoader != null) {
                 dbSession = (DatabaseSession) SessionManager.getManager().getSession(sessionLoader, sessionName, classLoader, false, true);
             } else {
-                dbSession = (DatabaseSession) SessionManager.getManager().getSession(sessionLoader, sessionName, PrivilegedAccessHelper.privilegedGetClassLoaderForClass(this.getClass()), false, false, false);
+                dbSession = (DatabaseSession) SessionManager.getManager().getSession(sessionLoader, sessionName, privilegedGetClassLoaderForClass(this.getClass()), false, false, false);
             }
             if ((dbSession.getDatasourceLogin() == null) || !(dbSession.getDatasourceLogin().getDatasourcePlatform() instanceof XMLPlatform)) {
                 XMLPlatform platform = new SAXPlatform();
@@ -930,7 +945,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
         List<Descriptor> descriptors = new ArrayList<Descriptor>();
         List<Session> sessions = getSessions();
         for (Session session : sessions) {
-            List<Descriptor> orderedDescriptors = (List<Descriptor>) (List) session.getProject().getOrderedDescriptors();
+            List<Descriptor> orderedDescriptors = (List) session.getProject().getOrderedDescriptors();
             for (Descriptor xDesc : orderedDescriptors) {
                 descriptors.add(xDesc);
             }
@@ -960,6 +975,17 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
         }
 
         return null;
+    }
+
+    private static ClassLoader privilegedGetClassLoaderForClass(final Class clazz) {
+        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+            try {
+                return AccessController.doPrivileged(new PrivilegedGetClassLoaderForClass(clazz));
+            } catch (PrivilegedActionException ex) {
+                throw (RuntimeException) ex.getCause();
+            }
+        }
+        return PrivilegedAccessHelper.getClassLoaderForClass(clazz);
     }
 
 }

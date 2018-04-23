@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -104,6 +104,7 @@ public class AttributeChangeListener extends ObjectChangeListener {
      * oldValue are identical.  If they are identical, do not create PropertyChangeEvent
      * and call this method.
      */
+    @Override
     public void propertyChange(PropertyChangeEvent evt) {
         if (this.ignoreEvents){
             return;
@@ -116,6 +117,7 @@ public class AttributeChangeListener extends ObjectChangeListener {
      * This method marks the object as changed.  This method is only
      * called by EclipseLink
      */
+    @Override
     public void internalPropertyChange(PropertyChangeEvent evt) {
         if (evt.getNewValue() == evt.getOldValue()) {
             return;
@@ -158,6 +160,7 @@ public class AttributeChangeListener extends ObjectChangeListener {
      * INTERNAL:
      * Clear the changes in this listener
      */
+    @Override
     public void clearChanges(boolean forRefresh) {
         super.clearChanges(forRefresh);
         if (forRefresh && this.objectChangeSet != null){
@@ -166,6 +169,7 @@ public class AttributeChangeListener extends ObjectChangeListener {
         this.objectChangeSet = null;
     }
 
+    @Override
     public String toString() {
         return getClass().getSimpleName() + "(" + getObjectChangeSet() + ")";
     }

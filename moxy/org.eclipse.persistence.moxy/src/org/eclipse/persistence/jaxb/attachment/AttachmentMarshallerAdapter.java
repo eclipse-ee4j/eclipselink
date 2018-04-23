@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -43,22 +43,27 @@ public class AttachmentMarshallerAdapter implements XMLAttachmentMarshaller {
         this.attachmentMarshaller = a;
     }
 
+    @Override
     public boolean isXOPPackage() {
         return attachmentMarshaller.isXOPPackage();
     }
 
+    @Override
     public String addMtomAttachment(javax.activation.DataHandler data, String elementName, String namespaceURI) {
         return this.attachmentMarshaller.addMtomAttachment(data,  namespaceURI, elementName);
     }
 
+    @Override
     public String addMtomAttachment(byte[] data, int offset, int length, String mimeType, String elementName, String namespace) {
         return this.attachmentMarshaller.addMtomAttachment(data, offset, length, mimeType, namespace, elementName);
     }
 
+    @Override
     public String addSwaRefAttachment(DataHandler data) {
         return this.attachmentMarshaller.addSwaRefAttachment(data);
     }
 
+    @Override
     public String addSwaRefAttachment(byte[] data, int offset, int length) {
         return null;
     }

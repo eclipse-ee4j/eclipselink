@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -60,6 +60,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * INTERNAL:
      * Build and return a new element based on the change set.
      */
+    @Override
     public Object buildAddedElementFromChangeSet(Object changeSet, MergeManager mergeManager, AbstractSession targetSession) {
         return this.buildElementFromChangeSet(changeSet, mergeManager, targetSession);
     }
@@ -86,6 +87,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * INTERNAL:
      * Build and return a change set for the specified element.
      */
+    @Override
     public Object buildChangeSet(Object element, ObjectChangeSet owner, AbstractSession session) {
         ObjectBuilder objectBuilder = this.getObjectBuilder(element, session);
         return objectBuilder.compareForChange(element, null, (UnitOfWorkChangeSet)owner.getUOWChangeSet(), session);
@@ -144,6 +146,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * INTERNAL:
      * Build and return a new element based on the specified element.
      */
+    @Override
     public Object buildElementFromElement(Object element, MergeManager mergeManager, AbstractSession targetSession) {
         ObjectBuilder objectBuilder = this.getObjectBuilder(element, mergeManager.getSession());
         Object result = objectBuilder.buildNewInstance();
@@ -157,6 +160,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * In case Query By Example is used, this method builds and returns an expression that
      * corresponds to a single attribute and it's value.
      */
+    @Override
     public Expression buildExpression(Object queryObject, QueryByExamplePolicy policy, Expression expressionBuilder, Map processedObjects, AbstractSession session) {
         if (policy.shouldValidateExample()){
             throw QueryException.unsupportedMappingQueryByExample(queryObject.getClass().getName(), this);
@@ -168,6 +172,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * INTERNAL:
      * Build and return a new element based on the change set.
      */
+    @Override
     public Object buildRemovedElementFromChangeSet(Object changeSet, MergeManager mergeManager, AbstractSession targetSession) {
         return this.buildElementFromChangeSet(changeSet, mergeManager, targetSession);
     }
@@ -262,6 +267,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * INTERNAL:
      * Compare the non-null elements and return true if they are alike.
      */
+    @Override
     public boolean compareElements(Object element1, Object element2, AbstractSession session) {
         if (element1.getClass() != element2.getClass()) {
             return false;
@@ -273,6 +279,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * INTERNAL:
      * Compare the non-null elements and return true if they are alike.
      */
+    @Override
     public boolean compareElementsForChange(Object element1, Object element2, AbstractSession session) {
         return this.compareElements(element1, element2, session);
     }
@@ -451,6 +458,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * since it was cloned from the original version.
      * Aggregate elements cannot change their keys without detection.
      */
+    @Override
     public boolean mapKeyHasChanged(Object element, AbstractSession session) {
         return false;
     }
@@ -543,6 +551,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * ADVANCED:
      * Set the mapping's containerPolicy.
      */
+    @Override
     public void setContainerPolicy(ContainerPolicy containerPolicy) {
         this.containerPolicy = containerPolicy;
     }
@@ -570,14 +579,17 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * <p>jdk1.2.x: The container class must implement (directly or indirectly) the Collection interface.
      * <p>jdk1.1.x: The container class must be a subclass of Vector.
      */
+    @Override
     public void useCollectionClass(Class concreteContainerClass) {
         this.setContainerPolicy(ContainerPolicy.buildPolicyFor(concreteContainerClass));
     }
 
+    @Override
     public void useCollectionClassName(String concreteContainerClassName) {
         this.setContainerPolicy(new CollectionContainerPolicy(concreteContainerClassName));
     }
 
+    @Override
     public void useListClassName(String concreteContainerClassName) {
         this.setContainerPolicy(new ListContainerPolicy(concreteContainerClassName));
     }
@@ -593,6 +605,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * <p>jdk1.1.x: The container class must be a subclass of Hashtable.
      * <p>The referenceClass must be set before calling this method.
      */
+    @Override
     public void useMapClass(Class concreteContainerClass, String methodName) {
         // the reference class has to be specified before coming here
         if (this.getReferenceClassName() == null) {
@@ -603,6 +616,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
         this.setContainerPolicy(policy);
     }
 
+    @Override
     public void useMapClassName(String concreteContainerClassName, String methodName) {
         // the reference class has to be specified before coming here
         if (this.getReferenceClassName() == null) {
@@ -790,6 +804,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * Build and return the change record that results
      * from comparing the two direct collection attributes.
      */
+    @Override
     public ChangeRecord compareForChange(Object clone, Object backup, ObjectChangeSet owner, AbstractSession session) {
         return (new ArrayCollectionMappingHelper(this)).compareForChange(clone, backup, owner, session);
     }
@@ -798,6 +813,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * INTERNAL:
      * Compare the attributes belonging to this mapping for the objects.
      */
+    @Override
     public boolean compareObjects(Object object1, Object object2, AbstractSession session) {
         return (new ArrayCollectionMappingHelper(this)).compareObjects(object1, object2, session);
     }
@@ -806,6 +822,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * INTERNAL:
      * Merge changes from the source to the target object.
      */
+    @Override
     public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager, AbstractSession targetSession) {
         (new ArrayCollectionMappingHelper(this)).mergeChangesIntoObject(target, changeRecord, source, mergeManager, targetSession);
     }
@@ -815,6 +832,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * Merge changes from the source to the target object.
      * Simply replace the entire target collection.
      */
+    @Override
     public void mergeIntoObject(Object target, boolean isTargetUnInitialized, Object source, MergeManager mergeManager, AbstractSession targetSession) {
         (new ArrayCollectionMappingHelper(this)).mergeIntoObject(target, isTargetUnInitialized, source, mergeManager, targetSession);
     }
@@ -824,6 +842,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * This method is used to have an object add to a collection once the changeSet is applied
      * The referenceKey parameter should only be used for direct Maps.
      */
+    @Override
     public void simpleAddToCollectionChangeRecord(Object referenceKey, Object changeSetToAdd, ObjectChangeSet changeSet, AbstractSession session) {
         (new ArrayCollectionMappingHelper(this)).simpleAddToCollectionChangeRecord(referenceKey, changeSetToAdd, changeSet, session);
     }
@@ -833,6 +852,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * This method is used to have an object removed from a collection once the changeSet is applied
      * The referenceKey parameter should only be used for direct Maps.
      */
+    @Override
     public void simpleRemoveFromCollectionChangeRecord(Object referenceKey, Object changeSetToRemove, ObjectChangeSet changeSet, AbstractSession session) {
         (new ArrayCollectionMappingHelper(this)).simpleRemoveFromCollectionChangeRecord(referenceKey, changeSetToRemove, changeSet, session);
     }

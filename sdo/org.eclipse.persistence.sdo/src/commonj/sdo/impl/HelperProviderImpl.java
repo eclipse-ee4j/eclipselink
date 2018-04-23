@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -46,30 +46,37 @@ public class HelperProviderImpl extends HelperProvider {
         super();
     }
 
+    @Override
     public CopyHelper copyHelper() {
         return copyHelper;
     }
 
+    @Override
     public DataFactory dataFactory() {
         return dataFactory;
     }
 
+    @Override
     public DataHelper dataHelper() {
         return dataHelper;
     }
 
+    @Override
     public EqualityHelper equalityHelper() {
         return equalityHelper;
     }
 
+    @Override
     public TypeHelper typeHelper() {
         return typeHelper;
     }
 
+    @Override
     public XMLHelper xmlHelper() {
         return xmlHelper;
     }
 
+    @Override
     public XSDHelper xsdHelper() {
         return xsdHelper;
     }
@@ -78,6 +85,7 @@ public class HelperProviderImpl extends HelperProvider {
      * This class handles resolving objects from a deserialized stream for
      * Reading
      */
+    @Override
     public ExternalizableDelegator.Resolvable resolvable() {
         return new SDOResolvable(HelperProvider.getDefaultContext());
     }
@@ -86,6 +94,7 @@ public class HelperProviderImpl extends HelperProvider {
      * This class handles custom serialization of target objects for
      * Writing
      */
+    @Override
     public ExternalizableDelegator.Resolvable resolvable(Object target) {
         return new SDOResolvable(target, HelperProvider.getDefaultContext());
     }

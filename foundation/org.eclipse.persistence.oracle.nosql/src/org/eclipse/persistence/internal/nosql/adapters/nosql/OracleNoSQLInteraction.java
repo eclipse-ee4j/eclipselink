@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -53,15 +53,18 @@ public class OracleNoSQLInteraction implements Interaction {
         this.connection = connection;
     }
 
+    @Override
     public void clearWarnings() {
     }
 
+    @Override
     public void close() {
     }
 
     /**
      * Output records are not supported/required.
      */
+    @Override
     public boolean execute(InteractionSpec spec, Record input, Record output) throws ResourceException {
         throw ValidationException.operationNotSupported("execute(InteractionSpec, Record, Record)");
     }
@@ -70,6 +73,7 @@ public class OracleNoSQLInteraction implements Interaction {
      * Execute the interaction and return output record.
      * The spec is either GET, PUT or DELETE interaction.
      */
+    @Override
     public Record execute(InteractionSpec spec, Record record) throws ResourceException {
         if (!(spec instanceof OracleNoSQLInteractionSpec)) {
             throw EISException.invalidInteractionSpecType();
@@ -199,10 +203,12 @@ public class OracleNoSQLInteraction implements Interaction {
         return null;
     }
 
+    @Override
     public Connection getConnection() {
         return connection;
     }
 
+    @Override
     public ResourceWarning getWarnings() {
         return null;
     }

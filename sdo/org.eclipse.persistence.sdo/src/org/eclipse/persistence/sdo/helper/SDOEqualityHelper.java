@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -92,6 +92,7 @@ public class SDOEqualityHelper implements EqualityHelper {
      * @param dataObject2 DataObject to be compared
      * @return true the objects have the same Type and all values of all compared Properties are equal.
      */
+    @Override
     public boolean equalShallow(DataObject dataObject1, DataObject dataObject2) {
         return compareDataObjects(dataObject1, dataObject2, false);
     }
@@ -128,6 +129,7 @@ public class SDOEqualityHelper implements EqualityHelper {
      * @param dataObject2 DataObject to be compared
      * @return true if the trees of DataObjects are equal(Deep).
      */
+    @Override
     public boolean equal(DataObject dataObject1, DataObject dataObject2) {
         return compareDataObjects(dataObject1, dataObject2, true);
     }

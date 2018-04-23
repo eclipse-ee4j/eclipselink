@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -47,7 +47,8 @@ public class DirectConnector extends DefaultConnector {
      * Indicates whether DriverManager should be used.
      * @return boolean
      */
-     public boolean shouldUseDriverManager(Properties properties, Session session) {
+     @Override
+    public boolean shouldUseDriverManager(Properties properties, Session session) {
          return false;
      }
 }

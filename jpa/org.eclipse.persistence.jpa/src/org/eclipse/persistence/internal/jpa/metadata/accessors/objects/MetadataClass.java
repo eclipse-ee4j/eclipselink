@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -147,6 +147,7 @@ public class MetadataClass extends MetadataAnnotatedElement {
     /**
      * Allow comparison to Java classes and Metadata classes.
      */
+    @Override
     public boolean equals(Object object) {
         if (object instanceof Class) {
             if (getName() == null) {
@@ -391,6 +392,7 @@ public class MetadataClass extends MetadataAnnotatedElement {
     /**
      * INTERNAL:
      */
+    @Override
     public int getModifiers() {
         return m_modifiers;
     }
@@ -588,6 +590,7 @@ public class MetadataClass extends MetadataAnnotatedElement {
     /**
      * INTERNAL:
      */
+    @Override
     public void setModifiers(int modifiers) {
         m_modifiers = modifiers;
     }
@@ -595,6 +598,7 @@ public class MetadataClass extends MetadataAnnotatedElement {
     /**
      * INTERNAL:
      */
+    @Override
     public void setName(String name) {
         super.setName(name);
 

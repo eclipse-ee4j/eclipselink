@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -140,6 +140,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
      * Return the converter on the mapping.
      * A converter can be used to convert between the object's value and database value of the attribute.
      */
+    @Override
     public Converter getConverter() {
         return converter;
     }
@@ -148,6 +149,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
      * Set the converter on the mapping.
      * A converter can be used to convert between the object's value and database value of the attribute.
      */
+    @Override
     public void setConverter(Converter converter) {
         this.converter = converter;
     }
@@ -156,6 +158,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
      * INTERNAL:
      * Clone the attribute from the clone and assign it to the backup.
      */
+    @Override
     public void buildBackupClone(Object clone, Object backup, UnitOfWorkImpl unitOfWork) {
         throw DescriptorException.invalidMappingOperation(this, "buildBackupClone");
     }
@@ -169,6 +172,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
         throw DescriptorException.invalidMappingOperation(this, "buildClone");
     }
 
+    @Override
     public void buildCloneFromRow(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object clone, CacheKey sharedCacheKey, ObjectBuildingQuery sourceQuery, UnitOfWorkImpl unitOfWork, AbstractSession executionSession) {
         throw DescriptorException.invalidMappingOperation(this, "buildCloneFromRow");
     }
@@ -177,6 +181,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
      * INTERNAL:
      * Cascade perform delete through mappings that require the cascade
      */
+    @Override
     public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
         //objects referenced by this mapping are not registered as they have
         // no identity, this is a no-op.
@@ -186,6 +191,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade
      */
+    @Override
     public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
         //Our current XML support does not make use of the UNitOfWork.
     }
@@ -195,6 +201,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
      * This method was created in VisualAge.
      * @return prototype.changeset.ChangeRecord
      */
+    @Override
     public ChangeRecord compareForChange(Object clone, Object backup, ObjectChangeSet owner, AbstractSession session) {
         throw DescriptorException.invalidMappingOperation(this, "compareForChange");
     }
@@ -203,6 +210,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
     * INTERNAL:
     * Compare the attributes belonging to this mapping for the objects.
     */
+    @Override
     public boolean compareObjects(Object firstObject, Object secondObject, AbstractSession session) {
         throw DescriptorException.invalidMappingOperation(this, "compareObjects");
     }
@@ -213,6 +221,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
     * Replace the transient attributes of the remote value holders
     * with client-side objects.
     */
+    @Override
     public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
         throw DescriptorException.invalidMappingOperation(this, "fixObjectReferences");
     }
@@ -221,6 +230,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
      * INTERNAL:
      * Iterate on the appropriate attribute value.
      */
+    @Override
     public void iterate(DescriptorIterator iterator) {
         throw DescriptorException.invalidMappingOperation(this, "iterate");
     }
@@ -243,6 +253,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
         throw DescriptorException.invalidMappingOperation(this, "mergeIntoObject");
     }
 
+    @Override
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected, Boolean[] wasCacheUsed) throws DatabaseException {
        List<XMLEntry> values = ((DOMRecord)row).getValuesIndicatingNoEntry(this.getFields());
        Object container = getContainerPolicy().containerInstance(values.size());
@@ -351,14 +362,17 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
         }
         return null;
     }
+    @Override
     public void writeSingleValue(Object value, Object parent, XMLRecord row, AbstractSession session) {
 
     }
 
+    @Override
     public boolean isXMLMapping() {
         return true;
     }
 
+    @Override
     public Vector<DatabaseField> getFields() {
         if(fields == null || fields.size() == 0) {
             fields = this.collectFields();
@@ -366,6 +380,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
         return this.fields;
     }
 
+    @Override
     protected Vector<DatabaseField> collectFields() {
         return new Vector<DatabaseField>(fieldToClassMappings.keySet());
     }
@@ -375,6 +390,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
         addChoiceElement(field, elementType);
     }
 
+    @Override
     public void addChoiceElement(String xpath, String elementTypeName) {
         XMLField field = new XMLField(xpath);
         addChoiceElement(field, elementTypeName);
@@ -403,6 +419,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
         addChoiceElementMapping(srcFields, elementType, tgtFields);
     }
 
+    @Override
     public void addChoiceElement(List<XMLField> srcFields, String elementTypeName, List<XMLField> tgtFields) {
         for(XMLField sourceField:srcFields) {
             this.fieldToClassNameMappings.put(sourceField, elementTypeName);
@@ -419,6 +436,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
         addChoiceElement(srcField, elementType, tgtField);
     }
 
+    @Override
     public void addChoiceElement(String srcXpath, String elementTypeName, String tgtXpath) {
         XMLField field = new XMLField(srcXpath);
         XMLField tgtField = new XMLField(tgtXpath);
@@ -480,6 +498,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
         this.choiceElementMappingsByClassName.put(className, mapping);
     }
 
+    @Override
     public void addChoiceElement(XMLField field, String elementTypeName) {
         this.fieldToClassNameMappings.put(field, elementTypeName);
         if (classNameToFieldMappings.get(elementTypeName) == null) {
@@ -489,10 +508,12 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
     }
 
 
+    @Override
     public Map<XMLField, Class> getFieldToClassMappings() {
         return fieldToClassMappings;
     }
 
+    @Override
     public void initialize(AbstractSession session) throws DescriptorException {
         super.initialize(session);
 
@@ -553,14 +574,17 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
         }
     }
 
+    @Override
     public Map<Class, XMLField> getClassToFieldMappings() {
         return classToFieldMappings;
     }
 
+    @Override
     public Map<XMLField, XMLMapping> getChoiceElementMappings() {
         return choiceElementMappings;
     }
 
+    @Override
     public ContainerPolicy getContainerPolicy() {
         return containerPolicy;
     }
@@ -573,10 +597,12 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
         this.setContainerPolicy(ContainerPolicy.buildPolicyFor(concreteContainerClass));
     }
 
+    @Override
     public void useCollectionClassName(String concreteContainerClassName) {
         this.setContainerPolicy(new CollectionContainerPolicy(concreteContainerClassName));
     }
 
+    @Override
     public void convertClassNamesToClasses(ClassLoader classLoader) {
         Iterator<Entry<XMLField, String>> entries = fieldToClassNameMappings.entrySet().iterator();
         while (entries.hasNext()) {
@@ -669,6 +695,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
         }
     }
 
+    @Override
     public void addConverter(XMLField field, Converter converter) {
         if(this.fieldsToConverters == null) {
             fieldsToConverters = new HashMap<XMLField, Converter>();
@@ -676,6 +703,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
         fieldsToConverters.put(field, converter);
     }
 
+    @Override
     public Converter getConverter(XMLField field) {
         if(null != this.fieldsToConverters) {
             Converter converter = fieldsToConverters.get(field);
@@ -697,6 +725,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
         return null;
     }
 
+    @Override
     public ArrayList getChoiceFieldToClassAssociations() {
         ArrayList associations = new ArrayList();
         if(this.fieldToClassNameMappings.size() > 0) {
@@ -788,14 +817,17 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
         }
     }
 
+    @Override
     public boolean isWriteOnly() {
         return this.isWriteOnly;
     }
 
+    @Override
     public void setIsWriteOnly(boolean b) {
         this.isWriteOnly = b;
     }
 
+    @Override
     public boolean isAny() {
         return this.isAny;
     }
@@ -804,6 +836,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
         this.isAny = b;
     }
 
+    @Override
     public void preInitialize(AbstractSession session) throws DescriptorException {
         getAttributeAccessor().setIsWriteOnly(this.isWriteOnly());
         getAttributeAccessor().setIsReadOnly(this.isReadOnly());
@@ -847,6 +880,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
         }
     }
 
+    @Override
     public void setAttributeValueInObject(Object object, Object value) throws DescriptorException {
         if(isWriteOnly()) {
             return;
@@ -859,6 +893,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
      * present.  If it is not present then the container policy will be used to
      * create the container.
      */
+    @Override
     public boolean getReuseContainer() {
         return reuseContainer;
     }
@@ -868,10 +903,12 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
      * present.  If it is not present then the container policy will be used to
      * create the container.
      */
+    @Override
     public void setReuseContainer(boolean reuseContainer) {
         this.reuseContainer = reuseContainer;
     }
 
+    @Override
     public Map<Class, List<XMLField>> getClassToSourceFieldsMappings() {
         if(this.classToSourceFieldsMappings == null) {
             this.classToSourceFieldsMappings = new HashMap<Class, List<XMLField>>();
@@ -903,10 +940,12 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
         return false;
     }
 
+    @Override
     public Map<String, XMLField> getClassNameToFieldMappings() {
         return classNameToFieldMappings;
     }
 
+    @Override
     public boolean isMixedContent() {
        // return this.mixedContentMapping != null;
         return isMixedContent;
@@ -920,6 +959,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
      * be specified here to allow the mixed content to be written/detected inside the wrapper element.
      * @since EclipseLink 2.3.1
      */
+    @Override
     public void setMixedContent(String groupingElement) {
         isMixedContent = true;
 
@@ -946,6 +986,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
      * any of the elements in the choice.
      * @since EclipseLink 2.3.1
      */
+    @Override
     public void setMixedContent(boolean mixed) {
        if(!mixed) {
             this.mixedContentMapping = null;
@@ -955,10 +996,12 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
         isMixedContent = mixed;
     }
 
+    @Override
     public XMLCompositeDirectCollectionMapping getMixedContentMapping() {
         return this.mixedContentMapping;
     }
 
+    @Override
     public XMLAnyCollectionMapping getAnyMapping(){
         return anyMapping;
     }
@@ -969,6 +1012,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
      * is no presence of the collection in the XML document.
      * @since EclipseLink 2.3.3
      */
+    @Override
     public boolean isDefaultEmptyContainer() {
         return isDefaultEmptyContainer;
     }
@@ -979,18 +1023,22 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
      * field/property if the collection is not present in the XML document.
      * @since EclipseLink 2.3.3
      */
+    @Override
     public void setDefaultEmptyContainer(boolean defaultEmptyContainer) {
         this.isDefaultEmptyContainer = defaultEmptyContainer;
     }
 
+    @Override
     public AbstractNullPolicy getWrapperNullPolicy() {
         return this.wrapperNullPolicy;
     }
 
+    @Override
     public void setWrapperNullPolicy(AbstractNullPolicy policy) {
         this.wrapperNullPolicy = policy;
     }
 
+    @Override
     public Map<Class, XMLMapping> getChoiceElementMappingsByClass() {
         return choiceElementMappingsByClass;
     }
@@ -1003,6 +1051,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
      * INTERNAL
      * @since EclipseLink 2.5.0
      */
+    @Override
     public Object convertObjectValueToDataValue(Object value, Session session, XMLMarshaller marshaller) {
         if (null != converter) {
             if (converter instanceof XMLConverter) {
@@ -1018,6 +1067,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
      * INTERNAL
      * @since EclipseLink 2.5.0
      */
+    @Override
     public Object convertDataValueToObjectValue(Object fieldValue, Session session, XMLUnmarshaller unmarshaller) {
         if (null != converter) {
             if (converter instanceof XMLConverter) {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -95,6 +95,7 @@ public class CloneListIterator<E>
         this.state = State.UNKNOWN;
     }
 
+    @Override
     public void add(E o) {
         // allow the nested iterator to throw an exception before we modify the original list
         this.listIterator.add(o);
@@ -112,10 +113,12 @@ public class CloneListIterator<E>
         this.mutator.add(index, o);
     }
 
+    @Override
     public boolean hasNext() {
         return this.listIterator.hasNext();
     }
 
+    @Override
     public boolean hasPrevious() {
         return this.listIterator.hasPrevious();
     }
@@ -142,6 +145,7 @@ public class CloneListIterator<E>
         return (E) this.listIterator.previous();
     }
 
+    @Override
     public E next() {
         // allow the nested iterator to throw an exception before we modify the index
         E next = this.nestedNext();
@@ -150,10 +154,12 @@ public class CloneListIterator<E>
         return next;
     }
 
+    @Override
     public int nextIndex() {
         return this.listIterator.nextIndex();
     }
 
+    @Override
     public E previous() {
         // allow the nested iterator to throw an exception before we modify the index
         E previous = this.nestedPrevious();
@@ -162,10 +168,12 @@ public class CloneListIterator<E>
         return previous;
     }
 
+    @Override
     public int previousIndex() {
         return this.listIterator.previousIndex();
     }
 
+    @Override
     public void remove() {
         // allow the nested iterator to throw an exception before we modify the original list
         this.listIterator.remove();
@@ -187,6 +195,7 @@ public class CloneListIterator<E>
         this.mutator.remove(index);
     }
 
+    @Override
     public void set(E o) {
         // allow the nested iterator to throw an exception before we modify the original list
         this.listIterator.set(o);
@@ -245,6 +254,7 @@ public class CloneListIterator<E>
                 return INSTANCE;
             }
             // add is not supported
+            @Override
             public void add(int index, Object o) {
                 throw new UnsupportedOperationException();
             }
@@ -253,10 +263,12 @@ public class CloneListIterator<E>
                 return INSTANCE;
             }
             // remove is not supported
+            @Override
             public void remove(int index) {
                 throw new UnsupportedOperationException();
             }
             // set is not supported
+            @Override
             public void set(int index, Object o) {
                 throw new UnsupportedOperationException();
             }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -235,7 +235,7 @@ public class IndexMetadata extends ORMetadata {
         // Process the column list (comma separated string)
         StringTokenizer st = new StringTokenizer(m_columnList, ",");
         while (st.hasMoreTokens()) {
-            indexDefinition.addField(((String) st.nextToken()).trim());
+            indexDefinition.addField(st.nextToken().trim());
         }
 
         // Process the name value.

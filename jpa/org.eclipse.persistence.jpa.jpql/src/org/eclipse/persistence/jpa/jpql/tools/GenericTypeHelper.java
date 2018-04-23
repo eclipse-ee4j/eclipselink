@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -46,6 +46,7 @@ public class GenericTypeHelper implements ITypeHelper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public IType bigDecimal() {
         return delegate.bigDecimal();
     }
@@ -53,6 +54,7 @@ public class GenericTypeHelper implements ITypeHelper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public IType bigInteger() {
         return delegate.bigInteger();
     }
@@ -60,6 +62,7 @@ public class GenericTypeHelper implements ITypeHelper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public IType booleanType() {
         return delegate.booleanType();
     }
@@ -67,6 +70,7 @@ public class GenericTypeHelper implements ITypeHelper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public IType byteType() {
         return delegate.byteType();
     }
@@ -74,6 +78,7 @@ public class GenericTypeHelper implements ITypeHelper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public IType characterType() {
         return delegate.characterType();
     }
@@ -81,6 +86,7 @@ public class GenericTypeHelper implements ITypeHelper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public IType collectionType() {
         return delegate.collectionType();
     }
@@ -88,6 +94,7 @@ public class GenericTypeHelper implements ITypeHelper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public IType convertPrimitive(Object type) {
         return delegate.convertPrimitive((IType) type);
     }
@@ -95,6 +102,7 @@ public class GenericTypeHelper implements ITypeHelper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public IType dateType() {
         return delegate.dateType();
     }
@@ -102,6 +110,7 @@ public class GenericTypeHelper implements ITypeHelper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public IType doubleType() {
         return delegate.doubleType();
     }
@@ -109,6 +118,7 @@ public class GenericTypeHelper implements ITypeHelper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public IType enumType() {
         return delegate.enumType();
     }
@@ -116,6 +126,7 @@ public class GenericTypeHelper implements ITypeHelper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public IType floatType() {
         return delegate.floatType();
     }
@@ -123,6 +134,7 @@ public class GenericTypeHelper implements ITypeHelper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public IType getType(Class<?> type) {
         return delegate.getType(type);
     }
@@ -130,6 +142,7 @@ public class GenericTypeHelper implements ITypeHelper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public IType getType(String typeName) {
         return delegate.getType(typeName);
     }
@@ -137,6 +150,7 @@ public class GenericTypeHelper implements ITypeHelper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public IType integerType() {
         return delegate.integerType();
     }
@@ -144,6 +158,7 @@ public class GenericTypeHelper implements ITypeHelper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean isBooleanType(Object type) {
         return delegate.isBooleanType((IType) type);
     }
@@ -151,6 +166,7 @@ public class GenericTypeHelper implements ITypeHelper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean isCollectionType(Object type) {
         return delegate.isCollectionType((IType) type);
     }
@@ -158,6 +174,7 @@ public class GenericTypeHelper implements ITypeHelper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean isDateType(Object type) {
         return delegate.isDateType((IType) type);
     }
@@ -165,6 +182,7 @@ public class GenericTypeHelper implements ITypeHelper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean isEnumType(Object type) {
         return delegate.isEnumType((IType) type);
     }
@@ -172,6 +190,7 @@ public class GenericTypeHelper implements ITypeHelper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean isFloatingType(Object type) {
         return delegate.isFloatingType((IType) type);
     }
@@ -179,6 +198,7 @@ public class GenericTypeHelper implements ITypeHelper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean isIntegralType(Object type) {
         return delegate.isIntegralType((IType) type);
     }
@@ -186,6 +206,7 @@ public class GenericTypeHelper implements ITypeHelper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean isMapType(Object type) {
         return delegate.isMapType((IType) type);
     }
@@ -193,6 +214,7 @@ public class GenericTypeHelper implements ITypeHelper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean isNumericType(Object type) {
         return delegate.isNumericType((IType) type);
     }
@@ -200,6 +222,7 @@ public class GenericTypeHelper implements ITypeHelper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean isObjectType(Object type) {
         return delegate.isObjectType((IType) type);
     }
@@ -207,6 +230,7 @@ public class GenericTypeHelper implements ITypeHelper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean isPrimitiveType(Object type) {
         return delegate.isPrimitiveType((IType) type);
     }
@@ -214,6 +238,7 @@ public class GenericTypeHelper implements ITypeHelper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean isStringType(Object type) {
         return delegate.isStringType((IType) type);
     }
@@ -221,6 +246,7 @@ public class GenericTypeHelper implements ITypeHelper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public IType longType() {
         return delegate.longType();
     }
@@ -228,6 +254,7 @@ public class GenericTypeHelper implements ITypeHelper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public IType longType(Object type) {
         return delegate.longType((IType) type);
     }
@@ -235,6 +262,7 @@ public class GenericTypeHelper implements ITypeHelper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public IType mapType() {
         return delegate.mapType();
     }
@@ -242,6 +270,7 @@ public class GenericTypeHelper implements ITypeHelper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public IType numberType() {
         return delegate.numberType();
     }
@@ -249,6 +278,7 @@ public class GenericTypeHelper implements ITypeHelper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public IType objectType() {
         return delegate.objectType();
     }
@@ -256,6 +286,7 @@ public class GenericTypeHelper implements ITypeHelper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public ITypeDeclaration objectTypeDeclaration() {
         return delegate.objectTypeDeclaration();
     }
@@ -263,6 +294,7 @@ public class GenericTypeHelper implements ITypeHelper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public IType primitiveBoolean() {
         return delegate.primitiveBoolean();
     }
@@ -270,6 +302,7 @@ public class GenericTypeHelper implements ITypeHelper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public IType primitiveByte() {
         return delegate.primitiveByte();
     }
@@ -277,6 +310,7 @@ public class GenericTypeHelper implements ITypeHelper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public IType primitiveChar() {
         return delegate.primitiveChar();
     }
@@ -284,6 +318,7 @@ public class GenericTypeHelper implements ITypeHelper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public IType primitiveDouble() {
         return delegate.primitiveDouble();
     }
@@ -291,6 +326,7 @@ public class GenericTypeHelper implements ITypeHelper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public IType primitiveFloat() {
         return delegate.primitiveFloat();
     }
@@ -298,6 +334,7 @@ public class GenericTypeHelper implements ITypeHelper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public IType primitiveInteger() {
         return delegate.primitiveInteger();
     }
@@ -305,6 +342,7 @@ public class GenericTypeHelper implements ITypeHelper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public IType primitiveLong() {
         return delegate.primitiveLong();
     }
@@ -312,6 +350,7 @@ public class GenericTypeHelper implements ITypeHelper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public IType primitiveShort() {
         return delegate.primitiveShort();
     }
@@ -319,6 +358,7 @@ public class GenericTypeHelper implements ITypeHelper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public IType shortType() {
         return delegate.shortType();
     }
@@ -326,6 +366,7 @@ public class GenericTypeHelper implements ITypeHelper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public IType stringType() {
         return delegate.stringType();
     }
@@ -333,6 +374,7 @@ public class GenericTypeHelper implements ITypeHelper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public IType timestampType() {
         return delegate.timestampType();
     }
@@ -340,6 +382,7 @@ public class GenericTypeHelper implements ITypeHelper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public IType toBooleanType(Object type) {
         return delegate.toBooleanType((IType) type);
     }
@@ -347,6 +390,7 @@ public class GenericTypeHelper implements ITypeHelper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public IType toByteType(Object type) {
         return delegate.toByteType((IType) type);
     }
@@ -354,6 +398,7 @@ public class GenericTypeHelper implements ITypeHelper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public IType toDoubleType(Object type) {
         return delegate.toDoubleType((IType) type);
     }
@@ -361,6 +406,7 @@ public class GenericTypeHelper implements ITypeHelper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public IType toFloatType(Object type) {
         return delegate.toFloatType((IType) type);
     }
@@ -368,6 +414,7 @@ public class GenericTypeHelper implements ITypeHelper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public IType toIntegerType(Object type) {
         return delegate.toIntegerType((IType) type);
     }
@@ -375,6 +422,7 @@ public class GenericTypeHelper implements ITypeHelper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public IType toShortType(Object type) {
         return delegate.toShortType((IType) type);
     }
@@ -382,6 +430,7 @@ public class GenericTypeHelper implements ITypeHelper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public IType unknownType() {
         return delegate.unknownType();
     }
@@ -389,6 +438,7 @@ public class GenericTypeHelper implements ITypeHelper {
     /**
      * {@inheritDoc}
      */
+    @Override
     public ITypeDeclaration unknownTypeDeclaration() {
         return delegate.unknownTypeDeclaration();
     }

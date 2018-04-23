@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -34,6 +34,7 @@ public class StackUnmarshalNamespaceResolver implements UnmarshalNamespaceResolv
         uriToPrefixMap = new HashMap<String, List<String>>();
     }
 
+    @Override
     public String getPrefix(String namespaceURI) {
         List<String> prefixes = uriToPrefixMap.get(namespaceURI);
         if(prefixes != null){
@@ -45,6 +46,7 @@ public class StackUnmarshalNamespaceResolver implements UnmarshalNamespaceResolv
         return null;
     }
 
+    @Override
     public String getNamespaceURI(String prefix) {
         if(prefix == null) {
             prefix = Constants.EMPTY_STRING;
@@ -60,6 +62,7 @@ public class StackUnmarshalNamespaceResolver implements UnmarshalNamespaceResolv
         return null;
     }
 
+    @Override
     public void pop(String prefix) {
         List<String> uris = namespaceMap.get(prefix);
         if(uris != null){
@@ -87,6 +90,7 @@ public class StackUnmarshalNamespaceResolver implements UnmarshalNamespaceResolv
         }
     }
 
+    @Override
     public void push(String prefix, String namespaceURI) {
         List<String> uris = namespaceMap.get(prefix);
         if(uris == null) {
@@ -102,6 +106,7 @@ public class StackUnmarshalNamespaceResolver implements UnmarshalNamespaceResolv
         prefixes.add(prefix);
     }
 
+    @Override
     public Set<String> getPrefixes() {
         return namespaceMap.keySet();
     }

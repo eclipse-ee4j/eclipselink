@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -70,10 +70,12 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
         this.currentAttribute = attribute;
     }
 
+    @Override
     public String getName() {
         return attributeGroup.getName();
     }
 
+    @Override
     public void addAttributeNodes(String... attributeNames) {
         if (!this.isMutable) {
             throw new IllegalStateException("immutable_entitygraph");
@@ -97,6 +99,7 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
         this.attributeNodes.put(attributeNode.getAttributeName(), attributeNode);
     }
 
+    @Override
     public void addAttributeNodes(Attribute<X, ?>... attribute) {
         if (!this.isMutable) {
             throw new IllegalStateException("immutable_entitygraph");
@@ -108,6 +111,7 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
         }
     }
 
+    @Override
     public <T> Subgraph<T> addSubgraph(Attribute<X, T> attribute) {
         Class type = attribute.getJavaType();
         if (attribute.isCollection()) {
@@ -116,14 +120,17 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
         return addSubgraph(attribute.getName(), type);
     }
 
+    @Override
     public <T> Subgraph<? extends T> addSubgraph(Attribute<X, T> attribute, Class<? extends T> type) {
         return addSubgraph(attribute.getName(), type);
     }
 
+    @Override
     public <X> Subgraph<X> addSubgraph(String attributeName) {
         return this.addSubgraph(attributeName, null);
     }
 
+    @Override
     public <X> Subgraph<X> addSubgraph(String attributeName, Class<X> type) {
         if (!this.isMutable) {
             throw new IllegalStateException(ExceptionLocalization.buildMessage("immutable_entitygraph"));
@@ -158,6 +165,7 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
         return entityGraph;
     }
 
+    @Override
     public <T> Subgraph<T> addKeySubgraph(Attribute<X, T> attribute) {
         if (!this.isMutable) {
             throw new IllegalStateException("immutable_entitygraph");
@@ -169,14 +177,17 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
         return addKeySubgraph(attribute.getName(), type);
     }
 
+    @Override
     public <T> Subgraph<? extends T> addKeySubgraph(Attribute<X, T> attribute, Class<? extends T> type) {
         return addKeySubgraph(attribute.getName(), type);
     }
 
+    @Override
     public <X> Subgraph<X> addKeySubgraph(String attributeName) {
         return this.addKeySubgraph(attributeName, null);
     }
 
+    @Override
     public <X> Subgraph<X> addKeySubgraph(String attributeName, Class<X> type) {
         if (!this.isMutable) {
             throw new IllegalStateException(ExceptionLocalization.buildMessage("immutable_entitygraph"));
@@ -214,6 +225,7 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
         return entityGraph;
     }
 
+    @Override
     public <T> Subgraph<? extends T> addSubclassSubgraph(Class<? extends T> type) {
         if (!this.isMutable) {
             throw new IllegalStateException("immutable_entitygraph");
@@ -232,6 +244,7 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
         return new EntityGraphImpl(subGroup, targetDesc);
     }
 
+    @Override
     public List<AttributeNode<?>> getAttributeNodes() {
         if (this.attributeNodes == null) {
             buildAttributeNodes();
@@ -239,6 +252,7 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
         return new ArrayList(this.attributeNodes.values());
     }
 
+    @Override
     public Class<X> getClassType() {
         return this.classType;
     }
@@ -250,6 +264,7 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
         return attributeGroup;
     }
 
+    @Override
     public String getAttributeName() {
         return currentAttribute;
     }

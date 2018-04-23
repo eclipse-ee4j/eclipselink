@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,7 +12,9 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.codegen;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * INTERNAL:
@@ -139,7 +141,7 @@ public abstract class CodeDefinition {
     }
 
     private static String packageName(String typeName) {
-        int lastPeriod = typeName.lastIndexOf(".");
+        int lastPeriod = typeName.lastIndexOf('.');
 
         if (lastPeriod == -1) {
             return "";
@@ -157,7 +159,7 @@ public abstract class CodeDefinition {
      * (e.g. int -> int, java.util.Vector -> Vector, java.lang.Boolean[] -> Boolean, etc.)
      */
     private static String shortName(String typeName) {
-        int shortNameStartIndex = typeName.lastIndexOf(".") + 1;
+        int shortNameStartIndex = typeName.lastIndexOf('.') + 1;
         int searchIndex = shortNameStartIndex;
 
         boolean stillLookingForEnd = true;
@@ -197,6 +199,7 @@ public abstract class CodeDefinition {
         this.name = name;
     }
 
+    @Override
     public String toString() {
         CodeGenerator generator = new CodeGenerator();
         write(generator);

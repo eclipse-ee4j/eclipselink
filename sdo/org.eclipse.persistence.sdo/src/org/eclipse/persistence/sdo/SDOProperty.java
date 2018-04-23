@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -144,6 +144,7 @@ public class SDOProperty implements Property, Serializable {
      * Returns the name of the Property.
      * @return the Property name.
      */
+    @Override
     public String getName() {
         return propertyName;
     }
@@ -152,6 +153,7 @@ public class SDOProperty implements Property, Serializable {
      * Returns the type of the Property.
      * @return the Property type.
      */
+    @Override
     public SDOType getType() {
         return type;
     }
@@ -160,6 +162,7 @@ public class SDOProperty implements Property, Serializable {
      * Returns whether the Property is many-valued.
      * @return <code>true</code> if the Property is many-valued.
      */
+    @Override
     public boolean isMany() {
         return hasMany;
     }
@@ -168,6 +171,7 @@ public class SDOProperty implements Property, Serializable {
       * Return whether or not this is an open content property.
       * @return true if this property is an open content property.
       */
+    @Override
     public boolean isOpenContent() {
         int idx = getIndexInType();
         if (idx == -1) {
@@ -181,6 +185,7 @@ public class SDOProperty implements Property, Serializable {
      * Returns whether the Property is containment, i.e., whether it represents by-value composition.
      * @return <code>true</code> if the Property is containment.
      */
+    @Override
     public boolean isContainment() {
         return isContainment;
     }
@@ -190,6 +195,7 @@ public class SDOProperty implements Property, Serializable {
      * @return the Property's containing type.
      * @see Type#getProperties()
      */
+    @Override
     public SDOType getContainingType() {
         return containingType;
     }
@@ -198,6 +204,7 @@ public class SDOProperty implements Property, Serializable {
      * Returns the default value this Property will have in a {@link commonj.sdo.DataObject data object} where the Property hasn't been set.
      * @return the default value.
      */
+    @Override
     public Object getDefault() {
         if (null == defaultValue) {
             // return an Object wrapper for numeric primitives or null
@@ -213,6 +220,7 @@ public class SDOProperty implements Property, Serializable {
      * Values may change due to other factors, such as services operating on DataObjects.
      * @return true if values for this Property cannot be modified.
      */
+    @Override
     public boolean isReadOnly() {
         return readOnly;
     }
@@ -221,6 +229,7 @@ public class SDOProperty implements Property, Serializable {
      * Returns the opposite Property if the Property is bi-directional or null otherwise.
      * @return the opposite Property if the Property is bi-directional or null
      */
+    @Override
     public SDOProperty getOpposite() {
         return opposite;
     }
@@ -233,6 +242,7 @@ public class SDOProperty implements Property, Serializable {
      * Return a list of alias names for this Property.
      * @return a list of alias names for this Property.
      */
+    @Override
     public List getAliasNames() {
         if (aliasNames == null) {
             aliasNames = new ArrayList();
@@ -1033,6 +1043,7 @@ public class SDOProperty implements Property, Serializable {
         return xpath;
     }
 
+    @Override
     public Object get(Property property) {
         if(SDOConstants.XMLELEMENT_PROPERTY.equals(property)) {
             return isElement;
@@ -1043,6 +1054,7 @@ public class SDOProperty implements Property, Serializable {
         return propertyValues.get(property);
     }
 
+    @Override
     public List getInstanceProperties() {
         return new ArrayList(getPropertyValues().keySet());
     }
@@ -1132,6 +1144,7 @@ public class SDOProperty implements Property, Serializable {
         }
     }
 
+    @Override
     public boolean isNullable() {
         return nullable;
     }
@@ -1295,6 +1308,7 @@ public class SDOProperty implements Property, Serializable {
     /**
      * Return a unique hashCode (as an int) for this instance.
      */
+    @Override
     public int hashCode() {
         int hash = 7;
         hash = (31 * hash) + ((null == getName()) ? 0 : getName().hashCode());
@@ -1312,6 +1326,7 @@ public class SDOProperty implements Property, Serializable {
      * @param obj Object to compare to this SDOProperty instance
      * @return true if obj is equal to this SDOProperty instance, false if not
      */
+    @Override
     public boolean equals(Object obj) {
         if (obj == null) {
             return false;

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -58,6 +58,7 @@ public class FixedMimeTypePolicy implements MimeTypePolicy {
      * "http://www.w3.org/2005/05/xmlmime". If this is not set/present then the
      * fixed value will be returned.
      */
+    @Override
     public String getMimeType(Object anObject) {
         if(!initialized && null == contentTypeMapping) {
             ClassDescriptor descriptor = binaryMapping.getDescriptor();

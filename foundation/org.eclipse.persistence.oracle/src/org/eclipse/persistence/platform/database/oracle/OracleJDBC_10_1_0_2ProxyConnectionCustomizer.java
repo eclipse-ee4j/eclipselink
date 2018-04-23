@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -55,6 +55,7 @@ public class OracleJDBC_10_1_0_2ProxyConnectionCustomizer extends ConnectionCust
      * isActive method called after this method should return true only in case
      * the connection was actually customized.
      */
+    @Override
     public void customize() {
         // Lazily initialize proxy properties - customize method may be never called
         // in case of ClientSession using external connection pooling.
@@ -118,6 +119,7 @@ public class OracleJDBC_10_1_0_2ProxyConnectionCustomizer extends ConnectionCust
      * INTERNAL:
      * Indicated whether the connection is currently customized.
      */
+    @Override
     public boolean isActive() {
         return oracleConnection != null;
     }
@@ -130,6 +132,7 @@ public class OracleJDBC_10_1_0_2ProxyConnectionCustomizer extends ConnectionCust
      * (just like DatasourceAccessor.closeConnection method).
      * isActive method called after this method should always return false.
      */
+    @Override
     public void clear() {
         try {
             clearConnectionCache();
@@ -156,6 +159,7 @@ public class OracleJDBC_10_1_0_2ProxyConnectionCustomizer extends ConnectionCust
      * Normally called only when customizer is in inactive state (isActive()==false)
      * and followed by setAccessor call on the clone.
      */
+    @Override
     public Object clone() {
         try {
             return super.clone();
@@ -168,6 +172,7 @@ public class OracleJDBC_10_1_0_2ProxyConnectionCustomizer extends ConnectionCust
      * INTERNAL:
      * Two customizers considered equal if they produce the sane customization.
      */
+    @Override
     public boolean equals(Object obj) {
         if(obj instanceof OracleJDBC_10_1_0_2ProxyConnectionCustomizer) {
             return equals((OracleJDBC_10_1_0_2ProxyConnectionCustomizer)obj);

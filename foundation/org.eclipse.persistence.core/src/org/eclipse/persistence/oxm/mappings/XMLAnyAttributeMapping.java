@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -95,6 +95,7 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
     * INTERNAL:
     * Clone the attribute from the clone and assign it to the backup.
     */
+    @Override
     public void buildBackupClone(Object clone, Object backup, UnitOfWorkImpl unitOfWork) {
         throw DescriptorException.invalidMappingOperation(this, "buildBackupClone");
     }
@@ -108,6 +109,7 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
         throw DescriptorException.invalidMappingOperation(this, "buildClone");
     }
 
+    @Override
     public void buildCloneFromRow(AbstractRecord Record, JoinedAttributeManager joinManager, Object clone, CacheKey sharedCacheKey, ObjectBuildingQuery sourceQuery, UnitOfWorkImpl unitOfWork, AbstractSession executionSession) {
         throw DescriptorException.invalidMappingOperation(this, "buildCloneFromRow");
     }
@@ -116,6 +118,7 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
      * INTERNAL:
      * Cascade perform delete through mappings that require the cascade
      */
+    @Override
     public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
         //objects referenced by this mapping are not registered as they have
         // no identity, this is a no-op.
@@ -125,10 +128,12 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
       * INTERNAL:
       * Cascade registerNew for Create through mappings that require the cascade
       */
+    @Override
     public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
         //Our current XML support does not make use of the UNitOfWork.
     }
 
+    @Override
     public Object clone() {
         // Bug 3037701 - clone the AttributeAccessor
         XMLAnyAttributeMapping mapping = null;
@@ -143,6 +148,7 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
     * This method was created in VisualAge.
     * @return prototype.changeset.ChangeRecord
     */
+    @Override
     public ChangeRecord compareForChange(Object clone, Object backup, ObjectChangeSet owner, AbstractSession session) {
         throw DescriptorException.invalidMappingOperation(this, "compareForChange");
     }
@@ -151,6 +157,7 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
     * INTERNAL:
     * Compare the attributes belonging to this mapping for the objects.
     */
+    @Override
     public boolean compareObjects(Object firstObject, Object secondObject, AbstractSession session) {
         throw DescriptorException.invalidMappingOperation(this, "compareObjects");
     }
@@ -161,6 +168,7 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
     * Replace the transient attributes of the remote value holders
     * with client-side objects.
     */
+    @Override
     public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
         throw DescriptorException.invalidMappingOperation(this, "fixObjectReferences");
     }
@@ -169,14 +177,17 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
     * INTERNAL:
     * Return the mapping's containerPolicy.
     */
+    @Override
     public ContainerPolicy getContainerPolicy() {
         return containerPolicy;
     }
 
+    @Override
     public DatabaseField getField() {
         return field;
     }
 
+    @Override
     public void initialize(AbstractSession session) throws DescriptorException {
         if (getField() != null) {
             setField(getDescriptor().buildField(getField()));
@@ -192,6 +203,7 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
     * INTERNAL:
     * Iterate on the appropriate attribute value.
     */
+    @Override
     public void iterate(DescriptorIterator iterator) {
         throw DescriptorException.invalidMappingOperation(this, "iterate");
     }
@@ -204,6 +216,7 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
     * INTERNAL:
     * Merge changes from the source to the target object.
     */
+    @Override
     public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager, AbstractSession targetSession) {
         throw DescriptorException.invalidMappingOperation(this, "mergeChangesIntoObject");
     }
@@ -227,10 +240,12 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
         this.containerPolicy = (MappedKeyMapContainerPolicy) cp;
     }
 
+    @Override
     public void setField(DatabaseField field) {
         this.field = (XMLField) field;
     }
 
+    @Override
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected, Boolean[] wasCacheUsed) throws DatabaseException {
         XMLRecord record = (XMLRecord) row;
 
@@ -318,10 +333,12 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
         return null;
     }
 
+    @Override
     public boolean isXMLMapping() {
         return true;
     }
 
+    @Override
     public Vector getFields() {
         return this.collectFields();
     }
@@ -333,6 +350,7 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
         this.containerPolicy.setContainerClass(concreteMapClass);
     }
 
+    @Override
     public void writeSingleValue(Object attributeValue, Object parent, XMLRecord row, AbstractSession session) {
         ContainerPolicy cp = this.getContainerPolicy();
         if ((attributeValue == null) || (cp.sizeFor(attributeValue) == 0)) {
@@ -397,36 +415,44 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
      *
      * @param concreteMapClassName
      */
+    @Override
     public void useMapClassName(String concreteMapClassName) {
         MappedKeyMapContainerPolicy policy = new MappedKeyMapContainerPolicy(concreteMapClassName);
         policy.setKeyMapping(new XMLDirectMapping());
         this.setContainerPolicy(policy);
     }
 
+    @Override
     public boolean isNamespaceDeclarationIncluded() {
         return isNamespaceDeclarationIncluded;
     }
 
+    @Override
     public void setNamespaceDeclarationIncluded(boolean isNamespaceDeclarationIncluded) {
         this.isNamespaceDeclarationIncluded = isNamespaceDeclarationIncluded;
     }
 
+    @Override
     public boolean isSchemaInstanceIncluded() {
         return isSchemaInstanceIncluded;
     }
 
+    @Override
     public void setSchemaInstanceIncluded(boolean isSchemaInstanceIncluded) {
         this.isSchemaInstanceIncluded = isSchemaInstanceIncluded;
     }
 
+    @Override
     public boolean isWriteOnly() {
         return isWriteOnly;
     }
 
+    @Override
     public void setIsWriteOnly(boolean b) {
         this.isWriteOnly = b;
     }
 
+    @Override
     public void setAttributeValueInObject(Object object, Object value) throws DescriptorException {
         if(isWriteOnly()) {
             return;
@@ -435,6 +461,7 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
     }
 
 
+    @Override
     public void preInitialize(AbstractSession session) throws DescriptorException {
         getAttributeAccessor().setIsWriteOnly(this.isWriteOnly());
         getAttributeAccessor().setIsReadOnly(this.isReadOnly());
@@ -446,6 +473,7 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
      * present.  If it is not present then the container policy will be used to
      * create the container.
      */
+    @Override
     public boolean getReuseContainer() {
         return reuseContainer;
     }
@@ -455,6 +483,7 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
      * present.  If it is not present then the container policy will be used to
      * create the container.
      */
+    @Override
     public void setReuseContainer(boolean reuseContainer) {
         this.reuseContainer = reuseContainer;
     }
@@ -465,6 +494,7 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
      * is no presence of the collection in the XML document.
      * @since EclipseLink 2.3.3
      */
+    @Override
     public boolean isDefaultEmptyContainer() {
         return isDefaultEmptyContainer;
     }
@@ -475,14 +505,17 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
      * field/property if the collection is not present in the XML document.
      * @since EclipseLink 2.3.3
      */
+    @Override
     public void setDefaultEmptyContainer(boolean defaultEmptyContainer) {
         this.isDefaultEmptyContainer = defaultEmptyContainer;
     }
 
+    @Override
     public AbstractNullPolicy getWrapperNullPolicy() {
         return this.wrapperNullPolicy;
     }
 
+    @Override
     public void setWrapperNullPolicy(AbstractNullPolicy policy) {
         this.wrapperNullPolicy = policy;
     }

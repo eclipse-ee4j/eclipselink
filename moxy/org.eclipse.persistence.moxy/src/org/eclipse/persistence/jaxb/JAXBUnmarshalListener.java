@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -58,6 +58,7 @@ public class JAXBUnmarshalListener implements XMLUnmarshalListener {
         return listener;
     }
 
+    @Override
     public void beforeUnmarshal(Object target, Object parent) {
         if(classBasedUnmarshalEvents != null) {
             UnmarshalCallback callback = (UnmarshalCallback)classBasedUnmarshalEvents.get(target.getClass().getName());
@@ -87,6 +88,7 @@ public class JAXBUnmarshalListener implements XMLUnmarshalListener {
             listener.beforeUnmarshal(target, parent);
         }
     }
+    @Override
     public void afterUnmarshal(Object target, Object parent) {
         if(classBasedUnmarshalEvents != null) {
             UnmarshalCallback callback = (UnmarshalCallback)classBasedUnmarshalEvents.get(target.getClass().getName());

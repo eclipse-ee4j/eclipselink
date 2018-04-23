@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -56,6 +56,7 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
      * INTERNAL:
      *    Return a backup clone of the attribute.
      */
+    @Override
     public Object backupCloneAttribute(Object attributeValue, Object clone, Object backup, UnitOfWorkImpl unitOfWork) {
         //no need to check if the attribute is a valueholder because closeAttribute
         // should always be called first
@@ -82,6 +83,7 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
      * TransparentIndirectionPolicy may wrap the valueholder in another object.
      */
 
+    @Override
     public Object buildIndirectObject(ValueHolderInterface valueHolder){
         return valueHolder;
     }
@@ -93,6 +95,7 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
      *  directly from a row as opposed to building the original from the
      *  row, putting it in the shared cache, and then cloning the original.
      */
+    @Override
     public Object cloneAttribute(Object attributeValue, Object original, CacheKey cacheKey, Object clone, Integer refreshCascade, AbstractSession cloningSession, boolean buildDirectlyFromRow) {
         ValueHolderInterface valueHolder = (ValueHolderInterface) attributeValue;
         ValueHolderInterface result;
@@ -154,6 +157,7 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
      * the reference object.
      * Return null if the object has already been instantiated.
      */
+    @Override
     public AbstractRecord extractReferenceRow(Object referenceObject) {
         if (this.objectIsInstantiated(referenceObject)) {
             return null;
@@ -168,6 +172,7 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
      * Replace the transient attributes of the remote value holders
      * with client-side objects.
      */
+    @Override
     public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
         Object attributeValue = this.mapping.getAttributeValueFromObject(object);
         //bug 4147755 if it is not a Remote Valueholder then treat as if there was no VH...
@@ -269,6 +274,7 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
     /**
      * Reset the wrapper used to store the value.
      */
+    @Override
     public void reset(Object target) {
         this.mapping.setAttributeValueInObject(target, new ValueHolder());
     }
@@ -278,6 +284,7 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
      * Return the "real" attribute value, as opposed to any wrapper.
      * This will trigger the wrapper to instantiate the value.
      */
+    @Override
     public Object getRealAttributeValueFromObject(Object object, Object attribute) {
         if (attribute instanceof ValueHolderInterface) {
             return ((ValueHolderInterface)attribute).getValue();
@@ -291,6 +298,7 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
      * Extract and return the appropriate value from the
      * specified remote value holder.
      */
+    @Override
     public Object getValueFromRemoteValueHolder(RemoteValueHolder remoteValueHolder) {
         return remoteValueHolder.getValue();
     }
@@ -315,6 +323,7 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
      * INTERNAL:
      *    Iterate over the specified attribute value,
      */
+    @Override
     public void iterateOnAttributeValue(DescriptorIterator iterator, Object attributeValue) {
         iterator.iterateValueHolderForMapping((ValueHolderInterface)attributeValue, this.mapping);
     }
@@ -324,6 +333,7 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
      * Replace the client value holder with the server value holder,
      * after copying some of the settings from the client value holder.
      */
+    @Override
     public void mergeRemoteValueHolder(Object clientSideDomainObject, Object serverSideDomainObject, MergeManager mergeManager) {
         // This will always be a remote value holder coming from the server,
         RemoteValueHolder serverValueHolder = (RemoteValueHolder)this.mapping.getAttributeValueFromObject(serverSideDomainObject);
@@ -339,6 +349,7 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
      * placed in the object's attribute as a result.
      * In this case, return an empty ValueHolder.
      */
+    @Override
     public Object nullValueFromRow() {
         return new ValueHolder();
     }
@@ -347,6 +358,7 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
      * INTERNAL:
      * Return whether the specified object is instantiated.
      */
+    @Override
     public boolean objectIsInstantiated(Object object) {
         return ((ValueHolderInterface)object).isInstantiated();
     }
@@ -355,6 +367,7 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
      * INTERNAL:
      * Return whether the specified object can be instantiated without database access.
      */
+    @Override
     public boolean objectIsEasilyInstantiated(Object object) {
         if (object instanceof DatabaseValueHolder) {
             return ((DatabaseValueHolder)object).isEasilyInstantiated();
@@ -368,6 +381,7 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
      * Set the value of the appropriate attribute of target to attributeValue.
      * In this case, place the value inside the target's ValueHolder.
      */
+    @Override
     public void setRealAttributeValueInObject(Object target, Object attributeValue) {
         ValueHolderInterface holder = (ValueHolderInterface)this.mapping.getAttributeValueFromObject(target);
         if (holder == null) {
@@ -383,6 +397,7 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
      * set the source object into QueryBasedValueHolder.
      * Used only by transparent indirection.
      */
+    @Override
     public void setSourceObject(Object sourceObject, Object attributeValue) {
         if (attributeValue instanceof QueryBasedValueHolder) {
             ((QueryBasedValueHolder)attributeValue).setSourceObject(sourceObject);
@@ -407,6 +422,7 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
      * ValueHolderInterface.
      * If the value is null return a new indirection object to be used for the attribute.
      */
+    @Override
     public Object validateAttributeOfInstantiatedObject(Object attributeValue) {
         // PERF: If the value is null, create a new value holder instance for the attribute value,
         // this allows for indirection attributes to not be instantiated in the constructor as they
@@ -427,6 +443,7 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
      * integrity checker.
      * In this case, the attribute type MUST be ValueHolderInterface.
      */
+    @Override
     public void validateDeclaredAttributeType(Class attributeType, IntegrityChecker checker) throws DescriptorException {
         super.validateDeclaredAttributeType(attributeType, checker);
         if (!this.typeIsValid(attributeType)) {
@@ -441,6 +458,7 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
      * to the integrity checker.
      * In this case, the return type MUST be ValueHolderInterface.
      */
+    @Override
     public void validateGetMethodReturnType(Class returnType, IntegrityChecker checker) throws DescriptorException {
         super.validateGetMethodReturnType(returnType, checker);
         if (!this.typeIsValid(returnType)) {
@@ -455,6 +473,7 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
      * to the integrity checker.
      * In this case, the parameter type MUST be ValueHolderInterface.
      */
+    @Override
     public void validateSetMethodParameterType(Class parameterType, IntegrityChecker checker) throws DescriptorException {
         super.validateSetMethodParameterType(parameterType, checker);
         if (!this.typeIsValid(parameterType)) {
@@ -468,6 +487,7 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
      *    This value is determined by the batchQuery.
      * In this case, wrap the query in a ValueHolder for later invocation.
      */
+    @Override
     public Object valueFromBatchQuery(ReadQuery batchQuery, AbstractRecord row, ObjectLevelReadQuery originalQuery, CacheKey parentCacheKey) {
         return new BatchValueHolder(batchQuery, row, this.getForeignReferenceMapping(), originalQuery, parentCacheKey);
     }
@@ -479,6 +499,7 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
      * method on the object and passing it the row and session.
      * In this case, wrap the row in a ValueHolder for later use.
      */
+    @Override
     public Object valueFromMethod(Object object, AbstractRecord row, AbstractSession session) {
         return new TransformerBasedValueHolder(this.getTransformationMapping().getAttributeTransformer(), object, row, session);
     }
@@ -489,6 +510,7 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
      *    This value is determined by the query.
      * In this case, wrap the query in a ValueHolder for later invocation.
      */
+    @Override
     public Object valueFromQuery(ReadQuery query, AbstractRecord row, Object sourceObject, AbstractSession session) {
         return new QueryBasedValueHolder(query, sourceObject, row, session);
     }
@@ -499,6 +521,7 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
      *    This value is determined by the query.
      * In this case, wrap the query in a ValueHolder for later invocation.
      */
+    @Override
     public Object valueFromQuery(ReadQuery query, AbstractRecord row, AbstractSession session) {
         return new QueryBasedValueHolder(query, row, session);
     }
@@ -509,6 +532,7 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
      *    This value is determined by the row.
      * In this case, simply wrap the object in a ValueHolder.
      */
+    @Override
     public Object valueFromRow(Object object) {
         return new ValueHolder(object);
     }

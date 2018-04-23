@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -101,6 +101,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      * Used when initializing queries for mappings that use a Map.
      * Called when the selection query is being initialized to add the fields for the map key to the query.
      */
+    @Override
     public void addAdditionalFieldsToQuery(ReadQuery selectionQuery, Expression baseExpression){
         if (selectionQuery.isObjectLevelReadQuery()){
             ((ObjectLevelReadQuery)selectionQuery).addAdditionalField(baseExpression.getField(getField()));
@@ -114,6 +115,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      * Used when initializing queries for mappings that use a Map
      * Called when the insert query is being initialized to ensure the fields for the map key are in the insert query.
      */
+    @Override
     public void addFieldsForMapKey(AbstractRecord joinRow) {
         if (!isReadOnly()){
             if (isUpdatable()){
@@ -130,6 +132,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      * This method is used for removal of private owned relationships
      * DirectMappings are dealt with in their parent delete, so this is a no-op.
      */
+    @Override
     public void addKeyToDeletedObjectsList(Object object, Map deletedObjects) {
     }
 
@@ -271,6 +274,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
     /**
      * Build a clone of the given element in a unitOfWork.
      */
+    @Override
     public Object buildElementClone(Object attributeValue, Object parent, CacheKey cacheKey, Integer refreshCascade, AbstractSession cloningSession, boolean isExisting, boolean isFromSharedCache){
         return buildCloneValue(attributeValue, cloningSession);
     }
@@ -305,6 +309,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      * Certain key mappings favor different types of selection query.  Return the appropriate
      * type of selectionQuery.
      */
+    @Override
     public ReadQuery buildSelectionQueryForDirectCollectionKeyMapping(ContainerPolicy containerPolicy){
         DataReadQuery query = new DataReadQuery();
         query.setSQLStatement(new SQLSelectStatement());
@@ -316,6 +321,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      * INTERNAL:
      * Cascade discover and persist new objects during commit to the map key.
      */
+    @Override
     public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow,  boolean getAttributeValueFromObject, Set cascadeErrors){
         //objects referenced by this mapping are not registered as they have
         // no identity, this is a no-op.
@@ -325,6 +331,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      * INTERNAL:
      * Cascade perform delete through mappings that require the cascade.
      */
+    @Override
     public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects, boolean getAttributeValueFromObject) {
         //objects referenced by this mapping are not registered as they have
         // no identity, this is a no-op.
@@ -334,6 +341,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      * INTERNAL:
      * Cascade perform delete through mappings that require the cascade.
      */
+    @Override
     public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
         //objects referenced by this mapping are not registered as they have
         // no identity, this is a no-op.
@@ -343,6 +351,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade.
      */
+    @Override
     public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects, boolean getAttributeValueFromObject) {
         //objects referenced by this mapping are not registered as they have
         // no identity, this is a no-op.
@@ -352,6 +361,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade.
      */
+    @Override
     public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
         //objects referenced by this mapping are not registered as they have
         // no identity, this is a no-op.
@@ -397,6 +407,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      * This method is used for removal of private owned relationships
      * DirectMappings are dealt with in their parent delete, so this is a no-op.
      */
+    @Override
     public void deleteMapKey(Object objectDeleted, AbstractSession session){
     }
 
@@ -504,6 +515,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      * INTERNAL:
      * Creates the Array of simple types used to recreate this map.
      */
+    @Override
     public Object createSerializableMapKeyInfo(Object key, AbstractSession session){
         return key; // DirectToFields are already simple types.
     }
@@ -513,6 +525,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      * Create an instance of the Key object from the key information extracted from the map.
      * This may return the value directly in case of a simple key or will be used as the FK to load a related entity.
      */
+    @Override
     public List<Object> createMapComponentsFromSerializableKeyInfo(Object[] keyInfo, AbstractSession session){
         return Arrays.asList(keyInfo); // DirectToFields are already simple types.
     }
@@ -522,6 +535,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      * Create an instance of the Key object from the key information extracted from the map.
      * This key object may be a shallow stub of the actual object if the key is an Entity type.
      */
+    @Override
     public Object createStubbedMapComponentFromSerializableKeyInfo(Object keyInfo, AbstractSession session){
         return keyInfo;
     }
@@ -530,6 +544,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      * INTERNAL
      * Called when a DatabaseMapping is used to map the key in a collection.  Returns the key.
      */
+    @Override
     public Object createMapComponentFromRow(AbstractRecord dbRow, ObjectBuildingQuery query, CacheKey parentCacheKey, AbstractSession session, boolean isTargetProtected) {
         Object key = dbRow.get(getField());
         key = getObjectValue(key, session);
@@ -540,6 +555,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      * INTERNAL
      * Called when a DatabaseMapping is used to map the key in a collection and a join query is executed.  Returns the key.
      */
+    @Override
     public Object createMapComponentFromJoinedRow(AbstractRecord dbRow, JoinedAttributeManager joinManger, ObjectBuildingQuery query, CacheKey parentCacheKey, AbstractSession session, boolean isTargetProtected) {
         return createMapComponentFromRow(dbRow, query, parentCacheKey, session, isTargetProtected);
     }
@@ -548,6 +564,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      * INTERNAL:
      * Create a query key that links to the map key.
      */
+    @Override
     public QueryKey createQueryKeyForMapKey() {
         DirectQueryKey queryKey = new DirectQueryKey();
         queryKey.setField(getField());
@@ -558,6 +575,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      * INTERNAL:
      * Extract the fields for the Map key from the object to use in a query.
      */
+    @Override
     public Map extractIdentityFieldsForQuery(Object object, AbstractSession session){
         Map fields = new HashMap();
         Object key = object;
@@ -572,6 +590,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      * INTERNAL:
      * Return any tables that will be required when this mapping is used as part of a join query.
      */
+    @Override
     public List<DatabaseTable> getAdditionalTablesForJoinQuery() {
         List tables = new ArrayList(1);
         tables.add(getField().getTable());
@@ -584,6 +603,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      * the base data type must be explicitly specified in the mapping to tell EclipseLink to force
      * the instance variable value to that data type.
      */
+    @Override
     public Class getAttributeClassification() {
         return attributeClassification;
     }
@@ -604,6 +624,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      * INTERNAL:
      * Allows for subclasses to convert the attribute value.
      */
+    @Override
     public Object getObjectValue(Object fieldValue, Session session) {
         // PERF: Direct variable access.
         Object attributeValue = fieldValue;
@@ -681,6 +702,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      * This method is potentially called when this mapping is used as a map key and
      * will return null since direct mappings do not have reference descriptors.
      */
+    @Override
     public ClassDescriptor getReferenceDescriptor(){
         return null;
     }
@@ -690,6 +712,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      * Return the classification for the field contained in the mapping.
      * This is used to convert the row value to a consistent Java value.
      */
+    @Override
     public Class getFieldClassification(DatabaseField fieldToClassify) {
         // PERF: This method is a major performance code point,
         // so has been micro optimized and uses direct variable access.
@@ -765,6 +788,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      * Convert the attribute value to a field value.
      * Process any converter if defined, and check for null values.
      */
+    @Override
     public Object getFieldValue(Object attributeValue, AbstractSession session) {
         // PERF: This method is a major performance code point,
         // so has been micro optimized and uses direct variable access.
@@ -799,6 +823,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      * INTERNAL:
      * Return a Map of any foreign keys defined within the the MapKey.
      */
+    @Override
     public Map<DatabaseField, DatabaseField> getForeignKeyFieldsForMapKey(){
         return null;
     }
@@ -809,6 +834,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      * a primary key, it will be the set of fields in the primary key.  For mappings without
      * a primary key it will likely be all the fields.
      */
+    @Override
     public List<DatabaseField> getIdentityFieldsForMapKey(){
         return getAllFieldsForMapKey();
     }
@@ -817,6 +843,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      * INTERNAL:
      * Get all the fields for the map key.
      */
+    @Override
     public List<DatabaseField> getAllFieldsForMapKey(){
         Vector<DatabaseField> fields = new Vector<DatabaseField>(1);
         fields.add(getField());
@@ -828,6 +855,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      * Return the query that is used when this mapping is part of a joined relationship
      * This method is used when this mapping is used to map the key in a Map.
      */
+    @Override
     public ObjectLevelReadQuery getNestedJoinQuery(JoinedAttributeManager joinManager, ObjectLevelReadQuery query, AbstractSession session){
         return null;
     }
@@ -849,6 +877,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      * is a map key.
      * DirectMappings do not need any additional selection criteria when they are map keys.
      */
+    @Override
     public Expression getAdditionalSelectionCriteriaForMapKey(){
         return null;
     }
@@ -858,6 +887,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      * If required, get the targetVersion of the source object from the merge manager.
      * Used with MapKeyContainerPolicy to abstract getting the target version of a source key.
      */
+    @Override
     public Object getTargetVersionOfSourceObject(Object object, Object parent, MergeManager mergeManager, AbstractSession targetSession){
        return object;
     }
@@ -867,6 +897,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      * Return the class this key mapping maps or the descriptor for it
      * @return
      */
+    @Override
     public Class getMapKeyTargetType() {
         Class aClass = getAttributeAccessor().getAttributeClass();
         // 294765: check the attributeClassification when the MapKey annotation is not specified
@@ -1004,6 +1035,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      * INTERNAL:
      * Called when iterating through descriptors to handle iteration on this mapping when it is used as a MapKey.
      */
+    @Override
     public void iterateOnMapKey(DescriptorIterator iterator, Object element){
         if (iterator.shouldIterateOnPrimitives()) {
             iterator.iteratePrimitiveForMapping(element, this);
@@ -1048,6 +1080,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      * INTERNAL:
      * Making any mapping changes necessary to use a the mapping as a map key prior to initializing the mapping.
      */
+    @Override
     public void preinitializeMapKey(DatabaseTable table) throws DescriptorException {
         this.keyTableForMapKey = table;
     }
@@ -1056,6 +1089,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      * INTERNAL:
      * Making any mapping changes necessary to use a the mapping as a map key after initializing the mapping.
      */
+    @Override
     public void postInitializeMapKey(MappedKeyMapContainerPolicy policy) {
         if (getField().getType() == null) {
             getField().setType(getFieldClassification(getField()));
@@ -1068,6 +1102,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      * used as a key in a map.  This will typically be true if there are any parts to this mapping
      * that are not read-only.
      */
+    @Override
     public boolean requiresDataModificationEventsForMapKey(){
         return !isReadOnly() && isUpdatable();
     }
@@ -1146,6 +1181,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      * INTERNAL:
      * Allow the key mapping to unwrap the object.
      */
+    @Override
     public Object unwrapKey(Object key, AbstractSession session){
         return key;
     }
@@ -1165,6 +1201,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      * INTERNAL:
      * Allow the key mapping to wrap the object.
      */
+    @Override
     public Object wrapKey(Object key, AbstractSession session){
         return key;
     }
@@ -1246,6 +1283,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
         return getObjectValue(fieldValue, session);
     }
 
+    @Override
     protected abstract void writeValueIntoRow(AbstractRecord row, DatabaseField field, Object value);
 
     /**

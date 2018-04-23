@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -29,16 +29,19 @@ class DatabaseSessionConnectionHandler implements SequencingConnectionHandler {
     Accessor accessor;
     boolean isBusy;
 
+    @Override
     public void onConnect() {
         if (!isConnected()) {
             accessor.connect(login, ownerSession);
         }
     }
 
+    @Override
     public boolean isConnected() {
         return accessor.isConnected();
     }
 
+    @Override
     public synchronized Accessor acquireAccessor() {
         if (isBusy) {
             try {
@@ -51,17 +54,20 @@ class DatabaseSessionConnectionHandler implements SequencingConnectionHandler {
         return accessor;
     }
 
+    @Override
     public synchronized void releaseAccessor(Accessor accessor) {
         isBusy = false;
         notify();
     }
 
+    @Override
     public void onDisconnect() {
         if (isConnected()) {
             accessor.disconnect(ownerSession);
         }
     }
 
+    @Override
     protected void finalize() throws Throwable {
         onDisconnect();
     }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -137,6 +137,7 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
      * PUBLIC:
      * Clear the contents of the row.
      */
+    @Override
     public void clear() {
         this.fields = new Vector();
         this.values = new Vector();
@@ -147,6 +148,7 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
      * INTERNAL:
      * Clone the row and its values.
      */
+    @Override
     public AbstractRecord clone() {
         try {
             AbstractRecord clone = (AbstractRecord)super.clone();
@@ -171,6 +173,7 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
      * Check if the field is contained in the row.
      * Conform to hashtable interface.
      */
+    @Override
     public boolean containsKey(Object key) {
         if (key instanceof String) {
             return containsKey((String)key);
@@ -210,6 +213,7 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
      * PUBLIC:
      * Check if the value is contained in the row.
      */
+    @Override
     public boolean containsValue(Object value) {
         return getValues().contains(value);
     }
@@ -226,6 +230,7 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
      * PUBLIC:
      * Returns a set of the keys.
      */
+    @Override
     public Set entrySet() {
         return new EntrySet();
     }
@@ -236,6 +241,7 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
      * A field is constructed on the name to check the hash table.
      * If missing null is returned.
      */
+    @Override
     public Object get(Object key) {
         if (key instanceof String) {
             return get((String)key);
@@ -386,6 +392,7 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
      * PUBLIC:
      * Return if the row is empty.
      */
+    @Override
     public boolean isEmpty() {
         return size() == 0;
     }
@@ -411,6 +418,7 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
      * PUBLIC:
      * Returns a set of the keys.
      */
+    @Override
     public Set keySet() {
         return new KeySet();
     }
@@ -419,12 +427,15 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
      * Defines the virtual keySet.
      */
     protected class KeySet extends EntrySet {
+        @Override
         public Iterator iterator() {
             return new RecordKeyIterator();
         }
+        @Override
         public boolean contains(Object object) {
             return AbstractRecord.this.containsKey(object);
         }
+        @Override
         public boolean remove(Object object) {
             return AbstractRecord.this.remove(object) != null;
         }
@@ -434,12 +445,15 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
      * Defines the virtual valuesSet.
      */
     protected class ValuesSet extends EntrySet {
+        @Override
         public Iterator iterator() {
             return new RecordValuesIterator();
         }
+        @Override
         public boolean contains(Object object) {
             return AbstractRecord.this.contains(object);
         }
+        @Override
         public boolean remove(Object object) {
             int index = getValues().indexOf(object);
             if (index == -1) {
@@ -454,18 +468,22 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
      * Defines the virtual entrySet.
      */
     protected class EntrySet extends AbstractSet {
+        @Override
         public Iterator iterator() {
             return new RecordEntryIterator();
         }
+        @Override
         public int size() {
             return AbstractRecord.this.size();
         }
+        @Override
         public boolean contains(Object object) {
             if (!(object instanceof Entry)) {
                 return false;
             }
             return AbstractRecord.this.containsKey(((Entry)object).getKey());
         }
+        @Override
         public boolean remove(Object object) {
             if (!(object instanceof Entry)) {
                 return false;
@@ -473,6 +491,7 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
             AbstractRecord.this.remove(((Entry)object).getKey());
             return true;
         }
+        @Override
         public void clear() {
             AbstractRecord.this.clear();
         }
@@ -488,10 +507,12 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
             this.index = 0;
         }
 
+        @Override
         public boolean hasNext() {
             return this.index < AbstractRecord.this.size();
         }
 
+        @Override
         public Object next() {
             if (!hasNext()) {
                 throw new NoSuchElementException();
@@ -500,6 +521,7 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
             return new RecordEntry(getFields().get(this.index - 1), getValues().get(this.index - 1));
         }
 
+        @Override
         public void remove() {
             if (this.index >= AbstractRecord.this.size()) {
                 throw new IllegalStateException();
@@ -512,6 +534,7 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
      * Defines the virtual keySet iterator.
      */
     protected class RecordKeyIterator extends RecordEntryIterator {
+        @Override
         public Object next() {
             if (!hasNext()) {
                 throw new NoSuchElementException();
@@ -525,6 +548,7 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
      * Defines the virtual valuesSet iterator.
      */
     protected class RecordValuesIterator extends RecordEntryIterator {
+        @Override
         public Object next() {
             if (!hasNext()) {
                 throw new NoSuchElementException();
@@ -546,20 +570,24 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
             this.value = value;
     }
 
+    @Override
     public Object getKey() {
         return key;
     }
 
+    @Override
     public Object getValue() {
         return value;
     }
 
+    @Override
     public Object setValue(Object value) {
         Object oldValue = this.value;
         this.value = value;
         return oldValue;
     }
 
+    @Override
     public boolean equals(Object object) {
         if (!(object instanceof Map.Entry)) {
         return false;
@@ -568,10 +596,12 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
         return compare(key, entry.getKey()) && compare(value, entry.getValue());
     }
 
+    @Override
     public int hashCode() {
         return ((key == null) ? 0 : key.hashCode()) ^ ((value == null) ? 0 : value.hashCode());
     }
 
+    @Override
     public String toString() {
         return key + "=" + value;
     }
@@ -598,6 +628,7 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
      * PUBLIC:
      * Add the field-value pair to the row.
      */
+    @Override
     public Object put(Object key, Object value) throws ValidationException {
         if (key instanceof String) {
             return put((String)key, value);
@@ -635,6 +666,7 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
      * PUBLIC:
      * Add all of the elements.
      */
+    @Override
     public void putAll(Map map) {
         Iterator entriesIterator = map.entrySet().iterator();
         while (entriesIterator.hasNext()) {
@@ -647,6 +679,7 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
      * INTERNAL:
      * Remove the field key from the row.
      */
+    @Override
     public Object remove(Object key) {
         if (key instanceof String) {
             return remove((String)key);
@@ -732,6 +765,7 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
      * PUBLIC:
      * Return the number of field/value pairs in the row.
      */
+    @Override
     public int size() {
         return this.fields.size();
     }
@@ -739,6 +773,7 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
     /**
      * INTERNAL:
      */
+    @Override
     public String toString() {
         StringWriter writer = new StringWriter();
         writer.write(Helper.getShortClassName(getClass()));
@@ -765,6 +800,7 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
      * PUBLIC:
      * Returns an collection of the values.
      */
+    @Override
     public Collection values() {
         return new ValuesSet();
     }

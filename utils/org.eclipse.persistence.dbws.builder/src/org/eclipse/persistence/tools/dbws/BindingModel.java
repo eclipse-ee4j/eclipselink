@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -43,7 +43,7 @@ public class BindingModel {
     }
 
     public static String convertJDBCParameterBindingMarkers(String sqlString, ArrayList<BindingModel> bindings) {
-        int idx = sqlString.indexOf("?");
+        int idx = sqlString.indexOf('?');
         if (idx == -1) {
             return sqlString;
         }
@@ -55,7 +55,7 @@ public class BindingModel {
             sb.append("#");
             sb.append(bindings.get(argNumber).getName());
             anchorIdx = idx + 1;
-            idx = sqlString.indexOf("?", anchorIdx);
+            idx = sqlString.indexOf('?', anchorIdx);
             argNumber++;
             // bug 309002 - may be GROUP BY/ORDER BY clauses after last marker
             if (idx == -1) {

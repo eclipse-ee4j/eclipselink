@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2018  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -37,24 +37,28 @@ public class JoinTableImpl extends AbstractTableImpl<JoinTableMetadata, JoinTabl
         getMetadata().setInverseJoinColumns(new ArrayList<JoinColumnMetadata>());
     }
 
+    @Override
     public JoinColumn addInverseJoinColumn() {
         JoinColumnImpl joinColumn = new JoinColumnImpl();
         getMetadata().getInverseJoinColumns().add(joinColumn.getMetadata());
         return joinColumn;
     }
 
+    @Override
     public JoinColumn addJoinColumn() {
         JoinColumnImpl joinColumn = new JoinColumnImpl();
         getMetadata().getJoinColumns().add(joinColumn.getMetadata());
         return joinColumn;
     }
 
+    @Override
     public ForeignKey setForeignKey() {
         ForeignKeyImpl foreignKey = new ForeignKeyImpl();
         getMetadata().setForeignKey(foreignKey.getMetadata());
         return foreignKey;
     }
 
+    @Override
     public ForeignKey setInverseForeignKey() {
         ForeignKeyImpl foreignKey = new ForeignKeyImpl();
         getMetadata().setInverseForeignKey(foreignKey.getMetadata());

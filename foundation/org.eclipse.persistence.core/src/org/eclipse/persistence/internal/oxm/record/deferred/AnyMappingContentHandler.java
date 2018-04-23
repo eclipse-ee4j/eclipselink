@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -36,11 +36,13 @@ public class AnyMappingContentHandler extends DeferredContentHandler {
          this.usesXMLRoot = usesXMLRoot;
      }
 
-     protected void processEmptyElement() throws SAXException {
+     @Override
+    protected void processEmptyElement() throws SAXException {
          processSimpleElement();
      }
 
-     protected void processSimpleElement() throws SAXException {
+     @Override
+    protected void processSimpleElement() throws SAXException {
          if(usesXMLRoot) {
              //Remove the first event as the start element for this element was already process by parentRecord
              getEvents().remove(0);
@@ -50,7 +52,8 @@ public class AnyMappingContentHandler extends DeferredContentHandler {
          }
      }
 
-     protected void processComplexElement() throws SAXException {
+     @Override
+    protected void processComplexElement() throws SAXException {
          getParent().unmappedContent();
          Class unmappedContentHandlerClass = getParent().getUnmarshaller().getUnmappedContentHandlerClass();
          UnmappedContentHandler unmappedContentHandler;

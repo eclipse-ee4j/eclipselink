@@ -122,6 +122,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * INTERNAL:
      * Clone the attribute from the clone and assign it to the backup.
      */
+    @Override
     public void buildBackupClone(Object clone, Object backup, UnitOfWorkImpl unitOfWork) {
         Object attributeValue = getAttributeValueFromObject(clone);
         setAttributeValueInObject(backup, buildBackupClonePart(attributeValue, unitOfWork));
@@ -165,6 +166,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * In order to bypass the shared cache when in transaction a UnitOfWork must
      * be able to populate working copies directly from the row.
      */
+    @Override
     public void buildCloneFromRow(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object clone, CacheKey sharedCacheKey, ObjectBuildingQuery sourceQuery, UnitOfWorkImpl unitOfWork, AbstractSession executionSession) {
         // automatically returns a uow result from scratch that doesn't need cloning
         Object cloneAttributeValue = valueFromRow(databaseRow, joinManager, sourceQuery, sharedCacheKey, executionSession, true, null);
@@ -236,6 +238,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * this is an Aggregate mapping, a recursive call is made to the buildExpressionFromExample method of
      * ObjectBuilder.
      */
+    @Override
     public Expression buildExpression(Object queryObject, QueryByExamplePolicy policy, Expression expressionBuilder, Map processedObjects, AbstractSession session) {
         String attributeName = this.getAttributeName();
         Object attributeValue = this.getRealAttributeValueFromObject(queryObject, session);
@@ -303,6 +306,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * Compare the changes between two aggregates.
      * Return a change record holding the changes.
      */
+    @Override
     public ChangeRecord compareForChange(Object clone, Object backup, ObjectChangeSet owner, AbstractSession session) {
         Object cloneAttribute = getAttributeValueFromObject(clone);
         Object backupAttribute = null;
@@ -351,6 +355,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * INTERNAL:
      * Compare the attributes belonging to this mapping for the objects.
      */
+    @Override
     public boolean compareObjects(Object firstObject, Object secondObject, AbstractSession session) {
         return compareAttributeValues(getAttributeValueFromObject(firstObject), getAttributeValueFromObject(secondObject), session);
     }
@@ -415,6 +420,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * Replace the transient attributes of the remote value holders
      * with client-side objects.
      */
+    @Override
     public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
         Object attributeValue = getAttributeValueFromObject(object);
         fixAttributeValue(attributeValue, objectDescriptors, processedObjects, query, session);
@@ -476,6 +482,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * #getReferenceDescriptor(Object). This will ensure you get the right descriptor if the object's
      * descriptor is part of an inheritance tree.
      */
+    @Override
     public ClassDescriptor getReferenceDescriptor() {
         return referenceDescriptor;
     }
@@ -526,6 +533,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * INTERNAL:
      * Initialize the reference descriptor.
      */
+    @Override
     public void initialize(AbstractSession session) throws DescriptorException {
         super.initialize(session);
 
@@ -551,6 +559,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * INTERNAL:
      * Related mapping should implement this method to return true.
      */
+    @Override
     public boolean isAggregateMapping() {
         return true;
     }
@@ -559,6 +568,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * INTERNAL:
      * Iterate on the appropriate attribute value.
      */
+    @Override
     public void iterate(DescriptorIterator iterator) {
         iterateOnAttributeValue(iterator, getAttributeValueFromObject(iterator.getVisitedParent()));
     }
@@ -624,6 +634,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * The actual aggregate object does not need to be replaced, because even if the clone references
      * another aggregate it appears the same to TopLink
      */
+    @Override
     public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager, AbstractSession targetSession) {
         ObjectChangeSet aggregateChangeSet = (ObjectChangeSet)((AggregateChangeRecord)changeRecord).getChangedObject();
         if (aggregateChangeSet == null) {// the change was to set the value to null
@@ -660,6 +671,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * Merge changes from the source to the target object. This merge is only called when a changeSet for the target
      * does not exist or the target is uninitialized
      */
+    @Override
     public void mergeIntoObject(Object target, boolean isTargetUnInitialized, Object source, MergeManager mergeManager, AbstractSession targetSession) {
         Object sourceAttributeValue = getAttributeValueFromObject(source);
         if (sourceAttributeValue == null) {
@@ -705,6 +717,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * INTERNAL:
      * The message is passed to its reference class descriptor.
      */
+    @Override
     public void postDelete(DeleteObjectQuery query) throws DatabaseException, OptimisticLockException {
         if (!isReadOnly()) {
             postDeleteAttributeValue(query, getAttributeValueFromObject(query.getObject()));
@@ -733,6 +746,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * INTERNAL:
      * The message is passed to its reference class descriptor.
      */
+    @Override
     public void postInsert(WriteObjectQuery query) throws DatabaseException, OptimisticLockException {
         if (!isReadOnly()) {
             postInsertAttributeValue(query, getAttributeValueFromObject(query.getObject()));
@@ -763,6 +777,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * INTERNAL:
      * The message is passed to its reference class descriptor.
      */
+    @Override
     public void postUpdate(WriteObjectQuery query) throws DatabaseException, OptimisticLockException {
         if (!isReadOnly()) {
             postUpdateAttributeValue(query, getAttributeValueFromObject(query.getObject()));
@@ -801,6 +816,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * INTERNAL:
      * The message is passed to its reference class descriptor.
      */
+    @Override
     public void preDelete(DeleteObjectQuery query) throws DatabaseException, OptimisticLockException {
         if (!isReadOnly()) {
             preDeleteAttributeValue(query, getAttributeValueFromObject(query.getObject()));
@@ -830,6 +846,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * INTERNAL:
      * The message is passed to its reference class descriptor.
      */
+    @Override
     public void preInsert(WriteObjectQuery query) throws DatabaseException, OptimisticLockException {
         if (!isReadOnly()) {
             preInsertAttributeValue(query, getAttributeValueFromObject(query.getObject()));
@@ -869,6 +886,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * INTERNAL:
      * The message is passed to its reference class descriptor.
      */
+    @Override
     public void preUpdate(WriteObjectQuery query) throws DatabaseException, OptimisticLockException {
         if (!isReadOnly()) {
             preUpdateAttributeValue(query, getAttributeValueFromObject(query.getObject()));
@@ -912,6 +930,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * Usually the mappings are initialized and the serialized reference descriptors are replaced with local descriptors
      * if they already exist in the remote session.
      */
+    @Override
     public void remoteInitialization(DistributedSession session) {
         super.remoteInitialization(session);
         ClassDescriptor refDescriptor = getReferenceDescriptor();
@@ -955,6 +974,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * Either create a new change record or update the change record with the new value.
      * This is used by attribute change tracking.
      */
+    @Override
     public void updateChangeRecord(Object sourceClone, Object newValue, Object oldValue, ObjectChangeSet objectChangeSet, UnitOfWorkImpl uow) throws DescriptorException {
         //This method will be called when either the referenced aggregate has
         //been changed or a component of the referenced aggregate has been changed
@@ -1049,6 +1069,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * INTERNAL:
      * Return whether the specified object and all its components have been deleted.
      */
+    @Override
     public boolean verifyDelete(Object object, AbstractSession session) throws DatabaseException {
         return verifyDeleteOfAttributeValue(getAttributeValueFromObject(object), session);
     }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -833,11 +833,13 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
             private String newPrefix = "org.eclipse.persistence.";
             private String oldOxmPrefix = oldPrefix + "ox.";
             private String newOxmPrefix = newPrefix + "oxm.";
+            @Override
             public Object convertObjectValueToDataValue(Object objectValue, Session session){
                 //if this code is writin out, write out the converted value
                 return objectValue;
             }
 
+            @Override
             public Object convertDataValueToObjectValue(Object dataValue, Session session){
                 if(dataValue == null) {
                     return null;
@@ -858,10 +860,12 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
                 }
             }
 
+            @Override
             public boolean isMutable(){
                 return false;
             }
 
+            @Override
             public void initialize(DatabaseMapping mapping, Session session){
                 this.platformList = new HashMap();
                 this.platformList.put("org.eclipse.persistence.internal.databaseaccess.AccessPlatform", "org.eclipse.persistence.platform.database.AccessPlatform");

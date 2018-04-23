@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2018  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -36,28 +36,33 @@ public class RangePartitioningImpl extends MetadataImpl<RangePartitioningMetadat
         getMetadata().setPartitions(new ArrayList<RangePartitionMetadata>());
     }
 
+    @Override
     public RangePartition addPartition() {
         RangePartitionImpl rangePartition = new RangePartitionImpl();
         getMetadata().getPartitions().add(rangePartition.getMetadata());
         return rangePartition;
     }
 
+    @Override
     public RangePartitioning setName(String name) {
         getMetadata().setName(name);
         return this;
     }
 
+    @Override
     public Column setPartitionColumn() {
         ColumnImpl column = new ColumnImpl();
         getMetadata().setPartitionColumn(column.getMetadata());
         return column;
     }
 
+    @Override
     public RangePartitioning setPartitionValueType(String partitionValueType) {
         getMetadata().setPartitionValueTypeName(partitionValueType);
         return this;
     }
 
+    @Override
     public RangePartitioning setUnionUnpartitionableQueries(Boolean unionUnpartitionableQueries) {
         getMetadata().setUnionUnpartitionableQueries(unionUnpartitionableQueries);
         return this;

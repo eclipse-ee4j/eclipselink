@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -63,6 +63,7 @@ public class XMLStreamWriterRecord extends MarshalRecord {
         return domToStreamWriter;
     }
 
+    @Override
     public void attribute(XPathFragment xPathFragment, NamespaceResolver namespaceResolver, String value) {
         try {
             String namespaceURI = xPathFragment.getNamespaceURI();
@@ -82,6 +83,7 @@ public class XMLStreamWriterRecord extends MarshalRecord {
         }
     }
 
+    @Override
     public void defaultNamespaceDeclaration(String defaultNamespace){
         try{
             xmlStreamWriter.writeDefaultNamespace(defaultNamespace);
@@ -90,6 +92,7 @@ public class XMLStreamWriterRecord extends MarshalRecord {
         }
     }
 
+    @Override
     public void namespaceDeclaration(String prefix, String namespaceURI){
         try{
             xmlStreamWriter.writeNamespace(prefix, namespaceURI);
@@ -98,6 +101,7 @@ public class XMLStreamWriterRecord extends MarshalRecord {
         }
     }
 
+    @Override
     public void attributeWithoutQName(String namespaceURI, String localName, String prefix, String value){
         try {
             if(namespaceURI == null || namespaceURI.length() == 0) {
@@ -110,6 +114,7 @@ public class XMLStreamWriterRecord extends MarshalRecord {
         }
     }
 
+    @Override
     public void attribute(String namespaceURI, String localName, String name, String value) {
         try {
              if(namespaceURI == null || namespaceURI.length() == 0) {
@@ -122,6 +127,7 @@ public class XMLStreamWriterRecord extends MarshalRecord {
         }
     }
 
+    @Override
     public void cdata(String value) {
         try {
             for (String part : MarshalRecord.splitCData(value)) {
@@ -132,6 +138,7 @@ public class XMLStreamWriterRecord extends MarshalRecord {
         }
     }
 
+    @Override
     public void characters(String value) {
         try {
             xmlStreamWriter.writeCharacters(value);
@@ -140,13 +147,16 @@ public class XMLStreamWriterRecord extends MarshalRecord {
         }
     }
 
+    @Override
     public boolean isNamespaceAware() {
         return true;
     }
 
+    @Override
     public void closeStartElement() {
     }
 
+    @Override
     public void openStartElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
         super.openStartElement(xPathFragment, namespaceResolver);
         try {
@@ -179,6 +189,7 @@ public class XMLStreamWriterRecord extends MarshalRecord {
         }
     }
 
+    @Override
     public void element(XPathFragment frag) {
         try {
             xmlStreamWriter.writeStartElement(getNameForFragment(frag));
@@ -188,6 +199,7 @@ public class XMLStreamWriterRecord extends MarshalRecord {
         }
     }
 
+    @Override
     public void endDocument() {
         try {
             xmlStreamWriter.writeEndDocument();
@@ -197,6 +209,7 @@ public class XMLStreamWriterRecord extends MarshalRecord {
         }
     }
 
+    @Override
     public void endElement(XPathFragment pathFragment, NamespaceResolver namespaceResolver) {
         try {
             xmlStreamWriter.writeEndElement();
@@ -205,6 +218,7 @@ public class XMLStreamWriterRecord extends MarshalRecord {
         }
     }
 
+    @Override
     public void node(Node node, NamespaceResolver resolver,String uri, String name) {
         try {
             if(node.getNodeType() == Node.DOCUMENT_NODE) {
@@ -216,6 +230,7 @@ public class XMLStreamWriterRecord extends MarshalRecord {
         }
     }
 
+    @Override
     public void startDocument(String encoding, String version) {
         try {
             if(Constants.DEFAULT_XML_ENCODING.equals(encoding)) {
@@ -228,6 +243,7 @@ public class XMLStreamWriterRecord extends MarshalRecord {
         }
     }
 
+    @Override
     public void startPrefixMapping(String prefix, String namespaceUri) {
         if(null == this.prefixMapping) {
             this.prefixMapping = new HashMap<String, String>();
@@ -260,9 +276,11 @@ public class XMLStreamWriterRecord extends MarshalRecord {
         }
     }
 
+    @Override
     public void namespaceDeclarations(NamespaceResolver namespaceResolver) {
     }
 
+    @Override
     public void startPrefixMappings(NamespaceResolver namespaceResolver) {
         this.namespaceResolver = namespaceResolver;
     }

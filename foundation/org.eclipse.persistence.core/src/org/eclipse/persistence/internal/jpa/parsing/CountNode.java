@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -31,6 +31,7 @@ public class CountNode extends AggregateNode {
      * INTERNAL
      * Apply this node to the passed query
      */
+    @Override
     public void applyToQuery(ObjectLevelReadQuery theQuery, GenerationContext context) {
         if (theQuery.isReportQuery()) {
             ReportQuery reportQuery = (ReportQuery)theQuery;
@@ -43,6 +44,7 @@ public class CountNode extends AggregateNode {
      * INTERNAL
      * Validate node and calculate its type.
      */
+    @Override
     public void validate(ParseTreeContext context) {
         if (left != null) {
             left.validate(context);
@@ -54,6 +56,7 @@ public class CountNode extends AggregateNode {
     /**
      * INTERNAL
      */
+    @Override
     protected Expression addAggregateExression(Expression expr) {
         return expr.count();
     }
@@ -62,6 +65,7 @@ public class CountNode extends AggregateNode {
      * INTERNAL
      * Is this node a CountNode
      */
+    @Override
     public boolean isCountNode() {
         return true;
     }
@@ -69,6 +73,7 @@ public class CountNode extends AggregateNode {
      * INTERNAL
      * Get the string representation of this node.
      */
+    @Override
     public String getAsString() {
         return "COUNT(" + left.getAsString() + ")";
     }

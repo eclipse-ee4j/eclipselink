@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -61,6 +61,7 @@ public class CciJMSConnection implements javax.resource.cci.Connection {
     /**
      * Close the session and the connection.
      */
+    @Override
     public void close() throws EISException {
         try {
             getSession().close();
@@ -75,6 +76,7 @@ public class CciJMSConnection implements javax.resource.cci.Connection {
      *
      * @return a new CciJMSInteraction
      */
+    @Override
     public Interaction createInteraction() {
         return new CciJMSInteraction(this);
     }
@@ -93,6 +95,7 @@ public class CciJMSConnection implements javax.resource.cci.Connection {
      *
      * @return the CciJMSTransaction as a LocalTransaction
      */
+    @Override
     public LocalTransaction getLocalTransaction() {
         return transaction;
     }
@@ -111,6 +114,7 @@ public class CciJMSConnection implements javax.resource.cci.Connection {
      *
      * @return the CciJMSConnectionMetaData for this connection
      */
+    @Override
     public javax.resource.cci.ConnectionMetaData getMetaData() {
         return new CciJMSConnectionMetaData(this);
     }
@@ -118,6 +122,7 @@ public class CciJMSConnection implements javax.resource.cci.Connection {
     /**
      * Result sets are not supported.
      */
+    @Override
     public ResultSetInfo getResultSetInfo() {
         throw ValidationException.operationNotSupported("getResultSetInfo");
     }

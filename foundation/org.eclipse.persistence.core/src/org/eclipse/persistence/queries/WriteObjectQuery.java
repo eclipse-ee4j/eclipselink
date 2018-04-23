@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -53,6 +53,7 @@ public class WriteObjectQuery extends ObjectLevelModifyQuery {
      * @exception  OptimisticLockException - an error has occurred using the optimistic lock feature
      * @return object - the object being written.
      */
+    @Override
     public Object executeDatabaseQuery() throws DatabaseException, OptimisticLockException {
         if (getObjectChangeSet() != null) {
             return getQueryMechanism().executeWriteWithChangeSet();
@@ -128,6 +129,7 @@ public class WriteObjectQuery extends ObjectLevelModifyQuery {
      * Returns the specific default redirector for this query type.  There are numerous default query redirectors.
      * See ClassDescriptor for their types.
      */
+    @Override
     protected QueryRedirector getDefaultRedirector(){
         return descriptor.getDefaultQueryRedirector();
     }
@@ -136,6 +138,7 @@ public class WriteObjectQuery extends ObjectLevelModifyQuery {
      * PUBLIC:
      * Return if this is a write object query.
      */
+    @Override
     public boolean isWriteObjectQuery() {
         return true;
     }
@@ -144,6 +147,7 @@ public class WriteObjectQuery extends ObjectLevelModifyQuery {
      * INTERNAL:
      * Prepare the receiver for execution in a session.
      */
+    @Override
     public void prepareForExecution() throws QueryException {
         super.prepareForExecution();
 

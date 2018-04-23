@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -68,6 +68,7 @@ public class VariableNode extends Node implements AliasableNode {
      * INTERNAL
      * Is this node a VariableNode
      */
+    @Override
     public boolean isVariableNode() {
         return true;
     }
@@ -76,6 +77,7 @@ public class VariableNode extends Node implements AliasableNode {
      * INTERNAL
      * Apply this node to the passed query
      */
+    @Override
     public void applyToQuery(ObjectLevelReadQuery theQuery, GenerationContext generationContext) {
         String name = getCanonicalVariableName();
         if (theQuery instanceof ReportQuery) {
@@ -139,6 +141,7 @@ public class VariableNode extends Node implements AliasableNode {
      * the base variable as left child node. The right child node is an
      * AttributeNode using the variableName as field name.
      */
+    @Override
     public Node qualifyAttributeAccess(ParseTreeContext context) {
         return context.isVariable(variableName) ? this :
             (Node)context.getNodeFactory().newQualifiedAttribute(
@@ -149,6 +152,7 @@ public class VariableNode extends Node implements AliasableNode {
      * INTERNAL
      * Validate node and calculate its type.
      */
+    @Override
     public void validate(ParseTreeContext context) {
         TypeHelper typeHelper = context.getTypeHelper();
         classConstant = typeHelper.resolveSchema(variableName);
@@ -181,6 +185,7 @@ public class VariableNode extends Node implements AliasableNode {
         return new ExpressionBuilder(this.resolveClass(context));
     }
 
+    @Override
     public Expression generateExpression(GenerationContext generationContext) {
         Expression myExpression = null;
         String name = getCanonicalVariableName();
@@ -250,6 +255,7 @@ public class VariableNode extends Node implements AliasableNode {
      * resolveClass: Answer the class which corresponds to my variableName. This is the class for
      * an alias, where the variableName is registered to an alias.
      */
+    @Override
     public Class resolveClass(GenerationContext generationContext) {
         Class clazz = null;
         String name = getCanonicalVariableName();
@@ -269,6 +275,7 @@ public class VariableNode extends Node implements AliasableNode {
         return clazz;
     }
 
+    @Override
     public String toString(int indent) {
         StringBuilder buffer = new StringBuilder();
         toStringIndent(indent, buffer);
@@ -280,6 +287,7 @@ public class VariableNode extends Node implements AliasableNode {
      * INTERNAL
      * Get the string representation of this node.
      */
+    @Override
     public String getAsString() {
         return getVariableName();
     }
@@ -300,6 +308,7 @@ public class VariableNode extends Node implements AliasableNode {
     }
 
 
+    @Override
     public boolean isAliasableNode(){
         return true;
     }

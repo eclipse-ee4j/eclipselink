@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2018  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -28,41 +28,49 @@ public class PlsqlParameterImpl extends MetadataImpl<PLSQLParameterMetadata> imp
         super(new PLSQLParameterMetadata());
     }
 
+    @Override
     public PlsqlParameter setDatabaseType(String databaseType) {
         getMetadata().setDatabaseType(databaseType);
         return this;
     }
 
+    @Override
     public PlsqlParameter setDirection(String direction) {
         getMetadata().setDirection(direction);
         return this;
     }
 
+    @Override
     public PlsqlParameter setLength(Integer length) {
         getMetadata().setLength(length);
         return this;
     }
 
+    @Override
     public PlsqlParameter setName(String name) {
         getMetadata().setName(name);
         return this;
     }
 
+    @Override
     public PlsqlParameter setOptional(Boolean optional) {
         getMetadata().setOptional(optional);
         return this;
     }
 
+    @Override
     public PlsqlParameter setPrecision(Integer precision) {
         getMetadata().setPrecision(precision);
         return this;
     }
 
+    @Override
     public PlsqlParameter setQueryParameter(String queryParameter) {
         getMetadata().setQueryParameter(queryParameter);
         return this;
     }
 
+    @Override
     public PlsqlParameter setScale(Integer scale) {
         getMetadata().setScale(scale);
         return this;

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -14,8 +14,10 @@ package org.eclipse.persistence.sdo.helper;
 
 import java.net.URI;
 import java.net.URL;
+
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
+
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.xml.sax.InputSource;
 
@@ -45,6 +47,7 @@ public class DefaultSchemaResolver implements SchemaResolver {
      * @return Source for the referenced Schema or null if processing the referenced
      * schema should be skipped
      */
+    @Override
     public Source resolveSchema(Source sourceXSD, String namespace, String schemaLocation) {
         try {
             URL schemaUrl = null;
@@ -73,7 +76,7 @@ public class DefaultSchemaResolver implements SchemaResolver {
                     if (baseUri.isOpaque() && baseUri.getScheme().equals("jar")) {
                         // Example - jar:file:/C:/schema.jar!/my.xsd
                         // Strip off anything after the last '/' character (base location could represent a file)
-                        schemaUrl = new URI(baseLoc.substring(0, baseLoc.lastIndexOf("/") + 1) + schemaLocation).toURL();
+                        schemaUrl = new URI(baseLoc.substring(0, baseLoc.lastIndexOf('/') + 1) + schemaLocation).toURL();
                     } else {
                         schemaUrl = new URI(baseLoc).resolve(schemaUri).toURL();
                     }
@@ -95,6 +98,7 @@ public class DefaultSchemaResolver implements SchemaResolver {
      * @param systemId
      * @return null
      */
+    @Override
     public InputSource resolveEntity(String publicId, String systemId) {
         return null;
     }

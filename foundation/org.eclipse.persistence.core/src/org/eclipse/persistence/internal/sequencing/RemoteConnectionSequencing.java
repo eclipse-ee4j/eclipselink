@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -44,10 +44,12 @@ class RemoteConnectionSequencing implements Sequencing {
         }
     }
 
+    @Override
     public int whenShouldAcquireValueForAll() {
         return whenShouldAcquireValueForAll;
     }
 
+    @Override
     public Object getNextValue(Class cls) {
         return processFunctionCall(new SequencingFunctionCall.GetNextValue(cls));
     }

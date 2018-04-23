@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -59,6 +59,7 @@ public class MongoInteraction implements Interaction {
     /**
      * Output records are not supported/required.
      */
+    @Override
     public boolean execute(InteractionSpec spec, Record input, Record output) throws ResourceException {
         if (!(spec instanceof MongoInteractionSpec)) {
             throw EISException.invalidInteractionSpecType();
@@ -98,6 +99,7 @@ public class MongoInteraction implements Interaction {
      * Execute the interaction and return output record.
      * The spec is either GET, PUT or DELETE interaction.
      */
+    @Override
     public Record execute(InteractionSpec spec, Record record) throws ResourceException {
         if (!(spec instanceof MongoInteractionSpec)) {
             throw EISException.invalidInteractionSpecType();
@@ -221,12 +223,12 @@ public class MongoInteraction implements Interaction {
                         values.add(value);
                     }
                 }
-                record.put((String)entry.getKey(), values);
+                record.put(entry.getKey(), values);
             } else if (entry.getValue() instanceof DBObject) {
                 MongoRecord nestedRecord = buildRecordFromDBObject((DBObject)entry.getValue());
-                record.put((String)entry.getKey(), nestedRecord);
+                record.put(entry.getKey(), nestedRecord);
             } else {
-                record.put((String)entry.getKey(), entry.getValue());
+                record.put(entry.getKey(), entry.getValue());
             }
         }
         return record;

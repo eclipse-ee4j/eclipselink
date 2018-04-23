@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -31,6 +31,7 @@ public abstract class AggregateNode extends Node implements AliasableNode {
     /**
      * INTERNAL
      */
+    @Override
     public String resolveAttribute() {
         Node arg = getLeft();
         return arg.isDotNode() ? ((DotNode)arg).resolveAttribute() : null;
@@ -39,6 +40,7 @@ public abstract class AggregateNode extends Node implements AliasableNode {
     /**
      * resolveClass: Answer the class associated with my left node.
      */
+    @Override
     public Class resolveClass(GenerationContext context) {
         return getLeft().resolveClass(context);
     }
@@ -47,6 +49,7 @@ public abstract class AggregateNode extends Node implements AliasableNode {
      * INTERNAL
      * Is this node an Aggregate node
      */
+    @Override
     public boolean isAggregateNode() {
         return true;
     }
@@ -65,6 +68,7 @@ public abstract class AggregateNode extends Node implements AliasableNode {
      * INTERNAL
      * Return a EclipseLink expression generated using the left node
      */
+    @Override
     public Expression generateExpression(GenerationContext context) {
         if (alias == null){
             alias = getAsString();
@@ -88,6 +92,7 @@ public abstract class AggregateNode extends Node implements AliasableNode {
 
 
 
+    @Override
     public boolean isAliasableNode(){
         return true;
     }

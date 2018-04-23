@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2018  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -162,224 +162,262 @@ public class MappingsImpl extends MetadataImpl<XMLEntityMappings> implements Map
         getMetadata().setValuePartitioning(new ArrayList<ValuePartitioningMetadata>());
     }
 
+    @Override
     public Converter addConverter() {
         ConverterImpl converter = new ConverterImpl();
         getMetadata().getConverters().add(converter.getMetadata());
         return converter;
     }
 
+    @Override
     public ConverterClass addConverterClass() {
         ConverterClassImpl converterClass = new ConverterClassImpl();
         getMetadata().getConverterAccessors().add(converterClass.getMetadata());
         return converterClass;
     }
 
+    @Override
     public Embeddable addEmbeddable() {
         EmbeddableImpl embeddable = new EmbeddableImpl();
         getMetadata().getEmbeddables().add(embeddable.getMetadata());
         return embeddable;
     }
 
+    @Override
     public Entity addEntity() {
         EntityImpl entity = new EntityImpl();
         getMetadata().getEntities().add(entity.getMetadata());
         return entity;
     }
 
+    @Override
     public HashPartitioning addHashPartitioning() {
         HashPartitioningImpl partitioning = new HashPartitioningImpl();
         getMetadata().getHashPartitioning().add(partitioning.getMetadata());
         return partitioning;
     }
 
+    @Override
     public MappedSuperclass addMappedSuperclass() {
         MappedSuperclassImpl mappedSuperclass = new MappedSuperclassImpl();
         getMetadata().getMappedSuperclasses().add(mappedSuperclass.getMetadata());
         return mappedSuperclass;
     }
 
+    @Override
     public NamedNativeQuery addNamedNativeQuery() {
         NamedNativeQueryImpl query = new NamedNativeQueryImpl();
         getMetadata().getNamedNativeQueries().add(query.getMetadata());
         return query;
     }
 
+    @Override
     public NamedPlsqlStoredFunctionQuery addNamedPlsqlStoredFunctionQuery() {
         NamedPlsqlStoredFunctionQueryImpl query = new NamedPlsqlStoredFunctionQueryImpl();
         getMetadata().getNamedPLSQLStoredFunctionQueries().add(query.getMetadata());
         return query;
     }
 
+    @Override
     public NamedPlsqlStoredProcedureQuery addNamedPlsqlStoredProcedureQuery() {
         NamedPlsqlStoredProcedureQueryImpl query = new NamedPlsqlStoredProcedureQueryImpl();
         getMetadata().getNamedPLSQLStoredProcedureQueries().add(query.getMetadata());
         return query;
     }
 
+    @Override
     public NamedQuery addNamedQuery() {
         NamedQueryImpl query = new NamedQueryImpl();
         getMetadata().getNamedQueries().add(query.getMetadata());
         return query;
     }
 
+    @Override
     public NamedStoredFunctionQuery addNamedStoredFunctionQuery() {
         NamedStoredFunctionQueryImpl query = new NamedStoredFunctionQueryImpl();
         getMetadata().getNamedStoredFunctionQueries().add(query.getMetadata());
         return query;
     }
 
+    @Override
     public NamedStoredProcedureQuery addNamedStoredProcedureQuery() {
         NamedStoredProcedureQueryImpl query = new NamedStoredProcedureQueryImpl();
         getMetadata().getNamedStoredProcedureQueries().add(query.getMetadata());
         return query;
     }
 
+    @Override
     public ObjectTypeConverter addObjectTypeConverter() {
         ObjectTypeConverterImpl converter = new ObjectTypeConverterImpl();
         getMetadata().getObjectTypeConverters().add(converter.getMetadata());
         return converter;
     }
 
+    @Override
     public OracleArray addOracleArray() {
         OracleArrayImpl oracleArray = new OracleArrayImpl();
         getMetadata().getOracleArrayTypes().add(oracleArray.getMetadata());
         return oracleArray;
     }
 
+    @Override
     public OracleObject addOracleObject() {
         OracleObjectImpl oracleObject = new OracleObjectImpl();
         getMetadata().getOracleObjectTypes().add(oracleObject.getMetadata());
         return oracleObject;
     }
 
+    @Override
     public Partitioning addPartitioning() {
         PartitioningImpl partitioning = new PartitioningImpl();
         getMetadata().getPartitioning().add(partitioning.getMetadata());
         return partitioning;
     }
 
+    @Override
     public PinnedPartitioning addPinnedPartitioning() {
         PinnedPartitioningImpl partitioning = new PinnedPartitioningImpl();
         getMetadata().getPinnedPartitioning().add(partitioning.getMetadata());
         return partitioning;
     }
 
+    @Override
     public PlsqlRecord addPlsqlRecord() {
         PlsqlRecordImpl plsqlRecord = new PlsqlRecordImpl();
         getMetadata().getPLSQLRecords().add(plsqlRecord.getMetadata());
         return plsqlRecord;
     }
 
+    @Override
     public PlsqlTable addPlsqlTable() {
         PlsqlTableImpl plsqlTable = new PlsqlTableImpl();
         getMetadata().getPLSQLTables().add(plsqlTable.getMetadata());
         return plsqlTable;
     }
 
+    @Override
     public RangePartitioning addRangePartitioning() {
         RangePartitioningImpl partitioning = new RangePartitioningImpl();
         getMetadata().getRangePartitioning().add(partitioning.getMetadata());
         return partitioning;
     }
 
+    @Override
     public ReplicationPartitioning addReplicationPartititioning() {
         ReplicationPartitioningImpl partitioning = new ReplicationPartitioningImpl();
         getMetadata().getReplicationPartitioning().add(partitioning.getMetadata());
         return partitioning;
     }
 
+    @Override
     public RoundRobinPartitioning addRoundRobinPartitioning() {
         RoundRobinPartitioningImpl partitioning = new RoundRobinPartitioningImpl();
         getMetadata().getRoundRobinPartitioning().add(partitioning.getMetadata());
         return partitioning;
     }
 
+    @Override
     public SequenceGenerator addSequenceGenerator() {
         SequenceGeneratorImpl generator = new SequenceGeneratorImpl();
         getMetadata().getSequenceGenerators().add(generator.getMetadata());
         return generator;
     }
 
+    @Override
     public SqlResultSetMapping addSqlResultSetMapping() {
         SqlResultSetMappingImpl sqlResultSetMapping = new SqlResultSetMappingImpl();
         getMetadata().getSqlResultSetMappings().add(sqlResultSetMapping.getMetadata());
         return sqlResultSetMapping;
     }
 
+    @Override
     public StructConverter addStructConverter() {
         StructConverterImpl converter = new StructConverterImpl();
         getMetadata().getStructConverters().add(converter.getMetadata());
         return converter;
     }
 
+    @Override
     public TableGenerator addTableGenerator() {
         TableGeneratorImpl generator = new TableGeneratorImpl();
         getMetadata().getTableGenerators().add(generator.getMetadata());
         return generator;
     }
 
+    @Override
     public TenantDiscriminatorColumn addTenantDiscriminatorColumn() {
         TenantDiscriminatorColumnImpl column = new TenantDiscriminatorColumnImpl();
         getMetadata().getTenantDiscriminatorColumns().add(column.getMetadata());
         return column;
     }
 
+    @Override
     public TypeConverter addTypeConverter() {
         TypeConverterImpl converter = new TypeConverterImpl();
         getMetadata().getTypeConverters().add(converter.getMetadata());
         return converter;
     }
 
+    @Override
     public UnionPartitioning addUnionPartitioning() {
         UnionPartitioningImpl partitioning = new UnionPartitioningImpl();
         getMetadata().getUnionPartitioning().add(partitioning.getMetadata());
         return partitioning;
     }
 
+    @Override
     public UuidGenerator addUuidGenerator() {
         UuidGeneratorImpl generator = new UuidGeneratorImpl();
         getMetadata().getUuidGenerators().add(generator.getMetadata());
         return null;
     }
 
+    @Override
     public ValuePartitioning addValuePartitioning() {
         ValuePartitioningImpl partitioning = new ValuePartitioningImpl();
         getMetadata().getValuePartitioning().add(partitioning.getMetadata());
         return partitioning;
     }
 
+    @Override
     public Mappings setAccess(String access) {
         getMetadata().setAccess(access);
         return this;
     }
 
+    @Override
     public AccessMethods setAccessMethods() {
         AccessMethodsImpl accessMethods = new AccessMethodsImpl();
         getMetadata().setAccessMethods(accessMethods.getMetadata());
         return accessMethods;
     }
 
+    @Override
     public Mappings setCatalog(String catalog) {
         getMetadata().setCatalog(catalog);
         return this;
     }
 
+    @Override
     public Mappings setPackage(String pkg) {
         getMetadata().setPackage(pkg);
         return this;
     }
 
+    @Override
     public PersistenceUnitMetadata setPersistenceUnitMetadata() {
         PersistenceUnitMetadataImpl persistenceUnit = new PersistenceUnitMetadataImpl();
         getMetadata().setPersistenceUnitMetadata(persistenceUnit.getMetadata());
         return persistenceUnit;
     }
 
+    @Override
     public Mappings setSchema(String schema) {
         getMetadata().setSchema(schema);
         return this;
     }
 
+    @Override
     public Mappings setVersion(String version) {
         getMetadata().setVersion(version);
         return this;

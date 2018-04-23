@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2018  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,26 +27,31 @@ public class ColumnImpl extends AbstractDirectColumnImpl<ColumnMetadata, Column>
         super(new ColumnMetadata());
     }
 
+    @Override
     public Column setLength(Integer length) {
         getMetadata().setLength(length);
         return this;
     }
 
+    @Override
     public Column setPrecision(Integer precision) {
         getMetadata().setPrecision(precision);
         return this;
     }
 
+    @Override
     public Column setScale(Integer scale) {
         getMetadata().setScale(scale);
         return this;
     }
 
+    @Override
     public Column setTable(String table) {
         getMetadata().setTable(table);
         return this;
     }
 
+    @Override
     public Column setUnique(Boolean unique) {
         getMetadata().setUnique(unique);
         return this;

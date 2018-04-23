@@ -4,5 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="resource/source"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/jpa/plugins/javax.persistence_2.2.0.v201708071007.jar" sourcepath="/ECLIPSELINK_HOME/jpa/plugins/javax.persistence.source_2.2.0.v201708071007.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

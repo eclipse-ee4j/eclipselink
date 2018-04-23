@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -28,6 +28,7 @@ import org.eclipse.persistence.oxm.record.XMLRecord;
  */
 public interface XMLMapping extends Mapping<AbstractSession, AttributeAccessor, ContainerPolicy, ClassDescriptor, DatabaseField, XMLRecord> {
 
+    @Override
     public void convertClassNamesToClasses(ClassLoader classLoader);
 
     /**
@@ -37,6 +38,7 @@ public interface XMLMapping extends Mapping<AbstractSession, AttributeAccessor, 
      * @param value - The value to be marshalled
      * @param record - The Record the value is being marshalled too.
      */
+    @Override
     public void writeSingleValue(Object value, Object parent, XMLRecord record, AbstractSession session);
 
     public boolean isWriteOnly();

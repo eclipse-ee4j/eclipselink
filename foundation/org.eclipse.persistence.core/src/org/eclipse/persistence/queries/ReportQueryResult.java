@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -258,6 +258,7 @@ public class ReportQueryResult implements Serializable, Map {
      * PUBLIC:
      * Clear the contents of the result.
      */
+    @Override
     public void clear() {
         this.names = new ArrayList<String>();
         this.results = new ArrayList<Object>();
@@ -275,6 +276,7 @@ public class ReportQueryResult implements Serializable, Map {
      * PUBLIC:
      * Check if the key is contained in the result.
      */
+    @Override
     public boolean containsKey(Object key) {
         return getNames().contains(key);
     }
@@ -283,6 +285,7 @@ public class ReportQueryResult implements Serializable, Map {
      * PUBLIC:
      * Check if the value is contained in the result.
      */
+    @Override
     public boolean containsValue(Object value) {
         return getResults().contains(value);
     }
@@ -300,6 +303,7 @@ public class ReportQueryResult implements Serializable, Map {
      * PUBLIC:
      * Returns a set of the keys.
      */
+    @Override
     public Set entrySet() {
         return new EntrySet();
     }
@@ -309,18 +313,22 @@ public class ReportQueryResult implements Serializable, Map {
      * Defines the virtual entrySet.
      */
     protected class EntrySet extends AbstractSet {
+        @Override
         public Iterator iterator() {
             return new EntryIterator();
         }
+        @Override
         public int size() {
             return ReportQueryResult.this.size();
         }
+        @Override
         public boolean contains(Object object) {
             if (!(object instanceof Entry)) {
                 return false;
             }
             return ReportQueryResult.this.containsKey(((Entry)object).getKey());
         }
+        @Override
         public boolean remove(Object object) {
             if (!(object instanceof Entry)) {
                 return false;
@@ -328,6 +336,7 @@ public class ReportQueryResult implements Serializable, Map {
             ReportQueryResult.this.remove(((Entry)object).getKey());
             return true;
         }
+        @Override
         public void clear() {
             ReportQueryResult.this.clear();
         }
@@ -345,20 +354,24 @@ public class ReportQueryResult implements Serializable, Map {
             this.value = value;
         }
 
+        @Override
         public Object getKey() {
             return key;
         }
 
+        @Override
         public Object getValue() {
             return value;
         }
 
+        @Override
         public Object setValue(Object value) {
             Object oldValue = this.value;
             this.value = value;
             return oldValue;
         }
 
+        @Override
         public boolean equals(Object object) {
             if (!(object instanceof Map.Entry)) {
                 return false;
@@ -367,10 +380,12 @@ public class ReportQueryResult implements Serializable, Map {
             return compare(key, entry.getKey()) && compare(value, entry.getValue());
         }
 
+        @Override
         public int hashCode() {
             return ((key == null) ? 0 : key.hashCode()) ^ ((value == null) ? 0 : value.hashCode());
         }
 
+        @Override
         public String toString() {
             return key + "=" + value;
         }
@@ -390,10 +405,12 @@ public class ReportQueryResult implements Serializable, Map {
             this.index = 0;
         }
 
+        @Override
         public boolean hasNext() {
             return this.index < ReportQueryResult.this.size();
         }
 
+        @Override
         public Object next() {
             if (!hasNext()) {
                 throw new NoSuchElementException();
@@ -402,6 +419,7 @@ public class ReportQueryResult implements Serializable, Map {
             return new RecordEntry(getNames().get(this.index - 1), getResults().get(this.index - 1));
         }
 
+        @Override
         public void remove() {
             if (this.index >= ReportQueryResult.this.size()) {
                 throw new IllegalStateException();
@@ -414,6 +432,7 @@ public class ReportQueryResult implements Serializable, Map {
      * Defines the virtual keySet iterator.
      */
     protected class KeyIterator extends EntryIterator {
+        @Override
         public Object next() {
             if (!hasNext()) {
                 throw new NoSuchElementException();
@@ -427,6 +446,7 @@ public class ReportQueryResult implements Serializable, Map {
      * PUBLIC:
      * Compare if the two results are equal.
      */
+    @Override
     public boolean equals(Object anObject) {
         if (anObject instanceof ReportQueryResult) {
             return equals((ReportQueryResult)anObject);
@@ -471,6 +491,7 @@ public class ReportQueryResult implements Serializable, Map {
      * PUBLIC:
      * Return the value for given item name.
      */
+    @Override
     public Object get(Object name) {
         if (name instanceof String) {
             return get((String)name);
@@ -555,6 +576,7 @@ public class ReportQueryResult implements Serializable, Map {
      * PUBLIC:
      * Return if the result is empty.
      */
+    @Override
     public boolean isEmpty() {
         return getNames().isEmpty();
     }
@@ -572,6 +594,7 @@ public class ReportQueryResult implements Serializable, Map {
      * PUBLIC:
      * Returns a set of the keys.
      */
+    @Override
     public Set keySet() {
         return new KeySet();
     }
@@ -580,12 +603,15 @@ public class ReportQueryResult implements Serializable, Map {
      * Defines the virtual keySet.
      */
     protected class KeySet extends EntrySet {
+        @Override
         public Iterator iterator() {
             return new KeyIterator();
         }
+        @Override
         public boolean contains(Object object) {
         return ReportQueryResult.this.containsKey(object);
         }
+        @Override
         public boolean remove(Object object) {
             return ReportQueryResult.this.remove(object) != null;
         }
@@ -595,6 +621,7 @@ public class ReportQueryResult implements Serializable, Map {
      * ADVANCED:
      * Set the value for given item name.
      */
+    @Override
     public Object put(Object name, Object value) {
         int index = getNames().indexOf(name);
         if (index == -1) {
@@ -612,6 +639,7 @@ public class ReportQueryResult implements Serializable, Map {
      * PUBLIC:
      * Add all of the elements.
      */
+    @Override
     public void putAll(Map map) {
         Iterator entriesIterator = map.entrySet().iterator();
         while (entriesIterator.hasNext()) {
@@ -639,6 +667,7 @@ public class ReportQueryResult implements Serializable, Map {
      * INTERNAL:
      * Remove the name key and value from the result.
      */
+    @Override
     public Object remove(Object name) {
         int index = getNames().indexOf(name);
         if (index >= 0) {
@@ -674,6 +703,7 @@ public class ReportQueryResult implements Serializable, Map {
      * PUBLIC:
      * Return the number of name/value pairs in the result.
      */
+    @Override
     public int size() {
         return getNames().size();
     }
@@ -695,6 +725,7 @@ public class ReportQueryResult implements Serializable, Map {
         return this.getResults();
     }
 
+    @Override
     public String toString() {
         java.io.StringWriter writer = new java.io.StringWriter();
         writer.write("ReportQueryResult(");
@@ -716,6 +747,7 @@ public class ReportQueryResult implements Serializable, Map {
      * PUBLIC:
      * Returns an collection of the values.
      */
+    @Override
     public Collection values() {
         return getResults();
     }

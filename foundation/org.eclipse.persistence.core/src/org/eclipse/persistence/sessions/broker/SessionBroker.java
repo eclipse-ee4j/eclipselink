@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -141,6 +141,7 @@ public class SessionBroker extends DatabaseSessionImpl {
      * INTERNAL:
      * Acquires a special historical session for reading objects as of a past time.
      */
+    @Override
     public org.eclipse.persistence.sessions.Session acquireHistoricalSession(AsOfClause clause) throws ValidationException {
         if (isServerSessionBroker()) {
             throw ValidationException.cannotAcquireHistoricalSession();
@@ -166,6 +167,7 @@ public class SessionBroker extends DatabaseSessionImpl {
      * Close the managed sql connection corresponding to the external transaction,
      * if applicable releases accessor.
      */
+    @Override
     public void releaseJTSConnection() {
         RuntimeException exception = null;
         for (Iterator sessionEnum = getSessionsByName().values().iterator();
@@ -191,6 +193,7 @@ public class SessionBroker extends DatabaseSessionImpl {
      *
      * @see UnitOfWorkImpl
      */
+    @Override
     public UnitOfWorkImpl acquireUnitOfWork() {
         if (isServerSessionBroker()) {
             return acquireClientSessionBroker().acquireUnitOfWork();
@@ -203,6 +206,7 @@ public class SessionBroker extends DatabaseSessionImpl {
      * PUBLIC:
      * You cannot add a descriptor to a session broker, you must add it to its session.
      */
+    @Override
     public void addDescriptor(ClassDescriptor descriptor) {
         throw ValidationException.cannotAddDescriptorsToSessionBroker();
     }
@@ -219,6 +223,7 @@ public class SessionBroker extends DatabaseSessionImpl {
      * PUBLIC:
      * You cannot add a project to a session broker, you must add it to its session.
      */
+    @Override
     public void addDescriptors(org.eclipse.persistence.sessions.Project project) throws ValidationException {
         throw ValidationException.cannotAddDescriptorsToSessionBroker();
     }
@@ -227,6 +232,7 @@ public class SessionBroker extends DatabaseSessionImpl {
      * PUBLIC:
      * You cannot add a sequence to a session broker, you must add it to its session.
      */
+    @Override
     public void addSequence(Sequence sequence) {
         throw ValidationException.cannotAddSequencesToSessionBroker();
     }
@@ -235,6 +241,7 @@ public class SessionBroker extends DatabaseSessionImpl {
      * INTERNAL:
      * Begin the transaction on all child sessions.
      */
+    @Override
     protected void basicBeginTransaction() throws DatabaseException {
         for (Iterator sessionEnum = getSessionsByName().values().iterator();
                  sessionEnum.hasNext();) {
@@ -249,6 +256,7 @@ public class SessionBroker extends DatabaseSessionImpl {
      * This assumes that the commit of the transaction will not fail because all of the
      * modification has already taken place and no errors would have occurred.
      */
+    @Override
     protected void basicCommitTransaction() throws DatabaseException {
         // Do one last check it make sure that all sessions are still connected.
         for (Iterator sessionEnum = getSessionsByName().values().iterator();
@@ -269,6 +277,7 @@ public class SessionBroker extends DatabaseSessionImpl {
      * INTERNAL:
      * Rollback the transaction on all child sessions.
      */
+    @Override
     protected void basicRollbackTransaction() throws DatabaseException {
         DatabaseException globalException = null;
         for (Iterator sessionEnum = getSessionsByName().values().iterator();
@@ -289,6 +298,7 @@ public class SessionBroker extends DatabaseSessionImpl {
      * PUBLIC:
      * Return true if the pre-defined query is defined on the session.
      */
+    @Override
     public boolean containsQuery(String queryName) {
         boolean containsQuery = getQueries().containsKey(queryName);
         if (isClientSessionBroker() && (containsQuery == false)) {
@@ -341,6 +351,7 @@ public class SessionBroker extends DatabaseSessionImpl {
      * The database accessor is used for direct database access.
      * The right accessor for this broker will be returned.
      */
+    @Override
     public Collection<Accessor> getAccessors(Call call, AbstractRecord translationRow, DatabaseQuery query) {
         if (query.getSessionName() != null) {
             return getSessionForName(query.getSessionName()).getAccessors(call, translationRow, query);
@@ -364,6 +375,7 @@ public class SessionBroker extends DatabaseSessionImpl {
      * @see #acquireHistoricalSession(AsOfClause)
      * @see org.eclipse.persistence.expressions.Expression#hasAsOfClause Expression.hasAsOfClause()
      */
+    @Override
     public AsOfClause getAsOfClause() {
         for (Iterator enumtr = getSessionsByName().values().iterator(); enumtr.hasNext();) {
             return ((AbstractSession)enumtr.next()).getAsOfClause();
@@ -375,6 +387,7 @@ public class SessionBroker extends DatabaseSessionImpl {
      * INTERNAL:
      * Gets the parent SessionBroker.
      */
+    @Override
     public SessionBroker getParent() {
         return parent;
     }
@@ -394,6 +407,7 @@ public class SessionBroker extends DatabaseSessionImpl {
      * @return a session with a live accessor
      * @param query may store session name or reference class for brokers case
      */
+    @Override
     public AbstractSession getExecutionSession(DatabaseQuery query) {
         AbstractSession sessionByQuery = getSessionForQuery(query);
 
@@ -405,6 +419,7 @@ public class SessionBroker extends DatabaseSessionImpl {
      * INTERNAL:
      * Return the platform for a particular class.
      */
+    @Override
     public Platform getPlatform(Class domainClass) {
         if (domainClass == null) {
             return super.getDatasourcePlatform();
@@ -432,6 +447,7 @@ public class SessionBroker extends DatabaseSessionImpl {
      */
     //Bug#3551263  Override getQuery(String name, Vector arguments) in Session search through
     //the server session broker as well
+    @Override
     public DatabaseQuery getQuery(String name, Vector arguments, boolean shouldSearchParent) {
         // First search the broker
         DatabaseQuery query = super.getQuery(name, arguments, shouldSearchParent);
@@ -460,6 +476,7 @@ public class SessionBroker extends DatabaseSessionImpl {
      * INTERNAL:
      * Return the session to be used for the class.
      */
+    @Override
     public AbstractSession getSessionForClass(Class domainClass) throws ValidationException {
         if (domainClass == null) {
             // CR2114; we don't have a session name. Return us.
@@ -476,6 +493,7 @@ public class SessionBroker extends DatabaseSessionImpl {
      * INTERNAL:
      * Return the session by name.
      */
+    @Override
     public AbstractSession getSessionForName(String name) throws ValidationException {
         AbstractSession sessionByName = getSessionsByName().get(name);
         if (sessionByName == null) {
@@ -529,6 +547,7 @@ public class SessionBroker extends DatabaseSessionImpl {
      * Normally the descriptors are added before login, then initialized on login.
      * Should not be called on client SessoionBroker
      */
+    @Override
     public void initializeDescriptors() {
         // ClientSession initializes sequencing during construction,
         // however DatabaseSession and ServerSession normally call initializeSequencing()
@@ -605,6 +624,7 @@ public class SessionBroker extends DatabaseSessionImpl {
      * Set up the IdentityMapManager.  This method allows subclasses of Session to override
      * the default IdentityMapManager functionality.
      */
+    @Override
     public void initializeIdentityMapAccessor() {
         this.identityMapAccessor = new SessionBrokerIdentityMapAccessor(this, new IdentityMapManager(this));
     }
@@ -616,6 +636,7 @@ public class SessionBroker extends DatabaseSessionImpl {
      * Find the correct child session to broker the query to,
      * and return the result of the session executing the query.
      */
+    @Override
     public Object internalExecuteQuery(DatabaseQuery query, AbstractRecord row) throws DatabaseException, QueryException {
         AbstractSession sessionByQuery = getSessionForQuery(query);
 
@@ -627,6 +648,7 @@ public class SessionBroker extends DatabaseSessionImpl {
      * INTERNAL:
      * Returns true if the session is a session Broker.
      */
+    @Override
     public boolean isBroker() {
         return true;
     }
@@ -651,6 +673,7 @@ public class SessionBroker extends DatabaseSessionImpl {
      * PUBLIC:
      * Return if all sessions are still connected to the database.
      */
+    @Override
     public boolean isConnected() {
         if ((getSessionsByName() == null) || (getSessionsByName().isEmpty())) {
             return false;
@@ -687,6 +710,7 @@ public class SessionBroker extends DatabaseSessionImpl {
      * INTERNAL:
      * Return if this session is a session broker.
      */
+    @Override
     public boolean isSessionBroker() {
         return true;
     }
@@ -696,6 +720,7 @@ public class SessionBroker extends DatabaseSessionImpl {
      * Connect to the database using the predefined login.
      * This connects all of the child sessions and expects that they are in a valid state to be connected.
      */
+    @Override
     public void login() throws DatabaseException {
         preConnectDatasource();
         // Connection all sessions and initialize
@@ -719,6 +744,7 @@ public class SessionBroker extends DatabaseSessionImpl {
      * The login must have been assigned when or after creating the session.
      *
      */
+    @Override
     public void loginAndDetectDatasource() throws DatabaseException {
         preConnectDatasource();
         // Connection all sessions and initialize
@@ -741,6 +767,7 @@ public class SessionBroker extends DatabaseSessionImpl {
      * Connect to the database using the predefined login.
      * This connects all of the child sessions and expects that they are in a valid state to be connected.
      */
+    @Override
     public void login(String userName, String password) throws DatabaseException {
         preConnectDatasource();
         // Connection all sessions and initialize
@@ -764,6 +791,7 @@ public class SessionBroker extends DatabaseSessionImpl {
      * @exception DatabaseException the database will also raise an error if their is an active transaction,
      * or a general error occurs.
      */
+    @Override
     public void logout() throws DatabaseException {
         if(!isLoggedIn) {
             return;
@@ -789,6 +817,7 @@ public class SessionBroker extends DatabaseSessionImpl {
      * INTERNAL:
      * Rise postLogin events for member sessions and the SessionBroker.
      */
+    @Override
     public void postLogin() {
         for (Iterator sessionEnum = getSessionsByName().values().iterator();
             sessionEnum.hasNext();) {
@@ -857,6 +886,7 @@ public class SessionBroker extends DatabaseSessionImpl {
      * Release the session.
      * This does nothing by default, but allows for other sessions such as the ClientSession to do something.
      */
+    @Override
     public void release() {
         if (isClientSessionBroker()) {
             log(SessionLog.FINER, SessionLog.CONNECTION, "releasing_client_session_broker");
@@ -900,6 +930,7 @@ public class SessionBroker extends DatabaseSessionImpl {
      * INTERNAL:
      * Used for JTS integration internally by ServerPlatform.
      */
+    @Override
     public void setExternalTransactionController(ExternalTransactionController externalTransactionController) {
         super.setExternalTransactionController(externalTransactionController);
         for (AbstractSession session : getSessionsByName().values()) {
@@ -912,6 +943,7 @@ public class SessionBroker extends DatabaseSessionImpl {
      * PUBLIC:
      * set the integrityChecker. IntegrityChecker holds all the ClassDescriptor Exceptions.
      */
+    @Override
     public void setIntegrityChecker(IntegrityChecker integrityChecker) {
         super.setIntegrityChecker(integrityChecker);
 
@@ -928,6 +960,7 @@ public class SessionBroker extends DatabaseSessionImpl {
      *
      * @see #logMessage
      */
+    @Override
     public void setSessionLog(SessionLog log) {
         super.setSessionLog(log);
 
@@ -944,6 +977,7 @@ public class SessionBroker extends DatabaseSessionImpl {
      *
      * @see #logMessage
      */
+    @Override
     public void setLog(Writer log) {
         super.setLog(log);
 
@@ -959,6 +993,7 @@ public class SessionBroker extends DatabaseSessionImpl {
      * Set the profiler for the session.
      * This allows for performance operations to be profiled.
      */
+    @Override
     public void setProfiler(SessionProfiler profiler) {
         super.setProfiler(profiler);
 
@@ -991,6 +1026,7 @@ public class SessionBroker extends DatabaseSessionImpl {
      * This method should only be called by setSynchronized method of UnitOfWork
      * obtained from either DatabaseSession Broker or ClientSession Broker.
      */
+    @Override
     public void setSynchronized(boolean synched) {
         if(!isServerSessionBroker()) {
             super.setSynchronized(synched);
@@ -1007,6 +1043,7 @@ public class SessionBroker extends DatabaseSessionImpl {
      * completed.  This notification can be used for such thing as flushing the
      * batch mechanism
      */
+    @Override
     public void writesCompleted() {
         for (Iterator sessionEnum = getSessionsByName().values().iterator();
                  sessionEnum.hasNext();) {
@@ -1028,6 +1065,7 @@ public class SessionBroker extends DatabaseSessionImpl {
      * Typically there is no need for the user to call this method -
      * it is called by login() and acquireClientSessionBroker.
      */
+    @Override
     public void initializeSequencing() {
         sequencing = SequencingFactory.createSequencing(this);
     }
@@ -1036,6 +1074,7 @@ public class SessionBroker extends DatabaseSessionImpl {
      * PROTECTED:
      * Session broker doesn't have SequencingHome.
      */
+    @Override
     protected SequencingHome getSequencingHome() {
         return null;
     }
@@ -1044,6 +1083,7 @@ public class SessionBroker extends DatabaseSessionImpl {
      * PUBLIC:
      * Return the Sequencing object used by the session.
      */
+    @Override
     public Sequencing getSequencing() {
         return sequencing;
     }
@@ -1073,6 +1113,7 @@ public class SessionBroker extends DatabaseSessionImpl {
      * Indicates whether SequencingCallback is required.
      * Always returns false if sequencing is not connected.
      */
+    @Override
     public boolean isSequencingCallbackRequired() {
         return howManySequencingCallbacks() > 0;
     }

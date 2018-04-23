@@ -665,11 +665,11 @@ public class SQLSelectStatement extends SQLStatement {
 
             //only works for these kinds of mappings. The data isn't hierarchical otherwise
             //Should also check that the source class and target class are the same.
-            Map foreignKeys = null;
+            Map<DatabaseField, DatabaseField> foreignKeys = null;
 
             if (mapping.isOneToManyMapping()) {
                 OneToManyMapping otm = (OneToManyMapping)mapping;
-                foreignKeys = otm.getTargetForeignKeyToSourceKeys();
+                foreignKeys = otm.getTargetForeignKeysToSourceKeys();
             } else if (mapping.isOneToOneMapping()) {
                 OneToOneMapping oto = (OneToOneMapping)mapping;
                 foreignKeys = oto.getSourceToTargetKeyFields();
@@ -692,7 +692,7 @@ public class SQLSelectStatement extends SQLStatement {
 
             if ((foreignKeys != null) && !foreignKeys.isEmpty()) {
                 //get the source and target fields.
-                Iterator sourceKeys = foreignKeys.keySet().iterator();
+                Iterator<DatabaseField> sourceKeys = foreignKeys.keySet().iterator();
 
                 //for each source field, get the target field and create the link. If there's
                 //only one, use the simplest version without ugly bracets
@@ -700,8 +700,8 @@ public class SQLSelectStatement extends SQLStatement {
                     printer.getWriter().write("((");
                 }
 
-                DatabaseField source = (DatabaseField)sourceKeys.next();
-                DatabaseField target = (DatabaseField)foreignKeys.get(source);
+                DatabaseField source = sourceKeys.next();
+                DatabaseField target = foreignKeys.get(source);
 
                 ReadAllQuery.Direction direction = getDirection() != null ? getDirection() : ReadAllQuery.Direction.getDefault(mapping);
                 if (direction == CHILD_TO_PARENT) {
@@ -714,8 +714,8 @@ public class SQLSelectStatement extends SQLStatement {
 
                 while (sourceKeys.hasNext()) {
                     printer.getWriter().write(") AND (");
-                    source = (DatabaseField)sourceKeys.next();
-                    target = (DatabaseField)foreignKeys.get(source);
+                    source = sourceKeys.next();
+                    target = foreignKeys.get(source);
 
                     if (direction == CHILD_TO_PARENT) {
                         printer.getWriter().write("PRIOR " + tableName + "." + source.getNameDelimited(printer.getPlatform()));

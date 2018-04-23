@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -120,11 +120,11 @@ public class CompilerHelper {
         org.eclipse.persistence.jaxb.xmlmodel.XmlElement element2 = null;
 
         if (tmi1.getXmlElement() != null) {
-            element1 = (org.eclipse.persistence.jaxb.xmlmodel.XmlElement) getXmlElement(tmi1.getXmlElement(), loader);
+            element1 = getXmlElement(tmi1.getXmlElement(), loader);
         }
 
         if (tmi2.getXmlElement() != null) {
-            element2 = (org.eclipse.persistence.jaxb.xmlmodel.XmlElement) getXmlElement(tmi2.getXmlElement(), loader);
+            element2 = getXmlElement(tmi2.getXmlElement(), loader);
         }
 
         Type actualType1 = getActualType(tmi1, element1);
@@ -345,7 +345,7 @@ public class CompilerHelper {
             //JavaClass declJavaType = Object.class;
             JavaClass declJavaType = helper.getJavaClass(Object.class);
             // look for marshal method
-            Object[] tacMethods = (Object[]) adapterClass.getMethods().toArray();
+            Object[] tacMethods = adapterClass.getMethods().toArray();
             for (int i = 0; i < tacMethods.length; i++) {
                 JavaMethod method = (JavaMethod)tacMethods[i];
                 if (method.getName().equals("marshal")) {
@@ -408,14 +408,17 @@ public class CompilerHelper {
                                         Type parameterizedType = new ParameterizedType() {
                                             Type[] typeArgs = { itemType };
 
+                                            @Override
                                             public Type[] getActualTypeArguments() {
                                                 return typeArgs;
                                             }
 
+                                            @Override
                                             public Type getOwnerType() {
                                                 return null;
                                             }
 
+                                            @Override
                                             public Type getRawType() {
                                                 return tmiType;
                                             }
@@ -455,14 +458,17 @@ public class CompilerHelper {
                         Type parameterizedType = new ParameterizedType() {
                             Type[] typeArgs = { itemType };
 
+                            @Override
                             public Type[] getActualTypeArguments() {
                                 return typeArgs;
                             }
 
+                            @Override
                             public Type getOwnerType() {
                                 return null;
                             }
 
+                            @Override
                             public Type getRawType() {
                                 return tmiType;
                             }

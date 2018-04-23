@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -78,6 +78,7 @@ public class AccessMethodsMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
+    @Override
     public AccessMethodsMetadata clone() {
         AccessMethodsMetadata accessMethods = new AccessMethodsMetadata();
         accessMethods.setGetMethodName(getGetMethodName());
@@ -146,6 +147,7 @@ public class AccessMethodsMetadata extends ORMetadata {
      * INTERNAL:
      * Used for validation exception message string and debugging.
      */
+    @Override
     public String toString() {
         return "Get method name: " + getMethodName + ", Set method name: " + setMethodName;
     }

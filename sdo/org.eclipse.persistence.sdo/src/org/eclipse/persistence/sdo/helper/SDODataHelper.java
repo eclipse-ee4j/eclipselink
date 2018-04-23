@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -117,6 +117,7 @@ public class SDODataHelper implements DataHelper {
      * @throws IllegalArgumentException
      *             for invalid formats.
      */
+    @Override
     public Calendar toCalendar(String dateString) {
         return toCalendar(dateString, null);
     }
@@ -133,6 +134,7 @@ public class SDODataHelper implements DataHelper {
      * @throws IllegalArgumentException
      *             for invalid formats.
      */
+    @Override
     public Calendar toCalendar(String dateString, Locale locale) {
         if (null == dateString) {
             return null;
@@ -159,6 +161,7 @@ public class SDODataHelper implements DataHelper {
      * @param dateString a String representation of the Date type
      * @return a Date from a String representation of the Date type.
      */
+    @Override
     public Date toDate(String dateString) {
         if (null == dateString) {
             return null;
@@ -182,6 +185,7 @@ public class SDODataHelper implements DataHelper {
      * @param calendar the calendar to convert
      * @return a Calendar to a String representation of the DateTime type.
      */
+    @Override
     public String toDateTime(Calendar calendar) {
         if (calendar == null) {
             return null;
@@ -202,6 +206,7 @@ public class SDODataHelper implements DataHelper {
      * @param date the date
      * @return a Date to a String representation of the DateTime type.
      */
+    @Override
     public String toDateTime(Date date) {
         if (date == null) {
             return null;
@@ -215,6 +220,7 @@ public class SDODataHelper implements DataHelper {
      * @param calendar the calendar to convert
      * @return a Calendar to a String representation of the Day type.
      */
+    @Override
     public String toDay(Calendar calendar) {
         if (calendar == null) {
             return null;
@@ -235,6 +241,7 @@ public class SDODataHelper implements DataHelper {
      * @param date the date
      * @return a Date to a String representation of the Day type.
      */
+    @Override
     public String toDay(Date date) {
         if (date == null) {
             return null;
@@ -248,6 +255,7 @@ public class SDODataHelper implements DataHelper {
      * @param calendar the calendar to convert
      * @return a Calendar to a String representation of the Duration type.
      */
+    @Override
     public String toDuration(Calendar calendar) {
         if (calendar == null) {
             return null;
@@ -276,6 +284,7 @@ public class SDODataHelper implements DataHelper {
      * @param date the date
      * @return a Date to a String representation of the Duration type.
      */
+    @Override
     public String toDuration(Date date) {
         if (date == null) {
             return null;
@@ -292,6 +301,7 @@ public class SDODataHelper implements DataHelper {
      * @param calendar the calendar to convert
      * @return a Calendar to a String representation of the Month type.
      */
+    @Override
     public String toMonth(Calendar calendar) {
         if (calendar == null) {
             return null;
@@ -311,6 +321,7 @@ public class SDODataHelper implements DataHelper {
      * @param date the date
      * @return a Date to a String representation of the Month type.
      */
+    @Override
     public String toMonth(Date date) {
         if (date == null) {
             return null;
@@ -330,6 +341,7 @@ public class SDODataHelper implements DataHelper {
      * @param calendar the calendar to convert
      * @return a Calendar to a String representation of the MonthDay type.
      */
+    @Override
     public String toMonthDay(Calendar calendar) {
         if (calendar == null) {
             return null;
@@ -390,6 +402,7 @@ public class SDODataHelper implements DataHelper {
      * @param date the date to convert
      * @return a Date to a String representation of the MonthDay type.
      */
+    @Override
     public String toMonthDay(Date date) {
         if (null == date) {
             return null;
@@ -408,6 +421,7 @@ public class SDODataHelper implements DataHelper {
      * @param calendar the calendar to convert
      * @return a Calendar to a String representation of the Time type.
      */
+    @Override
     public String toTime(Calendar calendar) {
         if (calendar == null) {
             return null;
@@ -427,6 +441,7 @@ public class SDODataHelper implements DataHelper {
      * @param date the date
      * @return a Date to a String representation of the Time type.
      */
+    @Override
     public String toTime(Date date) {
         if (date == null) {
             return null;
@@ -440,6 +455,7 @@ public class SDODataHelper implements DataHelper {
      * @param calendar the calendar to convert
      * @return a Calendar to a String representation of the Year type.
      */
+    @Override
     public String toYear(Calendar calendar) {
         if (calendar == null) {
             return null;
@@ -459,6 +475,7 @@ public class SDODataHelper implements DataHelper {
      * @param date the date
      * @return a Date to a String representation of the Year type.
      */
+    @Override
     public String toYear(Date date) {
         if (date == null) {
             return null;
@@ -472,6 +489,7 @@ public class SDODataHelper implements DataHelper {
      * @param date the date
      * @return a Date to a String representation of the YearMonth type.
      */
+    @Override
     public String toYearMonth(Date date) {
         if (date == null) {
             return null;
@@ -485,6 +503,7 @@ public class SDODataHelper implements DataHelper {
      * @param date the date
      * @return a Date to a String representation of the YearMonthDay type.
      */
+    @Override
     public String toYearMonthDay(Date date) {
         if (date == null) {
             return null;
@@ -498,6 +517,7 @@ public class SDODataHelper implements DataHelper {
      * @param calendar the calendar to convert
      * @return a Calendar to a String representation of the YearMonth type.
      */
+    @Override
     public String toYearMonth(Calendar calendar) {
         if (calendar == null) {
             return null;
@@ -518,6 +538,7 @@ public class SDODataHelper implements DataHelper {
      * @param calendar the calendar to convert
      * @return a Calendar to a String representation of the YearMonthDay type.
      */
+    @Override
     public String toYearMonthDay(Calendar calendar) {
         if (calendar == null) {
             return null;
@@ -736,6 +757,7 @@ public class SDODataHelper implements DataHelper {
      * @throws IllegalArgumentException if the value could not be converted
      * @see #convert(Property, Object)
      */
+    @Override
     public Object convert(Type type, Object value) {
         Class convertClass = null;
         if (((SDOType) type).isDataType()) {
@@ -770,6 +792,7 @@ public class SDODataHelper implements DataHelper {
      * @throws IllegalArgumentException if the value could not be converted
      * @see #convert(Type, Object)
      */
+    @Override
     public Object convert(Property property, Object value) {
         if (null == property) {
             throw new IllegalArgumentException(SDOException.conversionError(null));

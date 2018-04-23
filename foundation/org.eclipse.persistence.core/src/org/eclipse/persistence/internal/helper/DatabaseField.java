@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -177,6 +177,7 @@ public class DatabaseField implements Cloneable, Serializable, CoreField  {
     /**
      * The table is not cloned because it is treated as an automatic value.
      */
+    @Override
     public DatabaseField clone() {
         try {
             return (DatabaseField)super.clone();
@@ -216,6 +217,7 @@ public class DatabaseField implements Cloneable, Serializable, CoreField  {
      * Also return true if the table of the receiver or field are unspecified,
      * ie. have no name.
      */
+    @Override
     public boolean equals(Object object) {
         if (!(object instanceof DatabaseField)) {
             return false;
@@ -394,6 +396,7 @@ public class DatabaseField implements Cloneable, Serializable, CoreField  {
     /**
      * Return the hashcode of the name, because it is fairly unique.
      */
+    @Override
     public int hashCode() {
         return getNameForComparisons().hashCode();
     }
@@ -643,6 +646,7 @@ public class DatabaseField implements Cloneable, Serializable, CoreField  {
         this.isUpdatable = isUpdatable;
     }
 
+    @Override
     public String toString() {
         return this.getQualifiedName();
     }

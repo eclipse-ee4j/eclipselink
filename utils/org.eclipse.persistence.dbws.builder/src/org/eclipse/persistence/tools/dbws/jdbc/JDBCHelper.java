@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -258,10 +258,12 @@ public class JDBCHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHelp
      * Indicates if one or more database tables were discovered.
      *
      */
+    @Override
     public boolean hasTables() {
         return dbTables.size() != 0;
     }
 
+    @Override
     public void buildProcedureOperation(ProcedureOperationModel procedureOperationModel) {
         String name = procedureOperationModel.getName();
         boolean isMySQL = dbwsBuilder.getDatabasePlatform().getClass().getName().contains("MySQL");
@@ -466,6 +468,7 @@ public class JDBCHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHelp
         finishProcedureOperation();
     }
 
+    @Override
     protected List<TableType> loadTables(List<String> catalogPatterns, List<String> schemaPatterns,
         List<String> tableNamePatterns) {
         List<TableType> tables = new ArrayList<TableType>();
@@ -606,6 +609,7 @@ public class JDBCHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHelp
         return dbTables;
     }
 
+    @Override
     protected List<ProcedureType> loadProcedures(List<String> catalogPatterns,
         List<String> schemaPatterns, List<String> procedureNamePatterns) {
         List<ProcedureType> procedures = new ArrayList<ProcedureType>();
@@ -751,6 +755,7 @@ public class JDBCHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHelp
         }
         if (dbStoredProcedures != null && !dbStoredProcedures.isEmpty()) {
             Collections.sort(dbStoredProcedures, new Comparator<ProcedureType>() {
+                @Override
                 public int compare(ProcedureType o1, ProcedureType o2) {
                     String name1 = o1.getProcedureName();
                     String name2 = o2.getProcedureName();

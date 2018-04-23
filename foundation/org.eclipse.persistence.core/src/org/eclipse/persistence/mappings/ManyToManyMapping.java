@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -166,6 +166,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * INTERNAL
      * Called when a DatabaseMapping is used to map the key in a collection.  Returns the key.
      */
+    @Override
     public Object createMapComponentFromRow(AbstractRecord dbRow, ObjectBuildingQuery query, CacheKey parentCacheKey, AbstractSession session, boolean isTargetProtected){
         return session.executeQuery(getSelectionQuery(), dbRow);
     }
@@ -514,6 +515,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * INTERNAL:
      * Initialize changeOrderTargetQuery.
      */
+    @Override
     protected void initializeChangeOrderTargetQuery(AbstractSession session) {
         boolean hasChangeOrderTargetQuery = changeOrderTargetQuery != null;
         if(!hasChangeOrderTargetQuery) {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -59,6 +59,7 @@ public class WebSphereTransactionController extends JTATransactionController {
      * Obtain and return the JTA TransactionManager on this platform.
      * This will be called once when the controller is initialized.
      */
+    @Override
     protected TransactionManager acquireTransactionManager() throws Exception {
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
             try{

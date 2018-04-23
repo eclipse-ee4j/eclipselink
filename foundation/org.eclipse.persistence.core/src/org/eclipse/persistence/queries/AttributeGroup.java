@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -107,6 +107,7 @@ public class AttributeGroup extends CoreAttributeGroup<AttributeItem, ClassDescr
      * Returns AttributeGroup corresponding to the passed (possibly nested)
      * attribute.
      */
+    @Override
     public AttributeGroup getGroup(String attributeNameOrPath) {
         return (AttributeGroup)super.getGroup(attributeNameOrPath);
     }
@@ -126,6 +127,7 @@ public class AttributeGroup extends CoreAttributeGroup<AttributeItem, ClassDescr
      * @return item or null
      * @throws IllegalArgumentException if name is not valid attribute name or path
      */
+    @Override
     public AttributeItem getItem(String attributeNameOrPath) {
         return super.getItem(attributeNameOrPath);
     }
@@ -201,6 +203,7 @@ public class AttributeGroup extends CoreAttributeGroup<AttributeItem, ClassDescr
      * @return
      */
 
+    @Override
     public boolean isCopyGroup() {
         return false;
     }
@@ -263,6 +266,7 @@ public class AttributeGroup extends CoreAttributeGroup<AttributeItem, ClassDescr
         }
 
 
+    @Override
     public boolean isLoadGroup() {
         return false;
     }
@@ -322,6 +326,7 @@ public class AttributeGroup extends CoreAttributeGroup<AttributeItem, ClassDescr
      * INTERNAL:
      * Only LoadGroups allow concurrency.
      */
+    @Override
     public boolean isConcurrent() {
         return false;
     }

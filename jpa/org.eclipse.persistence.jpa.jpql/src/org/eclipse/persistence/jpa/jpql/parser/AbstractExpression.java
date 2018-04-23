@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -391,6 +391,7 @@ public abstract class AbstractExpression implements Expression {
     /**
      * {@inheritDoc}
      */
+    @Override
     public final ListIterable<Expression> children() {
         if (children == null) {
             children = new LinkedList<Expression>();
@@ -434,6 +435,7 @@ public abstract class AbstractExpression implements Expression {
     /**
      * {@inheritDoc}
      */
+    @Override
     public JPQLQueryBNF findQueryBNF(Expression expression) {
         return getQueryBNF();
     }
@@ -464,6 +466,7 @@ public abstract class AbstractExpression implements Expression {
     /**
      * {@inheritDoc}
      */
+    @Override
     public JPQLGrammar getGrammar() {
         return getRoot().getGrammar();
     }
@@ -490,6 +493,7 @@ public abstract class AbstractExpression implements Expression {
     /**
      * {@inheritDoc}
      */
+    @Override
     public final int getLength() {
         return toActualText().length();
     }
@@ -497,6 +501,7 @@ public abstract class AbstractExpression implements Expression {
     /**
      * {@inheritDoc}
      */
+    @Override
     public final int getOffset() {
         if (offset == -1) {
             offset = calculatePosition(this, 0);
@@ -507,6 +512,7 @@ public abstract class AbstractExpression implements Expression {
     /**
      * {@inheritDoc}
      */
+    @Override
     public final AbstractExpression getParent() {
         return parent;
     }
@@ -524,6 +530,7 @@ public abstract class AbstractExpression implements Expression {
     /**
      * {@inheritDoc}
      */
+    @Override
     public final JPQLExpression getRoot() {
         return (parent == null) ? (JPQLExpression) this : parent.getRoot();
     }
@@ -567,6 +574,7 @@ public abstract class AbstractExpression implements Expression {
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean isAncestor(Expression expression) {
 
         if (expression == this) {
@@ -661,6 +669,7 @@ public abstract class AbstractExpression implements Expression {
     /**
      * {@inheritDoc}
      */
+    @Override
     public final ListIterable<Expression> orderedChildren() {
         if (orderedChildren == null) {
             orderedChildren = new LinkedList<Expression>();
@@ -1033,6 +1042,7 @@ public abstract class AbstractExpression implements Expression {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void populatePosition(QueryPosition queryPosition, int position) {
 
         queryPosition.addPosition(this, position);
@@ -1123,6 +1133,7 @@ public abstract class AbstractExpression implements Expression {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String toActualText() {
         if (actualText == null) {
             StringBuilder writer = new StringBuilder();
@@ -1135,6 +1146,7 @@ public abstract class AbstractExpression implements Expression {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String toParsedText() {
         if (parsedText == null) {
             StringBuilder writer = new StringBuilder();

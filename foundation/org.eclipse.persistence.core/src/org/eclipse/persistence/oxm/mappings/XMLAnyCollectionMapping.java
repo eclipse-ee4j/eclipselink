@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -187,6 +187,7 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements An
     * INTERNAL:
     * Clone the attribute from the clone and assign it to the backup.
     */
+    @Override
     public void buildBackupClone(Object clone, Object backup, UnitOfWorkImpl unitOfWork) {
         throw DescriptorException.invalidMappingOperation(this, "buildBackupClone");
     }
@@ -200,6 +201,7 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements An
         throw DescriptorException.invalidMappingOperation(this, "buildClone");
     }
 
+    @Override
     public void buildCloneFromRow(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object clone, CacheKey sharedCacheKey, ObjectBuildingQuery sourceQuery, UnitOfWorkImpl unitOfWork, AbstractSession executionSession) {
         throw DescriptorException.invalidMappingOperation(this, "buildCloneFromRow");
     }
@@ -208,6 +210,7 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements An
      * INTERNAL:
      * Cascade perform delete through mappings that require the cascade
      */
+    @Override
     public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
         //objects referenced by this mapping are not registered as they have
         // no identity, this is a no-op.
@@ -217,10 +220,12 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements An
       * INTERNAL:
       * Cascade registerNew for Create through mappings that require the cascade
       */
+    @Override
     public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
         //Our current XML support does not make use of the UNitOfWork.
     }
 
+    @Override
     public Object clone() {
         // Bug 3037701 - clone the AttributeAccessor
         XMLAnyCollectionMapping mapping = null;
@@ -235,6 +240,7 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements An
     * This method was created in VisualAge.
     * @return prototype.changeset.ChangeRecord
     */
+    @Override
     public ChangeRecord compareForChange(Object clone, Object backup, ObjectChangeSet owner, AbstractSession session) {
         throw DescriptorException.invalidMappingOperation(this, "compareForChange");
     }
@@ -243,6 +249,7 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements An
     * INTERNAL:
     * Compare the attributes belonging to this mapping for the objects.
     */
+    @Override
     public boolean compareObjects(Object firstObject, Object secondObject, AbstractSession session) {
         throw DescriptorException.invalidMappingOperation(this, "compareObjects");
     }
@@ -253,6 +260,7 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements An
     * Replace the transient attributes of the remote value holders
     * with client-side objects.
     */
+    @Override
     public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
         throw DescriptorException.invalidMappingOperation(this, "fixObjectReferences");
     }
@@ -261,14 +269,17 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements An
     * INTERNAL:
     * Return the mapping's containerPolicy.
     */
+    @Override
     public ContainerPolicy getContainerPolicy() {
         return containerPolicy;
     }
 
+    @Override
     public DatabaseField getField() {
         return field;
     }
 
+    @Override
     public void initialize(AbstractSession session) throws DescriptorException {
         if (getField() != null) {
             setField(getDescriptor().buildField(getField()));
@@ -282,6 +293,7 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements An
     * INTERNAL:
     * Iterate on the appropriate attribute value.
     */
+    @Override
     public void iterate(DescriptorIterator iterator) {
         throw DescriptorException.invalidMappingOperation(this, "iterate");
     }
@@ -308,14 +320,17 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements An
         throw DescriptorException.invalidMappingOperation(this, "mergeIntoObject");
     }
 
+    @Override
     public void setContainerPolicy(ContainerPolicy cp) {
         this.containerPolicy = cp;
     }
 
+    @Override
     public void setField(DatabaseField field) {
         this.field = (XMLField) field;
     }
 
+    @Override
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected, Boolean[] wasCacheUsed) throws DatabaseException {
         XMLRecord record = (XMLRecord) row;
 
@@ -559,6 +574,7 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements An
         }
     }
 
+    @Override
     public void writeSingleValue(Object element, Object parent, XMLRecord row, AbstractSession session) {
         XMLField xmlRootField = null;
         Object originalObject = element;
@@ -666,10 +682,12 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements An
         return null;
     }
 
+    @Override
     public boolean isXMLMapping() {
         return true;
     }
 
+    @Override
     public Vector getFields() {
         return this.collectFields();
     }
@@ -681,38 +699,47 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements An
      * <p>jdk1.2.x: The container class must implement (directly or indirectly) the Collection interface.
      * <p>jdk1.1.x: The container class must be a subclass of Vector.
      */
+    @Override
     public void useCollectionClass(Class concreteContainerClass) {
         this.setContainerPolicy(ContainerPolicy.buildPolicyFor(concreteContainerClass));
     }
 
+    @Override
     public void useMapClass(Class concreteContainerClass, String methodName) {
         throw DescriptorException.invalidMappingOperation(this, "useMapClass");
     }
 
+    @Override
     public void useMapClassName(String concreteContainerClass, String methodName) {
         throw DescriptorException.invalidMappingOperation(this, "useMapClass");
     }
 
+    @Override
     public void useCollectionClassName(String concreteContainerClassName) {
         this.setContainerPolicy(new CollectionContainerPolicy(concreteContainerClassName));
     }
 
+    @Override
     public void useListClassName(String concreteContainerClassName) {
         this.setContainerPolicy(new ListContainerPolicy(concreteContainerClassName));
     }
 
+    @Override
     public void setUseXMLRoot(boolean useXMLRoot) {
         this.useXMLRoot = useXMLRoot;
     }
 
+    @Override
     public boolean usesXMLRoot() {
         return useXMLRoot;
     }
 
+    @Override
     public boolean isMixedContent() {
         return mixedContent;
     }
 
+    @Override
     public void setMixedContent(boolean mixed) {
         mixedContent = mixed;
     }
@@ -793,10 +820,12 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements An
         return unmappedNodes;
     }
 
+    @Override
     public boolean isCollectionMapping() {
         return true;
     }
 
+    @Override
     public void setConverter(XMLConverter conv) {
         this.valueConverter = conv;
     }
@@ -812,10 +841,12 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements An
      * If mixedContent is false, this setting has no effect.
      * @return
      */
+    @Override
     public boolean isWhitespacePreservedForMixedContent() {
         return this.isWhitespacePreservedForMixedContent;
     }
 
+    @Override
     public void setPreserveWhitespaceForMixedContent(boolean preserveWhitespace) {
         this.isWhitespacePreservedForMixedContent = preserveWhitespace;
     }
@@ -825,6 +856,7 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements An
      * present.  If it is not present then the container policy will be used to
      * create the container.
      */
+    @Override
     public boolean getReuseContainer() {
         return reuseContainer;
     }
@@ -834,6 +866,7 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements An
      * present.  If it is not present then the container policy will be used to
      * create the container.
      */
+    @Override
     public void setReuseContainer(boolean reuseContainer) {
         this.reuseContainer = reuseContainer;
     }
@@ -844,6 +877,7 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements An
      * is no presence of the collection in the XML document.
      * @since EclipseLink 2.3.3
      */
+    @Override
     public boolean isDefaultEmptyContainer() {
         return defaultEmptyContainer;
     }
@@ -854,14 +888,17 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements An
      * field/property if the collection is not present in the XML document.
      * @since EclipseLink 2.3.3
      */
+    @Override
     public void setDefaultEmptyContainer(boolean defaultEmptyContainer) {
         this.defaultEmptyContainer = defaultEmptyContainer;
     }
 
+    @Override
     public AbstractNullPolicy getWrapperNullPolicy() {
         return this.wrapperNullPolicy;
     }
 
+    @Override
     public void setWrapperNullPolicy(AbstractNullPolicy policy) {
         this.wrapperNullPolicy = policy;
     }
@@ -870,6 +907,7 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements An
      * INTERNAL
      * @since EclipseLink 2.5.0
      */
+    @Override
     public Object convertObjectValueToDataValue(Object value, Session session, XMLMarshaller marshaller) {
         if (null != valueConverter) {
             return valueConverter.convertObjectValueToDataValue(value, session, marshaller);
@@ -881,6 +919,7 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements An
      * INTERNAL
      * @since EclipseLink 2.5.0
      */
+    @Override
     public Object convertDataValueToObjectValue(Object fieldValue, Session session, XMLUnmarshaller unmarshaller) {
         if (null != valueConverter) {
             return valueConverter.convertDataValueToObjectValue(fieldValue, session, unmarshaller);

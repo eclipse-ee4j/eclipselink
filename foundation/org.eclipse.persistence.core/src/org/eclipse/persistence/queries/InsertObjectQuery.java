@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -60,6 +60,7 @@ public class InsertObjectQuery extends WriteObjectQuery {
      * INTERNAL:
      * Perform an insert.
      */
+    @Override
     public void executeCommit() throws DatabaseException {
         // Check for redirection.
         QueryRedirector localRedirector = getRedirectorForQuery();
@@ -85,6 +86,7 @@ public class InsertObjectQuery extends WriteObjectQuery {
      * INTERNAL:
      * Perform an insert.
      */
+    @Override
     public void executeCommitWithChangeSet() throws DatabaseException {
         // The same commit is used for changeset or not for inserts.
         executeCommit();
@@ -95,6 +97,7 @@ public class InsertObjectQuery extends WriteObjectQuery {
      * Returns the specific default redirector for this query type.  There are numerous default query redirectors.
      * See ClassDescriptor for their types.
      */
+    @Override
     protected QueryRedirector getDefaultRedirector(){
         return descriptor.getDefaultInsertObjectQueryRedirector();
     }
@@ -103,6 +106,7 @@ public class InsertObjectQuery extends WriteObjectQuery {
      * INTERNAL:
      * Prepare the receiver for execution in a session.
      */
+    @Override
     protected void prepare() {
         super.prepare();
         if (this.name == null) {
@@ -117,6 +121,7 @@ public class InsertObjectQuery extends WriteObjectQuery {
      * This is done before the query is copied and prepared/executed.
      * null means there is none.
      */
+    @Override
     protected DatabaseQuery checkForCustomQuery(AbstractSession session, AbstractRecord translationRow) {
         checkDescriptor(session);
 
@@ -135,6 +140,7 @@ public class InsertObjectQuery extends WriteObjectQuery {
      * INTERNAL:
      * Set the properties needed to be cascaded into the custom query.
      */
+    @Override
     protected void prepareCustomQuery(DatabaseQuery customQuery) {
         InsertObjectQuery customInsertQuery = (InsertObjectQuery)customQuery;
         customInsertQuery.setObject(getObject());
@@ -148,6 +154,7 @@ public class InsertObjectQuery extends WriteObjectQuery {
      * PUBLIC:
      * Return if this is an insert object query.
      */
+    @Override
     public boolean isInsertObjectQuery() {
         return true;
     }
