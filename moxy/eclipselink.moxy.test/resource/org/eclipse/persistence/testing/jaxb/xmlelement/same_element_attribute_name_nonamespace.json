@@ -1,0 +1,11 @@
+{
+  "employee": {
+    "@name": "john.smith",
+    "name": [
+      {
+        "first": "John",
+        "last": "Smith"
+      }
+    ]
+  }
+}
