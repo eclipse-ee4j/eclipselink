@@ -97,6 +97,10 @@ public class XPathFragment <
         this.namespaceAware = isNamespaceAware;
     }
 
+    public char getNamespaceSeparator() {
+        return this.namespaceSeparator;
+    }
+
     public void setNamespaceSeparator(char namespaceSeparator) {
         this.namespaceSeparator = namespaceSeparator;
     }
