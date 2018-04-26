@@ -953,10 +953,10 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
 
     @Override
     public int hashCode() {
-        if(null == xPathFragment) {
+        if(null == xPathFragment && null == xPathFragment.getXPath()) {
             return 1;
         }
-        return xPathFragment.hashCode();
+        return (xPathFragment.getXPath().replace((xPathFragment.getPrefix() != null) ? xPathFragment.getPrefix() + xPathFragment.getNamespaceSeparator() : "", "")).hashCode();
     }
 
 }
