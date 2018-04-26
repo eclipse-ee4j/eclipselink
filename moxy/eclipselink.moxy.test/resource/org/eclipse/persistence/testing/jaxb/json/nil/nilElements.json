@@ -1,0 +1,31 @@
+{
+  "format": {
+    "formatEntries": {
+      "formatEntry": [
+        {
+          "arrayList": {
+            "item": [
+              "111",
+              "222",
+              "333"
+            ],
+            "nil": 1
+          },
+          "field1": "ABC"
+        },
+        {
+          "arrayList": {
+            "item": [
+              "aaa",
+              "bbb",
+              "ccc"
+            ],
+            "nil": true
+          },
+          "field1": "xyz",
+          "nil": true
+        }
+      ]
+    }
+  }
+}
