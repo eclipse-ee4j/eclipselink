@@ -26,6 +26,7 @@ import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.ext.LexicalHandler;
 
+import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.validation.ValidatorHandler;
 
@@ -343,10 +344,11 @@ public class XMLReader implements org.xml.sax.XMLReader {
     }
 
     private boolean hasAttributes(Attributes attributes) {
-        QName nilAttrName = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, Constants.SCHEMA_NIL_ATTRIBUTE);
+        QName nilAttrName = new QName(XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, Constants.SCHEMA_NIL_ATTRIBUTE);
         for (int i = 0; i < attributes.getLength(); i++) {
             if (!(nilAttrName.getNamespaceURI().equals(attributes.getURI(i)) &&
-                    nilAttrName.getLocalPart().equals(attributes.getLocalName(i)))) {
+                    nilAttrName.getLocalPart().equals(attributes.getLocalName(i))) &&
+                    !XMLConstants.XMLNS_ATTRIBUTE_NS_URI.equals(attributes.getURI(i))) {
                 return true;
             }
         }
