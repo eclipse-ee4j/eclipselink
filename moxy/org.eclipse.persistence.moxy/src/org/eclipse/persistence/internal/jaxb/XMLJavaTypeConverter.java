@@ -149,7 +149,7 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
             }
             return adapter.unmarshal(toConvert);
         } catch (Exception ex) {
-            if(unmarshaller.getErrorHandler() == null){
+            if(unmarshaller == null || unmarshaller.getErrorHandler() == null){
                 throw ConversionException.couldNotBeConverted(dataValue, boundType, ex);
             }
             try {
@@ -183,7 +183,7 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
             }
             return dataValue;
         } catch (Exception ex) {
-            if(marshaller.getErrorHandler() == null){
+            if(marshaller == null || marshaller.getErrorHandler() == null){
                 throw ConversionException.couldNotBeConverted(objectValue, valueType, ex);
             }
             try {
