@@ -885,9 +885,11 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
                 unmarshalContext.startElement(this);
                 levelIndex++;
 
-                String xsiNilValue = atts.getValue(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, Constants.SCHEMA_NIL_ATTRIBUTE);
-                if(xsiNilValue != null){
-                    setNil(xsiNilValue.equals(Constants.BOOLEAN_STRING_TRUE) || xsiNilValue.equals("1"));
+                if(xmlReader.getMediaType().isApplicationXML()) {
+                    String xsiNilValue = atts.getValue(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, Constants.SCHEMA_NIL_ATTRIBUTE);
+                    if (xsiNilValue != null) {
+                        setNil(xsiNilValue.equals(Constants.BOOLEAN_STRING_TRUE) || xsiNilValue.equals("1"));
+                    }
                 }
 
                 if(node.getNullCapableValue() != null){
