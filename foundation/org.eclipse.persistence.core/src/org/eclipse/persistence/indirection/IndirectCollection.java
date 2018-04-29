@@ -24,7 +24,7 @@ import java.util.Collection;
  * @author James Sutherland
  * @since TopLink 10.1.3
  */
-public interface IndirectCollection extends IndirectContainer {
+public interface IndirectCollection<E, C> extends IndirectContainer<C> {
 
     /**
      * INTERNAL:
@@ -45,21 +45,21 @@ public interface IndirectCollection extends IndirectContainer {
      * Return if the collection has any elements added that have been deferred to instantiation.
      * Indirect collections with change tracking avoid instantiation on add/remove.
      */
-    Collection getAddedElements();
+    Collection<E> getAddedElements();
 
     /**
      * INTERNAL:
      * Return if the collection has any elements removed that have been deferred to instantiation.
      * Indirect collections with change tracking avoid instantiation on add/remove.
      */
-    Collection getRemovedElements();
+    Collection<E> getRemovedElements();
 
     /**
      * INTERNAL:
      * Return the real collection object.
      * This will force instantiation.
      */
-    Object getDelegateObject();
+    C getDelegateObject();
 
     /**
      * INTERNAL

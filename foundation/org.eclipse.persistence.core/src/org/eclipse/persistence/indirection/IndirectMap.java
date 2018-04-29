@@ -54,13 +54,13 @@ import org.eclipse.persistence.descriptors.changetracking.MapChangeEvent;
  * @author Big Country
  * @since TOPLink/Java 2.5
  */
-public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChangeTracker, IndirectCollection {
+public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChangeTracker, IndirectCollection<Map.Entry<K, V>, Map<K, V>> {
 
     /** Reduce type casting */
     protected volatile Hashtable<K, V> delegate;
 
     /** Delegate indirection behavior to a value holder */
-    protected volatile ValueHolderInterface<?> valueHolder;
+    protected volatile ValueHolderInterface<Map<K, V>> valueHolder;
 
     /** Change tracking listener. */
     private transient PropertyChangeListener changeListener;
@@ -179,7 +179,7 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
     public synchronized Object clone() {
         IndirectMap<K, V> result = (IndirectMap<K, V>)super.clone();
         result.delegate = (Hashtable<K, V>)this.getDelegate().clone();
-        result.valueHolder = new ValueHolder(result.delegate);
+        result.valueHolder = new ValueHolder<>(result.delegate);
         result.attributeName = null;
         result.changeListener = null;
         return result;
@@ -426,7 +426,7 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
      * This will force instantiation.
      */
     @Override
-    public Object getDelegateObject() {
+    public Map<K, V> getDelegateObject() {
         return getDelegate();
     }
 
@@ -453,8 +453,8 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
       * This method used to be synchronized, which caused deadlock.
       */
     @Override
-     public ValueHolderInterface getValueHolder() {
-         ValueHolderInterface<?> vh = this.valueHolder;
+     public ValueHolderInterface<Map<K, V>> getValueHolder() {
+         ValueHolderInterface<Map<K, V>> vh = this.valueHolder;
          // PERF: lazy initialize value holder and vector as are normally set after creation.
          if (vh == null) {
              synchronized(this){
@@ -500,7 +500,7 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
         this.delegate = null;
         Hashtable<K, V> temp = new Hashtable<>(m);
 
-        this.valueHolder = new ValueHolder(temp);
+        this.valueHolder = new ValueHolder<>(temp);
     }
 
     /**
@@ -939,7 +939,7 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
      * Set the value holder.
      */
     @Override
-    public void setValueHolder(ValueHolderInterface valueHolder) {
+    public void setValueHolder(ValueHolderInterface<Map<K, V>> valueHolder) {
         this.delegate = null;
         this.valueHolder = valueHolder;
     }

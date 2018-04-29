@@ -27,7 +27,7 @@ package org.eclipse.persistence.indirection;
  * @author Big Country
  *    @since TOPLink/Java 2.5
  */
-public interface IndirectContainer {
+public interface IndirectContainer<C> {
 
     /**
      * PUBLIC:
@@ -35,7 +35,7 @@ public interface IndirectContainer {
      * UOW clone of the container.
      * @return org.eclipse.persistence.indirection.ValueHolderInterface A representation of the valueholder  * which this container uses
      */
-    public ValueHolderInterface getValueHolder();
+    public ValueHolderInterface<C> getValueHolder();
 
     /**
      * PUBLIC:
@@ -51,5 +51,5 @@ public interface IndirectContainer {
      * This is used by the indirection policy to build the
      * UOW clone of the container.
      */
-    public void setValueHolder(ValueHolderInterface valueHolder);
+    public void setValueHolder(ValueHolderInterface<C> valueHolder);
 }

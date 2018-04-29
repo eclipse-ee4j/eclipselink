@@ -56,13 +56,13 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
  * @author Big Country
  * @since TOPLink/Java 2.5
  */
-public class IndirectList<E> extends Vector<E> implements CollectionChangeTracker, IndirectCollection {
+public class IndirectList<E> extends Vector<E> implements CollectionChangeTracker, IndirectCollection<E, List<E>> {
 
     /** Reduce type casting. */
     protected volatile Vector<E> delegate;
 
     /** Delegate indirection behavior to a value holder. */
-    protected volatile ValueHolderInterface<?> valueHolder;
+    protected volatile ValueHolderInterface<List<E>> valueHolder;
 
     /** Change tracking listener. */
     private transient PropertyChangeListener changeListener = null;
@@ -468,7 +468,7 @@ public class IndirectList<E> extends Vector<E> implements CollectionChangeTracke
      * This will force instantiation.
      */
     @Override
-    public Object getDelegateObject() {
+    public List<E> getDelegateObject() {
         return getDelegate();
     }
 
@@ -478,14 +478,14 @@ public class IndirectList<E> extends Vector<E> implements CollectionChangeTracke
      * This method used to be synchronized, which caused deadlock.
      */
     @Override
-    public ValueHolderInterface getValueHolder() {
-        ValueHolderInterface<?> vh = this.valueHolder;
+    public ValueHolderInterface<List<E>> getValueHolder() {
+        ValueHolderInterface<List<E>> vh = this.valueHolder;
         // PERF: lazy initialize value holder and vector as are normally set after creation.
         if (vh == null) {
             synchronized(this) {
                 vh = this.valueHolder;
                 if (vh == null) {
-                        this.valueHolder = vh = new ValueHolder<>(new Vector(this.initialCapacity, this.capacityIncrement));
+                        this.valueHolder = vh = new ValueHolder<>(new Vector<>(this.initialCapacity, this.capacityIncrement));
                 }
             }
         }
@@ -823,7 +823,7 @@ public class IndirectList<E> extends Vector<E> implements CollectionChangeTracke
      * Set the value holder.
      */
     @Override
-    public void setValueHolder(ValueHolderInterface valueHolder) {
+    public void setValueHolder(ValueHolderInterface<List<E>> valueHolder) {
         this.delegate = null;
         this.valueHolder = valueHolder;
         if (valueHolder instanceof UnitOfWorkQueryValueHolder) {
@@ -1007,7 +1007,7 @@ public class IndirectList<E> extends Vector<E> implements CollectionChangeTracke
      * Return the elements that have been removed before instantiation.
      */
     @Override
-    public Collection<E> getRemovedElements() {
+    public List<E> getRemovedElements() {
         if (removedElements == null) {
             removedElements = new ArrayList<>();
         }
@@ -1019,7 +1019,7 @@ public class IndirectList<E> extends Vector<E> implements CollectionChangeTracke
      * Return the elements that have been added before instantiation.
      */
     @Override
-    public Collection<E> getAddedElements() {
+    public List<E> getAddedElements() {
         if (addedElements == null) {
             addedElements = new ArrayList<>();
         }

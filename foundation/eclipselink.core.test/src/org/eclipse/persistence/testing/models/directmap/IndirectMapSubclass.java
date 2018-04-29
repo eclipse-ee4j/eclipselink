@@ -22,7 +22,7 @@ import java.util.Map;
  * Subclass of IndirectMap designed to test that transparent indirection can work
  * with custom map classes
  */
-public class IndirectMapSubclass extends IndirectMap {
+public class IndirectMapSubclass<K, V> extends IndirectMap<K, V> {
 
     /**
      * PUBLIC:
@@ -66,7 +66,7 @@ public class IndirectMapSubclass extends IndirectMap {
      * in the given Map or 11 (whichever is greater), and a default load factor, which is 0.75.
      * @param m a map containing the mappings to use
      */
-    public IndirectMapSubclass(Map m) {
+    public IndirectMapSubclass(Map<K, V> m) {
         super(m);
     }
 }
