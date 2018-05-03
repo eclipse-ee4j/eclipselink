@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle, IBM and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,6 +12,8 @@
  *     Thomas Spiegl - fix for bug 324406
  *     10/15/2010-2.2 Guy Pelletier
  *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
+ *     05/10/2018-2.7 Joe Grassel
+ *       - Github#93: Bug with bulk update processing involving version field update parameter
  ******************************************************************************/
 package org.eclipse.persistence.internal.queries;
 
@@ -1833,6 +1835,32 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         }
     }
 
+    private boolean isFieldInUpdate(Expression writeLock, HashMap updateClauses) {
+    	if (!(writeLock instanceof FieldExpression)) {
+    		return false;
+    	}
+    	
+    	final FieldExpression fe = (FieldExpression) writeLock;
+    	final DatabaseField targetField = fe.getField();
+    	
+    	final Set keys = updateClauses.keySet();
+    	for (Object key : keys) {
+    		if (!(key instanceof QueryKeyExpression)) {
+    			continue;
+    		}
+    		
+    		QueryKeyExpression qke = (QueryKeyExpression) key;
+    		ExpressionBuilder eb = qke.getBuilder();
+    		Expression ex = eb.existingDerivedField(targetField);
+    		if (ex != null) {
+    			// Found an expression in the update clause that touches this database field.
+    			return true;
+    		}
+    	}
+    	
+    	return false;
+    }
+    
     /**
      * Pre-build the SQL statement from the expressions.
      */
@@ -1846,12 +1874,18 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         if (policy != null) {
             if(policy.getWriteLockField() != null) {
                 Expression writeLock = builder.getField(policy.getWriteLockField());
-                Expression writeLockUpdateExpression = policy.getWriteLockUpdateExpression(builder, getQuery().getSession());
-                if (writeLockUpdateExpression != null) {
-                    // clone it to keep user's original data intact
-                    updateClauses = (HashMap)updateClauses.clone();
-                    updateClausesHasBeenCloned = true;
-                    updateClauses.put(writeLock, writeLockUpdateExpression);
+                // Note: The spec allows for version fields to be updated in bulk updates.  Adding the writeLockUpdateExpression when there is already
+                // a QueryKeyExpression associated with the version column will result in a scenario where one wins out by virtue of order of iteration
+                // of updateClauses's entrySet.  So we need to check the updateClause to see if the database fields in the writeLock expression are
+                // already targeted for update.
+                if (!isFieldInUpdate(writeLock, updateClauses)) {
+                	Expression writeLockUpdateExpression = policy.getWriteLockUpdateExpression(builder, getQuery().getSession());
+                    if (writeLockUpdateExpression != null) {
+                         // clone it to keep user's original data intact
+                        updateClauses = (HashMap)updateClauses.clone();
+                        updateClausesHasBeenCloned = true;
+                        updateClauses.put(writeLock, writeLockUpdateExpression);
+                    }
                 }
             }
         }
