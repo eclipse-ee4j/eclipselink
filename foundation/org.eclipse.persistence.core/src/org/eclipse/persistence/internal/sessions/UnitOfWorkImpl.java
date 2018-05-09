@@ -360,6 +360,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         }
         this.exceptionHandler = parent.exceptionHandler;
         this.pessimisticLockTimeoutDefault = parent.pessimisticLockTimeoutDefault;
+        this.pessimisticLockTimeoutUnitDefault = parent.pessimisticLockTimeoutUnitDefault;
         this.queryTimeoutDefault = parent.queryTimeoutDefault;
         this.queryTimeoutUnitDefault = parent.queryTimeoutUnitDefault;
         this.shouldOptimizeResultSetAccess = parent.shouldOptimizeResultSetAccess;

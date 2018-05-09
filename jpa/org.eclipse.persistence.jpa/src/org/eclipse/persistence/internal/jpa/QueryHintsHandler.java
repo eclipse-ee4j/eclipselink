@@ -243,6 +243,7 @@ public class QueryHintsHandler {
             addHint(new PessimisticLockHint());
             addHint(new PessimisticLockScope());
             addHint(new PessimisticLockTimeoutHint());
+            addHint(new PessimisticLockTimeoutUnitHint());
             addHint(new RefreshHint());
             addHint(new CascadePolicyHint());
             addHint(new BatchHint());
@@ -810,7 +811,24 @@ public class QueryHintsHandler {
             return query;
         }
     }
+    
+    protected static class PessimisticLockTimeoutUnitHint extends Hint {
+        PessimisticLockTimeoutUnitHint() {
+            super(QueryHints.PESSIMISTIC_LOCK_TIMEOUT_UNIT, "");
+        }
 
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
+            if (query.isObjectLevelReadQuery()) {
+                TimeUnit unit = TimeUnit.valueOf((String)valueToApply);
+                ((ObjectLevelReadQuery) query).setWaitTimeoutUnit(unit);
+            } else {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+            }
+
+            return query;
+        }
+    }
+    
     protected static class RefreshHint extends Hint {
         RefreshHint() {
             super(QueryHints.REFRESH, HintValues.FALSE);

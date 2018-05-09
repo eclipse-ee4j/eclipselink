@@ -241,6 +241,19 @@ public class QueryHints {
      * @see org.eclipse.persistence.queries.ObjectLevelReadQuery#setWaitTimeout(Integer)
      */
     public static final String PESSIMISTIC_LOCK_TIMEOUT = "javax.persistence.lock.timeout";
+    
+    /**
+     * "eclipselink.pessimistic.lock.timeout.unit"
+     * <p>Configures the pessimistic lock timeout unit value. Allows users more refinement.
+     * <b>Valid Values:</b>
+     * <ul>
+     * <li>"<code>java.util.concurrent.TimeUnit.MILLISECONDS</code>",
+     * <li>"<code>java.util.concurrent.TimeUnit.SECONDS</code>" (DEFAULT),
+     * <li>"<code>java.util.concurrent.TimeUnit.MINUTES</code>".
+     * </ul>
+     * @see org.eclipse.persistence.queries.ObjectLevelReadQuery#setWaitTimeoutUnit(TimeUnit)
+     */
+    public static final String PESSIMISTIC_LOCK_TIMEOUT_UNIT = "eclipselink.pessimistic.lock.timeout.unit";
 
     /**
      * "eclipselink.refresh"
