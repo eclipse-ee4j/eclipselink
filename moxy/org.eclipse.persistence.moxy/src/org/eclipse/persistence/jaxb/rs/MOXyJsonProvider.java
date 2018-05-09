@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -39,6 +39,8 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.activation.DataSource;
 import javax.ws.rs.Consumes;
@@ -205,6 +207,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
     private static final QName EMPTY_STRING_QNAME = new QName("");
     private static final String JSON = "json";
     private static final String PLUS_JSON = "+json";
+    private static final Logger LOGGER = Logger.getLogger(MOXyJsonProvider.class.getName());
 
     @Context
     protected Providers providers;
@@ -345,6 +348,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
             Set<Class<?>> domainClasses = getDomainClasses(genericType);
             return getJAXBContext(domainClasses, annotations, mediaType, null);
         } catch(JAXBException e) {
+            LOGGER.log(Level.WARNING, "Exception to get/create JAXB context: ", e);
             return null;
         }
     }
