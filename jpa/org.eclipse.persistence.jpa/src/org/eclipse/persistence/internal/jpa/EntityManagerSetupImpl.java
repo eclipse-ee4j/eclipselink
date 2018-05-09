@@ -2878,6 +2878,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             }
             updateIdValidation(m);
             updatePessimisticLockTimeout(m);
+            updatePessimisticLockTimeoutUnit(m);
             updateQueryTimeout(m);
             updateQueryTimeoutUnit(m);
             updateLockingTimestampDefault(m);
@@ -3499,7 +3500,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
 
         if (pessimisticLockTimeout != null) {
             try {
-                session.setPessimisticLockTimeoutDefault(convertTimeMillisToSeconds(pessimisticLockTimeout));
+                session.setPessimisticLockTimeoutDefault(Integer.parseInt(pessimisticLockTimeout));
             } catch (NumberFormatException invalid) {
                 session.handleException(ValidationException.invalidValueForProperty(pessimisticLockTimeout, PersistenceUnitProperties.PESSIMISTIC_LOCK_TIMEOUT, invalid));
             }
@@ -3507,10 +3508,20 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     }
     
     /**
-     * Convert time from MilliSeconds to Seconds
+     * Update the default pessimistic lock timeout unit value.
+     * @param persistenceProperties the properties map
      */
-    protected int convertTimeMillisToSeconds(String pessimisticLockTimeout) {
-        return (int)TimeUnit.MILLISECONDS.toSeconds(Integer.parseInt(pessimisticLockTimeout));
+    protected void updatePessimisticLockTimeoutUnit(Map persistenceProperties) {
+        String pessimisticLockTimeoutUnit = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.PESSIMISTIC_LOCK_TIMEOUT_UNIT, persistenceProperties, session);
+
+        if (pessimisticLockTimeoutUnit != null) {
+            try {
+                TimeUnit unit = TimeUnit.valueOf(pessimisticLockTimeoutUnit);
+                session.setPessimisticLockTimeoutUnitDefault(unit);
+            } catch (NumberFormatException invalid) {
+                session.handleException(ValidationException.invalidValueForProperty(pessimisticLockTimeoutUnit, PersistenceUnitProperties.PESSIMISTIC_LOCK_TIMEOUT_UNIT, invalid));
+            }
+        }
     }
 
     /**

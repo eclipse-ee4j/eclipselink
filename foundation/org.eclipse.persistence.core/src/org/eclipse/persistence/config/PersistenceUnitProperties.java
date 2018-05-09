@@ -3109,6 +3109,18 @@ public class PersistenceUnitProperties {
      * </ul>
      */
     public static final String PESSIMISTIC_LOCK_TIMEOUT = QueryHints.PESSIMISTIC_LOCK_TIMEOUT;
+    
+    /**
+     * The "<code>javax.persistence.lock.timeout.unit</code>" property configures the
+     * WAIT timeout used in pessimistic locking, Allows users more refinement.
+     * Used in combination with PersistenceUnitProperties.PESSIMISTIC_LOCK_TIMEOUT
+     * <p>
+     * <b>Allowed Values:</b>
+     * <ul>
+     * <li>a string containing a zero or greater integer value
+     * </ul>
+     */
+    public static final String PESSIMISTIC_LOCK_TIMEOUT_UNIT = QueryHints.PESSIMISTIC_LOCK_TIMEOUT_UNIT;
 
     /**
      * The "<code>javax.persistence.query.timeout</code>" property configures
@@ -3117,9 +3129,11 @@ public class PersistenceUnitProperties {
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>a string containing a zero or greater integer value
+     * <li>"<code>java.util.concurrent.TimeUnit.MILLISECONDS</code>",
+     * <li>"<code>java.util.concurrent.TimeUnit.SECONDS</code>" (DEFAULT),
+     * <li>"<code>java.util.concurrent.TimeUnit.MINUTES</code>".
      * </ul>
-     * @see #QUERY_TIMEOUT_UNIT
+     * @see #PESSIMISTIC_LOCK_TIMEOUT
      */
     public static final String QUERY_TIMEOUT = "javax.persistence.query.timeout";
 
