@@ -95,7 +95,9 @@
     <property name="eclipselink.lib" value="${perftest.2.trunk.dir}/${eclipselink.jar}"/>
     <property name="javax.validation.lib"   value="${perftest.2.common.plugins.dir}/${javax.validation.jar}"/>
     <property name="jpa21.lib"   value="${perftest.2.trunk.dir}/jpa/plugins/${persistence22.jar}"/>
-    <property name="json.lib" value="${perftest.2.common.plugins.dir}/${json.jar}"/>
+
+    <property name="json-api.lib" value="${perftest.2.common.plugins.dir}/${json-api.jar}"/>
+    <property name="json-impl.lib" value="${perftest.2.common.plugins.dir}/${json-impl.jar}"/>
     <property name="validation-impl.lib"   value="${extensions.depend.dir}/${validation-impl.jar}"/>
     <property name="jboss-logging.lib"   value="${extensions.depend.dir}/${jboss-logging.jar}"/>
     <property name="javax.el-api.lib"   value="${extensions.depend.dir}/${javax.el-api.jar}"/>
