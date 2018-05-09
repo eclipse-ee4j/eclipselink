@@ -122,7 +122,7 @@
     <path id="jaxb.compile.path">
         <path refid="xml.parser.path"/>
         <pathelement path="${jaxb-api.lib}"/>
-        <pathelement path="${moxytest.2.common.plugins.dir}/${json.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${json-api.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${resource.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${ejb.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${jms.jar}"/>
@@ -143,7 +143,8 @@
     <path id="jaxb.run.path">
         <path refid="xml.parser.path"/>
         <pathelement path="${jaxb-api.lib}"/>
-        <pathelement path="${moxytest.2.common.plugins.dir}/${json.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${json-api.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${json-impl.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${mail.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${jaxrs.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${asm.jar}"/>
@@ -200,7 +201,7 @@
         <pathelement path="${jmockit.lib}"/>
         <pathelement path="${junit.lib}"/>
         <pathelement path="${jaxb-api.lib}"/>
-        <pathelement path="${moxytest.2.common.plugins.dir}/${json.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${json-api.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${resource.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${ejb.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${jms.jar}"/>
@@ -220,7 +221,8 @@
         <pathelement path="${jmockit.lib}"/>
         <pathelement path="${junit.lib}"/>
         <pathelement path="${jaxb-api.lib}"/>
-        <pathelement path="${moxytest.2.common.plugins.dir}/${json.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${json-api.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${json-impl.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${mail.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${jaxrs.jar}"/>
         <pathelement path="${oep.nosql.lib}"/>
@@ -254,7 +256,7 @@
         <pathelement path="${jmockit.lib}"/>
         <pathelement path="${junit.lib}"/>
         <pathelement path="${jaxb-api.lib}"/>
-        <pathelement path="${moxytest.2.common.plugins.dir}/${json.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${json-api.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${resource.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${ejb.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${jms.jar}"/>
