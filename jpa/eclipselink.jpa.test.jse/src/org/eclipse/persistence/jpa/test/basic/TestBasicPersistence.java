@@ -191,7 +191,7 @@ public class TestBasicPersistence {
 
         EntityManager em = null;
         boolean pass = false;
-        Map<String, Object> properties = new HashMap<>();
+        Map<String, Object> properties = new HashMap();
         properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, dsName);
         properties.put("eclipselink.jdbc.exclusive-connection.mode", "Always");
 
@@ -233,7 +233,7 @@ public class TestBasicPersistence {
         connectionPolicy.setLogin(ss.getLogin());
         connectionPolicy.setPoolName(null);
 
-        Map<String, Object> properties = new HashMap<>();
+        Map<String, Object> properties = new HashMap();
         properties.put(EntityManagerProperties.CONNECTION_POLICY, connectionPolicy);
 
         final int initialNonPooledConnections = ss.getNumberOfNonPooledConnectionsUsed();
@@ -313,7 +313,7 @@ public class TestBasicPersistence {
             connectionPolicy.setLogin(ss.getLogin());
             connectionPolicy.setPoolName(null);
 
-            final Map<String, Object> properties = new HashMap<>();
+            final Map<String, Object> properties = new HashMap();
             properties.put(EntityManagerProperties.CONNECTION_POLICY, connectionPolicy);
 
             // Validate against initial non-pooled connection count
@@ -406,7 +406,7 @@ public class TestBasicPersistence {
             connectionPolicy.setLogin(ss.getLogin());
             connectionPolicy.setPoolName(null);
 
-            final Map<String, Object> properties = new HashMap<>();
+            final Map<String, Object> properties = new HashMap();
             properties.put(EntityManagerProperties.CONNECTION_POLICY, connectionPolicy);
 
             // Validate against initial non-pooled connection count

@@ -14,6 +14,8 @@
  *       - 512386: Concat expression return type Boolean -> String
  *     02/20/2018-2.7 Will Dazey
  *       - 531062: Incorrect expression type created for CollectionExpression
+ *     05/11/2018-2.7 Will Dazey
+ *       - 534515: Incorrect return type set for CASE functions
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.jpql;
 
@@ -2793,11 +2795,11 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 			// Create the WHEN expression
 			expression.getWhenExpression().accept(ExpressionBuilderVisitor.this);
 			Expression whenExpression = queryExpression;
-			types.add(type[0]);
 
 			// Create the THEN expression
 			expression.getThenExpression().accept(ExpressionBuilderVisitor.this);
 			Expression thenExpression = queryExpression;
+			types.add(type[0]);
 
 			whenClauses.put(whenExpression, thenExpression);
 		}
