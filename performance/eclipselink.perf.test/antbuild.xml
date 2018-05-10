@@ -116,7 +116,7 @@
     <path id="perf.compile.path">
         <pathelement path="${jmh-core.lib}"/>
         <pathelement path="${jmh-generator-annprocess.lib}"/>
-        <pathelement path="${json.lib}"/>
+        <pathelement path="${json-api.lib}"/>
         <pathelement path="${jpa21.lib}"/>
         <pathelement path="${perftest.2.core.dir}/target/${classes.dir}"/>
         <pathelement path="${perftest.2.jpa.dir}/target/${classes.dir}"/>
@@ -135,7 +135,8 @@
         <pathelement path="${javax.el-api.lib}"/>
         <pathelement path="${classmate.lib}"/>
         <pathelement path="${asm.lib}"/>
-        <pathelement path="${json.lib}"/>
+        <pathelement path="${json-api.lib}"/>
+        <pathelement path="${json-impl.lib}"/>
         <pathelement path="${perftest.2.moxy.dir}/target/${classes.dir}"/>
         <pathelement path="${perftest.2.core.dir}/target/${classes.dir}"/>
         <pathelement path="${perftest.2.jpa.dir}/target/${classes.dir}"/>
@@ -146,7 +147,7 @@
     <path id="perf.compile.against.jar.path">
         <pathelement path="${jmh-core.lib}"/>
         <pathelement path="${jmh-generator-annprocess.lib}"/>
-        <pathelement path="${json.lib}"/>
+        <pathelement path="${json-api.lib}"/>
         <pathelement path="${jpa21.lib}"/>
         <pathelement path="${eclipselink.lib}"/>
         <pathelement path="${javax.validation.lib}"/>
@@ -164,7 +165,8 @@
         <pathelement path="${classmate.lib}"/>
         <pathelement path="${asm.lib}"/>
         <pathelement path="${eclipselink.lib}"/>
-        <pathelement path="${json.lib}"/>
+        <pathelement path="${json-api.lib}"/>
+        <pathelement path="${json-impl.lib}"/>
         <pathelement path="${classes.dir}"/>
     </path>
 
