@@ -257,6 +257,7 @@
         <pathelement path="${junit.lib}"/>
         <pathelement path="${jaxb-api.lib}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${json-api.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${json-impl.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${resource.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${ejb.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${jms.jar}"/>

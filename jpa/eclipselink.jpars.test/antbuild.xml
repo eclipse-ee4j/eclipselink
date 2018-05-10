@@ -265,6 +265,7 @@
             <pathelement path="${antlr.lib}"/>
             <pathelement path="${hermes.lib}"/>
             <pathelement path="${json-api.lib}"/>
+            <pathelement path="${json-impl.lib}"/>
             <pathelement path="${hk2.api.lib}"/>
             <pathelement path="${javax.ws.rs.lib}"/>
             <pathelement path="${hk2.locator.lib}"/>
