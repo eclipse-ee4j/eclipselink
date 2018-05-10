@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -46,10 +46,12 @@ public class XMLCollectionReferenceMappingMarshalNodeValue extends MappingNodeVa
         return true;
     }
 
+    @Override
     public Object getContainerInstance() {
         return getContainerPolicy().containerInstance();
     }
 
+    @Override
     public CoreContainerPolicy getContainerPolicy() {
         return xmlCollectionReferenceMapping.getContainerPolicy();
     }
@@ -59,10 +61,12 @@ public class XMLCollectionReferenceMappingMarshalNodeValue extends MappingNodeVa
         return xmlCollectionReferenceMapping;
     }
 
+    @Override
     public boolean getReuseContainer() {
         return xmlCollectionReferenceMapping.getReuseContainer();
     }
 
+    @Override
     public void setContainerInstance(Object object, Object containerInstance) {
         xmlCollectionReferenceMapping.setAttributeValueInObject(object, containerInstance);
     }
@@ -195,6 +199,7 @@ public class XMLCollectionReferenceMappingMarshalNodeValue extends MappingNodeVa
      *  INTERNAL:
      *  Used to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord
      */
+    @Override
     public void setIndex(int index){
         this.index = index;
     }
@@ -204,6 +209,7 @@ public class XMLCollectionReferenceMappingMarshalNodeValue extends MappingNodeVa
      * Set to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord
      * Set during TreeObjectBuilder initialization
      */
+    @Override
     public int getIndex(){
         return index;
     }
@@ -214,6 +220,7 @@ public class XMLCollectionReferenceMappingMarshalNodeValue extends MappingNodeVa
      * is no presence of the collection in the XML document.
      * @since EclipseLink 2.3.3
      */
+    @Override
     public boolean isDefaultEmptyContainer() {
         return getMapping().isDefaultEmptyContainer();
     }

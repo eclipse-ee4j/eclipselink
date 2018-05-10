@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -86,6 +86,7 @@ public class JBossPlatform extends JMXServerPlatformBase implements JMXEnabledPl
      * @see org.eclipse.persistence.platform.server.ServerPlatformBase#disableJTA()
      * @see org.eclipse.persistence.platform.server.ServerPlatformBase#initializeExternalTransactionController()
      */
+    @Override
     public Class getExternalTransactionControllerClass() {
         if (externalTransactionControllerClass == null){
             externalTransactionControllerClass = isJTA11()
@@ -105,6 +106,7 @@ public class JBossPlatform extends JMXServerPlatformBase implements JMXEnabledPl
      *
      *  @see org.eclipse.persistence.internal.helper.JPAClassLoaderHolder
      */
+    @Override
     public JPAClassLoaderHolder getNewTempClassLoader(PersistenceUnitInfo puInfo) {
         // Bug 6460732: Use real classLoader instead of getNewTempClassLoader for now to avoid a JBoss NPE on loadClass()
         ClassLoader realClassLoader = puInfo.getClassLoader();
@@ -127,6 +129,7 @@ public class JBossPlatform extends JMXServerPlatformBase implements JMXEnabledPl
      * @see #disableRuntimeServices()
      * @see #registerMBean()
      */
+    @Override
     public void prepareServerSpecificServicesMBean() {
         // No check for an existing cached MBean - we will replace it if it exists
         if(getDatabaseSession() != null && shouldRegisterRuntimeBean) {

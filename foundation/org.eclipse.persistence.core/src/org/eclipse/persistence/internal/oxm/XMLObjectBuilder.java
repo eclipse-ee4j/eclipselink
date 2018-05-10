@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -106,6 +106,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
      * Create a new row/record for the object builder.
      * This allows subclasses to define different record types.
      */
+    @Override
     public AbstractRecord createRecord(AbstractSession session) {
         return (AbstractRecord) createRecord(getDescriptor().getTableName(), session);
     }
@@ -114,6 +115,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
      * Create a new row/record for the object builder.
      * This allows subclasses to define different record types.
      */
+    @Override
     public AbstractRecord createRecord(int size, AbstractSession session) {
         return (AbstractRecord) createRecord(getDescriptor().getTableName(), session);
     }
@@ -215,6 +217,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
      * define different record types.  This will typically be called when a
      * record will be used for temporarily holding on to primary key fields.
      */
+    @Override
     protected AbstractRecord createRecordForPKExtraction(int size, AbstractSession session) {
         NamespaceResolver namespaceResolver = getNamespaceResolver();
         XMLRecord xmlRec = new DOMRecord(getDescriptor().getTableName(), namespaceResolver);
@@ -382,6 +385,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
      * Override method in superclass in order to set the session on the record.
      * Return the row with primary keys and their values from the given expression.
      */
+    @Override
     public AbstractRecord extractPrimaryKeyRowFromExpression(Expression expression, AbstractRecord translationRow, AbstractSession session) {
         AbstractRecord primaryKeyRow = createRecord(getPrimaryKeyMappings().size(), session);
         expression.getBuilder().setSession(session.getRootSession(null));
@@ -502,6 +506,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
      * Set the descriptor.  This method is overridden so the
      * isXMLDescriptor Boolean can be reset.
      */
+    @Override
     public void setDescriptor(ClassDescriptor aDescriptor) {
         super.setDescriptor(aDescriptor);
         isXMLDescriptor = null;
@@ -526,6 +531,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
         }
     }
 
+    @Override
     public void initialize(AbstractSession session) throws DescriptorException {
         mappingsByField.clear();
         if(null != readOnlyMappingsByField) {
@@ -636,6 +642,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
         }
     }
 
+    @Override
     public boolean isXMLObjectBuilder() {
         return true;
     }

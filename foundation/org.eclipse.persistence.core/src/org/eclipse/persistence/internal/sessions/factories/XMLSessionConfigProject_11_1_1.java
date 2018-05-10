@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -91,12 +91,14 @@ public class XMLSessionConfigProject_11_1_1 extends XMLSessionConfigProject {
         }
     }
 
+    @Override
     public ClassDescriptor buildSessionConfigsDescriptor() {
         XMLDescriptor descriptor = (XMLDescriptor)super.buildSessionConfigsDescriptor();
         descriptor.setDefaultRootElement("sessions");
         return descriptor;
     }
 
+    @Override
     public ClassDescriptor buildDatabaseLoginConfigDescriptor() {
         ClassDescriptor descriptor = super.buildDatabaseLoginConfigDescriptor();
 
@@ -162,6 +164,7 @@ public class XMLSessionConfigProject_11_1_1 extends XMLSessionConfigProject {
         return descriptor;
     }
 
+    @Override
     public ClassDescriptor buildTransportManagerConfigDescriptor() {
         XMLDescriptor descriptor = (XMLDescriptor)super.buildTransportManagerConfigDescriptor();
         descriptor.getInheritancePolicy().addClassIndicator(Oc4jJGroupsTransportManagerConfig.class, "oc4j-jgroups-transport");
@@ -169,6 +172,7 @@ public class XMLSessionConfigProject_11_1_1 extends XMLSessionConfigProject {
         return descriptor;
     }
 
+    @Override
     public ClassDescriptor buildServerPlatformConfigDescriptor() {
         XMLDescriptor descriptor =(XMLDescriptor)super.buildServerPlatformConfigDescriptor();
         descriptor.getInheritancePolicy().addClassIndicator(Oc4jPlatformConfig.class, "oc4j-platform");
@@ -183,6 +187,7 @@ public class XMLSessionConfigProject_11_1_1 extends XMLSessionConfigProject {
         return descriptor;
     }
 
+    @Override
     public ClassDescriptor buildXMLLoginConfigDescriptor() {
         ClassDescriptor descriptor = super.buildXMLLoginConfigDescriptor();
 

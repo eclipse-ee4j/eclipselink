@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -58,6 +58,7 @@ public class MongoDatabaseConnection implements Connection {
     /**
      * Close the AQ native session and the database connection.
      */
+    @Override
     public void close() throws ResourceException {
         try {
             this.getMongo().close();
@@ -68,6 +69,7 @@ public class MongoDatabaseConnection implements Connection {
         }
     }
 
+    @Override
     public Interaction createInteraction() {
         return new MongoDatabaseInteraction(this);
     }
@@ -76,6 +78,7 @@ public class MongoDatabaseConnection implements Connection {
         return spec;
     }
 
+    @Override
     public LocalTransaction getLocalTransaction() {
         return transaction;
     }
@@ -84,6 +87,7 @@ public class MongoDatabaseConnection implements Connection {
         return transaction;
     }
 
+    @Override
     public ConnectionMetaData getMetaData() {
         return new MongoDatabaseConnectionMetaData(this);
     }
@@ -91,6 +95,7 @@ public class MongoDatabaseConnection implements Connection {
     /**
      * Result sets are not supported.
      */
+    @Override
     public ResultSetInfo getResultSetInfo() {
         throw ValidationException.operationNotSupported("getResultSetInfo");
     }

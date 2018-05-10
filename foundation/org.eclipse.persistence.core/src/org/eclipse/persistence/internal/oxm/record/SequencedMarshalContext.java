@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -47,6 +47,7 @@ public class SequencedMarshalContext implements MarshalContext {
     }
 
 
+    @Override
     public MarshalContext getMarshalContext(int index) {
         Setting setting = settings.get(index);
         List<Setting> children = setting.getChildren();
@@ -57,6 +58,7 @@ public class SequencedMarshalContext implements MarshalContext {
         }
     }
 
+    @Override
     public int getNonAttributeChildrenSize(XPathNode xPathNode) {
         if(null == settings) {
             return 0;
@@ -64,6 +66,7 @@ public class SequencedMarshalContext implements MarshalContext {
         return settings.size();
     }
 
+    @Override
     public Object getNonAttributeChild(int index, XPathNode xPathNode) {
         Setting setting = settings.get(index);
         if(null == setting.getName()) {
@@ -81,10 +84,12 @@ public class SequencedMarshalContext implements MarshalContext {
         }
     }
 
+    @Override
     public Object getAttributeValue(Object object, Mapping mapping) {
         return value;
     }
 
+    @Override
     public boolean marshal(NodeValue nodeValue, XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver) {
         if(nodeValue.isContainerValue()) {
             ((ContainerValue)nodeValue).marshalSingleValue(xPathFragment, marshalRecord, object, value, session, namespaceResolver, this);
@@ -94,6 +99,7 @@ public class SequencedMarshalContext implements MarshalContext {
         }
     }
 
+    @Override
     public boolean marshal(NodeValue nodeValue, XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver, XPathFragment rootFragment) {
         if(nodeValue.isContainerValue()) {
             ((ContainerValue)nodeValue).marshalSingleValue(xPathFragment, marshalRecord, object, value, session, namespaceResolver, this);

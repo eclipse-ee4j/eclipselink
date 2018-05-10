@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -48,42 +48,52 @@ public class OXMJavaConstructorImpl implements JavaConstructor {
         this.owningClass = owner;
     }
 
+    @Override
     public int getModifiers() {
         return 0;
     }
 
+    @Override
     public String getName() {
         return null;
     }
 
+    @Override
     public JavaClass getOwningClass() {
         return this.owningClass;
     }
 
+    @Override
     public JavaClass[] getParameterTypes() {
         return new JavaClass[] {};
     }
 
+    @Override
     public boolean isAbstract() {
         return Modifier.isAbstract(getModifiers());
     }
 
+    @Override
     public boolean isPrivate() {
         return Modifier.isPrivate(getModifiers());
     }
 
+    @Override
     public boolean isProtected() {
         return Modifier.isProtected(getModifiers());
     }
 
+    @Override
     public boolean isPublic() {
         return Modifier.isPublic(getModifiers());
     }
 
+    @Override
     public boolean isStatic() {
         return Modifier.isStatic(getModifiers());
     }
 
+    @Override
     public boolean isFinal() {
         return Modifier.isFinal(getModifiers());
     }
@@ -91,6 +101,7 @@ public class OXMJavaConstructorImpl implements JavaConstructor {
     /**
      * Not supported.
      */
+    @Override
     public boolean isSynthetic() {
         throw new UnsupportedOperationException("isSynthetic");
     }

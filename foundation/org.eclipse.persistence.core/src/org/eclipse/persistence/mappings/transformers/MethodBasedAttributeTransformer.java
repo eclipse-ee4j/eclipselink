@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -68,6 +68,7 @@ public class MethodBasedAttributeTransformer implements AttributeTransformer {
      * Initilizes the transformer. Looks up the transformation method on the
      * domain class using reflection. This method can have either 1 or 2 parameters.
      */
+    @Override
     public void initialize(AbstractTransformationMapping mapping) {
         this.mapping = mapping;
         final Class javaClass = this.mapping.getDescriptor().getJavaClass();
@@ -110,6 +111,7 @@ public class MethodBasedAttributeTransformer implements AttributeTransformer {
      * INTERNAL:
      * Build the attribute value by invoking the user's transformation method.
      */
+    @Override
     public Object buildAttributeValue(Record record, Object object, Session session) {
         Class[] parameterTypes = null;
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){

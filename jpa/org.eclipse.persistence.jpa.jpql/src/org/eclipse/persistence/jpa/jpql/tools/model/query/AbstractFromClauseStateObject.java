@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -25,7 +25,6 @@ import org.eclipse.persistence.jpa.jpql.utility.CollectionTools;
 import org.eclipse.persistence.jpa.jpql.utility.iterable.ListIterable;
 import static org.eclipse.persistence.jpa.jpql.ExpressionTools.*;
 import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
-import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
 /**
  * This state object represents the abstract definition of a <code><b>FROM</b></code> clause, which
@@ -159,6 +158,7 @@ public abstract class AbstractFromClauseStateObject extends AbstractListHolderSt
     /**
      * {@inheritDoc}
      */
+    @Override
     public ListIterable<? extends VariableDeclarationStateObject> declarations() {
         return items();
     }
@@ -197,6 +197,7 @@ public abstract class AbstractFromClauseStateObject extends AbstractListHolderSt
     /**
      * {@inheritDoc}
      */
+    @Override
     public IManagedType getManagedType(StateObject stateObject) {
 
         for (VariableDeclarationStateObject declaration : declarations()) {

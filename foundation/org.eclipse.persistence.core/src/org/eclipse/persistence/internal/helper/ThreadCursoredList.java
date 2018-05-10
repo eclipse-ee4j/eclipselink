@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -64,6 +64,7 @@ public class ThreadCursoredList extends Vector {
     /**
      * Add and notify any waiters that there are new elements.
      */
+    @Override
     public synchronized void add(int index, Object element) {
         super.add(index, element);
         this.notifyAll();
@@ -72,6 +73,7 @@ public class ThreadCursoredList extends Vector {
     /**
      * Add and notify any waiters that there are new elements.
      */
+    @Override
     public synchronized boolean add(Object element) {
         boolean result = super.add(element);
         notifyAll();
@@ -81,6 +83,7 @@ public class ThreadCursoredList extends Vector {
     /**
      * Add and notify any waiters that there are new elements.
      */
+    @Override
     public synchronized boolean addAll(int index, Collection collection) {
         boolean result = super.addAll(index, collection);
         notifyAll();
@@ -90,6 +93,7 @@ public class ThreadCursoredList extends Vector {
     /**
      * Add and notify any waiters that there are new elements.
      */
+    @Override
     public synchronized boolean addAll(Collection collection) {
         boolean result = super.addAll(collection);
         notifyAll();
@@ -99,6 +103,7 @@ public class ThreadCursoredList extends Vector {
     /**
      * Add and notify any waiters that there are new elements.
      */
+    @Override
     public synchronized void addElement(Object object) {
         super.addElement(object);
         notifyAll();
@@ -107,6 +112,7 @@ public class ThreadCursoredList extends Vector {
     /**
      * First wait until complete.
      */
+    @Override
     public synchronized void clear() {
         waitUntilComplete();
         super.clear();
@@ -115,6 +121,7 @@ public class ThreadCursoredList extends Vector {
     /**
      * First wait until complete.
      */
+    @Override
     public synchronized Object clone() {
         waitUntilComplete();
         return super.clone();
@@ -191,6 +198,7 @@ public class ThreadCursoredList extends Vector {
     /**
      * If it does not contain the object must wait until it is complete.
      */
+    @Override
     public synchronized boolean contains(Object element) {
         boolean result = super.contains(element);
         if ((result != true) && (!isComplete())) {
@@ -203,6 +211,7 @@ public class ThreadCursoredList extends Vector {
     /**
      * If it does not contain the object must wait until it is complete.
      */
+    @Override
     public synchronized boolean containsAll(Collection collection) {
         boolean result = super.containsAll(collection);
         if ((result != true) && (!isComplete())) {
@@ -215,6 +224,7 @@ public class ThreadCursoredList extends Vector {
     /**
      * First wait until complete.
      */
+    @Override
     public synchronized void copyInto(Object[] array) {
         waitUntilComplete();
         super.copyInto(array);
@@ -223,6 +233,7 @@ public class ThreadCursoredList extends Vector {
     /**
      * If the index is beyond the size wait until complete.
      */
+    @Override
     public synchronized Object elementAt(int index) {
         Object result = super.elementAt(index);
         if ((result == null) && (!isComplete())) {
@@ -239,10 +250,12 @@ public class ThreadCursoredList extends Vector {
     /**
      * Allow concurrent streaming of the elements.
      */
+    @Override
     public Enumeration elements() {
         return new Enumeration() {
                 int count = 0;
 
+                @Override
                 public boolean hasMoreElements() {
                     synchronized (ThreadCursoredList.this) {
                         boolean result = count < ThreadCursoredList.this.getSize();
@@ -254,6 +267,7 @@ public class ThreadCursoredList extends Vector {
                     }
                 }
 
+                @Override
                 public Object nextElement() {
                     synchronized (ThreadCursoredList.this) {
                         boolean result = count < ThreadCursoredList.this.getSize();
@@ -273,6 +287,7 @@ public class ThreadCursoredList extends Vector {
     /**
      * First wait until complete.
      */
+    @Override
     public synchronized boolean equals(Object object) {
         waitUntilComplete();
         return super.equals(object);
@@ -281,6 +296,7 @@ public class ThreadCursoredList extends Vector {
     /**
      * Wait until has an element or is complete.
      */
+    @Override
     public synchronized Object firstElement() {
         while ((!isComplete()) && (super.size() < 1)) {
             waitUntilAdd();
@@ -291,6 +307,7 @@ public class ThreadCursoredList extends Vector {
     /**
      * Wait until has the element or is complete.
      */
+    @Override
     public synchronized Object get(int index) {
         while ((!isComplete()) && (super.size() < index)) {
             waitUntilAdd();
@@ -301,6 +318,7 @@ public class ThreadCursoredList extends Vector {
     /**
      * First wait until complete.
      */
+    @Override
     public synchronized int hashCode() {
         waitUntilComplete();
         return super.hashCode();
@@ -309,6 +327,7 @@ public class ThreadCursoredList extends Vector {
     /**
      * If does not contain the object wait until complete.
      */
+    @Override
     public int indexOf(Object element) {
         int result = super.indexOf(element);
         if ((result == -1) && (!isComplete())) {
@@ -321,6 +340,7 @@ public class ThreadCursoredList extends Vector {
     /**
      * If does not contain the object wait until complete.
      */
+    @Override
     public synchronized int indexOf(Object element, int index) {
         int result = super.indexOf(element, index);
         if ((result == -1) && (!isComplete())) {
@@ -333,6 +353,7 @@ public class ThreadCursoredList extends Vector {
     /**
      * Add the element a notify any waiters that there are new elements.
      */
+    @Override
     public synchronized void insertElementAt(Object element, int index) {
         super.insertElementAt(element, index);
         notify();
@@ -341,6 +362,7 @@ public class ThreadCursoredList extends Vector {
     /**
      * If empty wait until an element has been added or is complete.
      */
+    @Override
     public boolean isEmpty() {
         boolean result = super.isEmpty();
         if (result && (!isComplete())) {
@@ -350,6 +372,7 @@ public class ThreadCursoredList extends Vector {
         return result;
     }
 
+    @Override
     public Iterator iterator() {
         return listIterator(0);
     }
@@ -357,6 +380,7 @@ public class ThreadCursoredList extends Vector {
     /**
      * First wait until complete.
      */
+    @Override
     public synchronized Object lastElement() {
         waitUntilComplete();
         return super.lastElement();
@@ -365,6 +389,7 @@ public class ThreadCursoredList extends Vector {
     /**
      * First wait until complete.
      */
+    @Override
     public int lastIndexOf(Object element) {
         waitUntilComplete();
         return super.lastIndexOf(element);
@@ -373,11 +398,13 @@ public class ThreadCursoredList extends Vector {
     /**
      * First wait until complete.
      */
+    @Override
     public synchronized int lastIndexOf(Object element, int index) {
         waitUntilComplete();
         return super.lastIndexOf(element, index);
     }
 
+    @Override
     public ListIterator listIterator() {
         return listIterator(0);
     }
@@ -385,10 +412,12 @@ public class ThreadCursoredList extends Vector {
     /**
      * Iterate while waiting at end until complete.
      */
+    @Override
     public ListIterator listIterator(final int index) {
         return new ListIterator() {
             int count = index;
 
+            @Override
             public boolean hasNext() {
                 synchronized (ThreadCursoredList.this) {
                     boolean result = count < ThreadCursoredList.this.getSize();
@@ -400,6 +429,7 @@ public class ThreadCursoredList extends Vector {
                 }
             }
 
+            @Override
             public Object next() {
                 synchronized (ThreadCursoredList.this) {
                     boolean result = count < ThreadCursoredList.this.getSize();
@@ -414,31 +444,38 @@ public class ThreadCursoredList extends Vector {
                 throw new NoSuchElementException("Vector Iterator");
             }
 
+            @Override
             public void remove() {
                 throw ValidationException.operationNotSupported("remove");
             }
 
+            @Override
             public void set(Object object) {
                 throw ValidationException.operationNotSupported("set");
             }
 
+            @Override
             public void add(Object object) {
                 throw ValidationException.operationNotSupported("add");
             }
 
+            @Override
             public int previousIndex() {
                 return count - 1;
             }
 
+            @Override
             public int nextIndex() {
                 return count;
             }
 
+            @Override
             public Object previous() {
                 count--;
                 return get(count);
             }
 
+            @Override
             public boolean hasPrevious() {
                 return count > 0;
             }
@@ -448,6 +485,7 @@ public class ThreadCursoredList extends Vector {
     /**
      * If index is missing wait until is there.
      */
+    @Override
     public synchronized Object remove(int index) {
         while ((!isComplete()) && (super.size() < index)) {
             waitUntilAdd();
@@ -458,6 +496,7 @@ public class ThreadCursoredList extends Vector {
     /**
      * If object is missing wait until complete.
      */
+    @Override
     public boolean remove(Object element) {
         boolean result = super.remove(element);
         if ((!result) && (!isComplete())) {
@@ -470,6 +509,7 @@ public class ThreadCursoredList extends Vector {
     /**
      * First wait until complete.
      */
+    @Override
     public synchronized boolean removeAll(Collection collection) {
         waitUntilComplete();
         return super.removeAll(collection);
@@ -478,6 +518,7 @@ public class ThreadCursoredList extends Vector {
     /**
      * First wait until complete.
      */
+    @Override
     public synchronized void removeAllElements() {
         waitUntilComplete();
         super.removeAllElements();
@@ -486,6 +527,7 @@ public class ThreadCursoredList extends Vector {
     /**
      * If missing wait until complete.
      */
+    @Override
     public synchronized boolean removeElement(Object element) {
         boolean result = super.removeElement(element);
         if ((!result) && (!isComplete())) {
@@ -498,6 +540,7 @@ public class ThreadCursoredList extends Vector {
     /**
      * If index is missing wait until reasched or complete.
      */
+    @Override
     public synchronized void removeElementAt(int index) {
         while ((!isComplete()) && (super.size() < index)) {
             waitUntilAdd();
@@ -508,6 +551,7 @@ public class ThreadCursoredList extends Vector {
     /**
      * First wait until complete.
      */
+    @Override
     public synchronized boolean retainAll(Collection collection) {
         waitUntilComplete();
         return super.retainAll(collection);
@@ -516,6 +560,7 @@ public class ThreadCursoredList extends Vector {
     /**
      * If index is missing wait until reached or complete.
      */
+    @Override
     public synchronized Object set(int index, Object element) {
         while ((!isComplete()) && (super.size() < index)) {
             waitUntilAdd();
@@ -526,6 +571,7 @@ public class ThreadCursoredList extends Vector {
     /**
      * If index is missing wait until reached or complete.
      */
+    @Override
     public synchronized void setElementAt(Object element, int index) {
         while ((!isComplete()) && (super.size() < index)) {
             waitUntilAdd();
@@ -536,6 +582,7 @@ public class ThreadCursoredList extends Vector {
     /**
      * First wait until complete.
      */
+    @Override
     public int size() {
         waitUntilComplete();
         return super.size();
@@ -544,6 +591,7 @@ public class ThreadCursoredList extends Vector {
     /**
      * If index is missing wait until reached or complete.
      */
+    @Override
     public List subList(int fromIndex, int toIndex) {
         while ((!isComplete()) && (super.size() < toIndex)) {
             waitUntilAdd();
@@ -554,6 +602,7 @@ public class ThreadCursoredList extends Vector {
     /**
      * First wait until complete.
      */
+    @Override
     public synchronized Object[] toArray() {
         waitUntilComplete();
         return super.toArray();
@@ -562,6 +611,7 @@ public class ThreadCursoredList extends Vector {
     /**
      * First wait until complete.
      */
+    @Override
     public synchronized Object[] toArray(Object[] array) {
         waitUntilComplete();
         return super.toArray(array);
@@ -570,6 +620,7 @@ public class ThreadCursoredList extends Vector {
     /**
      * First wait until complete.
      */
+    @Override
     public synchronized String toString() {
         waitUntilComplete();
         return super.toString();
@@ -578,6 +629,7 @@ public class ThreadCursoredList extends Vector {
     /**
      * First wait until complete.
      */
+    @Override
     public synchronized void trimToSize() {
         waitUntilComplete();
         super.trimToSize();

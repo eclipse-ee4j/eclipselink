@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2018  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -40,24 +40,28 @@ public class SqlResultSetMappingImpl extends MetadataImpl<SQLResultSetMappingMet
         getMetadata().setEntityResults(new ArrayList<EntityResultMetadata>());
     }
 
+    @Override
     public ColumnResult addColumnResult() {
         ColumnResultImpl columnResult = new ColumnResultImpl();
         getMetadata().getColumnResults().add(columnResult.getMetadata());
         return columnResult;
     }
 
+    @Override
     public ConstructorResult addConstructorResult() {
         ConstructorResultImpl constructorResult = new ConstructorResultImpl();
         getMetadata().getConstructorResults().add(constructorResult.getMetadata());
         return constructorResult;
     }
 
+    @Override
     public EntityResult addEntityResult() {
         EntityResultImpl entityResult = new EntityResultImpl();
         getMetadata().getEntityResults().add(entityResult.getMetadata());
         return entityResult;
     }
 
+    @Override
     public SqlResultSetMapping setName(String name) {
         getMetadata().setName(name);
         return this;

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -113,6 +113,7 @@ public class EISConnectionSpec implements Connector {
      * INTERNAL:
      * Clone the connector.
      */
+    @Override
     public Object clone() {
         try {
             return super.clone();
@@ -125,6 +126,7 @@ public class EISConnectionSpec implements Connector {
      * INTERNAL:
      * Required for interface, but never used, for JDBC.
      */
+    @Override
     public java.sql.Connection connect(Properties properties, Session session) {
         throw EISException.incorrectLoginInstanceProvided(EISLogin.class);
     }
@@ -218,6 +220,7 @@ public class EISConnectionSpec implements Connector {
      * Provide the details of my connection information. This is primarily for JMX runtime services.
      * @return java.lang.String
      */
+    @Override
     public String getConnectionDetails() {
         return this.getName().toString();
     }
@@ -292,6 +295,7 @@ public class EISConnectionSpec implements Connector {
      * PUBLIC:
      * Print data source info.
      */
+    @Override
     public String toString() {
         if (getName() != null) {
             return Helper.getShortClassName(getClass()) + "(connection manager url => " + getName() + ")";
@@ -304,6 +308,7 @@ public class EISConnectionSpec implements Connector {
      * INTERNAL:
      * Print something useful on the log.
      */
+    @Override
     public void toString(java.io.PrintWriter writer) {
         writer.println(toString());
     }

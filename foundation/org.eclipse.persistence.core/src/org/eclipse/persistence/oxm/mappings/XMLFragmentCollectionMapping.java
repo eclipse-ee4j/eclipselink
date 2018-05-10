@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -84,6 +84,7 @@ public class XMLFragmentCollectionMapping extends AbstractCompositeDirectCollect
     /**
      * INTERNAL:
      */
+    @Override
     public boolean isXMLMapping() {
         return true;
     }
@@ -92,6 +93,7 @@ public class XMLFragmentCollectionMapping extends AbstractCompositeDirectCollect
      * INTERNAL:
      * Initialize the mapping.
      */
+    @Override
     public void initialize(AbstractSession session) throws DescriptorException {
         super.initialize(session);
     }
@@ -116,6 +118,7 @@ public class XMLFragmentCollectionMapping extends AbstractCompositeDirectCollect
      * INTERNAL:
      * Build the nested collection from the database row.
      */
+    @Override
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected, Boolean[] wasCacheUsed) throws DatabaseException {
         ContainerPolicy cp = this.getContainerPolicy();
 
@@ -186,10 +189,12 @@ public class XMLFragmentCollectionMapping extends AbstractCompositeDirectCollect
         row.put(this.getField(), fieldValue);
     }
 
+    @Override
     public boolean isAbstractCompositeDirectCollectionMapping() {
         return false;
     }
 
+    @Override
     public void writeSingleValue(Object attributeValue, Object parent, XMLRecord row, AbstractSession session) {
         if (((XMLField)this.getField()).getLastXPathFragment().isAttribute()) {
             if (attributeValue instanceof Attr) {
@@ -203,20 +208,24 @@ public class XMLFragmentCollectionMapping extends AbstractCompositeDirectCollect
         row.put(getField(), attributeValue);
     }
 
+    @Override
     public boolean isWriteOnly() {
         return this.isWriteOnly;
     }
 
+    @Override
     public void setIsWriteOnly(boolean b) {
         this.isWriteOnly = b;
     }
 
+    @Override
     public void preInitialize(AbstractSession session) throws DescriptorException {
         getAttributeAccessor().setIsWriteOnly(this.isWriteOnly());
         getAttributeAccessor().setIsReadOnly(this.isReadOnly());
         super.preInitialize(session);
     }
 
+    @Override
     public void setAttributeValueInObject(Object object, Object value) throws DescriptorException {
         if(isWriteOnly()) {
             return;
@@ -229,6 +238,7 @@ public class XMLFragmentCollectionMapping extends AbstractCompositeDirectCollect
      * present.  If it is not present then the container policy will be used to
      * create the container.
      */
+    @Override
     public boolean getReuseContainer() {
         return reuseContainer;
     }
@@ -238,6 +248,7 @@ public class XMLFragmentCollectionMapping extends AbstractCompositeDirectCollect
      * present.  If it is not present then the container policy will be used to
      * create the container.
      */
+    @Override
     public void setReuseContainer(boolean reuseContainer) {
         this.reuseContainer = reuseContainer;
     }
@@ -248,6 +259,7 @@ public class XMLFragmentCollectionMapping extends AbstractCompositeDirectCollect
      * is no presence of the collection in the XML document.
      * @since EclipseLink 2.3.3
      */
+    @Override
     public boolean isDefaultEmptyContainer() {
         return defaultEmptyContainer;
     }
@@ -258,14 +270,17 @@ public class XMLFragmentCollectionMapping extends AbstractCompositeDirectCollect
      * field/property if the collection is not present in the XML document.
      * @since EclipseLink 2.3.3
      */
+    @Override
     public void setDefaultEmptyContainer(boolean defaultEmptyContainer) {
         this.defaultEmptyContainer = defaultEmptyContainer;
     }
 
+    @Override
     public AbstractNullPolicy getWrapperNullPolicy() {
         return this.wrapperNullPolicy;
     }
 
+    @Override
     public void setWrapperNullPolicy(AbstractNullPolicy policy) {
         this.wrapperNullPolicy = policy;
     }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -50,6 +50,7 @@ public class SDOFragmentMappingAttributeAccessor extends AttributeAccessor {
     /**
      * Gets the value of an instance variable in the object.
      */
+    @Override
     public Object getAttributeValueFromObject(Object anObject) throws DescriptorException {
         Object attributeValue = ((SDODataObject)anObject).get(property);
         if (attributeValue != null) {
@@ -73,6 +74,7 @@ public class SDOFragmentMappingAttributeAccessor extends AttributeAccessor {
      * Set get and set method after creating these methods by using
      * get and set method names
      */
+    @Override
     public void initializeAttributes(Class theJavaClass) throws DescriptorException {
         if (getAttributeName() == null) {
             throw DescriptorException.attributeNameNotSpecified();
@@ -82,6 +84,7 @@ public class SDOFragmentMappingAttributeAccessor extends AttributeAccessor {
     /**
      * INTERNAL:
      */
+    @Override
     public boolean isMethodAttributeAccessor() {
         return true;
     }
@@ -89,6 +92,7 @@ public class SDOFragmentMappingAttributeAccessor extends AttributeAccessor {
     /**
      * Sets the value of the instance variable in the object to the value.
      */
+    @Override
     public void setAttributeValueInObject(Object domainObject, Object attributeValue) throws DescriptorException {
         XMLUnmarshaller unmarshaller = ((SDOXMLHelper)helperContext.getXMLHelper()).getXmlContext().createUnmarshaller();
         unmarshaller.setUnmarshalListener(new org.eclipse.persistence.sdo.helper.SDOCSUnmarshalListener(helperContext));

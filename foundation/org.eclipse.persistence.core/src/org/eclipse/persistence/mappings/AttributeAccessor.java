@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -38,6 +38,7 @@ public abstract class AttributeAccessor implements CoreAttributeAccessor, Clonea
      * INTERNAL:
      * Clones itself.
      */
+    @Override
     public Object clone() {
         try {
             return super.clone();
@@ -50,6 +51,7 @@ public abstract class AttributeAccessor implements CoreAttributeAccessor, Clonea
      * INTERNAL:
      * Return the attribute name.
      */
+    @Override
     public String getAttributeName() {
         return attributeName;
     }
@@ -65,6 +67,7 @@ public abstract class AttributeAccessor implements CoreAttributeAccessor, Clonea
     /**
      * Return the class type of the attribute.
      */
+    @Override
     public Class getAttributeClass() {
         return ClassConstants.OBJECT;
     }
@@ -72,6 +75,7 @@ public abstract class AttributeAccessor implements CoreAttributeAccessor, Clonea
     /**
      * Allow any initialization to be performed with the descriptor class.
      */
+    @Override
     public void initializeAttributes(Class descriptorClass) throws DescriptorException {
         if (getAttributeName() == null) {
             throw DescriptorException.attributeNameNotSpecified();
@@ -86,6 +90,7 @@ public abstract class AttributeAccessor implements CoreAttributeAccessor, Clonea
         return true;
     }
 
+    @Override
     public boolean isInstanceVariableAttributeAccessor() {
         return false;
     }
@@ -94,6 +99,7 @@ public abstract class AttributeAccessor implements CoreAttributeAccessor, Clonea
         return false;
     }
 
+    @Override
     public boolean isMethodAttributeAccessor() {
         return false;
     }
@@ -110,6 +116,7 @@ public abstract class AttributeAccessor implements CoreAttributeAccessor, Clonea
      * INTERNAL:
      * @return
      */
+    @Override
     public boolean isWriteOnly() {
         return isWriteOnly;
     }
@@ -118,6 +125,7 @@ public abstract class AttributeAccessor implements CoreAttributeAccessor, Clonea
      * INTERNAL:
      * @param aBoolean
      */
+    @Override
     public void setIsWriteOnly(boolean aBoolean) {
         this.isWriteOnly = aBoolean;
     }
@@ -133,6 +141,7 @@ public abstract class AttributeAccessor implements CoreAttributeAccessor, Clonea
      * INTERNAL
      * @param aBoolean
      */
+    @Override
     public void setIsReadOnly(boolean aBoolean) {
         this.isReadOnly = aBoolean;
     }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -40,6 +40,7 @@ public class InstanceClassConverter implements Converter {
      * @param session
      * @return String value of the given object value, value returned from objectValue.toString
      */
+    @Override
     public Object convertObjectValueToDataValue(Object objectValue, Session session) {
         if (objectValue != null) {
             return objectValue.toString();
@@ -53,6 +54,7 @@ public class InstanceClassConverter implements Converter {
      * @param session
      * @return Convert the value from XML by invoking the constructor that takes a spring parameter
      */
+    @Override
     public Object convertDataValueToObjectValue(Object dataValue, Session session) {
         if (dataValue != null) {
             Class[] params = new Class[1];
@@ -88,10 +90,12 @@ public class InstanceClassConverter implements Converter {
         return null;
     }
 
+    @Override
     public boolean isMutable() {
         return true;
     }
 
+    @Override
     public void initialize(DatabaseMapping mapping, Session session) {
     }
 

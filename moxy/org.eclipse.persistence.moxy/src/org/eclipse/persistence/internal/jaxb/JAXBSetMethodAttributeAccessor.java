@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -54,6 +54,7 @@ public class JAXBSetMethodAttributeAccessor extends MethodAttributeAccessor {
     /**
      * Override to avoid exceptions due to lack of get method.
      */
+    @Override
     public void initializeAttributes(Class theJavaClass) throws DescriptorException {
         if (getAttributeName() == null) {
             throw DescriptorException.attributeNameNotSpecified();
@@ -75,6 +76,7 @@ public class JAXBSetMethodAttributeAccessor extends MethodAttributeAccessor {
     /**
      * Return the return type of the method accessor.
      */
+    @Override
     public Class getAttributeClass() {
         return attributeClassification;
     }

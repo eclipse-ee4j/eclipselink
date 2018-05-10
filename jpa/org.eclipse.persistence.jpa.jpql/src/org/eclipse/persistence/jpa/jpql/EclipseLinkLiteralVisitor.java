@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -55,24 +55,28 @@ public class EclipseLinkLiteralVisitor extends LiteralVisitor
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(AsOfClause expression) {
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(CastExpression expression) {
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(ConnectByClause expression) {
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(DatabaseType expression) {
         if (type == LiteralType.STRING_LITERAL) {
             literal = expression.getActualIdentifier();
@@ -82,36 +86,42 @@ public class EclipseLinkLiteralVisitor extends LiteralVisitor
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(ExtractExpression expression) {
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(HierarchicalQueryClause expression) {
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(OrderSiblingsByClause expression) {
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(RegexpExpression expression) {
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(StartWithClause expression) {
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(TableExpression expression) {
         if (type == LiteralType.STRING_LITERAL) {
             expression.getExpression().accept(this);
@@ -121,12 +131,14 @@ public class EclipseLinkLiteralVisitor extends LiteralVisitor
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(TableVariableDeclaration expression) {
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(UnionClause expression) {
     }
 }

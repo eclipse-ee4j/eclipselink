@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -67,6 +67,7 @@ public class PerformanceMonitor implements Serializable, Cloneable, SessionProfi
         this.dumpTime = dumpTime;
     }
 
+    @Override
     public PerformanceMonitor clone() {
         try {
             return (PerformanceMonitor)super.clone();
@@ -121,6 +122,7 @@ public class PerformanceMonitor implements Serializable, Cloneable, SessionProfi
      * INTERNAL:
      * End the operation timing.
      */
+    @Override
     public void endOperationProfile(String operationName) {
         if (this.profileWeight < SessionProfiler.HEAVY) {
             return;
@@ -146,6 +148,7 @@ public class PerformanceMonitor implements Serializable, Cloneable, SessionProfi
      * INTERNAL:
      * End the operation timing.
      */
+    @Override
     public void endOperationProfile(String operationName, DatabaseQuery query, int weight) {
         if (this.profileWeight < weight) {
             return;
@@ -186,6 +189,7 @@ public class PerformanceMonitor implements Serializable, Cloneable, SessionProfi
      * INTERNAL:
      * Monitoring is done on the endOperation only.
      */
+    @Override
     public Object profileExecutionOfQuery(DatabaseQuery query, Record row, AbstractSession session) {
         if (this.profileWeight < SessionProfiler.HEAVY) {
             return session.internalExecuteQuery(query, (AbstractRecord)row);
@@ -203,6 +207,7 @@ public class PerformanceMonitor implements Serializable, Cloneable, SessionProfi
         }
     }
 
+    @Override
     public void setSession(org.eclipse.persistence.sessions.Session session) {
         this.session = (AbstractSession)session;
     }
@@ -211,6 +216,7 @@ public class PerformanceMonitor implements Serializable, Cloneable, SessionProfi
      * INTERNAL:
      * Start the operation timing.
      */
+    @Override
     public void startOperationProfile(String operationName) {
         getOperationStartTimes().put(operationName, Long.valueOf(System.nanoTime()));
     }
@@ -219,6 +225,7 @@ public class PerformanceMonitor implements Serializable, Cloneable, SessionProfi
      * INTERNAL:
      * Start the operation timing.
      */
+    @Override
     public void startOperationProfile(String operationName, DatabaseQuery query, int weight) {
         if (this.profileWeight < weight) {
             return;
@@ -229,10 +236,12 @@ public class PerformanceMonitor implements Serializable, Cloneable, SessionProfi
         }
     }
 
+    @Override
     public void update(String operationName, Object value) {
         this.operationTimings.put(operationName, value);
     }
 
+    @Override
     public void occurred(String operationName, AbstractSession session) {
         if (this.profileWeight < SessionProfiler.NORMAL) {
             return;
@@ -247,6 +256,7 @@ public class PerformanceMonitor implements Serializable, Cloneable, SessionProfi
         }
     }
 
+    @Override
     public void occurred(String operationName, DatabaseQuery query, AbstractSession session) {
         if (this.profileWeight < SessionProfiler.NORMAL) {
             return;
@@ -261,6 +271,7 @@ public class PerformanceMonitor implements Serializable, Cloneable, SessionProfi
      * The higher the level, the more operations are profiled.
      * @see SessionProfiler
      */
+    @Override
     public void setProfileWeight(int profileWeight) {
         this.profileWeight = profileWeight;
     }
@@ -270,10 +281,12 @@ public class PerformanceMonitor implements Serializable, Cloneable, SessionProfi
      * One of ALL, HEAVY, NORMAL, NONE.
      * @see SessionProfiler
      */
+    @Override
     public int getProfileWeight() {
         return profileWeight;
     }
 
+    @Override
     public void initialize() {
     }
 }

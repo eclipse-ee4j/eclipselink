@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -57,6 +57,7 @@ public class OXMJavaPackageImpl implements JavaPackage {
      *
      * @return always returns <code>null</code> as <code>JavaTypes</code> do not have <code>Annotations</code>.
      */
+    @Override
     public JavaAnnotation getAnnotation(JavaClass aClass) {
         return null;
     }
@@ -66,6 +67,7 @@ public class OXMJavaPackageImpl implements JavaPackage {
      *
      * @return always returns <code>null</code> as <code>JavaTypes</code> do not have <code>Annotations</code>.
      */
+    @Override
     public Collection<JavaAnnotation> getAnnotations() {
         return null;
     }
@@ -84,6 +86,7 @@ public class OXMJavaPackageImpl implements JavaPackage {
      *
      * @return the <code>String</code> name of this <code>JavaPackage</code>.
      */
+    @Override
     public String getQualifiedName() {
         return getName();
     }
@@ -91,6 +94,7 @@ public class OXMJavaPackageImpl implements JavaPackage {
     /**
      * Not supported.
      */
+    @Override
     public JavaAnnotation getDeclaredAnnotation(JavaClass arg0) {
         throw new UnsupportedOperationException("getDeclaredAnnotation");
     }
@@ -98,6 +102,7 @@ public class OXMJavaPackageImpl implements JavaPackage {
     /**
      * Not supported.
      */
+    @Override
     public Collection<JavaAnnotation> getDeclaredAnnotations() {
         throw new UnsupportedOperationException("getDeclaredAnnotations");
     }

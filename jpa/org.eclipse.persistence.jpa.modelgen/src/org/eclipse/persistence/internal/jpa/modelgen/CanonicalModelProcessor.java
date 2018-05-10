@@ -271,8 +271,8 @@ public class CanonicalModelProcessor extends AbstractProcessor {
      * INTERNAL:
      */
     protected String getName(String qualifiedName) {
-        if (qualifiedName.indexOf(".") > -1) {
-            return qualifiedName.substring(qualifiedName.lastIndexOf(".") + 1);
+        if (qualifiedName.indexOf('.') > -1) {
+            return qualifiedName.substring(qualifiedName.lastIndexOf('.') + 1);
         }
 
         return qualifiedName;
@@ -282,8 +282,8 @@ public class CanonicalModelProcessor extends AbstractProcessor {
      * INTERNAL:
      */
     protected String getPackage(String qualifiedName) {
-        if (qualifiedName.indexOf(".") > -1) {
-            return qualifiedName.substring(0, qualifiedName.lastIndexOf("."));
+        if (qualifiedName.indexOf('.') > -1) {
+            return qualifiedName.substring(0, qualifiedName.lastIndexOf('.'));
         }
 
         return "";
@@ -308,28 +308,28 @@ public class CanonicalModelProcessor extends AbstractProcessor {
             // @BasicCollection public Collection responsibilities;
             return TypeVisitor.GENERIC_TYPE;
         } else if (type.startsWith("java.lang")) {
-            return type.substring(type.lastIndexOf(".") + 1);
+            return type.substring(type.lastIndexOf('.') + 1);
         } else {
-            if (type.indexOf("<") > -1) {
-                String raw = type.substring(0, type.indexOf("<"));
-                String generic = type.substring(type.indexOf("<") + 1, type.length() - 1);
+            if (type.indexOf('<') > -1) {
+                String raw = type.substring(0, type.indexOf('>'));
+                String generic = type.substring(type.indexOf('<') + 1, type.length() - 1);
 
                 if (raw.contains("Map")) {
-                    String key = generic.substring(0, generic.indexOf(","));
-                    String value = generic.substring(generic.indexOf(",") + 1);
+                    String key = generic.substring(0, generic.indexOf(','));
+                    String value = generic.substring(generic.indexOf(',') + 1);
                     return getUnqualifiedType(raw, imports) + "<" + getUnqualifiedType(key, imports) + ", " + getUnqualifiedType(value, imports) + ">";
                 }
 
                 return getUnqualifiedType(raw, imports) + "<" + getUnqualifiedType(generic, imports) + ">";
-            } else if (type.indexOf(".") > -1) {
-                String shortClassName = type.substring(type.lastIndexOf(".") + 1);
+            } else if (type.indexOf('.') > -1) {
+                String shortClassName = type.substring(type.lastIndexOf('.') + 1);
 
                 // We already have an import for this class, look at it further.
                 if (imports.containsKey(shortClassName)) {
                     if (imports.get(shortClassName).equals(type)) {
                         // We're hitting the same class from the same package,
                         // return the short name for this class.
-                        return type.substring(type.lastIndexOf(".") + 1);
+                        return type.substring(type.lastIndexOf('.') + 1);
                     } else {
                         // Same class name different package. Don't hack off the
                         // qualification and don't add it to the import list.
@@ -338,8 +338,8 @@ public class CanonicalModelProcessor extends AbstractProcessor {
                 } else {
                     // Add it to the import list. If the type is used in an array
                     // hack off the [].
-                    if (shortClassName.indexOf("[") > 1) {
-                        imports.put(shortClassName, type.substring(0, type.indexOf("[")));
+                    if (shortClassName.indexOf('[') > 1) {
+                        imports.put(shortClassName, type.substring(0, type.indexOf('[')));
                     } else {
                         imports.put(shortClassName, type);
                     }

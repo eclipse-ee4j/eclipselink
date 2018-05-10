@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -205,6 +205,7 @@ public class VariableOneToOneAccessor extends ObjectAccessor {
      * INTERNAL:
      * Return the logging context for this accessor.
      */
+    @Override
     protected String getLoggingContext() {
         return MetadataLogger.VARIABLE_ONE_TO_ONE_MAPPING_REFERENCE_CLASS;
     }
@@ -247,6 +248,7 @@ public class VariableOneToOneAccessor extends ObjectAccessor {
      * Process a variable one to one setting into an EclipseLink
      * VariableOneToOneMapping.
      */
+    @Override
     public void process() {
         super.process();
 

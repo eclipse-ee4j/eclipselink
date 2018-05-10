@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -173,6 +173,7 @@ public class EISObjectPersistenceXMLProject extends NamespaceResolvableProject {
 
         // Handle translation of argument lists to interaction-arguments.
         argumentsMapping.setAttributeAccessor(new AttributeAccessor() {
+                @Override
                 public Object getAttributeValueFromObject(Object object) {
                     XMLInteraction interaction = (XMLInteraction)object;
                     Vector argumentNames = interaction.getArgumentNames();
@@ -192,6 +193,7 @@ public class EISObjectPersistenceXMLProject extends NamespaceResolvableProject {
                     return interactionArguments;
                 }
 
+                @Override
                 public void setAttributeValueInObject(Object object, Object value) {
                     XMLInteraction interaction = (XMLInteraction)object;
                     Vector interactionArguments = (Vector)value;
@@ -229,6 +231,7 @@ public class EISObjectPersistenceXMLProject extends NamespaceResolvableProject {
 
         // Handle translation of argument lists to interaction-arguments.
         outputArgumentsMapping.setAttributeAccessor(new AttributeAccessor() {
+                @Override
                 public Object getAttributeValueFromObject(Object object) {
                     XMLInteraction interaction = (XMLInteraction)object;
                     Vector arguments = interaction.getOutputArguments();
@@ -243,6 +246,7 @@ public class EISObjectPersistenceXMLProject extends NamespaceResolvableProject {
                     return interactionArguments;
                 }
 
+                @Override
                 public void setAttributeValueInObject(Object object, Object value) {
                     XMLInteraction interaction = (XMLInteraction)object;
                     Vector interactionArguments = (Vector)value;
@@ -368,6 +372,7 @@ public class EISObjectPersistenceXMLProject extends NamespaceResolvableProject {
         sourceToTargetKeyFieldAssociationsMapping.setReferenceClass(Association.class);
         // Handle translation of foreign key associations to hashtables.
         sourceToTargetKeyFieldAssociationsMapping.setAttributeAccessor(new AttributeAccessor() {
+                @Override
                 public Object getAttributeValueFromObject(Object object) {
                     Map sourceToTargetKeyFields = ((EISOneToOneMapping)object).getSourceToTargetKeyFields();
                     List associations = new ArrayList(sourceToTargetKeyFields.size());
@@ -379,6 +384,7 @@ public class EISObjectPersistenceXMLProject extends NamespaceResolvableProject {
                     return associations;
                 }
 
+                @Override
                 public void setAttributeValueInObject(Object object, Object value) {
                     EISOneToOneMapping mapping = (EISOneToOneMapping)object;
                     List associations = (List)value;
@@ -415,6 +421,7 @@ public class EISObjectPersistenceXMLProject extends NamespaceResolvableProject {
         indirectionPolicyMapping.setReferenceClass(IndirectionPolicy.class);
         // Handle translation of NoIndirectionPolicy -> null.
         indirectionPolicyMapping.setAttributeAccessor(new AttributeAccessor() {
+                @Override
                 public Object getAttributeValueFromObject(Object object) {
                     IndirectionPolicy policy = ((ForeignReferenceMapping)object).getIndirectionPolicy();
                     if (policy instanceof NoIndirectionPolicy) {
@@ -423,6 +430,7 @@ public class EISObjectPersistenceXMLProject extends NamespaceResolvableProject {
                     return policy;
                 }
 
+                @Override
                 public void setAttributeValueInObject(Object object, Object value) {
                     IndirectionPolicy policy = (IndirectionPolicy)value;
                     if (value == null) {
@@ -439,6 +447,7 @@ public class EISObjectPersistenceXMLProject extends NamespaceResolvableProject {
         selectionQueryMapping.setAttributeName("selectionQuery");
         selectionQueryMapping.setReferenceClass(ReadQuery.class);
         selectionQueryMapping.setAttributeAccessor(new AttributeAccessor() {
+                @Override
                 public Object getAttributeValueFromObject(Object object) {
                     if (((ForeignReferenceMapping)object).hasCustomSelectionQuery()) {
                         return ((ForeignReferenceMapping)object).getSelectionQuery();
@@ -446,6 +455,7 @@ public class EISObjectPersistenceXMLProject extends NamespaceResolvableProject {
                     return null;
                 }
 
+                @Override
                 public void setAttributeValueInObject(Object object, Object value) {
                     if ((value != null) && value instanceof ReadQuery) {
                         ((ForeignReferenceMapping)object).setCustomSelectionQuery((ReadQuery)value);
@@ -507,6 +517,7 @@ public class EISObjectPersistenceXMLProject extends NamespaceResolvableProject {
         indirectionPolicyMapping.setReferenceClass(IndirectionPolicy.class);
         // Handle translation of NoIndirectionPolicy -> null.
         indirectionPolicyMapping.setAttributeAccessor(new AttributeAccessor() {
+                @Override
                 public Object getAttributeValueFromObject(Object object) {
                     IndirectionPolicy policy = ((ForeignReferenceMapping)object).getIndirectionPolicy();
                     if (policy instanceof NoIndirectionPolicy) {
@@ -515,6 +526,7 @@ public class EISObjectPersistenceXMLProject extends NamespaceResolvableProject {
                     return policy;
                 }
 
+                @Override
                 public void setAttributeValueInObject(Object object, Object value) {
                     IndirectionPolicy policy = (IndirectionPolicy)value;
                     if (value == null) {
@@ -531,6 +543,7 @@ public class EISObjectPersistenceXMLProject extends NamespaceResolvableProject {
         selectionQueryMapping.setAttributeName("selectionQuery");
         selectionQueryMapping.setReferenceClass(ReadQuery.class);
         selectionQueryMapping.setAttributeAccessor(new AttributeAccessor() {
+                @Override
                 public Object getAttributeValueFromObject(Object object) {
                     if (((ForeignReferenceMapping)object).hasCustomSelectionQuery()) {
                         return ((ForeignReferenceMapping)object).getSelectionQuery();
@@ -538,6 +551,7 @@ public class EISObjectPersistenceXMLProject extends NamespaceResolvableProject {
                     return null;
                 }
 
+                @Override
                 public void setAttributeValueInObject(Object object, Object value) {
                     if ((value != null) && value instanceof ReadQuery) {
                         ((ForeignReferenceMapping)object).setCustomSelectionQuery((ReadQuery)value);
@@ -553,6 +567,7 @@ public class EISObjectPersistenceXMLProject extends NamespaceResolvableProject {
         deleteAllQueryMapping.setAttributeName("deleteAllQuery");
         deleteAllQueryMapping.setReferenceClass(ModifyQuery.class);
         deleteAllQueryMapping.setAttributeAccessor(new AttributeAccessor() {
+                @Override
                 public Object getAttributeValueFromObject(Object object) {
                     boolean hasCustomDeleteAllQuery = ((EISOneToManyMapping)object).hasCustomDeleteAllQuery();
                     if (hasCustomDeleteAllQuery) {
@@ -562,6 +577,7 @@ public class EISObjectPersistenceXMLProject extends NamespaceResolvableProject {
                     }
                 }
 
+                @Override
                 public void setAttributeValueInObject(Object object, Object value) {
                     if ((value != null) && value instanceof ModifyQuery) {
                         ((EISOneToManyMapping)object).setCustomDeleteAllQuery((ModifyQuery)value);

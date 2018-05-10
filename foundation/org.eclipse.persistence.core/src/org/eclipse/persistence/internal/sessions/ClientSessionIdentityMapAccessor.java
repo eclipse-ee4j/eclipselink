@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -43,6 +43,7 @@ public class ClientSessionIdentityMapAccessor extends IdentityMapAccessor {
      * be maintained for any objects currently read in.  This should only be called
      * if the application knows that it no longer has references to object held in the cache.
      */
+    @Override
     public void initializeAllIdentityMaps() {
         ((ClientSession)session).getParent().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
@@ -53,6 +54,7 @@ public class ClientSessionIdentityMapAccessor extends IdentityMapAccessor {
      * This overrides the IdentityMapAccessor version of getIdentityMapManager to
      * return the parent session's IdentityMapManager
      */
+    @Override
     public IdentityMapManager getIdentityMapManager() {
         return ((ClientSession)session).getParent().getIdentityMapAccessorInstance().getIdentityMapManager();
     }
@@ -61,6 +63,7 @@ public class ClientSessionIdentityMapAccessor extends IdentityMapAccessor {
      * INTERNAL:
      * The client session does not have a local identity map, so this has no effect and should not be used.
      */
+    @Override
     public void initializeIdentityMap(Class theClass) {
         // Do nothing
     }
@@ -69,6 +72,7 @@ public class ClientSessionIdentityMapAccessor extends IdentityMapAccessor {
      * INTERNAL:
      * The client session does not have a local identity map, so this has no effect and should not be used.
      */
+    @Override
     public void initializeIdentityMaps() {
         // Do nothing
     }
@@ -78,6 +82,7 @@ public class ClientSessionIdentityMapAccessor extends IdentityMapAccessor {
      * The identity map manager cannot be set on a client session since it
      * looks at it's parent session's identity map manager.
      */
+    @Override
     public void setIdentityMapManager(IdentityMapManager identityMapManager) {
     }
 }

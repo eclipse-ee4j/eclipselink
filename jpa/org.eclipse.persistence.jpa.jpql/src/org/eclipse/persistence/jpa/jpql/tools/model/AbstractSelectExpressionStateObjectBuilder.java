@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -47,6 +47,7 @@ public abstract class AbstractSelectExpressionStateObjectBuilder extends Abstrac
     /**
      * {@inheritDoc}
      */
+    @Override
     public ISelectExpressionStateObjectBuilder append() {
         stateObjectList.add(pop());
         return this;
@@ -55,6 +56,7 @@ public abstract class AbstractSelectExpressionStateObjectBuilder extends Abstrac
     /**
      * {@inheritDoc}
      */
+    @Override
     public void commit() {
         if (hasStateObjects()) {
             append();
@@ -73,6 +75,7 @@ public abstract class AbstractSelectExpressionStateObjectBuilder extends Abstrac
     /**
      * {@inheritDoc}
      */
+    @Override
     public ISelectExpressionStateObjectBuilder new_(String className,
                                                     ISelectExpressionStateObjectBuilder... parameters) {
 
@@ -90,6 +93,7 @@ public abstract class AbstractSelectExpressionStateObjectBuilder extends Abstrac
     /**
      * {@inheritDoc}
      */
+    @Override
     public ISelectExpressionStateObjectBuilder object(String identificationVariable) {
         StateObject stateObject = new ObjectExpressionStateObject(getParent(), identificationVariable);
         add(stateObject);
@@ -99,6 +103,7 @@ public abstract class AbstractSelectExpressionStateObjectBuilder extends Abstrac
     /**
      * {@inheritDoc}
      */
+    @Override
     public ISelectExpressionStateObjectBuilder resultVariable(String resultVariable) {
         resultVariable(resultVariable, false);
         return this;
@@ -119,6 +124,7 @@ public abstract class AbstractSelectExpressionStateObjectBuilder extends Abstrac
     /**
      * {@inheritDoc}
      */
+    @Override
     public ISelectExpressionStateObjectBuilder resultVariableAs(String resultVariable) {
         resultVariable(resultVariable, true);
         return this;
@@ -127,6 +133,7 @@ public abstract class AbstractSelectExpressionStateObjectBuilder extends Abstrac
     /**
      * {@inheritDoc}
      */
+    @Override
     public ISelectExpressionStateObjectBuilder variable(String variable) {
         StateObject stateObject = buildIdentificationVariable(variable);
         add(stateObject);

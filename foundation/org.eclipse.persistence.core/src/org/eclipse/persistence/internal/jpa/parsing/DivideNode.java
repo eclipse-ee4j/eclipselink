@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -34,6 +34,7 @@ public class DivideNode extends BinaryOperatorNode implements AliasableNode {
      * INTERNAL
      * Apply this node to the passed query
      */
+    @Override
     public void applyToQuery(ObjectLevelReadQuery theQuery, GenerationContext context) {
         if (theQuery.isReportQuery()) {
             ReportQuery reportQuery = (ReportQuery)theQuery;
@@ -45,6 +46,7 @@ public class DivideNode extends BinaryOperatorNode implements AliasableNode {
      * INTERNAL
      * Validate node and calculates its type.
      */
+    @Override
     public void validate(ParseTreeContext context) {
         super.validate(context);
         if ((left != null) && (right != null)) {
@@ -62,16 +64,19 @@ public class DivideNode extends BinaryOperatorNode implements AliasableNode {
      * 3. Generate the expression for the right side and use it as the parameter for the .divide()
      * 4. Return the completed where clause to the caller
      */
+    @Override
     public Expression generateExpression(GenerationContext context) {
         Expression whereClause = getLeft().generateExpression(context);
         whereClause = ExpressionMath.divide(whereClause, getRight().generateExpression(context));
         return whereClause;
     }
 
+    @Override
     public boolean isDivideNode() {
         return true;
     }
 
+    @Override
     public boolean isAliasableNode(){
         return true;
     }

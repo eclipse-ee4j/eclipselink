@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -34,6 +34,7 @@ public class _CORBARemoteSessionControllerStub extends org.omg.CORBA.portable.Ob
         _set_delegate(delegate);
     }
 
+    @Override
     public org.eclipse.persistence.internal.sessions.remote.Transporter getLogin() {
         org.omg.CORBA.portable.InputStream _in = null;
         try {
@@ -53,6 +54,7 @@ public class _CORBARemoteSessionControllerStub extends org.omg.CORBA.portable.Ob
     }
     // getLogin
 
+    @Override
     public org.eclipse.persistence.internal.sessions.remote.Transporter getDefaultReadOnlyClasses() {
         org.omg.CORBA.portable.InputStream _in = null;
         try {
@@ -72,6 +74,7 @@ public class _CORBARemoteSessionControllerStub extends org.omg.CORBA.portable.Ob
     }
     // getDefaultReadOnlyClasses
 
+    @Override
     public org.eclipse.persistence.internal.sessions.remote.Transporter scrollableCursorCurrentIndex(org.eclipse.persistence.internal.sessions.remote.Transporter arg0) {
         org.omg.CORBA.portable.InputStream _in = null;
         try {
@@ -92,6 +95,7 @@ public class _CORBARemoteSessionControllerStub extends org.omg.CORBA.portable.Ob
     }
     // scrollableCursorCurrentIndex
 
+    @Override
     public org.eclipse.persistence.internal.sessions.remote.Transporter commitRootUnitOfWork(org.eclipse.persistence.internal.sessions.remote.Transporter arg0) {
         org.omg.CORBA.portable.InputStream _in = null;
         try {
@@ -112,6 +116,7 @@ public class _CORBARemoteSessionControllerStub extends org.omg.CORBA.portable.Ob
     }
     // commitRootUnitOfWork
 
+    @Override
     public org.eclipse.persistence.internal.sessions.remote.Transporter scrollableCursorAbsolute(org.eclipse.persistence.internal.sessions.remote.Transporter arg0, int arg1) {
         org.omg.CORBA.portable.InputStream _in = null;
         try {
@@ -133,6 +138,7 @@ public class _CORBARemoteSessionControllerStub extends org.omg.CORBA.portable.Ob
     }
     // scrollableCursorAbsolute
 
+    @Override
     public org.eclipse.persistence.internal.sessions.remote.Transporter cursoredStreamNextPage(org.eclipse.persistence.internal.sessions.remote.Transporter arg0, int arg1) {
         org.omg.CORBA.portable.InputStream _in = null;
         try {
@@ -154,6 +160,7 @@ public class _CORBARemoteSessionControllerStub extends org.omg.CORBA.portable.Ob
     }
     // cursoredStreamNextPage
 
+    @Override
     public org.eclipse.persistence.internal.sessions.remote.Transporter executeQuery(org.eclipse.persistence.internal.sessions.remote.Transporter arg0) {
         org.omg.CORBA.portable.InputStream _in = null;
         try {
@@ -174,6 +181,7 @@ public class _CORBARemoteSessionControllerStub extends org.omg.CORBA.portable.Ob
     }
     // executeQuery
 
+    @Override
     public org.eclipse.persistence.internal.sessions.remote.Transporter scrollableCursorFirst(org.eclipse.persistence.internal.sessions.remote.Transporter arg0) {
         org.omg.CORBA.portable.InputStream _in = null;
         try {
@@ -194,6 +202,7 @@ public class _CORBARemoteSessionControllerStub extends org.omg.CORBA.portable.Ob
     }
     // scrollableCursorFirst
 
+    @Override
     public org.eclipse.persistence.internal.sessions.remote.Transporter scrollableCursorAfterLast(org.eclipse.persistence.internal.sessions.remote.Transporter arg0) {
         org.omg.CORBA.portable.InputStream _in = null;
         try {
@@ -214,6 +223,7 @@ public class _CORBARemoteSessionControllerStub extends org.omg.CORBA.portable.Ob
     }
     // scrollableCursorAfterLast
 
+    @Override
     public org.eclipse.persistence.internal.sessions.remote.Transporter cursoredStreamClose(org.eclipse.persistence.internal.sessions.remote.Transporter arg0) {
         org.omg.CORBA.portable.InputStream _in = null;
         try {
@@ -234,6 +244,7 @@ public class _CORBARemoteSessionControllerStub extends org.omg.CORBA.portable.Ob
     }
     // cursoredStreamClose
 
+    @Override
     public org.eclipse.persistence.internal.sessions.remote.Transporter getSequenceNumberNamed(org.eclipse.persistence.internal.sessions.remote.Transporter arg0) {
         org.omg.CORBA.portable.InputStream _in = null;
         try {
@@ -254,6 +265,7 @@ public class _CORBARemoteSessionControllerStub extends org.omg.CORBA.portable.Ob
     }
     // getSequenceNumberNamed
 
+    @Override
     public org.eclipse.persistence.internal.sessions.remote.Transporter scrollableCursorClose(org.eclipse.persistence.internal.sessions.remote.Transporter arg0) {
         org.omg.CORBA.portable.InputStream _in = null;
         try {
@@ -274,6 +286,7 @@ public class _CORBARemoteSessionControllerStub extends org.omg.CORBA.portable.Ob
     }
     // scrollableCursorClose
 
+    @Override
     public org.eclipse.persistence.internal.sessions.remote.Transporter processCommand(org.eclipse.persistence.internal.sessions.remote.Transporter arg0) {
         org.omg.CORBA.portable.InputStream _in = null;
         try {
@@ -294,6 +307,7 @@ public class _CORBARemoteSessionControllerStub extends org.omg.CORBA.portable.Ob
     }
     // processCommand
 
+    @Override
     public org.eclipse.persistence.internal.sessions.remote.Transporter cursorSelectObjects(org.eclipse.persistence.internal.sessions.remote.Transporter arg0) {
         org.omg.CORBA.portable.InputStream _in = null;
         try {
@@ -314,6 +328,7 @@ public class _CORBARemoteSessionControllerStub extends org.omg.CORBA.portable.Ob
     }
     // cursorSelectObjects
 
+    @Override
     public org.eclipse.persistence.internal.sessions.remote.Transporter scrollableCursorLast(org.eclipse.persistence.internal.sessions.remote.Transporter arg0) {
         org.omg.CORBA.portable.InputStream _in = null;
         try {
@@ -334,6 +349,7 @@ public class _CORBARemoteSessionControllerStub extends org.omg.CORBA.portable.Ob
     }
     // scrollableCursorLast
 
+    @Override
     public org.eclipse.persistence.internal.sessions.remote.Transporter executeNamedQuery(org.eclipse.persistence.internal.sessions.remote.Transporter arg0, org.eclipse.persistence.internal.sessions.remote.Transporter arg1, org.eclipse.persistence.internal.sessions.remote.Transporter arg2) {
         org.omg.CORBA.portable.InputStream _in = null;
         try {
@@ -356,6 +372,7 @@ public class _CORBARemoteSessionControllerStub extends org.omg.CORBA.portable.Ob
     }
     // executeNamedQuery
 
+    @Override
     public org.eclipse.persistence.internal.sessions.remote.Transporter scrollableCursorBeforeFirst(org.eclipse.persistence.internal.sessions.remote.Transporter arg0) {
         org.omg.CORBA.portable.InputStream _in = null;
         try {
@@ -376,6 +393,7 @@ public class _CORBARemoteSessionControllerStub extends org.omg.CORBA.portable.Ob
     }
     // scrollableCursorBeforeFirst
 
+    @Override
     public org.eclipse.persistence.internal.sessions.remote.Transporter scrollableCursorIsBeforeFirst(org.eclipse.persistence.internal.sessions.remote.Transporter arg0) {
         org.omg.CORBA.portable.InputStream _in = null;
         try {
@@ -396,6 +414,7 @@ public class _CORBARemoteSessionControllerStub extends org.omg.CORBA.portable.Ob
     }
     // scrollableCursorIsBeforeFirst
 
+    @Override
     public org.eclipse.persistence.internal.sessions.remote.Transporter beginTransaction() {
         org.omg.CORBA.portable.InputStream _in = null;
         try {
@@ -415,6 +434,7 @@ public class _CORBARemoteSessionControllerStub extends org.omg.CORBA.portable.Ob
     }
     // beginTransaction
 
+    @Override
     public org.eclipse.persistence.internal.sessions.remote.Transporter beginEarlyTransaction() {
         org.omg.CORBA.portable.InputStream _in = null;
         try {
@@ -434,6 +454,7 @@ public class _CORBARemoteSessionControllerStub extends org.omg.CORBA.portable.Ob
     }
     // beginEarlyTransaction
 
+    @Override
     public org.eclipse.persistence.internal.sessions.remote.Transporter initializeIdentityMapsOnServerSession() {
         org.omg.CORBA.portable.InputStream _in = null;
         try {
@@ -453,6 +474,7 @@ public class _CORBARemoteSessionControllerStub extends org.omg.CORBA.portable.Ob
     }
     // initializeIdentityMapsOnServerSession
 
+    @Override
     public org.eclipse.persistence.internal.sessions.remote.Transporter scrollableCursorIsLast(org.eclipse.persistence.internal.sessions.remote.Transporter arg0) {
         org.omg.CORBA.portable.InputStream _in = null;
         try {
@@ -473,6 +495,7 @@ public class _CORBARemoteSessionControllerStub extends org.omg.CORBA.portable.Ob
     }
     // scrollableCursorIsLast
 
+    @Override
     public org.eclipse.persistence.internal.sessions.remote.Transporter scrollableCursorSize(org.eclipse.persistence.internal.sessions.remote.Transporter arg0) {
         org.omg.CORBA.portable.InputStream _in = null;
         try {
@@ -493,6 +516,7 @@ public class _CORBARemoteSessionControllerStub extends org.omg.CORBA.portable.Ob
     }
     // scrollableCursorSize
 
+    @Override
     public org.eclipse.persistence.internal.sessions.remote.Transporter scrollableCursorIsFirst(org.eclipse.persistence.internal.sessions.remote.Transporter arg0) {
         org.omg.CORBA.portable.InputStream _in = null;
         try {
@@ -513,6 +537,7 @@ public class _CORBARemoteSessionControllerStub extends org.omg.CORBA.portable.Ob
     }
     // scrollableCursorIsFirst
 
+    @Override
     public org.eclipse.persistence.internal.sessions.remote.Transporter getDescriptor(org.eclipse.persistence.internal.sessions.remote.Transporter arg0) {
         org.omg.CORBA.portable.InputStream _in = null;
         try {
@@ -533,6 +558,7 @@ public class _CORBARemoteSessionControllerStub extends org.omg.CORBA.portable.Ob
     }
     // getDescriptor
 
+    @Override
     public org.eclipse.persistence.internal.sessions.remote.Transporter getDescriptorForAlias(org.eclipse.persistence.internal.sessions.remote.Transporter arg0) {
         org.omg.CORBA.portable.InputStream _in = null;
         try {
@@ -553,6 +579,7 @@ public class _CORBARemoteSessionControllerStub extends org.omg.CORBA.portable.Ob
     }
     // getDescriptorForAlias
 
+    @Override
     public org.eclipse.persistence.internal.sessions.remote.Transporter cursoredStreamSize(org.eclipse.persistence.internal.sessions.remote.Transporter arg0) {
         org.omg.CORBA.portable.InputStream _in = null;
         try {
@@ -573,6 +600,7 @@ public class _CORBARemoteSessionControllerStub extends org.omg.CORBA.portable.Ob
     }
     // cursoredStreamSize
 
+    @Override
     public org.eclipse.persistence.internal.sessions.remote.Transporter scrollableCursorRelative(org.eclipse.persistence.internal.sessions.remote.Transporter arg0, int arg1) {
         org.omg.CORBA.portable.InputStream _in = null;
         try {
@@ -594,6 +622,7 @@ public class _CORBARemoteSessionControllerStub extends org.omg.CORBA.portable.Ob
     }
     // scrollableCursorRelative
 
+    @Override
     public org.eclipse.persistence.internal.sessions.remote.Transporter commitTransaction() {
         org.omg.CORBA.portable.InputStream _in = null;
         try {
@@ -613,6 +642,7 @@ public class _CORBARemoteSessionControllerStub extends org.omg.CORBA.portable.Ob
     }
     // commitTransaction
 
+    @Override
     public org.eclipse.persistence.internal.sessions.remote.Transporter rollbackTransaction() {
         org.omg.CORBA.portable.InputStream _in = null;
         try {
@@ -632,6 +662,7 @@ public class _CORBARemoteSessionControllerStub extends org.omg.CORBA.portable.Ob
     }
     // rollbackTransaction
 
+    @Override
     public org.eclipse.persistence.internal.sessions.remote.Transporter instantiateRemoteValueHolderOnServer(org.eclipse.persistence.internal.sessions.remote.Transporter arg0) {
         org.omg.CORBA.portable.InputStream _in = null;
         try {
@@ -652,6 +683,7 @@ public class _CORBARemoteSessionControllerStub extends org.omg.CORBA.portable.Ob
     }
     // instantiateRemoteValueHolderOnServer
 
+    @Override
     public org.eclipse.persistence.internal.sessions.remote.Transporter scrollableCursorNextObject(org.eclipse.persistence.internal.sessions.remote.Transporter arg0) {
         org.omg.CORBA.portable.InputStream _in = null;
         try {
@@ -672,6 +704,7 @@ public class _CORBARemoteSessionControllerStub extends org.omg.CORBA.portable.Ob
     }
     // scrollableCursorNextObject
 
+    @Override
     public org.eclipse.persistence.internal.sessions.remote.Transporter scrollableCursorPreviousObject(org.eclipse.persistence.internal.sessions.remote.Transporter arg0) {
         org.omg.CORBA.portable.InputStream _in = null;
         try {
@@ -692,6 +725,7 @@ public class _CORBARemoteSessionControllerStub extends org.omg.CORBA.portable.Ob
     }
     // scrollableCursorPreviousObject
 
+    @Override
     public org.eclipse.persistence.internal.sessions.remote.Transporter scrollableCursorIsAfterLast(org.eclipse.persistence.internal.sessions.remote.Transporter arg0) {
         org.omg.CORBA.portable.InputStream _in = null;
         try {
@@ -715,6 +749,7 @@ public class _CORBARemoteSessionControllerStub extends org.omg.CORBA.portable.Ob
     // Type-specific CORBA::Object operations
     private static String[] __ids = { "IDL:org/eclipse/persistence/remote/corba/sun/CORBARemoteSessionController:1.0" };
 
+    @Override
     public String[] _ids() {
         return __ids.clone();
     }

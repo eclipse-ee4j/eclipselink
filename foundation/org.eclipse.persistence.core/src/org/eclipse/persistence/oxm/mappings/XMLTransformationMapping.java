@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -139,30 +139,37 @@ import org.eclipse.persistence.mappings.transformers.FieldTransformer;
     /**
      * INTERNAL:
      */
+    @Override
     public boolean isXMLMapping() {
         return true;
     }
 
+    @Override
     public void addFieldTransformer(String fieldName, FieldTransformer transformer) {
         this.addFieldTransformer(new XMLField(fieldName), transformer);
     }
 
+    @Override
     public void addFieldTransformerClassName(String fieldName, String className) {
         this.addFieldTransformerClassName(new XMLField(fieldName), className);
     }
 
+    @Override
     public void addFieldTransformation(String fieldName, String methodName) {
         this.addFieldTransformation(new XMLField(fieldName), methodName);
     }
+    @Override
     public void writeSingleValue(Object value, Object parent, XMLRecord row, AbstractSession session) {
         this.writeFromObjectIntoRow(parent, row, session, WriteType.UNDEFINED);
     }
 
+    @Override
     public void setIsWriteOnly(boolean b) {
         // no op for this mapping.
         // A Transformation Mapping is write only if it has no Attribute Transformations.
     }
 
+    @Override
     public void preInitialize(AbstractSession session) throws DescriptorException {
         getAttributeAccessor().setIsWriteOnly(this.isWriteOnly());
         getAttributeAccessor().setIsReadOnly(this.isReadOnly());

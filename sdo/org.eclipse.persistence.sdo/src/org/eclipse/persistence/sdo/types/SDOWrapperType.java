@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the terms
 * of the Eclipse Public License v1.0 and Eclipse Distribution License v1.0
 * which accompanies this distribution.
@@ -212,46 +212,57 @@ public class SDOWrapperType extends SDOType implements Type {
         }
     }
 
+    @Override
     public List getAliasNames() {
         return Collections.EMPTY_LIST;
     }
 
+    @Override
     public List getBaseTypes() {
         return Collections.EMPTY_LIST;
     }
 
+    @Override
     public String getName() {
         return typeName;
     }
 
+    @Override
     public String getURI() {
         return SDOConstants.ORACLE_SDO_URL;
     }
 
+    @Override
     public boolean isAbstract() {
         return false;
     }
 
+    @Override
     public boolean isDataType() {
         return false;
     }
 
+    @Override
     public boolean isOpen() {
         return false;
     }
 
+    @Override
     public boolean isSequenced() {
         return false;
     }
 
+    @Override
     public boolean isFinalized() {
         return true;
     }
 
+    @Override
     public boolean isWrapperType() {
         return true;
     }
 
+    @Override
     public String toString() {
         StringBuffer str = new StringBuffer();
         str.append(getClass().getSimpleName() + "@" + Integer.toHexString(hashCode()));

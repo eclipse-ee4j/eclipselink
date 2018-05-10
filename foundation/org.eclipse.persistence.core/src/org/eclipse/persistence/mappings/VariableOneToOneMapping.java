@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -912,6 +912,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      * It contains the foreign keys with non null values that were set to null for shallow insert.
      * If mapping overrides writeFromObjectIntoRowForShallowInsert method it must override this one, too.
      */
+    @Override
     public void writeFromObjectIntoRowForUpdateAfterShallowInsert(Object object, AbstractRecord row, AbstractSession session, DatabaseTable table) {
         if (!getFields().get(0).getTable().equals(table)) {
             return;

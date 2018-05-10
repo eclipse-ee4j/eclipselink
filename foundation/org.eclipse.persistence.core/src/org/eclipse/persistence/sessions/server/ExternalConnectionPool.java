@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -47,6 +47,7 @@ public class ExternalConnectionPool extends ConnectionPool {
      * When we acquire a connection from an ExternalConnectionPool we build
      * a new connection (retrieve it from the external pool).
      */
+    @Override
     public Accessor acquireConnection() throws ConcurrencyException {
         // Check for dead database and fail-over.
         if (this.isDead) {
@@ -74,6 +75,7 @@ public class ExternalConnectionPool extends ConnectionPool {
      * INTERNAL:
      * Assume true as the driver is responsible for blocking.
      */
+    @Override
     public boolean hasConnectionAvailable() {
         return true;
     }
@@ -82,6 +84,7 @@ public class ExternalConnectionPool extends ConnectionPool {
      * INTERNAL:
      * Checks for a conflict between pool's type and pool's login
      */
+    @Override
     public boolean isThereConflictBetweenLoginAndType() {
         return !getLogin().shouldUseExternalConnectionPooling();
     }
@@ -90,6 +93,7 @@ public class ExternalConnectionPool extends ConnectionPool {
      * INTERNAL:
      * When you release an external connection, you simply let it go.
      */
+    @Override
     public void releaseConnection(Accessor connection) throws DatabaseException {
         if (this.owner.shouldLog(SessionLog.FINEST, SessionLog.CONNECTION)) {
             Object[] args = new Object[1];
@@ -125,6 +129,7 @@ public class ExternalConnectionPool extends ConnectionPool {
      * This method is called to indicate that all available connections should be checked.
      * Noop on external connection pool.
      */
+    @Override
     public void setCheckConnections() {
     }
 
@@ -132,6 +137,7 @@ public class ExternalConnectionPool extends ConnectionPool {
      * INTERNAL:
      * This mehtod is a no-op for external pools.
      */
+    @Override
     public synchronized void shutDown() {
         //do nothing
         setIsConnected(false);
@@ -142,6 +148,7 @@ public class ExternalConnectionPool extends ConnectionPool {
      * Build the default connection.
      * This validates that connect will work and sets up the parent accessor to clone.
      */
+    @Override
     public synchronized void startUp() {
         setCachedConnection(buildConnection());
         setIsConnected(true);

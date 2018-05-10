@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -87,6 +87,7 @@ public class QuerySequence extends StandardSequence {
         setShouldUseTransaction(shouldUseTransaction);
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof QuerySequence && super.equals(obj)) {
             QuerySequence other = (QuerySequence)obj;
@@ -114,6 +115,7 @@ public class QuerySequence extends StandardSequence {
     /**
     * PUBLIC:
     */
+    @Override
     public boolean shouldAcquireValueAfterInsert() {
         return shouldAcquireValueAfterInsert;
     }
@@ -128,6 +130,7 @@ public class QuerySequence extends StandardSequence {
     /**
     * PUBLIC:
     */
+    @Override
     public boolean shouldUseTransaction() {
         return shouldUseTransaction;
     }
@@ -226,6 +229,7 @@ public class QuerySequence extends StandardSequence {
     /**
     * INTERNAL:
     */
+    @Override
     public void onConnect() {
         super.onConnect();
         if (getSelectQuery() == null) {
@@ -247,6 +251,7 @@ public class QuerySequence extends StandardSequence {
     /**
     * INTERNAL:
     */
+    @Override
     public void onDisconnect() {
         if (wasSelectQueryCreated) {
             setSelectQuery(null);
@@ -262,6 +267,7 @@ public class QuerySequence extends StandardSequence {
     /**
     * INTERNAL:
     */
+    @Override
     protected Number updateAndSelectSequence(Accessor accessor, AbstractSession writeSession, String seqName, int size) {
         Integer sizeInteger = Integer.valueOf(size);
         if (shouldSkipUpdate()) {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -59,6 +59,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
         this.isInverseReference = isInverse;
     }
 
+    @Override
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver) {
         if (xmlCompositeCollectionMapping.isReadOnly()) {
             return false;
@@ -93,20 +94,18 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
         if (null != iterator && cp.hasNext(iterator)) {
             XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
             marshalRecord.closeStartGroupingElements(groupingFragment);
-        } else {
-            return marshalRecord.emptyCollection(xPathFragment, namespaceResolver, xmlCompositeCollectionMapping.getWrapperNullPolicy() != null);
+            marshalRecord.startCollection();
+            do {
+                Object objectValue = cp.next(iterator, session);
+                marshalSingleValue(xPathFragment, marshalRecord, object, objectValue, session, namespaceResolver, ObjectMarshalContext.getInstance());
+            } while (cp.hasNext(iterator));
+            marshalRecord.endCollection();
+            return true;
         }
-
-        marshalRecord.startCollection();
-        iterator = cp.iteratorFor(collection);
-        while (cp.hasNext(iterator)) {
-            Object objectValue = cp.next(iterator, session);
-            marshalSingleValue(xPathFragment, marshalRecord, object, objectValue, session, namespaceResolver, ObjectMarshalContext.getInstance());
-        }
-        marshalRecord.endCollection();
-        return true;
+        return marshalRecord.emptyCollection(xPathFragment, namespaceResolver, xmlCompositeCollectionMapping.getWrapperNullPolicy() != null);
     }
 
+    @Override
     public boolean startElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts) {
         try {
             Descriptor xmlDescriptor = (Descriptor) xmlCompositeCollectionMapping.getReferenceDescriptor();
@@ -189,11 +188,13 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
         return true;
     }
 
+    @Override
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord) {
         Object collection = unmarshalRecord.getContainerInstance(this);
         endElement(xPathFragment, unmarshalRecord, collection);
     }
 
+    @Override
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Object collection) {
         if(unmarshalRecord.isNil() && unmarshalRecord.getXMLReader().isNullRepresentedByXsiNil(xmlCompositeCollectionMapping.getNullPolicy()) &&
                 (unmarshalRecord.getChildRecord() == null)){
@@ -257,22 +258,27 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
 
     }
 
+    @Override
     public Object getContainerInstance() {
         return getContainerPolicy().containerInstance();
     }
 
+    @Override
     public void setContainerInstance(Object object, Object containerInstance) {
         xmlCompositeCollectionMapping.setAttributeValueInObject(object, containerInstance);
     }
 
+    @Override
     public CoreContainerPolicy getContainerPolicy() {
         return xmlCompositeCollectionMapping.getContainerPolicy();
     }
 
+    @Override
     public boolean isContainerValue() {
         return true;
     }
 
+    @Override
     public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
 
         Marshaller marshaller = marshalRecord.getMarshaller();
@@ -350,14 +356,17 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
         return true;
     }
 
+    @Override
     public CompositeCollectionMapping getMapping() {
         return xmlCompositeCollectionMapping;
     }
 
+    @Override
     protected void setOrAddAttributeValue(UnmarshalRecord unmarshalRecord, Object value, XPathFragment xPathFragment, Object collection){
         unmarshalRecord.addAttributeValue(this, value, collection);
     }
 
+    @Override
     public boolean getReuseContainer() {
         return xmlCompositeCollectionMapping.getReuseContainer();
     }
@@ -366,6 +375,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
      *  INTERNAL:
      *  Used to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord
      */
+    @Override
     public void setIndex(int index){
         this.index = index;
     }
@@ -375,6 +385,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
      * Set to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord
      * Set during TreeObjectBuilder initialization
      */
+    @Override
     public int getIndex(){
         return index;
     }
@@ -385,6 +396,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
      * is no presence of the collection in the XML document.
      * @since EclipseLink 2.3.3
      */
+    @Override
     public boolean isDefaultEmptyContainer() {
         return xmlCompositeCollectionMapping.isDefaultEmptyContainer();
     }

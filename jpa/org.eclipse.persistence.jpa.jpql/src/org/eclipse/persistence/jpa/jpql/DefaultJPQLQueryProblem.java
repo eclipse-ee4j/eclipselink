@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -79,6 +79,7 @@ final class DefaultJPQLQueryProblem implements JPQLQueryProblem {
     /**
      * {@inheritDoc}
      */
+    @Override
     public int getEndPosition() {
         return endIndex;
     }
@@ -86,6 +87,7 @@ final class DefaultJPQLQueryProblem implements JPQLQueryProblem {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Expression getExpression() {
         return expression;
     }
@@ -93,6 +95,7 @@ final class DefaultJPQLQueryProblem implements JPQLQueryProblem {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String[] getMessageArguments() {
         return messageArguments;
     }
@@ -100,6 +103,7 @@ final class DefaultJPQLQueryProblem implements JPQLQueryProblem {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getMessageKey() {
         return messageKey;
     }
@@ -107,6 +111,7 @@ final class DefaultJPQLQueryProblem implements JPQLQueryProblem {
     /**
      * {@inheritDoc}
      */
+    @Override
     public int getStartPosition() {
         return startIndex;
     }

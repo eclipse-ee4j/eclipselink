@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -53,6 +53,7 @@ public class FuncNode extends FunctionalExpressionNode {
         return this.parameters;
     }
 
+    @Override
     public void validate(ParseTreeContext context) {
         for(Node parameter : this.parameters) {
             parameter.validate(context);
@@ -63,6 +64,7 @@ public class FuncNode extends FunctionalExpressionNode {
      * INTERNAL
      * Generate the EclipseLink expression for this node
      */
+    @Override
     public Expression generateExpression(GenerationContext context) {
         int size = this.parameters.size();
         if(size == 0) {

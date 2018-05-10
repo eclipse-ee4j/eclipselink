@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -832,6 +832,7 @@ public class StoredProcedureCall extends DatabaseCall {
         return procedureName;
     }
 
+    @Override
     public boolean isStoredProcedureCall() {
         return true;
     }
@@ -872,6 +873,7 @@ public class StoredProcedureCall extends DatabaseCall {
         this.procedureName = procedureName;
     }
 
+    @Override
     public String toString() {
         return Helper.getShortClassName(getClass()) + "(" + getProcedureName() + ")";
     }
@@ -929,6 +931,7 @@ public class StoredProcedureCall extends DatabaseCall {
      * Used for Oracle result sets through procedures.
      * This can only be used if the arguments are not named but ordered.
      */
+    @Override
     public void useUnnamedCursorOutputAsResultSet() {
         useCursorOutputResultSet(null, "CURSOR");
     }
@@ -952,6 +955,7 @@ public class StoredProcedureCall extends DatabaseCall {
      * This can be used by data queries, if an object query is used, all of the result sets must return
      * the required data to build the resulting class.
      */
+    @Override
     public void setHasMultipleResultSets(boolean hasMultipleResultSets) {
         super.setHasMultipleResultSets(hasMultipleResultSets);
     }
@@ -965,6 +969,7 @@ public class StoredProcedureCall extends DatabaseCall {
      * result sets can only be used by read queries.
      * For Oracle a cursored output parameter can be used instead of a result set.
      */
+    @Override
     public void setReturnsResultSet(boolean returnsResultSet) {
         super.setReturnsResultSet(returnsResultSet);
     }

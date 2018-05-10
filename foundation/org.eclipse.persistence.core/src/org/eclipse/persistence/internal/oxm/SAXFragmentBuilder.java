@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -41,6 +41,7 @@ public class SAXFragmentBuilder extends SAXDocumentBuilder {
         owningRecord = unmarshalRecord;
     }
 
+    @Override
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
         if (!mixedContent) {
             boolean bufferContainsOnlyWhitespace = stringBuffer.toString().trim().length() == 0;
@@ -127,6 +128,7 @@ public class SAXFragmentBuilder extends SAXDocumentBuilder {
         }
     }
 
+    @Override
     public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
         if (super.nodes.size() == 2) {
             Element endedElement = (Element)nodes.get(nodes.size() -1);
@@ -173,6 +175,7 @@ public class SAXFragmentBuilder extends SAXDocumentBuilder {
         this.owningRecord = record;
     }
 
+    @Override
     public void appendChildNode(Node parent, Node child) {
         if (parent != this.getDocument()) {
             parent.appendChild(child);

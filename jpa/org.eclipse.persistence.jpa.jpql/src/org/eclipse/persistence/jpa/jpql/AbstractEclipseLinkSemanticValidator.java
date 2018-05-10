@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -422,6 +422,7 @@ public class AbstractEclipseLinkSemanticValidator extends AbstractSemanticValida
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(AsOfClause expression) {
         super.visit(expression);
         // Nothing to validate semantically
@@ -430,6 +431,7 @@ public class AbstractEclipseLinkSemanticValidator extends AbstractSemanticValida
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(CastExpression expression) {
         super.visit(expression);
         // Nothing to validate semantically
@@ -438,6 +440,7 @@ public class AbstractEclipseLinkSemanticValidator extends AbstractSemanticValida
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(ConnectByClause expression) {
         super.visit(expression);
         // Nothing to validate semantically
@@ -446,6 +449,7 @@ public class AbstractEclipseLinkSemanticValidator extends AbstractSemanticValida
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(DatabaseType expression) {
         super.visit(expression);
         // Nothing to validate semantically
@@ -454,6 +458,7 @@ public class AbstractEclipseLinkSemanticValidator extends AbstractSemanticValida
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(ExtractExpression expression) {
         super.visit(expression);
         // Nothing to validate semantically
@@ -462,6 +467,7 @@ public class AbstractEclipseLinkSemanticValidator extends AbstractSemanticValida
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(HierarchicalQueryClause expression) {
         super.visit(expression);
         // Nothing to validate semantically
@@ -470,6 +476,7 @@ public class AbstractEclipseLinkSemanticValidator extends AbstractSemanticValida
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(OrderSiblingsByClause expression) {
         super.visit(expression);
         // TODO
@@ -478,6 +485,7 @@ public class AbstractEclipseLinkSemanticValidator extends AbstractSemanticValida
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(RegexpExpression expression) {
         super.visit(expression);
         // Nothing to validate semantically
@@ -486,6 +494,7 @@ public class AbstractEclipseLinkSemanticValidator extends AbstractSemanticValida
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(StartWithClause expression) {
         super.visit(expression);
         // Nothing to validate semantically
@@ -494,6 +503,7 @@ public class AbstractEclipseLinkSemanticValidator extends AbstractSemanticValida
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(TableExpression expression) {
         super.visit(expression);
 
@@ -515,6 +525,7 @@ public class AbstractEclipseLinkSemanticValidator extends AbstractSemanticValida
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(TableVariableDeclaration expression) {
         super.visit(expression);
         // Nothing to validate semantically
@@ -523,6 +534,7 @@ public class AbstractEclipseLinkSemanticValidator extends AbstractSemanticValida
     /**
      * {@inheritDoc}
      */
+    @Override
     public void visit(UnionClause expression) {
         super.visit(expression);
         // Nothing to validate semantically

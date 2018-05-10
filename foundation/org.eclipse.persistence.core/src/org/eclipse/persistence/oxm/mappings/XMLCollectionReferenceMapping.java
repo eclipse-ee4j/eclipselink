@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -88,10 +88,12 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
         this.usesSingleNode = false;
     }
 
+    @Override
     public DatabaseField getField() {
         return field;
     }
 
+    @Override
     public void setField(DatabaseField field) {
         this.field = field;
     }
@@ -126,6 +128,7 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
      * matches the target field name - otherwise, return the associated primary
      * key value
      */
+    @Override
     public Object buildFieldValue(Object targetObject, XMLField xmlFld, AbstractSession session) {
         if (targetObject == null) {
             return null;
@@ -157,6 +160,7 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
      * during the mapping reference resolution phase after unmarshalling is
      * complete.
      */
+    @Override
     public void buildReference(UnmarshalRecord record, XMLField xmlField, Object object, AbstractSession session, Object container) {
          buildReference(record.getCurrentObject(), xmlField, object, session, container, record.getReferenceResolver());
     }
@@ -251,6 +255,7 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
      * INTERNAL:
      * Return the mapping's containerPolicy.
      */
+    @Override
     public ContainerPolicy getContainerPolicy() {
         return containerPolicy;
     }
@@ -260,6 +265,7 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
      * The mapping is initialized with the given session. This mapping is fully initialized
      * after this.
      */
+    @Override
     public void initialize(AbstractSession session) throws DescriptorException {
         super.initialize(session);
         if(null != getField()) {
@@ -281,6 +287,7 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
      * org.eclipse.persistence.internal.oxm.Reference instance and stored it
      * on the session's org.eclipse.persistence.internal.oxm.ReferenceResolver.
      */
+    @Override
     public Object readFromRowIntoObject(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object targetObject, CacheKey parentCacheKey, ObjectBuildingQuery sourceQuery, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
           ContainerPolicy cp = getContainerPolicy();
 
@@ -337,6 +344,7 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
      * ADVANCED:
      * Set the mapping's containerPolicy.
      */
+    @Override
     public void setContainerPolicy(ContainerPolicy containerPolicy) {
         // set reference class here if necessary
         this.containerPolicy = containerPolicy;
@@ -352,14 +360,17 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
      * <p>jdk1.2.x: The container class must implement (directly or indirectly) the Collection interface.
      * <p>jdk1.1.x: The container class must be a subclass of Vector.
      */
+    @Override
     public void useCollectionClass(Class concreteContainerClass) {
         this.setContainerPolicy(ContainerPolicy.buildPolicyFor(concreteContainerClass));
     }
 
+    @Override
     public void useCollectionClassName(String concreteContainerClassName) {
         this.setContainerPolicy(new CollectionContainerPolicy(concreteContainerClassName));
     }
 
+    @Override
     public void useListClassName(String concreteContainerClassName) {
         this.setContainerPolicy(new ListContainerPolicy(concreteContainerClassName));
     }
@@ -375,6 +386,7 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
      * <p>jdk1.1.x: The container class must be a subclass of Hashtable.
      * <p>The referenceClass must be set before calling this method.
      */
+    @Override
     public void useMapClass(Class concreteContainerClass, String methodName) {
         // the reference class has to be specified before coming here
         if (this.getReferenceClass() == null) {
@@ -396,6 +408,7 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
      * <p>jdk1.1.x: The container class must be a subclass of Hashtable.
      * <p>The referenceClass must be set before calling this method.
      */
+    @Override
     public void useMapClassName(String concreteContainerClass, String methodName) {
         // the reference class has to be specified before coming here
         if (this.getReferenceClass() == null) {
@@ -412,10 +425,12 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
      * refers to the fact that the source key xpath fields should all be written as
      * space-separated lists. Would be used for mapping to an IDREFS field in a schema
      */
+    @Override
     public boolean usesSingleNode() {
         return this.usesSingleNode;
     }
 
+    @Override
     public void setUsesSingleNode(boolean useSingleNode) {
         this.usesSingleNode = useSingleNode;
     }
@@ -478,6 +493,7 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
         }
     }
 
+    @Override
     public void writeSingleValue(Object value, Object parent, XMLRecord row, AbstractSession session) {
         for (Iterator fieldIt = getFields().iterator(); fieldIt.hasNext();) {
             XMLField xmlField = (XMLField) fieldIt.next();
@@ -491,6 +507,7 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
 
     }
 
+    @Override
     public boolean isCollectionMapping() {
         return true;
     }
@@ -500,6 +517,7 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
      * present.  If it is not present then the container policy will be used to
      * create the container.
      */
+    @Override
     public boolean getReuseContainer() {
         return reuseContainer;
     }
@@ -509,6 +527,7 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
      * present.  If it is not present then the container policy will be used to
      * create the container.
      */
+    @Override
     public void setReuseContainer(boolean reuseContainer) {
         this.reuseContainer = reuseContainer;
     }
@@ -519,6 +538,7 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
      * is no presence of the collection in the XML document.
      * @since EclipseLink 2.3.3
      */
+    @Override
     public boolean isDefaultEmptyContainer() {
         return defaultEmptyContainer;
     }
@@ -529,14 +549,17 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
      * field/property if the collection is not present in the XML document.
      * @since EclipseLink 2.3.3
      */
+    @Override
     public void setDefaultEmptyContainer(boolean defaultEmptyContainer) {
         this.defaultEmptyContainer = defaultEmptyContainer;
     }
 
+    @Override
     public AbstractNullPolicy getWrapperNullPolicy() {
         return this.wrapperNullPolicy;
     }
 
+    @Override
     public void setWrapperNullPolicy(AbstractNullPolicy policy) {
         this.wrapperNullPolicy = policy;
     }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -238,6 +238,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * INTERNAL:
      * Performs a first level clone of the attribute.  This generally means on the container will be cloned.
      */
+    @Override
     public Object buildContainerClone(Object attributeValue, AbstractSession cloningSession){
         Object newContainer = this.containerPolicy.containerInstance(this.containerPolicy.sizeFor(attributeValue));
         Object valuesIterator = this.containerPolicy.iteratorFor(attributeValue);
@@ -334,6 +335,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * this is an Aggregate mapping, a recursive call is made to the buildExpressionFromExample method of
      * ObjectBuilder.
      */
+    @Override
     public Expression buildExpression(Object queryObject, QueryByExamplePolicy policy, Expression expressionBuilder, Map processedObjects, AbstractSession session) {
         String bypassProperty = PrivilegedAccessHelper.getSystemProperty(SystemProperties.DO_NOT_PROCESS_XTOMANY_FOR_QBE);
         if (this.getContainerPolicy().isMapPolicy() ||  (bypassProperty != null && bypassProperty.toLowerCase().equals("true")) ){
@@ -1068,6 +1070,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * INTERNAL:
      * Returns the receiver's containerPolicy.
      */
+    @Override
     public ContainerPolicy getContainerPolicy() {
         return containerPolicy;
     }
@@ -1968,6 +1971,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * Configure the mapping to use a container policy.
      * The policy manages the access to the collection.
      */
+    @Override
     public void setContainerPolicy(ContainerPolicy containerPolicy) {
         this.containerPolicy = containerPolicy;
         ((ReadAllQuery)getSelectionQuery()).setContainerPolicy(containerPolicy);
@@ -2066,6 +2070,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * This method is used to have an object add to a collection once the changeSet is applied
      * The referenceKey parameter should only be used for direct Maps.
      */
+    @Override
     public void simpleAddToCollectionChangeRecord(Object referenceKey, Object changeSetToAdd, ObjectChangeSet changeSet, AbstractSession session) {
         CollectionChangeRecord collectionChangeRecord = (CollectionChangeRecord)changeSet.getChangesForAttributeNamed(this.getAttributeName());
         if (collectionChangeRecord == null) {
@@ -2085,6 +2090,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * This method is used to have an object removed from a collection once the changeSet is applied
      * The referenceKey parameter should only be used for direct Maps.
      */
+    @Override
     public void simpleRemoveFromCollectionChangeRecord(Object referenceKey, Object changeSetToRemove, ObjectChangeSet changeSet, AbstractSession session) {
         CollectionChangeRecord collectionChangeRecord = (CollectionChangeRecord)changeSet.getChangesForAttributeNamed(this.getAttributeName());
         if (collectionChangeRecord == null) {
@@ -2133,6 +2139,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * Update a ChangeRecord to replace the ChangeSet for the old entity with the changeSet for the new Entity.  This is
      * used when an Entity is merged into itself and the Entity reference new or detached entities.
      */
+    @Override
     public void updateChangeRecordForSelfMerge(ChangeRecord changeRecord, Object source, Object target, UnitOfWorkChangeSet parentUOWChangeSet, UnitOfWorkImpl unitOfWork){
         getContainerPolicy().updateChangeRecordForSelfMerge(changeRecord, source, target, this, parentUOWChangeSet, unitOfWork);
     }
@@ -2142,6 +2149,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * Add or removes a new value and its change set to the collection change record based on the event passed in.  This is used by
      * attribute change tracking.
      */
+    @Override
     public void updateCollectionChangeRecord(CollectionChangeEvent event, ObjectChangeSet changeSet, UnitOfWorkImpl uow) {
         if (event !=null && event.getNewValue() != null) {
             Object newValue = event.getNewValue();
@@ -2268,6 +2276,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * <p>The container class must implement (directly or indirectly) the
      * <code>java.util.Collection</code> interface.
      */
+    @Override
     public void useCollectionClass(Class concreteClass) {
         ContainerPolicy policy = ContainerPolicy.buildPolicyFor(concreteClass, hasOrderBy() || listOrderField != null);
         setContainerPolicy(policy);
@@ -2319,6 +2328,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * Used to set the collection class by name.
      * This is required when building from metadata to allow the correct class loader to be used.
      */
+    @Override
     public void useCollectionClassName(String concreteClassName) {
         setContainerPolicy(new CollectionContainerPolicy(concreteClassName));
     }
@@ -2328,6 +2338,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * Used to set the collection class by name.
      * This is required when building from metadata to allow the correct class loader to be used.
      */
+    @Override
     public void useListClassName(String concreteClassName) {
         setContainerPolicy(new ListContainerPolicy(concreteClassName));
     }
@@ -2345,6 +2356,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * <p>To facilitate resolving the method, the mapping's referenceClass
      * must set before calling this method.
      */
+    @Override
     public void useMapClass(Class concreteClass, String keyName) {
         // the reference class has to be specified before coming here
         if (getReferenceClassName() == null) {
@@ -2374,6 +2386,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * INTERNAL:
      * Not sure were this is used, MW?
      */
+    @Override
     public void useMapClassName(String concreteClassName, String methodName) {
         // the reference class has to be specified before coming here
         if (getReferenceClassName() == null) {

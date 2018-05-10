@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -19,10 +19,12 @@ import org.xml.sax.SAXParseException;
 public class XMLExceptionHandler implements ErrorHandler {
     private XMLException m_xmlException;
 
+    @Override
     public void warning(SAXParseException exception) throws SAXException {
         this.error(exception);
     }
 
+    @Override
     public void error(SAXParseException exception) throws SAXException {
         if (m_xmlException == null) {
             m_xmlException = new XMLException();
@@ -30,6 +32,7 @@ public class XMLExceptionHandler implements ErrorHandler {
         m_xmlException.addNestedException(exception);
     }
 
+    @Override
     public void fatalError(SAXParseException exception) throws SAXException {
         this.error(exception);
     }

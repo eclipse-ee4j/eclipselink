@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -86,6 +86,7 @@ public final class EmptyCollectionComparisonExpression extends AbstractExpressio
     /**
      * {@inheritDoc}
      */
+    @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
@@ -93,6 +94,7 @@ public final class EmptyCollectionComparisonExpression extends AbstractExpressio
     /**
      * {@inheritDoc}
      */
+    @Override
     public void acceptChildren(ExpressionVisitor visitor) {
         getExpression().accept(visitor);
     }
@@ -227,6 +229,7 @@ public final class EmptyCollectionComparisonExpression extends AbstractExpressio
     /**
      * {@inheritDoc}
      */
+    @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(EmptyCollectionComparisonExpressionBNF.ID);
     }

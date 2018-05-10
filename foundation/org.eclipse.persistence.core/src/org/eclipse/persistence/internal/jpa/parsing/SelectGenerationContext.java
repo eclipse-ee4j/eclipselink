@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -63,10 +63,12 @@ public class SelectGenerationContext extends GenerationContext {
     }
 
     //Set and get the contained MemberOfNode. This is for handling NOT MEMBER OF.
+    @Override
     public void setMemberOfNode(MemberOfNode newMemberOfNode) {
         memberOfNode = newMemberOfNode;
     }
 
+    @Override
     public MemberOfNode getMemberOfNode() {
         return memberOfNode;
     }
@@ -85,6 +87,7 @@ public class SelectGenerationContext extends GenerationContext {
 
     //Answer true if we need to use parallel expressions
     //This will be the case if a 1:1 is SELECTed in the EJBQL.
+    @Override
     public boolean useParallelExpressions() {
         return useParallelExpressions;
     }
@@ -97,11 +100,13 @@ public class SelectGenerationContext extends GenerationContext {
 
     //Answer true if we want VariableNodes to check if they're
     //SELECTed first, to determine how to instantiate the ExpressionBuilder
+    @Override
     public boolean shouldCheckSelectNodeBeforeResolving() {
         return shouldCheckSelectNodeBeforeResolving;
     }
 
     //Answer true if we should use outer joins in our get() (vs getAllowingNull())
+    @Override
     public boolean shouldUseOuterJoins() {
         return shouldUseOuterJoins;
     }
@@ -115,10 +120,12 @@ public class SelectGenerationContext extends GenerationContext {
     }
 
     //Answer true if we have a MemberOfNode contained. This is for handling NOT MEMBER OF
+    @Override
     public boolean hasMemberOfNode() {
         return memberOfNode != null;
     }
 
+    @Override
     public boolean isSelectGenerationContext() {
         return true;
     }
@@ -132,6 +139,7 @@ public class SelectGenerationContext extends GenerationContext {
      * Iterate the set of variables declared in an outer scope and
      * connect the inner variable expression with the outer one.
      */
+    @Override
     public Expression joinVariables(Set variables) {
         if ((outer == null) || (variables == null) || variables.isEmpty()) {
             // not an inner query or no variables to join

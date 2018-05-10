@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -201,6 +201,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * @deprecated since EclipseLink 2.1, replaced by copy(Object)
      * @see #copy(Object)
      */
+    @Deprecated
     public Object copyObject(Object original);
 
     /**
@@ -212,6 +213,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * @deprecated since EclipseLink 2.1, replaced by copy(Object, AttributeGroup)
      * @see #copy(Object, AttributeGroup)
      */
+    @Deprecated
     public Object copyObject(Object original, ObjectCopyingPolicy policy);
 
     /**
@@ -464,6 +466,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * ADVANCED:
      * Return all registered descriptors.
      */
+    @Override
     public Map<Class, ClassDescriptor> getDescriptors();
 
     /**
@@ -477,6 +480,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * Return the event manager.
      * The event manager can be used to register for various session events.
      */
+    @Override
     public SessionEventManager getEventManager();
 
     /**
@@ -532,6 +536,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * Return the database platform currently connected to.
      * The platform is used for database specific behavior.
      */
+    @Override
     public Platform getDatasourcePlatform();
 
     /**
@@ -547,6 +552,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * Return the login, the login holds any database connection information given.
      * This return the Login interface and may need to be cast to the datasource specific implementation.
      */
+    @Override
     public Login getDatasourceLogin();
 
     /**
@@ -575,6 +581,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * Return the project.
      * The project includes the login and descriptor and other configuration information.
      */
+    @Override
     public org.eclipse.persistence.sessions.Project getProject();
 
     /**
@@ -963,6 +970,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * <br>Possible values for log level are listed in SessionLog.
      * @see org.eclipse.persistence.logging.SessionLog
      */
+    @Override
     public void setLogLevel(int level);
 
     /**

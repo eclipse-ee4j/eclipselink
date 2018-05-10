@@ -344,6 +344,7 @@ public class ClientSession extends AbstractSession {
      * Release (if required) connection after call.
      * @param query
      */
+    @Override
     public void releaseConnectionAfterCall(DatabaseQuery query) {
         if ((!isInTransaction() || (query.isObjectLevelReadQuery() && ((ObjectLevelReadQuery)query).isReadOnly())) && !isExclusiveIsolatedClientSession() ) {
             this.parent.releaseConnectionAfterCall(query);
@@ -413,6 +414,7 @@ public class ClientSession extends AbstractSession {
      * ADVANCED:
      * Return all registered descriptors.
      */
+    @Override
     public Map<Class, ClassDescriptor> getDescriptors() {
         // descriptors from the project may have been modified (for table per
         // tenants so make sure to return the updated ones)

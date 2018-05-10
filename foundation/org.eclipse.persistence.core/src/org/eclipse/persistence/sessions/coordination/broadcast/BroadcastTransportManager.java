@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -51,6 +51,7 @@ public abstract class BroadcastTransportManager extends TransportManager {
      * BroadcastTransportManager doesn't use DiscoveryManager - instead RemoteCommandManager
      * calls createConnections method during initialization.
      */
+    @Override
     public DiscoveryManager createDiscoveryManager() {
         return null;
     }
@@ -62,6 +63,7 @@ public abstract class BroadcastTransportManager extends TransportManager {
      * this method called during RCM initialization to create all the necessary connections.
      * BroadcastTransportManager ancestors may need to override this method.
      */
+    @Override
     public void createConnections() {
         createLocalConnection();
     }
@@ -70,6 +72,7 @@ public abstract class BroadcastTransportManager extends TransportManager {
      * INTERNAL:
      * No-op implementation of super abstract method since there is only one connection to a known topic.
      */
+    @Override
     public RemoteConnection createConnection(ServiceId serviceId) {
         return null;
     }
@@ -78,6 +81,7 @@ public abstract class BroadcastTransportManager extends TransportManager {
      * INTERNAL:
      * Add a remote Connection to a remote service.
      */
+    @Override
     public void addConnectionToExternalService(RemoteConnection connection) {
         // nothing to do
     }
@@ -88,6 +92,7 @@ public abstract class BroadcastTransportManager extends TransportManager {
      * This method is called by the remote command manager when this service should connect back
      * ('handshake') to the service from which this remote connection came.
      */
+    @Override
     public void connectBackToRemote(RemoteConnection connection) throws Exception {
         // nothing to do
     }

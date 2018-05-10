@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -50,6 +50,7 @@ public class JTASynchronizationListener extends AbstractSynchronizationListener 
      * Create and return the Synchronization listener object that can be registered
      * to receive JTA transaction notification callbacks.
      */
+    @Override
     public AbstractSynchronizationListener newSynchronizationListener(UnitOfWorkImpl unitOfWork, AbstractSession session, Object transaction, AbstractTransactionController controller) {
         return new JTASynchronizationListener(unitOfWork, session, transaction, controller);
     }
@@ -62,6 +63,7 @@ public class JTASynchronizationListener extends AbstractSynchronizationListener 
      * who initiates the TransactionManager.commit, or the call is executed
      * with no transaction context if Transaction.commit is used.
      */
+    @Override
     public void beforeCompletion() {
         super.beforeCompletion();
     }
@@ -73,6 +75,7 @@ public class JTASynchronizationListener extends AbstractSynchronizationListener 
      *
      * @param stat The status of the transaction completion.
      */
+    @Override
     public void afterCompletion(int stat) {
         super.afterCompletion(Integer.valueOf(stat));
     }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -50,6 +50,7 @@ public final class JPQLQueryBuilder2_1 extends AbstractJPQLQueryBuilder {
     /**
      * {@inheritDoc}
      */
+    @Override
     public DefaultConditionalExpressionStateObjectBuilder buildStateObjectBuilder(AbstractConditionalClauseStateObject stateObject) {
         return new DefaultConditionalExpressionStateObjectBuilder(stateObject);
     }
@@ -57,6 +58,7 @@ public final class JPQLQueryBuilder2_1 extends AbstractJPQLQueryBuilder {
     /**
      * {@inheritDoc}
      */
+    @Override
     public DefaultSelectExpressionStateObjectBuilder buildStateObjectBuilder(SelectClauseStateObject stateObject) {
         return new DefaultSelectExpressionStateObjectBuilder(stateObject);
     }
@@ -64,6 +66,7 @@ public final class JPQLQueryBuilder2_1 extends AbstractJPQLQueryBuilder {
     /**
      * {@inheritDoc}
      */
+    @Override
     public DefaultSimpleSelectExpressionStateObjectBuilder buildStateObjectBuilder(SimpleSelectClauseStateObject stateObject) {
         return new DefaultSimpleSelectExpressionStateObjectBuilder(stateObject);
     }
@@ -71,6 +74,7 @@ public final class JPQLQueryBuilder2_1 extends AbstractJPQLQueryBuilder {
     /**
      * {@inheritDoc}
      */
+    @Override
     public INewValueStateObjectBuilder buildStateObjectBuilder(UpdateItemStateObject stateObject) {
         return new DefaultNewValueStateObjectBuilder(stateObject);
     }
@@ -78,6 +82,7 @@ public final class JPQLQueryBuilder2_1 extends AbstractJPQLQueryBuilder {
     /**
      * {@inheritDoc}
      */
+    @Override
     public JPQLGrammar getGrammar() {
         return JPQLGrammar2_1.instance();
     }

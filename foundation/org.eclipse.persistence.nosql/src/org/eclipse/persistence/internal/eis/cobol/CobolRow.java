@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -37,6 +37,7 @@ public class CobolRow extends DatabaseRecord {
     /**
     * overrides get method to allow on-demand extraction.
     */
+    @Override
     public Object get(Object key) {
         Object value = super.get(key);
         if (value instanceof CobolRedefinedFieldValue) {
@@ -48,6 +49,7 @@ public class CobolRow extends DatabaseRecord {
     /**
     * overrides get method to allow on-demand extraction.
     */
+    @Override
     public Object get(String fieldName) {
         Object value = super.get(fieldName);
         if (value instanceof CobolRedefinedFieldValue) {
@@ -59,6 +61,7 @@ public class CobolRow extends DatabaseRecord {
     /**
     * overrides get method to allow on-demand extraction.
     */
+    @Override
     public Object get(DatabaseField key) {
         Object value = super.get(key);
         if (value instanceof CobolRedefinedFieldValue) {

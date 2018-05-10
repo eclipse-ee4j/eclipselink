@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -25,11 +25,6 @@ import org.eclipse.persistence.internal.libraries.antlr.runtime.MismatchedSetExc
 import org.eclipse.persistence.internal.libraries.antlr.runtime.NoViableAltException;
 import org.eclipse.persistence.internal.libraries.antlr.runtime.RecognitionException;
 import org.eclipse.persistence.internal.libraries.antlr.runtime.RecognizerSharedState;
-
-
-import java.util.Stack;
-import java.util.List;
-import java.util.ArrayList;
 
 @SuppressWarnings("all")
 public class JPQLLexer extends Lexer {

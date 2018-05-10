@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -22,6 +22,13 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.databaseaccess;
 
+import java.io.CharArrayWriter;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -33,13 +40,6 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
 import org.eclipse.persistence.queries.Call;
 import org.eclipse.persistence.queries.DatabaseQuery;
-
-import java.io.CharArrayWriter;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * INTERNAL:
@@ -161,6 +161,7 @@ public abstract class DatasourceCall implements Call {
      * Return the appropriate mechanism,
      * with the call added as necessary.
      */
+    @Override
     public DatabaseQueryMechanism buildNewQueryMechanism(DatabaseQuery query) {
         return new DatasourceCallQueryMechanism(query, this);
     }
@@ -169,6 +170,7 @@ public abstract class DatasourceCall implements Call {
      * Return the appropriate mechanism,
      * with the call added as necessary.
      */
+    @Override
     public DatabaseQueryMechanism buildQueryMechanism(DatabaseQuery query, DatabaseQueryMechanism mechanism) {
         if (mechanism.isCallQueryMechanism() && (mechanism instanceof DatasourceCallQueryMechanism)) {
             // Must also add the call singleton...
@@ -184,6 +186,7 @@ public abstract class DatasourceCall implements Call {
         }
     }
 
+    @Override
     public Object clone() {
         try {
             return super.clone();
@@ -197,6 +200,7 @@ public abstract class DatasourceCall implements Call {
     /**
      * Return the SQL string for logging purposes.
      */
+    @Override
     public abstract String getLogString(Accessor accessor);
 
     /**
@@ -230,6 +234,7 @@ public abstract class DatasourceCall implements Call {
     /**
      * Return whether all the results of the call have been returned.
      */
+    @Override
     public boolean isFinished() {
         return !isCursorReturned() && !isExecuteUpdate();
     }
@@ -237,6 +242,7 @@ public abstract class DatasourceCall implements Call {
     /**
      * The return type is one of, NoReturn, ReturnOneRow or ReturnManyRows.
      */
+    @Override
     public boolean isNothingReturned() {
         return this.returnType == NO_RETURN;
     }
@@ -244,6 +250,7 @@ public abstract class DatasourceCall implements Call {
     /**
      * The return type is one of, NoReturn, ReturnOneRow or ReturnManyRows.
      */
+    @Override
     public boolean isOneRowReturned() {
         return this.returnType == RETURN_ONE_ROW;
     }
@@ -375,7 +382,7 @@ public abstract class DatasourceCall implements Call {
     public void translateCustomQuery() {
         if (this.shouldProcessTokenInQuotes) {
             if (getQueryString().indexOf(this.query.getParameterDelimiter()) == -1) {
-                if (this.getQuery().shouldBindAllParameters() && getQueryString().indexOf("?") == -1) {
+                if (this.getQuery().shouldBindAllParameters() && getQueryString().indexOf('?') == -1) {
                     return;
                 }
                 translatePureSQLCustomQuery();

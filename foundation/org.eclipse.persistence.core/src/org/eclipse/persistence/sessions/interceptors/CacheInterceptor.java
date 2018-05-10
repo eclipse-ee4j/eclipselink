@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -67,6 +67,7 @@ public abstract class CacheInterceptor implements IdentityMap {
      * This first thread will get an active lock.
      * Other threads will get deferred locks, all threads will wait until all other threads are complete before releasing their locks.
      */
+    @Override
     public CacheKey acquireDeferredLock(Object primaryKey, boolean isCacheCheckComplete){
         return createCacheKeyInterceptor(this.targetIdentityMap.acquireDeferredLock(primaryKey, isCacheCheckComplete));
     }
@@ -75,6 +76,7 @@ public abstract class CacheInterceptor implements IdentityMap {
      * Acquire an active lock on the object.
      * This is used by reading (when using indirection or no relationships) and by merge.
      */
+    @Override
     public CacheKey acquireLock(Object primaryKey, boolean forMerge, boolean isCacheCheckComplete){
         return createCacheKeyInterceptor(this.targetIdentityMap.acquireLock(primaryKey, forMerge, isCacheCheckComplete));
     }
@@ -83,6 +85,7 @@ public abstract class CacheInterceptor implements IdentityMap {
      * Acquire an active lock on the object, if not already locked.
      * This is used by merge for missing existing objects.
      */
+    @Override
     public CacheKey acquireLockNoWait(Object primaryKey, boolean forMerge){
         CacheKey cacheKeyToBeWrapped = this.targetIdentityMap.acquireLockNoWait(primaryKey, forMerge);
         if (cacheKeyToBeWrapped != null){
@@ -95,6 +98,7 @@ public abstract class CacheInterceptor implements IdentityMap {
      * Acquire an active lock on the object, if not already locked.
      * This is used by merge for missing existing objects.
      */
+    @Override
     public CacheKey acquireLockWithWait(Object primaryKey, boolean forMerge, int wait) {
         CacheKey cacheKeyToBeWrapped = this.targetIdentityMap.acquireLockWithWait(primaryKey, forMerge, wait);
         if (cacheKeyToBeWrapped != null) {
@@ -108,6 +112,7 @@ public abstract class CacheInterceptor implements IdentityMap {
      * This is used by UnitOfWork cloning.
      * This will allow multiple users to read the same object but prevent writes to the object while the read lock is held.
      */
+    @Override
     public CacheKey acquireReadLockOnCacheKey(Object primaryKey) {
         return createCacheKeyInterceptor(this.targetIdentityMap.acquireReadLockOnCacheKey(primaryKey));
     }
@@ -117,6 +122,7 @@ public abstract class CacheInterceptor implements IdentityMap {
      * This is used by UnitOfWork cloning.
      * This will allow multiple users to read the same object but prevent writes to the object while the read lock is held.
      */
+    @Override
     public CacheKey acquireReadLockOnCacheKeyNoWait(Object primaryKey) {
         CacheKey cacheKeyToBeWrapped = this.targetIdentityMap.acquireReadLockOnCacheKeyNoWait(primaryKey);
         if (cacheKeyToBeWrapped != null){
@@ -129,6 +135,7 @@ public abstract class CacheInterceptor implements IdentityMap {
      * Add all locked CacheKeys to the map grouped by thread.
      * Used to print all the locks in the identity map.
      */
+    @Override
     public void collectLocks(HashMap threadList) {
         this.targetIdentityMap.collectLocks(threadList);
     }
@@ -137,6 +144,7 @@ public abstract class CacheInterceptor implements IdentityMap {
      * Clone the map and all of the CacheKeys.
      * This is used by UnitOfWork commitAndResumeOnFailure to avoid corrupting the cache during a failed commit.
      */
+    @Override
     public abstract Object clone();
 
     /**
@@ -144,6 +152,7 @@ public abstract class CacheInterceptor implements IdentityMap {
      * User API.
      * @param primaryKey is the primary key for the object to search for.
      */
+    @Override
     public boolean containsKey(Object primaryKey) {
         return this.targetIdentityMap.containsKey(primaryKey);
     }
@@ -155,6 +164,7 @@ public abstract class CacheInterceptor implements IdentityMap {
      * Allow for the cache to be iterated on.  This method is only used during debugging when
      * validateCache() has been called to print out the contents of the cache.
      */
+    @Override
     public Enumeration elements() {
         return this.targetIdentityMap.elements();
     }
@@ -163,6 +173,7 @@ public abstract class CacheInterceptor implements IdentityMap {
      * Return the object cached in the identity map or null if it could not be found.
      * User API.
      */
+    @Override
     public Object get(Object primaryKey){
         return this.targetIdentityMap.get(primaryKey);
     }
@@ -176,6 +187,7 @@ public abstract class CacheInterceptor implements IdentityMap {
      * @return Map of Entity PKs associated to the Entities that were retrieved
      * @throws QueryException
      */
+    @Override
     public abstract Map<Object, Object> getAllFromIdentityMapWithEntityPK(Object[] pkList, ClassDescriptor descriptor, AbstractSession session);
 
     /**
@@ -187,11 +199,13 @@ public abstract class CacheInterceptor implements IdentityMap {
      * @return Map of Entity PKs associated to the Entities that were retrieved
      * @throws QueryException
      */
+    @Override
     public abstract Map<Object, CacheKey> getAllCacheKeysFromIdentityMapWithEntityPK(Object[] pkList, ClassDescriptor descriptor, AbstractSession session);
 
     /**
      * Get the cache key (with object) for the primary key.
      */
+    @Override
     public CacheKey getCacheKey(Object primaryKey, boolean forMerge) {
         return this.targetIdentityMap.getCacheKey(primaryKey, forMerge);
     }
@@ -199,6 +213,7 @@ public abstract class CacheInterceptor implements IdentityMap {
     /**
      * Get the cache key (with object) for the primary key.
      */
+    @Override
     public CacheKey getCacheKeyForLock(Object primaryKey) {
         return this.targetIdentityMap.getCacheKeyForLock(primaryKey);
     }
@@ -206,6 +221,7 @@ public abstract class CacheInterceptor implements IdentityMap {
     /**
      * Return the descriptor that this is the map for.
      */
+    @Override
     public ClassDescriptor getDescriptor() {
         return this.targetIdentityMap.getDescriptor();
     }
@@ -213,6 +229,7 @@ public abstract class CacheInterceptor implements IdentityMap {
     /**
      * Return the class that this is the map for.
      */
+    @Override
     public Class getDescriptorClass() {
         return this.targetIdentityMap.getDescriptorClass();
     }
@@ -220,6 +237,7 @@ public abstract class CacheInterceptor implements IdentityMap {
     /**
      * @return The maxSize for the IdentityMap (NOTE: some subclasses may use this differently).
      */
+    @Override
     public int getMaxSize() {
         return this.targetIdentityMap.getMaxSize();
     }
@@ -228,6 +246,7 @@ public abstract class CacheInterceptor implements IdentityMap {
      * Return the number of CacheKeys in the IdentityMap.
      * This may contain weak referenced objects that have been garbage collected.
      */
+    @Override
     public int getSize() {
         return this.targetIdentityMap.getSize();
     }
@@ -236,6 +255,7 @@ public abstract class CacheInterceptor implements IdentityMap {
      * Return the number of actual objects of type myClass in the IdentityMap.
      * Recurse = true will include subclasses of myClass in the count.
      */
+    @Override
     public int getSize(Class myClass, boolean recurse) {
         return this.targetIdentityMap.getSize(myClass, recurse);
     }
@@ -252,6 +272,7 @@ public abstract class CacheInterceptor implements IdentityMap {
      * Get the wrapper object from the cache key associated with the given primary key,
      * this is used for EJB2.
      */
+    @Override
     public Object getWrapper(Object primaryKey) {
         return this.targetIdentityMap.getWrapper(primaryKey);
     }
@@ -260,6 +281,7 @@ public abstract class CacheInterceptor implements IdentityMap {
      * Get the write lock value from the cache key associated to the primarykey.
      * User API.
      */
+    @Override
     public Object getWriteLockValue(Object primaryKey) {
         return this.targetIdentityMap.getWriteLockValue(primaryKey);
     }
@@ -270,6 +292,7 @@ public abstract class CacheInterceptor implements IdentityMap {
      *
      * @return {@link Enumeration} of {@link CacheKey} instances.
      */
+    @Override
     public Enumeration<CacheKey> keys() {
         return this.targetIdentityMap.keys();
     }
@@ -281,6 +304,7 @@ public abstract class CacheInterceptor implements IdentityMap {
      *
      * @return {@link Enumeration} with clone of the {@link CacheKey} {@link Collection}
      */
+    @Override
     public Enumeration<CacheKey> cloneKeys() {
         return this.targetIdentityMap.cloneKeys();
     }
@@ -293,6 +317,7 @@ public abstract class CacheInterceptor implements IdentityMap {
      *        instances should be checked or {@code false} otherwise
      * @return {@link Enumeration} of {@link CacheKey} instances.
      */
+    @Override
     public Enumeration<CacheKey> keys(boolean checkReadLocks) {
         return this.targetIdentityMap.keys(checkReadLocks);
     }
@@ -301,6 +326,7 @@ public abstract class CacheInterceptor implements IdentityMap {
      * Notify the cache that a lazy relationship has been triggered in the object
      * and the cache may need to be updated
      */
+    @Override
     public void lazyRelationshipLoaded(Object rootEntity, ValueHolderInterface valueHolder, ForeignReferenceMapping mapping){
         this.targetIdentityMap.lazyRelationshipLoaded(rootEntity, valueHolder, mapping);
     }
@@ -314,6 +340,7 @@ public abstract class CacheInterceptor implements IdentityMap {
      * @param object is the domain object to cache.
      * @param writeLockValue is the current write lock value of object, if null the version is ignored.
      */
+    @Override
     public CacheKey put(Object primaryKey, Object object, Object writeLockValue, long readTime) {
         return this.targetIdentityMap.put(primaryKey, object, writeLockValue, readTime);
     }
@@ -323,6 +350,7 @@ public abstract class CacheInterceptor implements IdentityMap {
      * This is used by DeleteObjectQuery and merge.
      * This is also an advanced (very) user API.
      */
+    @Override
     public Object remove(Object primaryKey, Object object) {
         return this.targetIdentityMap.remove(primaryKey, object);
     }
@@ -330,6 +358,7 @@ public abstract class CacheInterceptor implements IdentityMap {
     /**
      * Remove the CacheKey from the map.
      */
+    @Override
     public Object remove(CacheKey cacheKey) {
         if (cacheKey.isWrapper()){
             return this.targetIdentityMap.remove(cacheKey.getWrappedCacheKey());
@@ -342,6 +371,7 @@ public abstract class CacheInterceptor implements IdentityMap {
      * be remove from the cache. Please note that this does not remove the object from the identityMap, except in
      * the case of the CacheIdentityMap.
      */
+    @Override
     public void updateMaxSize(int maxSize){
         this.targetIdentityMap.updateMaxSize(maxSize);
     }
@@ -349,6 +379,7 @@ public abstract class CacheInterceptor implements IdentityMap {
     /**
      * Set the descriptor that this is the map for.
      */
+    @Override
     public void setDescriptor(ClassDescriptor descriptor) {
         this.targetIdentityMap.setDescriptor(descriptor);
     }
@@ -357,6 +388,7 @@ public abstract class CacheInterceptor implements IdentityMap {
      * Update the wrapper object in the CacheKey associated with the given primaryKey,
      * this is used for EJB2.
      */
+    @Override
     public void setWrapper(Object primaryKey, Object wrapper) {
         this.targetIdentityMap.setWrapper(primaryKey, wrapper);
     }
@@ -365,10 +397,12 @@ public abstract class CacheInterceptor implements IdentityMap {
      * Update the write lock value of the CacheKey associated with the given primaryKey.
      * This is used by UpdateObjectQuery, and is also an advanced (very) user API.
      */
+    @Override
     public void setWriteLockValue(Object primaryKey, Object writeLockValue) {
         this.targetIdentityMap.setWriteLockValue(primaryKey, writeLockValue);
     }
 
+    @Override
     public String toString() {
         return Helper.getShortClassName("Intercepted " + this.targetIdentityMap.getClass()) + "[" + getSize() + "]";
     }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -89,6 +89,7 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
     /**
      * {@inheritDoc}
      */
+    @Override
     public T abs(T builder) {
 
         checkBuilder(builder);
@@ -101,6 +102,7 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
     /**
      * {@inheritDoc}
      */
+    @Override
     public T add(T builder) {
 
         checkBuilder(builder);
@@ -131,6 +133,7 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
     /**
      * {@inheritDoc}
      */
+    @Override
     public T avg(String path) {
         avg(false, path);
         return (T) this;
@@ -139,6 +142,7 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
     /**
      * {@inheritDoc}
      */
+    @Override
     public T avgDistinct(String path) {
         avg(true, path);
         return (T) this;
@@ -175,6 +179,7 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
     /**
      * {@inheritDoc}
      */
+    @Override
     public T case_(ICaseExpressionStateObjectBuilder builder) {
         Assert.isEqual(caseBuilder, builder, "The Case expression builder is not the same as the current one");
         add(builder.buildStateObject());
@@ -185,6 +190,7 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
     /**
      * {@inheritDoc}
      */
+    @Override
     public T coalesce(T builder1, T builder2, T... builders) {
 
         checkBuilders(builder1, builder2);
@@ -203,6 +209,7 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
     /**
      * {@inheritDoc}
      */
+    @Override
     public T concat(T builder1, T builder2, T... builders) {
 
         checkBuilders(builder1, builder2);
@@ -226,6 +233,7 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
     /**
      * {@inheritDoc}
      */
+    @Override
     public T count(String path) {
         count(false, path);
         return (T) this;
@@ -234,6 +242,7 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
     /**
      * {@inheritDoc}
      */
+    @Override
     public T countDistinct(String path) {
         count(true, path);
         return (T) this;
@@ -242,6 +251,7 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
     /**
      * {@inheritDoc}
      */
+    @Override
     public T currentDate() {
         return date(CURRENT_DATE);
     }
@@ -249,6 +259,7 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
     /**
      * {@inheritDoc}
      */
+    @Override
     public T currentTime() {
         return date(CURRENT_TIME);
     }
@@ -256,6 +267,7 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
     /**
      * {@inheritDoc}
      */
+    @Override
     public T currentTimestamp() {
         return date(CURRENT_TIMESTAMP);
     }
@@ -263,6 +275,7 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
     /**
      * {@inheritDoc}
      */
+    @Override
     public T date(String jdbcDate) {
         StateObject stateObject = new DateTimeStateObject(parent, jdbcDate);
         add(stateObject);
@@ -272,6 +285,7 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
     /**
      * {@inheritDoc}
      */
+    @Override
     public T divide(T builder) {
 
         checkBuilder(builder);
@@ -292,6 +306,7 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
     /**
      * {@inheritDoc}
      */
+    @Override
     public T entityType(String entityTypeName) {
         StateObject stateObject = new EntityTypeLiteralStateObject(parent,entityTypeName);
         add(stateObject);
@@ -301,6 +316,7 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
     /**
      * {@inheritDoc}
      */
+    @Override
     public T enumLiteral(Enum<? extends Enum<?>> enumConstant) {
         StateObject stateObject = new EnumTypeStateObject(parent, enumConstant);
         add(stateObject);
@@ -310,6 +326,7 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
     /**
      * {@inheritDoc}
      */
+    @Override
     public T function(String identifier, String functionName, String... arguments) {
 
         StateObject stateObject = new FunctionExpressionStateObject(
@@ -326,6 +343,7 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
     /**
      * {@inheritDoc}
      */
+    @Override
     public T function(String identifier, String functionName, T... arguments) {
 
         checkBuilders(arguments);
@@ -344,6 +362,7 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
     /**
      * {@inheritDoc}
      */
+    @Override
     public ICaseExpressionStateObjectBuilder getCaseBuilder() {
         if (caseBuilder == null) {
             caseBuilder = getParent().getQueryBuilder().buildCaseExpressionStateObjectBuilder(parent);
@@ -364,6 +383,7 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
     /**
      * {@inheritDoc}
      */
+    @Override
     public T index(String variable) {
         StateObject stateObject = new IndexExpressionStateObject(parent, variable);
         add(stateObject);
@@ -373,6 +393,7 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
     /**
      * {@inheritDoc}
      */
+    @Override
     public T length(T builder) {
 
         checkBuilder(builder);
@@ -422,6 +443,7 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
     /**
      * {@inheritDoc}
      */
+    @Override
     public T locate(T parameter1, T parameter2) {
         return locate(parameter1, parameter2, null);
     }
@@ -429,6 +451,7 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
     /**
      * {@inheritDoc}
      */
+    @Override
     public T locate(T parameter1, T parameter2, T parameter3) {
 
         checkBuilders(parameter1, parameter2);
@@ -460,6 +483,7 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
     /**
      * {@inheritDoc}
      */
+    @Override
     public T max(String path) {
         max(false, path);
         return (T) this;
@@ -468,6 +492,7 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
     /**
      * {@inheritDoc}
      */
+    @Override
     public T maxDistinct(String path) {
         max(true, path);
         return (T) this;
@@ -481,6 +506,7 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
     /**
      * {@inheritDoc}
      */
+    @Override
     public T min(String path) {
         min(false, path);
         return (T) this;
@@ -489,6 +515,7 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
     /**
      * {@inheritDoc}
      */
+    @Override
     public T minDistinct(String path) {
         min(true, path);
         return (T) this;
@@ -497,6 +524,7 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
     /**
      * {@inheritDoc}
      */
+    @Override
     public T minus(T builder) {
         checkBuilders(builder);
         arithmetic(false);
@@ -506,6 +534,7 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
     /**
      * {@inheritDoc}
      */
+    @Override
     public T mod(T parameter1, T parameter2) {
 
         checkBuilders(parameter1, parameter2);
@@ -526,6 +555,7 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
     /**
      * {@inheritDoc}
      */
+    @Override
     public T multiply(T builder) {
 
         checkBuilders(builder);
@@ -546,6 +576,7 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
     /**
      * {@inheritDoc}
      */
+    @Override
     public T nullIf(T builder1, T builder2) {
 
         checkBuilders(builder1, builder2);
@@ -566,6 +597,7 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
     /**
      * {@inheritDoc}
      */
+    @Override
     public T numeric(Number number) {
         StateObject stateObject = buildNumeric(number);
         add(stateObject);
@@ -575,6 +607,7 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
     /**
      * {@inheritDoc}
      */
+    @Override
     public T numeric(String number) {
         StateObject stateObject = buildNumeric(number);
         add(stateObject);
@@ -584,6 +617,7 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
     /**
      * {@inheritDoc}
      */
+    @Override
     public T parameter(String parameter) {
         StateObject stateObject = buildInputParameter(parameter);
         add(stateObject);
@@ -593,6 +627,7 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
     /**
      * {@inheritDoc}
      */
+    @Override
     public T path(String path) {
         StateObject stateObject = buildStateFieldPath(path);
         add(stateObject);
@@ -602,6 +637,7 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
     /**
      * {@inheritDoc}
      */
+    @Override
     public T plus(T builder) {
         checkBuilders(builder);
         arithmetic(true);
@@ -611,6 +647,7 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
     /**
      * {@inheritDoc}
      */
+    @Override
     public T size(String path) {
         StateObject stateObject = new SizeExpressionStateObject(parent, buildCollectionPath(path));
         add(stateObject);
@@ -620,6 +657,7 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
     /**
      * {@inheritDoc}
      */
+    @Override
     public T sqrt(T builder) {
 
         checkBuilders(builder);
@@ -664,6 +702,7 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
     /**
      * {@inheritDoc}
      */
+    @Override
     public T string(String literal) {
         StateObject stateObject = buildStringLiteral(literal);
         add(stateObject);
@@ -673,6 +712,7 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
     /**
      * {@inheritDoc}
      */
+    @Override
     public T sub(T builder) {
 
         checkBuilders(builder);
@@ -685,6 +725,7 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
     /**
      * {@inheritDoc}
      */
+    @Override
     public T subtract(T builder) {
 
         checkBuilders(builder);
@@ -710,6 +751,7 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
     /**
      * {@inheritDoc}
      */
+    @Override
     public T sum(String path) {
         sum(false, path);
         return (T) this;
@@ -718,6 +760,7 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
     /**
      * {@inheritDoc}
      */
+    @Override
     public T sumDistinct(String path) {
         sum(true, path);
         return (T) this;
@@ -726,6 +769,7 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
     /**
      * {@inheritDoc}
      */
+    @Override
     public T type(String path) {
         StateObject stateObject = new TypeExpressionStateObject(parent, path);
         add(stateObject);

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2017 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -15,6 +15,8 @@
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     01/31/2017-2.6 Will Dazey
  *       - 511426: Adding cloning support
+ *     04/11/2018 - Will Dazey
+ *       - 533148 : Add the eclipselink.jpa.sql-call-deferral property
  ******************************************************************************/
 package org.eclipse.persistence.internal.queries;
 
@@ -90,6 +92,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
     /**
      * Clone the DatasourceCall and Vector<DatasourceCall>.
      */
+    @Override
     public DatabaseQueryMechanism clone(DatabaseQuery queryClone) {
         DatasourceCallQueryMechanism clone = (DatasourceCallQueryMechanism)super.clone(queryClone);
         if(this.call != null) {
@@ -107,6 +110,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
      * Read all rows from the database using a cursored stream.
      * @exception  DatabaseException - an error has occurred on the database
      */
+    @Override
     public DatabaseCall cursorSelectAllRows() throws DatabaseException {
         try {
             return (DatabaseCall)executeCall();
@@ -139,6 +143,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
      * Delete a collection of objects. Assume call is correct.
      * @exception  DatabaseException - an error has occurred on the database
      */
+    @Override
     public Integer deleteAll() throws DatabaseException {
         if(((DeleteAllQuery)this.query).isPreparedUsingTempStorage()) {
             return deleteAllUsingTempTables();
@@ -221,6 +226,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
      * Delete an object.  Assume call is correct
      * @exception  DatabaseException - an error has occurred on the database
      */
+    @Override
     public Integer deleteObject() throws DatabaseException {
         if (hasMultipleCalls()) {
             Integer returnedRowCount = null;
@@ -244,6 +250,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
      * Execute a call.
      * @exception  DatabaseException - an error has occurred on the database
      */
+    @Override
     public Object execute() throws DatabaseException {
         return executeCall();
     }
@@ -275,6 +282,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
      * @exception  DatabaseException - an error has occurred on the database.
      * @return the row count.
      */
+    @Override
     public Integer executeNoSelect() throws DatabaseException {
         return executeNoSelectCall();
     }
@@ -305,6 +313,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
      * Execute a selecting call.
      * @exception  DatabaseException - an error has occurred on the database
      */
+    @Override
     public Vector executeSelect() throws DatabaseException {
         return executeSelectCall();
     }
@@ -358,6 +367,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
      * Insert the object.  Assume the call is correct.
      * @exception  DatabaseException - an error has occurred on the database
      */
+    @Override
     public void insertObject() throws DatabaseException {
         ClassDescriptor descriptor = getDescriptor();
         boolean usesSequencing = descriptor.usesSequenceNumbers();
@@ -384,7 +394,8 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
             for (int index = 0; index < size; index++) {
                 DatasourceCall databseCall = (DatasourceCall)this.calls.get(index);
                 if ((index > 0) && isExpressionQueryMechanism()
-                        && this.query.shouldCascadeOnlyDependentParts() && !descriptor.hasMultipleTableConstraintDependecy()) {
+                        && this.query.shouldCascadeOnlyDependentParts() && !descriptor.hasMultipleTableConstraintDependecy()
+                        && this.query.getSession().getProject().allowSQLDeferral()) {
                     DatabaseTable table = descriptor.getMultipleTableInsertOrder().get(index);
                     this.query.getSession().getCommitManager().addDeferredCall(table, databseCall, this);
                 } else {
@@ -435,6 +446,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
      * Execute the call that was deferred to the commit manager.
      * This is used to allow multiple table batching and deadlock avoidance.
      */
+    @Override
     public void executeDeferredCall(DatasourceCall call) {
         Object result = executeCall(call);
         // Set the return row if one was returned (Postgres).
@@ -453,6 +465,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
     /**
      * Return true if this is a call query mechanism
      */
+    @Override
     public boolean isCallQueryMechanism() {
         return true;
     }
@@ -464,6 +477,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
      * This query is copied for concurrency so this prepare can only setup things that
      * will apply to any future execution of this query.
      */
+    @Override
     public void prepare() {
         if ((!hasMultipleCalls()) && (getCall() == null)) {
             throw QueryException.sqlStatementNotSetProperly(getQuery());
@@ -492,6 +506,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
     /**
      * Pre-build configure the call.
      */
+    @Override
     public void prepareCursorSelectAllRows() throws QueryException {
         getCall().returnCursor();
         prepareCall();
@@ -500,6 +515,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
     /**
      * Pre-build configure the call.
      */
+    @Override
     public void prepareDeleteAll() {
         if (hasMultipleCalls()) {
             for (Enumeration callsEnum = getCalls().elements(); callsEnum.hasMoreElements();) {
@@ -515,6 +531,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
     /**
      * Pre-build configure the call.
      */
+    @Override
     public void prepareDeleteObject() {
         if (hasMultipleCalls()) {
             for (Enumeration callsEnum = getCalls().elements(); callsEnum.hasMoreElements();) {
@@ -530,6 +547,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
     /**
      * Pre-build configure the call.
      */
+    @Override
     public void prepareDoesExist(DatabaseField field) {
         if (hasMultipleCalls()) {
             for (Enumeration callsEnum = getCalls().elements(); callsEnum.hasMoreElements();) {
@@ -544,6 +562,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
     /**
      * Pre-build configure the call.
      */
+    @Override
     public void prepareExecuteNoSelect() {
         if (hasMultipleCalls()) {
             for (Enumeration callsEnum = getCalls().elements(); callsEnum.hasMoreElements();) {
@@ -561,6 +580,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
      *
      * The return type on the call will already be set and
      */
+    @Override
     public void prepareExecute() {
         getCall().setExecuteUpdate();
         prepareCall();
@@ -569,6 +589,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
     /**
      * Pre-build configure the call.
      */
+    @Override
     public void prepareExecuteSelect() {
         if (hasMultipleCalls()) {
             for (Enumeration callsEnum = getCalls().elements(); callsEnum.hasMoreElements();) {
@@ -584,6 +605,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
     /**
      * Pre-build configure the call.
      */
+    @Override
     public void prepareInsertObject() {
         if (hasMultipleCalls()) {
             int size = this.calls.size();
@@ -630,6 +652,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
     /**
      * Pre-build configure the call.
      */
+    @Override
     public void prepareReportQuerySelectAllRows() {
         prepareReportQueryItems();
         prepareExecuteSelect();
@@ -638,6 +661,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
     /**
      * Prepare for a sub select using a call.
      */
+    @Override
     public void prepareReportQuerySubSelect() {
         prepareReportQueryItems();
         prepareCall();
@@ -646,6 +670,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
     /**
      * Pre-build configure the call.
      */
+    @Override
     public void prepareSelectAllRows() {
         if (hasMultipleCalls()) {
             for (Enumeration callsEnum = getCalls().elements(); callsEnum.hasMoreElements();) {
@@ -661,6 +686,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
     /**
      * Pre-build configure the call.
      */
+    @Override
     public void prepareSelectOneRow() {
         if (hasMultipleCalls()) {
             for (Enumeration callsEnum = getCalls().elements(); callsEnum.hasMoreElements();) {
@@ -676,6 +702,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
     /**
      * Pre-build configure the call.
      */
+    @Override
     public void prepareUpdateObject() {
         if (hasMultipleCalls()) {
             int size = this.calls.size();
@@ -696,6 +723,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
     /**
        * Pre-build configure the call.
        */
+    @Override
     public void prepareUpdateAll() {
         if (getCall() != null) {
             getCall().returnNothing();
@@ -709,6 +737,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
      * @return Vector containing the database rows
      * @exception  DatabaseException - an error has occurred on the database
      */
+    @Override
     public Vector selectAllReportQueryRows() throws DatabaseException {
         return executeSelect();
     }
@@ -718,6 +747,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
      * @return Vector containing the database rows
      * @exception  DatabaseException - an error has occurred on the database
      */
+    @Override
     public Vector selectAllRows() throws DatabaseException {
         return executeSelectCall();
     }
@@ -727,6 +757,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
      * @return row containing data
      * @exception  DatabaseException - an error has occurred on the database
      */
+    @Override
     public AbstractRecord selectOneRow() throws DatabaseException {
         if (hasMultipleCalls()) {
             for (Enumeration callsEnum = getCalls().elements(); callsEnum.hasMoreElements();) {
@@ -749,6 +780,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
      * @return  the associated row from the database
      * @exception  DatabaseException - an error has occurred on the database
      */
+    @Override
     public AbstractRecord selectRowForDoesExist(DatabaseField field) throws DatabaseException {
         if (hasMultipleCalls()) {
             for (Enumeration callsEnum = getCalls().elements(); callsEnum.hasMoreElements();) {
@@ -788,6 +820,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
      * @exception  DatabaseException - an error has occurred on the database.
      * @return the row count.
      */
+    @Override
     public Integer updateObject() throws DatabaseException {
         Collection returnFields = null;
         ClassDescriptor descriptor = getDescriptor();
@@ -800,7 +833,8 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
             for (int index = 0; index < size; index++) {
                 DatasourceCall databseCall = (DatasourceCall)this.calls.get(index);
                 if ((index > 0) && isExpressionQueryMechanism()
-                        && this.query.shouldCascadeOnlyDependentParts() && !descriptor.hasMultipleTableConstraintDependecy()) {
+                        && this.query.shouldCascadeOnlyDependentParts() && !descriptor.hasMultipleTableConstraintDependecy()
+                        && this.query.getSession().getProject().allowSQLDeferral()) {
                     DatabaseTable table = descriptor.getMultipleTableInsertOrder().get(index);
                     this.query.getSession().getCommitManager().addDeferredCall(table, databseCall, this);
                 } else {
@@ -856,6 +890,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
        * Update the rows on the database.  Assume the call is correct.
        * @exception  DatabaseException - an error has occurred on the database.
        */
+    @Override
     public Integer updateAll() throws DatabaseException {
         if(((UpdateAllQuery)this.query).isPreparedUsingTempStorage() && getExecutionSession().getPlatform().supportsTempTables()) {
             return updateAllUsingTempTables();
@@ -938,6 +973,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
      * Update the foreign key fields when resolving a bi-directional reference in a UOW.
      * This is rare to occur for non-relational, however if it does each of the calls must be re-executed.
      */
+    @Override
     protected void updateForeignKeyFieldAfterInsert(WriteObjectQuery writeQuery) {
         writeQuery.setModifyRow(this.getDescriptor().getObjectBuilder().buildRow(writeQuery.getObject(), this.getSession(), WriteType.INSERT));
 

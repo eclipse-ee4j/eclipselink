@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -96,6 +96,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * INTERNAL:
      * Build and return a new element based on the change set.
      */
+    @Override
     public Object buildAddedElementFromChangeSet(Object changeSet, MergeManager mergeManager, AbstractSession targetSession) {
         return this.buildElementFromChangeSet(changeSet, mergeManager, targetSession);
     }
@@ -105,6 +106,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * Clone the attribute from the clone and assign it to the backup.
      * For these mappings, this is the same as building the first clone.
      */
+    @Override
     public void buildBackupClone(Object clone, Object backup, UnitOfWorkImpl unitOfWork) {
         this.buildClone(clone, null, backup, null, unitOfWork);
     }
@@ -114,6 +116,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * Build and return a change set for the specified element.
      * Direct collections simply store the element itself, since it is immutable.
      */
+    @Override
     public Object buildChangeSet(Object element, ObjectChangeSet owner, AbstractSession session) {
         return element;
     }
@@ -135,6 +138,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * In order to bypass the shared cache when in transaction a UnitOfWork must
      * be able to populate working copies directly from the row.
      */
+    @Override
     public void buildCloneFromRow(AbstractRecord row, JoinedAttributeManager joinManager, Object clone, CacheKey sharedCacheKey, ObjectBuildingQuery sourceQuery, UnitOfWorkImpl unitOfWork, AbstractSession executionSession) {
         // for direct collection a cloned value is no different from an original value
         Object cloneAttributeValue = valueFromRow(row, joinManager, sourceQuery, sharedCacheKey, executionSession, true, new Boolean[1]);
@@ -195,6 +199,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * Build and return a new element based on the specified element.
      * Direct collections simply return the element itself, since it is immutable.
      */
+    @Override
     public Object buildElementFromElement(Object object, MergeManager mergeManager, AbstractSession targetSession) {
         return object;
     }
@@ -203,6 +208,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * INTERNAL:
      * Build and return a new element based on the change set.
      */
+    @Override
     public Object buildRemovedElementFromChangeSet(Object changeSet, MergeManager mergeManager, AbstractSession targetSession) {
         return this.buildElementFromChangeSet(changeSet, mergeManager, targetSession);
     }
@@ -211,6 +217,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * INTERNAL:
      * Cascade perform delete through mappings that require the cascade
      */
+    @Override
     public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
         //objects referenced by this mapping are not registered as they have
         // no identity, this is a no-op.
@@ -220,6 +227,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade
      */
+    @Override
     public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
         //objects referenced by this mapping are not registered as they have
         // no identity, this is a no-op.
@@ -228,6 +236,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
     /**
      * Return the fields handled by the mapping.
      */
+    @Override
     protected Vector collectFields() {
         Vector fields = new Vector(1);
         fields.addElement(this.getField());
@@ -239,6 +248,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * Compare the non-null elements. Return true if they are alike.
      * Use #equals() to determine if two elements are the same.
      */
+    @Override
     public boolean compareElements(Object element1, Object element2, AbstractSession session) {
         return element1.equals(element2);
     }
@@ -247,6 +257,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * INTERNAL:
      * Compare the non-null elements and return true if they are alike.
      */
+    @Override
     public boolean compareElementsForChange(Object element1, Object element2, AbstractSession session) {
         return this.compareElements(element1, element2, session);
     }
@@ -275,6 +286,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * Replace the transient attributes of the remote value holders
      * with client-side objects.
      */
+    @Override
     public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
         // Do nothing....
         // The nested collection should de-serialize without need for any further manipulation.
@@ -299,6 +311,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * INTERNAL:
      * Return the mapping's containerPolicy.
      */
+    @Override
     public ContainerPolicy getContainerPolicy() {
         return containerPolicy;
     }
@@ -307,6 +320,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * INTERNAL:
      * Return the field that holds the nested collection.
      */
+    @Override
     public DatabaseField getField() {
         return field;
     }
@@ -314,6 +328,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
     /**
      * INTERNAL:
      */
+    @Override
     public boolean isAbstractCompositeDirectCollectionMapping() {
         return true;
     }
@@ -347,6 +362,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * Return the value of an attribute, unwrapping value holders if necessary.
      * If the value is null, build a new container.
      */
+    @Override
     public Object getRealCollectionAttributeValueFromObject(Object object, AbstractSession session) throws DescriptorException {
         Object value = this.getRealAttributeValueFromObject(object, session);
         if (value == null) {
@@ -359,6 +375,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * INTERNAL:
      * Initialize the mapping.
      */
+    @Override
     public void initialize(AbstractSession session) throws DescriptorException {
         super.initialize(session);
         if (getField() == null) {
@@ -375,6 +392,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * INTERNAL:
      * Iterate on the appropriate attribute value.
      */
+    @Override
     public void iterate(DescriptorIterator iterator) {
         // PERF: Only iterate when required.
         if (iterator.shouldIterateOnPrimitives()) {
@@ -395,6 +413,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * since it was cloned from the original version.
      * Direct elements are not allowed to have keys.
      */
+    @Override
     public boolean mapKeyHasChanged(Object element, AbstractSession session) {
         return false;
     }
@@ -441,6 +460,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * ADVANCED:
      * Set the mapping's containerPolicy.
      */
+    @Override
     public void setContainerPolicy(ContainerPolicy containerPolicy) {
         this.containerPolicy = containerPolicy;
     }
@@ -478,6 +498,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * <p>jdk1.2.x: The container class must implement (directly or indirectly) the Collection interface.
      * <p>jdk1.1.x: The container class must be a subclass of Vector.
      */
+    @Override
     public void useCollectionClass(Class concreteClass) {
         this.setContainerPolicy(ContainerPolicy.buildPolicyFor(concreteClass));
     }
@@ -487,6 +508,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * Used to set the collection class by name.
      * This is required when building from metadata to allow the correct class loader to be used.
      */
+    @Override
     public void useCollectionClassName(String concreteClassName) {
         setContainerPolicy(new CollectionContainerPolicy(concreteClassName));
     }
@@ -496,6 +518,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * Used to set the collection class by name.
      * This is required when building from metadata to allow the correct class loader to be used.
      */
+    @Override
     public void useListClassName(String concreteClassName) {
         setContainerPolicy(new ListContainerPolicy(concreteClassName));
     }
@@ -505,10 +528,12 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * Mapping does not support Map containers.
      * It supports only Collection containers.
      */
+    @Override
     public void useMapClass(Class concreteClass, String methodName) {
         throw new UnsupportedOperationException(this.getClass().getName() + ".useMapClass(Class, String)");
     }
 
+    @Override
     public void useMapClassName(String concreteContainerClassName, String methodName) {
         throw new UnsupportedOperationException(this.getClass().getName() + ".useMapClass(String, String)");
     }
@@ -658,6 +683,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * INTERNAL:
      * Write the fields needed for insert into the template with null values.
      */
+    @Override
     public void writeInsertFieldsIntoRow(AbstractRecord row, AbstractSession session) {
         if (this.isReadOnly()) {
             return;
@@ -671,10 +697,12 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * This is used to convert the row value to a consistent java value.
      * By default this is unknown.
      */
+    @Override
     public Class getFieldClassification(DatabaseField fieldToClassify) {
         return getAttributeElementClass();
     }
 
+    @Override
     public boolean isCollectionMapping() {
         return true;
     }
@@ -694,6 +722,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * Build and return the change record that results
      * from comparing the two direct collection attributes.
      */
+    @Override
     public ChangeRecord compareForChange(Object clone, Object backup, ObjectChangeSet owner, AbstractSession session) {
         return (new ArrayCollectionMappingHelper(this)).compareForChange(clone, backup, owner, session);
     }
@@ -702,6 +731,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * INTERNAL:
      * Compare the attributes belonging to this mapping for the objects.
      */
+    @Override
     public boolean compareObjects(Object object1, Object object2, AbstractSession session) {
         return (new ArrayCollectionMappingHelper(this)).compareObjects(object1, object2, session);
     }
@@ -710,6 +740,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * INTERNAL:
      * Merge changes from the source to the target object.
      */
+    @Override
     public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager, AbstractSession targetSession) {
         (new ArrayCollectionMappingHelper(this)).mergeChangesIntoObject(target, changeRecord, source, mergeManager, targetSession);
     }
@@ -719,6 +750,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * Merge changes from the source to the target object.
      * Simply replace the entire target collection.
      */
+    @Override
     public void mergeIntoObject(Object target, boolean isTargetUnInitialized, Object source, MergeManager mergeManager, AbstractSession targetSession) {
         (new ArrayCollectionMappingHelper(this)).mergeIntoObject(target, isTargetUnInitialized, source, mergeManager, targetSession);
     }
@@ -728,6 +760,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * This method is used to have an object add to a collection once the changeSet is applied
      * The referenceKey parameter should only be used for direct Maps.
      */
+    @Override
     public void simpleAddToCollectionChangeRecord(Object referenceKey, Object changeSetToAdd, ObjectChangeSet changeSet, AbstractSession session) {
         (new ArrayCollectionMappingHelper(this)).simpleAddToCollectionChangeRecord(referenceKey, changeSetToAdd, changeSet, session);
     }
@@ -737,6 +770,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * This method is used to have an object removed from a collection once the changeSet is applied
      * The referenceKey parameter should only be used for direct Maps.
      */
+    @Override
     public void simpleRemoveFromCollectionChangeRecord(Object referenceKey, Object changeSetToRemove, ObjectChangeSet changeSet, AbstractSession session) {
         (new ArrayCollectionMappingHelper(this)).simpleRemoveFromCollectionChangeRecord(referenceKey, changeSetToRemove, changeSet, session);
     }

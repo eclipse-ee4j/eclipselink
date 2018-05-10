@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -44,6 +44,7 @@ public class AggregateCollectionChangeRecord extends CollectionChangeRecord impl
      * ADVANCED:
      * Return the values representing the changed AggregateCollection.
      */
+    @Override
     public List<ObjectChangeSet> getChangedValues() {
         if (changedValues == null) {
             changedValues = new ArrayList(2);
@@ -54,6 +55,7 @@ public class AggregateCollectionChangeRecord extends CollectionChangeRecord impl
     /**
      * Returns descriptor corresponding to the object.
      */
+    @Override
     ClassDescriptor getReferenceDescriptor(Object object, AbstractSession session) {
         return ((AggregateCollectionMapping)this.mapping).getReferenceDescriptor(object.getClass(), session);
     }
@@ -62,6 +64,7 @@ public class AggregateCollectionChangeRecord extends CollectionChangeRecord impl
      * INTERNAL:
      * This method will be used to merge one record into another
      */
+    @Override
     public void mergeRecord(ChangeRecord mergeFromRecord, UnitOfWorkChangeSet mergeToChangeSet, UnitOfWorkChangeSet mergeFromChangeSet) {
         this.setChangedValues(((AggregateCollectionChangeRecord)mergeFromRecord).getChangedValues());
 
@@ -88,6 +91,7 @@ public class AggregateCollectionChangeRecord extends CollectionChangeRecord impl
      * Check to see if it exists here already to prevent us from creating a little
      * extra garbage.
      */
+    @Override
     public void updateReferences(UnitOfWorkChangeSet mergeToChangeSet, UnitOfWorkChangeSet mergeFromChangeSet) {
         for (ObjectChangeSet mergedChangeSet : getChangedValues()) {
             Object localObject = mergeToChangeSet.getUOWCloneForObjectChangeSet(mergedChangeSet);

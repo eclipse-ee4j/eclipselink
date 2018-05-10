@@ -14,6 +14,7 @@ public class QueueableWeakCacheKey extends WeakCacheKey {
         this.referenceQueue = refQueue;
     }
 
+    @Override
     public void setObject(Object object) {
         this.reference = new CacheKeyReference(object, referenceQueue, this);
     }
@@ -21,6 +22,7 @@ public class QueueableWeakCacheKey extends WeakCacheKey {
     /**
      * Avoid acquiring locks for unit of work.
      */
+    @Override
     public void acquire() {
         return;
     }
@@ -28,6 +30,7 @@ public class QueueableWeakCacheKey extends WeakCacheKey {
     /**
      * Avoid acquiring locks for unit of work.
      */
+    @Override
     public void acquire(boolean forMerge) {
         return;
     }
@@ -35,6 +38,7 @@ public class QueueableWeakCacheKey extends WeakCacheKey {
     /**
      * Avoid acquiring locks for unit of work.
      */
+    @Override
     public boolean acquireNoWait() {
         return true;
     }
@@ -42,6 +46,7 @@ public class QueueableWeakCacheKey extends WeakCacheKey {
     /**
      * Avoid acquiring locks for unit of work.
      */
+    @Override
     public boolean acquireNoWait(boolean forMerge) {
         return true;
     }
@@ -49,6 +54,7 @@ public class QueueableWeakCacheKey extends WeakCacheKey {
     /**
      * Avoid acquiring locks for unit of work.
      */
+    @Override
     public void acquireDeferredLock() {
         return;
     }
@@ -56,6 +62,7 @@ public class QueueableWeakCacheKey extends WeakCacheKey {
     /**
      * Avoid acquiring locks for unit of work.
      */
+    @Override
     public void checkReadLock() {
         return;
     }
@@ -63,6 +70,7 @@ public class QueueableWeakCacheKey extends WeakCacheKey {
     /**
      * Avoid acquiring locks for unit of work.
      */
+    @Override
     public void acquireReadLock() {
         return;
     }
@@ -70,6 +78,7 @@ public class QueueableWeakCacheKey extends WeakCacheKey {
     /**
      * Avoid acquiring locks for unit of work.
      */
+    @Override
     public boolean acquireReadLockNoWait() {
         return true;
     }
@@ -77,6 +86,7 @@ public class QueueableWeakCacheKey extends WeakCacheKey {
     /**
      * Avoid acquiring locks for unit of work.
      */
+    @Override
     public boolean isAcquired() {
         return false;
     }
@@ -84,6 +94,7 @@ public class QueueableWeakCacheKey extends WeakCacheKey {
     /**
      * Avoid acquiring locks for unit of work.
      */
+    @Override
     public void release() {
         return;
     }
@@ -91,6 +102,7 @@ public class QueueableWeakCacheKey extends WeakCacheKey {
     /**
      * Avoid acquiring locks for unit of work.
      */
+    @Override
     public void releaseDeferredLock() {
         return;
     }
@@ -98,6 +110,7 @@ public class QueueableWeakCacheKey extends WeakCacheKey {
     /**
      * Avoid acquiring locks for unit of work.
      */
+    @Override
     public void releaseReadLock() {
         return;
     }

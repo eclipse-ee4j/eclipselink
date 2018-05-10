@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -37,6 +37,7 @@ public class BinaryDataUnmarshalRecord extends UnmarshalRecordImpl {
         activeContentHandler = handler;
     }
 
+    @Override
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
         activeContentHandler.startElement(namespaceURI, localName, qName, atts);
         if (handler.isFinished()) {
@@ -44,6 +45,7 @@ public class BinaryDataUnmarshalRecord extends UnmarshalRecordImpl {
         }
     }
 
+    @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
         activeContentHandler.characters(ch, start, length);
         if (handler.isFinished()) {
@@ -51,6 +53,7 @@ public class BinaryDataUnmarshalRecord extends UnmarshalRecordImpl {
         }
     }
 
+    @Override
     public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
         activeContentHandler.endElement(namespaceURI, localName, qName);
         if (handler.isFinished()) {
@@ -58,10 +61,12 @@ public class BinaryDataUnmarshalRecord extends UnmarshalRecordImpl {
         }
     }
 
+    @Override
     public NodeValue getAttributeChildNodeValue(String namespace, String localName) {
         return null;
     }
 
+    @Override
     public void endDocument() throws SAXException {
     }
 

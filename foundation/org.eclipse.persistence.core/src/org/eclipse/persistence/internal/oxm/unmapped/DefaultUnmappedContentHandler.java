@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -29,36 +29,47 @@ public class DefaultUnmappedContentHandler <UNMARSHAL_RECORD extends UnmarshalRe
     public void setUnmarshalRecord(UNMARSHAL_RECORD unmarshalRecord) {
     }
 
+    @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
     }
 
+    @Override
     public void endDocument() throws SAXException {
     }
 
+    @Override
     public void endElement(String uri, String localName, String name) throws SAXException {
     }
 
+    @Override
     public void endPrefixMapping(String prefix) throws SAXException {
     }
 
+    @Override
     public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {
     }
 
+    @Override
     public void processingInstruction(String target, String data) throws SAXException {
     }
 
+    @Override
     public void setDocumentLocator(Locator locator) {
     }
 
+    @Override
     public void skippedEntity(String name) throws SAXException {
     }
 
+    @Override
     public void startDocument() throws SAXException {
     }
 
+    @Override
     public void startElement(String uri, String localName, String name, Attributes atts) throws SAXException {
     }
 
+    @Override
     public void startPrefixMapping(String prefix, String uri) throws SAXException {
     }
 

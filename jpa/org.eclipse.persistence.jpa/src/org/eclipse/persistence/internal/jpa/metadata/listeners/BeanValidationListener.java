@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2016 Sun Microsystems, Inc, IBM Corporation. All rights reserved.
+ * Copyright (c) 2009, 2018 Sun Microsystems, Inc, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -190,6 +190,7 @@ public class BeanValidationListener extends DescriptorEventAdapter {
         /**
          * @return false for any lazily loaded property of root object being validated
          */
+        @Override
         public boolean isReachable(Object traversableObject, Path.Node traversableProperty, Class<?> rootBeanType, Path pathToTraversableObject, ElementType elementType) {
             boolean reachable = true;
             String attributeName = null;
@@ -220,6 +221,7 @@ public class BeanValidationListener extends DescriptorEventAdapter {
          * Called only if isReachable returns true
          * @return false for any associatons of root object being validated true otherwise
          */
+        @Override
         public boolean isCascadable(Object traversableObject, Path.Node traversableProperty, Class<?> rootBeanType, Path pathToTraversableObject, ElementType elementType) {
             boolean cascadable = true;
             if (isRootObjectPath(pathToTraversableObject)) {

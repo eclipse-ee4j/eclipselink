@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -36,9 +36,11 @@ public class AQInteraction implements Interaction {
         this.connection = connection;
     }
 
+    @Override
     public void clearWarnings() {
     }
 
+    @Override
     public void close() {
     }
 
@@ -46,6 +48,7 @@ public class AQInteraction implements Interaction {
      * Execute the interaction spec.
      * The spec is either an enqueue or dequeue interaction.
      */
+    @Override
     public Record execute(InteractionSpec spec, Record input) throws ResourceException {
         AQRecord record = new AQRecord();
         execute(spec, input, record);
@@ -57,6 +60,7 @@ public class AQInteraction implements Interaction {
      * The spec is either an enqueue or dequeue interaction.
      * Only raw messages are supported.
      */
+    @Override
     public boolean execute(InteractionSpec spec, Record input, Record output) throws ResourceException {
         if (!(spec instanceof AQInteractionSpec)) {
             throw EISException.invalidAQInteractionSpecType();
@@ -136,10 +140,12 @@ public class AQInteraction implements Interaction {
         }
     }
 
+    @Override
     public Connection getConnection() {
         return connection;
     }
 
+    @Override
     public ResourceWarning getWarnings() {
         return null;
     }

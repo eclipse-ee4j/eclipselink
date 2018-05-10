@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -78,6 +78,7 @@ public class CacheBasedValueHolder extends DatabaseValueHolder {
         return null;
     }
 
+    @Override
     protected Object instantiate() throws DatabaseException {
         return instantiate(this.session);
     }
@@ -100,6 +101,7 @@ public class CacheBasedValueHolder extends DatabaseValueHolder {
      * and the query.
      * Note: This method is not thread-safe.  It must be used in a synchronized manner
      */
+    @Override
     public Object instantiateForUnitOfWorkValueHolder(UnitOfWorkValueHolder unitOfWorkValueHolder) {
         return instantiate(unitOfWorkValueHolder.getUnitOfWork());
     }
@@ -121,6 +123,7 @@ public class CacheBasedValueHolder extends DatabaseValueHolder {
      * Return if add/remove should trigger instantiation or avoid.
      * Current instantiation is avoided is using change tracking.
      */
+    @Override
     public boolean shouldAllowInstantiationDeferral() {
         return this.shouldAllowInstantiationDeferral;
     }

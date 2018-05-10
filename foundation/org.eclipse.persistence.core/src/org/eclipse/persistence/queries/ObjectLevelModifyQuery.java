@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -59,6 +59,7 @@ public abstract class ObjectLevelModifyQuery extends ModifyQuery {
      * INTERNAL:
      * Ensure that the descriptor has been set.
      */
+    @Override
     public void checkDescriptor(AbstractSession session) throws QueryException {
         if (this.descriptor == null) {
             if (getObject() == null) {
@@ -78,6 +79,7 @@ public abstract class ObjectLevelModifyQuery extends ModifyQuery {
      * INTERNAL:
      * All have done is move code from UnitOfWork.internalExecuteQuery
      */
+    @Override
     public Object executeInUnitOfWork(UnitOfWorkImpl unitOfWork, AbstractRecord translationRow) throws DatabaseException {
         if (unitOfWork.isAfterWriteChangesButBeforeCommit()) {
             throw ValidationException.illegalOperationForUnitOfWorkLifecycle(unitOfWork.getLifecycle(), "executeQuery(ObjectLevelModifyQuery)");
@@ -148,6 +150,7 @@ public abstract class ObjectLevelModifyQuery extends ModifyQuery {
     /**
      * Return the domain class associated with this query.
      */
+    @Override
     public Class getReferenceClass() {
         if (this.object == null) {
             if (this.descriptor != null) {
@@ -164,6 +167,7 @@ public abstract class ObjectLevelModifyQuery extends ModifyQuery {
      * Note: Although the API is designed to avoid classpath dependencies for the MW, since the object
      * is specified at runtime, this will not be an issue.
      */
+    @Override
     public String getReferenceClassName() {
         Class referenceClass = getReferenceClass();
         if (referenceClass != null) {
@@ -177,6 +181,7 @@ public abstract class ObjectLevelModifyQuery extends ModifyQuery {
      * INTERNAL:
      * Return the name to use for the query in performance monitoring.
      */
+    @Override
     public void resetMonitorName() {
         this.monitorName = getClass().getSimpleName() + ":" + getReferenceClassName();
     }
@@ -185,6 +190,7 @@ public abstract class ObjectLevelModifyQuery extends ModifyQuery {
      * PUBLIC:
      * Return if this is an object level modify query.
      */
+    @Override
     public boolean isObjectLevelModifyQuery() {
         return true;
     }
@@ -194,6 +200,7 @@ public abstract class ObjectLevelModifyQuery extends ModifyQuery {
      * Prepare the receiver for execution in a session.
      * In particular check that the tables on the descriptor are set.
      */
+    @Override
     protected void prepare() throws QueryException {
         checkDescriptor(this.session);
 
@@ -213,6 +220,7 @@ public abstract class ObjectLevelModifyQuery extends ModifyQuery {
      * Prepare the receiver for execution in a session.
      * In particular check that the tables on the descriptor are set.
      */
+    @Override
     public void prepareForExecution() throws QueryException {
         super.prepareForExecution();
 
@@ -263,6 +271,7 @@ public abstract class ObjectLevelModifyQuery extends ModifyQuery {
         this.primaryKey = primaryKey;
     }
 
+    @Override
     public String toString() {
         return Helper.getShortClassName(getClass()) + "(" + String.valueOf(getObject()) + ")";
     }

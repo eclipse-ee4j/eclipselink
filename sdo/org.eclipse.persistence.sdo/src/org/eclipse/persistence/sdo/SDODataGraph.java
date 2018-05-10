@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -45,6 +45,7 @@ public class SDODataGraph implements DataGraph {
      * @return the root data object.
      * @see DataObject#getDataGraph
      */
+    @Override
     public SDODataObject getRootObject() {
         return this.rootObject;
     }
@@ -54,6 +55,7 @@ public class SDODataGraph implements DataGraph {
      * @return the change summary.
      * @see ChangeSummary#getDataGraph
      */
+    @Override
     public SDOChangeSummary getChangeSummary() {
         return this.changeSummary;
     }
@@ -66,6 +68,7 @@ public class SDODataGraph implements DataGraph {
      * @param typeName name of a type.
      * @return the type with the corresponding namespace and name.
      */
+    @Override
     public SDOType getType(String uri, String typeName) {
         return (SDOType) helperContext.getTypeHelper().getType(uri, typeName);
     }
@@ -80,6 +83,7 @@ public class SDODataGraph implements DataGraph {
      * @see #createRootObject(Type)
      * @see #getType(String, String)
      */
+    @Override
     public SDODataObject createRootObject(String namespaceURI, String typeName) {
         if(null != rootObject) {
             throw new IllegalStateException();
@@ -99,6 +103,7 @@ public class SDODataGraph implements DataGraph {
      * @throws IllegalStateException if the root object already exists.
      * @see #createRootObject(String, String)
      */
+    @Override
     public SDODataObject createRootObject(Type type) {
         if(null != rootObject) {
             throw new IllegalStateException();

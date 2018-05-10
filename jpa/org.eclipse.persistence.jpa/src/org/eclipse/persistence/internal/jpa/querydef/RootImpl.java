@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -49,14 +49,17 @@ public class RootImpl<X> extends FromImpl<X, X> implements Root<X> {
      *
      * @return metamodel entity corresponding to the root
      */
+    @Override
     public EntityType<X> getModel() {
         return (EntityType<X>) this.modelArtifact;
     }
 
+    @Override
     public void findRootAndParameters(CommonAbstractCriteriaImpl query) {
         query.integrateRoot(this);
     }
 
+    @Override
     public boolean isRoot() {
         return true;
     }

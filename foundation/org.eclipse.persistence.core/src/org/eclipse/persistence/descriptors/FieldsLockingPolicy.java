@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -55,6 +55,7 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
      * These are any unmapped fields required to write in an update.
      * Since all fields are mapped, there is nothing required.
      */
+    @Override
     public void addLockFieldsToUpdateRow(AbstractRecord Record, AbstractSession session) {
         // Nothing required.
     }
@@ -64,6 +65,7 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
      * Values to be included in the locking mechanism are added
      * to the translation row.  Set the translation row to all the original field values.
      */
+    @Override
     public abstract void addLockValuesToTranslationRow(ObjectLevelModifyQuery query);
 
     /**
@@ -101,6 +103,7 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
      * locking values included.  The values are taken from the passed in database row.
      * This expression will be used in a delete call.
      */
+    @Override
     public Expression buildDeleteExpression(DatabaseTable table, Expression mainExpression, AbstractRecord row) {
         return mainExpression.and(buildExpression(table, row, null, mainExpression.getBuilder()));
     }
@@ -131,6 +134,7 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
      * locking values included.  The values are taken from the passed in database row.
      * This expression will be used in a delete call.
      */
+    @Override
     public Expression buildUpdateExpression(DatabaseTable table, Expression mainExpression, AbstractRecord transRow, AbstractRecord modifyRow) {
         return mainExpression.and(buildExpression(table, transRow, modifyRow, mainExpression.getBuilder()));
     }
@@ -139,6 +143,7 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
      * INTERNAL:
      * Clone the policy
      */
+    @Override
     public Object clone() {
         try {
             return super.clone();
@@ -167,6 +172,7 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
      *
      * Use compareWriteLockValues method only if this method returns true.
      */
+    @Override
     public boolean supportsWriteLockValuesComparison() {
         return false;
     }
@@ -184,6 +190,7 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
      *  NullPointerException if the passed value is null;
      *  ClassCastException if the passed value is of a wrong type.
      */
+    @Override
     public int compareWriteLockValues(Object value1, Object value2){
         // should never be called because supportsWriteLockValuesComparison() returns false.
         return -1;
@@ -221,6 +228,7 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
      * This is the base value that is older than all other values, it is used in the place of
      * null in some situations.
      */
+    @Override
     public Object getBaseValue(){
         return null; // this locking type does not store values in the cache
     }
@@ -236,6 +244,7 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
      * INTERNAL:
      * Return the write lock field.
      */
+    @Override
     public DatabaseField getWriteLockField() {
         // Does not apply to any field locking policy, so return null
         return null;
@@ -244,6 +253,7 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
     /**
      * INTERNAL:
      */
+    @Override
     public Expression getWriteLockUpdateExpression(ExpressionBuilder builder, AbstractSession session) {
         // Does not apply to any field locking policy, so return null
         return null;
@@ -256,6 +266,7 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
      * Unfortunately this locking policy can not enforce an optimistic write lock unless a FK or DTF field
      * has changed so this type returns LockOnChange.NONE
      */
+    @Override
     public LockOnChange getLockOnChangeMode(){
         return LockOnChange.NONE;
     }
@@ -265,6 +276,7 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
      * Return the value that should be stored in the identity map.  If the value
      * is stored in the object, then return a null.
      */
+    @Override
     public Object getValueToPutInCache(AbstractRecord row, AbstractSession session) {
         return null;
     }
@@ -273,6 +285,7 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
      * INTERNAL:
      * Return the number of version difference between the two states of the object.
      */
+    @Override
     public int getVersionDifference(Object currentValue, Object domainObject, Object primaryKeys, AbstractSession session) {
         // There is no way of knowing what the difference is so return 0
         // This should never be called for field locking.
@@ -283,6 +296,7 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
      * INTERNAL:
      * This method will return the optimistic lock value for the object
      */
+    @Override
     public Object getWriteLockValue(Object domainObject, Object primaryKey, AbstractSession session) {
         //There is no way of knowing if this value is newer or not, so always return true.
         return null;
@@ -292,6 +306,7 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
      * INTERNAL:
      * It is responsible for initializing the policy;
      */
+    @Override
     public void initialize(AbstractSession session) {
         // If the version field is not in the primary table, then they cannot be batched together.
         if (this.descriptor.getTables().size() > 0) {
@@ -303,6 +318,7 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
      * INTERNAL:
      * It is responsible for initializing the policy;
      */
+    @Override
     public void initializeProperties() {
         //nothing to do
     }
@@ -311,7 +327,8 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
       * PUBLIC:
       * Return true if the lock value is stored in the cache.
       */
-     public boolean isStoredInCache() {
+     @Override
+    public boolean isStoredInCache() {
          return false;
      }
 
@@ -320,7 +337,8 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
      * Return true if the policy uses cascade locking. Currently, not supported
      * on this policy at this time.
      */
-     public boolean isCascaded() {
+     @Override
+    public boolean isCascaded() {
          return false;
      }
 
@@ -330,6 +348,7 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
      * (or cache).  Will return true if the object is newer
      * than the row.
      */
+    @Override
     public boolean isNewerVersion(Object currentValue, Object domainObject, Object primaryKey, AbstractSession session) {
         //There is no way of knowing if this value is newer or not, so always return true.
         return true;
@@ -341,6 +360,7 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
      * (or cache).  Will return true if the object is newer
      * than the row.
      */
+    @Override
     public boolean isNewerVersion(AbstractRecord Record, Object domainObject, Object primaryKey, AbstractSession session) {
         //There is no way of knowing if this value is newer or not, so always return true.
         return true;
@@ -371,6 +391,7 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
      * INTERNAL:
      * Only applicable when the value is stored in the cache.
      */
+    @Override
     public void mergeIntoParentCache(UnitOfWorkImpl uow, Object primaryKey, Object object) {
         // nothing to do
     }
@@ -381,6 +402,7 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
      *
      * #see this method in VersionLockingPolicy
      */
+    @Override
     public void mergeIntoParentCache(CacheKey unitOfWorkCacheKey, CacheKey parentSessionCacheKey){
         // nothing to do
     }
@@ -395,6 +417,7 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
     /**
      * INTERNAL: Set method for the descriptor
      */
+    @Override
     public void setDescriptor(ClassDescriptor descriptor) {
         this.descriptor = descriptor;
     }
@@ -405,6 +428,7 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
      * Optimistic Write lock should be enforced on this entity when set of mappings are changed.
      * Unfortunately this locking policy can not always force an optimistic lock unless the core fields have changed
      */
+    @Override
     public void setLockOnChangeMode(LockOnChange lockOnChangeMode){
         //no-op for this type
     }
@@ -413,6 +437,7 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
      * Put the initial writelock value into the modifyRow.
      * There is nothing to do because all the lock values are in the mappings.
      */
+    @Override
     public void setupWriteFieldsForInsert(ObjectLevelModifyQuery query) {
         //nothing to do.
     }
@@ -421,6 +446,7 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
      * INTERNAL:
      * Nothing to do because all updates are handled by the application
      */
+    @Override
     public void updateRowAndObjectForUpdate(ObjectLevelModifyQuery query, Object domainObject) {
         //nothing to do
     }
@@ -430,6 +456,7 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
      * Returns true if the policy has been set to set an optimistic read lock when a owning mapping changes.
      * Unfortunately this locking policy can not always force an optimistic lock unless the core fields have changed
      */
+    @Override
     public boolean shouldUpdateVersionOnOwnedMappingChange(){
         return false;
     }
@@ -439,6 +466,7 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
      * Returns true if the policy has been set to set an optimistic read lock when any mapping changes.
      * Unfortunately this locking policy can not always force an optimistic lock unless the core fields have changed
      */
+    @Override
     public boolean shouldUpdateVersionOnMappingChange(){
         return false;
     }
@@ -446,6 +474,7 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
      * INTERNAL:
      * Check the row count for lock failure.
      */
+    @Override
     public void validateDelete(int rowCount, Object object, DeleteObjectQuery query) {
         if (rowCount <= 0) {
             // Mark the object as invalid in the session cache.
@@ -458,6 +487,7 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
      * INTERNAL:
      * Check the row count for lock failure.
      */
+    @Override
     public void validateUpdate(int rowCount, Object object, WriteObjectQuery query) {
         if (rowCount <= 0) {
             // Mark the object as invalid in the session cache.

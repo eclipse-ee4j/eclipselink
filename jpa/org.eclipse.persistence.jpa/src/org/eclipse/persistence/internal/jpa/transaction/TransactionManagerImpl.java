@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -59,6 +59,7 @@ public class TransactionManagerImpl implements TransactionManager, UserTransacti
     /************************************************************/
     /***** Supported TransactionManager/UserTransaction API *****/
     /************************************************************/
+    @Override
     public void begin() throws NotSupportedException, SystemException {
         debug("Tx - begin");
 
@@ -70,6 +71,7 @@ public class TransactionManagerImpl implements TransactionManager, UserTransacti
         tx = new TransactionImpl();
     }
 
+    @Override
     public void commit() throws RollbackException, HeuristicMixedException, HeuristicRollbackException, SecurityException, IllegalStateException, SystemException {
         debug("Tx - commit");
 
@@ -83,15 +85,18 @@ public class TransactionManagerImpl implements TransactionManager, UserTransacti
         }
     }
 
+    @Override
     public int getStatus() throws SystemException {
         return (!isTransactionActive()) ? Status.STATUS_NO_TRANSACTION : tx.getStatus();
     }
 
+    @Override
     public Transaction getTransaction() throws SystemException {
         return tx;
 
     }
 
+    @Override
     public void rollback() throws IllegalStateException, SecurityException, SystemException {
         debug("Tx - rollback");
 
@@ -105,6 +110,7 @@ public class TransactionManagerImpl implements TransactionManager, UserTransacti
         }
     }
 
+    @Override
     public void setRollbackOnly() throws IllegalStateException, SystemException {
         debug("Tx - rollback");
 
@@ -117,14 +123,17 @@ public class TransactionManagerImpl implements TransactionManager, UserTransacti
     /****************************************************************/
     /***** NOT supported TransactionManager/UserTransaction API *****/
     /****************************************************************/
+    @Override
     public Transaction suspend() throws SystemException {
         return null;
     }
 
+    @Override
     public void resume(Transaction transaction) throws InvalidTransactionException, IllegalStateException, SystemException {
         // Do nothing
     }
 
+    @Override
     public void setTransactionTimeout(int i) throws SystemException {
         // Do nothing
     }

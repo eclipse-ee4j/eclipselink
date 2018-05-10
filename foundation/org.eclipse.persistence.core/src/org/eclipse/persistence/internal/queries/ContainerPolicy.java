@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -122,6 +122,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * The session may be required to wrap for the wrapper policy.
      * Return whether the container changed
      */
+    @Override
     public boolean addInto(Object element, Object container, AbstractSession session) {
         return addInto(null, element, container, session);
     }
@@ -185,6 +186,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * The session may be required to wrap for the wrapper policy.
      * Return whether the container changed.
      */
+    @Override
     public boolean addInto(Object key, Object element, Object container, AbstractSession session) {
         throw QueryException.cannotAddToContainer(element, container, this);
     }
@@ -613,6 +615,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * Null should never be returned.
      * A ValidationException is thrown on error.
      */
+    @Override
     public Object containerInstance() {
         Class containerClass = getContainerClass();
         // PERF: Avoid reflection for common cases.
@@ -648,6 +651,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * Null should never be returned.
      * A ValidationException is thrown on error.
      */
+    @Override
     public Object containerInstance(int initialCapacity) {
         if (this.constructor == null) {
             return containerInstance();
@@ -892,6 +896,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      *
      * @see ContainerPolicy#iteratorFor(java.lang.Object)
      */
+    @Override
     public abstract boolean hasNext(Object iterator);
 
     /**
@@ -1024,6 +1029,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * @see ContainerPolicy#hasNext(java.lang.Object)
      * @see ContainerPolicy#next(java.lang.Object)
      */
+    @Override
     public abstract Object iteratorFor(Object container);
 
     /**
@@ -1174,6 +1180,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * This is used to stream over a collection independent of JDK 1.1 and 1.2.
      * The session may be required to unwrap for the wrapper policy.
      */
+    @Override
     public Object next(Object iterator, AbstractSession session) {
         Object next = next(iterator);
         if (hasElementDescriptor()) {
@@ -1207,6 +1214,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * @see ContainerPolicy#iteratorFor(Object iterator, AbstractSession session)
      * @see MapContainerPolicy.unwrapIteratorResult(Object object)
      */
+    @Override
     public Object nextEntry(Object iterator, AbstractSession session) {
         return next(iterator, session);
     }
@@ -1466,6 +1474,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * INTERNAL:
      * Set the class used for the container.
      */
+    @Override
     public void setContainerClass(Class containerClass) {
         throw QueryException.methodNotValid(this, "getContainerClass()");
     }

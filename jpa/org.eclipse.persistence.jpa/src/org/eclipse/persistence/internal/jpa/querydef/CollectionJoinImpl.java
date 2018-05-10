@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -57,14 +57,17 @@ public class CollectionJoinImpl<Z, X>  extends JoinImpl<Z, X> implements Collect
     * @return metamodel type representing the Collection that is
     * the target of the join
     */
+    @Override
     public CollectionAttribute<? super Z, X> getModel(){
         return (CollectionAttribute<? super Z, X>)this.modelArtifact;
     }
 
+    @Override
     public CollectionJoinImpl<Z, X> on(Expression<Boolean> restriction) {
         return (CollectionJoinImpl<Z, X>)super.on(restriction);
     }
 
+    @Override
     public CollectionJoinImpl<Z, X> on(Predicate... restrictions) {
         return (CollectionJoinImpl<Z, X>)super.on(restrictions);
     }

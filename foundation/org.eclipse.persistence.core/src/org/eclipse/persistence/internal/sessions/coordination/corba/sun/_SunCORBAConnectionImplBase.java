@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -39,6 +39,7 @@ public abstract class _SunCORBAConnectionImplBase extends ObjectImpl implements 
         _methods.put("executeCommand", Integer.valueOf(0));
     }
 
+    @Override
     public org.omg.CORBA.portable.OutputStream _invoke(String $method, InputStream in, ResponseHandler $rh) {
         OutputStream out = null;
         Integer __method = (Integer) _methods.get($method);
@@ -67,6 +68,7 @@ public abstract class _SunCORBAConnectionImplBase extends ObjectImpl implements 
     // Type-specific CORBA::Object operations
     private static String[] __ids = { "IDL:org/eclipse/persistence/internal/remotecommand/corba/sun/SunCORBAConnection:1.0" };
 
+    @Override
     public String[] _ids() {
         return __ids.clone();
     }

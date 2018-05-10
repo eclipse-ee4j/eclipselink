@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -71,8 +71,9 @@ public class PredicateImpl extends CompoundExpressionImpl implements Predicate {
      *
      * @return list boolean expressions forming the predicate
      */
+    @Override
     public List<Expression<Boolean>> getExpressions(){
-        return (List<Expression<Boolean>>) this.expressions;
+        return this.expressions;
     }
 
     /**
@@ -80,6 +81,7 @@ public class PredicateImpl extends CompoundExpressionImpl implements Predicate {
      *
      * @return the negated predicate
      */
+    @Override
     public Predicate not(){
         PredicateImpl predicateImpl = null;
         if (isJunction()) {
@@ -101,6 +103,7 @@ public class PredicateImpl extends CompoundExpressionImpl implements Predicate {
     /**
      * @param operator the operator to set
      */
+    @Override
     public void setOperator(BooleanOperator operator) {
         this.booloperator = operator;
     }

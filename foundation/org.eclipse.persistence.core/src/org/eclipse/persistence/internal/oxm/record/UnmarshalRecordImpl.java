@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -159,6 +159,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
         initialize(objectBuilder);
     }
 
+    @Override
     public UnmarshalRecord initialize(ObjectBuilder treeObjectBuilder) {
         this.isBufferCDATA = false;
         this.treeObjectBuilder = treeObjectBuilder;
@@ -201,6 +202,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
         return rootElementLocalName;
     }
 
+    @Override
     public void setLocalName(String localName) {
         rootElementLocalName = localName;
     }
@@ -221,10 +223,12 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
         throw XMLMarshalException.operationNotSupported("transformToXML");
     }
 
+    @Override
     public XMLReader getXMLReader() {
         return this.xmlReader;
     }
 
+    @Override
     public void setXMLReader(XMLReader xmlReader) {
         this.xmlReader = xmlReader;
         namespaceAware = xmlReader.isNamespaceAware();
@@ -233,10 +237,12 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
         }
     }
 
+    @Override
     public UnmarshalRecord getChildRecord() {
         return this.childRecord;
     }
 
+    @Override
     public void setChildRecord(UnmarshalRecord childRecord) {
         this.childRecord = childRecord;
         if (null != childRecord) {
@@ -244,6 +250,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
         }
     }
 
+    @Override
     public UnmarshalRecord getParentRecord() {
         return this.parentRecord;
     }
@@ -253,6 +260,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
      * The ReferenceResolver that is leveraged by key based mappings.
      * @since EclipseLink 2.5.0
      */
+    @Override
     public ReferenceResolver getReferenceResolver() {
         if(null == referenceResolver) {
             referenceResolver = new ReferenceResolver();
@@ -265,6 +273,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
      * Set the ReferenceResolver that will be leveraged by key based mappings.
      * @since EclipseLink 2.5.0
      */
+    @Override
     public void setReferenceResolver(ReferenceResolver referenceResolver) {
         this.referenceResolver = referenceResolver;
     }
@@ -272,10 +281,12 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
     /**
      * Return the root element's prefix qualified name
      */
+    @Override
     public String getRootElementName() {
         return rootElementName;
     }
 
+    @Override
     public void setRootElementName(String qName) {
         this.rootElementName = qName;
     }
@@ -283,14 +294,17 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
     /**
      * Return the root element's namespace URI
      */
+    @Override
     public String getRootElementNamespaceUri() {
         return rootElementNamespaceUri;
     }
 
+    @Override
     public void setRootElementNamespaceUri(String uri) {
         this.rootElementNamespaceUri = uri;
     }
 
+    @Override
     public void setParentRecord(UnmarshalRecord parentRecord) {
         this.parentRecord = parentRecord;
     }
@@ -305,6 +319,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
         this.transformationRecord = transformationRecord;
     }
 
+    @Override
     public UnmarshalNamespaceResolver getUnmarshalNamespaceResolver() {
         if(null == unmarshalNamespaceResolver) {
             this.unmarshalNamespaceResolver = new StackUnmarshalNamespaceResolver();
@@ -312,10 +327,12 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
         return this.unmarshalNamespaceResolver;
     }
 
+    @Override
     public void setUnmarshalNamespaceResolver(UnmarshalNamespaceResolver anUnmarshalNamespaceResolver) {
         this.unmarshalNamespaceResolver = anUnmarshalNamespaceResolver;
     }
 
+    @Override
     public List getNullCapableValues() {
         if (null == nullCapableValues) {
             this.nullCapableValues = new ArrayList<NullCapableValue>();
@@ -323,16 +340,19 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
         return this.nullCapableValues;
     }
 
+    @Override
     public void removeNullCapableValue(NullCapableValue nullCapableValue) {
         if(null != nullCapableValues) {
             nullCapableValues.remove(nullCapableValue);
         }
     }
 
+    @Override
     public Object getContainerInstance(ContainerValue c) {
         return getContainerInstance(c, true);
     }
 
+    @Override
     public Object getContainerInstance(ContainerValue c, boolean createContainerIfNecessary) {
         Object containerInstance = containerInstances[c.getIndex()];
 
@@ -355,6 +375,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
         return containerInstance;
     }
 
+    @Override
     public void setContainerInstance(int index, Object containerInstance) {
         containerInstances[index] = containerInstance;
     }
@@ -364,6 +385,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
      * Gets the encoding for this document. Only set on the root-level UnmarshalRecord
      * @return a String representing the encoding for this doc
      */
+    @Override
     public String getEncoding() {
         return encoding;
     }
@@ -380,6 +402,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
      * Gets the XML Version for this document. Only set on the root-level
      * UnmarshalRecord, if supported by the parser.
      */
+    @Override
     public String getVersion() {
         return version;
     }
@@ -391,6 +414,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
         this.version = version;
     }
 
+    @Override
     public String getSchemaLocation() {
         return schemaLocation;
     }
@@ -399,6 +423,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
         this.schemaLocation = schemaLocation;
     }
 
+    @Override
     public String getNoNamespaceSchemaLocation() {
         return noNamespaceSchemaLocation;
     }
@@ -411,26 +436,32 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
         return unmarshaller.getStringBuffer();
     }
 
+    @Override
     public CharSequence getCharacters() {
         return unmarshaller.getStringBuffer();
     }
 
+    @Override
     public Attributes getAttributes() {
         return this.attributes;
     }
 
+    @Override
     public void setAttributes(Attributes attributes) {
         this.attributes = attributes;
     }
 
+    @Override
     public QName getTypeQName() {
         return this.typeQName;
     }
 
+    @Override
     public void setTypeQName(QName typeQName) {
         this.typeQName = typeQName;
     }
 
+    @Override
     public void setDocumentLocator(Locator locator) {
     if(xmlReader != null){
         xmlReader.setLocator(locator);
@@ -449,6 +480,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
       return null;
     }
 
+    @Override
     public Object get(CoreField key) {
         Field xmlField = this.convertToXMLField(key);
         XPathFragment lastFragment = xmlField.getLastXPathFragment();
@@ -470,30 +502,37 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
     }
 
 
+    @Override
     public XPathNode getXPathNode() {
         return xPathNode;
     }
 
+    @Override
     public Descriptor getDescriptor() {
         return (Descriptor) treeObjectBuilder.getDescriptor();
     }
 
+    @Override
     public UnmarshalContext getUnmarshalContext() {
         return unmarshalContext;
     }
 
+    @Override
     public void setUnmarshalContext(UnmarshalContext unmarshalContext) {
         this.unmarshalContext = unmarshalContext;
     }
 
+    @Override
     public boolean isNil() {
         return this.isXsiNil;
     }
 
+    @Override
     public void setNil(boolean nil) {
         this.isXsiNil = nil;
     }
 
+    @Override
     public void startDocument() throws SAXException {
         if (unmarshaller.getIDResolver() != null && parentRecord == null) {
         unmarshaller.getIDResolver().startDocument(unmarshaller.getErrorHandler());
@@ -530,6 +569,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
          initializeRecord((Mapping)null);
     }
 
+    @Override
     public void initializeRecord(Mapping selfRecordMapping) throws SAXException {
         try {
             Descriptor xmlDescriptor = (Descriptor) treeObjectBuilder.getDescriptor();
@@ -594,6 +634,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
         }
     }
 
+    @Override
     public void endDocument() throws SAXException {
         if (unmarshaller.getIDResolver() != null && parentRecord == null) {
         unmarshaller.getIDResolver().endDocument();
@@ -617,14 +658,14 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
             }
         }
 
-        CoreDescriptor xmlDescriptor = (CoreDescriptor) treeObjectBuilder.getDescriptor();
+        CoreDescriptor xmlDescriptor = treeObjectBuilder.getDescriptor();
 
         try {
             // PROCESS COLLECTION MAPPINGS
         //All populated containerValues need to be set on the object
         if(null != populatedContainerValues){
                 for (int populatedCVSize=populatedContainerValues.size(), i = populatedCVSize-1; i>=0; i--) {
-                ContainerValue cv = ((ContainerValue) populatedContainerValues.get(i));
+                ContainerValue cv = (populatedContainerValues.get(i));
                 cv.setContainerInstance(currentObject, getContainerInstance(cv, cv.isDefaultEmptyContainer()));
             }
         }
@@ -632,7 +673,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
         //Additionally if any containerValues are defaultEmptyContainerValues they need to be set to a new empty container
         if(null != defaultEmptyContainerValues){
                  for (int defaultEmptyCVSize=defaultEmptyContainerValues.size(),i = defaultEmptyCVSize-1; i>=0; i--) {
-                     ContainerValue cv = ((ContainerValue) defaultEmptyContainerValues.get(i));
+                     ContainerValue cv = (defaultEmptyContainerValues.get(i));
                      cv.setContainerInstance(currentObject, getContainerInstance(cv, cv.isDefaultEmptyContainer()));
                  }
 
@@ -734,15 +775,18 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
         }
     }
 
+    @Override
     public void startPrefixMapping(String prefix, String uri) throws SAXException {
         getUnmarshalNamespaceResolver().push(prefix, uri);
         getPrefixesForFragment().put(prefix, uri);
     }
 
+    @Override
     public void endPrefixMapping(String prefix) throws SAXException {
         getUnmarshalNamespaceResolver().pop(prefix);
     }
 
+    @Override
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
         if (currentObject == null) {
             initializeRecord(atts);
@@ -841,9 +885,11 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
                 unmarshalContext.startElement(this);
                 levelIndex++;
 
-                String xsiNilValue = atts.getValue(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, Constants.SCHEMA_NIL_ATTRIBUTE);
-                if(xsiNilValue != null){
-                    setNil(xsiNilValue.equals(Constants.BOOLEAN_STRING_TRUE) || xsiNilValue.equals("1"));
+                if(xmlReader.getMediaType().isApplicationXML()) {
+                    String xsiNilValue = atts.getValue(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, Constants.SCHEMA_NIL_ATTRIBUTE);
+                    if (xsiNilValue != null) {
+                        setNil(xsiNilValue.equals(Constants.BOOLEAN_STRING_TRUE) || xsiNilValue.equals("1"));
+                    }
                 }
 
                 if(node.getNullCapableValue() != null){
@@ -1022,6 +1068,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
         xmlReader.setLexicalHandler(unmappedContentHandlerWrapper);
     }
 
+    @Override
     public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
         try {
             if (null != selfRecords) {
@@ -1142,6 +1189,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
         }
     }
 
+    @Override
     public void endUnmappedElement(String namespaceURI, String localName, String qName) throws SAXException {
         typeQName = null;
         levelIndex--;
@@ -1159,6 +1207,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
         setNil(false); // null unmapped element processed. We have to reset nil status
     }
 
+    @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
     if(currentObject == null){
         return;
@@ -1223,6 +1272,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
         }
     }
 
+    @Override
     public void characters(CharSequence characters) throws SAXException {
         if(null != characters) {
             String string = characters.toString();
@@ -1230,18 +1280,22 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
         }
     }
 
+    @Override
     public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {
     }
 
+    @Override
     public void processingInstruction(String target, String data) throws SAXException {
     }
 
+    @Override
     public void skippedEntity(String name) throws SAXException {
     }
 
     /**
      * INTERNAL:
      */
+    @Override
     public XPathNode getNonAttributeXPathNode(String namespaceURI, String localName, String qName, Attributes attributes) {
         if (0 == levelIndex) {
             return xPathNode;
@@ -1322,6 +1376,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
         return null;
     }
 
+    @Override
     public String resolveNamespacePrefix(String prefix) {
         String namespaceURI = getUnmarshalNamespaceResolver().getNamespaceURI(prefix);
         if(null == namespaceURI && null != parentRecord) {
@@ -1330,6 +1385,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
         return namespaceURI;
     }
 
+    @Override
     public String resolveNamespaceUri(String uri) {
         String prefix = getUnmarshalNamespaceResolver().getPrefix(uri);
         if (null == prefix) {
@@ -1355,6 +1411,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
         return null;
     }
 
+    @Override
     public NodeValue getAttributeChildNodeValue(String namespace, String localName) {
         Map<XPathFragment, XPathNode> attributeChildrenMap = xPathNode.getAttributeChildrenMap();
         if (attributeChildrenMap != null) {
@@ -1445,6 +1502,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
         ((AbstractSession) session).logMessage(CommandProcessor.LOG_WARNING, sb.toString());
     }
 
+    @Override
     public SAXFragmentBuilder getFragmentBuilder() {
         if(this.fragmentBuilder == null){
         fragmentBuilder = new SAXFragmentBuilder(this);
@@ -1452,40 +1510,50 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
         return fragmentBuilder;
     }
 
+    @Override
     public void setFragmentBuilder(SAXFragmentBuilder builder) {
         this.fragmentBuilder = builder;
     }
 
+    @Override
     public void resetStringBuffer() {
         this.getStringBuffer().reset();
         this.isBufferCDATA = false;
     }
 
+    @Override
     public boolean isBufferCDATA() {
         return isBufferCDATA;
     }
 
+    @Override
     public void comment(char[] data, int start, int length) {
     }
 
+    @Override
     public void startCDATA() {
         if (null != xPathNode && xPathNode.getUnmarshalNodeValue() != null) {
             this.isBufferCDATA = true;
         }
     }
 
+    @Override
     public void endCDATA() {
     }
 
+    @Override
     public void startEntity(String entity) {
     }
 
+    @Override
     public void endEntity(String entity) {
     }
 
+    @Override
     public void startDTD(String a, String b, String c) {
     }
 
+    @Override
     public void endDTD() {
     }
 
@@ -1496,6 +1564,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
      * @param isSelfRecord true if this record represents
      * 'self', false otherwise
      */
+    @Override
     public void setSelfRecord(boolean isSelfRecord) {
         this.isSelfRecord = isSelfRecord;
     }
@@ -1505,10 +1574,12 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
      *
      * @return true if this record represents 'self', false otherwise
      */
+    @Override
     public boolean isSelfRecord() {
         return isSelfRecord;
     }
 
+    @Override
     public int getLevelIndex() {
         return levelIndex;
     }
@@ -1517,18 +1588,22 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
      * INTERNAL
      * @since EclipseLink 2.5.0
      */
+    @Override
     public void setAttributeValue(Object value, Mapping mapping) {
         this.unmarshalContext.setAttributeValue(this, value, mapping);
     }
 
+    @Override
     public void addAttributeValue(ContainerValue containerValue, Object value) {
         this.unmarshalContext.addAttributeValue(this, containerValue, value);
     }
 
+    @Override
     public void addAttributeValue(ContainerValue containerValue, Object value, Object collection) {
         this.unmarshalContext.addAttributeValue(this, containerValue, value, collection);
     }
 
+    @Override
     public void setAttributeValueNull(ContainerValue containerValue) {
         this.unmarshalContext.setAttributeValue(this, null, containerValue.getMapping());
         int containerIndex = containerValue.getIndex();
@@ -1536,10 +1611,12 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
         containerInstances[containerIndex] = null;
     }
 
+    @Override
     public void reference(Reference reference) {
         this.unmarshalContext.reference(reference);
     }
 
+    @Override
     public void unmappedContent() {
         if(this.xPathNode.getParent() != null) {
             xPathNode = xPathNode.getParent();
@@ -1547,6 +1624,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
         this.unmarshalContext.unmappedContent(this);
     }
 
+    @Override
     public UnmarshalRecord getChildUnmarshalRecord(ObjectBuilder treeObjectBuilder) {
     if(childRecord != null && !childRecord.isSelfRecord()){
         childRecord.initialize(treeObjectBuilder);
@@ -1568,6 +1646,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
     /**
      * INTERNAL:
      */
+    @Override
     public void setUnmarshaller(Unmarshaller unmarshaller) {
         this.unmarshaller = unmarshaller; //super.setUnmarshaller(unmarshaller);
         if(xPathFragment != null){
@@ -1582,6 +1661,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
      * fragment builder in the event that the element in question is going to be unmarshalled
      * as a Node.
      */
+    @Override
     public Map<String, String> getPrefixesForFragment() {
     if(prefixesForFragment == null){
         prefixesForFragment = new HashMap<String, String>();
@@ -1591,14 +1671,17 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
     }
 
 
+    @Override
     public char getNamespaceSeparator(){
     return xmlReader.getNamespaceSeparator();
     }
 
+    @Override
     public void setTextWrapperFragment(XPathFragment newTextWrapperFragment) {
     textWrapperFragment = newTextWrapperFragment;
     }
 
+    @Override
     public XPathFragment getTextWrapperFragment() {
     if(xmlReader.getMediaType() .isApplicationJSON()){
         if(textWrapperFragment == null){
@@ -1618,6 +1701,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
      * references.
      * @since EclipseLink 2.5.0
      */
+    @Override
     public void resolveReferences(CoreAbstractSession abstractSession, IDResolver idResolver) {
         if(null != referenceResolver) {
             referenceResolver.resolveReferences(abstractSession, idResolver, unmarshaller.getErrorHandler());
@@ -1628,6 +1712,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
      * INTERNAL:
      * @since EclipseLink 2.5.0
      */
+    @Override
     public Root createRoot() {
         return unmarshaller.createRoot();
     }
@@ -1688,10 +1773,12 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
         this.session = session;
     }
 
+    @Override
     public CoreAttributeGroup getUnmarshalAttributeGroup() {
         return unmarshalAttributeGroup;
     }
 
+    @Override
     public void setUnmarshalAttributeGroup(CoreAttributeGroup unmarshalAttributeGroup) {
         this.unmarshalAttributeGroup = unmarshalAttributeGroup;
     }

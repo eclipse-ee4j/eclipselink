@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -46,6 +46,7 @@ public class ManualQueryKeyExpression extends QueryKeyExpression {
      * Return if the expression is equal to the other.
      * This is used to allow dynamic expression's SQL to be cached.
      */
+    @Override
     public boolean equals(Object object) {
         if (this == object) {
             return true;
@@ -58,6 +59,7 @@ public class ManualQueryKeyExpression extends QueryKeyExpression {
      * INTERNAL:
      * Used for debug printing.
      */
+    @Override
     public String descriptionOfNodeType() {
         return "Manual Query Key";
     }
@@ -69,6 +71,7 @@ public class ManualQueryKeyExpression extends QueryKeyExpression {
      * aggregate isn't participating (and even if it is, we can't
      * know which node it is, so *DO* use the aggregate's parents tables
      */
+    @Override
     public List<DatabaseTable> getOwnedTables() {
         if (getDescriptor() == null) {
             return null;
@@ -80,6 +83,7 @@ public class ManualQueryKeyExpression extends QueryKeyExpression {
         }
     }
 
+    @Override
     public QueryKey getQueryKeyOrNull() {
         return null;
     }
@@ -88,6 +92,7 @@ public class ManualQueryKeyExpression extends QueryKeyExpression {
      * INTERNAL:
      * We can never be an attribute, we're always a join
      */
+    @Override
     public boolean isAttribute() {
         return false;
     }
@@ -102,6 +107,7 @@ public class ManualQueryKeyExpression extends QueryKeyExpression {
      * This expression is built on a different base than the one we want. Rebuild it and
      * return the root of the new tree
      */
+    @Override
     public Expression rebuildOn(Expression newBase) {
         ObjectExpression newLocalBase = (ObjectExpression)getBaseExpression().rebuildOn(newBase);
         return newLocalBase.getManualQueryKey(getName(), getDescriptor());
@@ -124,6 +130,7 @@ public class ManualQueryKeyExpression extends QueryKeyExpression {
     /**
      * Do any required validation for this node. Throw an exception if it's incorrect.
      */
+    @Override
     public void validateNode() {
         // Override super.validateNode() because those criteria don't apply to us
     }

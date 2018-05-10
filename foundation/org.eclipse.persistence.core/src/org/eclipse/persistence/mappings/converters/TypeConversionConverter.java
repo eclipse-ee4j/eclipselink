@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -69,6 +69,7 @@ public class TypeConversionConverter implements Converter, ClassNameConversionRe
      * This method is implemented by subclasses as necessary.
      * @param classLoader
      */
+    @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){
         Class dataClass = null;
         Class objectClass = null;
@@ -110,6 +111,7 @@ public class TypeConversionConverter implements Converter, ClassNameConversionRe
      * INTERNAL:
      * The field value must first be converted to the field type, then the attribute type.
      */
+    @Override
     public Object convertDataValueToObjectValue(Object fieldValue, Session session) {
         Object attributeValue = fieldValue;
         if (attributeValue != null) {
@@ -203,6 +205,7 @@ public class TypeConversionConverter implements Converter, ClassNameConversionRe
      *  INTERNAL:
      *  Convert to the field class.
      */
+    @Override
     public Object convertObjectValueToDataValue(Object attributeValue, Session session) {
         try {
             return ((AbstractSession)session).getDatasourcePlatform().convertObject(attributeValue, getDataClass());
@@ -215,6 +218,7 @@ public class TypeConversionConverter implements Converter, ClassNameConversionRe
      * INTERNAL:
      * Set the mapping.
      */
+    @Override
     public void initialize(DatabaseMapping mapping, Session session) {
         this.mapping = mapping;
         // CR#... Mapping must also have the field classification.
@@ -249,6 +253,7 @@ public class TypeConversionConverter implements Converter, ClassNameConversionRe
      * a value that can have its' parts changed without being replaced,
      * then it must return false, serialization can be non-atomic.
      */
+    @Override
     public boolean isMutable() {
         return false;
     }

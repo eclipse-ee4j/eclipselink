@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -88,6 +88,7 @@ public class SerializedObjectConverter implements Converter, ClassNameConversion
      * This method is implemented by subclasses as necessary.
      * @param classLoader
      */
+    @Override
     public void convertClassNamesToClasses(ClassLoader classLoader) {
         try{
             if (this.serializerClassName != null) {
@@ -110,6 +111,7 @@ public class SerializedObjectConverter implements Converter, ClassNameConversion
      * on the fieldValue.  Create an ObjectInputStream on the ByteArrayInputStream
      * to read in the objects.
      */
+    @Override
     public Object convertDataValueToObjectValue(Object fieldValue, Session session) throws DescriptorException {
         if (fieldValue == null) {
             return null;
@@ -149,6 +151,7 @@ public class SerializedObjectConverter implements Converter, ClassNameConversion
      *  INTERNAL:
      *  Convert the object to a byte array through serialize.
      */
+    @Override
     public Object convertObjectValueToDataValue(Object attributeValue, Session session) {
         if (attributeValue == null) {
             return null;
@@ -164,6 +167,7 @@ public class SerializedObjectConverter implements Converter, ClassNameConversion
      * INTERNAL:
      * Set the mapping.
      */
+    @Override
     public void initialize(DatabaseMapping mapping, Session session) {
         this.mapping = mapping;
         // CR#... Mapping must also have the field classification.
@@ -195,6 +199,7 @@ public class SerializedObjectConverter implements Converter, ClassNameConversion
      * a value that can have its' parts changed without being replaced,
      * then it must return false, serialization can be non-atomic.
      */
+    @Override
     public boolean isMutable() {
         return true;
     }

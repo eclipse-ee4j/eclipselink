@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -61,6 +61,7 @@ public class OracleArrayType extends ComplexDatabaseType implements Cloneable {
         return true;
     }
 
+    @Override
     public int getSqlCode() {
         return ARRAY;
     }
@@ -83,10 +84,12 @@ public class OracleArrayType extends ComplexDatabaseType implements Cloneable {
         this.typeName = compatibleType;
     }
 
+    @Override
     public void buildBeginBlock(StringBuilder sb, PLSQLargument arg, PLSQLStoredProcedureCall call) {
         // no-op
     }
 
+    @Override
     public void buildInDeclare(StringBuilder sb, PLSQLargument inArg) {
         // Validate.
         if ((getTypeName() == null) || getTypeName().equals("")) {
@@ -102,6 +105,7 @@ public class OracleArrayType extends ComplexDatabaseType implements Cloneable {
         sb.append(NL);
     }
 
+    @Override
     public void buildOutDeclare(StringBuilder sb, PLSQLargument outArg) {
         // Validate.
         if ((getTypeName() == null) || getTypeName().equals("")) {
@@ -115,6 +119,7 @@ public class OracleArrayType extends ComplexDatabaseType implements Cloneable {
         sb.append(NL);
     }
 
+    @Override
     public void buildOutAssignment(StringBuilder sb, PLSQLargument outArg, PLSQLStoredProcedureCall call) {
         String target = databaseTypeHelper.buildTarget(outArg);
         sb.append("  :");

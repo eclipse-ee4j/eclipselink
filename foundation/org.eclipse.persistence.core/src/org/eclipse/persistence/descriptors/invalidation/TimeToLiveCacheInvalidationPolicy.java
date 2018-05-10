@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -47,6 +47,7 @@ public class TimeToLiveCacheInvalidationPolicy extends CacheInvalidationPolicy {
      * INTERNAL:
      * Return the next expiry time.
      */
+    @Override
     public long getExpiryTimeInMillis(CacheKey key) {
         if (this.isInvalidationRandomized) {
             // If using randomized invalidation, subtract 0-10% of the timeToLive
@@ -69,6 +70,7 @@ public class TimeToLiveCacheInvalidationPolicy extends CacheInvalidationPolicy {
      * INTERNAL:
      * Return true if this object is set as invalid or has expired.
      */
+    @Override
     public boolean isInvalidated(CacheKey key, long currentTimeMillis) {
         if (key.getInvalidationState() == CacheKey.CACHE_KEY_INVALID) {
             return true;
@@ -84,6 +86,7 @@ public class TimeToLiveCacheInvalidationPolicy extends CacheInvalidationPolicy {
         this.timeToLive = timeToLive;
     }
 
+    @Override
     public Object clone() {
         TimeToLiveCacheInvalidationPolicy clone = null;
 

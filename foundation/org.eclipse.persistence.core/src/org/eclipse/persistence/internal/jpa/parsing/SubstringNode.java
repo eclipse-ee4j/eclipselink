@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -39,6 +39,7 @@ public class SubstringNode extends StringFunctionNode {
      * Check the child nodes for an unqualified field access and if so,
      * replace them by a qualified field access.
      */
+    @Override
     public Node qualifyAttributeAccess(ParseTreeContext context) {
        if (left != null) {
            left = left.qualifyAttributeAccess(context);
@@ -56,6 +57,7 @@ public class SubstringNode extends StringFunctionNode {
      * INTERNAL
      * Validate node and calculate its type.
      */
+    @Override
     public void validate(ParseTreeContext context) {
         TypeHelper typeHelper = context.getTypeHelper();
         if (left != null) {
@@ -77,6 +79,7 @@ public class SubstringNode extends StringFunctionNode {
      * INTERNAL
      * Generate the EclipseLink expression for this node
      */
+    @Override
     public Expression generateExpression(GenerationContext context) {
         Expression whereClause = getLeft().generateExpression(context);
         Expression startPosition = getStartPosition().generateExpression(context);

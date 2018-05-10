@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 2012, 2018 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -55,6 +55,7 @@ public class InjectionManagerImpl<T> implements InjectionManager<T> {
      * @param managedBeanClass bean class to be instantiated.
      * @return New instance of bean class with injected content.
      */
+    @Override
     public T createManagedBeanAndInjectDependencies(final Class<T> managedBeanClass) throws NamingException{
         final AnnotatedType<T> aType = beanManager.createAnnotatedType(managedBeanClass);
         final InjectionTarget<T> injectionTarget = beanManager.createInjectionTarget(aType);
@@ -68,6 +69,7 @@ public class InjectionManagerImpl<T> implements InjectionManager<T> {
         return beanInstance;
     }
 
+    @Override
     public void cleanUp(AbstractSession session){
         Set<T> keys = new HashSet<>();
         synchronized(injectionTargets){

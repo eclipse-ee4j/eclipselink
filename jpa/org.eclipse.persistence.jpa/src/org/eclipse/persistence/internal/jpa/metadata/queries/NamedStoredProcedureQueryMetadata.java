@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -86,12 +86,12 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
         }
 
         // JPA spec allows for multiple result classes.
-        for (Object resultClass : (Object[]) namedStoredProcedureQuery.getAttributeArray("resultClasses")) {
+        for (Object resultClass : namedStoredProcedureQuery.getAttributeArray("resultClasses")) {
             m_resultClasses.add(getMetadataClass((String) resultClass));
         }
 
         // JPA spec allows for multiple result set mappings.
-        for (Object resultSetMapping : (Object[]) namedStoredProcedureQuery.getAttributeArray("resultSetMappings")) {
+        for (Object resultSetMapping : namedStoredProcedureQuery.getAttributeArray("resultSetMappings")) {
             m_resultSetMappings.add((String) resultSetMapping);
         }
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2018  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -42,6 +42,7 @@ public class ParameterExpressionImpl<T> extends ExpressionImpl<T> implements Par
         this.position = position;
     }
 
+    @Override
     public void findRootAndParameters(CommonAbstractCriteriaImpl query){
         query.addParameter(this);
     }
@@ -52,6 +53,7 @@ public class ParameterExpressionImpl<T> extends ExpressionImpl<T> implements Par
      *
      * @return parameter name
      */
+    @Override
     public String getName(){
         return this.name;
     }
@@ -70,6 +72,7 @@ public class ParameterExpressionImpl<T> extends ExpressionImpl<T> implements Par
      *
      * @return position of parameter
      */
+    @Override
     public Integer getPosition(){
         return this.position;
     }
@@ -86,7 +89,8 @@ public class ParameterExpressionImpl<T> extends ExpressionImpl<T> implements Par
      * native query when the implementation does not support this
      * use.
      */
-     public Class<T> getParameterType(){
+     @Override
+    public Class<T> getParameterType(){
          return this.javaType;
      }
 
@@ -99,6 +103,7 @@ public class ParameterExpressionImpl<T> extends ExpressionImpl<T> implements Par
         return this.internalName.hashCode();
     }
 
+    @Override
     public boolean isParameter(){
         return true;
     }

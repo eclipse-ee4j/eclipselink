@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -29,22 +29,27 @@ public class AQAdapterMetaData implements ResourceAdapterMetaData {
     public AQAdapterMetaData() {
     }
 
+    @Override
     public String getAdapterName() {
         return "Oracle AQ Adapter";
     }
 
+    @Override
     public String getAdapterShortDescription() {
         return "Oracle AQ JCA adapter.";
     }
 
+    @Override
     public String getAdapterVendorName() {
         return "Oracle";
     }
 
+    @Override
     public String getAdapterVersion() {
         return Version.getVersion();
     }
 
+    @Override
     public String[] getInteractionSpecsSupported() {
         String[] specs = new String[2];
         specs[0] = "org.eclipse.persistence.eis.aq.AQEnqueueInteractionSpec";
@@ -52,18 +57,22 @@ public class AQAdapterMetaData implements ResourceAdapterMetaData {
         return specs;
     }
 
+    @Override
     public String getSpecVersion() {
         return "1.5";
     }
 
+    @Override
     public boolean supportsExecuteWithInputAndOutputRecord() {
         return true;
     }
 
+    @Override
     public boolean supportsExecuteWithInputRecordOnly() {
         return true;
     }
 
+    @Override
     public boolean supportsLocalTransactionDemarcation() {
         return true;
     }

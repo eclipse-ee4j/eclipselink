@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -46,34 +46,42 @@ public class SDOXMLHelperLoadOptionsType extends SDOType implements Type {
         addDeclaredProperty(attachmentUnmarshallerProperty);
     }
 
+    @Override
     public List getAliasNames() {
         return Collections.EMPTY_LIST;
     }
 
+    @Override
     public List getBaseTypes() {
         return Collections.EMPTY_LIST;
     }
 
+    @Override
     public String getName() {
         return SDOConstants.XMLHELPER_LOAD_OPTIONS;
     }
 
+    @Override
     public String getURI() {
         return SDOConstants.ORACLE_SDO_URL;
     }
 
+    @Override
     public boolean isAbstract() {
         return false;
     }
 
+    @Override
     public boolean isDataType() {
         return false;
     }
 
+    @Override
     public boolean isOpen() {
         return false;
     }
 
+    @Override
     public boolean isSequenced() {
         return false;
     }

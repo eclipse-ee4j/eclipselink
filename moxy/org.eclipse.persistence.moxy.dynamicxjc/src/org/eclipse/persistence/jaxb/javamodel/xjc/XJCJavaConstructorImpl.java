@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -70,6 +70,7 @@ public class XJCJavaConstructorImpl implements JavaConstructor {
      *
      * @see java.lang.reflect.Modifier
      */
+    @Override
     public int getModifiers() {
         return xjcConstructor.mods().getValue();
     }
@@ -79,6 +80,7 @@ public class XJCJavaConstructorImpl implements JavaConstructor {
      *
      * @return the <code>String</code> name of this <code>JavaConstructor</code>.
      */
+    @Override
     public String getName() {
         return xjcConstructor.name();
     }
@@ -88,6 +90,7 @@ public class XJCJavaConstructorImpl implements JavaConstructor {
      *
      * @return a <code>JavaClass[]</code> representing the argument types for this constructor.
      */
+    @Override
     public JavaClass[] getParameterTypes() {
         JType[] params = xjcConstructor.listParamTypes();
         JavaClass[] paramArray = new JavaClass[params.length];
@@ -110,6 +113,7 @@ public class XJCJavaConstructorImpl implements JavaConstructor {
      *
      * @return <code>true</code> if this <code>JavaConstructor</code> is <code>abstract</code>, otherwise <code>false</code>.
      */
+    @Override
     public boolean isAbstract() {
         return Modifier.isAbstract(getModifiers());
     }
@@ -119,6 +123,7 @@ public class XJCJavaConstructorImpl implements JavaConstructor {
      *
      * @return <code>true</code> if this <code>JavaConstructor</code> is <code>private</code>, otherwise <code>false</code>.
      */
+    @Override
     public boolean isPrivate() {
         return Modifier.isPrivate(getModifiers());
     }
@@ -128,6 +133,7 @@ public class XJCJavaConstructorImpl implements JavaConstructor {
      *
      * @return <code>true</code> if this <code>JavaConstructor</code> is <code>protected</code>, otherwise <code>false</code>.
      */
+    @Override
     public boolean isProtected() {
         return Modifier.isProtected(getModifiers());
     }
@@ -137,6 +143,7 @@ public class XJCJavaConstructorImpl implements JavaConstructor {
      *
      * @return <code>true</code> if this <code>JavaConstructor</code> is <code>public</code>, otherwise <code>false</code>.
      */
+    @Override
     public boolean isPublic() {
         return Modifier.isPublic(getModifiers());
     }
@@ -146,6 +153,7 @@ public class XJCJavaConstructorImpl implements JavaConstructor {
      *
      * @return <code>true</code> if this <code>JavaConstructor</code> is <code>static</code>, otherwise <code>false</code>.
      */
+    @Override
     public boolean isStatic() {
         return Modifier.isStatic(getModifiers());
     }
@@ -155,6 +163,7 @@ public class XJCJavaConstructorImpl implements JavaConstructor {
      *
      * @return <code>true</code> if this <code>JavaConstructor</code> is <code>final</code>, otherwise <code>false</code>.
      */
+    @Override
     public boolean isFinal() {
         return Modifier.isFinal(getModifiers());
     }
@@ -162,6 +171,7 @@ public class XJCJavaConstructorImpl implements JavaConstructor {
     /**
      * Not supported.
      */
+    @Override
     public boolean isSynthetic() {
         throw new UnsupportedOperationException("isSynthetic");
     }
@@ -171,6 +181,7 @@ public class XJCJavaConstructorImpl implements JavaConstructor {
      *
      * @return <code>JavaClass</code> representing the owner of this <code>JavaConstructor</code>.
      */
+    @Override
     public JavaClass getOwningClass() {
         return owningClass;
     }

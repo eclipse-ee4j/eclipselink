@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -51,6 +51,7 @@ public class FromNode extends MajorNode {
      * unqualified field access and if so, replace it by a qualified field
      * access.
      */
+    @Override
     public Node qualifyAttributeAccess(ParseTreeContext context) {
         for (int i = 0; i < declarations.size(); i++) {
             Node decl = (Node)declarations.get(i);
@@ -63,6 +64,7 @@ public class FromNode extends MajorNode {
      * INTERNAL
      * Validate the current node.
      */
+    @Override
     public void validate(ParseTreeContext context) {
         for (Iterator i = declarations.iterator(); i.hasNext();) {
             Node decl = (Node)i.next();

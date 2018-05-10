@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -106,6 +106,7 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
      * The specified TimeZone will be used for all String to date object
      * conversions.  By default the TimeZone from the JVM is used.
      */
+    @Override
     public void setTimeZone(TimeZone timeZone) {
         getXmlConversionManager().setTimeZone(timeZone);
     }
@@ -115,6 +116,7 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
      * the XML schema types time and dateTime will be qualified by a time zone.
      * By default time information is not time zone qualified.
      */
+    @Override
     public void setTimeZoneQualified(boolean timeZoneQualified) {
         getXmlConversionManager().setTimeZoneQualified(timeZoneQualified);
     }
@@ -130,6 +132,7 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
      * @throws RuntimeException for errors in XML parsing or
      *    implementation-specific validation.
      */
+    @Override
     public XMLDocument load(String inputString) {
         StringReader reader = new StringReader(inputString);
         try {
@@ -153,6 +156,7 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
      * @throws RuntimeException for errors in XML parsing or
      *    implementation-specific validation.
      */
+    @Override
     public XMLDocument load(InputStream inputStream) throws IOException {
         return load(inputStream, null, null);
     }
@@ -169,6 +173,7 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
      * @throws RuntimeException for errors in XML parsing or
      *    implementation-specific validation.
      */
+    @Override
     public XMLDocument load(InputStream inputStream, String locationURI, Object options) throws IOException {
         InputSource inputSource = new InputSource(inputStream);
         return load(inputSource, locationURI, options);
@@ -186,6 +191,7 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
        * @throws RuntimeException for errors in XML parsing or
        *    implementation-specific validation.
        */
+    @Override
     public XMLDocument load(InputSource inputSource, String locationURI, Object options) throws IOException {
         // get XMLUnmarshaller once - as we may create a new instance if this helper isDirty=true
         XMLUnmarshaller anXMLUnmarshaller = getXmlUnmarshaller(options);
@@ -262,11 +268,13 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
      * @throws RuntimeException for errors in XML parsing or
      *    implementation-specific validation.
      */
+    @Override
     public XMLDocument load(Reader inputReader, String locationURI, Object options) throws IOException {
         InputSource inputSource = new InputSource(inputReader);
         return load(inputSource, locationURI, options);
     }
 
+    @Override
     public XMLDocument load(Source source, String locationURI, Object options) throws IOException {
         // get XMLUnmarshaller once - as we may create a new instance if this helper isDirty=true
         XMLUnmarshaller anXMLUnmarshaller = getXmlUnmarshaller(options);
@@ -347,6 +355,7 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
      * @throws IllegalArgumentException if the dataObject tree
      *    is not closed or has no container.
      */
+    @Override
     public String save(DataObject dataObject, String rootElementURI, String rootElementName) {
         try {
             StringWriter writer = new StringWriter();
@@ -371,12 +380,14 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
      * @throws IllegalArgumentException if the dataObject tree
      *    is not closed or has no container.
      */
+    @Override
     public void save(DataObject dataObject, String rootElementURI, String rootElementName, OutputStream outputStream) throws XMLMarshalException, IOException {
         XMLMarshaller xmlMarshaller = getXmlMarshaller(null);
         OutputStreamWriter writer = new OutputStreamWriter(outputStream, xmlMarshaller.getEncoding());
         save(dataObject, rootElementURI, rootElementName, writer, xmlMarshaller);
     }
 
+    @Override
     public void serialize(XMLDocument xmlDocument, OutputStream outputStream, Object options) throws IOException {
         XMLMarshaller xmlMarshaller = getXmlMarshaller();
         XMLAttachmentMarshaller attachmentMarshaller = xmlMarshaller.getAttachmentMarshaller();
@@ -402,6 +413,7 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
      * @throws IllegalArgumentException if the dataObject tree
      *    is not closed or has no container.
      */
+    @Override
     public void save(XMLDocument xmlDocument, OutputStream outputStream, Object options) throws IOException {
         if (xmlDocument == null) {
             throw new IllegalArgumentException(SDOException.cannotPerformOperationWithNullInputParameter("save", "xmlDocument"));
@@ -430,6 +442,7 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
      * @throws IllegalArgumentException if the dataObject tree
      *    is not closed or has no container.
      */
+    @Override
     public void save(XMLDocument xmlDocument, Writer outputWriter, Object options) throws IOException {
         save(xmlDocument, outputWriter, getXmlMarshaller(options));
     }
@@ -478,6 +491,7 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
         outputWriter.flush();
     }
 
+    @Override
     public void save(XMLDocument xmlDocument, Result result, Object options) throws IOException {
         if (xmlDocument == null) {
             throw new IllegalArgumentException(SDOException.cannotPerformOperationWithNullInputParameter("save", "xmlDocument"));
@@ -543,6 +557,7 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
      * @param rootElementName the Name of the root XML element
      * @return XMLDocument a new XMLDocument set with the specified parameters.
      */
+    @Override
     public XMLDocument createDocument(DataObject dataObject, String rootElementURI, String rootElementName) {
         SDOXMLDocument document = new SDOXMLDocument();
         document.setRootObject(dataObject);
@@ -620,19 +635,23 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
         }
     }
 
+    @Override
     public void setLoader(SDOClassLoader loader) {
         this.loader = loader;
         getXmlConversionManager().setLoader(this.loader);
     }
 
+    @Override
     public SDOClassLoader getLoader() {
         return loader;
     }
 
+    @Override
     public void setXmlContext(XMLContext xmlContext) {
         this.xmlContext = xmlContext;
     }
 
+    @Override
     public synchronized XMLContext getXmlContext() {
         if (xmlContext == null) {
             xmlContext = new XMLContext(getTopLinkProject());
@@ -644,6 +663,7 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
         return xmlContext;
     }
 
+    @Override
     public void initializeDescriptor(XMLDescriptor descriptor){
         AbstractSession theSession = (AbstractSession)getXmlContext().getSession();
 
@@ -656,6 +676,7 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
         getXmlContext().storeXMLDescriptorByQName(descriptor);
     }
 
+    @Override
     public void addDescriptors(List types) {
         for (int i = 0; i < types.size(); i++) {
             SDOType nextType = (SDOType)types.get(i);
@@ -674,6 +695,7 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
         }
     }
 
+    @Override
     public void setTopLinkProject(Project toplinkProject) {
         this.topLinkProject = toplinkProject;
         this.xmlContext = null;
@@ -681,6 +703,7 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
         this.xmlUnmarshallerMap.clear();
     }
 
+    @Override
     public Project getTopLinkProject() {
         if (topLinkProject == null) {
             topLinkProject = new Project();
@@ -714,10 +737,12 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
         return topLinkProject;
     }
 
+    @Override
     public void setXmlMarshaller(XMLMarshaller xmlMarshaller) {
         this.xmlMarshallerMap.put(Thread.currentThread(), xmlMarshaller);
     }
 
+    @Override
     public XMLMarshaller getXmlMarshaller() {
         XMLMarshaller marshaller = xmlMarshallerMap.get(Thread.currentThread());
 
@@ -751,10 +776,12 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
         }
     }
 
+    @Override
     public void setXmlUnmarshaller(XMLUnmarshaller xmlUnmarshaller) {
         this.xmlUnmarshallerMap.put(Thread.currentThread(), xmlUnmarshaller);
     }
 
+    @Override
     public XMLUnmarshaller getXmlUnmarshaller() {
         XMLUnmarshaller unmarshaller = xmlUnmarshallerMap.get(Thread.currentThread());
 
@@ -790,6 +817,7 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
         }
     }
 
+    @Override
     public void reset() {
         setTopLinkProject(null);
         setXmlContext(null);
@@ -798,10 +826,12 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
         setLoader(new SDOClassLoader(getClass().getClassLoader(), aHelperContext));
     }
 
+    @Override
     public HelperContext getHelperContext() {
         return aHelperContext;
     }
 
+    @Override
     public void setHelperContext(HelperContext helperContext) {
         aHelperContext = helperContext;
     }
@@ -816,6 +846,7 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
         }
     }
 
+    @Override
     public XMLConversionManager getXmlConversionManager() {
         return (XMLConversionManager) getXmlContext().getSession().getDatasourceLogin().getDatasourcePlatform().getConversionManager();
     }

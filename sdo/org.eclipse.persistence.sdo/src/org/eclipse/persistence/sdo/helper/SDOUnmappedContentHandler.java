@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -72,23 +72,29 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
         currentBuffer = new StrBuffer();
     }
 
+    @Override
     public void setDocumentLocator(Locator locator) {
     }
 
+    @Override
     public void startDocument() throws SAXException {
     }
 
+    @Override
     public void endDocument() throws SAXException {
     }
 
+    @Override
     public void startPrefixMapping(String prefix, String uri) throws SAXException {
         unmarshalNamespaceResolver.push(prefix, uri);
     }
 
+    @Override
     public void endPrefixMapping(String prefix) throws SAXException {
         unmarshalNamespaceResolver.pop(prefix);
     }
 
+    @Override
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
         if (isInCharacterBlock) {
             if (!currentBuffer.toString().trim().equals("")) {
@@ -166,15 +172,19 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
         }
     }
 
+    @Override
     public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {
     }
 
+    @Override
     public void processingInstruction(String target, String data) throws SAXException {
     }
 
+    @Override
     public void skippedEntity(String name) throws SAXException {
     }
 
+    @Override
     public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
         if ((currentDataObjects.size() == 0) && (currentProperties.size() == 0)) {
             return;
@@ -191,6 +201,7 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
         }
     }
 
+    @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
         if (!isInCharacterBlock) {
             currentBuffer.reset();
@@ -471,6 +482,7 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
         return xmlDocument;
     }
 
+    @Override
     public void setUnmarshalRecord(UnmarshalRecord unmarshalRecord) {
         parentRecord = unmarshalRecord;
         aHelperContext = (HelperContext)unmarshalRecord.getUnmarshaller().getProperty(SDOConstants.SDO_HELPER_CONTEXT);

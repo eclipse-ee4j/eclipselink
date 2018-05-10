@@ -749,6 +749,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * fetchGroup.addAttribute("address.city");
      * query.setFetchGroup(fetchGroup);
      */
+    @Deprecated
     public void addPartialAttribute(String attributeName) {
         addPartialAttribute(getExpressionBuilder().get(attributeName));
     }
@@ -843,6 +844,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * fetchGroup.addAttribute("address.city");
      * query.setFetchGroup(fetchGroup);
      */
+    @Deprecated
     public void addPartialAttribute(Expression attributeExpression) {
         getPartialAttributeExpressions().add(attributeExpression);
         //Bug2804042 Must un-prepare if prepared as the SQL may change.
@@ -1117,6 +1119,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * PUBLIC:
      * When unset means perform read normally and dont do refresh.
      */
+    @Override
     public void dontRefreshIdentityMapResult() {
         setShouldRefreshIdentityMapResult(false);
     }
@@ -1125,6 +1128,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * PUBLIC:
      * When unset means perform read normally and dont do refresh.
      */
+    @Override
     public void dontRefreshRemoteIdentityMapResult() {
         setShouldRefreshRemoteIdentityMapResult(false);
     }
@@ -1580,6 +1584,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * INTERNAL:
      * Return the reference class of the query.
      */
+    @Override
     public String getReferenceClassName() {
         if ((referenceClassName == null) && (referenceClass != null)) {
             referenceClassName = referenceClass.getName();
@@ -1608,6 +1613,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * INTERNAL:
      * Return if partial attributes.
      */
+    @Override
     public boolean hasPartialAttributeExpressions() {
         return (this.partialAttributeExpressions != null) && (!this.partialAttributeExpressions.isEmpty());
     }
@@ -1864,6 +1870,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * this will return true (after first execution) as the SQL contained a
      * FOR UPDATE OF clause.
      */
+    @Override
     public boolean isLockQuery() {
         return (this.lockingClause != null) && (getLockMode() > NO_LOCK);
     }
@@ -1964,6 +1971,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * INTERNAL:
      * Clear cached flags when un-preparing.
      */
+    @Override
     public void setIsPrepared(boolean isPrepared) {
         boolean oldIsPrepared = this.isPrepared;
         super.setIsPrepared(isPrepared);
@@ -2304,6 +2312,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Refresh the attributes of the object(s) resulting from the query.
      * If cascading is used the private parts of the objects will also be refreshed.
      */
+    @Override
     public void refreshIdentityMapResult() {
         setShouldRefreshIdentityMapResult(true);
     }
@@ -2313,6 +2322,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Refresh the attributes of the object(s) resulting from the query.
      * If cascading is used the private parts of the objects will also be refreshed.
      */
+    @Override
     public void refreshRemoteIdentityMapResult() {
         setShouldRefreshRemoteIdentityMapResult(true);
     }
@@ -2390,6 +2400,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * INTERNAL:
      * Set the descriptor for the query.
      */
+    @Override
     public void setDescriptor(ClassDescriptor descriptor) {
         // If the descriptor changed must unprepare as the SQL may change.
         if (this.descriptor != descriptor) {
@@ -2504,6 +2515,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * </ul>
      * @see org.eclipse.persistence.descriptors.PessimisticLockingPolicy
      */
+    @Override
     public void setLockMode(short lockMode) {
         if ((lockMode == LOCK) || (lockMode == LOCK_NOWAIT)) {
             lockingClause = ForUpdateClause.newInstance(lockMode);
@@ -2600,6 +2612,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         this.partialAttributeExpressions = partialAttributeExpressions;
     }
 
+    @Override
     public void setEJBQLString(String ejbqlString) {
         super.setEJBQLString(ejbqlString);
         setIsPrePrepared(false);
@@ -2769,6 +2782,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * INTERNAL:
      * Return if this is a full object query, not partial nor fetch group.
      */
+    @Override
     public boolean shouldReadAllMappings() {
         return (!hasPartialAttributeExpressions()) && (this.fetchGroup == null);
     }
@@ -2777,6 +2791,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * INTERNAL:
      * Check if the mapping is part of the partial attributes.
      */
+    @Override
     public boolean shouldReadMapping(DatabaseMapping mapping, FetchGroup fetchGroup) {
         String attrName = mapping.getAttributeName();
 
@@ -2811,6 +2826,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     * INTERNAL:
     * Helper method that checks if clone has been locked with uow.
     */
+    @Override
     public boolean isClonePessimisticLocked(Object clone, UnitOfWorkImpl uow) {
         return this.descriptor.hasPessimisticLockingPolicy() && uow.isPessimisticLocked(clone);
     }
@@ -2830,6 +2846,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * INTERNAL:
      * Helper method that records clone with uow if query is pessimistic locking.
      */
+    @Override
     public void recordCloneForPessimisticLocking(Object clone, UnitOfWorkImpl uow) {
         if (isReferenceClassLocked()) {
             uow.addPessimisticLockedClone(clone);
@@ -2942,6 +2959,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * INTERNAL: Helper method to determine the default mode. If true and query has a pessimistic locking policy,
      * locking will be configured according to the pessimistic locking policy.
      */
+    @Override
     public boolean isDefaultLock() {
         return (this.lockingClause == null) || wasDefaultLockMode();
     }
@@ -2997,6 +3015,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     /**
      * Return the load group set in the query.
      */
+    @Override
     public LoadGroup getLoadGroup() {
         return this.loadGroup;
     }
@@ -3028,6 +3047,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * INTERNAL:
      * Indicates whether a FetchGroup will be applied to the query.
      */
+    @Override
     public boolean hasExecutionFetchGroup() {
         return getExecutionFetchGroup() != null;
     }
@@ -3437,6 +3457,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * INTERNAL:
      * Return temporary map of batched objects.
      */
+    @Override
     public Map<Object, Object> getBatchObjects() {
         return getBatchFetchPolicy().getBatchObjects();
     }
@@ -3445,6 +3466,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * INTERNAL:
      * Set temporary map of batched objects.
      */
+    @Override
     public void setBatchObjects(Map<Object, Object> batchObjects) {
         getBatchFetchPolicy().setBatchObjects(batchObjects);
     }

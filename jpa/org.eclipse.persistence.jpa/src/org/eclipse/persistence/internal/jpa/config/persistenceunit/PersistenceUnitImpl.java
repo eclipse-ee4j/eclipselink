@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2018  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -69,16 +69,19 @@ public class PersistenceUnitImpl implements PersistenceUnit {
         this(name, null);
     }
 
+    @Override
     public Mappings addMappings() {
         Mappings mappings = new MappingsImpl();
         this.mappings.add(mappings);
         return mappings;
     }
 
+    @Override
     public ClassLoader getClassLoader() {
         return puInfo.getClassLoader();
     }
 
+    @Override
     public PersistenceUnitInfo getPersistenceUnitInfo() {
         return puInfo;
     }
@@ -87,65 +90,78 @@ public class PersistenceUnitImpl implements PersistenceUnit {
         return ((MappingsImpl) mappings.get(0)).getMetadata();
     }
 
+    @Override
     public String getName() {
         return puInfo.getPersistenceUnitName();
     }
 
+    @Override
     public PersistenceUnit setClass(String cls) {
         puInfo.getManagedClassNames().add(cls);
         return this;
     }
 
+    @Override
     public PersistenceUnit setExcludeUnlistedClasses(Boolean excludeUnlistedClasses) {
         puInfo.setExcludeUnlistedClasses(excludeUnlistedClasses);
         return this;
     }
 
+    @Override
     public PersistenceUnit setJarFile(String jarFile) {
         puInfo.getJarFiles().add(jarFile);
         return this;
     }
 
+    @Override
     public PersistenceUnit setJtaDataSource(String jtaDataSource) {
         setProperty(PersistenceUnitProperties.JTA_DATASOURCE, jtaDataSource);
         return this;
     }
 
+    @Override
     public PersistenceUnit setMappingFile(String mappingFile) {
         puInfo.getMappingFileNames().add(mappingFile);
         return this;
     }
 
+    @Override
     public PersistenceUnit setName(String name) {
         puInfo.setPersistenceUnitName(name);
         return this;
     }
 
+    @Override
     public PersistenceUnit setNonJtaDataSource(String nonJtaDataSource) {
         setProperty(PersistenceUnitProperties.NON_JTA_DATASOURCE, nonJtaDataSource);
         return this;
     }
 
+    @Override
     public PersistenceUnit setProperty(String name, Object value) {
         puInfo.getProperties().put(name, value);
         return this;
     }
 
+    @Override
     public PersistenceUnit setProvider(String provider) {
         puInfo.setPersistenceProviderClassName(provider);
         return this;
     }
 
+    @Override
     public PersistenceUnit setSharedCacheMode(String sharedCacheMode) {
         puInfo.setSharedCacheMode(sharedCacheMode);
         return this;
     }
 
+    @Override
     public PersistenceUnit setTransactionType(PersistenceUnitTransactionType transactionType) {
         puInfo.setTransactionType(transactionType);
         return this;
     }
 
+    @Override
     public PersistenceUnit setValidationMode(String validationMode) {
         puInfo.setValidationMode(validationMode);
         return this;

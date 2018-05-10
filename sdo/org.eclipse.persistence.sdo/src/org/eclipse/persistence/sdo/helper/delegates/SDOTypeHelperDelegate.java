@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -291,6 +291,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         }
     }
 
+    @Override
     public void addWrappersToProject(Project project) {
         SDO_BOOLEAN_WRAPPER.addDescriptorToProject(project);
         SDO_BYTE_WRAPPER.addDescriptorToProject(project);
@@ -618,6 +619,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         sdoTypeForSimpleJavaType.put(ClassConstants.PSHORT, SDOConstants.SDO_SHORT);
     }
 
+    @Override
     public Class getJavaWrapperTypeForSDOType(Type type) {
         SDOType sdoType = (SDOType) type;
         if (sdoType.getInstanceClass() != null) {
@@ -644,6 +646,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
      * @return the Type specified by typeName with the given uri,
      *    or null if not found.
      */
+    @Override
     public SDOType getType(String uri, String typeName) {
         // for now, only the build in HashMap will be used to acquire
         // Type.a
@@ -661,6 +664,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         }
     }
 
+    @Override
     public void addType(SDOType newType) {
         if(SDOConstants.SDO_URL.equals(newType.getURI())) {
             commonjHashMap.put(newType.getName(), newType);
@@ -677,6 +681,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
      *    type.getInstanceClass();
      * @return the Type for this interfaceClass or null if not found.
      */
+    @Override
     @SuppressWarnings("unchecked")
     public SDOType getType(Class interfaceClass) {
         if (LOGGER.isLoggable(Level.INFO)) {
@@ -750,6 +755,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         return null;
     }
 
+    @Override
     public SDOType getTypeForImplClass(Class implClass) {
         SDOType type = getTypeForSimpleJavaType(implClass);
         if (type != null) {
@@ -780,10 +786,12 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
      * INTERNAL:
      * Used to determine which SDO Type corresponds the given Java simple type
      */
+    @Override
     public SDOType getTypeForSimpleJavaType(Class implClass) {
         return (SDOType)getSDOTypeForSimpleJavaTypeMap().get(implClass);
     }
 
+    @Override
     public synchronized Type define(DataObject dataObject) {
         List types = new ArrayList();
         Type rootType = define(dataObject, types);
@@ -1071,6 +1079,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
      * @return the defined Types.
      * @throws IllegalArgumentException if the Types could not be defined.
      */
+    @Override
     public synchronized List define(List types) {
         if (types == null) {
             throw new IllegalArgumentException(SDOException.cannotPerformOperationWithNullInputParameter("define", "types"));
@@ -1088,6 +1097,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
      * @param aType    a SDO Type Object
      * @return         the corresponding  XSD QName Object
      */
+    @Override
     public QName getXSDTypeFromSDOType(Type aType) {
         return (QName)sdoToXSDTypes.get(aType);
     }
@@ -1097,14 +1107,17 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
      * @param aName
      * @return
      */
+    @Override
     public SDOType getSDOTypeFromXSDType(QName aName) {
         return (SDOType)xsdToSDOType.get(aName);
     }
 
+    @Override
     public void setTypesHashMap(Map typesHashMap) {
         this.typesHashMap = typesHashMap;
     }
 
+    @Override
     public Map getTypesHashMap() {
         if (typesHashMap == null) {
             initTypesHashMap();
@@ -1117,6 +1130,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
      * Return the map of Wrapper objects (SDOWrapperTypes that wrap a primitive document).
      * @return a HashMap of SDOWrapperTypes, keyed on the XSD type that it wraps.
      */
+    @Override
     public Map getWrappersHashMap() {
         if (wrappersHashMap == null) {
             initWrappersHashMap();
@@ -1129,10 +1143,12 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
      * Set the map of Wrapper objects (SDOWrapperTypes that wrap a primitive document).
      * @param   aMap        a HashMap of SDOWrapperTypes, keyed on the XSD type that it wraps.
      */
+    @Override
     public void setWrappersHashMap(Map aMap) {
         this.wrappersHashMap = aMap;
     }
 
+    @Override
     public void reset() {
         interfacesToSDOTypeHashMap = new HashMap<Class, SDOType>();
         namespaceResolver = null;
@@ -1158,6 +1174,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
     @return the defined open Property.
     @throws IllegalArgumentException if the Property could not be defined.
     */
+    @Override
     public Property defineOpenContentProperty(String uri, DataObject propertyDO) {
         if (propertyDO == null) {
             throw new IllegalArgumentException(SDOException.cannotPerformOperationWithNullInputParameter("defineOpenContentProperty", "propertyDO"));
@@ -1268,6 +1285,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
     @param propertyName the name of the open Property.
     @return the open Property.
     */
+    @Override
     public Property getOpenContentProperty(String uri, String propertyName) {
         QName qname = new QName(uri, propertyName);
         return (Property)openContentProperties.get(qname);
@@ -1285,6 +1303,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
      * INTERNAL:
      * Return the current helperContext associated with this delegate.
      */
+    @Override
     public HelperContext getHelperContext() {
         return aHelperContext;
     }
@@ -1293,6 +1312,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
      * INTERNAL:
      * Set the current helperContext to be associated with this delegate
      */
+    @Override
     public void setHelperContext(HelperContext helperContext) {
         aHelperContext = helperContext;
     }
@@ -1301,6 +1321,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
      * INTERNAL:
      * Return the prefix for the given uri, or generate a new one if necessary
      */
+    @Override
     public String getPrefix(String uri) {
         if (uri == null) {
             return null;
@@ -1336,6 +1357,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
       * INTERNAL:
       * Add the given namespace uri and prefix to the global namespace resolver.
       */
+    @Override
     public String addNamespace(String prefix, String uri) {
         NamespaceResolver nr = getNamespaceResolver();
 
@@ -1361,6 +1383,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
     * INTERNAL:
     * Return the NamespaceResolver
     */
+    @Override
     public NamespaceResolver getNamespaceResolver() {
         if (namespaceResolver == null) {
             namespaceResolver = new NamespaceResolver();
@@ -1372,6 +1395,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
     * INTERNAL:
     * Return the Map of Open Content Properties
     */
+    @Override
     public Map getOpenContentProperties(){
       return openContentProperties;
     }
@@ -1390,14 +1414,17 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         openContentProperties.put(SDOConstants.DOCUMENTATION_PROPERTY_QNAME, SDOConstants.DOCUMENTATION_PROPERTY);
     }
 
+    @Override
     public Map getInterfacesToSDOTypeHashMap() {
         return interfacesToSDOTypeHashMap;
     }
 
+    @Override
     public Map<Class, SDOType> getImplClassesToSDOType() {
         return implClassesToSDOType;
     }
 
+    @Override
     public List getAnonymousTypes() {
         if(this.anonymousTypes == null) {
             anonymousTypes = new ArrayList();

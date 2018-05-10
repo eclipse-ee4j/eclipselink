@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -78,16 +78,20 @@ public class JarArchiver implements DBWSPackager.Archiver {
         this.packager = packager;
     }
 
+    @Override
     public DBWSPackager getPackager() {
         return packager;
     }
+    @Override
     public void setPackager(DBWSPackager packager) {
         this.packager = packager;
     }
 
+    @Override
     public String getFilename() {
         return jarFilename;
     }
+    @Override
     public void setFilename(String jarFilename) {
         if (!(jarFilename.endsWith(".jar"))) {
             jarFilename += ".jar";
@@ -95,6 +99,7 @@ public class JarArchiver implements DBWSPackager.Archiver {
         this.jarFilename = jarFilename;
     }
 
+    @Override
     public void archive() {
         try {
             JarOutputStream jarOutputStream = buildJarOutputStream();
@@ -238,12 +243,15 @@ public class JarArchiver implements DBWSPackager.Archiver {
         }
     }
 
+    @Override
     public String getOrProjectPathPrefix() {
         return META_INF_PATHS[0];
     }
+    @Override
     public String getOxProjectPathPrefix() {
         return META_INF_PATHS[0];
     }
+    @Override
     public String getWSDLPathPrefix() {
         return WSDL_DIR;
     }

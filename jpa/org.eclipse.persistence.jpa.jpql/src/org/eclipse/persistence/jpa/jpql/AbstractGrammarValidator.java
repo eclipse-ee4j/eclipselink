@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -239,9 +239,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             public String encapsulatedExpressionMissingKey(AbsExpression expression) {
                 return AbsExpression_MissingExpression;
             }
+            @Override
             public String leftParenthesisMissingKey(AbsExpression expression) {
                 return AbsExpression_MissingLeftParenthesis;
             }
+            @Override
             public String rightParenthesisMissingKey(AbsExpression expression) {
                 return AbsExpression_MissingRightParenthesis;
             }
@@ -262,9 +264,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             public String encapsulatedExpressionMissingKey(AllOrAnyExpression expression) {
                 return AllOrAnyExpression_MissingExpression;
             }
+            @Override
             public String leftParenthesisMissingKey(AllOrAnyExpression expression) {
                 return AllOrAnyExpression_MissingLeftParenthesis;
             }
+            @Override
             public String rightParenthesisMissingKey(AllOrAnyExpression expression) {
                 return AllOrAnyExpression_MissingRightParenthesis;
             }
@@ -281,6 +285,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             public String encapsulatedExpressionMissingKey(AvgFunction expression) {
                 return AvgFunction_MissingExpression;
             }
+            @Override
             public String leftParenthesisMissingKey(AvgFunction expression) {
                 return AvgFunction_MissingLeftParenthesis;
             }
@@ -289,6 +294,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
                 return (expression.hasDistinct() ? 8 /* DISTINCT */ : 0) +
                        (expression.hasSpaceAfterDistinct() ? 1 : 0);
             }
+            @Override
             public String rightParenthesisMissingKey(AvgFunction expression) {
                 return AvgFunction_MissingRightParenthesis;
             }
@@ -309,9 +315,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             protected boolean isEncapsulatedExpressionValid(CoalesceExpression expression) {
                 return isValidWithChildCollectionBypass(expression.getExpression(), expression.getEncapsulatedExpressionQueryBNFId());
             }
+            @Override
             public String leftParenthesisMissingKey(CoalesceExpression expression) {
                 return CoalesceExpression_MissingLeftParenthesis;
             }
+            @Override
             public String rightParenthesisMissingKey(CoalesceExpression expression) {
                 return CoalesceExpression_MissingRightParenthesis;
             }
@@ -342,9 +350,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
                 // Done in visit(ConcatExpression)
                 return true;
             }
+            @Override
             public String leftParenthesisMissingKey(ConcatExpression expression) {
                 return ConcatExpression_MissingLeftParenthesis;
             }
+            @Override
             public String rightParenthesisMissingKey(ConcatExpression expression) {
                 return ConcatExpression_MissingRightParenthesis;
             }
@@ -361,6 +371,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             public String encapsulatedExpressionMissingKey(CountFunction expression) {
                 return CountFunction_MissingExpression;
             }
+            @Override
             public String leftParenthesisMissingKey(CountFunction expression) {
                 return CountFunction_MissingLeftParenthesis;
             }
@@ -369,6 +380,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
                 return (expression.hasDistinct() ? 8 /* DISTINCT */ : 0) +
                        (expression.hasSpaceAfterDistinct() ? 1 : 0);
             }
+            @Override
             public String rightParenthesisMissingKey(CountFunction expression) {
                 return CountFunction_MissingRightParenthesis;
             }
@@ -393,9 +405,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             public boolean isEncapsulatedExpressionValid(EntryExpression expression) {
                 return isValid(expression.getExpression(), IdentificationVariableBNF.ID);
             }
+            @Override
             public String leftParenthesisMissingKey(EntryExpression expression) {
                 return EntryExpression_MissingLeftParenthesis;
             }
+            @Override
             public String rightParenthesisMissingKey(EntryExpression expression) {
                 return EntryExpression_MissingRightParenthesis;
             }
@@ -412,9 +426,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             public String encapsulatedExpressionMissingKey(ExistsExpression expression) {
                 return ExistsExpression_MissingExpression;
             }
+            @Override
             public String leftParenthesisMissingKey(ExistsExpression expression) {
                 return ExistsExpression_MissingLeftParenthesis;
             }
+            @Override
             public String rightParenthesisMissingKey(ExistsExpression expression) {
                 return ExistsExpression_MissingRightParenthesis;
             }
@@ -494,6 +510,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
                     }
                 }
             }
+            @Override
             public String leftParenthesisMissingKey(FunctionExpression expression) {
                 return null; // never happens
             }
@@ -503,6 +520,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
                        (expression.hasComma() ? 1 : 0) +
                        (expression.hasSpaceAfterComma() ? 1 : 0);
             }
+            @Override
             public String rightParenthesisMissingKey(FunctionExpression expression) {
                 return FunctionExpression_MissingRightParenthesis;
             }
@@ -523,9 +541,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             public boolean isEncapsulatedExpressionValid(IndexExpression expression) {
                 return isValid(expression.getExpression(), IdentificationVariableBNF.ID);
             }
+            @Override
             public String leftParenthesisMissingKey(IndexExpression expression) {
                 return IndexExpression_MissingLeftParenthesis;
             }
+            @Override
             public String rightParenthesisMissingKey(IndexExpression expression) {
                 return IndexExpression_MissingRightParenthesis;
             }
@@ -546,9 +566,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             public boolean isEncapsulatedExpressionValid(KeyExpression expression) {
                 return isValid(expression.getExpression(), IdentificationVariableBNF.ID);
             }
+            @Override
             public String leftParenthesisMissingKey(KeyExpression expression) {
                 return KeyExpression_MissingLeftParenthesis;
             }
+            @Override
             public String rightParenthesisMissingKey(KeyExpression expression) {
                 return KeyExpression_MissingRightParenthesis;
             }
@@ -565,9 +587,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             public String encapsulatedExpressionMissingKey(LengthExpression expression) {
                 return LengthExpression_MissingExpression;
             }
+            @Override
             public String leftParenthesisMissingKey(LengthExpression expression) {
                 return LengthExpression_MissingLeftParenthesis;
             }
+            @Override
             public String rightParenthesisMissingKey(LengthExpression expression) {
                 return LengthExpression_MissingRightParenthesis;
             }
@@ -588,12 +612,15 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             protected String firstExpressionMissingKey() {
                 return LocateExpression_MissingFirstExpression;
             }
+            @Override
             public String identifier(LocateExpression expression) {
                 return LOCATE;
             }
+            @Override
             public String leftParenthesisMissingKey(LocateExpression expression) {
                 return LocateExpression_MissingLeftParenthesis;
             }
+            @Override
             public String rightParenthesisMissingKey(LocateExpression expression) {
                 return LocateExpression_MissingRightParenthesis;
             }
@@ -630,9 +657,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             public String encapsulatedExpressionMissingKey(LowerExpression expression) {
                 return LowerExpression_MissingExpression;
             }
+            @Override
             public String leftParenthesisMissingKey(LowerExpression expression) {
                 return LowerExpression_MissingLeftParenthesis;
             }
+            @Override
             public String rightParenthesisMissingKey(LowerExpression expression) {
                 return LowerExpression_MissingRightParenthesis;
             }
@@ -649,6 +678,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             public String encapsulatedExpressionMissingKey(MaxFunction expression) {
                 return MaxFunction_MissingExpression;
             }
+            @Override
             public String leftParenthesisMissingKey(MaxFunction expression) {
                 return MaxFunction_MissingLeftParenthesis;
             }
@@ -657,6 +687,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
                 return (expression.hasDistinct() ? 8 /* DISTINCT */ : 0) +
                        (expression.hasSpaceAfterDistinct() ? 1 : 0);
             }
+            @Override
             public String rightParenthesisMissingKey(MaxFunction expression) {
                 return MaxFunction_MissingRightParenthesis;
             }
@@ -673,6 +704,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             public String encapsulatedExpressionMissingKey(MinFunction expression) {
                 return MinFunction_MissingExpression;
             }
+            @Override
             public String leftParenthesisMissingKey(MinFunction expression) {
                 return MinFunction_MissingLeftParenthesis;
             }
@@ -681,6 +713,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
                 return (expression.hasDistinct() ? 8 /* DISTINCT */ : 0) +
                        (expression.hasSpaceAfterDistinct() ? 1 : 0);
             }
+            @Override
             public String rightParenthesisMissingKey(MinFunction expression) {
                 return MinFunction_MissingRightParenthesis;
             }
@@ -697,6 +730,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             protected String firstExpressionMissingKey() {
                 return ModExpression_MissingFirstExpression;
             }
+            @Override
             public String leftParenthesisMissingKey(ModExpression expression) {
                 return ModExpression_MissingLeftParenthesis;
             }
@@ -704,6 +738,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             protected String missingCommaKey() {
                 return ModExpression_MissingComma;
             }
+            @Override
             public String rightParenthesisMissingKey(ModExpression expression) {
                 return ModExpression_MissingRightParenthesis;
             }
@@ -737,6 +772,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             public String firstExpressionMissingKey() {
                 return NullIfExpression_MissingFirstExpression;
             }
+            @Override
             public String leftParenthesisMissingKey(NullIfExpression expression) {
                 return NullIfExpression_MissingLeftParenthesis;
             }
@@ -744,6 +780,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             public String missingCommaKey() {
                 return NullIfExpression_MissingComma;
             }
+            @Override
             public String rightParenthesisMissingKey(NullIfExpression expression) {
                 return NullIfExpression_MissingRightParenthesis;
             }
@@ -772,9 +809,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             public boolean isEncapsulatedExpressionValid(ObjectExpression expression) {
                 return isValid(expression.getExpression(), IdentificationVariableBNF.ID);
             }
+            @Override
             public String leftParenthesisMissingKey(ObjectExpression expression) {
                 return ObjectExpression_MissingLeftParenthesis;
             }
+            @Override
             public String rightParenthesisMissingKey(ObjectExpression expression) {
                 return ObjectExpression_MissingRightParenthesis;
             }
@@ -791,9 +830,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             public String encapsulatedExpressionMissingKey(SizeExpression expression) {
                 return SizeExpression_MissingExpression;
             }
+            @Override
             public String leftParenthesisMissingKey(SizeExpression expression) {
                 return SizeExpression_MissingLeftParenthesis;
             }
+            @Override
             public String rightParenthesisMissingKey(SizeExpression expression) {
                 return SizeExpression_MissingRightParenthesis;
             }
@@ -810,9 +851,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             public String encapsulatedExpressionMissingKey(SqrtExpression expression) {
                 return SqrtExpression_MissingExpression;
             }
+            @Override
             public String leftParenthesisMissingKey(SqrtExpression expression) {
                 return SqrtExpression_MissingLeftParenthesis;
             }
+            @Override
             public String rightParenthesisMissingKey(SqrtExpression expression) {
                 return SqrtExpression_MissingRightParenthesis;
             }
@@ -833,12 +876,15 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             protected String firstExpressionMissingKey() {
                 return SubstringExpression_MissingFirstExpression;
             }
+            @Override
             public String identifier(SubstringExpression expression) {
                 return SUBSTRING;
             }
+            @Override
             public String leftParenthesisMissingKey(SubstringExpression expression) {
                 return SubstringExpression_MissingLeftParenthesis;
             }
+            @Override
             public String rightParenthesisMissingKey(SubstringExpression expression) {
                 return SubstringExpression_MissingRightParenthesis;
             }
@@ -875,6 +921,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             public String encapsulatedExpressionMissingKey(SumFunction expression) {
                 return SumFunction_MissingExpression;
             }
+            @Override
             public String leftParenthesisMissingKey(SumFunction expression) {
                 return SumFunction_MissingLeftParenthesis;
             }
@@ -883,6 +930,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
                 return (expression.hasDistinct() ? 8 /* DISTINCT */ : 0) +
                        (expression.hasSpaceAfterDistinct() ? 1 : 0);
             }
+            @Override
             public String rightParenthesisMissingKey(SumFunction expression) {
                 return SumFunction_MissingRightParenthesis;
             }
@@ -909,9 +957,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
                 // Done in visit(TrimExpression)
                 return true;
             }
+            @Override
             public String leftParenthesisMissingKey(TrimExpression expression) {
                 return TrimExpression_MissingLeftParenthesis;
             }
+            @Override
             public String rightParenthesisMissingKey(TrimExpression expression) {
                 return TrimExpression_MissingRightParenthesis;
             }
@@ -928,9 +978,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             public String encapsulatedExpressionMissingKey(TypeExpression expression) {
                 return TypeExpression_MissingExpression;
             }
+            @Override
             public String leftParenthesisMissingKey(TypeExpression expression) {
                 return TypeExpression_MissingLeftParenthesis;
             }
+            @Override
             public String rightParenthesisMissingKey(TypeExpression expression) {
                 return TypeExpression_MissingRightParenthesis;
             }
@@ -947,9 +999,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             public String encapsulatedExpressionMissingKey(UpperExpression expression) {
                 return UpperExpression_MissingExpression;
             }
+            @Override
             public String leftParenthesisMissingKey(UpperExpression expression) {
                 return UpperExpression_MissingLeftParenthesis;
             }
+            @Override
             public String rightParenthesisMissingKey(UpperExpression expression) {
                 return UpperExpression_MissingRightParenthesis;
             }
@@ -970,9 +1024,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             protected boolean isEncapsulatedExpressionValid(ValueExpression expression) {
                 return isValid(expression.getExpression(), IdentificationVariableBNF.ID);
             }
+            @Override
             public String leftParenthesisMissingKey(ValueExpression expression) {
                 return ValueExpression_MissingLeftParenthesis;
             }
+            @Override
             public String rightParenthesisMissingKey(ValueExpression expression) {
                 return ValueExpression_MissingRightParenthesis;
             }
@@ -4663,6 +4719,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         /**
          * {@inheritDoc}
          */
+        @Override
         public String[] arguments(T expression) {
             return ExpressionTools.EMPTY_STRING_ARRAY;
         }
@@ -4687,6 +4744,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         /**
          * {@inheritDoc}
          */
+        @Override
         public boolean hasLeftParenthesis(T expression) {
             return expression.hasLeftParenthesis();
         }
@@ -4694,6 +4752,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         /**
          * {@inheritDoc}
          */
+        @Override
         public boolean hasRightParenthesis(T expression) {
             // If the second encapsulated expression is missing, then no need
             // to add a problem for a missing ')' because the second encapsulated
@@ -4710,6 +4769,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         /**
          * {@inheritDoc}
          */
+        @Override
         public String identifier(T expression) {
             return expression.getIdentifier();
         }
@@ -4808,6 +4868,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         /**
          * {@inheritDoc}
          */
+        @Override
         public String[] arguments(T expression) {
             return ExpressionTools.EMPTY_STRING_ARRAY;
         }
@@ -4841,6 +4902,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         /**
          * {@inheritDoc}
          */
+        @Override
         public boolean hasLeftParenthesis(T expression) {
             return expression.hasLeftParenthesis();
         }
@@ -4848,6 +4910,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         /**
          * {@inheritDoc}
          */
+        @Override
         public boolean hasRightParenthesis(T expression) {
             // If the encapsulated expression is missing, then no need to
             // add a problem for a missing ')' because the encapsulated
@@ -4859,6 +4922,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         /**
          * {@inheritDoc}
          */
+        @Override
         public final String identifier(T expression) {
             return expression.getIdentifier();
         }
@@ -4910,6 +4974,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         /**
          * {@inheritDoc}
          */
+        @Override
         public String[] arguments(T expression) {
             return ExpressionTools.EMPTY_STRING_ARRAY;
         }
@@ -4931,6 +4996,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         /**
          * {@inheritDoc}
          */
+        @Override
         public boolean hasLeftParenthesis(T expression) {
             return expression.hasLeftParenthesis();
         }
@@ -4938,6 +5004,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         /**
          * {@inheritDoc}
          */
+        @Override
         public boolean hasRightParenthesis(T expression) {
             return !isRightParenthesisMissing(expression);
         }

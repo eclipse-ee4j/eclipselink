@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -65,7 +65,6 @@ import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.queries.WriteObjectQuery;
-import org.eclipse.persistence.sessions.DatabaseRecord;
 
 /**
  * A MappedKeyMapContainerPolicy should be used for mappings to implementers of Map.
@@ -754,6 +753,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
      * INTERNAL:
      * Propagate the postDeleteEvent to any additional objects the query is aware of
      */
+    @Override
     public void propogatePreInsert(WriteObjectQuery query, Object object) {
         if (propagatesEventsToCollection()){
             ((AggregateObjectMapping)keyMapping).preInsertAttributeValue(query, ((Map.Entry)object).getKey());
@@ -777,6 +777,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
      * Aggregates need events propagated to them because they are not explicitly
      * deleted, updated or inserted
      */
+    @Override
     public boolean propagatesEventsToCollection() {
         return ((DatabaseMapping)keyMapping).isAggregateObjectMapping();
     }

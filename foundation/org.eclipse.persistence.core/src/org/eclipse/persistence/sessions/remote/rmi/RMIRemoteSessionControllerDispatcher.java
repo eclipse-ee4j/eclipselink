@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -43,6 +43,7 @@ public class RMIRemoteSessionControllerDispatcher extends UnicastRemoteObject im
      * remote session
      * @param remoteTransporter The Transporter carrying the command to be executed on the remote session
      */
+    @Override
     public Transporter processCommand(Transporter remoteTransporter) {
         return getController().processCommand(remoteTransporter);
     }
@@ -50,6 +51,7 @@ public class RMIRemoteSessionControllerDispatcher extends UnicastRemoteObject im
     /**
      * Begin a transaction on the database.
      */
+    @Override
     public Transporter beginTransaction() {
         return getController().beginTransaction();
     }
@@ -57,6 +59,7 @@ public class RMIRemoteSessionControllerDispatcher extends UnicastRemoteObject im
     /**
      * Begin an early unit of work transaction.
      */
+    @Override
     public Transporter beginEarlyTransaction() {
         return getController().beginEarlyTransaction();
     }
@@ -64,6 +67,7 @@ public class RMIRemoteSessionControllerDispatcher extends UnicastRemoteObject im
     /**
      * Remote unit of work after serialization is committed locally.
      */
+    @Override
     public Transporter commitRootUnitOfWork(Transporter remoteUnitOfWork) {
         return getController().commitRootUnitOfWork(remoteUnitOfWork);
     }
@@ -71,6 +75,7 @@ public class RMIRemoteSessionControllerDispatcher extends UnicastRemoteObject im
     /**
      * Commit a transaction on the database.
      */
+    @Override
     public Transporter commitTransaction() {
         return getController().commitTransaction();
     }
@@ -78,6 +83,7 @@ public class RMIRemoteSessionControllerDispatcher extends UnicastRemoteObject im
     /**
      * Used for closing cursored streams across RMI.
      */
+    @Override
     public Transporter cursoredStreamClose(Transporter remoteCursoredStreamID) {
         return getController().cursoredStreamClose(remoteCursoredStreamID);
     }
@@ -85,6 +91,7 @@ public class RMIRemoteSessionControllerDispatcher extends UnicastRemoteObject im
     /**
      * Retrieve next page size of objects from the remote cursored stream
      */
+    @Override
     public Transporter cursoredStreamNextPage(Transporter remoteCursoredStream, int pageSize) {
         return getController().cursoredStreamNextpage(remoteCursoredStream, pageSize);
     }
@@ -92,6 +99,7 @@ public class RMIRemoteSessionControllerDispatcher extends UnicastRemoteObject im
     /**
      * Return the cursored stream size
      */
+    @Override
     public Transporter cursoredStreamSize(Transporter remoteCursoredStreamOid) {
         return getController().cursoredStreamSize(remoteCursoredStreamOid);
     }
@@ -99,6 +107,7 @@ public class RMIRemoteSessionControllerDispatcher extends UnicastRemoteObject im
     /**
      * Returns a remote cursor stub in a transporter
      */
+    @Override
     public Transporter cursorSelectObjects(Transporter remoteTransporter) {
         Transporter transporter = getController().cursorSelectObjects(remoteTransporter);
 
@@ -108,6 +117,7 @@ public class RMIRemoteSessionControllerDispatcher extends UnicastRemoteObject im
     /**
      * A remote query after serialization is executed locally.
      */
+    @Override
     public Transporter executeNamedQuery(Transporter nameTransporter, Transporter classTransporter, Transporter argumentsTransporter) {
         return getController().executeNamedQuery(nameTransporter, classTransporter, argumentsTransporter);
     }
@@ -115,6 +125,7 @@ public class RMIRemoteSessionControllerDispatcher extends UnicastRemoteObject im
     /**
      * A remote query after serialization is executed locally.
      */
+    @Override
     public Transporter executeQuery(Transporter query) {
         return getController().executeQuery(query);
     }
@@ -130,6 +141,7 @@ public class RMIRemoteSessionControllerDispatcher extends UnicastRemoteObject im
     /**
      * Get the default read-only classes
      **/
+    @Override
     public Transporter getDefaultReadOnlyClasses() {
         return getController().getDefaultReadOnlyClasses();
     }
@@ -137,6 +149,7 @@ public class RMIRemoteSessionControllerDispatcher extends UnicastRemoteObject im
     /**
      * Extract descriptor from the session
      */
+    @Override
     public Transporter getDescriptor(Transporter theClass) {
         return getController().getDescriptor(theClass);
     }
@@ -144,6 +157,7 @@ public class RMIRemoteSessionControllerDispatcher extends UnicastRemoteObject im
     /**
      * Extract descriptor from the session
      */
+    @Override
     public Transporter getDescriptorForAlias(Transporter alias) {
         return getController().getDescriptorForAlias(alias);
     }
@@ -151,6 +165,7 @@ public class RMIRemoteSessionControllerDispatcher extends UnicastRemoteObject im
     /**
      * Get the associated session login.
      */
+    @Override
     public Transporter getLogin() {
         return getController().getLogin();
     }
@@ -159,10 +174,12 @@ public class RMIRemoteSessionControllerDispatcher extends UnicastRemoteObject im
      * INTERNAL:
      * Get the value returned by remote function call
      */
+    @Override
     public Transporter getSequenceNumberNamed(Transporter remoteFunctionCall) {
         return getController().getSequenceNumberNamed(remoteFunctionCall);
     }
 
+    @Override
     public Transporter initializeIdentityMapsOnServerSession() {
         return getController().initializeIdentityMapsOnServerSession();
     }
@@ -170,6 +187,7 @@ public class RMIRemoteSessionControllerDispatcher extends UnicastRemoteObject im
     /**
      * The corresponding original value holder is instantiated.
      */
+    @Override
     public Transporter instantiateRemoteValueHolderOnServer(Transporter remoteValueHolder) {
         return getController().instantiateRemoteValueHolderOnServer(remoteValueHolder);
     }
@@ -177,6 +195,7 @@ public class RMIRemoteSessionControllerDispatcher extends UnicastRemoteObject im
     /**
      * Rollback a transaction on the database.
      */
+    @Override
     public Transporter rollbackTransaction() {
         return getController().rollbackTransaction();
     }
@@ -184,6 +203,7 @@ public class RMIRemoteSessionControllerDispatcher extends UnicastRemoteObject im
     /**
      * Moves the cursor to the given row number in the result set
      */
+    @Override
     public Transporter scrollableCursorAbsolute(Transporter remoteScrollableCursorOid, int rows) {
         return getController().scrollableCursorAbsolute(remoteScrollableCursorOid, rows);
     }
@@ -191,6 +211,7 @@ public class RMIRemoteSessionControllerDispatcher extends UnicastRemoteObject im
     /**
      * Moves the cursor to the end of the result set, just after the last row.
      */
+    @Override
     public Transporter scrollableCursorAfterLast(Transporter remoteScrollableCursorOid) {
         return getController().scrollableCursorAfterLast(remoteScrollableCursorOid);
     }
@@ -198,6 +219,7 @@ public class RMIRemoteSessionControllerDispatcher extends UnicastRemoteObject im
     /**
      * Moves the cursor to the front of the result set, just before the first row
      */
+    @Override
     public Transporter scrollableCursorBeforeFirst(Transporter remoteScrollableCursor) {
         return getController().scrollableCursorBeforeFirst(remoteScrollableCursor);
     }
@@ -205,6 +227,7 @@ public class RMIRemoteSessionControllerDispatcher extends UnicastRemoteObject im
     /**
      * Used for closing scrollable cursor across RMI.
      */
+    @Override
     public Transporter scrollableCursorClose(Transporter remoteScrollableCursorOid) {
         return getController().scrollableCursorClose(remoteScrollableCursorOid);
     }
@@ -212,6 +235,7 @@ public class RMIRemoteSessionControllerDispatcher extends UnicastRemoteObject im
     /**
      * Retrieves the current row index number
      */
+    @Override
     public Transporter scrollableCursorCurrentIndex(Transporter remoteScrollableCursor) {
         return getController().scrollableCursorCurrentIndex(remoteScrollableCursor);
     }
@@ -219,6 +243,7 @@ public class RMIRemoteSessionControllerDispatcher extends UnicastRemoteObject im
     /**
      * Moves the cursor to the first row in the result set
      */
+    @Override
     public Transporter scrollableCursorFirst(Transporter remoteScrollableCursor) {
         return getController().scrollableCursorFirst(remoteScrollableCursor);
     }
@@ -226,6 +251,7 @@ public class RMIRemoteSessionControllerDispatcher extends UnicastRemoteObject im
     /**
      * Indicates whether the cursor is after the last row in the result set.
      */
+    @Override
     public Transporter scrollableCursorIsAfterLast(Transporter remoteScrollableCursor) {
         return getController().scrollableCursorIsAfterLast(remoteScrollableCursor);
     }
@@ -233,6 +259,7 @@ public class RMIRemoteSessionControllerDispatcher extends UnicastRemoteObject im
     /**
      * Indicates whether the cursor is before the first row in the result set.
      */
+    @Override
     public Transporter scrollableCursorIsBeforeFirst(Transporter remoteScrollableCursor) {
         return getController().scrollableCursorIsBeforeFirst(remoteScrollableCursor);
     }
@@ -240,6 +267,7 @@ public class RMIRemoteSessionControllerDispatcher extends UnicastRemoteObject im
     /**
      * Indicates whether the cursor is on the first row of the result set.
      */
+    @Override
     public Transporter scrollableCursorIsFirst(Transporter remoteScrollableCursor) {
         return getController().scrollableCursorIsFirst(remoteScrollableCursor);
     }
@@ -247,6 +275,7 @@ public class RMIRemoteSessionControllerDispatcher extends UnicastRemoteObject im
     /**
      * Indicates whether the cursor is on the last row of the result set.
      */
+    @Override
     public Transporter scrollableCursorIsLast(Transporter remoteScrollableCursor) {
         return getController().scrollableCursorIsLast(remoteScrollableCursor);
     }
@@ -254,6 +283,7 @@ public class RMIRemoteSessionControllerDispatcher extends UnicastRemoteObject im
     /**
      * Moves the cursor to the last row in the result set
      */
+    @Override
     public Transporter scrollableCursorLast(Transporter remoteScrollableCursor) {
         return getController().scrollableCursorLast(remoteScrollableCursor);
     }
@@ -261,6 +291,7 @@ public class RMIRemoteSessionControllerDispatcher extends UnicastRemoteObject im
     /**
      * Retrieve next object from the scrollable cursor
      */
+    @Override
     public Transporter scrollableCursorNextObject(Transporter scrollableCursorOid) {
         return getController().scrollableCursorNextObject(scrollableCursorOid);
     }
@@ -268,6 +299,7 @@ public class RMIRemoteSessionControllerDispatcher extends UnicastRemoteObject im
     /**
      * Retrieve previous object from the scrollable cursor
      */
+    @Override
     public Transporter scrollableCursorPreviousObject(Transporter scrollableCursorOid) {
         return getController().scrollableCursorPreviousObject(scrollableCursorOid);
     }
@@ -275,6 +307,7 @@ public class RMIRemoteSessionControllerDispatcher extends UnicastRemoteObject im
     /**
      * Moves the cursor to the given row number in the result set
      */
+    @Override
     public Transporter scrollableCursorRelative(Transporter remoteScrollableCursor, int rows) {
         return getController().scrollableCursorRelative(remoteScrollableCursor, rows);
     }
@@ -282,6 +315,7 @@ public class RMIRemoteSessionControllerDispatcher extends UnicastRemoteObject im
     /**
      * Return the cursor size
      */
+    @Override
     public Transporter scrollableCursorSize(Transporter remoteCursorOid) {
         return getController().scrollableCursorSize(remoteCursorOid);
     }

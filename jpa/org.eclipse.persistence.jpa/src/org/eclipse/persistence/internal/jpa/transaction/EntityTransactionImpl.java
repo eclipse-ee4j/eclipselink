@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -84,6 +84,7 @@ public class EntityTransactionImpl implements javax.persistence.EntityTransactio
      * @throws IllegalStateException
      *             if isActive() is true.
      */
+    @Override
     public void begin() {
         if (isActive()) {
             throw new IllegalStateException(TransactionException.transactionIsActive().getMessage());
@@ -118,6 +119,7 @@ public class EntityTransactionImpl implements javax.persistence.EntityTransactio
      * @throws IllegalStateException
      *             if isActive() is false.
      */
+    @Override
     public void commit() {
         if (!isActive()) {
             throw new IllegalStateException(TransactionException.transactionNotActive().getMessage());
@@ -173,6 +175,7 @@ public class EntityTransactionImpl implements javax.persistence.EntityTransactio
      * @throws IllegalStateException
      *             if isActive() is false.
      */
+    @Override
     public void rollback() {
         if (!isActive()) {
             throw new IllegalStateException(TransactionException.transactionNotActive().getMessage());
@@ -202,6 +205,7 @@ public class EntityTransactionImpl implements javax.persistence.EntityTransactio
      * @throws IllegalStateException
      *             if isActive() is false.
      */
+    @Override
     public void setRollbackOnly() {
         if (!isActive()) {
             throw new IllegalStateException(TransactionException.transactionNotActive().getMessage());
@@ -227,6 +231,7 @@ public class EntityTransactionImpl implements javax.persistence.EntityTransactio
      * @throws IllegalStateException
      *             if isActive() is false.
      */
+    @Override
     public boolean getRollbackOnly() {
         if (!isActive()) {
             throw new IllegalStateException(TransactionException.transactionNotActive().getMessage());
@@ -237,6 +242,7 @@ public class EntityTransactionImpl implements javax.persistence.EntityTransactio
     /**
      * Check to see if the current transaction is in progress.
      */
+    @Override
     public boolean isActive() {
         return this.active;
     }
@@ -248,6 +254,7 @@ public class EntityTransactionImpl implements javax.persistence.EntityTransactio
          * but just throws it away. If we do not rollback the txn the connection
          * will go back into the pool.
          */
+        @Override
         protected void finalize() throws Throwable {
             if (isActive()) {
                 rollback();

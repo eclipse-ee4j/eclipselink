@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -13,18 +13,18 @@
 package org.eclipse.persistence.oxm.schema;
 
 import java.net.URL;
-import org.w3c.dom.Document;
-import org.xml.sax.ErrorHandler;
 
-import org.eclipse.persistence.platform.xml.XMLPlatform;
-import org.eclipse.persistence.platform.xml.XMLPlatformException;
-import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
+import javax.xml.namespace.QName;
+
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
-
-import javax.xml.namespace.QName;
+import org.eclipse.persistence.platform.xml.XMLPlatform;
+import org.eclipse.persistence.platform.xml.XMLPlatformException;
+import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
+import org.w3c.dom.Document;
+import org.xml.sax.ErrorHandler;
 
 /**
  * Provides a way for a descriptor's reference to its schema to be specified.
@@ -76,6 +76,7 @@ public abstract class XMLSchemaReference implements org.eclipse.persistence.plat
         this.resource = resource;
     }
 
+    @Override
     public abstract URL getURL();
 
     /**
@@ -84,6 +85,7 @@ public abstract class XMLSchemaReference implements org.eclipse.persistence.plat
      *
      * @return COMPLEX_TYPE=1, SIMPLE_TYPE=2, ELEMENT=3, GROUP=5
      */
+    @Override
     public int getType() {
         return type;
     }
@@ -109,6 +111,7 @@ public abstract class XMLSchemaReference implements org.eclipse.persistence.plat
      *
      * @return the schema context
      */
+    @Override
     public String getSchemaContext() {
         return this.schemaContext;
     }
@@ -143,7 +146,7 @@ public abstract class XMLSchemaReference implements org.eclipse.persistence.plat
         }
 
         if (schemaContextAsQName == null) {
-            int idx = schemaContext.lastIndexOf("/");
+            int idx = schemaContext.lastIndexOf('/');
             String type = schemaContext.substring(idx + 1);
             idx = type.indexOf(Constants.COLON);
             if (idx != -1) {
@@ -180,7 +183,7 @@ public abstract class XMLSchemaReference implements org.eclipse.persistence.plat
      */
     public boolean isGlobalDefinition() {
         // more than one occurance of "/" indicates a local definition
-        return schemaContext.lastIndexOf("/") <= 0;
+        return schemaContext.lastIndexOf('/') <= 0;
     }
 
     /**

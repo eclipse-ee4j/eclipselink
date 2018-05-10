@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -40,6 +40,7 @@ public class IdentityMapEnumeration extends AbstractIdentityMapEnumeration<Objec
      * @return the next {@link CacheKey#getObject()} element of this enumeration
      * @exception  NoSuchElementException  if no more elements exist
      */
+    @Override
     public Object nextElement() {
         return getNextElement().getObject();
     }

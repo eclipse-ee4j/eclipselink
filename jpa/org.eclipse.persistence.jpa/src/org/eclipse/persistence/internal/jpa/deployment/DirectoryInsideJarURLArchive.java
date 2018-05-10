@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -88,16 +88,19 @@ public class DirectoryInsideJarURLArchive extends ArchiveBase implements Archive
         }
     }
 
+    @Override
     public Iterator<String> getEntries() {
         return entries.iterator();
     }
 
+    @Override
     public InputStream getEntry(String entryPath) throws IOException {
         InputStream is = entries.contains(entryPath) ?
             jarFile.getInputStream(jarFile.getEntry(relativeRootPath + entryPath)) : null;
         return is;
     }
 
+    @Override
     public URL getEntryAsURL(String entryPath) throws IOException {
         rootURL = rootURL.toString().startsWith("jar:") ? rootURL : new URL("jar:"+rootURL);
         URL result = entries.contains(entryPath) ?
@@ -105,6 +108,7 @@ public class DirectoryInsideJarURLArchive extends ArchiveBase implements Archive
         return result;
     }
 
+    @Override
     public void close() {
         try {
             jarFile.close();

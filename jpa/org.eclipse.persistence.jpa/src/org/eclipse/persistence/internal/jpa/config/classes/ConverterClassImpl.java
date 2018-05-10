@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2018  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -28,11 +28,13 @@ public class ConverterClassImpl extends MetadataImpl<ConverterAccessor> implemen
         super(new ConverterAccessor());
     }
 
+    @Override
     public ConverterClass setClass(String className) {
         getMetadata().setClassName(className);
         return this;
     }
 
+    @Override
     public ConverterClass setAutoApply(Boolean autoApply) {
         getMetadata().setAutoApply(autoApply);
         return this;

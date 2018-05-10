@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -71,6 +71,7 @@ public class DataModifyQuery extends ModifyQuery {
      * Perform the work to execute the SQL call.
      * Return the row count of the number of rows effected by the SQL call.
      */
+    @Override
     public Object executeDatabaseQuery() throws DatabaseException {
 
         /* Fix to allow executing non-selecting SQL in a UnitOfWork. - RB */
@@ -89,6 +90,7 @@ public class DataModifyQuery extends ModifyQuery {
      * PUBLIC:
      * Return if this is a data modify query.
      */
+    @Override
     public boolean isDataModifyQuery() {
         return true;
     }
@@ -97,6 +99,7 @@ public class DataModifyQuery extends ModifyQuery {
      * INTERNAL:
      * Prepare the receiver for execution in a session.
      */
+    @Override
     protected void prepare() {
         super.prepare();
 
@@ -109,6 +112,7 @@ public class DataModifyQuery extends ModifyQuery {
      * set the descriptor of the receiver to the ClassDescriptor for the
      * appropriate class for the receiver's object.
      */
+    @Override
     public void prepareForExecution() throws QueryException {
         super.prepareForExecution();
 

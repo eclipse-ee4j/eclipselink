@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2015 Oracle. All rights reserved.
+ * Copyright (c) 2014, 2018 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -70,7 +70,7 @@ public class ObjectGraphBuilder {
             final SingleResultQueryResult singleResultQueryResult = (SingleResultQueryResult)object;
             processFieldsList(root.addSubNode("fields"), singleResultQueryResult.getFields());
         } else if (object instanceof ReadAllQueryResultCollection) {
-            createNodeForPageableCollection((PageableCollection) object, root);
+            createNodeForPageableCollection((PageableCollection<?>) object, root);
         } else {
             return null;
         }
@@ -81,7 +81,7 @@ public class ObjectGraphBuilder {
         return objectGraph;
     }
 
-    private void createNodeForPageableCollection(PageableCollection collection, Node node) {
+    private void createNodeForPageableCollection(PageableCollection<?> collection, Node node) {
         node.addAttributeNode("hasMore");
         node.addAttributeNode("count");
         node.addAttributeNode("offset");
@@ -98,8 +98,8 @@ public class ObjectGraphBuilder {
         }
     }
 
-    private void processFieldsList(Node fieldsNode, List<JAXBElement> elements) {
-        for (JAXBElement field : elements) {
+    private void processFieldsList(Node fieldsNode, List<JAXBElement<?>> elements) {
+        for (JAXBElement<?> field : elements) {
             if (field.getValue() instanceof PersistenceWeavedRest) {
                 final Node subNode = fieldsNode.addSubNode(field.getName().toString());
                 subNode.addAttributeNode("_persistence_links");

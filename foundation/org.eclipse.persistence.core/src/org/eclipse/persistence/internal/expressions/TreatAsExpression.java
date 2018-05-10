@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015  Oracle. All rights reserved.
+ * Copyright (c) 2013, 2018  Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -40,15 +40,18 @@ public class TreatAsExpression extends QueryKeyExpression {
 
     protected Boolean isDowncast;//we only need a type expression if this is a downcast.
 
+    @Override
     public Expression convertToUseOuterJoin() {
         typeExpressionBase.convertToUseOuterJoin();
         return this;
     }
 
+    @Override
     public String descriptionOfNodeType() {
         return "Treat";
     }
 
+    @Override
     public boolean equals(Object object) {
         if (!super.equals(object)) {
             return false;
@@ -57,10 +60,12 @@ public class TreatAsExpression extends QueryKeyExpression {
         return getCastClass().equals(expression.getCastClass());
     }
 
+    @Override
     public Vector getFields() {
         return typeExpressionBase.getFields();
     }
 
+    @Override
     public Object getFieldValue(Object objectValue, AbstractSession session) {
         return typeExpressionBase.getFieldValue(objectValue, session);
     }
@@ -69,10 +74,12 @@ public class TreatAsExpression extends QueryKeyExpression {
      * This owns (can access) the child's extra tables as well as its parent's tables
      * so we should pull these from super (which gets them from the current descriptor)
      */
+    @Override
     public List<DatabaseTable> getOwnedTables() {
         return super.getOwnedTables();
     }
 
+    @Override
     public Expression getAlias(Expression subSelect) {
         return typeExpressionBase.getAlias(subSelect);
     }
@@ -87,14 +94,17 @@ public class TreatAsExpression extends QueryKeyExpression {
      *
      * @return DatabaseTable
      */
+    @Override
     public DatabaseTable getRelationTable() {
         return null;
     }
 
+    @Override
     public TableAliasLookup getTableAliases() {
         return typeExpressionBase.getTableAliases();
     }
 
+    @Override
     public boolean hasAsOfClause() {
         return typeExpressionBase.hasAsOfClause();
     }
@@ -112,18 +122,22 @@ public class TreatAsExpression extends QueryKeyExpression {
     /**
      * INTERNAL:
      */
+    @Override
     public boolean isTreatExpression() {
         return true;
     }
 
+    @Override
     public void printSQL(ExpressionSQLPrinter printer) {
         typeExpressionBase.printSQL(printer);
     }
 
+    @Override
     public boolean selectIfOrderedBy() {
         return typeExpressionBase.selectIfOrderedBy();
     }
 
+    @Override
     public Expression twistedForBaseAndContext(Expression newBase,
             Expression context, Expression oldBase) {
         if (oldBase == null || this.typeExpressionBase == oldBase) {
@@ -141,6 +155,7 @@ public class TreatAsExpression extends QueryKeyExpression {
         return this;
     }
 
+    @Override
     public void validateNode() {
         typeExpressionBase.validateNode();
         //getDescriptor currently checks if the descriptor can be found for the castclass.
@@ -148,6 +163,7 @@ public class TreatAsExpression extends QueryKeyExpression {
         getDescriptor();
     }
 
+    @Override
     public Object valueFromObject(Object object, AbstractSession session,
             AbstractRecord translationRow, int valueHolderPolicy,
             boolean isObjectUnregistered) {
@@ -155,23 +171,27 @@ public class TreatAsExpression extends QueryKeyExpression {
                 translationRow, valueHolderPolicy, isObjectUnregistered);
     }
 
+    @Override
     public Object valueFromObject(Object object, AbstractSession session,
             AbstractRecord translationRow, int valueHolderPolicy) {
         return typeExpressionBase.valueFromObject(object, session,
                 translationRow, valueHolderPolicy);
     }
 
+    @Override
     public void writeDescriptionOn(BufferedWriter writer) throws IOException {
         if (castClass != null){
             writer.write(" AS "+ castClass.getName());
         }
     }
 
+    @Override
     public void writeFields(ExpressionSQLPrinter printer, Vector newFields,
             SQLSelectStatement statement) {
         typeExpressionBase.writeFields(printer, newFields, statement);
     }
 
+    @Override
     public void writeSubexpressionsTo(BufferedWriter writer, int indent)
             throws IOException {
         if (this.typeExpressionBase != null) {
@@ -181,11 +201,13 @@ public class TreatAsExpression extends QueryKeyExpression {
         }
     }
 
+    @Override
     public ClassDescriptor getLeafDescriptor(DatabaseQuery query,
             ClassDescriptor rootDescriptor, AbstractSession session) {
         return session.getDescriptor(castClass);
     }
 
+    @Override
     public DatabaseMapping getLeafMapping(DatabaseQuery query,
             ClassDescriptor rootDescriptor, AbstractSession session) {
         return typeExpressionBase
@@ -202,11 +224,13 @@ public class TreatAsExpression extends QueryKeyExpression {
      * This expression is built on a different base than the one we want. Rebuild it and
      * return the root of the new tree
      */
+    @Override
     public Expression rebuildOn(Expression newBase) {
         Expression newLocalBase = this.typeExpressionBase.rebuildOn(newBase);
         return newLocalBase.treat(castClass);
     }
 
+    @Override
     public ClassDescriptor getDescriptor() {
         if (isAttribute()) {
             //TODO: add support for treat on attributes
@@ -224,6 +248,7 @@ public class TreatAsExpression extends QueryKeyExpression {
      * Return the descriptor which contains this query key, look in the inheritance hierarchy
      * of rootDescriptor for the descriptor.  Does not set the descriptor, only returns it.
      */
+    @Override
     public ClassDescriptor convertToCastDescriptor(ClassDescriptor rootDescriptor, AbstractSession session) {
         isDowncast = Boolean.FALSE;
         if (castClass == null || rootDescriptor == null || rootDescriptor.getJavaClass() == castClass) {
@@ -319,6 +344,7 @@ public class TreatAsExpression extends QueryKeyExpression {
      * INTERNAL:
      * Alias a particular table within this node
      */
+    @Override
     protected void assignAlias(DatabaseTable alias, DatabaseTable table) {
         if (tableAliases == null) {
             if (this.typeExpressionBase!=null) {
@@ -339,6 +365,7 @@ public class TreatAsExpression extends QueryKeyExpression {
      * and return the new value of  the counter , i.e. if initialValue is one
      * and I have tables ADDRESS and EMPLOYEE I will assign them t1 and t2 respectively, and return 3.
      */
+    @Override
     public int assignTableAliasesStartingAt(int initialValue) {
         //This assumes that the typeExpressionBase will alias its own tables, so we only need to handle
         //the extra's caused by this treat expression.
@@ -397,6 +424,7 @@ public class TreatAsExpression extends QueryKeyExpression {
      * base expression -> foreign reference join criteria.
      * This shouldn't be used on Treat
      */
+    @Override
     public Expression mappingCriteria(Expression base) {
         if (typeExpressionBase.isQueryKeyExpression()) {
             return ((QueryKeyExpression)typeExpressionBase).mappingCriteria(base);
@@ -506,16 +534,19 @@ public class TreatAsExpression extends QueryKeyExpression {
     }
 
 
+    @Override
     public DatabaseTable getSourceTable() {
         //not used currently, but should return the baseExpressionType table if used in the future
         return null;
     }
 
+    @Override
     public DatabaseTable getReferenceTable() {
         //not used currently, but should return the treat subclass first table if used in the future
         return null;
     }
 
+    @Override
     public Expression normalize(ExpressionNormalizer normalizer, Expression base, List<Expression> foreignKeyJoinPointer) {
         //need to determine what type this is, as it may need to change the expression its based off slightly
         if (this.hasBeenNormalized) {

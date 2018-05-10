@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2017 IBM Corporation, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 IBM Corporation, Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -305,6 +305,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * to communicate to the server through.
      * This method allows for a client session to be acquired sharing the same login as the server session.
      */
+    @Override
     public ClientSession acquireClientSession() throws DatabaseException {
         return acquireClientSession(getDefaultConnectionPolicy());
     }
@@ -330,6 +331,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * of connection allocated on the server session.
      * By default this uses a lazy connection policy.
      */
+    @Override
     public ClientSession acquireClientSession(String poolName) throws DatabaseException {
         return acquireClientSession(new ConnectionPolicy(poolName));
     }
@@ -358,6 +360,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * all database modification for all units of work acquired from the client session.
      * By default this does not use a lazy connection policy.
      */
+    @Override
     public ClientSession acquireClientSession(Login login) throws DatabaseException {
         return acquireClientSession(new ConnectionPolicy(login));
     }
@@ -382,6 +385,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * Return a client session for this server session.
      * The connection policy specifies how the client session's connection will be acquired.
      */
+    @Override
     public ClientSession acquireClientSession(ConnectionPolicy connectionPolicy) throws DatabaseException, ValidationException {
         return acquireClientSession(connectionPolicy, null);
     }
@@ -442,6 +446,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * INTERNAL:
      * Acquires a special historical session for reading objects as of a past time.
      */
+    @Override
     public org.eclipse.persistence.sessions.Session acquireHistoricalSession(org.eclipse.persistence.history.AsOfClause clause) throws ValidationException {
         throw ValidationException.cannotAcquireHistoricalSession();
     }
@@ -455,6 +460,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      *
      * @see UnitOfWorkImpl
      */
+    @Override
     public UnitOfWorkImpl acquireUnitOfWork() {
         return acquireClientSession().acquireUnitOfWork();
     }
@@ -464,6 +470,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * Add the connection pool.
      * Connections are pooled to share and restrict the number of database connections.
      */
+    @Override
     public void addConnectionPool(String poolName, Login login, int minNumberOfConnections, int maxNumberOfConnections) throws ValidationException {
         if (minNumberOfConnections > maxNumberOfConnections) {
             throw ValidationException.maxSizeLessThanMinSize();
@@ -484,6 +491,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * PUBLIC:
      * Connection are pooled to share and restrict the number of database connections.
      */
+    @Override
     public void addConnectionPool(ConnectionPool pool) {
         pool.setOwner(this);
         getConnectionPools().put(pool.getName(), pool);
@@ -632,6 +640,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * Release (if required) connection after call.
      * @param query
      */
+    @Override
     public void releaseConnectionAfterCall(DatabaseQuery query) {
         RuntimeException exception = null;
         for (Accessor accessor : query.getAccessors()) {
@@ -658,6 +667,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * Return the results from executing the database query.
      * The query arguments are passed in as a List of argument values in the same order as the query arguments.
      */
+    @Override
     public Object executeQuery(DatabaseQuery query, List argumentValues) throws DatabaseException {
         if (query == null) {
             throw QueryException.queryNotDefined();
@@ -682,6 +692,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * PUBLIC:
      * Return the pool by name.
      */
+    @Override
     public ConnectionPool getConnectionPool(String poolName) {
         return this.connectionPools.get(poolName);
     }
@@ -699,6 +710,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * The default connection policy is used by default by the acquireClientConnection() protocol.
      * By default it is a connection pool with min 5 and max 10 lazy pooled connections.
      */
+    @Override
     public ConnectionPolicy getDefaultConnectionPolicy() {
         if (this.defaultConnectionPolicy == null) {
             this.defaultConnectionPolicy = new ConnectionPolicy(DEFAULT_POOL);
@@ -710,6 +722,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * PUBLIC:
      * Return the default connection pool.
      */
+    @Override
     public ConnectionPool getDefaultConnectionPool() {
         return getConnectionPool(DEFAULT_POOL);
     }
@@ -743,6 +756,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * This can be enforced to make up for the resource limitation of most JDBC drivers and database clients.
      * By default this is 50.
      */
+    @Override
     public int getMaxNumberOfNonPooledConnections() {
         return maxNumberOfNonPooledConnections;
     }
@@ -759,6 +773,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * INTERNAL:
      * Return the login for the read connection.  Used by the platform autodetect feature
      */
+    @Override
     protected Login getReadLogin(){
         return this.readConnectionPool.getLogin();
     }
@@ -769,6 +784,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * Return the read connection pool.
      * The read connection pool handles allocating connection for read queries.
      */
+    @Override
     public ConnectionPool getReadConnectionPool() {
         return readConnectionPool;
     }
@@ -888,6 +904,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * INTERNAL:
      * Release the read connection back into the read pool.
      */
+    @Override
     public void releaseReadConnection(Accessor connection) {
         //if connection is using external connection pooling then the event has been risen right before it disconnected.
         if (!connection.usesExternalConnectionPooling()) {
@@ -911,6 +928,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * The default connection policy is used by default by the acquireClientConnection() protocol.
      * By default it is a connection pool with min 5 and max 10 lazy pooled connections.
      */
+    @Override
     public void setDefaultConnectionPolicy(ConnectionPolicy defaultConnectionPolicy) {
         this.defaultConnectionPolicy = defaultConnectionPolicy;
     }
@@ -929,6 +947,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * This can be enforced to make up for the resource limitation of most JDBC drivers and database clients.
      * By default this is 50.
      */
+    @Override
     public void setMaxNumberOfNonPooledConnections(int maxNumberOfNonPooledConnections) {
         this.maxNumberOfNonPooledConnections = maxNumberOfNonPooledConnections;
     }
@@ -948,6 +967,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * The read connection pool handles allocating connection for read queries.
      * If external connection pooling is used, an external connection pool will be used by default.
      */
+    @Override
     public void setReadConnectionPool(ConnectionPool readConnectionPool) {
         if (isConnected()) {
             throw ValidationException.cannotSetReadPoolSizeAfterLogin();
@@ -1013,6 +1033,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * Configure the read connection pool.
      * The read connection pool handles allocating connection for read queries.
      */
+    @Override
     public void useExclusiveReadConnectionPool(int minNumerOfConnections, int maxNumerOfConnections) {
         setReadConnectionPool(new ConnectionPool("read", getDatasourceLogin(), minNumerOfConnections, maxNumerOfConnections, this));
     }
@@ -1022,6 +1043,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * Configure the read connection pool.
      * The read connection pool handles allocating connection for read queries.
      */
+    @Override
     public void useExclusiveReadConnectionPool(int initialNumberOfConnections, int minNumerOfConnections, int maxNumerOfConnections) {
         setReadConnectionPool(new ConnectionPool("read", getDatasourceLogin(), initialNumberOfConnections, minNumerOfConnections, maxNumerOfConnections, this));
     }
@@ -1031,6 +1053,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * Configure the read connection pool.
      * The read connection pool handles allocating connection for read queries.
      */
+    @Override
     public void useExternalReadConnectionPool() {
         setReadConnectionPool(new ExternalConnectionPool("read", getDatasourceLogin(), this));
     }
@@ -1045,6 +1068,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * so an exclusive read connection pool is normally recommended.
      * @see #useExclusiveReadConnectionPool(int, int)
      */
+    @Override
     public void useReadConnectionPool(int minNumerOfConnections, int maxNumerOfConnections) {
         setReadConnectionPool(new ReadConnectionPool("read", getDatasourceLogin(), minNumerOfConnections, maxNumerOfConnections, this));
     }
@@ -1059,6 +1083,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * so an exclusive read connection pool is normally recommended.
      * @see #useExclusiveReadConnectionPool(int, int, int)
      */
+    @Override
     public void useReadConnectionPool(int initialNumerOfConnections, int minNumerOfConnections, int maxNumerOfConnections) {
         setReadConnectionPool(new ReadConnectionPool("read", getDatasourceLogin(), initialNumerOfConnections,
                 minNumerOfConnections, maxNumerOfConnections, this));

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -41,15 +41,18 @@ public abstract class XMLVariableXPathMappingNodeValue extends XMLRelationshipMa
      * @param xPathFragment
      * @return
      */
-     public boolean isOwningNode(XPathFragment xPathFragment) {
+     @Override
+    public boolean isOwningNode(XPathFragment xPathFragment) {
             return null == xPathFragment;
      }
 
+    @Override
     protected Descriptor findReferenceDescriptor(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts, Mapping mapping, UnmarshalKeepAsElementPolicy policy) {
        return (Descriptor)mapping.getReferenceDescriptor();
     }
 
-     public void attribute(UnmarshalRecord unmarshalRecord, String namespaceURI, String localName, String value) {
+     @Override
+    public void attribute(UnmarshalRecord unmarshalRecord, String namespaceURI, String localName, String value) {
             Descriptor referenceDescriptor = (Descriptor) getMapping().getReferenceDescriptor();
             ObjectBuilder treeObjectBuilder = (ObjectBuilder) referenceDescriptor.getObjectBuilder();
             MappingNodeValue textMappingNodeValue = (MappingNodeValue) treeObjectBuilder.getRootXPathNode().getTextNode().getNodeValue();
@@ -72,13 +75,14 @@ public abstract class XMLVariableXPathMappingNodeValue extends XMLRelationshipMa
             setOrAddAttributeValue(unmarshalRecord, childObject, null, null);
         }
 
+    @Override
     public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         if (null == value) {
             return false;
         }
 
         Object originalValue = value;
-        VariableXPathObjectMapping mapping = (VariableXPathObjectMapping)this.getMapping();
+        VariableXPathObjectMapping mapping = this.getMapping();
         Descriptor descriptor = (Descriptor)mapping.getReferenceDescriptor();
 
         if(descriptor.hasInheritance()){
@@ -126,6 +130,7 @@ public abstract class XMLVariableXPathMappingNodeValue extends XMLRelationshipMa
         return true;
     }
 
+    @Override
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord) {
         UnmarshalRecord childRecord = unmarshalRecord.getChildRecord();
         if(childRecord != null){
@@ -142,13 +147,14 @@ public abstract class XMLVariableXPathMappingNodeValue extends XMLRelationshipMa
         }
     }
 
+    @Override
     public abstract VariableXPathObjectMapping getMapping();
 
     public void setXPathInObject(String uri, String localName, Object childObject) {
-        CoreAttributeAccessor variableAttributeAccessor = ((VariableXPathObjectMapping)this.getMapping()).getVariableAttributeAccessor();
+        CoreAttributeAccessor variableAttributeAccessor = this.getMapping().getVariableAttributeAccessor();
         if(!variableAttributeAccessor.isWriteOnly()){
         Object value = null;
-         if(((VariableXPathObjectMapping)getMapping()).getVariableAttributeAccessor().getAttributeClass() == CoreClassConstants.QNAME){
+         if(getMapping().getVariableAttributeAccessor().getAttributeClass() == CoreClassConstants.QNAME){
                  if(uri != null && uri.length() > 0) {
                      value =  new QName(uri, localName);
                  }else{
@@ -162,6 +168,7 @@ public abstract class XMLVariableXPathMappingNodeValue extends XMLRelationshipMa
         }
     }
 
+    @Override
     public boolean startElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts) {
            try {
             processChild(xPathFragment, unmarshalRecord, atts, (Descriptor) getMapping().getReferenceDescriptor(), getMapping());

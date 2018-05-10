@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -41,6 +41,7 @@ public class CciJMSConnectionMetaData implements ConnectionMetaData {
      * @return the JMS provider name
      * @throws EISException
      */
+    @Override
     public String getEISProductName() throws EISException {
         try {
             return connection.getConnection().getMetaData().getJMSProviderName();
@@ -55,6 +56,7 @@ public class CciJMSConnectionMetaData implements ConnectionMetaData {
      * @return the JMS provider version
      * @throws EISException
      */
+    @Override
     public String getEISProductVersion() throws EISException {
         try {
             return connection.getConnection().getMetaData().getProviderVersion();
@@ -68,6 +70,7 @@ public class CciJMSConnectionMetaData implements ConnectionMetaData {
      *
      * @return
      */
+    @Override
     public String getUserName() {
         return null;
     }

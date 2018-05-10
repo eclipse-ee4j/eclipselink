@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -69,6 +69,7 @@ public abstract class Declaration implements JPQLQueryDeclaration {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Expression getBaseExpression() {
         return baseExpression;
     }
@@ -76,6 +77,7 @@ public abstract class Declaration implements JPQLQueryDeclaration {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Expression getDeclarationExpression() {
         return declarationExpression;
     }
@@ -92,6 +94,7 @@ public abstract class Declaration implements JPQLQueryDeclaration {
     /**
      * {@inheritDoc}
      */
+    @Override
     public List<Join> getJoins() {
         return Collections.emptyList();
     }
@@ -112,6 +115,7 @@ public abstract class Declaration implements JPQLQueryDeclaration {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getVariableName() {
         if (identificationVariable == null) {
             return ExpressionTools.EMPTY_STRING;
@@ -122,6 +126,7 @@ public abstract class Declaration implements JPQLQueryDeclaration {
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean hasJoins() {
         return false;
     }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -137,6 +137,7 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
      * @see #disableRuntimeServices()
      * @see #registerMBean()
      */
+    @Override
     public void prepareServerSpecificServicesMBean() {
         // No check for an existing cached MBean - we will replace it if it exists
         if(getDatabaseSession() != null && shouldRegisterRuntimeBean) {
@@ -237,6 +238,8 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
      * Get the applicationName and moduleName from the runtime WebLogic MBean reflectively
      * @deprecated
      */
+    @Override
+    @Deprecated
     protected void initializeApplicationNameAndModuleName() {
         // use non-reflective superclass method that searches the database session and classLoader strings
         // to be DEPRECATED
@@ -250,8 +253,8 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
             jpaModuleName = getModuleOrApplicationName(WLS_MODULE_NAME_GET_METHOD_NAME);
 
             // If we are running a version of WebLogic 10.3 that does not support ExecuteThreadRuntime (from 10.3+) then use the ClassLoader
-            if(null != jpaModuleName && jpaModuleName.indexOf("@") != -1) {
-                setModuleName(jpaModuleName.substring(jpaModuleName.indexOf("@") + 1));
+            if(null != jpaModuleName && jpaModuleName.indexOf('@') != -1) {
+                setModuleName(jpaModuleName.substring(jpaModuleName.indexOf('@') + 1));
             } else {
                 setModuleName(jpaModuleName);
             }
@@ -268,8 +271,8 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
              }
 
             // If we are running a version of WebLogic 10.3 that does not support ExecuteThreadRuntime (from 10.3+) then use the ClassLoader
-            if(null != jpaApplicationName && jpaApplicationName.indexOf("@") > -1) {
-                setApplicationName(jpaApplicationName.substring(jpaApplicationName.indexOf("@") + 1));
+            if(null != jpaApplicationName && jpaApplicationName.indexOf('@') > -1) {
+                setApplicationName(jpaApplicationName.substring(jpaApplicationName.indexOf('@') + 1));
             } else {
                 setApplicationName(jpaApplicationName);
             }
@@ -392,6 +395,7 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
      * WLS 10.3.4.0 added a getVendorConnectionSafe that does not invalidate the connection,
      * so use this if available.
      */
+    @Override
     protected Method getVendorConnectionMethod() {
         if ((this.vendorConnectionMethod == null) && (!getWebLogicConnectionClass().equals(void.class))) {
             try {

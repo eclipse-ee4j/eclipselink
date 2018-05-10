@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -57,6 +57,7 @@ public class XMLChoiceObjectMappingNodeValue extends MappingNodeValue {
         initializeNodeValue();
     }
 
+    @Override
     public boolean isOwningNode(XPathFragment xPathFragment) {
         return choiceElementNodeValue.isOwningNode(xPathFragment);
     }
@@ -94,10 +95,12 @@ public class XMLChoiceObjectMappingNodeValue extends MappingNodeValue {
         this.nullCapableNodeValue = nodeValue;
     }
 
+    @Override
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver) {
         return this.marshal(xPathFragment, marshalRecord, object, session, namespaceResolver, ObjectMarshalContext.getInstance());
     }
 
+    @Override
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         if(xmlChoiceMapping.isReadOnly()) {
             return false;
@@ -106,6 +109,7 @@ public class XMLChoiceObjectMappingNodeValue extends MappingNodeValue {
         return this.marshalSingleValue(xPathFragment, marshalRecord, object, value, session, namespaceResolver, marshalContext);
     }
 
+    @Override
     public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         Class valueClass = null;
         if (value instanceof Root) {
@@ -170,6 +174,7 @@ public class XMLChoiceObjectMappingNodeValue extends MappingNodeValue {
         return false;
     }
 
+    @Override
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord) {
         if(null != xmlChoiceMapping.getConverter()) {
             UnmarshalContext unmarshalContext = unmarshalRecord.getUnmarshalContext();
@@ -181,10 +186,12 @@ public class XMLChoiceObjectMappingNodeValue extends MappingNodeValue {
         }
     }
 
+    @Override
     public boolean startElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts) {
         return this.choiceElementNodeValue.startElement(xPathFragment, unmarshalRecord, atts);
     }
 
+    @Override
     public void setXPathNode(XPathNode xPathNode) {
         super.setXPathNode(xPathNode);
         this.choiceElementNodeValue.setXPathNode(xPathNode);
@@ -199,6 +206,7 @@ public class XMLChoiceObjectMappingNodeValue extends MappingNodeValue {
      * The underlying choice element node value will handle attributes.
      *
      */
+    @Override
     public void attribute(UnmarshalRecord unmarshalRecord, String URI, String localName, String value) {
         this.choiceElementNodeValue.attribute(unmarshalRecord, URI, localName, value);
     }

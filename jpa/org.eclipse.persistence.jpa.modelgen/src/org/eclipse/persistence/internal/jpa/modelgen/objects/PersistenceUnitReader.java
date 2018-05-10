@@ -137,7 +137,7 @@ public class PersistenceUnitReader {
             StringTokenizer st = new StringTokenizer(persistenceUnits, ",");
 
             while (st.hasMoreTokens()) {
-                persistenceUnitList.add(((String) st.nextToken()).trim());
+                persistenceUnitList.add(st.nextToken().trim());
             }
         }
 

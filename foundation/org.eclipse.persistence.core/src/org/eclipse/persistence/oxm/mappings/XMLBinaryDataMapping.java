@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -87,10 +87,12 @@ public class XMLBinaryDataMapping extends XMLDirectMapping implements BinaryData
     public XMLBinaryDataMapping() {
     }
 
+    @Override
     public boolean shouldInlineBinaryData() {
         return shouldInlineBinaryData;
     }
 
+    @Override
     public void setShouldInlineBinaryData(boolean b) {
         shouldInlineBinaryData = b;
     }
@@ -98,6 +100,7 @@ public class XMLBinaryDataMapping extends XMLDirectMapping implements BinaryData
     /**
      * INTERNAL
      */
+    @Override
     public String getMimeType(Object anObject) {
         if (mimeTypePolicy == null) {
             return null;
@@ -109,6 +112,7 @@ public class XMLBinaryDataMapping extends XMLDirectMapping implements BinaryData
     /**
      * INTERNAL
      */
+    @Override
     public String getMimeType() {
         if(mimeTypePolicy == null) {
             return null;
@@ -124,6 +128,7 @@ public class XMLBinaryDataMapping extends XMLDirectMapping implements BinaryData
      * Allow implementer to set the MimeTypePolicy class FixedMimeTypePolicy or AttributeMimeTypePolicy (dynamic)
      * @param aPolicy MimeTypePolicy
      */
+    @Override
     public void setMimeTypePolicy(MimeTypePolicy aPolicy) {
         mimeTypePolicy = aPolicy;
     }
@@ -132,15 +137,18 @@ public class XMLBinaryDataMapping extends XMLDirectMapping implements BinaryData
      * Force mapping to set default FixedMimeTypePolicy using the MimeType string as argument
      * @param mimeTypeString
      */
+    @Override
     public void setMimeType(String mimeTypeString) {
         // use the following to set dynamically - mapping.setMimeTypePolicy(new FixedMimeTypePolicy(property.getMimeType()));
         mimeTypePolicy = new FixedMimeTypePolicy(mimeTypeString);
     }
 
+    @Override
     public boolean isSwaRef() {
         return isSwaRef;
     }
 
+    @Override
     public void setSwaRef(boolean swaRef) {
         isSwaRef = swaRef;
     }
@@ -149,6 +157,7 @@ public class XMLBinaryDataMapping extends XMLDirectMapping implements BinaryData
      * Set the Mapping field name attribute to the given XPath String
      * @param xpathString String
      */
+    @Override
     public void setXPath(String xpathString) {
         setField(new XMLField(xpathString));
     }
@@ -167,6 +176,7 @@ public class XMLBinaryDataMapping extends XMLDirectMapping implements BinaryData
         writeSingleValue(attributeValue, object, (XMLRecord) row, session);
     }
 
+    @Override
     public void writeSingleValue(Object attributeValue, Object parent, XMLRecord record, AbstractSession session) {
         XMLMarshaller marshaller = record.getMarshaller();
         attributeValue = convertObjectValueToDataValue(attributeValue, session, record.getMarshaller());
@@ -337,6 +347,7 @@ public class XMLBinaryDataMapping extends XMLDirectMapping implements BinaryData
         }
     }
 
+    @Override
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected, Boolean[] wasCacheUsed) {
         // PERF: Direct variable access.
         Object value = row.get(this.field);
@@ -422,6 +433,7 @@ public class XMLBinaryDataMapping extends XMLDirectMapping implements BinaryData
         return attributeValue;
     }
 
+    @Override
     public boolean isAbstractDirectMapping() {
         return false;
     }

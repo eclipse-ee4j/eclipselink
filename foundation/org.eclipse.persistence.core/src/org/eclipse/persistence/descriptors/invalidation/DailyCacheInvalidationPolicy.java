@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -53,6 +53,7 @@ public class DailyCacheInvalidationPolicy extends CacheInvalidationPolicy {
      * INTERNAL:
      * Return the next expiry time.
      */
+    @Override
     public long getExpiryTimeInMillis(CacheKey key) {
         incrementExpiry();
         return this.expiryTime.getTimeInMillis();
@@ -70,6 +71,7 @@ public class DailyCacheInvalidationPolicy extends CacheInvalidationPolicy {
      * INTERNAL:
      * Return true if this object has expire or is invalid
      */
+    @Override
     public boolean isInvalidated(CacheKey key, long currentTimeMillis) {
         if (key.getInvalidationState() == CacheKey.CACHE_KEY_INVALID) {
             return true;
@@ -147,6 +149,7 @@ public class DailyCacheInvalidationPolicy extends CacheInvalidationPolicy {
         setExpiryTime(calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), calendar.get(Calendar.SECOND), calendar.get(Calendar.MILLISECOND));
     }
 
+    @Override
     public Object clone() {
         DailyCacheInvalidationPolicy clone = null;
 

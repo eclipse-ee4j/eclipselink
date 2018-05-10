@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -50,6 +50,7 @@ public class ForeignReferenceQueryKey extends QueryKey {
      * settings
      * @param classLoader
      */
+    @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){
         Class referenceClass = null;
         try{
@@ -102,6 +103,7 @@ public class ForeignReferenceQueryKey extends QueryKey {
      * override the isForeignReferenceQueryKey() method in the superclass to return true.
      * @return boolean
      */
+    @Override
     public boolean isForeignReferenceQueryKey() {
         return true;
     }
@@ -167,6 +169,7 @@ public class ForeignReferenceQueryKey extends QueryKey {
      */
     public DatabaseTable getRelationTable(ClassDescriptor referenceDescriptor) {
         ExpressionIterator expIterator = new ExpressionIterator() {
+            @Override
             public void iterate(Expression each) {
                 if(each.isTableExpression()) {
                     ((Collection)this.getResult()).add(((TableExpression)each).getTable());

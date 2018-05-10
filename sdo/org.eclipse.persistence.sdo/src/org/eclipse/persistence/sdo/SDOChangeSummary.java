@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -119,6 +119,7 @@ public class SDOChangeSummary implements ChangeSummary {
      * @see #beginLogging
      * @see #endLogging
      */
+    @Override
     public boolean isLogging() {
         return logging;
     }
@@ -229,6 +230,7 @@ public class SDOChangeSummary implements ChangeSummary {
      * @return the data graph.
      * @see DataGraph#getChangeSummary
      */
+    @Override
     public DataGraph getDataGraph() {
         return dataGraph;
     }
@@ -249,6 +251,7 @@ public class SDOChangeSummary implements ChangeSummary {
      * @see #isDeleted(DataObject)
      * @see #isModified(DataObject)
      */
+    @Override
     public List getChangedDataObjects() {
         // merge all the sets
         ArrayList aList = new ArrayList();
@@ -329,6 +332,7 @@ public class SDOChangeSummary implements ChangeSummary {
      * @return <code>true</code> if the specified data object was created.
      * @see #getChangedDataObjects
      */
+    @Override
     public boolean isCreated(DataObject dataObject) {
         return (createdList != null) && createdList.contains(dataObject);
     }
@@ -341,6 +345,7 @@ public class SDOChangeSummary implements ChangeSummary {
      * @return <code>true</code> if the specified data object was deleted.
      * @see #getChangedDataObjects
      */
+    @Override
     public boolean isDeleted(DataObject dataObject) {
         return (deletedList != null) && deletedList.contains(dataObject);
     }
@@ -354,6 +359,7 @@ public class SDOChangeSummary implements ChangeSummary {
      * @return <code>true</code> if the specified data object was modified.
      * @see #getChangedDataObjects
      */
+    @Override
     public boolean isModified(DataObject dataObject) {
         // a modified data object is present in the original value
         // stores list and has not been deleted
@@ -379,6 +385,7 @@ public class SDOChangeSummary implements ChangeSummary {
      * @return a list of settings.
      * @see #getChangedDataObjects
      */
+    @Override
     public List getOldValues(DataObject dataObject) {
         if ((dataObject == null) || (!isDeleted(dataObject) && ((((SDODataObject)dataObject).getChangeSummary() != null) && (((SDODataObject)dataObject).getChangeSummary() != this)))) {
             return new ArrayList();
@@ -496,6 +503,7 @@ public class SDOChangeSummary implements ChangeSummary {
      * @see #endLogging
      * @see #isLogging
      */
+    @Override
     public void beginLogging() {
         if (!logging) {
             logging = true;
@@ -522,6 +530,7 @@ public class SDOChangeSummary implements ChangeSummary {
      * @see #beginLogging
      * @see #isLogging
      */
+    @Override
     public void endLogging() {
         logging = false;
         loggingMapping = false;
@@ -564,6 +573,7 @@ public class SDOChangeSummary implements ChangeSummary {
      * When a DataGraph is used, this is the same as getDataGraph().getRootObject().
      * @return the ChangeSummary root DataObject
      */
+    @Override
     public SDODataObject getRootObject() {
         return rootDataObject;
     }
@@ -579,6 +589,7 @@ public class SDOChangeSummary implements ChangeSummary {
      * @return the Setting for the specified property.
      * @see #getChangedDataObjects
      */
+    @Override
     public SDOChangeSummary.Setting getOldValue(DataObject dataObject, Property property) {
         if ((dataObject == null) || (!isDeleted(dataObject) && ((((SDODataObject)dataObject).getChangeSummary() != null) && (((SDODataObject)dataObject).getChangeSummary() != this)))) {
             return null;
@@ -683,6 +694,7 @@ public class SDOChangeSummary implements ChangeSummary {
      * @param dataObject the object in question.
      * @return the old container data object.
      */
+    @Override
     public SDODataObject getOldContainer(DataObject dataObject) {
         return (SDODataObject) oldContainer.get(dataObject);
     }
@@ -693,6 +705,7 @@ public class SDOChangeSummary implements ChangeSummary {
      * @param dataObject the object in question.
      * @return the old containment property.
      */
+    @Override
     public SDOProperty getOldContainmentProperty(DataObject dataObject) {
         return (SDOProperty) oldContainmentProperty.get(dataObject);
     }
@@ -703,6 +716,7 @@ public class SDOChangeSummary implements ChangeSummary {
      * @param dataObject the object in question.
      * @return the old containment property.
      */
+    @Override
     public SDOSequence getOldSequence(DataObject dataObject) {
         if ((dataObject == null) || (!isDeleted(dataObject) && ((((SDODataObject)dataObject).getChangeSummary() != null) && (((SDODataObject)dataObject).getChangeSummary() != this)))) {
             return null;
@@ -756,6 +770,7 @@ public class SDOChangeSummary implements ChangeSummary {
      * @see #endLogging
      * @see #isLogging
      */
+    @Override
     public void undoChanges() {
 
         /**
@@ -1084,6 +1099,7 @@ public class SDOChangeSummary implements ChangeSummary {
      * INTERNAL:
      * Return the string representation of the receiver.
      */
+    @Override
     public String toString() {
         StringBuffer aBuffer = new StringBuffer();
         aBuffer.append("ChangeSummary@");

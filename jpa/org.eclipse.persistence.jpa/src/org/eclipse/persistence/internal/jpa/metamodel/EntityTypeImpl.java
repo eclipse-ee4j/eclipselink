@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -56,6 +56,7 @@ public class EntityTypeImpl<X> extends IdentifiableTypeImpl<X> implements Entity
      *  Return the bindable type of the represented object.
      *  @return bindable type
      */
+    @Override
     public Bindable.BindableType getBindableType() {
         return Bindable.BindableType.ENTITY_TYPE;
     }
@@ -69,6 +70,7 @@ public class EntityTypeImpl<X> extends IdentifiableTypeImpl<X> implements Entity
      * represented entity or attribute is returned.
      * @return Java type
      */
+    @Override
     public Class<X> getBindableJavaType() {
         // In EntityType our BindableType is ENTITY_TYPE - return the java type of the entity
         return this.getJavaType();
@@ -78,6 +80,7 @@ public class EntityTypeImpl<X> extends IdentifiableTypeImpl<X> implements Entity
      *  Return the entity name
      *  @return entity name
      */
+    @Override
     public String getName() {
         return getDescriptor().getAlias();
     }
@@ -86,6 +89,7 @@ public class EntityTypeImpl<X> extends IdentifiableTypeImpl<X> implements Entity
      *  Return the persistence type.
      *  @return persistence type
      */
+    @Override
     public Type.PersistenceType getPersistenceType() {
         return Type.PersistenceType.ENTITY;
     }

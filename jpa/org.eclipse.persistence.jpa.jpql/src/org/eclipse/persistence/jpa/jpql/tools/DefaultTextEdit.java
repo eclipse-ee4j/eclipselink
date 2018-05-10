@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -56,6 +56,7 @@ public class DefaultTextEdit implements TextEdit {
     /**
      * {@inheritDoc}
      */
+    @Override
     public int getLength() {
         return oldValue.length();
     }
@@ -63,6 +64,7 @@ public class DefaultTextEdit implements TextEdit {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getNewValue() {
         return newValue;
     }
@@ -70,6 +72,7 @@ public class DefaultTextEdit implements TextEdit {
     /**
      * {@inheritDoc}
      */
+    @Override
     public int getOffset() {
         return offset;
     }
@@ -77,6 +80,7 @@ public class DefaultTextEdit implements TextEdit {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getOldValue() {
         return oldValue;
     }

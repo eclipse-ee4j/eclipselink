@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -417,6 +417,7 @@ public final class JPQLGrammar2_1 extends AbstractJPQLGrammar {
     /**
      * {@inheritDoc}
      */
+    @Override
     public JPAVersion getJPAVersion() {
         return JPAVersion.VERSION_2_1;
     }
@@ -424,6 +425,7 @@ public final class JPQLGrammar2_1 extends AbstractJPQLGrammar {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getProvider() {
         return DefaultJPQLGrammar.PROVIDER_NAME;
     }
@@ -431,6 +433,7 @@ public final class JPQLGrammar2_1 extends AbstractJPQLGrammar {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getProviderVersion() {
         return ExpressionTools.EMPTY_STRING;
     }

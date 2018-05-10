@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -39,6 +39,7 @@ public class TableSequence extends QuerySequence {
      * Use an empty string as a default sequence table name instead,
      * that triggers usage of platform.getDefaultSequenceTableName() when the sequence is connected.
      */
+    @Deprecated
     public static final String defaultTableName = "SEQUENCE";
 
     /** Hold the database table */
@@ -106,10 +107,12 @@ public class TableSequence extends QuerySequence {
         setCounterFieldName(counterFieldName);
     }
 
+    @Override
     public boolean isTable() {
         return true;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof TableSequence) {
             TableSequence other = (TableSequence)obj;
@@ -175,6 +178,7 @@ public class TableSequence extends QuerySequence {
         table = new DatabaseTable(name);
     }
 
+    @Override
     public void onConnect() {
         if(this.table.getName().length() == 0) {
             this.table.setName(((DatabasePlatform)getDatasourcePlatform()).getDefaultSequenceTableName());
@@ -186,6 +190,7 @@ public class TableSequence extends QuerySequence {
         super.onConnect();
     }
 
+    @Override
     protected ValueReadQuery buildSelectQuery() {
         ValueReadQuery query = new ValueReadQuery();
         query.addArgument(getNameFieldName());
@@ -199,6 +204,7 @@ public class TableSequence extends QuerySequence {
         return query;
     }
 
+    @Override
     protected DataModifyQuery buildUpdateQuery() {
         DataModifyQuery query = new DataModifyQuery();
         query.addArgument(getNameFieldName());

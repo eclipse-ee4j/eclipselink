@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -32,10 +32,12 @@ import org.omg.CORBA.portable.ServantObject;
 public class _RMIRemoteSessionController_Stub extends Stub implements RMIRemoteSessionController {
     private static final String[] _type_ids = { "RMI:org.eclipse.persistence.sessions.remote.rmi.iiop.RMIRemoteSessionController:0000000000000000" };
 
+    @Override
     public String[] _ids() {
         return _type_ids;
     }
 
+    @Override
     public Transporter processCommand(Transporter remoteTransporter) throws RemoteException {
         if (!Util.isLocal(this)) {
             try {
@@ -75,6 +77,7 @@ public class _RMIRemoteSessionController_Stub extends Stub implements RMIRemoteS
         }
     }
 
+    @Override
     public Transporter beginTransaction() throws RemoteException {
         if (!Util.isLocal(this)) {
             try {
@@ -112,6 +115,7 @@ public class _RMIRemoteSessionController_Stub extends Stub implements RMIRemoteS
         }
     }
 
+    @Override
     public Transporter beginEarlyTransaction() throws RemoteException {
         if (!Util.isLocal(this)) {
             try {
@@ -149,6 +153,7 @@ public class _RMIRemoteSessionController_Stub extends Stub implements RMIRemoteS
         }
     }
 
+    @Override
     public Transporter commitRootUnitOfWork(Transporter remoteUnitOfWork) throws RemoteException {
         if (!Util.isLocal(this)) {
             try {
@@ -188,6 +193,7 @@ public class _RMIRemoteSessionController_Stub extends Stub implements RMIRemoteS
         }
     }
 
+    @Override
     public Transporter commitTransaction() throws RemoteException {
         if (!Util.isLocal(this)) {
             try {
@@ -225,6 +231,7 @@ public class _RMIRemoteSessionController_Stub extends Stub implements RMIRemoteS
         }
     }
 
+    @Override
     public Transporter cursoredStreamClose(Transporter remoetCursoredStreamID) throws RemoteException {
         if (!Util.isLocal(this)) {
             try {
@@ -264,6 +271,7 @@ public class _RMIRemoteSessionController_Stub extends Stub implements RMIRemoteS
         }
     }
 
+    @Override
     public Transporter cursoredStreamNextPage(Transporter remoteCursoredStream, int pageSize) throws RemoteException {
         if (!Util.isLocal(this)) {
             try {
@@ -304,6 +312,7 @@ public class _RMIRemoteSessionController_Stub extends Stub implements RMIRemoteS
         }
     }
 
+    @Override
     public Transporter cursoredStreamSize(Transporter cursoredStream) throws RemoteException {
         if (!Util.isLocal(this)) {
             try {
@@ -343,6 +352,7 @@ public class _RMIRemoteSessionController_Stub extends Stub implements RMIRemoteS
         }
     }
 
+    @Override
     public Transporter cursorSelectObjects(Transporter policy) throws RemoteException {
         if (!Util.isLocal(this)) {
             try {
@@ -382,6 +392,7 @@ public class _RMIRemoteSessionController_Stub extends Stub implements RMIRemoteS
         }
     }
 
+    @Override
     public Transporter executeNamedQuery(Transporter name, Transporter theClass, Transporter arguments) throws RemoteException {
         if (!Util.isLocal(this)) {
             try {
@@ -426,6 +437,7 @@ public class _RMIRemoteSessionController_Stub extends Stub implements RMIRemoteS
         }
     }
 
+    @Override
     public Transporter executeQuery(Transporter query) throws RemoteException {
         if (!Util.isLocal(this)) {
             try {
@@ -465,6 +477,7 @@ public class _RMIRemoteSessionController_Stub extends Stub implements RMIRemoteS
         }
     }
 
+    @Override
     public Transporter getDescriptor(Transporter domainClass) throws RemoteException {
         if (!Util.isLocal(this)) {
             try {
@@ -505,6 +518,7 @@ public class _RMIRemoteSessionController_Stub extends Stub implements RMIRemoteS
         }
     }
 
+    @Override
     public Transporter getDescriptorForAlias(Transporter alias) throws RemoteException {
         if (!Util.isLocal(this)) {
             try {
@@ -545,6 +559,7 @@ public class _RMIRemoteSessionController_Stub extends Stub implements RMIRemoteS
         }
     }
 
+    @Override
     public Transporter getDefaultReadOnlyClasses() throws RemoteException {
         if (!Util.isLocal(this)) {
             try {
@@ -582,6 +597,7 @@ public class _RMIRemoteSessionController_Stub extends Stub implements RMIRemoteS
         }
     }
 
+    @Override
     public Transporter getLogin() throws RemoteException {
         if (!Util.isLocal(this)) {
             try {
@@ -619,6 +635,7 @@ public class _RMIRemoteSessionController_Stub extends Stub implements RMIRemoteS
         }
     }
 
+    @Override
     public Transporter getSequenceNumberNamed(Transporter remoteFunctionCall) throws RemoteException {
         if (!Util.isLocal(this)) {
             try {
@@ -658,6 +675,7 @@ public class _RMIRemoteSessionController_Stub extends Stub implements RMIRemoteS
         }
     }
 
+    @Override
     public Transporter initializeIdentityMapsOnServerSession() throws RemoteException {
         if (!Util.isLocal(this)) {
             try {
@@ -695,6 +713,7 @@ public class _RMIRemoteSessionController_Stub extends Stub implements RMIRemoteS
         }
     }
 
+    @Override
     public Transporter instantiateRemoteValueHolderOnServer(Transporter remoteValueHolder) throws RemoteException {
         if (!Util.isLocal(this)) {
             try {
@@ -762,6 +781,7 @@ public class _RMIRemoteSessionController_Stub extends Stub implements RMIRemoteS
         return transporter;
     }
 
+    @Override
     public Transporter rollbackTransaction() throws RemoteException {
         if (!Util.isLocal(this)) {
             try {
@@ -799,6 +819,7 @@ public class _RMIRemoteSessionController_Stub extends Stub implements RMIRemoteS
         }
     }
 
+    @Override
     public Transporter scrollableCursorAbsolute(Transporter remoteScrollableCursorOid, int rows) throws RemoteException {
         if (!Util.isLocal(this)) {
             try {
@@ -839,6 +860,7 @@ public class _RMIRemoteSessionController_Stub extends Stub implements RMIRemoteS
         }
     }
 
+    @Override
     public Transporter scrollableCursorAfterLast(Transporter remoteScrollableCursorOid) throws RemoteException {
         if (!Util.isLocal(this)) {
             try {
@@ -878,6 +900,7 @@ public class _RMIRemoteSessionController_Stub extends Stub implements RMIRemoteS
         }
     }
 
+    @Override
     public Transporter scrollableCursorBeforeFirst(Transporter remoteScrollableCursor) throws RemoteException {
         if (!Util.isLocal(this)) {
             try {
@@ -917,6 +940,7 @@ public class _RMIRemoteSessionController_Stub extends Stub implements RMIRemoteS
         }
     }
 
+    @Override
     public Transporter scrollableCursorClose(Transporter remoteScrollableCursorOid) throws RemoteException {
         if (!Util.isLocal(this)) {
             try {
@@ -956,6 +980,7 @@ public class _RMIRemoteSessionController_Stub extends Stub implements RMIRemoteS
         }
     }
 
+    @Override
     public Transporter scrollableCursorCurrentIndex(Transporter remoteScrollableCursor) throws RemoteException {
         if (!Util.isLocal(this)) {
             try {
@@ -995,6 +1020,7 @@ public class _RMIRemoteSessionController_Stub extends Stub implements RMIRemoteS
         }
     }
 
+    @Override
     public Transporter scrollableCursorFirst(Transporter remoteScrollableCursor) throws RemoteException {
         if (!Util.isLocal(this)) {
             try {
@@ -1034,6 +1060,7 @@ public class _RMIRemoteSessionController_Stub extends Stub implements RMIRemoteS
         }
     }
 
+    @Override
     public Transporter scrollableCursorIsAfterLast(Transporter remoteScrollableCursor) throws RemoteException {
         if (!Util.isLocal(this)) {
             try {
@@ -1073,6 +1100,7 @@ public class _RMIRemoteSessionController_Stub extends Stub implements RMIRemoteS
         }
     }
 
+    @Override
     public Transporter scrollableCursorIsBeforeFirst(Transporter remoteScrollableCursor) throws RemoteException {
         if (!Util.isLocal(this)) {
             try {
@@ -1112,6 +1140,7 @@ public class _RMIRemoteSessionController_Stub extends Stub implements RMIRemoteS
         }
     }
 
+    @Override
     public Transporter scrollableCursorIsFirst(Transporter remoteScrollableCursor) throws RemoteException {
         if (!Util.isLocal(this)) {
             try {
@@ -1151,6 +1180,7 @@ public class _RMIRemoteSessionController_Stub extends Stub implements RMIRemoteS
         }
     }
 
+    @Override
     public Transporter scrollableCursorIsLast(Transporter remoteScrollableCursor) throws RemoteException {
         if (!Util.isLocal(this)) {
             try {
@@ -1190,6 +1220,7 @@ public class _RMIRemoteSessionController_Stub extends Stub implements RMIRemoteS
         }
     }
 
+    @Override
     public Transporter scrollableCursorLast(Transporter remoteScrollableCursor) throws RemoteException {
         if (!Util.isLocal(this)) {
             try {
@@ -1229,6 +1260,7 @@ public class _RMIRemoteSessionController_Stub extends Stub implements RMIRemoteS
         }
     }
 
+    @Override
     public Transporter scrollableCursorNextObject(Transporter scrollableCursorOid) throws RemoteException {
         if (!Util.isLocal(this)) {
             try {
@@ -1268,6 +1300,7 @@ public class _RMIRemoteSessionController_Stub extends Stub implements RMIRemoteS
         }
     }
 
+    @Override
     public Transporter scrollableCursorPreviousObject(Transporter scrollableCursorOid) throws RemoteException {
         if (!Util.isLocal(this)) {
             try {
@@ -1307,6 +1340,7 @@ public class _RMIRemoteSessionController_Stub extends Stub implements RMIRemoteS
         }
     }
 
+    @Override
     public Transporter scrollableCursorRelative(Transporter remoteScrollableCursor, int rows) throws RemoteException {
         if (!Util.isLocal(this)) {
             try {
@@ -1347,6 +1381,7 @@ public class _RMIRemoteSessionController_Stub extends Stub implements RMIRemoteS
         }
     }
 
+    @Override
     public Transporter scrollableCursorSize(Transporter cursoredStream) throws RemoteException {
         if (!Util.isLocal(this)) {
             try {

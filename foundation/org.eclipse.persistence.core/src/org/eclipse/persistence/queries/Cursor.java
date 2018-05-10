@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -144,6 +144,7 @@ public abstract class Cursor implements Enumeration, Iterator, java.io.Serializa
     /**
      * Close in case not closed.
      */
+    @Override
     protected void finalize() throws DatabaseException {
         close();
     }
@@ -432,6 +433,7 @@ public abstract class Cursor implements Enumeration, Iterator, java.io.Serializa
      * PUBLIC:
      * Remove is not support with cursors.
      */
+    @Override
     public void remove() throws QueryException {
         QueryException.invalidOperation("remove");
     }

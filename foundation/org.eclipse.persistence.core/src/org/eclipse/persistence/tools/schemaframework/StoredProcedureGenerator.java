@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,21 +12,39 @@
  ******************************************************************************/
 package org.eclipse.persistence.tools.schemaframework;
 
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.sql.Time;
-import org.eclipse.persistence.mappings.*;
-import org.eclipse.persistence.sequencing.TableSequence;
-import org.eclipse.persistence.sessions.DatabaseRecord;
-import org.eclipse.persistence.sessions.DatabaseLogin;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
+
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.internal.queries.*;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.expressions.ParameterExpression;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.queries.CallQueryMechanism;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.internal.expressions.ParameterExpression;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.OneToManyMapping;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.DeleteAllQuery;
+import org.eclipse.persistence.queries.DeleteObjectQuery;
+import org.eclipse.persistence.queries.InsertObjectQuery;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.queries.SQLCall;
+import org.eclipse.persistence.queries.UpdateObjectQuery;
+import org.eclipse.persistence.sequencing.TableSequence;
+import org.eclipse.persistence.sessions.DatabaseLogin;
+import org.eclipse.persistence.sessions.DatabaseRecord;
 
 /**
  * <b>Purpose</b>: To generate StoredProcedures from EclipseLink Projects <p>
@@ -102,7 +120,7 @@ public class StoredProcedureGenerator {
         StringWriter stringWriter = new StringWriter();
         int startIndex = 0;
         int nextParamIndex = 0;
-        int tokenIndex = stringToModify.indexOf("?");
+        int tokenIndex = stringToModify.indexOf('?');
 
         while (tokenIndex != -1) {
             stringWriter.write(stringToModify.substring(startIndex, tokenIndex));
@@ -118,7 +136,7 @@ public class StoredProcedureGenerator {
                 getSession().getPlatform().appendParameter(call, stringWriter, parameter);
             }
 
-            tokenIndex = stringToModify.indexOf("?", startIndex);
+            tokenIndex = stringToModify.indexOf('?', startIndex);
             nextParamIndex++;
         }
         stringWriter.write(stringToModify.substring(startIndex));
@@ -412,15 +430,15 @@ public class StoredProcedureGenerator {
         deleteAllQuery.setDescriptor(targetDescriptor);
         deleteAllQuery.setReferenceClass(targetDescriptor.getJavaClass());
         deleteAllQuery.setSelectionCriteria(mapping.getSelectionCriteria());
-        return generateOneToManyMappingProcedures(mapping, deleteAllQuery, mapping.getTargetForeignKeyToSourceKeys(), "D_1M_");
+        return generateOneToManyMappingProcedures(mapping, deleteAllQuery, mapping.getTargetForeignKeysToSourceKeys(), "D_1M_");
     }
 
     /**
      * INTERNAL: Generates all the stored procedures for this mapping
      */
-    protected StoredProcedureDefinition generateOneToManyMappingProcedures(OneToManyMapping mapping, DatabaseQuery query, Map fields, String namePrefix) {
+    protected StoredProcedureDefinition generateOneToManyMappingProcedures(OneToManyMapping mapping, DatabaseQuery query, Map<DatabaseField, DatabaseField> fields, String namePrefix) {
         String sourceClassName = Helper.getShortClassName(mapping.getDescriptor().getJavaClass());
-        return generateStoredProcedure(query, new ArrayList(fields.values()), getPrefix() + namePrefix + sourceClassName + "_" + mapping.getAttributeName());
+        return generateStoredProcedure(query, new ArrayList<>(fields.values()), getPrefix() + namePrefix + sourceClassName + "_" + mapping.getAttributeName());
     }
 
     /**
@@ -433,7 +451,7 @@ public class StoredProcedureGenerator {
         readAllQuery.setDescriptor(targetDescriptor);
         readAllQuery.setReferenceClass(targetDescriptor.getJavaClass());
         readAllQuery.setSelectionCriteria(mapping.getSelectionCriteria());
-        return generateOneToManyMappingProcedures(mapping, readAllQuery, mapping.getTargetForeignKeyToSourceKeys(), "R_1M_");
+        return generateOneToManyMappingProcedures(mapping, readAllQuery, mapping.getTargetForeignKeysToSourceKeys(), "R_1M_");
     }
 
     /**
@@ -496,7 +514,7 @@ public class StoredProcedureGenerator {
      * INTERNAL: Generates the stored procedure for this query.  A new row
      * will be used for the check prepare.
      */
-    protected StoredProcedureDefinition generateStoredProcedure(DatabaseQuery query, List fields, String name) {
+    protected StoredProcedureDefinition generateStoredProcedure(DatabaseQuery query, List<DatabaseField> fields, String name) {
         return generateStoredProcedure(query, fields, new DatabaseRecord(), name);
     }
 
@@ -504,7 +522,7 @@ public class StoredProcedureGenerator {
      * INTERNAL: Generates the stored procedure for this query using the row
      * passed in for the check prepare.
      */
-    protected StoredProcedureDefinition generateStoredProcedure(DatabaseQuery query, List fields, AbstractRecord rowForPrepare, String name) {
+    protected StoredProcedureDefinition generateStoredProcedure(DatabaseQuery query, List<DatabaseField> fields, AbstractRecord rowForPrepare, String name) {
         StoredProcedureDefinition definition = new StoredProcedureDefinition();
         Vector callVector;
         Vector statementVector = new Vector();
@@ -527,9 +545,9 @@ public class StoredProcedureGenerator {
         DatabaseField databaseField;
         AbstractRecord dataRow;
         Hashtable fieldNames = new Hashtable();
-        List primaryKeyFields = fields;
+        List<DatabaseField> primaryKeyFields = fields;
         for (int index = 0; index < primaryKeyFields.size(); index++) {
-            databaseField = (DatabaseField)primaryKeyFields.get(index);
+            databaseField = primaryKeyFields.get(index);
             fieldNames.put(databaseField.getName(), this.schemaManager.getColumnInfo(null, null, databaseField.getTableName(), databaseField.getName()).firstElement());
         }
 

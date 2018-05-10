@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -37,6 +37,7 @@ import org.eclipse.persistence.testing.jaxb.json.namespaces.NamespaceInheritance
 import org.eclipse.persistence.testing.jaxb.json.namespaces.NamespacesOnContextTestCases;
 import org.eclipse.persistence.testing.jaxb.json.namespaces.NamespacesOnUnmarshalOnlyTestCases;
 import org.eclipse.persistence.testing.jaxb.json.namespaces.SeparatorInNameTestCases;
+import org.eclipse.persistence.testing.jaxb.json.nil.NilElementsUsageTestCases;
 import org.eclipse.persistence.testing.jaxb.json.norootelement.IncludeRootFalseWithXMLRootElementTestCases;
 import org.eclipse.persistence.testing.jaxb.json.norootelement.IncludeRootTrueWithXMLRootElementTestCases;
 import org.eclipse.persistence.testing.jaxb.json.norootelement.InheritanceNoRootTestCases;
@@ -74,6 +75,7 @@ public class JSONTestSuite extends TestSuite {
           suite.addTestSuite(NamespaceInheritanceTestCases.class);
           suite.addTestSuite(NamespaceInheritanceSeparatorTestCases.class);
           suite.addTestSuite(NamespaceInheritanceSeparatorContextTestCases.class);
+          suite.addTestSuite(NilElementsUsageTestCases.class);
           suite.addTestSuite(SeparatorInNameTestCases.class);
           suite.addTestSuite(IncludeRootFalseWithXMLRootElementTestCases.class);
           suite.addTestSuite(IncludeRootTrueWithXMLRootElementTestCases.class);

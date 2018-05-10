@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -95,6 +95,10 @@ public class XPathFragment <
 
     public void setNamespaceAware(boolean isNamespaceAware) {
         this.namespaceAware = isNamespaceAware;
+    }
+
+    public char getNamespaceSeparator() {
+        return this.namespaceSeparator;
     }
 
     public void setNamespaceSeparator(char namespaceSeparator) {
@@ -328,6 +332,7 @@ public class XPathFragment <
         return shouldExecuteSelectNodes;
     }
 
+    @Override
     public boolean equals(Object object) {
         return equals(object, false);
     }
@@ -379,6 +384,7 @@ public class XPathFragment <
         return true;
     }
 
+    @Override
     public int hashCode() {
         if(null == localName) {
             return 1;

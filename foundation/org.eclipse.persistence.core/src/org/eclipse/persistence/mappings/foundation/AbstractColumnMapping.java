@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -80,6 +80,7 @@ public abstract class AbstractColumnMapping extends DatabaseMapping {
      * INTERNAL:
      * Cascade perform delete through mappings that require the cascade.
      */
+    @Override
     public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
         // objects referenced by this mapping are not registered as they have
         // no identity, this is a no-op.
@@ -89,6 +90,7 @@ public abstract class AbstractColumnMapping extends DatabaseMapping {
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade.
      */
+    @Override
     public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
         // objects referenced by this mapping are not registered as they have
         // no identity, this is a no-op.
@@ -192,6 +194,7 @@ public abstract class AbstractColumnMapping extends DatabaseMapping {
      * INTERNAL:
      * Returns the field which this mapping represents.
      */
+    @Override
     public DatabaseField getField() {
         return field;
     }

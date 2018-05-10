@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -44,6 +44,7 @@ public class TransformationMappingChangeRecord extends ChangeRecord implements o
      * ADVANCED:
      * This method is used to access the changes of the fields in a transformation mapping.
      */
+    @Override
     public Record getRecord() {
         if (rowCollection == null) {
             this.rowCollection = new DatabaseRecord();
@@ -55,6 +56,7 @@ public class TransformationMappingChangeRecord extends ChangeRecord implements o
      * INTERNAL:
      * This method will be used to merge one record into another
      */
+    @Override
     public void mergeRecord(ChangeRecord mergeFromRecord, UnitOfWorkChangeSet mergeToChangeSet, UnitOfWorkChangeSet mergeFromChangeSet) {
         this.rowCollection = (AbstractRecord)((TransformationMappingChangeRecord)mergeFromRecord).getRecord();
     }
@@ -74,6 +76,7 @@ public class TransformationMappingChangeRecord extends ChangeRecord implements o
      * There is nothing to do for this mapping type as there are no object
      * references
      */
+    @Override
     public void updateReferences(UnitOfWorkChangeSet mergeToChangeSet, UnitOfWorkChangeSet mergeFromChangeSet) {
     }
 
@@ -81,6 +84,7 @@ public class TransformationMappingChangeRecord extends ChangeRecord implements o
      * ADVANCED:
      * Return the old value of the attribute represented by this ChangeRecord.
      */
+    @Override
     public Object getOldValue() {
         return this.oldValue;
     }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -236,7 +236,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
                 return;
             }
 
-            Method eventMethod = (Method)getEventMethods().get(event.getEventCode());
+            Method eventMethod = getEventMethods().get(event.getEventCode());
             if (eventMethod == null) {
                 return;
             }
@@ -656,14 +656,14 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
         // Step 1 - notify our default listeners.
         if (hasDefaultEventListeners()) {
             for (int i = 0; i < getDefaultEventListeners().size(); i++) {
-                DescriptorEventListener listener = (DescriptorEventListener) getDefaultEventListeners().get(i);
+                DescriptorEventListener listener = getDefaultEventListeners().get(i);
                 notifyListener(listener, event);
             }
         }
 
         // Step 2 - Notify the Entity Listener's first, top -> down.
         for (int index = entityListenerEventManagers.size() - 1; index >= 0; index--) {
-            List entityListenerEventListeners = ((DescriptorEventManager) entityListenerEventManagers.get(index)).getEntityListenerEventListeners();
+            List entityListenerEventListeners = entityListenerEventManagers.get(index).getEntityListenerEventListeners();
 
             for (int i = 0; i < entityListenerEventListeners.size(); i++) {
                 DescriptorEventListener listener = (DescriptorEventListener) entityListenerEventListeners.get(i);
@@ -761,7 +761,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
     public void notifyListeners(DescriptorEvent event) {
         if (hasAnyListeners()) {
             for (int index = 0; index < getEventListeners().size(); index++) {
-                DescriptorEventListener listener = (DescriptorEventListener)getEventListeners().get(index);
+                DescriptorEventListener listener = getEventListeners().get(index);
                 notifyListener(listener, event);
             }
         }
@@ -1056,7 +1056,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
     private static <T> AtomicReferenceArray<T> newAtomicReferenceArray(final int length) {
         final AtomicReferenceArray array = new AtomicReferenceArray<>(length);
         for (int index = 0; index < length; array.set(index++, null));
-        return (AtomicReferenceArray<T>)array;
+        return array;
     }
 
     /**
@@ -1069,7 +1069,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
         final int length = src.length();
         final AtomicReferenceArray array = new AtomicReferenceArray<>(length);
         for (int index = 0; index < length; array.set(index, src.get(index++)));
-        return (AtomicReferenceArray<T>)array;
+        return array;
     }
 
 }

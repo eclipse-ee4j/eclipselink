@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -45,6 +45,7 @@ public class RMIRemoteConnection extends RemoteConnection {
      * If a RemoteException occurred then a communication problem occurred. In this
      * case the exception will be wrapped in a CommunicationException and re-thrown.
      */
+    @Override
     public Object executeCommand(Command command) throws CommunicationException {
         try {
             return this.connection.executeCommand(command);
@@ -63,6 +64,7 @@ public class RMIRemoteConnection extends RemoteConnection {
      * If a RemoteException occurred then a communication problem occurred. In this
      * case the exception will be wrapped in a CommunicationException and re-thrown.
      */
+    @Override
     public Object executeCommand(byte[] command) throws CommunicationException {
         try {
             return this.connection.executeCommand(command);

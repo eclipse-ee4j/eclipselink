@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -26,6 +26,7 @@ import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.ext.LexicalHandler;
 
+import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.validation.ValidatorHandler;
 
@@ -93,10 +94,12 @@ public class XMLReader implements org.xml.sax.XMLReader {
         locator = newLocator;
     }
 
+    @Override
     public ContentHandler getContentHandler () {
         return reader.getContentHandler();
     }
 
+    @Override
     public void setContentHandler (ContentHandler handler) {
         if(validatingContentHandler != null) {
             validatingContentHandler.setContentHandler(handler);
@@ -160,26 +163,32 @@ public class XMLReader implements org.xml.sax.XMLReader {
         return xmlField.convertValueBasedOnSchemaType(value, conversionManager, record);
     }
 
+    @Override
     public DTDHandler getDTDHandler () {
         return reader.getDTDHandler();
     }
 
+    @Override
     public void setDTDHandler (DTDHandler handler) {
         reader.setDTDHandler(handler);
     }
 
+    @Override
     public void setEntityResolver (EntityResolver resolver) {
         reader.setEntityResolver(resolver);
     }
 
+    @Override
     public EntityResolver getEntityResolver () {
         return reader.getEntityResolver();
     }
 
+    @Override
     public ErrorHandler getErrorHandler () {
         return reader.getErrorHandler();
     }
 
+    @Override
     public void setErrorHandler (ErrorHandler handler) {
         if(validatingContentHandler != null) {
             validatingContentHandler.setErrorHandler(handler);
@@ -214,14 +223,17 @@ public class XMLReader implements org.xml.sax.XMLReader {
         }
     }
 
+    @Override
     public boolean getFeature (String name) throws SAXNotRecognizedException, SAXNotSupportedException {
         return reader.getFeature(name);
     }
 
+    @Override
     public void setFeature (String name, boolean value) throws SAXNotRecognizedException, SAXNotSupportedException {
         reader.setFeature(name, value);
     }
 
+    @Override
     public Object getProperty (String name) throws SAXNotRecognizedException, SAXNotSupportedException {
         if(Constants.LEXICAL_HANDLER_PROPERTY.equals(name)) {
             return getLexicalHandler();
@@ -230,6 +242,7 @@ public class XMLReader implements org.xml.sax.XMLReader {
         }
     }
 
+    @Override
     public void setProperty (String name, Object value) throws SAXNotRecognizedException, SAXNotSupportedException {
         if(Constants.LEXICAL_HANDLER_PROPERTY.equals(name)) {
             setLexicalHandler((LexicalHandler) value);
@@ -238,6 +251,7 @@ public class XMLReader implements org.xml.sax.XMLReader {
         }
     }
 
+    @Override
     public void parse(InputSource input) throws IOException, SAXException {
         try {
             reader.parse(input);
@@ -252,6 +266,7 @@ public class XMLReader implements org.xml.sax.XMLReader {
         }
     }
 
+    @Override
     public void parse (String systemId) throws IOException, SAXException {
         try {
             reader.parse(systemId);
@@ -329,10 +344,11 @@ public class XMLReader implements org.xml.sax.XMLReader {
     }
 
     private boolean hasAttributes(Attributes attributes) {
-        QName nilAttrName = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, Constants.SCHEMA_NIL_ATTRIBUTE);
+        QName nilAttrName = new QName(XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, Constants.SCHEMA_NIL_ATTRIBUTE);
         for (int i = 0; i < attributes.getLength(); i++) {
             if (!(nilAttrName.getNamespaceURI().equals(attributes.getURI(i)) &&
-                    nilAttrName.getLocalPart().equals(attributes.getLocalName(i)))) {
+                    nilAttrName.getLocalPart().equals(attributes.getLocalName(i))) &&
+                    !XMLConstants.XMLNS_ATTRIBUTE_NS_URI.equals(attributes.getURI(i))) {
                 return true;
             }
         }
@@ -364,42 +380,49 @@ public class XMLReader implements org.xml.sax.XMLReader {
             this.lexicalHandler = lexicalHandler;
         }
 
+        @Override
         public void comment(char[] ch, int start, int length) throws SAXException {
             if(null != lexicalHandler) {
                 lexicalHandler.comment(ch, start, length);
             }
         }
 
+        @Override
         public void endCDATA() throws SAXException {
             if(null  != lexicalHandler) {
                 lexicalHandler.endCDATA();
             }
         }
 
+        @Override
         public void endDTD() throws SAXException {
             if(null != lexicalHandler) {
                 lexicalHandler.endDTD();
             }
         }
 
+        @Override
         public void endEntity(String name) throws SAXException {
             if(null != lexicalHandler) {
                 lexicalHandler.endEntity(name);
             }
         }
 
+        @Override
         public void startCDATA() throws SAXException {
             if(null != lexicalHandler) {
                 lexicalHandler.startCDATA();
             }
         }
 
+        @Override
         public void startDTD(String name, String publicId, String systemId) throws SAXException {
             if(null != lexicalHandler) {
                 lexicalHandler.startCDATA();
             }
         }
 
+        @Override
         public void startEntity(String name) throws SAXException {
             if(null != lexicalHandler) {
                 lexicalHandler.startEntity(name);
@@ -442,56 +465,67 @@ public class XMLReader implements org.xml.sax.XMLReader {
             this.validatorHandler = validatorHandler;
         }
 
+        @Override
         public void setDocumentLocator(Locator locator) {
             validatorHandler.setDocumentLocator(locator);
             contentHandler.setDocumentLocator(locator);
         }
 
+        @Override
         public void startDocument() throws SAXException {
             validatorHandler.startDocument();
             contentHandler.startDocument();
         }
 
+        @Override
         public void endDocument() throws SAXException {
             validatorHandler.endDocument();
             contentHandler.endDocument();
         }
 
+        @Override
         public void startPrefixMapping(String prefix, String uri) throws SAXException {
             validatorHandler.startPrefixMapping(prefix, uri);
             contentHandler.startPrefixMapping(prefix, uri);
         }
 
+        @Override
         public void endPrefixMapping(String prefix) throws SAXException {
             validatorHandler.endPrefixMapping(prefix);
             contentHandler.endPrefixMapping(prefix);
         }
 
+        @Override
         public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
             validatorHandler.startElement(uri, localName, qName, atts);
             contentHandler.startElement(uri, localName, qName, atts);
         }
 
+        @Override
         public void endElement(String uri, String localName, String qName) throws SAXException {
             validatorHandler.endElement(uri, localName, qName);
             contentHandler.endElement(uri, localName, qName);
         }
 
+        @Override
         public void characters(char[] ch, int start, int length) throws SAXException {
             validatorHandler.characters(ch, start, length);
             contentHandler.characters(ch, start, length);
         }
 
+        @Override
         public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {
             validatorHandler.ignorableWhitespace(ch, start, length);
             contentHandler.characters(ch, start, length);
         }
 
+        @Override
         public void processingInstruction(String target, String data) throws SAXException {
             validatorHandler.processingInstruction(target, data);
             contentHandler.processingInstruction(target, data);
         }
 
+        @Override
         public void skippedEntity(String name) throws SAXException {
             validatorHandler.skippedEntity(name);
             contentHandler.skippedEntity(name);

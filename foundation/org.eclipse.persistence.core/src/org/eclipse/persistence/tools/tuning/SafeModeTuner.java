@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2018  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -29,6 +29,7 @@ public class SafeModeTuner implements SessionTuner {
     /**
      * Allow any JPA persistence unit properties to be configured, prior to deployment.
      */
+    @Override
     public void tunePreDeploy(Map properties) {
         properties.put(PersistenceUnitProperties.WEAVING_INTERNAL, "false");
         properties.put(PersistenceUnitProperties.WEAVING_CHANGE_TRACKING, "false");
@@ -41,6 +42,7 @@ public class SafeModeTuner implements SessionTuner {
     /**
      * Allow any Session configuration to be tune after meta-data has been processed, but before connecting the session.
      */
+    @Override
     public void tuneDeploy(Session session) {
 
     }
@@ -48,6 +50,7 @@ public class SafeModeTuner implements SessionTuner {
     /**
      * Allow any Session configuration to be tune after deploying and connecting the session.
      */
+    @Override
     public void tunePostDeploy(Session session) {
 
     }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -37,7 +37,6 @@
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.persistence.annotations.Convert;
@@ -194,6 +193,7 @@ public abstract class DirectAccessor extends MappingAccessor {
     /**
      * INTERNAL:
      */
+    @Override
     public abstract String getDefaultFetchType();
 
     /**
@@ -233,6 +233,7 @@ public abstract class DirectAccessor extends MappingAccessor {
      * INTERNAL:
      * Return the lob metadata for this accessor.
      */
+    @Override
     public LobMetadata getLob(boolean isForMapKey) {
         if (isForMapKey) {
             return super.getLob(isForMapKey);

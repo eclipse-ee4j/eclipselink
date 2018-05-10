@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -40,10 +40,12 @@ public class AttributeNodeImpl<X> implements AttributeNode<X>{
         this.currentAttribute = attribute;
     }
 
+    @Override
     public String getAttributeName() {
         return currentAttribute;
     }
 
+    @Override
     public Map<Class, Subgraph> getSubgraphs() {
         if (this.subgraphs == null){
             this.subgraphs = new HashMap<Class, Subgraph>();
@@ -51,6 +53,7 @@ public class AttributeNodeImpl<X> implements AttributeNode<X>{
         return this.subgraphs;
     }
 
+    @Override
     public Map<Class, Subgraph> getKeySubgraphs() {
         if (this.keySubgraphs == null){
             this.keySubgraphs = new HashMap<Class, Subgraph>();

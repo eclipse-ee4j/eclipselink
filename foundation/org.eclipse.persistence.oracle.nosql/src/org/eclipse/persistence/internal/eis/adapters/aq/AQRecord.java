@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -34,18 +34,22 @@ public class AQRecord extends ArrayList implements IndexedRecord {
         this.description = "AQ message data";
     }
 
+    @Override
     public String getRecordShortDescription() {
         return description;
     }
 
+    @Override
     public void setRecordShortDescription(String description) {
         this.description = description;
     }
 
+    @Override
     public String getRecordName() {
         return name;
     }
 
+    @Override
     public void setRecordName(String name) {
         this.name = name;
     }

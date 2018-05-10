@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -79,6 +79,7 @@ public class ReplaceValueHoldersIterator extends DescriptorIterator {
     /**
      * Iterate an indirect container.
      */
+    @Override
     protected void internalIterateIndirectContainer(IndirectContainer container) {
         ValueHolderInterface containedValueHolder = container.getValueHolder();
 
@@ -101,6 +102,7 @@ public class ReplaceValueHoldersIterator extends DescriptorIterator {
      * so that we can ensure that the value holder being held by the object is used
      * instead of the one that was passed in.
      */
+    @Override
     protected void internalIterateValueHolder(ValueHolderInterface originalValueHolder) {
         ValueHolderInterface rootValueHolder = originalValueHolder;
 
@@ -124,6 +126,7 @@ public class ReplaceValueHoldersIterator extends DescriptorIterator {
     /**
      * if we get here, it is a domain object
      */
+    @Override
     protected void iterate(Object object) {
         ((Map)getResult()).put(object, this.buildObjectDescriptor(object));
     }

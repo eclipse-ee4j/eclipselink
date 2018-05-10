@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -116,6 +116,7 @@ public class QueryBasedValueHolder extends DatabaseValueHolder {
         return query;
     }
 
+    @Override
     protected Object instantiate() throws DatabaseException {
         return instantiate(this.session);
     }
@@ -147,6 +148,7 @@ public class QueryBasedValueHolder extends DatabaseValueHolder {
      * stores all the info like the row and the query. Note: This method is not
      * thread-safe. It must be used in a synchronized manner
      */
+    @Override
     public Object instantiateForUnitOfWorkValueHolder(UnitOfWorkValueHolder unitOfWorkValueHolder) {
         return instantiate(unitOfWorkValueHolder.getUnitOfWork());
     }
@@ -156,6 +158,7 @@ public class QueryBasedValueHolder extends DatabaseValueHolder {
      * Run any extra code required after the valueholder instantiates
      * For query based VH, we notify the cache that the valueholder has been triggered
      */
+    @Override
     public void postInstantiate(){
         DatabaseMapping mapping = query.getSourceMapping();
         if (mapping != null && mapping.isForeignReferenceMapping()){
@@ -207,6 +210,7 @@ public class QueryBasedValueHolder extends DatabaseValueHolder {
     /**
      * Reset all the fields that are not needed after instantiation.
      */
+    @Override
     protected void resetFields() {
         super.resetFields();
         this.query = null;
@@ -232,6 +236,7 @@ public class QueryBasedValueHolder extends DatabaseValueHolder {
      * it. Note: This method is not thread-safe. It must be used in a
      * synchronized manner
      */
+    @Override
     public boolean isPessimisticLockingValueHolder() {
         // Get the easy checks out of the way first.
         if ((this.query == null) || !this.query.isObjectLevelReadQuery()) {

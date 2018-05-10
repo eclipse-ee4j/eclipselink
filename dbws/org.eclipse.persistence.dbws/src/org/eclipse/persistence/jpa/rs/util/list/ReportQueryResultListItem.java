@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -24,8 +24,8 @@ import javax.xml.bind.annotation.XmlAnyElement;
  *
  */
 public class ReportQueryResultListItem {
-    @SuppressWarnings("rawtypes")
-    private List<JAXBElement> fields;
+
+    private List<JAXBElement<?>> fields;
 
     /**
      * Instantiates a new query result list item.
@@ -38,9 +38,8 @@ public class ReportQueryResultListItem {
      *
      * @return the fields
      */
-    @SuppressWarnings("rawtypes")
     @XmlAnyElement(lax = true)
-    public List<JAXBElement> getFields() {
+    public List<JAXBElement<?>> getFields() {
         return fields;
     }
 
@@ -49,8 +48,7 @@ public class ReportQueryResultListItem {
      *
      * @param fields the new fields
      */
-    @SuppressWarnings("rawtypes")
-    public void setFields(List<JAXBElement> fields) {
+    public void setFields(List<JAXBElement<?>> fields) {
         this.fields = fields;
     }
 }

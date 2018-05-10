@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998 - 2014, 2015  Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998 - 2014, 2018  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -74,6 +74,7 @@ public class JavaMethodImpl implements JavaMethod {
         return argCollection;
     }
 
+    @Override
     public JavaAnnotation getAnnotation(JavaClass arg0) {
         if (arg0 != null && !isMetadataComplete) {
             Class annotationClass = ((JavaClassImpl) arg0).getJavaClass();
@@ -85,6 +86,7 @@ public class JavaMethodImpl implements JavaMethod {
         return null;
     }
 
+    @Override
     public Collection getAnnotations() {
         ArrayList<JavaAnnotation> annotationCollection = new ArrayList<JavaAnnotation>();
         if (!isMetadataComplete) {
@@ -96,10 +98,12 @@ public class JavaMethodImpl implements JavaMethod {
         return annotationCollection;
     }
 
+    @Override
     public String getName() {
         return jMethod.getName();
     }
 
+    @Override
     public JavaClass[] getParameterTypes() {
         Class[] params = PrivilegedAccessHelper.getMethodParameterTypes(jMethod);
         JavaClass[] paramArray = new JavaClass[params.length];
@@ -114,6 +118,7 @@ public class JavaMethodImpl implements JavaMethod {
         return javaModelImpl.getClass(returnType);
     }
 
+    @Override
     public JavaClass getReturnType() {
         Type type = jMethod.getGenericReturnType();
         Class returnType = PrivilegedAccessHelper.getMethodReturnType(jMethod);
@@ -134,10 +139,12 @@ public class JavaMethodImpl implements JavaMethod {
         return false;
     }
 
+    @Override
     public int getModifiers() {
         return jMethod.getModifiers();
     }
 
+    @Override
     public JavaClass getOwningClass() {
         return javaModelImpl.getClass(jMethod.getDeclaringClass());
     }
@@ -146,30 +153,37 @@ public class JavaMethodImpl implements JavaMethod {
         return jMethod;
     }
 
+    @Override
     public boolean isAbstract() {
         return Modifier.isAbstract(getModifiers());
     }
 
+    @Override
     public boolean isPrivate() {
         return Modifier.isPrivate(getModifiers());
     }
 
+    @Override
     public boolean isProtected() {
         return Modifier.isProtected(getModifiers());
     }
 
+    @Override
     public boolean isPublic() {
         return Modifier.isPublic(getModifiers());
     }
 
+    @Override
     public boolean isStatic() {
         return Modifier.isStatic(getModifiers());
     }
 
+    @Override
     public boolean isFinal() {
         return Modifier.isFinal(getModifiers());
     }
 
+    @Override
     public boolean isSynthetic() {
         return jMethod.isSynthetic();
     }
@@ -179,10 +193,12 @@ public class JavaMethodImpl implements JavaMethod {
         return jMethod.isBridge();
     }
 //  ---------------- unimplemented methods ----------------//
+    @Override
     public JavaAnnotation getDeclaredAnnotation(JavaClass arg0) {
         return null;
     }
 
+    @Override
     public Collection getDeclaredAnnotations() {
         return null;
     }

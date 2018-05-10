@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -28,31 +28,39 @@ public class ObjectUnmarshalContext implements UnmarshalContext {
         return INSTANCE;
     }
 
+    @Override
     public void startElement(UnmarshalRecord unmarshalRecord) {
     }
 
+    @Override
     public void characters(UnmarshalRecord unmarshalRecord) {
     }
 
+    @Override
     public void endElement(UnmarshalRecord unmarshalRecord) {
     }
 
+    @Override
     public void setAttributeValue(UnmarshalRecord unmarshalRecord, Object value, Mapping mapping) {
         mapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), value);
     }
 
+    @Override
     public void addAttributeValue(UnmarshalRecord unmarshalRecord, ContainerValue containerValue, Object value) {
         Object collection = unmarshalRecord.getContainerInstance(containerValue);
         addAttributeValue(unmarshalRecord, containerValue, value, collection);
     }
 
+    @Override
     public void addAttributeValue(UnmarshalRecord unmarshalRecord, ContainerValue containerValue, Object value, Object collection) {
         containerValue.getContainerPolicy().addInto(value, collection, unmarshalRecord.getSession());
     }
 
+    @Override
     public void reference(Reference reference) {
     }
 
+    @Override
     public void unmappedContent(UnmarshalRecord unmarshalRecord) {
     }
 

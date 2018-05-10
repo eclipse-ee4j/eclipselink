@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -51,6 +51,7 @@ public class SDOExternalizableDelegator extends AbstractExternalizableDelegator 
         }
     }
 
+    @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         // This function is indirectly called by InputStream.readExternalData().
         // We reset the static helperContext set in the default constructor during is.readObject()
@@ -76,7 +77,7 @@ public class SDOExternalizableDelegator extends AbstractExternalizableDelegator 
 
     private void setDelegate(Resolvable resolvable) {
         try {
-            Field delegateField = (Field) privilegedGetDelegateField.run();
+            Field delegateField = privilegedGetDelegateField.run();
             PrivilegedSetValueInField privilegedSetValueInDelegateField = new PrivilegedSetValueInField(delegateField, this, resolvable);
             privilegedSetValueInDelegateField.run();
         } catch (NoSuchFieldException nsfException){

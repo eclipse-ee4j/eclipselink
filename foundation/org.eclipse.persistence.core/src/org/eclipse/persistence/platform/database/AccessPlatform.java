@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -28,6 +28,7 @@ import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
  * @since TOPLink/Java 1.0
  */
 public class AccessPlatform extends org.eclipse.persistence.platform.database.DatabasePlatform {
+    @Override
     protected Map<String, Class> buildClassTypes() {
         Map<String, Class> classTypeMapping = super.buildClassTypes();
 
@@ -38,6 +39,7 @@ public class AccessPlatform extends org.eclipse.persistence.platform.database.Da
         return classTypeMapping;
     }
 
+    @Override
     protected Hashtable buildFieldTypes() {
         Hashtable fieldTypeMapping;
 
@@ -75,6 +77,7 @@ public class AccessPlatform extends org.eclipse.persistence.platform.database.Da
      * returns the maximum number of characters that can be used in a field
      * name on this platform.
      */
+    @Override
     public int getMaxFieldNameSize() {
         return 64;
     }
@@ -82,6 +85,7 @@ public class AccessPlatform extends org.eclipse.persistence.platform.database.Da
     /**
      * Access do not support millisecond well, truncate the millisecond from the timestamp
      */
+    @Override
     public java.sql.Timestamp getTimestampFromServer(AbstractSession session, String sessionName) {
         if (getTimestampQuery() == null) {
             java.sql.Timestamp currentTime = new java.sql.Timestamp(System.currentTimeMillis());
@@ -96,6 +100,7 @@ public class AccessPlatform extends org.eclipse.persistence.platform.database.Da
     /**
      * Initialize any platform-specific operators
      */
+    @Override
     protected void initializePlatformOperators() {
         super.initializePlatformOperators();
 
@@ -103,6 +108,7 @@ public class AccessPlatform extends org.eclipse.persistence.platform.database.Da
         addOperator(ExpressionOperator.simpleFunction(ExpressionOperator.ToLowerCase, "LCASE"));
     }
 
+    @Override
     public boolean isAccess() {
         return true;
     }
@@ -112,6 +118,7 @@ public class AccessPlatform extends org.eclipse.persistence.platform.database.Da
      * might also be useful to end users attempting to sanitize values.
      * <p><b>NOTE</b>: BigInteger {@literal &} BigDecimal maximums are dependent upon their precision {@literal &} Scale
      */
+    @Override
     public Hashtable maximumNumericValues() {
         Hashtable values = new Hashtable();
 
@@ -131,6 +138,7 @@ public class AccessPlatform extends org.eclipse.persistence.platform.database.Da
      * might also be useful to end users attempting to sanitize values.
      * <p><b>NOTE</b>: BigInteger {@literal &} BigDecimal minimums are dependent upon their precision {@literal &} Scale
      */
+    @Override
     public Hashtable minimumNumericValues() {
         Hashtable values = new Hashtable();
 
@@ -148,6 +156,7 @@ public class AccessPlatform extends org.eclipse.persistence.platform.database.Da
     /**
      * This is used as some databases create the primary key constraint differently, i.e. Access.
      */
+    @Override
     public boolean requiresNamedPrimaryKeyConstraints() {
         return true;
     }
@@ -155,6 +164,7 @@ public class AccessPlatform extends org.eclipse.persistence.platform.database.Da
     /**
      * JDBC defines and outer join syntax, many drivers do not support this. So we normally avoid it.
      */
+    @Override
     public boolean shouldUseJDBCOuterJoinSyntax() {
         return false;
     }
@@ -162,6 +172,7 @@ public class AccessPlatform extends org.eclipse.persistence.platform.database.Da
     /**
      * INTERNAL: Build the identity query for native sequencing.
      */
+    @Override
     public ValueReadQuery buildSelectQueryForIdentity() {
         ValueReadQuery selectQuery = new ValueReadQuery();
         StringWriter writer = new StringWriter();
@@ -171,6 +182,7 @@ public class AccessPlatform extends org.eclipse.persistence.platform.database.Da
     }
 
     /** Append the receiver's field 'identity' constraint clause to a writer. */
+    @Override
     public void printFieldIdentityClause(Writer writer)    throws ValidationException {
         try {
             writer.write(" COUNTER");
@@ -184,10 +196,12 @@ public class AccessPlatform extends org.eclipse.persistence.platform.database.Da
      * through IDENTITY field types. This method is to be used *ONLY* by
      * sequencing classes
      */
+    @Override
     public boolean supportsIdentity() {
         return true;
     }
 
+    @Override
     public void printFieldTypeSize(Writer writer, FieldDefinition field,FieldTypeDefinition fieldType, boolean shouldPrintFieldIdentityClause) throws IOException {
         if (!shouldPrintFieldIdentityClause) {
             super.printFieldTypeSize(writer, field, fieldType,
@@ -195,6 +209,7 @@ public class AccessPlatform extends org.eclipse.persistence.platform.database.Da
         }
     }
 
+    @Override
     public void printFieldUnique(Writer writer,    boolean shouldPrintFieldIdentityClause) throws IOException {
         if (!shouldPrintFieldIdentityClause) {
             super.printFieldUnique(writer, shouldPrintFieldIdentityClause);

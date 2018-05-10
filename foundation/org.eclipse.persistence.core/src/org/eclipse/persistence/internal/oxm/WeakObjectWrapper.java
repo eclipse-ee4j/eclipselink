@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -39,6 +39,7 @@ public class WeakObjectWrapper {
         reference = new WeakReference(object);
     }
 
+    @Override
     public int hashCode() {
         if (getDomainObject() == null) {
             return -1;
@@ -46,6 +47,7 @@ public class WeakObjectWrapper {
         return getDomainObject().hashCode();
     }
 
+    @Override
     public boolean equals(Object wrapper) {
         if (!(wrapper instanceof WeakObjectWrapper)) {
             return false;

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -31,18 +31,22 @@ public class ByteArrayDataSource implements DataSource {
         bytes = data;
     }
 
+    @Override
     public String getName() {
         return "";
     }
 
+    @Override
     public java.io.OutputStream getOutputStream() {
         return new ByteArrayOutputStream(bytes.length);
     }
 
+    @Override
     public java.io.InputStream getInputStream() {
         return new ByteArrayInputStream(bytes);
     }
 
+    @Override
     public String getContentType() {
         if(contentType.startsWith("multipart") && contentType.indexOf("boundary") == -1) {
             //parse the bytes for the header and extract the boundary. Add it into the content type.

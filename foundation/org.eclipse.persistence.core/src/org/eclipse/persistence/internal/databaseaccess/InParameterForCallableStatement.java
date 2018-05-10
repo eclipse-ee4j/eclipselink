@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -26,6 +26,7 @@ public class InParameterForCallableStatement extends BindCallCustomParameter {
         this.inField = inField;
     }
 
+    @Override
     public void set(DatabasePlatform platform, PreparedStatement statement, int index, AbstractSession session) throws SQLException {
         Object parameter = convert(inParameter,inField, session, statement.getConnection());
         platform.setParameterValueInDatabaseCall(parameter, statement, index, session);

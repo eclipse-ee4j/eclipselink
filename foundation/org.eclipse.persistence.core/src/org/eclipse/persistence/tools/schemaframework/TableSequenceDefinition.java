@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -56,6 +56,7 @@ public class TableSequenceDefinition extends SequenceDefinition {
      * Return the SQL required to insert the sequence row into the sequence table.
      * Assume that the sequence table exists.
      */
+    @Override
     public Writer buildCreationWriter(AbstractSession session, Writer writer) throws ValidationException {
         try {
             writer.write("INSERT INTO ");
@@ -76,6 +77,7 @@ public class TableSequenceDefinition extends SequenceDefinition {
      * dealing with create creation, then delegate to the table so that is
      * dropped outright since we will delete the schema.
      */
+    @Override
     public Writer buildDeletionWriter(AbstractSession session, Writer writer) throws ValidationException {
         if (shouldDropTableDefinition()) {
             return tableDefinition.buildDeletionWriter(session, writer);
@@ -97,6 +99,7 @@ public class TableSequenceDefinition extends SequenceDefinition {
      * Execute the SQL required to insert the sequence row into the sequence table.
      * Assume that the sequence table exists.
      */
+    @Override
     public boolean checkIfExist(AbstractSession session) throws DatabaseException {
         StringBuilder buffer = new StringBuilder();
         buffer.append("SELECT * FROM ");
@@ -199,6 +202,7 @@ public class TableSequenceDefinition extends SequenceDefinition {
      * Return a TableDefinition specifying sequence table.
      * Cache the table definition for re-use (during CREATE and DROP)
      */
+    @Override
     public TableDefinition buildTableDefinition() {
         if (tableDefinition == null) {
             tableDefinition = new TableDefinition();
@@ -234,6 +238,7 @@ public class TableSequenceDefinition extends SequenceDefinition {
      * @param session
      * @param dropSchemaWriter
      */
+    @Override
     public void preDropObject(AbstractSession session, Writer dropSchemaWriter, boolean createSQLFiles) {
         if ((session.getPlatform().shouldCreateIndicesForPrimaryKeys()) || (session.getPlatform().shouldCreateIndicesOnUniqueKeys())) {
             // Do not drop index when database is Symfoware. Index is required for primary keys or unique keys.

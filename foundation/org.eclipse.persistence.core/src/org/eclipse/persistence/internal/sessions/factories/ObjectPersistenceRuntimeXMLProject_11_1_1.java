@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -350,6 +350,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         foreignKeyForMultipleTables.setAttributeName("foreignKeysForMultipleTables");
         foreignKeyForMultipleTables.setXPath(getPrimaryNamespaceXPath() + "foreign-keys-for-multiple-table/" + getSecondaryNamespaceXPath() + "field-reference");
         foreignKeyForMultipleTables.setAttributeAccessor(new AttributeAccessor() {
+                @Override
                 public Object getAttributeValueFromObject(Object object) {
                     ClassDescriptor descriptor = (ClassDescriptor) object;
                     Vector associations = descriptor.getMultipleTableForeignKeyAssociations();
@@ -361,6 +362,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
                     }
                     return associations;
                 }
+                @Override
                 public void setAttributeValueInObject(Object object, Object value) {
                     ClassDescriptor descriptor = (ClassDescriptor) object;
                     Vector associations = (Vector) value;
@@ -610,6 +612,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         sourceToTargetKeyFieldAssociationsMapping.setReferenceClass(Association.class);
         // Handle translation of foreign key associations to hashmaps.
         sourceToTargetKeyFieldAssociationsMapping.setAttributeAccessor(new AttributeAccessor() {
+                @Override
                 public Object getAttributeValueFromObject(Object object) {
                     Map sourceToTargetKeyFields = ((XMLObjectReferenceMapping) object).getSourceToTargetKeyFieldAssociations();
                     List associations = new ArrayList(sourceToTargetKeyFields.size());
@@ -621,6 +624,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
                     return associations;
                 }
 
+                @Override
                 public void setAttributeValueInObject(Object object, Object value) {
                     XMLObjectReferenceMapping mapping = (XMLObjectReferenceMapping) object;
                     List associations = (List)value;
@@ -813,7 +817,8 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
           StoredProcedureInOutArgument(DatabaseField dbfield) {
               super(dbfield);
           }
-          Integer getDirection() {
+          @Override
+        Integer getDirection() {
               return INOUT;
           }
     }
@@ -825,6 +830,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         StoredProcedureOutArgument(DatabaseField dbfield){
             super(dbfield);
         }
+        @Override
         Integer getDirection() {
             return OUT;
         }
@@ -837,6 +843,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         StoredProcedureOutCursorArgument(DatabaseField dbfield){
             super(dbfield);
         }
+        @Override
         Integer getDirection() {
             return OUT_CURSOR;
         }
@@ -1655,12 +1662,14 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
          XMLCompositeObjectMapping databaseTypeMapping = new XMLCompositeObjectMapping();
          databaseTypeMapping.setAttributeName("databaseTypeWrapper");
          databaseTypeMapping.setAttributeAccessor(new AttributeAccessor() {
-             public Object getAttributeValueFromObject(Object object) {
+             @Override
+            public Object getAttributeValueFromObject(Object object) {
                  OracleArrayType array = (OracleArrayType)object;
                  DatabaseType type = array.getNestedType();
                  return wrapType(type);
              }
-             public void setAttributeValueInObject(Object object, Object value) {
+             @Override
+            public void setAttributeValueInObject(Object object, Object value) {
                  OracleArrayType array = (OracleArrayType)object;
                  DatabaseTypeWrapper type = (DatabaseTypeWrapper)value;
                  array.setNestedType(type.getWrappedType());
@@ -1700,7 +1709,8 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
          fieldsMapping.setReferenceClass(ObjectTypeFieldAssociation.class);
          // handle translation of 'field' LinkedHashMap
          fieldsMapping.setAttributeAccessor(new AttributeAccessor() {
-             public Object getAttributeValueFromObject(Object object) {
+             @Override
+            public Object getAttributeValueFromObject(Object object) {
                  Map fields = ((OracleObjectType) object).getFields();
                  List associations = new ArrayList(fields.size());
                  Iterator iterator = fields.entrySet().iterator();
@@ -1710,7 +1720,8 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
                  }
                  return associations;
              }
-             public void setAttributeValueInObject(Object object, Object value) {
+             @Override
+            public void setAttributeValueInObject(Object object, Object value) {
                  OracleObjectType objectType = (OracleObjectType) object;
                  List associations = (List) value;
                  Map fieldMap = new LinkedHashMap<String, DatabaseType>(associations.size() + 1);
@@ -1746,14 +1757,17 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
              this.value = value;
          }
 
+        @Override
         public Object getKey() {
             return key;
         }
 
+        @Override
         public Object getValue() {
             return value;
         }
 
+        @Override
         public Object setValue(Object arg0) {
             Object oldValue = this.value;
             this.value = (DatabaseTypeWrapper) arg0;
@@ -1862,11 +1876,13 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         XMLCompositeObjectMapping databaseTypeMapping = new XMLCompositeObjectMapping();
         databaseTypeMapping.setAttributeName("databaseTypeWrapper");
         databaseTypeMapping.setAttributeAccessor(new AttributeAccessor() {
+            @Override
             public Object getAttributeValueFromObject(Object object) {
                 PLSQLCollection collection = (PLSQLCollection)object;
                 DatabaseType type = collection.getNestedType();
                 return wrapType(type);
             }
+            @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 PLSQLCollection collection = (PLSQLCollection)object;
                 DatabaseTypeWrapper type = (DatabaseTypeWrapper)value;
@@ -1963,13 +1979,15 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
          XMLCompositeObjectMapping databaseTypeMapping = new XMLCompositeObjectMapping();
          databaseTypeMapping.setAttributeName("databaseTypeWrapper");
          databaseTypeMapping.setAttributeAccessor(new AttributeAccessor() {
-             public Object getAttributeValueFromObject(Object object) {
+             @Override
+            public Object getAttributeValueFromObject(Object object) {
                  PLSQLargument argument = (PLSQLargument)object;
                  DatabaseType type = argument.databaseType;
                  return wrapType(type);
              }
 
-             public void setAttributeValueInObject(Object object, Object value) {
+             @Override
+            public void setAttributeValueInObject(Object object, Object value) {
                  PLSQLargument argument = (PLSQLargument)object;
                  DatabaseTypeWrapper type = (DatabaseTypeWrapper)value;
                  argument.databaseType = type.getWrappedType();

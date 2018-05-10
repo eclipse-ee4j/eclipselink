@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -84,6 +84,7 @@ public class TransformerBasedValueHolder extends DatabaseValueHolder {
     /**
      * Instantiate the object by executing the method on the transformer.
      */
+    @Override
     protected Object instantiate() throws DescriptorException {
         return instantiate(getObject(), getSession());
     }
@@ -116,6 +117,7 @@ public class TransformerBasedValueHolder extends DatabaseValueHolder {
      * and the query.
      * Note: This method is not thread-safe.  It must be used in a synchronized manner
      */
+    @Override
     public Object instantiateForUnitOfWorkValueHolder(UnitOfWorkValueHolder unitOfWorkValueHolder) {
         return instantiate(getObject(), unitOfWorkValueHolder.getUnitOfWork());
     }
@@ -129,6 +131,7 @@ public class TransformerBasedValueHolder extends DatabaseValueHolder {
      * all fields can not be reset.
      * Note: This method is not thread-safe.  It must be used in a synchronized manner
      */
+    @Override
     public boolean isPessimisticLockingValueHolder() {
         // there is no way to tell, as a transformation mapping may have
         // a reference class or query to check, but by design there is no

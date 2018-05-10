@@ -12,6 +12,7 @@ public class AttributeNodeImpl<X> implements AttributeNode {
         this.currentAttribute = attributeName;
     }
 
+    @Override
     public String getAttributeName() {
         return currentAttribute;
     }

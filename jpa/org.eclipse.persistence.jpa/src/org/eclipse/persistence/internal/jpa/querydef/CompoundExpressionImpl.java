@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -54,6 +54,7 @@ public class CompoundExpressionImpl extends FunctionExpressionImpl<Boolean> impl
      *
      * @return boolean operator for the predicate
      */
+    @Override
     public BooleanOperator getOperator(){
         return BooleanOperator.AND;
     }
@@ -68,6 +69,7 @@ public class CompoundExpressionImpl extends FunctionExpressionImpl<Boolean> impl
         return new ArrayList<>();
     }
 
+    @Override
     public boolean isCompoundExpression(){
         return true;
     }
@@ -82,6 +84,7 @@ public class CompoundExpressionImpl extends FunctionExpressionImpl<Boolean> impl
      *
      * @return boolean indicating if the predicate has been negated
      */
+    @Override
     public boolean isNegated(){
         return isNegated;
     }
@@ -91,6 +94,7 @@ public class CompoundExpressionImpl extends FunctionExpressionImpl<Boolean> impl
      *
      * @return the negated predicate
      */
+    @Override
     public Predicate not(){
         List<Expression<?>> list = new ArrayList();
         list.add(this);

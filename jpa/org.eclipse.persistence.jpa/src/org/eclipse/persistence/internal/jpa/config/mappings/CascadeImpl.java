@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2018  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,31 +27,37 @@ public class CascadeImpl extends MetadataImpl<CascadeMetadata> implements Cascad
         super(new CascadeMetadata());
     }
 
+    @Override
     public Cascade setCascadeAll() {
         getMetadata().setCascadeAll(true);
         return this;
     }
 
+    @Override
     public Cascade setCascadeDetach() {
         getMetadata().setCascadeDetach(true);
         return this;
     }
 
+    @Override
     public Cascade setCascadeMerge() {
         getMetadata().setCascadeMerge(true);
         return this;
     }
 
+    @Override
     public Cascade setCascadePersist() {
         getMetadata().setCascadePersist(true);
         return this;
     }
 
+    @Override
     public Cascade setCascadeRefresh() {
         getMetadata().setCascadeRefresh(true);
         return this;
     }
 
+    @Override
     public Cascade setCascadeRemove() {
         getMetadata().setCascadeRemove(true);
         return this;

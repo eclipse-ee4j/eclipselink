@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -64,6 +64,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T all(SimpleSelectStatementStateObject subquery) {
         allOrAny(ALL, subquery);
         return (T) this;
@@ -77,6 +78,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T and(T builder) {
 
         checkBuilder(builder);
@@ -97,6 +99,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T any(SimpleSelectStatementStateObject subquery) {
         allOrAny(ANY, subquery);
         return (T) this;
@@ -122,6 +125,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T between(T lowerBoundExpression, T upperBoundExpression) {
         checkBuilders(lowerBoundExpression, upperBoundExpression);
         between(false);
@@ -131,6 +135,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T collectionPath(String path) {
         StateObject stateObject = buildCollectionPath(path);
         add(stateObject);
@@ -158,6 +163,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T different(Number number) {
         comparison(DIFFERENT, buildNumeric(number));
         return (T) this;
@@ -166,6 +172,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T different(String literal) {
         comparison(DIFFERENT, literal(literal));
         return (T) this;
@@ -174,6 +181,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T different(T builder) {
         checkBuilder(builder);
         comparison(DIFFERENT);
@@ -183,6 +191,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T equal(Number number) {
         comparison(EQUAL, buildNumeric(number));
         return (T) this;
@@ -191,6 +200,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T equal(String literal) {
         comparison(EQUAL, literal(literal));
         return (T) this;
@@ -199,6 +209,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T equal(T builder) {
         checkBuilder(builder);
         comparison(EQUAL);
@@ -213,6 +224,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T exists(SimpleSelectStatementStateObject subquery) {
         exists(false, subquery);
         return (T) this;
@@ -221,6 +233,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T FALSE() {
         keyword(FALSE);
         return (T) this;
@@ -229,6 +242,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T greaterThan(Number number) {
         comparison(GREATER_THAN, buildNumeric(number));
         return (T) this;
@@ -237,6 +251,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T greaterThan(String literal) {
         comparison(GREATER_THAN, literal(literal));
         return (T) this;
@@ -245,6 +260,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T greaterThan(T builder) {
         checkBuilder(builder);
         comparison(GREATER_THAN);
@@ -254,6 +270,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T greaterThanOrEqual(Number number) {
         comparison(GREATER_THAN_OR_EQUAL, buildNumeric(number));
         return (T) this;
@@ -262,6 +279,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T greaterThanOrEqual(String literal) {
         comparison(GREATER_THAN_OR_EQUAL, literal(literal));
         return (T) this;
@@ -270,6 +288,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T greaterThanOrEqual(T builder) {
         checkBuilder(builder);
         comparison(GREATER_THAN_OR_EQUAL);
@@ -301,6 +320,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T in(SimpleSelectStatementStateObject subquery) {
         in(false, Collections.<StateObject>singletonList(subquery));
         return (T) this;
@@ -309,6 +329,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T in(String... inItems) {
         in(false, inItems);
         return (T) this;
@@ -317,6 +338,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T in(T... inItems) {
         checkBuilders(inItems);
         in(false, inItems);
@@ -337,6 +359,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T isEmpty(String path) {
         isEmpty(false, path);
         return (T) this;
@@ -345,6 +368,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T isNotEmpty(String path) {
         isEmpty(true, path);
         return (T) this;
@@ -353,6 +377,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T isNotNull(String path) {
         isNull(true, path);
         return (T) this;
@@ -381,6 +406,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T isNull(String path) {
         isNull(false, path);
         return (T) this;
@@ -410,6 +436,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T like(String patternValue) {
         like(string(patternValue));
         return (T) this;
@@ -418,6 +445,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T like(T patternValue) {
         checkBuilder(patternValue);
         like(false, null);
@@ -427,6 +455,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T like(T patternValue, String escapeCharacter) {
         checkBuilder(patternValue);
         like(false, escapeCharacter);
@@ -436,6 +465,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T lower(T builder) {
         checkBuilder(builder);
         StateObject stateObject = new LowerExpressionStateObject(getParent(), pop());
@@ -446,6 +476,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T lowerThan(Number number) {
         comparison(LOWER_THAN, buildNumeric(number));
         return (T) this;
@@ -454,6 +485,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T lowerThan(String literal) {
         comparison(LOWER_THAN, literal(literal));
         return (T) this;
@@ -462,6 +494,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T lowerThan(T builder) {
         checkBuilder(builder);
         comparison(LOWER_THAN);
@@ -471,6 +504,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T lowerThanOrEqual(Number number) {
         comparison(LOWER_THAN_OR_EQUAL, buildNumeric(number));
         return (T) this;
@@ -479,6 +513,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T lowerThanOrEqual(String literal) {
         comparison(LOWER_THAN_OR_EQUAL, literal(literal));
         return (T) this;
@@ -487,6 +522,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T lowerThanOrEqual(T builder) {
         checkBuilder(builder);
         comparison(LOWER_THAN_OR_EQUAL);
@@ -511,6 +547,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T member(String path) {
         member(false, false, path);
         return (T) this;
@@ -519,6 +556,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T memberOf(String path) {
         member(false, true, path);
         return (T) this;
@@ -527,6 +565,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T notBetween(T lowerBoundExpression, T upperBoundExpression) {
         checkBuilders(lowerBoundExpression, upperBoundExpression);
         between(true);
@@ -536,6 +575,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T notExists(SimpleSelectStatementStateObject subquery) {
         exists(true, subquery);
         return (T) this;
@@ -544,6 +584,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T notIn(SimpleSelectStatementStateObject subquery) {
         in(true, Collections.<StateObject>singletonList(subquery));
         return (T) this;
@@ -552,6 +593,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T notIn(String... inItems) {
         in(true, inItems);
         return (T) this;
@@ -560,6 +602,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T notIn(T... inItems) {
         checkBuilders(inItems);
         in(true, inItems);
@@ -569,6 +612,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T notLike(String patternValue) {
         notLike(string(patternValue));
         return (T) this;
@@ -577,6 +621,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T notLike(T builder) {
         checkBuilder(builder);
         like(true, null);
@@ -586,6 +631,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T notLike(T builder, String escapeCharacter) {
         checkBuilder(builder);
         like(true, escapeCharacter);
@@ -595,6 +641,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T notMember(String path) {
         member(true, false, path);
         return (T) this;
@@ -603,6 +650,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T notMemberOf(String path) {
         member(true, true, path);
         return (T) this;
@@ -611,6 +659,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T NULL() {
         keyword(NULL);
         return (T) this;
@@ -619,6 +668,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T or(T builder) {
 
         checkBuilder(builder);
@@ -639,6 +689,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T some(SimpleSelectStatementStateObject subquery) {
         allOrAny(SOME, subquery);
         return (T) this;
@@ -647,6 +698,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T sub(StateObject stateObject) {
         stateObject = new SubExpressionStateObject(getParent(), stateObject);
         add(stateObject);
@@ -656,6 +708,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T substring(T parameter1, T parameter2, T parameter3) {
 
         checkBuilders(parameter1, parameter2, parameter3);
@@ -678,6 +731,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T trim(Specification specification, String trimCharacter, T builder) {
 
         checkBuilder(builder);
@@ -697,6 +751,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T trim(Specification specification, T builder) {
         return trim(specification, null, builder);
     }
@@ -704,6 +759,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T TRUE() {
         keyword(TRUE);
         return (T) this;
@@ -712,6 +768,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T upper(T builder) {
         checkBuilder(builder);
         StateObject stateObject = new UpperExpressionStateObject(getParent(), pop());
@@ -722,6 +779,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
     /**
      * {@inheritDoc}
      */
+    @Override
     public T variable(String variable) {
         StateObject stateObject = buildIdentificationVariable(variable);
         add(stateObject);

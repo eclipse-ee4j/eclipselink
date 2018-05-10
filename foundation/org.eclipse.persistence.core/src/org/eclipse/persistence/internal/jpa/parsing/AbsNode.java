@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -32,6 +32,7 @@ public class AbsNode extends ArithmeticFunctionNode {
      * INTERNAL
      * Validate node and calculate its type.
      */
+    @Override
     public void validate(ParseTreeContext context) {
         if (left != null) {
             left.validate(context);
@@ -42,6 +43,7 @@ public class AbsNode extends ArithmeticFunctionNode {
     /**
      * INTERNAL
      */
+    @Override
     public void validateParameter(ParseTreeContext context, Object contextType) {
         // delegate to the argument node
         left.validateParameter(context, contextType);
@@ -51,6 +53,7 @@ public class AbsNode extends ArithmeticFunctionNode {
      * INTERNAL
      * Generate the EclipseLink expression for this node
      */
+    @Override
     public Expression generateExpression(GenerationContext context) {
         Expression whereClause = getLeft().generateExpression(context);
         whereClause = ExpressionMath.abs(whereClause);

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2018  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -28,21 +28,25 @@ public class TimeOfDayImpl extends MetadataImpl<TimeOfDayMetadata> implements Ti
         super(new TimeOfDayMetadata());
     }
 
+    @Override
     public TimeOfDay setHour(Integer hour) {
         getMetadata().setHour(hour);
         return this;
     }
 
+    @Override
     public TimeOfDay setMillisecond(Integer millisecond) {
         getMetadata().setMillisecond(millisecond);
         return this;
     }
 
+    @Override
     public TimeOfDay setMinute(Integer minute) {
         getMetadata().setMinute(minute);
         return this;
     }
 
+    @Override
     public TimeOfDay setSecond(Integer second) {
         getMetadata().setSecond(second);
         return this;

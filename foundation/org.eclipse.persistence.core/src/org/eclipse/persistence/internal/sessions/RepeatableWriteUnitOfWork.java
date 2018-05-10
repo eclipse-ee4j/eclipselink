@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -113,6 +113,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      * This method will clear all registered objects from this UnitOfWork.
      * If parameter value is 'true' then the cache(s) are cleared, too.
      */
+    @Override
     public void clear(boolean shouldClearCache) {
         super.clear(shouldClearCache);
         if (this.cumulativeUOWChangeSet != null) {
@@ -157,6 +158,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      * the uow might still be referenced by objects using UOWValueHolders (though they shouldn't be around
      * they still might).
      */
+    @Override
     public void clearForClose(boolean shouldClearCache){
         this.cumulativeUOWChangeSet = null;
         this.unregisteredDeletedObjectsCloneToBackupAndOriginal = null;
@@ -238,6 +240,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      * INTERNAL:
      * Indicates whether clearForClose method should be called by release method.
      */
+    @Override
     public boolean shouldClearForCloseOnRelease() {
         return true;
     }
@@ -262,6 +265,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      * @param Class
      * @return ClassDescriptor
      */
+    @Override
     protected ClassDescriptor checkHierarchyForDescriptor(Class theClass){
         ClassDescriptor descriptor = getDescriptor(theClass.getSuperclass());
         if (descriptor != null && descriptor.hasInheritance() && descriptor.getInheritancePolicy().getDescribesNonPersistentSubclasses()){
@@ -274,6 +278,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      * INTERNAL:
      * Commit the changes to any objects to the parent.
      */
+    @Override
     public void commitRootUnitOfWork() throws DatabaseException, OptimisticLockException {
         commitToDatabaseWithChangeSet(false);
         // unit of work has been committed so it's ok to set the cumulative into the UOW for merge
@@ -297,6 +302,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      * Any unregistered new objects found will be persisted or an error will be thrown depending on the mapping's cascade persist.
      * References to deleted objects will also currently cause them to be undeleted.
      */
+    @Override
     public void discoverUnregisteredNewObjects(Map clones, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects) {
         if (this.discoverUnregisteredNewObjectsWithoutPersist){
             super.discoverUnregisteredNewObjects(clones, newObjects, unregisteredExistingObjects, visitedObjects);
@@ -321,6 +327,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      * either succeeded or failed but either way the UnitOfWork is in a highly
      * restricted state.
      */
+    @Override
     public boolean isAfterWriteChangesButBeforeCommit() {
         //don't check for writechanges failure.
         return (getLifecycle() == CommitTransactionPending);
@@ -330,6 +337,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      * INTERNAL:
      * Return if the object has been deleted in this unit of work.
      */
+    @Override
     public boolean isObjectDeleted(Object object) {
         if(super.isObjectDeleted(object)) {
             return true;
@@ -351,6 +359,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      * INTERNAL:
      * For synchronized units of work, dump SQL to database
      */
+    @Override
     public void issueSQLbeforeCompletion() {
         super.issueSQLbeforeCompletion(false);
 
@@ -367,6 +376,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
     /**
      * INTERNAL: Merge the changes to all objects to the parent.
      */
+    @Override
     protected void mergeChangesIntoParent() {
         if (this.classesToBeInvalidated != null) {
             // get identityMap of the parent ServerSession
@@ -383,6 +393,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      * INTERNAL:
      * Merge the attributes of the clone into the unit of work copy.
      */
+    @Override
     public Object mergeCloneWithReferences(Object rmiClone, MergeManager manager) {
         Object mergedObject = super.mergeCloneWithReferences(rmiClone, manager);
 
@@ -409,6 +420,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      * INTERNAL:
      * This method is used internally to update the tracked objects if required
      */
+    @Override
     public void updateChangeTrackersIfRequired(Object objectToWrite, ObjectChangeSet changeSetToWrite, UnitOfWorkImpl uow, ClassDescriptor descriptor) {
         descriptor.getObjectChangePolicy().updateWithChanges(objectToWrite, changeSetToWrite, uow, descriptor);
     }
@@ -418,6 +430,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      * This will flush all changes to the database,
      * and create or merge into the cumulativeUOWChangeSet.
      */
+    @Override
     public void writeChanges() {
         // Check for a nested flush and return early if we are in one
         if (this.isWithinFlush()) {
@@ -487,6 +500,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      * @see #registerObject(Object)
      */
 
+    @Override
     public Object registerNewObject(Object newObject) {
         Object workingCopy = super.registerNewObject(newObject);
         if (!this.discoverUnregisteredNewObjectsWithoutPersist) {
@@ -503,6 +517,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      * unregisteredDeletedObjectsCloneToBackupAndOriginal then it's re-registered,
      * otherwise the superclass method called.
      */
+    @Override
     protected void registerNotRegisteredNewObjectForPersist(Object newObject, ClassDescriptor descriptor) {
         if(unregisteredDeletedObjectsCloneToBackupAndOriginal != null) {
             Object[] backupAndOriginal = (Object[])unregisteredDeletedObjectsCloneToBackupAndOriginal.remove(newObject);
@@ -527,6 +542,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      * This is internal to the uow, transactions should not be used explicitly in a uow.
      * The uow shares its parents transactions.
      */
+    @Override
     public void rollbackTransaction() throws DatabaseException {
         if (this.shouldTerminateTransaction || getParent().getTransactionMutex().isNested()){
             super.rollbackTransaction();
@@ -544,6 +560,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      * The uow shares its parents transactions.  Called in JTA this should not set the
      * transaction to rollback.
      */
+    @Override
     protected void rollbackTransaction(boolean intendedToCommitTransaction) throws DatabaseException {
         rollbackTransaction();
     }
@@ -552,6 +569,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      * Synchronize the clones and update their backup copies.
      * Called after commit and commit and resume.
      */
+    @Override
     public void synchronizeAndResume() {
         this.cumulativeUOWChangeSet = null;
         this.unregisteredDeletedObjectsCloneToBackupAndOriginal = null;
@@ -562,6 +580,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      * INTERNAL:
      * Return if the object was deleted previously (in a flush).
      */
+    @Override
     public boolean wasDeleted(Object original) {
         return getUnregisteredDeletedCloneForOriginal(original) != null;
     }
@@ -645,6 +664,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      * This is internal to the uow, transactions should not be used explicitly in a uow.
      * The uow shares its parents transactions.
      */
+    @Override
     public void commitTransaction() throws DatabaseException {
         if (this.shouldTerminateTransaction || getParent().getTransactionMutex().isNested()) {
             super.commitTransaction();

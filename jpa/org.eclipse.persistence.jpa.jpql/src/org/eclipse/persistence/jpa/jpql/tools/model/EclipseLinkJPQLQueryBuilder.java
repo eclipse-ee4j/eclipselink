@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -59,6 +59,7 @@ public final class EclipseLinkJPQLQueryBuilder extends AbstractJPQLQueryBuilder 
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder buildStateObjectBuilder(AbstractConditionalClauseStateObject stateObject) {
         return new EclipseLinkConditionalStateObjectBuilder(stateObject);
     }
@@ -66,6 +67,7 @@ public final class EclipseLinkJPQLQueryBuilder extends AbstractJPQLQueryBuilder 
     /**
      * {@inheritDoc}
      */
+    @Override
     public EclipseLinkSelectExpressionStateObjectBuilder buildStateObjectBuilder(SelectClauseStateObject stateObject) {
         return new EclipseLinkSelectExpressionStateObjectBuilder(stateObject);
     }
@@ -73,6 +75,7 @@ public final class EclipseLinkJPQLQueryBuilder extends AbstractJPQLQueryBuilder 
     /**
      * {@inheritDoc}
      */
+    @Override
     public EclipseLinkSimpleSelectExpressionStateObjectBuilder buildStateObjectBuilder(SimpleSelectClauseStateObject stateObject) {
         return new EclipseLinkSimpleSelectExpressionStateObjectBuilder(stateObject);
     }
@@ -80,6 +83,7 @@ public final class EclipseLinkJPQLQueryBuilder extends AbstractJPQLQueryBuilder 
     /**
      * {@inheritDoc}
      */
+    @Override
     public INewValueStateObjectBuilder buildStateObjectBuilder(UpdateItemStateObject stateObject) {
         return new DefaultNewValueStateObjectBuilder(stateObject);
     }
@@ -87,6 +91,7 @@ public final class EclipseLinkJPQLQueryBuilder extends AbstractJPQLQueryBuilder 
     /**
      * {@inheritDoc}
      */
+    @Override
     public JPQLGrammar getGrammar() {
         return jpqlGrammar;
     }

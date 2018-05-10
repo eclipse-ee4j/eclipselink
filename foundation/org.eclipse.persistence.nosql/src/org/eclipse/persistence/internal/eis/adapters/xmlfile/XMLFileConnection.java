@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -38,9 +38,11 @@ public class XMLFileConnection implements Connection {
         this.spec = spec;
     }
 
+    @Override
     public void close() {
     }
 
+    @Override
     public Interaction createInteraction() {
         return new XMLFileInteraction(this);
     }
@@ -49,6 +51,7 @@ public class XMLFileConnection implements Connection {
         return spec;
     }
 
+    @Override
     public LocalTransaction getLocalTransaction() {
         return transaction;
     }
@@ -57,6 +60,7 @@ public class XMLFileConnection implements Connection {
         return transaction;
     }
 
+    @Override
     public ConnectionMetaData getMetaData() {
         return new XMLFileConnectionMetaData();
     }
@@ -64,6 +68,7 @@ public class XMLFileConnection implements Connection {
     /**
      * Result sets are not supported.
      */
+    @Override
     public ResultSetInfo getResultSetInfo() {
         throw ValidationException.operationNotSupported("getResultSetInfo");
     }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -39,6 +39,7 @@ public class EmptyCollectionComparisonNode extends SimpleConditionalExpressionNo
      * INTERNAL
      * Validate node and calculate its type.
      */
+    @Override
     public void validate(ParseTreeContext context) {
         if (left != null) {
             left.validate(context);
@@ -51,6 +52,7 @@ public class EmptyCollectionComparisonNode extends SimpleConditionalExpressionNo
      * INTERNAL
      * Return a EclipseLink expression for this node.
      */
+    @Override
     public Expression generateExpression(GenerationContext context) {
         //get the variable name from the DotNode's right attribute
         //...WHERE emp.firstName IS EMPTY

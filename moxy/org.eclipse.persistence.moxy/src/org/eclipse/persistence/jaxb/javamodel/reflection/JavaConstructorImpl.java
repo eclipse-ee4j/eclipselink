@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -38,18 +38,22 @@ public class JavaConstructorImpl implements JavaConstructor {
         this.jConstructor = constructor;
     }
 
+    @Override
     public int getModifiers() {
         return jConstructor.getModifiers();
     }
 
+    @Override
     public String getName() {
         return jConstructor.getName();
     }
 
+    @Override
     public JavaClass getOwningClass() {
         return javaModelImpl.getClass(jConstructor.getDeclaringClass());
     }
 
+    @Override
     public JavaClass[] getParameterTypes() {
         Class[] params = jConstructor.getParameterTypes();
         JavaClass[] paramArray = new JavaClass[params.length];
@@ -59,30 +63,37 @@ public class JavaConstructorImpl implements JavaConstructor {
         return paramArray;
     }
 
+    @Override
     public boolean isAbstract() {
         return Modifier.isAbstract(getModifiers());
     }
 
+    @Override
     public boolean isPrivate() {
         return Modifier.isPrivate(getModifiers());
     }
 
+    @Override
     public boolean isProtected() {
         return Modifier.isProtected(getModifiers());
     }
 
+    @Override
     public boolean isPublic() {
         return Modifier.isPublic(getModifiers());
     }
 
+    @Override
     public boolean isStatic() {
         return Modifier.isStatic(getModifiers());
     }
 
+    @Override
     public boolean isFinal() {
         return Modifier.isFinal(getModifiers());
     }
 
+    @Override
     public boolean isSynthetic() {
         return jConstructor.isSynthetic();
     }

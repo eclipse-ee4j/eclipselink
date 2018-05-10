@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -58,7 +58,7 @@ public class JAXBArrayAttributeAccessor extends AttributeAccessor {
         } else {
             for (int x = 0; x < length; x++) {
                 try {
-                    ManyValue manyValue = (ManyValue) PrivilegedAccessHelper.newInstanceFromClass(adaptedClass);
+                    ManyValue manyValue = PrivilegedAccessHelper.newInstanceFromClass(adaptedClass);
                     manyValue.setItem(Array.get(arrayValue, x));
                     containerPolicy.addInto(manyValue, results, null);
                 } catch (Exception e) {
@@ -149,11 +149,13 @@ public class JAXBArrayAttributeAccessor extends AttributeAccessor {
         this.nestedAccessor = a;
     }
 
+    @Override
     public void setIsWriteOnly(boolean aBoolean) {
         super.setIsWriteOnly(aBoolean);
         this.nestedAccessor.setIsWriteOnly(aBoolean);
     }
 
+    @Override
     public void setIsReadOnly(boolean aBoolean) {
         super.setIsReadOnly(aBoolean);
         this.nestedAccessor.setIsReadOnly(aBoolean);

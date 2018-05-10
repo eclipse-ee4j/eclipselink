@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -67,6 +67,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
     /**
      * If using native SQL then print a byte[] as '0xFF...'
      */
+    @Override
     protected void appendByteArray(byte[] bytes, Writer writer) throws IOException {
         if (usesNativeSQL() && (!usesByteArrayBinding())) {
             writer.write("0x");
@@ -80,6 +81,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
      * Answer a platform correct string representation of a Date, suitable for SQL generation.
      * Native format: 'yyyy-mm-dd
      */
+    @Override
     protected void appendDate(java.sql.Date date, Writer writer) throws IOException {
         if (usesNativeSQL()) {
             writer.write("'");
@@ -126,6 +128,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
     *    Answer a platform correct string representation of a Time, suitable for SQL generation.
     *    The time is printed in the ODBC platform independent format {t'hh:mm:ss'}.
     */
+    @Override
     protected void appendTime(java.sql.Time time, Writer writer) throws IOException {
         if (usesNativeSQL()) {
             writer.write("'");
@@ -140,6 +143,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
      * Answer a platform correct string representation of a Timestamp, suitable for SQL generation.
      * The date is printed in the ODBC platform independent format {d'YYYY-MM-DD'}.
      */
+    @Override
     protected void appendTimestamp(java.sql.Timestamp timestamp, Writer writer) throws IOException {
         if (usesNativeSQL()) {
             appendSybaseTimestamp(timestamp, writer);
@@ -152,6 +156,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
      * Answer a platform correct string representation of a Calendar, suitable for SQL generation.
      * The date is printed in the ODBC platform independent format {d'YYYY-MM-DD'}.
      */
+    @Override
     protected void appendCalendar(Calendar calendar, Writer writer) throws IOException {
         if (usesNativeSQL()) {
             appendSybaseCalendar(calendar, writer);
@@ -160,6 +165,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
         }
     }
 
+    @Override
     protected Hashtable buildFieldTypes() {
         Hashtable fieldTypeMapping;
 
@@ -202,6 +208,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
      * INTERNAL:
      * Build the identity query for native sequencing.
      */
+    @Override
     public ValueReadQuery buildSelectQueryForIdentity() {
         ValueReadQuery selectQuery = new ValueReadQuery();
         StringWriter writer = new StringWriter();
@@ -228,6 +235,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
      * PreparedStatement can't be used in another PreparedStatement.
      * Workaround is to use Statement instead of PreparedStatement.
      */
+    @Override
     public boolean dontBindUpdateAllQueryUsingTempTables() {
         return true;
     }
@@ -235,6 +243,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
     /**
      * Used for batch writing and sp defs.
      */
+    @Override
     public String getBatchDelimiterString() {
         return "";
     }
@@ -243,6 +252,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
      * This method is used to print the required output parameter token for the
      * specific platform.  Used when stored procedures are created.
      */
+    @Override
     public String getCreationInOutputProcedureToken() {
         return getInOutputProcedureToken();
     }
@@ -251,6 +261,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
      * This method is used to print the required output parameter token for the
      * specific platform.  Used when stored procedures are created.
      */
+    @Override
     public String getCreationOutputProcedureToken() {
         return "OUTPUT";
     }
@@ -259,6 +270,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
      * This method is used to print the output parameter token when stored
      * procedures are called
      */
+    @Override
     public String getInOutputProcedureToken() {
         return "OUT";
     }
@@ -268,6 +280,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
      * returns the maximum number of characters that can be used in a field
      * name on this platform.
      */
+    @Override
     public int getMaxFieldNameSize() {
         return 22;
     }
@@ -301,6 +314,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
      * This method is used to print the output parameter token when stored
      * procedures are called
      */
+    @Override
     public String getOutputProcedureToken() {
         return "";
     }
@@ -308,6 +322,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
     /**
      * Used for sp defs.
      */
+    @Override
     public String getProcedureArgumentString() {
         return "@";
     }
@@ -315,10 +330,12 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
     /**
      * Used for sp calls.
      */
+    @Override
     public String getProcedureCallHeader() {
         return "EXECUTE ";
     }
 
+    @Override
     public String getStoredProcedureParameterPrefix() {
         return "@";
     }
@@ -328,6 +345,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
      * This method returns the query to select the timestamp
      * from the server for SQLServer.
      */
+    @Override
     public ValueReadQuery getTimestampQuery() {
         if (timestampQuery == null) {
             timestampQuery = new ValueReadQuery();
@@ -355,6 +373,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
      * in that case SQLServer will wait until the resource becomes available.
      *
      */
+    @Override
     public String getSelectForUpdateString() {
         return " WITH (UPDLOCK)";
     }
@@ -363,6 +382,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
      * INTERNAL:
      * This syntax does no wait on the lock.
      */
+    @Override
     public String getSelectForUpdateNoWaitString() {
         return " WITH (UPDLOCK, NOWAIT)";
     }
@@ -376,6 +396,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
      *   on SQLServer platform (method returns false):
      *     SELECT ADDRESS_ID, ... FROM ADDRESS WITH (UPDLOCK) WHERE (ADDRESS_ID = ?)
      */
+    @Override
     public boolean shouldPrintLockingClauseAfterWhereClause() {
         return false;
     }
@@ -383,6 +404,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
     /**
      * Initialize any platform-specific operators
      */
+    @Override
     protected void initializePlatformOperators() {
         super.initializePlatformOperators();
         addOperator(operatorOuterJoin());
@@ -500,6 +522,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
         return false;
     }
 
+    @Override
     public boolean isSQLServer() {
         return true;
     }
@@ -509,6 +532,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
      * might also be useful to end users attempting to sanitize values.
      * <p><b>NOTE</b>: BigInteger {@literal &} BigDecimal maximums are dependent upon their precision {@literal &} Scale
      */
+    @Override
     public Hashtable maximumNumericValues() {
         Hashtable values = new Hashtable();
 
@@ -528,6 +552,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
      * might also be useful to end users attempting to sanitize values.
      * <p><b>NOTE</b>: BigInteger {@literal &} BigDecimal minimums are dependent upon their precision {@literal &} Scale
      */
+    @Override
     public Hashtable minimumNumericValues() {
         Hashtable values = new Hashtable();
 
@@ -614,6 +639,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
      * INTERNAL:
      * Append the receiver's field 'identity' constraint clause to a writer.
      */
+    @Override
     public void printFieldIdentityClause(Writer writer) throws ValidationException {
         try {
             writer.write(" IDENTITY");
@@ -626,6 +652,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
      * INTERNAL:
      * Append the receiver's field 'NULL' constraint clause to a writer.
      */
+    @Override
     public void printFieldNullClause(Writer writer) throws ValidationException {
         try {
             writer.write(" NULL");
@@ -637,6 +664,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
     /**
      * USed for sp calls.
      */
+    @Override
     public boolean requiresProcedureCallBrackets() {
         return false;
     }
@@ -644,6 +672,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
     /**
      * Used for sp calls.  Sybase must print output after output params.
      */
+    @Override
     public boolean requiresProcedureCallOuputToken() {
         return true;
     }
@@ -652,6 +681,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
      * This is required in the construction of the stored procedures with
      * output parameters
      */
+    @Override
     public boolean shouldPrintInOutputTokenBeforeType() {
         return false;
     }
@@ -661,6 +691,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
      * This is required in the construction of the stored procedures with
      * output parameters
      */
+    @Override
     public boolean shouldPrintOutputTokenBeforeType() {
         return false;
     }
@@ -668,6 +699,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
     /**
      * JDBC defines and outer join syntax, many drivers do not support this. So we normally avoid it.
      */
+    @Override
     public boolean shouldUseJDBCOuterJoinSyntax() {
         return false;
     }
@@ -678,6 +710,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
      *  SQLServer does through IDENTITY field types.
      *  This method is to be used *ONLY* by sequencing classes
      */
+    @Override
     public boolean supportsIdentity() {
         return true;
     }
@@ -693,6 +726,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
     /**
      * INTERNAL:
      */
+    @Override
     public boolean supportsLocalTempTables() {
         return true;
     }
@@ -700,6 +734,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
     /**
      * INTERNAL:
      */
+    @Override
     protected String getCreateTempTableSqlPrefix() {
         return "CREATE TABLE ";
     }
@@ -707,6 +742,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
     /**
      * INTERNAL:
      */
+    @Override
     public DatabaseTable getTempTableForTable(DatabaseTable table) {
         return new DatabaseTable("#" + table.getName(), table.getTableQualifier(), table.shouldUseDelimiters(), getStartDelimiter(), getEndDelimiter());
     }
@@ -714,6 +750,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
     /**
      * INTERNAL:
      */
+    @Override
     public void writeUpdateOriginalFromTempTableSql(Writer writer, DatabaseTable table,
                                                     Collection pkFields,
                                                     Collection assignedFields) throws IOException

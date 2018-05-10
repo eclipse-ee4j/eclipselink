@@ -17,14 +17,31 @@
  ******************************************************************************/
 package org.eclipse.persistence.expressions;
 
+import java.io.IOException;
+import java.io.Serializable;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
-import java.util.*;
-import java.io.*;
-import org.eclipse.persistence.internal.expressions.*;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.exceptions.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
+import java.util.Vector;
+
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.internal.expressions.ArgumentListFunctionExpression;
+import org.eclipse.persistence.internal.expressions.ExpressionJavaPrinter;
+import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
+import org.eclipse.persistence.internal.expressions.FunctionExpression;
+import org.eclipse.persistence.internal.expressions.LogicalExpression;
+import org.eclipse.persistence.internal.expressions.ObjectExpression;
+import org.eclipse.persistence.internal.expressions.RelationExpression;
 import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.helper.JavaPlatform;
+import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 
@@ -290,6 +307,7 @@ public class ExpressionOperator implements Serializable {
      * INTERNAL:
      * Return if the operator is equal to the other.
      */
+    @Override
     public boolean equals(Object object) {
         if (this == object) {
             return true;
@@ -309,6 +327,7 @@ public class ExpressionOperator implements Serializable {
      * INTERNAL:
      * Return the hash-code based on the unique selector.
      */
+    @Override
     public int hashCode() {
         return getSelector();
     }
@@ -704,11 +723,11 @@ public class ExpressionOperator implements Serializable {
             throw QueryException.cannotConformExpression();
         }
         String likeString = (String)right;
-        if (likeString.indexOf("_") != -1) {
+        if (likeString.indexOf('_') != -1) {
             throw QueryException.cannotConformExpression();
         }
         String value = (String)left;
-        if (likeString.indexOf("%") == -1) {
+        if (likeString.indexOf('%') == -1) {
             // No % symbols
             return left.equals(right);
         }
@@ -917,7 +936,7 @@ public class ExpressionOperator implements Serializable {
             }
             if (left instanceof Number && left instanceof Comparable && right instanceof Comparable
                 && left.getClass().equals (right.getClass())) {
-                return (((Comparable) left).compareTo( (Comparable) right) == 0) == (this.selector == Equal);
+                return (((Comparable) left).compareTo( right) == 0) == (this.selector == Equal);
             }
             if (((left instanceof Number) && (right instanceof Number)) && (left.getClass() != right.getClass())) {
                 double leftDouble = ((Number)left).doubleValue();
@@ -2993,6 +3012,7 @@ public class ExpressionOperator implements Serializable {
     /**
      * Print a debug representation of this operator.
      */
+    @Override
     public String toString() {
         if ((getDatabaseStrings() == null) || (getDatabaseStrings().length == 0)) {
             //CR#... Print a useful name for the missing platform operator.

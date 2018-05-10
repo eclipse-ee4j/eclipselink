@@ -22,16 +22,18 @@
  *       - 489794 : Add support for WebSphere EJBEmbeddable platform.
  *     08/29/2016 Jody Grassel
  *       - 500441: Eclipselink core has System.getProperty() calls that are not potentially executed under doPriv()
+ *     04/11/2018 - Will Dazey
+ *       - 533148 : Add the eclipselink.jpa.sql-call-deferral property
  ******************************************************************************/
 package org.eclipse.persistence.internal.sessions;
 
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 
 import org.eclipse.persistence.annotations.IdValidation;
 import org.eclipse.persistence.config.BatchWriting;
@@ -231,6 +233,7 @@ public class PropertiesHandler {
             addProp(new QueryTimeoutUnitProp());
             addProp(new PessimisticLockTimeoutUnitProp());
             addProp(new BooleanProp(PersistenceUnitProperties.USE_LOCAL_TIMESTAMP, "false"));
+            addProp(new BooleanProp(PersistenceUnitProperties.SQL_CALL_DEFERRAL, "true"));
         }
 
         Prop(String name) {
@@ -262,6 +265,7 @@ public class PropertiesHandler {
 
             if(useSystemAsDefault) {
                 Map.Entry[] entries = (Map.Entry[]) AccessController.doPrivileged(new PrivilegedAction() {
+                    @Override
                     public Object run() {
                         return System.getProperties().entrySet().toArray(new Map.Entry[] {});
                         }
@@ -540,11 +544,11 @@ public class PropertiesHandler {
 
     protected static class CommitOrderProp extends Prop {
         CommitOrderProp() {
-            super(EntityManagerProperties.PERSISTENCE_CONTEXT_COMMIT_ORDER, CommitOrderType.None.toString());
+            super(EntityManagerProperties.PERSISTENCE_CONTEXT_COMMIT_ORDER, CommitOrderType.None);
             valueArray = new Object[] {
-                    CommitOrderType.Id.toString(),
-                    CommitOrderType.Changes.toString(),
-                    CommitOrderType.None.toString()
+                    CommitOrderType.Id,
+                    CommitOrderType.Changes,
+                    CommitOrderType.None
             };
         }
     }

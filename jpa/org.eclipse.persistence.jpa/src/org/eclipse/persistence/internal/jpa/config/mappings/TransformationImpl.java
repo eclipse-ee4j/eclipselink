@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2018  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -36,17 +36,20 @@ public class TransformationImpl extends AbstractDirectMappingImpl<Transformation
         getMetadata().setWriteTransformers(new ArrayList<WriteTransformerMetadata>());
     }
 
+    @Override
     public WriteTransformer addWriteTransformer() {
         WriteTransformerImpl transformer = new WriteTransformerImpl();
         getMetadata().getWriteTransformers().add(transformer.getMetadata());
         return transformer;
     }
 
+    @Override
     public Transformation setMutable(Boolean mutable) {
         getMetadata().setMutable(mutable);
         return this;
     }
 
+    @Override
     public ReadTransformer setReadTransformer() {
         ReadTransformerImpl transformer = new ReadTransformerImpl();
         getMetadata().setReadTransformer(transformer.getMetadata());

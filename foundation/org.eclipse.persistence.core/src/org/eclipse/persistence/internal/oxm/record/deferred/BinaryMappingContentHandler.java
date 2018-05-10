@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -55,22 +55,26 @@ public class BinaryMappingContentHandler extends DeferredContentHandler {
         this.isCollection = true;
     }
 
+    @Override
     public void processComplexElement() throws SAXException {
         getEvents().remove(0);
         workingUnmarshalRecord = new XMLBinaryAttachmentHandler(this.getParent(), nodeValue, mapping, converter, isCollection);
         executeEvents(workingUnmarshalRecord);
     }
 
+    @Override
     public void processSimpleElement() throws SAXException {
         getEvents().remove(0);
         workingUnmarshalRecord = new XMLInlineBinaryHandler(this.getParent(), nodeValue, mapping, converter, isCollection);
         executeEvents(workingUnmarshalRecord);
     }
 
+    @Override
     public void processEmptyElement() throws SAXException {
         processSimpleElement();
     }
 
+    @Override
     protected void executeEvents(UnmarshalRecord unmarshalRecord) throws SAXException {
         super.executeEvents(unmarshalRecord);
         finished = true;

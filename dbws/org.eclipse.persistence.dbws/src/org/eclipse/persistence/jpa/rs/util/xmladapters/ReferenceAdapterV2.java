@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2015  Oracle. All rights reserved.
+ * Copyright (c) 2014, 2018 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.util.xmladapters;
 
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.ItemLinks;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.LinkV2;
@@ -22,8 +24,6 @@ import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
 import org.eclipse.persistence.jpa.rs.features.ItemLinksBuilder;
 import org.eclipse.persistence.jpa.rs.util.HrefHelper;
 import org.eclipse.persistence.jpa.rs.util.IdHelper;
-
-import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
  * Reference adapter used in JPARS V2. Main purpose of this adapter is retrieving an entity
@@ -116,8 +116,8 @@ public class ReferenceAdapterV2<T extends PersistenceWeavedRest> extends XmlAdap
     private T loadEntity(String href) throws Exception {
         final String uri = href.replace("\\/", "/");
         String entityType = uri.substring(uri.indexOf("/entity/"), uri.lastIndexOf('/'));
-        entityType = entityType.substring(entityType.lastIndexOf("/") + 1);
-        final String entityId = uri.substring(uri.lastIndexOf("/") + 1);
+        entityType = entityType.substring(entityType.lastIndexOf('/') + 1);
+        final String entityId = uri.substring(uri.lastIndexOf('/') + 1);
         final ClassDescriptor descriptor = context.getDescriptor(entityType);
         final Object id = IdHelper.buildId(context, descriptor.getAlias(), entityId);
 

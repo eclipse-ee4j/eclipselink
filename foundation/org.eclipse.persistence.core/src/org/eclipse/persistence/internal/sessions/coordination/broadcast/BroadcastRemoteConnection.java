@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -64,6 +64,7 @@ public abstract class BroadcastRemoteConnection extends RemoteConnection {
      * Publish the remote command. The result of execution is returned.
      * This method is used only by external (publishing) connection.
      */
+    @Override
     public Object executeCommand(Command command) throws CommunicationException {
         if (isActive()) {
             try {
@@ -90,6 +91,7 @@ public abstract class BroadcastRemoteConnection extends RemoteConnection {
      * Publish the remote command. The result of execution is returned.
      * This method is used only by external (publishing) connection.
      */
+    @Override
     public Object executeCommand(byte[] command) throws CommunicationException {
         if (isActive()) {
             try {
@@ -249,6 +251,7 @@ public abstract class BroadcastRemoteConnection extends RemoteConnection {
      * but there are some special cases (see comment to areAllResourcesFreedOnClose method)
      * when the state is still CLOSING after the method returns.
      */
+    @Override
     public void close() {
         synchronized(this) {
             if(isClosing()) {
@@ -358,6 +361,7 @@ public abstract class BroadcastRemoteConnection extends RemoteConnection {
     /**
      * INTERNAL:
      */
+    @Override
     public String toString() {
         if(displayString == null) {
             createDisplayString();

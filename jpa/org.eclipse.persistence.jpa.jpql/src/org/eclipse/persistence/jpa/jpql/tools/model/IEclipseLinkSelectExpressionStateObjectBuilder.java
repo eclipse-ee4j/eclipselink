@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -23,31 +23,37 @@ public interface IEclipseLinkSelectExpressionStateObjectBuilder extends ISelectE
     /**
      * {@inheritDoc}
      */
+    @Override
     IEclipseLinkSelectExpressionStateObjectBuilder append();
 
     /**
      * {@inheritDoc}
      */
+    @Override
     IEclipseLinkSelectExpressionStateObjectBuilder new_(String className,
                                                         ISelectExpressionStateObjectBuilder... parameters);
 
     /**
      * {@inheritDoc}
      */
+    @Override
     IEclipseLinkSelectExpressionStateObjectBuilder object(String identificationVariable);
 
     /**
      * {@inheritDoc}
      */
+    @Override
     IEclipseLinkSelectExpressionStateObjectBuilder resultVariable(String resultVariable);
 
     /**
      * {@inheritDoc}
      */
+    @Override
     IEclipseLinkSelectExpressionStateObjectBuilder resultVariableAs(String resultVariable);
 
     /**
      * {@inheritDoc}
      */
+    @Override
     IEclipseLinkSelectExpressionStateObjectBuilder variable(String variable);
 }

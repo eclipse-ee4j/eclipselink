@@ -147,6 +147,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
      * Create a new row/record for the object builder.
      * This allows subclasses to define different record types.
      */
+    @Override
     public AbstractRecord createRecord(AbstractSession session) {
         return new DatabaseRecord();
     }
@@ -663,6 +664,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
     /**
      * Return a new instance of the receiver's javaClass.
      */
+    @Override
     public Object buildNewInstance() {
         return this.descriptor.getInstantiationPolicy().buildNewInstance();
     }
@@ -801,6 +803,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             // Only do so on a ServerSession, as other sessions are not thread safe.
             if (group.isConcurrent() && session.isServerSession()) {
                 Runnable runnable = new Runnable() {
+                    @Override
                     public void run() {
                         mapping.load(object, item, session, fromFetchGroup);
                     }
@@ -2410,6 +2413,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
     /**
      * Returns a clone of itself.
      */
+    @Override
     public Object clone() {
         ObjectBuilder objectBuilder = null;
         try {
@@ -3495,6 +3499,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
     /**
      * Return al the mapping for the specified field.
      */
+    @Override
     public DatabaseMapping getMappingForField(DatabaseField field) {
         return getMappingsByField().get(field);
     }
@@ -4395,6 +4400,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         primaryKeyMappings = thePrimaryKeyMappings;
     }
 
+    @Override
     public String toString() {
         return Helper.getShortClassName(getClass()) + "(" + this.descriptor.toString() + ")";
     }

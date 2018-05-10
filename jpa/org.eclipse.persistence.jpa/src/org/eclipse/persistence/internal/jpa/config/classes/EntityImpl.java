@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2018  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -55,68 +55,80 @@ public class EntityImpl extends AbstractMappedClassImpl<EntityAccessor, Entity> 
         getMetadata().setSecondaryTables(new ArrayList<SecondaryTableMetadata>());
     }
 
+    @Override
     public Convert addConvert() {
         ConvertImpl convert = new ConvertImpl();
         getMetadata().getConverts().add(convert.getMetadata());
         return convert;
     }
 
+    @Override
     public Index addIndex() {
         IndexImpl index = new IndexImpl();
         getMetadata().getIndexes().add(index.getMetadata());
         return index;
     }
 
+    @Override
     public PrimaryKeyJoinColumn addPrimaryKeyJoinColumn() {
         PrimaryKeyJoinColumnImpl primaryKeyJoinColumn = new PrimaryKeyJoinColumnImpl();
         getMetadata().getPrimaryKeyJoinColumns().add(primaryKeyJoinColumn.getMetadata());
         return primaryKeyJoinColumn;
     }
 
+    @Override
     public SecondaryTable addSecondaryTable() {
         SecondaryTableImpl secondaryTable = new SecondaryTableImpl();
         getMetadata().getSecondaryTables().add(secondaryTable.getMetadata());
         return secondaryTable;
     }
 
+    @Override
     public Entity setAccess(String access) {
         getMetadata().setAccess(access);
         return this;
     }
 
+    @Override
     public Entity setCascadeOnDelete(Boolean cascadeOnDelete) {
         getMetadata().setCascadeOnDelete(cascadeOnDelete);
         return this;
     }
 
+    @Override
     public Entity setClassExtractor(String classExtractor) {
         getMetadata().setClassExtractorName(classExtractor);
         return this;
     }
 
+    @Override
     public DiscriminatorColumn setDiscriminatorColumn() {
         DiscriminatorColumnImpl column = new DiscriminatorColumnImpl();
         getMetadata().setDiscriminatorColumn(column.getMetadata());
         return column;
     }
 
+    @Override
     public Entity setDiscriminatorValue(String discriminatorValue) {
         getMetadata().setDiscriminatorValue(discriminatorValue);
         return this;
     }
 
+    @Override
     public Inheritance setInheritance() {
         InheritanceImpl inheritance = new InheritanceImpl();
         getMetadata().setInheritance(inheritance.getMetadata());
         return inheritance;
     }
 
+    @Override
     public ForeignKey setPrimaryKeyForeignKey() {
         ForeignKeyImpl foreignKey = new ForeignKeyImpl();
         getMetadata().setPrimaryKeyForeignKey(new PrimaryKeyForeignKeyMetadata(foreignKey.getMetadata()));
         return foreignKey;
     }
 
+    @Override
     public Table setTable() {
         TableImpl table = new TableImpl();
         getMetadata().setTable(table.getMetadata());

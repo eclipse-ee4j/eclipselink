@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -46,14 +46,17 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
         this.xmlBinaryDataCollectionMapping = mapping;
     }
 
+    @Override
     public void setContainerInstance(Object object, Object containerInstance) {
         xmlBinaryDataCollectionMapping.setAttributeValueInObject(object, containerInstance);
     }
 
+    @Override
     public Object getContainerInstance() {
         return getContainerPolicy().containerInstance();
     }
 
+    @Override
     public CoreContainerPolicy getContainerPolicy() {
         return xmlBinaryDataCollectionMapping.getContainerPolicy();
     }
@@ -62,6 +65,7 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
         return (String) ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.STRING, schemaType);
     }
 
+    @Override
     public boolean isOwningNode(XPathFragment xPathFragment) {
         return xPathFragment.getNextFragment() == null || xPathFragment.isAttribute();
     }
@@ -71,6 +75,7 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
         return true;
     }
 
+    @Override
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver) {
         if (xmlBinaryDataCollectionMapping.isReadOnly()) {
             return false;
@@ -104,6 +109,7 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
         return true;
     }
 
+    @Override
     public boolean startElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts) {
         try {
             Field xmlField = (Field)xmlBinaryDataCollectionMapping.getField();
@@ -146,10 +152,12 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
         }
     }
 
+    @Override
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord) {
         unmarshalRecord.resetStringBuffer();
     }
 
+    @Override
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Object container) {
         this.endElement(xPathFragment, unmarshalRecord);
     }
@@ -161,6 +169,7 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
         return null;
     }
 
+    @Override
     public boolean isContainerValue() {
         return true;
     }
@@ -270,10 +279,12 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
         return true;
     }
 
+    @Override
     public BinaryDataCollectionMapping getMapping() {
         return xmlBinaryDataCollectionMapping;
     }
 
+    @Override
     public boolean getReuseContainer() {
         return getMapping().getReuseContainer();
     }
@@ -282,6 +293,7 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
      *  INTERNAL:
      *  Used to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord
      */
+    @Override
     public void setIndex(int index){
         this.index = index;
     }
@@ -291,6 +303,7 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
      * Set to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord
      * Set during TreeObjectBuilder initialization
      */
+    @Override
     public int getIndex(){
         return index;
     }
@@ -301,6 +314,7 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
      * is no presence of the collection in the XML document.
      * @since EclipseLink 2.3.3
      */
+    @Override
     public boolean isDefaultEmptyContainer() {
         return getMapping().isDefaultEmptyContainer();
     }

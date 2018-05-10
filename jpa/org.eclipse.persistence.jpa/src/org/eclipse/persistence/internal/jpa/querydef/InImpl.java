@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -71,14 +71,17 @@ public class InImpl<T> extends CompoundExpressionImpl implements In<T> {
      * list of values.
      * @return expression
      */
+    @Override
     public Expression<T> getExpression(){
         return this.leftExpression;
     }
 
+    @Override
     public void findRootAndParameters(CommonAbstractCriteriaImpl query){
         super.findRootAndParameters(query);
     }
 
+    @Override
     public boolean isPredicate(){
         return true;
     }
@@ -88,6 +91,7 @@ public class InImpl<T> extends CompoundExpressionImpl implements In<T> {
      *  @param value value
      *  @return in predicate
      */
+    @Override
     public In<T> value(T value){
         ((Collection)((CollectionExpression)((RelationExpression)this.currentNode).getSecondChild()).getValue()).add(value);
         return this;
@@ -98,6 +102,7 @@ public class InImpl<T> extends CompoundExpressionImpl implements In<T> {
      *  @param value expression
      *  @return in predicate
      */
+    @Override
     public In<T> value(Expression<? extends T> value) {
         if (!(((InternalExpression) value).isLiteral() || ((InternalExpression) value).isParameter())) {
             RelationExpression baseIn = (RelationExpression) this.currentNode;
@@ -131,10 +136,12 @@ public class InImpl<T> extends CompoundExpressionImpl implements In<T> {
      * This method is used to store what will be the parent EclipseLink expression in the case the tree needs to be altered.
      * Currently used for In.
      */
+    @Override
     public void setParentNode(org.eclipse.persistence.expressions.Expression parentNode){
         this.parentNode = parentNode;
     }
 
+    @Override
     public Predicate not(){
         parentNode = this.getCurrentNode().not();
         ArrayList list = new ArrayList();

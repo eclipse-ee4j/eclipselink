@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -123,6 +123,7 @@ public class ConnectionPolicy implements Cloneable, Serializable {
      * INTERNAL:
      * Clone the query
      */
+    @Override
     public Object clone() {
         try {
             ConnectionPolicy clone = (ConnectionPolicy)super.clone();
@@ -331,6 +332,7 @@ public class ConnectionPolicy implements Cloneable, Serializable {
      * false - to ExclusiveMode.Transactional.
      * @deprecated
      */
+    @Deprecated
     public void setShouldUseExclusiveConnection(boolean useExclusiveConnection) {
         if(useExclusiveConnection) {
             exclusiveMode = ExclusiveMode.Isolated;
@@ -348,6 +350,7 @@ public class ConnectionPolicy implements Cloneable, Serializable {
      * This method has been replaced with isExclusiveIsolated method.
      * @deprecated
      */
+    @Deprecated
     public boolean shouldUseExclusiveConnection() {
         return isExclusiveIsolated();
     }
@@ -356,6 +359,7 @@ public class ConnectionPolicy implements Cloneable, Serializable {
      * INTERNAL:
      * return a string representation of this ConnectionPolicy
      */
+    @Override
     public String toString() {
         String type = "";
         if (isPooled()) {

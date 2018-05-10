@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2017 IBM Corporation, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 IBM Corporation, Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -37,10 +37,12 @@ public class _RMIRemoteCommandConnection_Stub extends Stub implements RMIRemoteC
         "RMI:org.eclipse.persistence.internal.sessions.coordination.rmi.RMIRemoteCommandConnection:0000000000000000"
     };
     
+    @Override
     public String[] _ids() { 
-        return (String [] )  _type_ids.clone();
+        return _type_ids.clone();
     }
     
+    @Override
     public Object executeCommand(Command arg0) throws RemoteException {
         while(true) {
             if (!Util.isLocal(this)) {
@@ -73,7 +75,7 @@ public class _RMIRemoteCommandConnection_Stub extends Stub implements RMIRemoteC
                 try {
                     Command arg0Copy = (Command) Util.copyObject(arg0,_orb());
                     Object result = ((org.eclipse.persistence.internal.sessions.coordination.rmi.RMIRemoteCommandConnection)so.servant).executeCommand(arg0Copy);
-                    return (Object)Util.copyObject(result,_orb());
+                    return Util.copyObject(result,_orb());
                 } catch (Throwable ex) {
                     Throwable exCopy = (Throwable)Util.copyObject(ex,_orb());
                     throw Util.wrapException(exCopy);
@@ -84,6 +86,7 @@ public class _RMIRemoteCommandConnection_Stub extends Stub implements RMIRemoteC
         }
     }
     
+    @Override
     public Object executeCommand(byte[] arg0) throws RemoteException {
         while(true) {
             if (!Util.isLocal(this)) {
@@ -116,7 +119,7 @@ public class _RMIRemoteCommandConnection_Stub extends Stub implements RMIRemoteC
                 try {
                     byte[] arg0Copy = (byte[]) Util.copyObject(arg0,_orb());
                     Object result = ((org.eclipse.persistence.internal.sessions.coordination.rmi.RMIRemoteCommandConnection)so.servant).executeCommand(arg0Copy);
-                    return (Object)Util.copyObject(result,_orb());
+                    return Util.copyObject(result,_orb());
                 } catch (Throwable ex) {
                     Throwable exCopy = (Throwable)Util.copyObject(ex,_orb());
                     throw Util.wrapException(exCopy);

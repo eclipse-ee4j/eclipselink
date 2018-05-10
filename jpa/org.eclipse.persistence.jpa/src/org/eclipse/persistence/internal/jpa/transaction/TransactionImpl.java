@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -179,6 +179,7 @@ public class TransactionImpl implements Transaction {
     /*************************************/
     /***** Supported Transaction API *****/
     /*************************************/
+    @Override
     public void commit() throws RollbackException, HeuristicMixedException, HeuristicRollbackException, SecurityException, IllegalStateException, SystemException {
         Exception error = null;
 
@@ -237,15 +238,18 @@ public class TransactionImpl implements Transaction {
         }
     }
 
+    @Override
     public int getStatus() throws SystemException {
         return status;
     }
 
+    @Override
     public void registerSynchronization(Synchronization synchronization) throws RollbackException, IllegalStateException, SystemException {
         debug("TxImpl - registering sync listener: " + synchronization);
         listeners.add(synchronization);
     }
 
+    @Override
     public void rollback() throws IllegalStateException, SystemException {
         Exception error = null;
 
@@ -266,6 +270,7 @@ public class TransactionImpl implements Transaction {
         }
     }
 
+    @Override
     public void setRollbackOnly() throws IllegalStateException, SystemException {
         debug("TxImpl - setRollbackOnly");
         status = STATUS_MARKED_ROLLBACK;
@@ -274,10 +279,12 @@ public class TransactionImpl implements Transaction {
     /*****************************************/
     /***** NOT supported Transaction API *****/
     /*****************************************/
+    @Override
     public boolean enlistResource(XAResource xaresource) throws RollbackException, IllegalStateException, SystemException {
         return false;
     }
 
+    @Override
     public boolean delistResource(XAResource xaresource, int i) throws IllegalStateException, SystemException {
         return false;
     }

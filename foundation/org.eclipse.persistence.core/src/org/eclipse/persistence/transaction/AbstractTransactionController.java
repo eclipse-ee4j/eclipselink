@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -94,6 +94,7 @@ public abstract class AbstractTransactionController implements ExternalTransacti
     /**
      * Return the exception handler used to handle or wrap exceptions thrown in before/after completion.
      */
+    @Override
     public ExceptionHandler getExceptionHandler() {
         return exceptionHandler;
     }
@@ -101,6 +102,7 @@ public abstract class AbstractTransactionController implements ExternalTransacti
     /**
      * Set an exception handler to handle or wrap exceptions thrown in before/after completion.
      */
+    @Override
     public void setExceptionHandler(ExceptionHandler exceptionHandler) {
         this.exceptionHandler = exceptionHandler;
     }
@@ -147,6 +149,7 @@ public abstract class AbstractTransactionController implements ExternalTransacti
      *
      * @param session The session for which the transaction is being begun.
      */
+    @Override
     public void beginTransaction(AbstractSession session) {
         try {
             Object status = getTransactionStatus();
@@ -170,6 +173,7 @@ public abstract class AbstractTransactionController implements ExternalTransacti
      *
      * @param session The session for which the transaction is being committed.
      */
+    @Override
     public void commitTransaction(AbstractSession session) {
         try {
             Object status = getTransactionStatus();
@@ -192,6 +196,7 @@ public abstract class AbstractTransactionController implements ExternalTransacti
      *
      * @param session The session for which the transaction is being rolled back.
      */
+    @Override
     public void rollbackTransaction(AbstractSession session) {
         try {
             Object status = getTransactionStatus();
@@ -213,6 +218,7 @@ public abstract class AbstractTransactionController implements ExternalTransacti
      * INTERNAL:
      * Mark the external transaction for rollback.
      */
+    @Override
     public void markTransactionForRollback() {
         try {
             markTransactionForRollback_impl();
@@ -297,6 +303,7 @@ public abstract class AbstractTransactionController implements ExternalTransacti
      * If no transaction is active then return null. If a transaction is active
      * but no unit of work has been bound to it then create and return one.
      */
+    @Override
     public UnitOfWorkImpl getActiveUnitOfWork() {
         Object transaction = getTransaction();
         if (transaction == null) {
@@ -377,6 +384,7 @@ public abstract class AbstractTransactionController implements ExternalTransacti
      * INTERNAL:
      * Return the manager's session.
      */
+    @Override
     public AbstractSession getSession() {
         return session;
     }
@@ -385,6 +393,7 @@ public abstract class AbstractTransactionController implements ExternalTransacti
      * INTERNAL:
      * Set the manager's session.
      */
+    @Override
     public void setSession(AbstractSession session) {
         this.session = session;
         initializeSequencingListeners();
@@ -429,6 +438,7 @@ public abstract class AbstractTransactionController implements ExternalTransacti
      * Associate the given unit of work and EclipseLink session with the current external
      * transaction. This method is offered only for backwards compatibility.
      */
+    @Override
     public void registerSynchronizationListener(UnitOfWorkImpl uow, AbstractSession session) throws DatabaseException {
         this.bindToCurrentTransaction(uow, session);
     }
@@ -482,6 +492,7 @@ public abstract class AbstractTransactionController implements ExternalTransacti
      * therefore if isSequencingCallbackRequired method has returned true once,
      * it will always return true after that (unless clearSequencingListeners method is called).
      */
+    @Override
     public void initializeSequencingListeners() {
         if(session == null) {
             return;
@@ -521,6 +532,7 @@ public abstract class AbstractTransactionController implements ExternalTransacti
      * DatabaseSession is passed for the sake of SessionBroker case.
      * This method requires active external transaction.
      */
+    @Override
     public SequencingCallback getActiveSequencingCallback(DatabaseSession dbSession, SequencingCallbackFactory sequencingCallbackFactory) {
         Object transaction = getTransaction();
         // This method requires active external transaction.
@@ -553,6 +565,7 @@ public abstract class AbstractTransactionController implements ExternalTransacti
      * Clears sequencing listeners.
      * Called by initializeSequencingListeners and by sequencing on disconnect.
      */
+    @Override
     public void clearSequencingListeners() {
         this.numSessionsRequiringSequencingCallback = 0;
         this.sequencingListeners = null;

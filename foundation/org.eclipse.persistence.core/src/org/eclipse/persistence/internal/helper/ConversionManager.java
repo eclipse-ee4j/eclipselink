@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2017 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -67,6 +67,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
     /**
      * INTERNAL:
      */
+    @Override
     public Object clone() {
         try {
             return super.clone();
@@ -281,9 +282,8 @@ public class ConversionManager extends CoreConversionManager implements Serializ
             int intValue = ((Number)sourceObject).intValue();
             if (intValue != 0) {
                 return Boolean.TRUE;
-            } else if (intValue == 0) {
-                return Boolean.FALSE;
             }
+            return Boolean.FALSE;
         }
         throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.BOOLEAN);
     }

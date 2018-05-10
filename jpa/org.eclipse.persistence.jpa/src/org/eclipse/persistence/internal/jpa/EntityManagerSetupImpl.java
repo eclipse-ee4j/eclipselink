@@ -1587,11 +1587,13 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             String poolName = "default";
             String attribute = null;
             try {
-                if (entry.getKey().indexOf(".") == -1) {
+                int dotIdx = entry.getKey().indexOf('.');
+                if (dotIdx == -1) {
                     attribute = entry.getKey();
                 } else {
-                    poolName = entry.getKey().substring(0, entry.getKey().indexOf("."));
-                    attribute = entry.getKey().substring(entry.getKey().indexOf(".") + 1, entry.getKey().length());
+                    String key = entry.getKey();
+                    poolName = key.substring(0, dotIdx);
+                    attribute = key.substring(dotIdx + 1, key.length());
                 }
                 ConnectionPool pool = null;
                 if (poolName.equals("write")) {
@@ -2880,6 +2882,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             updateQueryTimeout(m);
             updateQueryTimeoutUnit(m);
             updateLockingTimestampDefault(m);
+            updateSQLCallDeferralDefault(m);
             if (!session.hasBroker()) {
                 updateCacheCoordination(m, loader);
             }
@@ -3692,6 +3695,20 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             }
         } catch (NumberFormatException exception) {
             this.session.handleException(ValidationException.invalidValueForProperty(local, PersistenceUnitProperties.USE_LOCAL_TIMESTAMP, exception));
+        }
+    }
+
+    //Bug #333100: Added support for turning off SQL deferral default behavior
+    private void updateSQLCallDeferralDefault(Map persistenceProperties) {
+        String defer = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.SQL_CALL_DEFERRAL, persistenceProperties, this.session);
+        if (defer != null) {
+            if (defer.equalsIgnoreCase("true")) {
+                this.session.getProject().setAllowSQLDeferral(true);
+            } else if (defer.equalsIgnoreCase("false")) {
+                this.session.getProject().setAllowSQLDeferral(false);
+            } else {
+                this.session.handleException(ValidationException.invalidBooleanValueForProperty(defer, PersistenceUnitProperties.SQL_CALL_DEFERRAL));
+            }
         }
     }
 

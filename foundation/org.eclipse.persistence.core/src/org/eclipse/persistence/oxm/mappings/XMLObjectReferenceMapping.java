@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -79,6 +79,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
      * @param srcXPath
      * @param tgtXPath
      */
+    @Override
     public void addSourceToTargetKeyFieldAssociation(String srcXPath, String tgtXPath) {
         XMLField srcFld = new XMLField(srcXPath);
         sourceToTargetKeys.add(srcFld);
@@ -107,6 +108,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
      * matches the target field name - otherwise, return the associated primary
      * key value
      */
+    @Override
     public Object buildFieldValue(Object targetObject, XMLField xmlFld, AbstractSession session) {
         if (targetObject == null || getReferenceClass() == null) {
             return null;
@@ -142,6 +144,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
      * @param object
      * @param session
      */
+    @Override
     public void buildReference(UnmarshalRecord record, XMLField xmlField, Object object, AbstractSession session) {
         ReferenceResolver resolver = record.getReferenceResolver();
         if (resolver == null) {
@@ -193,6 +196,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
      * INTERNAL:
      * Cascade perform delete through mappings that require the cascade
      */
+    @Override
     public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
         // objects referenced by this mapping are not registered as they have
         // no identity, however mappings from the referenced object may need cascading.
@@ -211,6 +215,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade
      */
+    @Override
     public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
         // Aggregate objects are not registered but their mappings should be.
         Object objectReferenced = getRealAttributeValueFromObject(object, uow);
@@ -229,6 +234,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
      * Return a list of XMLFields based on the source XPath values
      * in the source-target key field associations list.
      */
+    @Override
     public Vector getFields() {
         return sourceToTargetKeys;
     }
@@ -297,6 +303,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
      *
      * @return
      */
+    @Override
     public HashMap getSourceToTargetKeyFieldAssociations() {
         return sourceToTargetKeyFieldAssociations;
     }
@@ -324,6 +331,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
      * @see org.eclipse.persistence.internal.oxm.ReferenceResolver
      * @see org.eclipse.persistence.oxm.NamespaceResolver
      */
+    @Override
     public void initialize(AbstractSession session) throws DescriptorException {
         if (null == referenceClass) {
             if(referenceClassName != null){
@@ -369,6 +377,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
         }
     }
 
+    @Override
     public void preInitialize(AbstractSession session) throws DescriptorException {
         getAttributeAccessor().setIsWriteOnly(this.isWriteOnly());
         getAttributeAccessor().setIsReadOnly(this.isReadOnly());
@@ -380,6 +389,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
      * INTERNAL:
      * Indicates that this is an XML mapping.
      */
+    @Override
     public boolean isXMLMapping() {
         return true;
     }
@@ -390,6 +400,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
      * org.eclipse.persistence.internal.oxm.Reference instance and store it
      * on the session's org.eclipse.persistence.internal.oxm.ReferenceResolver.
      */
+    @Override
     public Object readFromRowIntoObject(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object targetObject, CacheKey parentCacheKey, ObjectBuildingQuery sourceQuery, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
         // the order in which the primary keys are added to the vector is
         // relevant for cache lookup - it must match the ordering of the
@@ -460,6 +471,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
         writeSingleValue(targetObject, object, (XMLRecord) row, session);
     }
 
+    @Override
     public void writeSingleValue(Object value, Object parent, XMLRecord row, AbstractSession session) {
         for (Iterator fieldIt = getFields().iterator(); fieldIt.hasNext();) {
             XMLField xmlField = (XMLField) fieldIt.next();
@@ -473,14 +485,17 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
 
     }
 
+    @Override
     public void setIsWriteOnly(boolean b) {
         this.isWriteOnly = b;
     }
 
+    @Override
     public boolean isWriteOnly() {
         return this.isWriteOnly;
     }
 
+    @Override
     public void setAttributeValueInObject(Object object, Object value) throws DescriptorException {
         if(isWriteOnly()) {
             return;
@@ -488,6 +503,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
         super.setAttributeValueInObject(object, value);
     }
 
+    @Override
     public XMLInverseReferenceMapping getInverseReferenceMapping() {
         return inverseReferenceMapping;
     }

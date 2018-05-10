@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2018  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -36,33 +36,39 @@ public class ValuePartitioningImpl extends MetadataImpl<ValuePartitioningMetadat
         getMetadata().setPartitions(new ArrayList<ValuePartitionMetadata>());
     }
 
+    @Override
     public ValuePartition addPartition() {
         ValuePartitionImpl valuePartition = new ValuePartitionImpl();
         getMetadata().getPartitions().add(valuePartition.getMetadata());
         return valuePartition;
     }
 
+    @Override
     public ValuePartitioning setDefaultConnectionPool(String defaultConnectionPool) {
         getMetadata().setDefaultConnectionPool(defaultConnectionPool);
         return this;
     }
 
+    @Override
     public ValuePartitioning setName(String name) {
         getMetadata().setName(name);
         return this;
     }
 
+    @Override
     public Column setPartitionColumn() {
         ColumnImpl column = new ColumnImpl();
         getMetadata().setPartitionColumn(column.getMetadata());
         return column;
     }
 
+    @Override
     public ValuePartitioning setPartitionValueType(String partitionValueType) {
         getMetadata().setPartitionValueTypeName(partitionValueType);
         return this;
     }
 
+    @Override
     public ValuePartitioning setUnionUnpartitionableQueries(Boolean unionUnpartitionableQueries) {
         getMetadata().setUnionUnpartitionableQueries(unionUnpartitionableQueries);
         return this;

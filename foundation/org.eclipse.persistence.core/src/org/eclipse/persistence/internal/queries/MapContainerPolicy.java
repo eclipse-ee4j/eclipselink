@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates, Frank Schwarz. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates, Frank Schwarz. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -782,6 +782,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      * Sets the key name to be used to generate the key in a Map type container
      * class. The key name, may be the name of a field or method.
      */
+    @Override
     public void setKeyName(String keyName, String elementClassName) {
         // The key name and class name must be held as the policy is used
         // directly from the mapping.
@@ -796,6 +797,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      * An instance of the class is provided in the case when the descriptor is being
      * built in code.
      */
+    @Override
     public void setKeyName(String keyName, Class elementClass) {
         // The key name and class name must be held as the policy is used
         // directly from the mapping.
@@ -850,6 +852,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      * This method is used to load a relationship from a list of PKs. This list
      * may be available if the relationship has been cached.
      */
+    @Override
     public Object valueFromPKList(Object[] pks, AbstractRecord foreignKeys, ForeignReferenceMapping mapping, AbstractSession session){
         // pks contains both keys and values, but only values are required because keys could be obtained from corresponding values.
         Object[] pksOnly = new Object[pks.length / 2];
@@ -874,10 +877,12 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
             this.iterator = container.entrySet().iterator();
         }
 
+        @Override
         public boolean hasNext() {
             return iterator.hasNext();
         }
 
+        @Override
         public Map.Entry next() {
             currentEntry = (Map.Entry)iterator.next();
             return currentEntry;
@@ -897,6 +902,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
             return null;
         }
 
+        @Override
         public void remove() {
             this.iterator.remove();
         }

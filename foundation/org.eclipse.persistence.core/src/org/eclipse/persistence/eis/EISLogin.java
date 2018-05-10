@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -62,6 +62,7 @@ public class EISLogin extends DatasourceLogin {
     /**
      * Build and return the EIS accessorr.
      */
+    @Override
     public Accessor buildAccessor() {
         return new EISAccessor();
     }
@@ -69,6 +70,7 @@ public class EISLogin extends DatasourceLogin {
     /**
      * Connect to the EIS adapter and return the Connection.
      */
+    @Override
     public Object connectToDatasource(Accessor accessor, Session session) {
         return getConnectionSpec().connectToDataSource((EISAccessor)accessor, getProperties());
     }
@@ -77,6 +79,7 @@ public class EISLogin extends DatasourceLogin {
      * PUBLIC:
      * Set the password.
      */
+    @Override
     public void setPassword(String password) {
         // Avoid encryption
         // Bug 4117441 - Secure programming practices, store password in char[]

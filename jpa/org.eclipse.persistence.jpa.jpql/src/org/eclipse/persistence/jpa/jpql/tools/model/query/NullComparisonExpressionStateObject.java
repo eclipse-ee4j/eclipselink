@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -18,7 +18,6 @@ import java.util.List;
 import org.eclipse.persistence.jpa.jpql.parser.LiteralBNF;
 import org.eclipse.persistence.jpa.jpql.parser.NullComparisonExpression;
 import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
-import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
 /**
  * A null comparison tests whether or not the single-valued path expression or input parameter is a
@@ -127,6 +126,7 @@ public class NullComparisonExpressionStateObject extends AbstractStateObject {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }

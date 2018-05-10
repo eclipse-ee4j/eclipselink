@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -121,6 +121,7 @@ public class IdentityHashSet extends AbstractCollection implements Set, Cloneabl
     /**
      * @return the size of this <tt>IdentityHashSet</tt>.
      */
+    @Override
     public int size() {
         return count;
     }
@@ -128,6 +129,7 @@ public class IdentityHashSet extends AbstractCollection implements Set, Cloneabl
     /**
      * @return <tt>true</tt> if this <tt>IdentityHashSet</tt> is empty.
      */
+    @Override
     public boolean isEmpty() {
         return (count == 0);
     }
@@ -140,6 +142,7 @@ public class IdentityHashSet extends AbstractCollection implements Set, Cloneabl
      * @return <tt>true</tt> if this <tt>IdentityHashSet</tt> contains
      * obj by reference.
      */
+    @Override
     public boolean contains(Object obj) {
         if (obj == null) {
             return false;
@@ -188,6 +191,7 @@ public class IdentityHashSet extends AbstractCollection implements Set, Cloneabl
      * already contain obj.
      * @throws <tt>NullPointerException</tt> if obj is null.
      */
+    @Override
     public boolean add(Object obj) {
         if (obj == null) {
             throw new NullPointerException();
@@ -225,6 +229,7 @@ public class IdentityHashSet extends AbstractCollection implements Set, Cloneabl
      * @return <tt>true</tt> if this <tt>IdentityHashSet</tt> contained
      * obj.
      */
+    @Override
     public boolean remove(Object obj) {
         if (obj == null) {
             return false;
@@ -252,6 +257,7 @@ public class IdentityHashSet extends AbstractCollection implements Set, Cloneabl
      * because <tt>removeAll</tt> does not work correctly with reference
      * equality testing.<p>
      */
+    @Override
     public boolean removeAll(Collection c) {
         throw new UnsupportedOperationException("IdentityHashSet removeAll");
     }
@@ -261,6 +267,7 @@ public class IdentityHashSet extends AbstractCollection implements Set, Cloneabl
      * The Javadocs for {@link AbstractCollection} indicates that <tt>retainAll</tt>
      * is an optional method.<p>
      */
+    @Override
     public boolean retainAll(Collection c) {
         throw new UnsupportedOperationException("IdentityHashSet retainAll");
     }
@@ -268,6 +275,7 @@ public class IdentityHashSet extends AbstractCollection implements Set, Cloneabl
     /**
      * Removes all of the objects from this <tt>IdentityHashSet</tt>.
      */
+    @Override
     public void clear() {
         if (count > 0) {
             Entry[] copyOfEntries = entries;
@@ -284,6 +292,7 @@ public class IdentityHashSet extends AbstractCollection implements Set, Cloneabl
      *
      * @return a shallow copy of this <tt>IdentityHashSet</tt>.
      */
+    @Override
     public Object clone() {
         try {
             Entry[] copyOfEntries = entries;
@@ -302,6 +311,7 @@ public class IdentityHashSet extends AbstractCollection implements Set, Cloneabl
     /**
      * Get an iterator for this <tt>IdentityHashSet</tt>
      */
+    @Override
     public Iterator iterator() {
         return new IdentityHashSetIterator();
     }
@@ -320,6 +330,7 @@ public class IdentityHashSet extends AbstractCollection implements Set, Cloneabl
             this.next = next;
         }
 
+        @Override
         protected Object clone() {
             Entry currentNode = this;
             Entry rootNode = new Entry(hash, value, null);
@@ -344,6 +355,7 @@ public class IdentityHashSet extends AbstractCollection implements Set, Cloneabl
         IdentityHashSetIterator() {
         }
 
+        @Override
         public boolean hasNext() {
             Entry e = entry;
             int i = index;
@@ -356,6 +368,7 @@ public class IdentityHashSet extends AbstractCollection implements Set, Cloneabl
             return e != null;
         }
 
+        @Override
         public Object next() {
             Entry et = entry;
             int i = index;
@@ -374,6 +387,7 @@ public class IdentityHashSet extends AbstractCollection implements Set, Cloneabl
             throw new NoSuchElementException();
         }
 
+        @Override
         public void remove() {
             if (lastReturned == null) {
                 throw new IllegalStateException();

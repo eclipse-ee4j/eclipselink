@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -143,6 +143,7 @@ public abstract class AbstractPathExpressionStateObject extends AbstractStateObj
     /**
      * {@inheritDoc}
      */
+    @Override
     @SuppressWarnings("unchecked")
     public String addItem(String item) {
         getChangeSupport().addItem(this, paths, PATHS_LIST, item);
@@ -152,6 +153,7 @@ public abstract class AbstractPathExpressionStateObject extends AbstractStateObj
     /**
      * {@inheritDoc}
      */
+    @Override
     public void addItems(List<? extends String> items) {
         getChangeSupport().addItems(this, paths, PATHS_LIST, items);
     }
@@ -159,6 +161,7 @@ public abstract class AbstractPathExpressionStateObject extends AbstractStateObj
     /**
      * {@inheritDoc}
      */
+    @Override
     public void addListChangeListener(String listName, IListChangeListener<String> listener) {
         getChangeSupport().addListChangeListener(listName, listener);
     }
@@ -227,6 +230,7 @@ public abstract class AbstractPathExpressionStateObject extends AbstractStateObj
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean canMoveDown(String item) {
         return false;
     }
@@ -234,6 +238,7 @@ public abstract class AbstractPathExpressionStateObject extends AbstractStateObj
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean canMoveUp(String item) {
         return false;
     }
@@ -275,6 +280,7 @@ public abstract class AbstractPathExpressionStateObject extends AbstractStateObj
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getItem(int index) {
         return paths.get(index);
     }
@@ -360,6 +366,7 @@ public abstract class AbstractPathExpressionStateObject extends AbstractStateObj
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean hasItems() {
         return !paths.isEmpty();
     }
@@ -413,6 +420,7 @@ public abstract class AbstractPathExpressionStateObject extends AbstractStateObj
     /**
      * {@inheritDoc}
      */
+    @Override
     public ListIterable<String> items() {
         return new SnapshotCloneListIterable<String>(paths);
     }
@@ -420,6 +428,7 @@ public abstract class AbstractPathExpressionStateObject extends AbstractStateObj
     /**
      * {@inheritDoc}
      */
+    @Override
     public int itemsSize() {
         return paths.size();
     }
@@ -427,6 +436,7 @@ public abstract class AbstractPathExpressionStateObject extends AbstractStateObj
     /**
      * {@inheritDoc}
      */
+    @Override
     public String moveDown(String item) {
         throw new RuntimeException(getClass().getName() + " does not support moveDown(String).");
     }
@@ -434,6 +444,7 @@ public abstract class AbstractPathExpressionStateObject extends AbstractStateObj
     /**
      * {@inheritDoc}
      */
+    @Override
     public String moveUp(String item) {
         throw new RuntimeException(getClass().getName() + " does not support moveUp(String).");
     }
@@ -454,6 +465,7 @@ public abstract class AbstractPathExpressionStateObject extends AbstractStateObj
     /**
      * {@inheritDoc}
      */
+    @Override
     public void removeItem(String item) {
         getChangeSupport().removeItem(this, paths, PATHS_LIST, item);
     }
@@ -461,6 +473,7 @@ public abstract class AbstractPathExpressionStateObject extends AbstractStateObj
     /**
      * {@inheritDoc}
      */
+    @Override
     public void removeItems(Collection<String> items) {
         getChangeSupport().removeItems(this, this.paths, PATHS_LIST, items);
     }
@@ -468,6 +481,7 @@ public abstract class AbstractPathExpressionStateObject extends AbstractStateObj
     /**
      * {@inheritDoc}
      */
+    @Override
     public void removeListChangeListener(String listName, IListChangeListener<String> listener) {
         getChangeSupport().removeListChangeListener(listName, listener);
     }

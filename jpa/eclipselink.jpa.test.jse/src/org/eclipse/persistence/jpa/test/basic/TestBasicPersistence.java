@@ -73,13 +73,13 @@ public class TestBasicPersistence {
 
     @SQLListener
     List<String> _sql;
-    
+
     private static final int rmiPort;
     private static final String dsName = "mockDataSource";
     private static final BogusDataSource mockDataSource = new BogusDataSource("tmpDataSourceImp getConnection called");
     private static Registry rmiRegistry = null;
     private static JMXConnectorServer connector = null;
-    
+
     static {
         int rmiPortVal = 1099;
         
@@ -94,7 +94,7 @@ public class TestBasicPersistence {
             
         rmiPort = rmiPortVal;
     }
-    
+
     @BeforeClass
     public static void beforeClass() throws Exception {
         rmiRegistry = LocateRegistry.createRegistry(rmiPort);
@@ -111,12 +111,12 @@ public class TestBasicPersistence {
         if (rmiRegistry != null) {
             rmiRegistry.unbind(dsName);
         } 
-        
+
         if (connector != null) {
             connector.stop();
         }
     }
-    
+
     @Test
     public void activeTransaction() {
         Assert.assertNotNull(emf);
@@ -180,21 +180,21 @@ public class TestBasicPersistence {
             em.close();
         }
     }
-    
+
     @Test
     public void testNonJTADataSourceOverride() throws Exception {
         if (emf == null)
             return;
-        
+
         InitialContext ic = new InitialContext();
         Assert.assertNotNull(ic.lookup(dsName));
-        
+
         EntityManager em = null;
         boolean pass = false;
-        Map properties = new HashMap();  
+        Map<String, Object> properties = new HashMap<>();
         properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, dsName);
         properties.put("eclipselink.jdbc.exclusive-connection.mode", "Always");
-        
+
         try {
             em = emf.createEntityManager(properties);
             em.clear();
@@ -211,7 +211,7 @@ public class TestBasicPersistence {
         }
         Assert.assertTrue("Non JTA datasource was not set or accessed as expected through map of properties", pass);
     }
-    
+
     /*
      * Verify that the number of non pooled connections used is accounted for accurately in regular non-error scenario usage.
      */
@@ -221,21 +221,21 @@ public class TestBasicPersistence {
         System.out.println("*BEGIN testNonpooledConnection()");
         if (emf == null) 
             return;
-        
+
         final EntityManagerFactoryImpl emfi = emf.unwrap(EntityManagerFactoryImpl.class);
         Assert.assertNotNull(emfi);
-        
+
         // Create an em with a unpooled connection policy, idea taken from EntityManagerJUnitTestSuite.testNonPooledConnection()
         final ServerSession ss = emfi.getServerSession();
-        
+
         // Clone the connection policy and set the pool name to null to emulate using non-pooled connections
         final ConnectionPolicy connectionPolicy = (ConnectionPolicy)ss.getDefaultConnectionPolicy().clone();
         connectionPolicy.setLogin(ss.getLogin());
         connectionPolicy.setPoolName(null);
-        
-        final Map properties = new HashMap(1);
+
+        final Map<String, Object> properties = new HashMap<>();
         properties.put(EntityManagerProperties.CONNECTION_POLICY, connectionPolicy);
-           
+
         final int initialNonPooledConnections = ss.getNumberOfNonPooledConnectionsUsed();
         final int maxNonPooledConnections = ss.getMaxNumberOfNonPooledConnections();
         System.out.println("initialNonPooledConnections = " + initialNonPooledConnections);
@@ -246,10 +246,10 @@ public class TestBasicPersistence {
 
         EntityManager em = emf.createEntityManager(properties);
         EntityTransaction et = em.getTransaction();
-     
+
         try {
             et.begin();
-            
+
             Person p = new Person();
             Dog d = new Dog("Bingo");
             p.setDog(d);
@@ -258,26 +258,25 @@ public class TestBasicPersistence {
             em.persist(p);
             em.persist(d);
             em.persist(new XmlFish());
-            
+
             em.flush();
-            
+
             int nonPooledConnectionsAfterFlush = ss.getNumberOfNonPooledConnectionsUsed();
             System.out.println("nonPooledConnectionsAfterFlush = " + nonPooledConnectionsAfterFlush);
             Assert.assertTrue("Test problem: connection should be not pooled", em.unwrap(UnitOfWork.class).getParent().getAccessor().getPool() == null);
             Assert.assertEquals(initialNonPooledConnections + 1, nonPooledConnectionsAfterFlush);
-            
+
             et.commit();
             em.clear();
-            
+
             int nonPooledConnectionsAfterCommit = ss.getNumberOfNonPooledConnectionsUsed();
             System.out.println("nonPooledConnectionsAfterCommit = " + nonPooledConnectionsAfterCommit);
             Assert.assertEquals(initialNonPooledConnections, nonPooledConnectionsAfterCommit);
-            
-            
+
             Dog foundDog = em.find(Dog.class, d.getId());
             foundDog.getOwner();
-            Assert.assertTrue(_sql.size() > 0);           
-            
+            Assert.assertTrue(_sql.size() > 0);
+
             int nonPooledConnectionsAfterFind = ss.getNumberOfNonPooledConnectionsUsed();
             System.out.println("nonPooledConnectionsAfterFind = " + nonPooledConnectionsAfterFind);
             Assert.assertEquals(initialNonPooledConnections, nonPooledConnectionsAfterFind);
@@ -286,37 +285,37 @@ public class TestBasicPersistence {
                 et.rollback();
             }
             em.close();
-            
+
             System.out.println("*END testNonpooledConnection()");
         }
     }
-    
+
     @Test
     public void testNonpooledConnectionWithErrorOnAcquireConnection() throws Exception {
         System.out.println("********************");
         System.out.println("*BEGIN testNonpooledConnectionWithErrorOnAcquireConnection()");
         if (emf == null) 
             return;
-        
+
         final EntityManagerFactoryImpl emfi = emf.unwrap(EntityManagerFactoryImpl.class);
         Assert.assertNotNull(emfi);
-        
+
         // Create an em with a unpooled connection policy, idea taken from EntityManagerJUnitTestSuite.testNonPooledConnection()
         final ServerSession ss = emfi.getServerSession();
-        
+
         // Set up the DriverWrapper/ConnectionWrapper so we can emulate database connection failure
         // cache the original driver name and connection string.
         try {
             setupDriverWrapper(ss);
-            
+
             // Clone the connection policy and set the pool name to null to emulate using non-pooled connections
             final ConnectionPolicy connectionPolicy = (ConnectionPolicy)ss.getDefaultConnectionPolicy().clone();
             connectionPolicy.setLogin(ss.getLogin());
             connectionPolicy.setPoolName(null);
-            
-            final Map properties = new HashMap(1);
+
+            final Map<String, Object> properties = new HashMap<>();
             properties.put(EntityManagerProperties.CONNECTION_POLICY, connectionPolicy);
-            
+
             // Validate against initial non-pooled connection count
             final int initialNonPooledConnections = ss.getNumberOfNonPooledConnectionsUsed();
             final int maxNonPooledConnections = ss.getMaxNumberOfNonPooledConnections();
@@ -328,7 +327,7 @@ public class TestBasicPersistence {
 
             EntityManager em = emf.createEntityManager(properties);
             EntityTransaction et = em.getTransaction();
-         
+
             try {
                 Person p = new Person();
                 Dog d = new Dog("Bingo");
@@ -338,11 +337,11 @@ public class TestBasicPersistence {
                 et.begin();
                 final int nonPooledConnectionsBeforePersist = ss.getNumberOfNonPooledConnectionsUsed();
                 System.out.println("nonPooledConnectionsBeforePersist = " + nonPooledConnectionsBeforePersist);
-                
+
                 em.persist(p);
                 em.persist(d);
                 em.persist(new XmlFish());
-                
+
                 final int nonPooledConnectionsBeforeFlush = ss.getNumberOfNonPooledConnectionsUsed();
                 System.out.println("nonPooledConnectionsBeforeFlush = " + nonPooledConnectionsBeforeFlush);
                 try {
@@ -354,11 +353,11 @@ public class TestBasicPersistence {
                 } finally {
                     DriverWrapper.repairAll();
                 }
-                
+
                 final int nonPooledConnectionsAfterFlush = ss.getNumberOfNonPooledConnectionsUsed();
                 System.out.println("nonPooledConnectionsAfterFlush = " + nonPooledConnectionsAfterFlush);
                 Assert.assertEquals("nonPooledConnectionsBeforeFlush == nonPooledConnectionsAfterFlush", nonPooledConnectionsBeforeFlush, nonPooledConnectionsAfterFlush);
-                
+
                 try {
                 et.rollback();
                 } catch (Throwable t) {
@@ -366,7 +365,7 @@ public class TestBasicPersistence {
                     // the DriverWrapper was set to make new connections broken, but the real Connection is
                     // still established, but being "Broken" prevents the Connection from being set autocommit=false.
                 }
-                
+
                 final int nonPooledConnectionsAfterRollback = ss.getNumberOfNonPooledConnectionsUsed();
                 System.out.println("nonPooledConnectionsAfterRollback = " + nonPooledConnectionsAfterRollback);
                 Assert.assertTrue("initialNonPooledConnections >= nonPooledConnectionsAfterRollback", initialNonPooledConnections >= nonPooledConnectionsAfterRollback);
@@ -374,41 +373,41 @@ public class TestBasicPersistence {
                 if (et.isActive()) {
                     et.rollback();
                 }
-                em.close();  
-            }           
+                em.close();
+            }
         } finally {
             DriverWrapper.repairAll();
             System.out.println("*END testNonpooledConnectionWithErrorOnAcquireConnection()");
         }
     }
-    
+
     @Test
     public void testNonpooledConnectionWithErrorOnReleaseConnection() throws Exception {
         System.out.println("********************");
         System.out.println("*BEGIN testNonpooledConnectionWithErrorOnReleaseConnection()");
         if (emf == null) 
             return;
-        
+
         final EntityManagerFactoryImpl emfi = emf.unwrap(EntityManagerFactoryImpl.class);
         Assert.assertNotNull(emfi);
-        
+
         // Create an em with a unpooled connection policy, idea taken from EntityManagerJUnitTestSuite.testNonPooledConnection()
         final ServerSession ss = emfi.getServerSession();
-        
+
         // Set up the DriverWrapper/ConnectionWrapper so we can emulate database connection failure
         // cache the original driver name and connection string.
         try {
             setupDriverWrapper(ss);
             DriverWrapper.repairAll();
-            
+
             // Clone the connection policy and set the pool name to null to emulate using non-pooled connections
             final ConnectionPolicy connectionPolicy = (ConnectionPolicy)ss.getDefaultConnectionPolicy().clone();
             connectionPolicy.setLogin(ss.getLogin());
             connectionPolicy.setPoolName(null);
-            
-            final Map properties = new HashMap(1);
+
+            final Map<String, Object> properties = new HashMap<>();
             properties.put(EntityManagerProperties.CONNECTION_POLICY, connectionPolicy);
-            
+
             // Validate against initial non-pooled connection count
             final int initialNonPooledConnections = ss.getNumberOfNonPooledConnectionsUsed();
             final int maxNonPooledConnections = ss.getMaxNumberOfNonPooledConnections();
@@ -420,10 +419,10 @@ public class TestBasicPersistence {
 
             EntityManager em = emf.createEntityManager(properties);
             EntityTransaction et = em.getTransaction();
-         
+
             try {
                 et.begin();
-                
+
                 Person p = new Person();
                 Dog d = new Dog("Bingo");
                 p.setDog(d);
@@ -432,15 +431,15 @@ public class TestBasicPersistence {
                 em.persist(p);
                 em.persist(d);
                 em.persist(new XmlFish());
-                
+
                 final int nonPooledConnectionsBeforeFlush = ss.getNumberOfNonPooledConnectionsUsed();
                 System.out.println("nonPooledConnectionsBeforeFlush = " + nonPooledConnectionsBeforeFlush);
-                
+
                 em.flush();
                 final int nonPooledConnectionsAfterFlush = ss.getNumberOfNonPooledConnectionsUsed();
                 System.out.println("nonPooledConnectionsAfterFlush = " + nonPooledConnectionsAfterFlush);
                 Assert.assertEquals("nonPooledConnectionsBeforeFlush + 1 == nonPooledConnectionsAfterFlush", nonPooledConnectionsBeforeFlush + 1, nonPooledConnectionsAfterFlush);
-                
+
                 // The non-pooled Connection would be released after the commit.
                 DriverWrapper.breakOldConnections();
                 try {
@@ -451,7 +450,7 @@ public class TestBasicPersistence {
                 } finally {
                     DriverWrapper.repairAll();
                 }
-                
+
                 int nonPooledConnectionsAfterCommit = ss.getNumberOfNonPooledConnectionsUsed();
                 System.out.println("nonPooledConnectionsAfterCommit = " + nonPooledConnectionsAfterCommit);
                 Assert.assertTrue("initialNonPooledConnections >= nonPooledConnectionsAfterCommit", initialNonPooledConnections >= nonPooledConnectionsAfterCommit);
@@ -460,20 +459,20 @@ public class TestBasicPersistence {
                 if (et.isActive()) {
                     et.rollback();
                 }
-                em.close();  
-            }           
+                em.close();
+            }
         } finally {
             DriverWrapper.repairAll();
             System.out.println("*END testNonpooledConnectionWithErrorOnReleaseConnection()");
         }
     }
-    
+
     private void setupDriverWrapper(ServerSession ss) {
         // Set up the DriverWrapper/ConnectionWrapper so we can emulate database connection failure
         // cache the original driver name and connection string.
         String originalDriverName = ss.getLogin().getDriverClassName();
         String originalConnectionString = ss.getLogin().getConnectionString();
-        
+
         if (DriverWrapper.class.getName().equals(originalDriverName)) {
             // DriverWrapper is already set up, so just return.
             return;
@@ -485,7 +484,7 @@ public class TestBasicPersistence {
 
         // setup the wrapper driver
         DriverWrapper.initialize(originalDriverName);
-        
+
         ss.logout();
         ss.getLogin().setDriverClassName(newDriverName);
         ss.getLogin().setConnectionHealthValidatedOnError(true);
@@ -497,27 +496,30 @@ public class TestBasicPersistence {
      * Taken from org.eclipse.persistence.testing.tests.jpa.validation.ValidationTestSuite
      */
     public static class BogusDataSource implements DataSource, Remote, Serializable {
+
+        private static final long serialVersionUID = 1L;
+
         private String text = "foo";
-        
+
         public BogusDataSource(String text){
             super();
             this.text = text;
         }
-        
+
         public Connection getConnection() throws SQLException {
             RuntimeException exception = new RuntimeException(text);
             throw exception;
         }
-        
+
         public Connection getConnection(String username, String password) throws SQLException {
             return getConnection();
         }
-        
+
         //rest are ignored
         public java.io.PrintWriter getLogWriter() throws SQLException {
             return null;
         }
-        
+
         public void setLogWriter(java.io.PrintWriter out) throws SQLException{}
         public void setLoginTimeout(int seconds) throws SQLException{}
         public int getLoginTimeout() throws SQLException { return 1; }
@@ -525,5 +527,5 @@ public class TestBasicPersistence {
         public boolean isWrapperFor(Class<?> iface) throws SQLException { return false; }
         public Logger getParentLogger() { return null; }
     }
-    
+
 }

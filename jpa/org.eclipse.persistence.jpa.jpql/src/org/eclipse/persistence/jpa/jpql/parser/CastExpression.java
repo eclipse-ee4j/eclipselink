@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -75,6 +75,7 @@ public final class CastExpression extends AbstractSingleEncapsulatedExpression {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void accept(ExpressionVisitor visitor) {
         acceptUnknownVisitor(visitor);
     }
@@ -126,6 +127,7 @@ public final class CastExpression extends AbstractSingleEncapsulatedExpression {
     /**
      * {@inheritDoc}
      */
+    @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(CastExpressionBNF.ID);
     }

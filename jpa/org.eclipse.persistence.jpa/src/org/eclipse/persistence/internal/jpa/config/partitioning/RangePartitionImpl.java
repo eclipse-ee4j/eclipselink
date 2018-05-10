@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2018  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -28,16 +28,19 @@ public class RangePartitionImpl extends MetadataImpl<RangePartitionMetadata> imp
         super(new RangePartitionMetadata());
     }
 
+    @Override
     public RangePartition setConnectionPool(String connectionPool) {
         getMetadata().setConnectionPool(connectionPool);
         return this;
     }
 
+    @Override
     public RangePartition setEndValue(String endValue) {
         getMetadata().setEndValue(endValue);
         return this;
     }
 
+    @Override
     public RangePartition setStartValue(String startValue) {
         getMetadata().setStartValue(startValue);
         return this;

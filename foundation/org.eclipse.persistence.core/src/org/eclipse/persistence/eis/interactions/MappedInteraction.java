@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -122,6 +122,7 @@ public class MappedInteraction extends EISInteraction {
      * Create a mapped input record for this interaction.
      * Populate the data into the record from this interaction's arguments.
      */
+    @Override
     public Record createInputRecord(EISAccessor accessor) {
         try {
             MappedRecord record = null;
@@ -170,6 +171,7 @@ public class MappedInteraction extends EISInteraction {
     /**
      * Build a database row from the record returned from the interaction.
      */
+    @Override
     public AbstractRecord buildRow(Record record, EISAccessor accessor) {
         if (record == null) {
             return  null;

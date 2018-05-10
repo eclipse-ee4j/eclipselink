@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -45,6 +45,7 @@ public class ConstructorNode extends Node implements AliasableNode {
      * INTERNAL
      * Apply this node to the passed query
      */
+    @Override
     public void applyToQuery(ObjectLevelReadQuery theQuery, GenerationContext context) {
         if (theQuery instanceof ReportQuery) {
             SelectGenerationContext selectContext = (SelectGenerationContext)context;
@@ -67,6 +68,7 @@ public class ConstructorNode extends Node implements AliasableNode {
      * INTERNAL
      * Validate node and calculate its type.
      */
+    @Override
     public void validate(ParseTreeContext context) {
         for (Iterator i = constructorItems.iterator(); i.hasNext();) {
             Node item = (Node)i.next();
@@ -92,6 +94,7 @@ public class ConstructorNode extends Node implements AliasableNode {
      * INTERNAL
      * Is this node a ConstructorNode
      */
+    @Override
     public boolean isConstructorNode() {
         return true;
     }
@@ -153,6 +156,7 @@ public class ConstructorNode extends Node implements AliasableNode {
      * INTERNAL
      * Get the string representation of this node.
      */
+    @Override
     public String getAsString() {
         StringBuilder repr = new StringBuilder();
         repr.append("NEW ").append(className);
@@ -168,6 +172,7 @@ public class ConstructorNode extends Node implements AliasableNode {
         return repr.toString();
     }
 
+    @Override
     public boolean isAliasableNode(){
         return true;
     }

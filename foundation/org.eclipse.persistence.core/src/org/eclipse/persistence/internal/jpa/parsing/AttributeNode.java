@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -65,6 +65,7 @@ public class AttributeNode extends Node {
      * the base variable as left child node and the attribute as right child
      * node.
      */
+    @Override
     public Node qualifyAttributeAccess(ParseTreeContext context) {
         return (Node)context.getNodeFactory().newQualifiedAttribute(
             getLine(), getColumn(), context.getBaseVariable(), name);
@@ -74,6 +75,7 @@ public class AttributeNode extends Node {
      * INTERNAL
      * Validate the current node and calculates its type.
      */
+    @Override
     public void validate(ParseTreeContext context) {
         // The type is calculated in the parent DotNode.
     }
@@ -99,6 +101,7 @@ public class AttributeNode extends Node {
     }
 
     /** */
+    @Override
     public Expression addToExpression(Expression parentExpression, GenerationContext context) {
         if (isCollectionAttribute()) {
             //special case for NOT MEMBER OF
@@ -127,6 +130,7 @@ public class AttributeNode extends Node {
      * INTERNAL
      * Is this node an AttributeNode
      */
+    @Override
     public boolean isAttributeNode() {
         return true;
     }
@@ -188,6 +192,7 @@ public class AttributeNode extends Node {
     /**
      * resolveMapping: Answer the mapping which corresponds to my variableName.
      */
+    @Override
     public DatabaseMapping resolveMapping(GenerationContext context, Class ownerClass) {
         ClassDescriptor descriptor = context.getSession().getDescriptor(ownerClass);
         return (descriptor==null) ? null : descriptor.getObjectBuilder().getMappingForAttributeName(getAttributeName());
@@ -197,6 +202,7 @@ public class AttributeNode extends Node {
      * resolveClass: Answer the class for the mapping associated with the my variableName in the ownerClass.
      * Answer null if the node represents a mapping that doesn't exist
      */
+    @Override
     public Class resolveClass(GenerationContext context, Class ownerClass) {
         DatabaseMapping mapping;
 
@@ -215,6 +221,7 @@ public class AttributeNode extends Node {
         //return mapping.getReferenceDescriptor().getJavaClass();
     }
 
+    @Override
     public String toString(int indent) {
         StringBuilder buffer = new StringBuilder();
         toStringIndent(indent, buffer);
@@ -226,6 +233,7 @@ public class AttributeNode extends Node {
      * INTERNAL
      * Get the string representation of this node.
      */
+    @Override
     public String getAsString() {
         return getAttributeName();
     }

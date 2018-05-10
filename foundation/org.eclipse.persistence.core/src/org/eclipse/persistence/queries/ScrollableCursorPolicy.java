@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -79,6 +79,7 @@ public class ScrollableCursorPolicy extends CursorPolicy {
      * INTERNAL:
      * Execute the cursored select and build the stream.
      */
+    @Override
     public Object execute() {
         DatabaseCall call = getQuery().getQueryMechanism().cursorSelectAllRows();
 
@@ -109,6 +110,7 @@ public class ScrollableCursorPolicy extends CursorPolicy {
         return resultSetType;
     }
 
+    @Override
     public boolean isScrollableCursorPolicy() {
         return true;
     }
@@ -117,6 +119,7 @@ public class ScrollableCursorPolicy extends CursorPolicy {
      * INTERNAL:
      * Execute the cursored select and build the stream.
      */
+    @Override
     public Object remoteExecute() {
         return ((DistributedSession)getQuery().getSession()).cursorSelectObjects(this);
     }

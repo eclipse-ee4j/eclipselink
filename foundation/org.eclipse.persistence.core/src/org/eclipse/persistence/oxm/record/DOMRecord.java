@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -160,6 +160,7 @@ public class DOMRecord extends XMLRecord implements TransformationRecord {
      * PUBLIC:
      * Get the local name of the context root element.
      */
+    @Override
     public String getLocalName() {
         String localName = getDOM().getLocalName();
         if (null != localName) {
@@ -172,6 +173,7 @@ public class DOMRecord extends XMLRecord implements TransformationRecord {
      * PUBLIC:
      *  Get the namespace URI for the context root element.
      */
+    @Override
     public String getNamespaceURI() {
         return getDOM().getNamespaceURI();
     }
@@ -201,6 +203,7 @@ public class DOMRecord extends XMLRecord implements TransformationRecord {
      * INTERNAL:
      * Add the field-value pair to the document.
      */
+    @Override
     public void add(DatabaseField key, Object value) {
         // Value may be a direct value, nested record, or collection of values.
         Object nodeValue = convertToNodeValue(value);
@@ -236,6 +239,7 @@ public class DOMRecord extends XMLRecord implements TransformationRecord {
      * PUBLIC:
      * Clear the sub-nodes of the DOM.
      */
+    @Override
     public void clear() {
         if(getDOM() instanceof Element) {
             String domName = ((Element)getDOM()).getTagName();
@@ -248,6 +252,7 @@ public class DOMRecord extends XMLRecord implements TransformationRecord {
      * INTERNAL:
      * Clone the row and its values.
      */
+    @Override
     public DOMRecord clone() {
         DOMRecord clone = (DOMRecord)super.clone();
         if (clone != null) {
@@ -286,6 +291,7 @@ public class DOMRecord extends XMLRecord implements TransformationRecord {
      * PUBLIC:
      * Return the document.
      */
+    @Override
     public Document getDocument() {
         return getDOM().getOwnerDocument();
     }
@@ -294,6 +300,7 @@ public class DOMRecord extends XMLRecord implements TransformationRecord {
      * INTERNAL:
      * Check if the field is contained in the row.
      */
+    @Override
     public boolean containsKey(DatabaseField key) {
         XMLField xmlField = convertToXMLField(key);
         NodeList nodeList = UnmarshalXPathEngine.getInstance().selectNodes(dom, xmlField, xmlField.getNamespaceResolver());
@@ -304,10 +311,12 @@ public class DOMRecord extends XMLRecord implements TransformationRecord {
      * PUBLIC:
      * Check if the value is contained in the row.
      */
+    @Override
     public boolean contains(Object value) {
         return values().contains(value);
     }
 
+    @Override
     public Object get(DatabaseField key) {
         Object value = getIndicatingNoEntry(key);
         if(value == noEntry) {
@@ -319,6 +328,7 @@ public class DOMRecord extends XMLRecord implements TransformationRecord {
      * INTERNAL:
      * Given a DatabaseField return the corresponding value from the document
      */
+    @Override
     public Object getIndicatingNoEntry(DatabaseField key) {
         return getIndicatingNoEntry(key, false, false);
     }
@@ -374,6 +384,7 @@ public class DOMRecord extends XMLRecord implements TransformationRecord {
      * INTERNAL:
      * Retrieve the value for the field name.
      */
+    @Override
     public Object getValues(String key) {
         Object value = getValuesIndicatingNoEntry(new XMLField(key));
 
@@ -388,6 +399,7 @@ public class DOMRecord extends XMLRecord implements TransformationRecord {
      * INTERNAL:
      * Given a DatabaseField, return the corresponding values from the document
      */
+    @Override
     public Object getValues(DatabaseField key) {
         return this.getValues(key, null);
     }
@@ -555,6 +567,7 @@ public class DOMRecord extends XMLRecord implements TransformationRecord {
     * PUBLIC:
     * Return the DOM.
     */
+    @Override
     public Node getDOM() {
         return dom;
     }
@@ -564,6 +577,7 @@ public class DOMRecord extends XMLRecord implements TransformationRecord {
     * Set the field value into the DOM.
     * The field name must be a valid simple XPath expression.
     */
+    @Override
     public Object put(DatabaseField key, Object value) {
         // Value may be a direct value, nested record, or collection of values.
         XMLField field = convertToXMLField(key);
@@ -602,6 +616,7 @@ public class DOMRecord extends XMLRecord implements TransformationRecord {
         return replaced;
     }
 
+    @Override
     public Object put(Object key, Object value) throws ValidationException {
         if (key instanceof String) {
             return put((String)key, value);
@@ -618,6 +633,7 @@ public class DOMRecord extends XMLRecord implements TransformationRecord {
      * INTERNAL:
      * Remove the field key from the row.
      */
+    @Override
     public Object remove(DatabaseField key) {
         return XPathEngine.getInstance().remove(convertToXMLField(key), dom, true);
     }
@@ -626,6 +642,7 @@ public class DOMRecord extends XMLRecord implements TransformationRecord {
      * INTERNAL:
      * replaces the value at index with value
      */
+    @Override
     public void replaceAt(Object value, int index) {
         throw XMLMarshalException.operationNotSupported("replaceAt(Object value, int index)");
     }
@@ -633,6 +650,7 @@ public class DOMRecord extends XMLRecord implements TransformationRecord {
     /**
      * PUBLIC:
      */
+    @Override
     public Set entrySet() {
         int size = this.size();
         Map tempMap = new HashMap(size);
@@ -648,6 +666,7 @@ public class DOMRecord extends XMLRecord implements TransformationRecord {
      * INTERNAL:
      * Setting fields vector will not update the document so this is not supported
      */
+    @Override
     protected void setFields(Vector fields) throws XMLMarshalException {
         throw XMLMarshalException.operationNotSupported("setField(Vector fields)");
     }
@@ -658,6 +677,7 @@ public class DOMRecord extends XMLRecord implements TransformationRecord {
      * is called from some places such as sdk call used in the descriptor to define operation not supported,
      * may also be called from toplin in some places.
      */
+    @Override
     public Vector getFields() {
         int length = getDOM().getChildNodes().getLength();
         Node nextNode = null;
@@ -678,6 +698,7 @@ public class DOMRecord extends XMLRecord implements TransformationRecord {
      * is called from some places such as sdk call used in the descriptor to define operation not supported,
      * may also be called from TopLink in some places.
      */
+    @Override
     public Vector getValues() {
         int length = getDOM().getChildNodes().getLength();
         Node nextNode = null;
@@ -696,6 +717,7 @@ public class DOMRecord extends XMLRecord implements TransformationRecord {
      * INTERNAL:
      * Setting values vector will not update the document so this is not supported
      */
+    @Override
     protected void setValues(Vector values) throws XMLMarshalException {
         throw XMLMarshalException.operationNotSupported("setValues(Vector values)");
     }
@@ -720,6 +742,7 @@ public class DOMRecord extends XMLRecord implements TransformationRecord {
      * INTERNAL:
      * Print the dom XML string.
      */
+    @Override
     public String toString() {
         StringWriter writer = new StringWriter();
         writer.write(Helper.getShortClassName(getClass()));
@@ -733,6 +756,7 @@ public class DOMRecord extends XMLRecord implements TransformationRecord {
      * PUBLIC:
      * Return the set of element names from the DOM.
      */
+    @Override
     public Set keySet() {
         int length = getDOM().getChildNodes().getLength();
         HashSet keys = new HashSet(length);
@@ -746,6 +770,7 @@ public class DOMRecord extends XMLRecord implements TransformationRecord {
      * PUBLIC:
      * Return the collection of element values from the DOM.
      */
+    @Override
     public Collection values() {
         int length = getDOM().getChildNodes().getLength();
         Vector values = new Vector(length);
@@ -758,6 +783,7 @@ public class DOMRecord extends XMLRecord implements TransformationRecord {
     /**
      * Return the number of elements in the DOM.
      */
+    @Override
     public int size() {
         return getDOM().getAttributes().getLength() + getDOM().getChildNodes().getLength();
     }
@@ -800,6 +826,7 @@ public class DOMRecord extends XMLRecord implements TransformationRecord {
         }
     }
 
+    @Override
     public void setSession(AbstractSession session) {
         this.session = session;
         if (session != null && session.getDatasourceLogin() instanceof XMLLogin) {
@@ -819,6 +846,7 @@ public class DOMRecord extends XMLRecord implements TransformationRecord {
     /**
      * Return the XML string representation of the DOM.
      */
+    @Override
     public String transformToXML() {
         StringWriter writer = new StringWriter();
         transformToWriter(writer);
@@ -833,6 +861,7 @@ public class DOMRecord extends XMLRecord implements TransformationRecord {
         xmlTransformer.transform(this.getDOM(), writer);
     }
 
+    @Override
     public String resolveNamespacePrefix(String prefix) {
         XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
         return xmlPlatform.resolveNamespacePrefix(currentNode, prefix);

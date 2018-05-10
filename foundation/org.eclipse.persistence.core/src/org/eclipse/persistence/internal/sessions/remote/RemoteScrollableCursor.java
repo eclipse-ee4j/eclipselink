@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -45,6 +45,7 @@ public class RemoteScrollableCursor extends ScrollableCursor {
     /**
      * Moves the cursor to the given row number in the result set
      */
+    @Override
     public boolean absolute(int rows) throws DatabaseException {
         clearNextAndPrevious();
         return ((DistributedSession)getSession()).getRemoteConnection().scrollableCursorAbsolute(getID(), rows);
@@ -53,6 +54,7 @@ public class RemoteScrollableCursor extends ScrollableCursor {
     /**
      * Moves the cursor to the end of the result set, just after the last row.
      */
+    @Override
     public void afterLast() throws DatabaseException {
         clearNextAndPrevious();
         ((DistributedSession)getSession()).getRemoteConnection().scrollableCursorAfterLast(getID());
@@ -61,6 +63,7 @@ public class RemoteScrollableCursor extends ScrollableCursor {
     /**
      * Moves the cursor to the front of the result set, just before the first row
      */
+    @Override
     public void beforeFirst() throws DatabaseException {
         clearNextAndPrevious();
         ((DistributedSession)getSession()).getRemoteConnection().scrollableCursorBeforeFirst(getID());
@@ -70,6 +73,7 @@ public class RemoteScrollableCursor extends ScrollableCursor {
      * Close the wrapped cursored stream
      * This should be performed whenever the user has finished with the stream.
      */
+    @Override
     public void close() throws DatabaseException {
         if (isClosed()) {
             return;
@@ -83,6 +87,7 @@ public class RemoteScrollableCursor extends ScrollableCursor {
     /**
      * Retrieves the current row index number
      */
+    @Override
     public int currentIndex() throws DatabaseException {
         return ((DistributedSession)getSession()).getRemoteConnection().scrollableCursorCurrentIndex(getID());
     }
@@ -90,6 +95,7 @@ public class RemoteScrollableCursor extends ScrollableCursor {
     /**
      * Moves the cursor to the first row in the result set
      */
+    @Override
     public boolean first() throws DatabaseException {
         clearNextAndPrevious();
         return ((DistributedSession)getSession()).getRemoteConnection().scrollableCursorFirst(getID());
@@ -99,6 +105,7 @@ public class RemoteScrollableCursor extends ScrollableCursor {
      * INTERNAL:
      * Retreive the size of the wrapped cursored stream.
      */
+    @Override
     protected int getCursorSize() {
         return (((DistributedSession)getSession()).getRemoteConnection()).scrollableCursorSize(getID());
     }
@@ -114,6 +121,7 @@ public class RemoteScrollableCursor extends ScrollableCursor {
     /**
      * Indicates whether the cursor is after the last row in the result set.
      */
+    @Override
     public boolean isAfterLast() throws DatabaseException {
         return ((DistributedSession)getSession()).getRemoteConnection().scrollableCursorIsAfterLast(getID());
     }
@@ -121,6 +129,7 @@ public class RemoteScrollableCursor extends ScrollableCursor {
     /**
      * Indicates whether the cursor is before the first row in the result set.
      */
+    @Override
     public boolean isBeforeFirst() throws DatabaseException {
         return ((DistributedSession)getSession()).getRemoteConnection().scrollableCursorIsBeforeFirst(getID());
     }
@@ -129,6 +138,7 @@ public class RemoteScrollableCursor extends ScrollableCursor {
      * INTERNAL:
      * Return if the stream is closed.
      */
+    @Override
     public boolean isClosed() {
         return isClosed;
     }
@@ -136,6 +146,7 @@ public class RemoteScrollableCursor extends ScrollableCursor {
     /**
      * Indicates whether the cursor is on the first row of the result set.
      */
+    @Override
     public boolean isFirst() throws DatabaseException {
         return ((DistributedSession)getSession()).getRemoteConnection().scrollableCursorIsFirst(getID());
     }
@@ -143,6 +154,7 @@ public class RemoteScrollableCursor extends ScrollableCursor {
     /**
      * Indicates whether the cursor is on the last row of the result set.
      */
+    @Override
     public boolean isLast() throws DatabaseException {
         return ((DistributedSession)getSession()).getRemoteConnection().scrollableCursorIsLast(getID());
     }
@@ -150,6 +162,7 @@ public class RemoteScrollableCursor extends ScrollableCursor {
     /**
      * Moves the cursor to the last row in the result set
      */
+    @Override
     public boolean last() throws DatabaseException {
         clearNextAndPrevious();
         return ((DistributedSession)getSession()).getRemoteConnection().scrollableCursorLast(getID());
@@ -160,6 +173,7 @@ public class RemoteScrollableCursor extends ScrollableCursor {
      * Attempting to move beyond the first/last row in the result set positions the cursor before/after the
      * the first/last row
      */
+    @Override
     public boolean relative(int rows) throws DatabaseException {
         clearNextAndPrevious();
         return ((DistributedSession)getSession()).getRemoteConnection().scrollableCursorRelative(getID(), rows);
@@ -175,6 +189,7 @@ public class RemoteScrollableCursor extends ScrollableCursor {
      * @return - next object in stream
      * @exception - throws exception if read pass end of stream
      */
+    @Override
     protected Object retrieveNextObject() throws DatabaseException, QueryException {
         return ((DistributedSession)getSession()).getRemoteConnection().scrollableCursorNextObject(getID(), getPolicy().getQuery(), (DistributedSession)getSession());
     }
@@ -185,6 +200,7 @@ public class RemoteScrollableCursor extends ScrollableCursor {
      * Read the previous row from the result set. It is used solely
      * for scrollable cursor support.
      */
+    @Override
     protected Object retrievePreviousObject() throws DatabaseException {
         return ((DistributedSession)getSession()).getRemoteConnection().scrollableCursorPreviousObject(getID(), getPolicy().getQuery(), (DistributedSession)getSession());
     }

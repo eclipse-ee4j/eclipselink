@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -512,6 +512,7 @@ public class ConnectionPool {
      * INTERNAL:
      * return a string representation of this connection pool
      */
+    @Override
     public String toString() {
         Object[] args = { Integer.valueOf(getMinNumberOfConnections()), Integer.valueOf(getMaxNumberOfConnections()) };
         return Helper.getShortClassName(getClass()) + ToStringLocalization.buildMessage("min_max", args);

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -21,7 +21,15 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
-import org.eclipse.persistence.jaxb.javamodel.*;
+import org.eclipse.persistence.jaxb.javamodel.AnnotationProxy;
+import org.eclipse.persistence.jaxb.javamodel.JavaAnnotation;
+import org.eclipse.persistence.jaxb.javamodel.JavaClass;
+import org.eclipse.persistence.jaxb.javamodel.JavaClassInstanceOf;
+import org.eclipse.persistence.jaxb.javamodel.JavaConstructor;
+import org.eclipse.persistence.jaxb.javamodel.JavaField;
+import org.eclipse.persistence.jaxb.javamodel.JavaMethod;
+import org.eclipse.persistence.jaxb.javamodel.JavaModel;
+import org.eclipse.persistence.jaxb.javamodel.JavaPackage;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaAnnotationImpl;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlRegistry;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlRegistry.XmlElementDecl;
@@ -62,7 +70,7 @@ public class OXMObjectFactoryImpl implements JavaClass {
         // Build annotations and methods
         List<XmlElementDecl> decls = this.registry.getXmlElementDecl();
         for (Iterator<XmlElementDecl> iterator = decls.iterator(); iterator.hasNext();) {
-            XmlElementDecl xmlElementDecl = (XmlElementDecl) iterator.next();
+            XmlElementDecl xmlElementDecl = iterator.next();
 
             String paramType = xmlElementDecl.getType();
 
@@ -81,74 +89,91 @@ public class OXMObjectFactoryImpl implements JavaClass {
         }
     }
 
+    @Override
     public Collection<JavaClass> getActualTypeArguments() {
         return new ArrayList<JavaClass>();
     }
 
+    @Override
     public JavaClass getComponentType() {
         return null;
     }
 
+    @Override
     public JavaConstructor getConstructor(JavaClass[] parameterTypes) {
         return new OXMJavaConstructorImpl(this);
     }
 
+    @Override
     public Collection<JavaConstructor> getConstructors() {
         ArrayList<JavaConstructor> constructors = new ArrayList<JavaConstructor>(1);
         constructors.add(new OXMJavaConstructorImpl(this));
         return constructors;
     }
 
+    @Override
     public Collection<JavaClass> getDeclaredClasses() {
         return new ArrayList<JavaClass>();
     }
 
+    @Override
     public JavaConstructor getDeclaredConstructor(JavaClass[] parameterTypes) {
         return new OXMJavaConstructorImpl(this);
     }
 
+    @Override
     public Collection<JavaConstructor> getDeclaredConstructors() {
         ArrayList<JavaConstructor> constructors = new ArrayList<JavaConstructor>(1);
         constructors.add(new OXMJavaConstructorImpl(this));
         return constructors;
     }
 
+    @Override
     public JavaField getDeclaredField(String arg0) {
         return null;
     }
 
+    @Override
     public Collection<JavaField> getDeclaredFields() {
         return null;
     }
 
+    @Override
     public JavaMethod getDeclaredMethod(String arg0, JavaClass[] arg1) {
         return null;
     }
 
+    @Override
     public Collection<JavaMethod> getDeclaredMethods() {
         return methods;
     }
 
+    @Override
     public JavaMethod getMethod(String arg0, JavaClass[] arg1) {
         return null;
     }
 
+    @Override
     public Collection<JavaMethod> getMethods() {
         return methods;
     }
 
+    @Override
     public int getModifiers() {
         return 0;
     }
 
+    @Override
     public String getName() {
         return getQualifiedName();
     }
 
+    @Override
     public JavaPackage getPackage() {
         return new OXMJavaPackageImpl(getPackageName());
     }
 
+    @Override
     public String getPackageName() {
         int lastDotIndex = getQualifiedName().lastIndexOf(DOT);
         if (lastDotIndex == -1) {
@@ -158,82 +183,102 @@ public class OXMObjectFactoryImpl implements JavaClass {
         return getQualifiedName().substring(0, lastDotIndex);
     }
 
+    @Override
     public String getQualifiedName() {
         return this.registry.getName();
     }
 
+    @Override
     public String getRawName() {
         return getQualifiedName();
     }
 
+    @Override
     public JavaClass getSuperclass() {
         return this.javaModel.getClass(JAVA_LANG_OBJECT);
     }
 
+    @Override
     public Type[] getGenericInterfaces() {
         return new Type[0];
     }
 
+    @Override
     public Type getGenericSuperclass() {
         return null;
     }
 
+    @Override
     public boolean hasActualTypeArguments() {
         return false;
     }
 
+    @Override
     public boolean isAbstract() {
         return false;
     }
 
+    @Override
     public boolean isAnnotation() {
         return false;
     }
 
+    @Override
     public boolean isArray() {
         return false;
     }
 
+    @Override
     public boolean isAssignableFrom(JavaClass arg0) {
         return false;
     }
 
+    @Override
     public boolean isEnum() {
         return false;
     }
 
+    @Override
     public boolean isFinal() {
         return false;
     }
 
+    @Override
     public boolean isInterface() {
         return false;
     }
 
+    @Override
     public boolean isMemberClass() {
         return false;
     }
 
+    @Override
     public boolean isPrimitive() {
         return false;
     }
 
+    @Override
     public boolean isPrivate() {
         return false;
     }
 
+    @Override
     public boolean isProtected() {
         return false;
     }
 
+    @Override
     public boolean isPublic() {
         return true;
     }
 
+    @Override
     public boolean isStatic() {
         return false;
     }
 
+    @Override
     public boolean isSynthetic() {
         return false;
     }
@@ -243,18 +288,22 @@ public class OXMObjectFactoryImpl implements JavaClass {
         return JavaClassInstanceOf.OXM_OBJECT_FACTORY_IMPL;
     }
 
+    @Override
     public JavaAnnotation getAnnotation(JavaClass arg0) {
         return null;
     }
 
+    @Override
     public Collection<JavaAnnotation> getAnnotations() {
         return null;
     }
 
+    @Override
     public JavaAnnotation getDeclaredAnnotation(JavaClass arg0) {
         return null;
     }
 
+    @Override
     public Collection<JavaAnnotation> getDeclaredAnnotations() {
         return null;
     }
@@ -268,7 +317,7 @@ public class OXMObjectFactoryImpl implements JavaClass {
     }
 
     private static String EMPTY_STRING = "";
-    private static String DOT = ".";
+    private static char DOT = '.';
     private static String JAVA_LANG_OBJECT = "java.lang.Object";
     private static String NAME = "name";
     private static String NAMESPACE = "namespace";

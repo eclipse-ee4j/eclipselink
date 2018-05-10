@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -47,6 +47,7 @@ public class ClassInstanceConverter implements Converter {
      * INTERNAL:
      * Convert the class name to a class, then create an instance of the class.
      */
+    @Override
     public Object convertDataValueToObjectValue(Object fieldValue, Session session) {
         Object attributeValue = null;
         if (fieldValue != null) {
@@ -73,6 +74,7 @@ public class ClassInstanceConverter implements Converter {
      *  INTERNAL:
      *  Convert to the field class.
      */
+    @Override
     public Object convertObjectValueToDataValue(Object attributeValue, Session session) {
         if (attributeValue == null) {
             return null;
@@ -84,6 +86,7 @@ public class ClassInstanceConverter implements Converter {
      * INTERNAL:
      * Set the mapping.
      */
+    @Override
     public void initialize(DatabaseMapping mapping, Session session) {
         this.mapping = mapping;
         // CR#... Mapping must also have the field classification.
@@ -111,6 +114,7 @@ public class ClassInstanceConverter implements Converter {
      * a value that can have its' parts changed without being replaced,
      * then it must return false, serialization can be non-atomic.
      */
+    @Override
     public boolean isMutable() {
         return false;
     }

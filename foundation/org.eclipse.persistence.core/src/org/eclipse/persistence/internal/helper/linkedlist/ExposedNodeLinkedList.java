@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -43,79 +43,98 @@ public class ExposedNodeLinkedList implements List {
     }
 
     // Bunch of List methods not currently implemented.
+    @Override
     public Object[] toArray(Object[] array) {
         throw ValidationException.operationNotSupported("toArray");
     }
 
+    @Override
     public Object[] toArray() {
         throw ValidationException.operationNotSupported("toArray");
     }
 
+    @Override
     public Object set(int index, Object value) {
         throw ValidationException.operationNotSupported("set");
     }
 
+    @Override
     public ListIterator listIterator(int index) {
         throw ValidationException.operationNotSupported("listIterator");
     }
 
+    @Override
     public ListIterator listIterator() {
         throw ValidationException.operationNotSupported("listIterator");
     }
 
+    @Override
     public Iterator iterator() {
         throw ValidationException.operationNotSupported("iterator");
     }
 
+    @Override
     public List subList(int start, int end) {
         throw ValidationException.operationNotSupported("subList");
     }
 
+    @Override
     public boolean retainAll(Collection collection) {
         throw ValidationException.operationNotSupported("retainAll");
     }
 
+    @Override
     public boolean removeAll(Collection collection) {
         throw ValidationException.operationNotSupported("removeAll");
     }
 
+    @Override
     public boolean containsAll(Collection collection) {
         throw ValidationException.operationNotSupported("containsAll");
     }
 
+    @Override
     public boolean addAll(Collection collection) {
         throw ValidationException.operationNotSupported("addAll");
     }
 
+    @Override
     public boolean addAll(int index, Collection collection) {
         throw ValidationException.operationNotSupported("addAll");
     }
 
+    @Override
     public boolean remove(Object object) {
         throw ValidationException.operationNotSupported("remove");
     }
 
+    @Override
     public boolean add(Object object) {
         addLast(object);
         return true;
     }
 
+    @Override
     public int lastIndexOf(Object object) {
         throw ValidationException.operationNotSupported("lastIndexOf");
     }
 
+    @Override
     public void add(int index, Object object) {
         throw ValidationException.operationNotSupported("add");
     }
 
+    @Override
     public Object remove(int index) {
         throw ValidationException.operationNotSupported("remove");
     }
 
+    @Override
     public Object get(int index) {
         throw ValidationException.operationNotSupported("get");
     }
 
+    @Override
     public boolean isEmpty() {
         return size() == 0;
     }
@@ -202,6 +221,7 @@ public class ExposedNodeLinkedList implements List {
      * @param o contents whose presence in this list is to be tested.
      * @return <tt>true</tt> if this list contains the specified contents.
      */
+    @Override
     public boolean contains(Object o) {
         return indexOf(o) != -1;
     }
@@ -211,6 +231,7 @@ public class ExposedNodeLinkedList implements List {
      *
      * @return the number of contents in this list.
      */
+    @Override
     public int size() {
         return size;
     }
@@ -218,6 +239,7 @@ public class ExposedNodeLinkedList implements List {
     /**
      * Removes all of the contents from this list.
      */
+    @Override
     public void clear() {
         header.next = header;
         header.previous = header;
@@ -236,6 +258,7 @@ public class ExposedNodeLinkedList implements List {
      *            specified contents, or -1 if the list does not contain this
      *            contents.
      */
+    @Override
     public int indexOf(Object o) {
         int index = 0;
         if (o == null) {

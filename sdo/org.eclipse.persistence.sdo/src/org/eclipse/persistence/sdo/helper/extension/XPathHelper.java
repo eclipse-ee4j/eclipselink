@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -15,13 +15,15 @@ package org.eclipse.persistence.sdo.helper.extension;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import commonj.sdo.DataObject;
-import commonj.sdo.Property;
+
+import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.helper.SDOXMLHelper;
 import org.eclipse.persistence.sdo.helper.XPathEngine;
-import org.eclipse.persistence.exceptions.ConversionException;
+
+import commonj.sdo.DataObject;
+import commonj.sdo.Property;
 
 /**
  * This singleton provides support for querying DataObjects
@@ -543,8 +545,8 @@ public class XPathHelper {
             int openQIdx = value.indexOf('\'');
             int closeQIdx = value.lastIndexOf('\'');
             if (openQIdx == -1 && closeQIdx == -1) {
-                openQIdx = value.indexOf("\"");
-                closeQIdx = value.lastIndexOf("\"");
+                openQIdx = value.indexOf('\"');
+                closeQIdx = value.lastIndexOf('\"');
             }
             if (openQIdx != -1 && closeQIdx != -1 && openQIdx < closeQIdx) {
                 value = value.substring(openQIdx + 1, closeQIdx);
@@ -633,6 +635,7 @@ public class XPathHelper {
             return false;
         }
 
+        @Override
         public String toString() {
             return "QueryPart {" + propertyName + " " + getStringFromOperand(relOperand) + " " + queryValue + "}";
         }

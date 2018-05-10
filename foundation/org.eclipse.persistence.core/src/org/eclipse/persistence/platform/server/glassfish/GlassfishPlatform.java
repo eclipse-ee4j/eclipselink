@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -89,6 +89,7 @@ public class GlassfishPlatform extends JMXServerPlatformBase implements JMXEnabl
      * @see ServerPlatformBase#disableJTA()
      * @see ServerPlatformBase#initializeExternalTransactionController()
      */
+    @Override
     public Class getExternalTransactionControllerClass() {
         if (externalTransactionControllerClass == null) {
             // JTA 1.1 exixts since Glassfish 3. Check JTA 1.1 availability to set proper JTa transaction controller.
@@ -98,11 +99,13 @@ public class GlassfishPlatform extends JMXServerPlatformBase implements JMXEnabl
         return externalTransactionControllerClass;
     }
 
+    @Override
     public java.sql.Connection unwrapConnection(final Connection connection)  {
         Connection unwrappedConnection;
 
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
             unwrappedConnection = AccessController.doPrivileged(new PrivilegedAction<Connection>() {
+                @Override
                 public Connection run() {
                     return unwrapGlassFishConnectionHelper(connection);
                 }
@@ -139,6 +142,7 @@ public class GlassfishPlatform extends JMXServerPlatformBase implements JMXEnabl
         return unwrappedConnection;
     }
 
+    @Override
     public SessionLog getServerLog() {
         return  new JavaLog();
     }
@@ -162,6 +166,7 @@ public class GlassfishPlatform extends JMXServerPlatformBase implements JMXEnabl
      * @see #disableRuntimeServices()
      * @see #registerMBean()
      */
+    @Override
     public void prepareServerSpecificServicesMBean() {
         // No check for an existing cached MBean - we will replace it if it exists
         if(getDatabaseSession() != null && shouldRegisterRuntimeBean) {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2018  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -40,18 +40,21 @@ public class EmbeddedImpl extends AbstractEmbeddedMappingImpl<EmbeddedAccessor, 
         getMetadata().setConverts(new ArrayList<ConvertMetadata>());
     }
 
+    @Override
     public AssociationOverride addAssociationOverride() {
         AssociationOverrideImpl override = new AssociationOverrideImpl();
         getMetadata().getAssociationOverrides().add(override.getMetadata());
         return override;
     }
 
+    @Override
     public Convert addConvert() {
         ConvertImpl convert = new ConvertImpl();
         getMetadata().getConverts().add(convert.getMetadata());
         return convert;
     }
 
+    @Override
     public Field setField() {
         FieldImpl field = new FieldImpl();
         getMetadata().setField(field.getMetadata());

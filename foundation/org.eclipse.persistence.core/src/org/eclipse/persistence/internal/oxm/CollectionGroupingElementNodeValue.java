@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -32,33 +32,40 @@ public class CollectionGroupingElementNodeValue extends NodeValue {
         this.containerValue = c;
     }
 
+    @Override
     public boolean isOwningNode(XPathFragment xPathFragment) {
         return true;
     }
 
+    @Override
     public boolean isMarshalNodeValue() {
         return false;
     }
 
+    @Override
     public boolean isWrapperNodeValue() {
         return true;
     }
 
+    @Override
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord) {
         Object collection = unmarshalRecord.getContainerInstance(this.containerValue, false);
         endElement(xPathFragment, unmarshalRecord, collection);
     }
 
+    @Override
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Object collection) {
         if (collection == null && !unmarshalRecord.isNil()) {
             unmarshalRecord.setContainerInstance(this.containerValue.getIndex(), this.containerValue.getContainerInstance());
         }
     }
 
+    @Override
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver) {
         return false;
     }
 
+    @Override
     public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object objectValue, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         return false;
     }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -45,6 +45,7 @@ public class SequenceObjectDefinition extends SequenceDefinition {
      * INTERNAL:
      * Return the SQL required to create the Oracle sequence object.
      */
+    @Override
     public Writer buildCreationWriter(AbstractSession session, Writer writer) {
         try {
             // startWith value calculated using the initial value and increment.
@@ -62,6 +63,7 @@ public class SequenceObjectDefinition extends SequenceDefinition {
      * INTERNAL:
      * Return the SQL required to drop the Oracle sequence object.
      */
+    @Override
     public Writer buildDeletionWriter(AbstractSession session, Writer writer) {
         try {
             session.getPlatform().buildSequenceObjectDeletionWriter(writer, getFullName());
@@ -88,6 +90,7 @@ public class SequenceObjectDefinition extends SequenceDefinition {
      * INTERNAL:
      * Check if the sequence object already exists, in which case dont create it.
      */
+    @Override
     public boolean checkIfExist(AbstractSession session) throws DatabaseException {
         boolean isConnected = sequence.isConnected();
         // temporary connect sequence if it's not connected.
@@ -123,6 +126,7 @@ public class SequenceObjectDefinition extends SequenceDefinition {
      * INTERNAL:
      * Indicates whether alterIncrement is supported
      */
+    @Override
     public boolean isAlterSupported(AbstractSession session) {
         return session.getPlatform().isAlterSequenceObjectSupported();
     }
@@ -132,6 +136,7 @@ public class SequenceObjectDefinition extends SequenceDefinition {
      * Execute the SQL required to alter sequence increment.
      * Assume that the sequence exists.
      */
+    @Override
     public void alterOnDatabase(AbstractSession session) throws EclipseLinkException {
         // Bug# 242120: Let the DatabaseException propagate and do not call
         // createOnDatabase(session) which would cause an infinite loop on a JTA connection
@@ -156,6 +161,7 @@ public class SequenceObjectDefinition extends SequenceDefinition {
      * Most major databases support a creator name scope.
      * This means whenever the database object is referenced, it must be qualified.
      */
+    @Override
     public String getFullName() {
         return sequence.getQualified(getName());
     }

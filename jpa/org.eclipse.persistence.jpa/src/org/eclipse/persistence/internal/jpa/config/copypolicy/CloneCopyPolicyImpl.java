@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2018  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -28,11 +28,13 @@ public class CloneCopyPolicyImpl extends MetadataImpl<CloneCopyPolicyMetadata> i
         super(new CloneCopyPolicyMetadata());
     }
 
+    @Override
     public CloneCopyPolicy setMethodName(String methodName) {
         getMetadata().setMethodName(methodName);
         return this;
     }
 
+    @Override
     public CloneCopyPolicy setWorkingCopyMethodName(String workingCopyMethodName) {
         getMetadata().setWorkingCopyMethodName(workingCopyMethodName);
         return this;

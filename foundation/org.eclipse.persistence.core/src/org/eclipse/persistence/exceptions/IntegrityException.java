@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -52,6 +52,7 @@ public class IntegrityException extends ValidationException {
      * PUBLIC:
      * This method is used to print out all the descriptor exceptions.
      */
+    @Override
     public String getMessage() {
         String cr = org.eclipse.persistence.internal.helper.Helper.cr();
         java.io.StringWriter swriter = new java.io.StringWriter();
@@ -87,6 +88,7 @@ public class IntegrityException extends ValidationException {
      * PUBLIC:
      * Print both the normal and internal stack traces.
      */
+    @Override
     public void printStackTrace() {
         printStackTrace(System.err);
     }
@@ -95,6 +97,7 @@ public class IntegrityException extends ValidationException {
      * PUBLIC:
      * Print both the normal and internal stack traces.
      */
+    @Override
     public void printStackTrace(PrintStream outStream) {
         printStackTrace(new PrintWriter(outStream));
     }
@@ -103,6 +106,7 @@ public class IntegrityException extends ValidationException {
      * PUBLIC:
      * Print both the normal and internal stack traces.
      */
+    @Override
     public void printStackTrace(PrintWriter writer) {
         super.printStackTrace(writer);
         String cr = org.eclipse.persistence.internal.helper.Helper.cr();

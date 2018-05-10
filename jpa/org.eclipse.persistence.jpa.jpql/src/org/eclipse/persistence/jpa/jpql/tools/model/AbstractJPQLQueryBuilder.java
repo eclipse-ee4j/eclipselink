@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -47,6 +47,7 @@ public abstract class AbstractJPQLQueryBuilder implements IJPQLQueryBuilder {
     /**
      * {@inheritDoc}
      */
+    @Override
     public ICaseExpressionStateObjectBuilder buildCaseExpressionStateObjectBuilder(StateObject parent) {
         return new DefaultCaseExpressionStateObjectBuilder(parent);
     }
@@ -54,6 +55,7 @@ public abstract class AbstractJPQLQueryBuilder implements IJPQLQueryBuilder {
     /**
      * {@inheritDoc}
      */
+    @Override
     public JPQLQueryStateObject buildStateObject(IManagedTypeProvider provider,
                                                  CharSequence jpqlQuery,
                                                  boolean tolerant) {
@@ -64,6 +66,7 @@ public abstract class AbstractJPQLQueryBuilder implements IJPQLQueryBuilder {
     /**
      * {@inheritDoc}
      */
+    @Override
     public JPQLQueryStateObject buildStateObject(IManagedTypeProvider provider,
                                                  CharSequence jpqlQuery,
                                                  String queryBNFId,
@@ -94,6 +97,7 @@ public abstract class AbstractJPQLQueryBuilder implements IJPQLQueryBuilder {
     /**
      * {@inheritDoc}
      */
+    @Override
     public StateObject buildStateObject(StateObject parent,
                                         CharSequence jpqlFragment,
                                         String queryBNFId) {

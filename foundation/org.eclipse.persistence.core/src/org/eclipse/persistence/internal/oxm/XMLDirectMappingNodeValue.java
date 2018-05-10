@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -37,6 +37,7 @@ public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullC
         this.xmlDirectMapping = xmlDirectMapping;
     }
 
+    @Override
     public void setXPathNode(XPathNode xPathNode) {
         super.setXPathNode(xPathNode);
         xmlDirectMapping.getNullPolicy().xPathNode(xPathNode, this);
@@ -49,14 +50,17 @@ public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullC
         }
     }
 
+    @Override
     public boolean isOwningNode(XPathFragment xPathFragment) {
         return xPathFragment.hasAttribute || xPathFragment.nameIsText;
     }
 
+    @Override
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver) {
         return marshal(xPathFragment, marshalRecord, object, session, namespaceResolver, ObjectMarshalContext.getInstance());
     }
 
+    @Override
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         if (xmlDirectMapping.isReadOnly()) {
             return false;
@@ -65,6 +69,7 @@ public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullC
         return this.marshalSingleValue(xPathFragment, marshalRecord, object, objectValue, session, namespaceResolver, marshalContext);
     }
 
+    @Override
     public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object objectValue, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         Object fieldValue = xmlDirectMapping.getFieldValue(objectValue, session, marshalRecord);
 
@@ -159,6 +164,7 @@ public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullC
 
     }
 
+    @Override
     public void attribute(UnmarshalRecord unmarshalRecord, String namespaceURI, String localName, String value) {
         unmarshalRecord.removeNullCapableValue(this);
         Field xmlField = (Field) xmlDirectMapping.getField();
@@ -170,6 +176,7 @@ public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullC
         xmlDirectMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), convertedValue);
     }
 
+    @Override
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord) {
         if(unmarshalRecord.isNil() && xmlDirectMapping.getNullPolicy().isNullRepresentedByXsiNil()){
             Object convertedValue = xmlDirectMapping.getAttributeValue(org.eclipse.persistence.oxm.record.XMLRecord.NIL, unmarshalRecord.getSession(), unmarshalRecord);
@@ -205,11 +212,13 @@ public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullC
         unmarshalRecord.setAttributeValue(convertedValue, xmlDirectMapping);
     }
 
+    @Override
     public void setNullValue(Object object, CoreSession session) {
         Object value = xmlDirectMapping.getObjectValue(null, session);
         xmlDirectMapping.setAttributeValueInObject(object, value);
     }
 
+    @Override
     public boolean isNullCapableValue() {
         if(xmlDirectMapping.getAttributeAccessor().isInstanceVariableAttributeAccessor() && !xmlDirectMapping.hasConverter() && xmlDirectMapping.getNullValue() == null) {
              return false;
@@ -217,10 +226,12 @@ public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullC
         return xmlDirectMapping.getNullPolicy().getIsSetPerformedForAbsentNode();
     }
 
+    @Override
     public DirectMapping getMapping() {
         return xmlDirectMapping;
     }
 
+    @Override
     public boolean isWhitespaceAware() {
         return !xmlDirectMapping.getNullPolicy().isNullRepresentedByEmptyNode();
     }

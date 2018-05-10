@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015  Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -43,7 +43,6 @@ import org.eclipse.persistence.internal.jpa.config.structures.ArrayImpl;
 import org.eclipse.persistence.internal.jpa.config.structures.StructImpl;
 import org.eclipse.persistence.internal.jpa.config.structures.StructureImpl;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.IdAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.columns.AssociationOverrideMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.AttributeOverrideMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.OracleArrayTypeMetadata;
@@ -137,7 +136,7 @@ public abstract class AbstractClassImpl<T extends ClassAccessor, R> extends Abst
 
     public Id addId() {
         IdImpl id = new IdImpl();
-        getMetadata().getAttributes().getIds().add((IdAccessor) id.getMetadata());
+        getMetadata().getAttributes().getIds().add(id.getMetadata());
         return id;
     }
 

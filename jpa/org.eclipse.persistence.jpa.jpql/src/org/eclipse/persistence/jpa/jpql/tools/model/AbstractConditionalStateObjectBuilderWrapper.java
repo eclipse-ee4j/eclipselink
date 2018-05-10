@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -47,6 +47,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder abs(IConditionalExpressionStateObjectBuilder builder) {
         return delegate.abs(builder);
     }
@@ -54,6 +55,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder add(IConditionalExpressionStateObjectBuilder builder) {
         return delegate.add(builder);
     }
@@ -61,6 +63,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder all(SimpleSelectStatementStateObject subquery) {
         return delegate.all(subquery);
     }
@@ -68,6 +71,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder and(IConditionalExpressionStateObjectBuilder builder) {
         return delegate.and(builder);
     }
@@ -75,6 +79,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder any(SimpleSelectStatementStateObject subquery) {
         return delegate.any(subquery);
     }
@@ -82,6 +87,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder avg(String path) {
         return delegate.avg(path);
     }
@@ -89,6 +95,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder avgDistinct(String path) {
         return delegate.avgDistinct(path);
     }
@@ -96,6 +103,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder between(IConditionalExpressionStateObjectBuilder lowerBoundExpression,
                                                   IConditionalExpressionStateObjectBuilder upperBoundExpression) {
 
@@ -105,6 +113,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder collectionPath(String path) {
         return delegate.collectionPath(path);
     }
@@ -112,6 +121,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public void commit() {
         delegate.commit();
     }
@@ -119,6 +129,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder count(String path) {
         return delegate.count(path);
     }
@@ -126,6 +137,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder countDistinct(String path) {
         return delegate.countDistinct(path);
     }
@@ -133,6 +145,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder currentDate() {
         return delegate.currentDate();
     }
@@ -140,6 +153,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder currentTime() {
         return delegate.currentTime();
     }
@@ -147,6 +161,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder currentTimestamp() {
         return delegate.currentTimestamp();
     }
@@ -154,6 +169,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder date(String jdbcDate) {
         return delegate.date(jdbcDate);
     }
@@ -161,6 +177,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder different(IConditionalExpressionStateObjectBuilder builder) {
         return delegate.different(builder);
     }
@@ -168,6 +185,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder different(Number number) {
         return delegate.different(number);
     }
@@ -175,6 +193,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder different(String literal) {
         return delegate.different(literal);
     }
@@ -182,6 +201,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder divide(IConditionalExpressionStateObjectBuilder builder) {
         return delegate.divide(builder);
     }
@@ -189,6 +209,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder entityType(String entityTypeName) {
         return delegate.entityType(entityTypeName);
     }
@@ -196,6 +217,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder equal(IConditionalExpressionStateObjectBuilder builder) {
         return delegate.equal(builder);
     }
@@ -203,6 +225,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder equal(Number number) {
         return delegate.equal(number);
     }
@@ -210,6 +233,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder equal(String literal) {
         return delegate.equal(literal);
     }
@@ -217,6 +241,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder exists(SimpleSelectStatementStateObject subquery) {
         return delegate.exists(subquery);
     }
@@ -224,6 +249,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder FALSE() {
         return delegate.FALSE();
     }
@@ -231,6 +257,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder greaterThan(IConditionalExpressionStateObjectBuilder builder) {
         return delegate.greaterThan(builder);
     }
@@ -238,6 +265,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder greaterThan(Number number) {
         return delegate.greaterThan(number);
     }
@@ -245,6 +273,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder greaterThan(String literal) {
         return delegate.greaterThan(literal);
     }
@@ -252,6 +281,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder greaterThanOrEqual(IConditionalExpressionStateObjectBuilder builder) {
         return delegate.greaterThanOrEqual(builder);
     }
@@ -259,6 +289,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder greaterThanOrEqual(Number number) {
         return delegate.greaterThanOrEqual(number);
     }
@@ -266,6 +297,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder greaterThanOrEqual(String literal) {
         return delegate.greaterThanOrEqual(literal);
     }
@@ -273,6 +305,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder in(IConditionalExpressionStateObjectBuilder... inItems) {
         return delegate.in(inItems);
     }
@@ -280,6 +313,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder in(SimpleSelectStatementStateObject subquery) {
         return delegate.in(subquery);
     }
@@ -287,6 +321,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder in(String... inItems) {
         return delegate.in(inItems);
     }
@@ -294,6 +329,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder index(String variable) {
         return delegate.index(variable);
     }
@@ -301,6 +337,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder isEmpty(String path) {
         return delegate.isEmpty(path);
     }
@@ -308,6 +345,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder isNotEmpty(String path) {
         return delegate.isNotEmpty(path);
     }
@@ -315,6 +353,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder isNotNull(String path) {
         return delegate.isNotNull(path);
     }
@@ -322,6 +361,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder isNull(String path) {
         return delegate.isNull(path);
     }
@@ -329,6 +369,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder length(IConditionalExpressionStateObjectBuilder builder) {
         return delegate.length(builder);
     }
@@ -336,6 +377,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder like(IConditionalExpressionStateObjectBuilder patternValue) {
         return delegate.like(patternValue);
     }
@@ -343,6 +385,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder like(IConditionalExpressionStateObjectBuilder patternValue,
                                                String escapeCharacter) {
 
@@ -352,6 +395,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder like(String patternValue) {
         return delegate.like(patternValue);
     }
@@ -359,6 +403,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder locate(IConditionalExpressionStateObjectBuilder parameter1,
                                                  IConditionalExpressionStateObjectBuilder parameter2) {
 
@@ -368,6 +413,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder locate(IConditionalExpressionStateObjectBuilder parameter1,
                                                  IConditionalExpressionStateObjectBuilder parameter2, IConditionalExpressionStateObjectBuilder parameter3) {
 
@@ -377,6 +423,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder lower(IConditionalExpressionStateObjectBuilder builder) {
         return delegate.lower(builder);
     }
@@ -384,6 +431,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder lowerThan(IConditionalExpressionStateObjectBuilder builder) {
         return delegate.lowerThan(builder);
     }
@@ -391,6 +439,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder lowerThan(Number number) {
         return delegate.lowerThan(number);
     }
@@ -398,6 +447,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder lowerThan(String literal) {
         return delegate.lowerThan(literal);
     }
@@ -405,6 +455,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder lowerThanOrEqual(IConditionalExpressionStateObjectBuilder builder) {
         return delegate.lowerThanOrEqual(builder);
     }
@@ -412,6 +463,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder lowerThanOrEqual(Number number) {
         return delegate.lowerThanOrEqual(number);
     }
@@ -419,6 +471,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder lowerThanOrEqual(String literal) {
         return delegate.lowerThanOrEqual(literal);
     }
@@ -426,6 +479,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder max(String path) {
         return delegate.max(path);
     }
@@ -433,6 +487,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder maxDistinct(String path) {
         return delegate.maxDistinct(path);
     }
@@ -440,6 +495,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder member(String path) {
         return delegate.member(path);
     }
@@ -447,6 +503,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder memberOf(String path) {
         return delegate.memberOf(path);
     }
@@ -454,6 +511,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder min(String path) {
         return delegate.min(path);
     }
@@ -461,6 +519,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder minDistinct(String path) {
         return delegate.minDistinct(path);
     }
@@ -468,6 +527,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder minus(IConditionalExpressionStateObjectBuilder builder) {
         return delegate.minus(builder);
     }
@@ -475,6 +535,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder mod(IConditionalExpressionStateObjectBuilder parameter1,
                                               IConditionalExpressionStateObjectBuilder parameter2) {
 
@@ -484,6 +545,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder multiply(IConditionalExpressionStateObjectBuilder builder) {
         return delegate.multiply(builder);
     }
@@ -491,6 +553,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder notBetween(IConditionalExpressionStateObjectBuilder lowerBoundExpression,
                                                      IConditionalExpressionStateObjectBuilder upperBoundExpression) {
 
@@ -500,6 +563,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder notExists(SimpleSelectStatementStateObject subquery) {
         return delegate.notExists(subquery);
     }
@@ -507,6 +571,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder notIn(IConditionalExpressionStateObjectBuilder... inItems) {
         return delegate.notIn(inItems);
     }
@@ -514,6 +579,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder notIn(SimpleSelectStatementStateObject subquery) {
         return delegate.notIn(subquery);
     }
@@ -521,6 +587,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder notIn(String... inItems) {
         return delegate.notIn(inItems);
     }
@@ -528,6 +595,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder notLike(IConditionalExpressionStateObjectBuilder builder) {
         return delegate.notLike(builder);
     }
@@ -535,6 +603,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder notLike(IConditionalExpressionStateObjectBuilder builder,
                                                   String escapeCharacter) {
 
@@ -544,6 +613,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder notLike(String patternValue) {
         return delegate.notLike(patternValue);
     }
@@ -551,6 +621,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder notMember(String path) {
         return delegate.notMember(path);
     }
@@ -558,6 +629,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder notMemberOf(String path) {
         return delegate.notMemberOf(path);
     }
@@ -565,6 +637,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder NULL() {
         return delegate.NULL();
     }
@@ -572,6 +645,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder numeric(Number numeric) {
         return delegate.numeric(numeric);
     }
@@ -579,6 +653,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder or(IConditionalExpressionStateObjectBuilder builder) {
         return delegate.or(builder);
     }
@@ -586,6 +661,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder parameter(String parameter) {
         return delegate.parameter(parameter);
     }
@@ -593,6 +669,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder path(String path) {
         return delegate.path(path);
     }
@@ -600,6 +677,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder plus(IConditionalExpressionStateObjectBuilder builder) {
         return delegate.plus(builder);
     }
@@ -607,6 +685,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder size(String path) {
         return delegate.size(path);
     }
@@ -614,6 +693,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder some(SimpleSelectStatementStateObject subquery) {
         return delegate.some(subquery);
     }
@@ -621,6 +701,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder sqrt(IConditionalExpressionStateObjectBuilder builder) {
         return delegate.sqrt(builder);
     }
@@ -628,6 +709,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder string(String literal) {
         return delegate.string(literal);
     }
@@ -635,6 +717,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder sub(IConditionalExpressionStateObjectBuilder builder) {
         return delegate.sub(builder);
     }
@@ -642,6 +725,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder sub(StateObject stateObject) {
         return delegate.sub(stateObject);
     }
@@ -649,6 +733,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder substring(IConditionalExpressionStateObjectBuilder parameter1, IConditionalExpressionStateObjectBuilder parameter2, IConditionalExpressionStateObjectBuilder parameter3) {
         return null;
     }
@@ -656,6 +741,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder subtract(IConditionalExpressionStateObjectBuilder builder) {
         return delegate.subtract(builder);
     }
@@ -663,6 +749,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder sum(String path) {
         return delegate.sum(path);
     }
@@ -670,6 +757,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder sumDistinct(String path) {
         return delegate.sumDistinct(path);
     }
@@ -677,6 +765,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder trim(Specification specification,
                                                IConditionalExpressionStateObjectBuilder builder) {
 
@@ -686,6 +775,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder trim(Specification specification,
                                                String trimCharacter,
                                                IConditionalExpressionStateObjectBuilder builder) {
@@ -696,6 +786,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder TRUE() {
         return delegate.TRUE();
     }
@@ -703,6 +794,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder type(String path) {
         return delegate.type(path);
     }
@@ -710,6 +802,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder upper(IConditionalExpressionStateObjectBuilder builder) {
         return delegate.upper(builder);
     }
@@ -717,6 +810,7 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
     /**
      * {@inheritDoc}
      */
+    @Override
     public IConditionalExpressionStateObjectBuilder variable(String variable) {
         return delegate.variable(variable);
     }

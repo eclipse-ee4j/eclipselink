@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -68,6 +68,7 @@ public class JoinImpl<Z, X> extends FromImpl<Z, X> implements Join<Z, X>, Fetch<
      *
      * @return metamodel Attribute type for the join
      */
+    @Override
     public Attribute<? super Z, ?> getAttribute(){
         //Only attributes will be stored in this field so it is ok
         //to perform the cast.
@@ -79,6 +80,7 @@ public class JoinImpl<Z, X> extends FromImpl<Z, X> implements Join<Z, X>, Fetch<
      *
      * @return join parent
      */
+    @Override
     public From<?, Z> getParent(){
         // this cast is acceptable as by design the parent of a Join must be a from implementor
         return (From<?, Z>)pathParent;
@@ -89,16 +91,19 @@ public class JoinImpl<Z, X> extends FromImpl<Z, X> implements Join<Z, X>, Fetch<
      *
      * @return join type
      */
+    @Override
     public JoinType getJoinType(){
         return joinType;
     }
 
+    @Override
     protected <T> Expression<T> buildExpressionForAs(Class<T> type) {
         managedType = metamodel.managedType(type);
         currentNode = currentNode.treat(type);
         return (Expression<T>)this;
     }
 
+    @Override
     public Predicate getOn() {
         if (this.on == null) {
             return null;
@@ -111,6 +116,7 @@ public class JoinImpl<Z, X> extends FromImpl<Z, X> implements Join<Z, X>, Fetch<
         return new CompoundExpressionImpl(this.metamodel, ((InternalSelection)this.on).getCurrentNode().equal(true), list, "equals");
     }
 
+    @Override
     public JoinImpl<Z, X> on(Expression<Boolean> restriction) {
         this.on = restriction;
         org.eclipse.persistence.expressions.Expression onExp = restriction==null? null:((ExpressionImpl)restriction).getCurrentNode();
@@ -119,6 +125,7 @@ public class JoinImpl<Z, X> extends FromImpl<Z, X> implements Join<Z, X>, Fetch<
         return this;
     }
 
+    @Override
     public JoinImpl<Z, X> on(Predicate... restrictions) {
         org.eclipse.persistence.expressions.Expression onExp;
         if (restrictions == null || restrictions.length == 0){

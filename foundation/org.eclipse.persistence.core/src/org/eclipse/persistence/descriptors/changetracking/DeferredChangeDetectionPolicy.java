@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -44,6 +44,7 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
      * INTERNAL:
      * PERF: Calculate change for the new object, avoids check for new since already know.
      */
+    @Override
     public ObjectChangeSet calculateChangesForNewObject(Object clone, UnitOfWorkChangeSet changeSet, UnitOfWorkImpl unitOfWork, ClassDescriptor descriptor, boolean shouldRaiseEvent) {
         return calculateChanges(clone, null, true, changeSet, unitOfWork, descriptor, shouldRaiseEvent);
     }
@@ -52,6 +53,7 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
      * INTERNAL:
      * PERF: Calculate change for the new object, avoids check for new since already know.
      */
+    @Override
     public ObjectChangeSet calculateChangesForExistingObject(Object clone, UnitOfWorkChangeSet changeSet, UnitOfWorkImpl unitOfWork, ClassDescriptor descriptor, boolean shouldRaiseEvent) {
         return calculateChanges(clone, unitOfWork.getBackupClone(clone, descriptor), false, changeSet, unitOfWork, descriptor, shouldRaiseEvent);
     }
@@ -69,6 +71,7 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
      * @param descriptor the descriptor for this object
      * @param shouldRaiseEvent indicates whether PreUpdate event should be risen (usually true)
      */
+    @Override
     public ObjectChangeSet calculateChanges(Object clone, Object backUp, boolean isNew, UnitOfWorkChangeSet changeSet, UnitOfWorkImpl unitOfWork, ClassDescriptor descriptor, boolean shouldRaiseEvent) {
         // PERF: Avoid events if no listeners.
         if (descriptor.getEventManager().hasAnyEventListeners() && shouldRaiseEvent) {
@@ -135,6 +138,7 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
      * INTERNAL:
      * This is a place holder for reseting the listener on one of the subclasses
      */
+    @Override
     public void clearChanges(Object object, UnitOfWorkImpl uow, ClassDescriptor descriptor, boolean forRefresh) {
     }
 
@@ -150,6 +154,7 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
      * INTERNAL:
      * Create ObjectChangeSet
      */
+    @Override
     public ObjectChangeSet createObjectChangeSetThroughComparison(Object clone, Object backUp, org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet changeSet, boolean isNew, AbstractSession session, ClassDescriptor descriptor) {
         ObjectBuilder builder = descriptor.getObjectBuilder();
         ObjectChangeSet changes = builder.createObjectChangeSet(clone, changeSet, isNew, true, session);
@@ -195,6 +200,7 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
      * INTERNAL:
      * This method is used to disable changetracking temporarily
      */
+    @Override
     public void dissableEventProcessing(Object changeTracker){
         //no-op
     }
@@ -203,6 +209,7 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
      * INTERNAL:
      * This method is used to enable changetracking temporarily
      */
+    @Override
     public void enableEventProcessing(Object changeTracker){
         //no-op
     }
@@ -215,6 +222,7 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
      * @param unitOfWork the active unitOfWork
      * @param descriptor the descriptor for the current object
      */
+    @Override
     public boolean shouldCompareExistingObjectForChange(Object object, UnitOfWorkImpl unitOfWork, ClassDescriptor descriptor) {
         return true;
     }
@@ -223,6 +231,7 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
      * INTERNAL:
      * Build back up clone.  Used if clone is new because listener should not be set.
      */
+    @Override
     public Object buildBackupClone(Object clone, ObjectBuilder builder, UnitOfWorkImpl uow) {
         return builder.buildBackupClone(clone, uow);
     }
@@ -231,6 +240,7 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
      * INTERNAL:
      * Assign ChangeListener to an aggregate object
      */
+    @Override
     public void setAggregateChangeListener(Object parent, Object aggregate, UnitOfWorkImpl uow, ClassDescriptor descriptor, String mappingAttribute){
         //no-op
     }
@@ -239,6 +249,7 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
      * INTERNAL:
      * Set ChangeListener for the clone
      */
+    @Override
     public PropertyChangeListener setChangeListener(Object clone, UnitOfWorkImpl uow, ClassDescriptor descriptor) {
         return null;
     }
@@ -247,6 +258,7 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
      * INTERNAL:
      * Set the ObjectChangeSet on the Listener, initially used for aggregate support
      */
+    @Override
     public void setChangeSetOnListener(ObjectChangeSet objectChangeSet, Object clone){
         //no-op
     }
@@ -255,6 +267,7 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
      * INTERNAL:
      * Clear changes in the ChangeListener of the clone
      */
+    @Override
     public void updateWithChanges(Object clone, ObjectChangeSet objectChangeSet, UnitOfWorkImpl uow, ClassDescriptor descriptor) {
         if (objectChangeSet == null) {
             return;
@@ -278,6 +291,7 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
      * This may cause a property change event to be raised to a listener in the case that a listener exists.
      * If there is no listener then this call is a no-op
      */
+    @Override
     public void raiseInternalPropertyChangeEvent(Object source, String propertyName, Object oldValue, Object newValue){
         //no-op
     }
@@ -287,6 +301,7 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
      * This method is used to revert an object within the unit of work
      * @param cloneMapping may not be the same as what is in the uow
      */
+    @Override
     public void revertChanges(Object clone, ClassDescriptor descriptor, UnitOfWorkImpl uow, Map cloneMapping, boolean forRefresh) {
         cloneMapping.put(clone, buildBackupClone(clone, descriptor.getObjectBuilder(), uow));
         clearChanges(clone, uow, descriptor, forRefresh);
@@ -296,6 +311,7 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
      * INTERNAL:
      * initialize the Policy
      */
+    @Override
     public void initialize(AbstractSession session, ClassDescriptor descriptor) {
         //do nothing
     }
@@ -303,6 +319,7 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
     /**
      * Used to track instances of the change policies without doing an instance of check
      */
+    @Override
     public boolean isDeferredChangeDetectionPolicy(){
         return true;
     }
@@ -310,6 +327,7 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
     /**
      * Used to track instances of the change policies without doing an instance of check
      */
+    @Override
     public boolean isObjectChangeTrackingPolicy(){
         return false;
     }
@@ -317,6 +335,7 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
     /**
      * Used to track instances of the change policies without doing an instance of check
      */
+    @Override
     public boolean isAttributeChangeTrackingPolicy(){
         return false;
     }
@@ -326,6 +345,7 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
      * In cases where a relationship with detached or new entities is merged into itself previous changes may have been recorded for
      * the detached/new entity that need to be updated.
      */
+    @Override
     public void updateListenerForSelfMerge(ObjectChangeListener listener, ForeignReferenceMapping mapping, Object source, Object target, UnitOfWorkImpl unitOfWork) {
         //not applicable for this change detection type.
     }

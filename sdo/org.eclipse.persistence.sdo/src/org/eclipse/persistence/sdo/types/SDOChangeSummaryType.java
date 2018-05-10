@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -66,62 +66,77 @@ public class SDOChangeSummaryType extends SDOType implements Type {
         xmlDescriptor.addMapping(aChangeMapping);
     }
 
+    @Override
     public Object get(Property property) {
         return null;
     }
 
+    @Override
     public List getAliasNames() {
         return Collections.EMPTY_LIST;
     }
 
+    @Override
     public List getBaseTypes() {
         return Collections.EMPTY_LIST;
     }
 
+    @Override
     public List getDeclaredProperties() {
         return Collections.EMPTY_LIST;
     }
 
+    @Override
     public List getInstanceProperties() {
         return Collections.EMPTY_LIST;
     }
 
+    @Override
     public String getName() {
         return SDOConstants.CHANGESUMMARY;
     }
 
+    @Override
     public List getProperties() {
         return Collections.EMPTY_LIST;
     }
 
+    @Override
     public SDOProperty getProperty(String propertyName) {
         return null;
     }
 
+    @Override
     public String getURI() {
         return SDOConstants.SDO_URL;
     }
 
+    @Override
     public boolean isAbstract() {
         return true;
     }
 
+    @Override
     public boolean isDataType() {
         return true;
     }
 
+    @Override
     public boolean isInstance(Object object) {
         return getInstanceClass().isInstance(object);
     }
 
+    @Override
     public boolean isOpen() {
         return false;
     }
 
+    @Override
     public boolean isSequenced() {
         return false;
     }
 
+    @Override
     public boolean isChangeSummaryType() {
         return true;
     }

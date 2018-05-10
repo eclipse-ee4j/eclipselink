@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -1958,7 +1958,7 @@ public class ProjectClassGenerator {
      * This can be qualified or unqualified name and will set the file name to match.
      */
     public void setClassName(String newClassName) {
-        int lastDotIndex = newClassName.lastIndexOf(".");
+        int lastDotIndex = newClassName.lastIndexOf('.');
         if (lastDotIndex >= 0) {
             className = newClassName.substring(lastDotIndex + 1, newClassName.length());
             setPackageName(newClassName.substring(0, lastDotIndex));

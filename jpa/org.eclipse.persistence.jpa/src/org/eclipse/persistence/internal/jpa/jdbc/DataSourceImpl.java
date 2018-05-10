@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -95,6 +95,7 @@ public class DataSourceImpl implements DataSource {
     /*
      * Forward to the other method.
      */
+    @Override
     public Connection getConnection() throws SQLException {
         return getConnection(this.userName, this.password);
     }
@@ -102,6 +103,7 @@ public class DataSourceImpl implements DataSource {
     /*
      * Go to the Transaction Manager to get a connection
      */
+    @Override
     public Connection getConnection(String userName, String password) throws SQLException {
         if (isTransactional() && tm.isTransactionActive()) {
             // This will actually eventually call back into this class, but allows
@@ -116,6 +118,7 @@ public class DataSourceImpl implements DataSource {
     /*
      * Forward to the DriverManager.
      */
+    @Override
     public PrintWriter getLogWriter() throws SQLException {
         return DriverManager.getLogWriter();
     }
@@ -123,6 +126,7 @@ public class DataSourceImpl implements DataSource {
     /*
      * Forward to the DriverManager.
      */
+    @Override
     public void setLogWriter(PrintWriter out) throws SQLException {
         DriverManager.setLogWriter(out);
     }
@@ -130,6 +134,7 @@ public class DataSourceImpl implements DataSource {
     /*
      * Forward to the DriverManager.
      */
+    @Override
     public int getLoginTimeout() throws SQLException {
         return DriverManager.getLoginTimeout();
     }
@@ -137,6 +142,7 @@ public class DataSourceImpl implements DataSource {
     /*
      * Forward to the DriverManager.
      */
+    @Override
     public void setLoginTimeout(int seconds) throws SQLException {
         DriverManager.setLoginTimeout(seconds);
     }
@@ -144,6 +150,7 @@ public class DataSourceImpl implements DataSource {
     /*
      * JDBC 4.0
      */
+    @Override
     public <T> T unwrap(Class<T> iface) throws SQLException {
         throw new SQLException();
     }
@@ -151,6 +158,7 @@ public class DataSourceImpl implements DataSource {
     /*
      * JDBC 4.0
      */
+    @Override
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
         return false;
     }
@@ -158,6 +166,7 @@ public class DataSourceImpl implements DataSource {
     /*
      * JDBC 4.1
      */
+    @Override
     public Logger getParentLogger() {
         return null;
     }

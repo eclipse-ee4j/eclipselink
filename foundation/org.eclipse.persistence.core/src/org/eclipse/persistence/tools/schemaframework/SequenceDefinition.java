@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -80,6 +80,7 @@ public abstract class SequenceDefinition extends DatabaseObjectDefinition {
      * Creates this sequence definition on the database.  If it already exists, the method will attempt
      * to alter it based on what the platform supports.
      */
+    @Override
     public void createOnDatabase(AbstractSession session) throws EclipseLinkException {
         if (checkIfExist(session)) {
             if (this.isAlterSupported(session)) {

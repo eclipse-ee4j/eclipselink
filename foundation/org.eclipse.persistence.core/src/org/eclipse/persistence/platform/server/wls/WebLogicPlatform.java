@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -80,6 +80,7 @@ public class WebLogicPlatform extends JMXServerPlatformBase {
     /**
      * INTERNAL: Set the WLS version number through reflection.
      */
+    @Override
     public void initializeServerNameAndVersion() {
         try {
             Class clazz = PrivilegedAccessHelper.getClassForName("weblogic.version");
@@ -102,6 +103,7 @@ public class WebLogicPlatform extends JMXServerPlatformBase {
      * @see org.eclipse.persistence.platform.server.ServerPlatformBase#disableJTA()
      * @see org.eclipse.persistence.platform.server.ServerPlatformBase#initializeExternalTransactionController()
      */
+    @Override
     public Class getExternalTransactionControllerClass() {
         if (externalTransactionControllerClass == null) {
             externalTransactionControllerClass = WebLogicTransactionController.class;
@@ -180,6 +182,7 @@ public class WebLogicPlatform extends JMXServerPlatformBase {
      * This method is called by OracleJDBC_10_1_0_2ProxyConnectionCustomizer
      * before opening proxy session and before closing it.
      */
+    @Override
     public void clearStatementCache(Connection connection) {
         if(this.serverNameAndVersion == null) {
             // this will initialize shouldClearStatementCache, too.

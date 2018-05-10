@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -43,6 +43,7 @@ public class MethodBasedFieldTransformer implements FieldTransformer {
         this.methodName = methodName;
     }
 
+    @Override
     public void initialize(AbstractTransformationMapping mapping) {
         this.mapping = mapping;
         final Class javaClass = this.mapping.getDescriptor().getJavaClass();
@@ -85,6 +86,7 @@ public class MethodBasedFieldTransformer implements FieldTransformer {
         return null;
     }
 
+    @Override
     public Object buildFieldValue(Object object, String fieldName, Session session) {
         Class[] parameterTypes = null;
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){

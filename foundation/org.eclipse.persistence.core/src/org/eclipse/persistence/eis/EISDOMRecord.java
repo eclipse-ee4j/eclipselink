@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -152,6 +152,7 @@ public class EISDOMRecord extends org.eclipse.persistence.oxm.record.DOMRecord i
     /**
      * Forward to the record.
      */
+    @Override
     public String getRecordShortDescription() {
         return recordShortDescription;
     }
@@ -159,6 +160,7 @@ public class EISDOMRecord extends org.eclipse.persistence.oxm.record.DOMRecord i
     /**
      * Forward to the record.
      */
+    @Override
     public void setRecordShortDescription(String recordShortDescription) {
         this.recordShortDescription = recordShortDescription;
     }
@@ -166,6 +168,7 @@ public class EISDOMRecord extends org.eclipse.persistence.oxm.record.DOMRecord i
     /**
      * Forward to the record.
      */
+    @Override
     public String getRecordName() {
         return recordName;
     }
@@ -173,6 +176,7 @@ public class EISDOMRecord extends org.eclipse.persistence.oxm.record.DOMRecord i
     /**
      * Forward to the record.
      */
+    @Override
     public void setRecordName(String recordName) {
         this.recordName = recordName;
     }
@@ -181,6 +185,7 @@ public class EISDOMRecord extends org.eclipse.persistence.oxm.record.DOMRecord i
      * INTERNAL:
      * Build the nested record, this can be overwriten by subclasses to use their subclass instance.
      */
+    @Override
     public XMLRecord buildNestedRow(Element element) {
         if (getRecord() != null) {
             return new EISDOMRecord(getRecord(), element);

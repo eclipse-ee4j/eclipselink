@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -62,6 +62,7 @@ public class QNameInheritancePolicy extends InheritancePolicy {
      * Override to control order of uniqueTables, child tablenames should be first since
      * getDefaultRootElement on an XMLDescriptor will return the first table.
      */
+    @Override
     protected void updateTables(){
         // Unique is required because the builder can add the same table many times.
         Vector<DatabaseTable> childTables = getDescriptor().getTables();
@@ -102,7 +103,7 @@ public class QNameInheritancePolicy extends InheritancePolicy {
 
             // Clone the multitenant policy and set on child descriptor.
             if (getParentDescriptor().hasMultitenantPolicy()) {
-                MultitenantPolicy clonedMultitenantPolicy = (MultitenantPolicy) getParentDescriptor().getMultitenantPolicy().clone(getDescriptor());
+                MultitenantPolicy clonedMultitenantPolicy = getParentDescriptor().getMultitenantPolicy().clone(getDescriptor());
                 getDescriptor().setMultitenantPolicy(clonedMultitenantPolicy);
             }
 
@@ -158,6 +159,7 @@ public class QNameInheritancePolicy extends InheritancePolicy {
      * Initialized the inheritance properties of the descriptor once the mappings are initialized.
      * This is done before formal postInitialize during the end of mapping initialize.
      */
+    @Override
     public void initialize(AbstractSession session) {
         super.initialize(session);
 
@@ -225,6 +227,7 @@ public class QNameInheritancePolicy extends InheritancePolicy {
      * INTERNAL:
      * This method is invoked only for the abstract descriptors.
      */
+    @Override
     public Class classFromRow(AbstractRecord rowFromDatabase, AbstractSession session) throws DescriptorException {
         ((XMLRecord) rowFromDatabase).setSession(session);
         if (hasClassExtractor() || shouldUseClassNameAsIndicator()) {
@@ -289,6 +292,7 @@ public class QNameInheritancePolicy extends InheritancePolicy {
      * To set the class indicator field name.
      * This is the name of the field in the table that stores what type of object this is.
      */
+    @Override
     public void setClassIndicatorFieldName(String fieldName) {
         if (fieldName == null) {
             setClassIndicatorField(null);
@@ -303,6 +307,7 @@ public class QNameInheritancePolicy extends InheritancePolicy {
      * required when building a row for an insert or an update of a concrete child
      * descriptor.
      */
+    @Override
     public void addClassIndicatorFieldToRow(AbstractRecord databaseRow) {
         if (hasClassExtractor()) {
             return;

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -161,6 +161,7 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
      * INTERNAL:
      * Api for changing dms weight dynamically.
      */
+    @Override
     public void setProfileWeight(int newWeight) {
         if (newWeight != this.weight) {
             getSession().setIsInProfile(!(newWeight == DMSConsole.NONE));
@@ -181,6 +182,7 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
      * INTERNAL:
      * Initialize TopLink noun tree by default (DMSConsole.getSensorWeight())
      */
+    @Override
     public void initialize() {
         weight = DMSConsole.NONE;
         initializeNounTree(DMSConsole.getSensorWeight());
@@ -192,6 +194,7 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
      * INTERNAL:
      * Return current TopLink dms weight.
      */
+    @Override
     public int getProfileWeight() {
         return weight;
     }
@@ -200,6 +203,7 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
      * INTERNAL:
      * Link to the dms PhaseEvent api start().
      */
+    @Override
     public void startOperationProfile(String operationName) {
         //due to DMS bug3242994 can't set DMS weight to NONE
         //shortcut for NORMAL weight since no operation profiles are every done for this level.
@@ -217,6 +221,7 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
      * INTERNAL:
      * Link to the dms PhaseEvent api start().  Intended to be used for query profiling.
      */
+    @Override
     public void startOperationProfile(String operationName, DatabaseQuery query, int weight) {
         //due to DMS bug3242994 can't set DMS weight to NONE
         //shortcut for NORMAL weight since no operation profiles are every done for this level.
@@ -242,6 +247,7 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
      * INTERNAL:
      * Link to the dms PhaseEvent api stop().
      */
+    @Override
     public void endOperationProfile(String operationName) {
         //due to DMS bug3242994 can't set DMS weight to NONE
         //shortcut for NORMAL weight since no operation profiles are every done for this level.
@@ -259,6 +265,7 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
      * INTERNAL:
      * Link to the dms PhaseEvent api stop().  Intended to be used for query profiling.
      */
+    @Override
     public void endOperationProfile(String operationName, DatabaseQuery query, int weight) {
         //due to DMS bug3242994 can't set DMS weight to NONE
         //shortcut for NORMAL weight since no operation profiles are every done for this level.
@@ -285,6 +292,7 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
      * INTERNAL:
      * Link to the dms State api update().
      */
+    @Override
     public void update(String operationName, Object value) {
         Sensor state = getSensorByName(operationName);
         if (state != null) {
@@ -296,6 +304,7 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
      * INTERNAL:
      * Link to the dms Event api occurred().
      */
+    @Override
     public void occurred(String operationName, AbstractSession session) {
         Sensor event = getSensorByName(operationName);
         if (event != null) {
@@ -307,6 +316,7 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
      * INTERNAL:
      * Increase DMS Event sensor occurrence.(DMS)
      */
+    @Override
     public void occurred(String operationName, DatabaseQuery query, AbstractSession session) {
         Sensor event = getSensorByName(operationName);
         if (event != null) {
@@ -342,7 +352,7 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
                 }
                 phaseEvent = PhaseEvent.create(queryNoun, sensorName, DMSLocalization.buildMessage("query", new Object[]{sensorName}));
             } else {
-                queryNoun = (Noun)getAllWeightNouns().get(MiscellaneousNounType);
+                queryNoun = getAllWeightNouns().get(MiscellaneousNounType);
                 phaseEvent = PhaseEvent.create(queryNoun, sensorName, DMSLocalization.buildMessage("query_misc", new Object[]{sensorName}));
             }
             phaseEvent.deriveMetric(Sensor.all);
@@ -395,11 +405,11 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
     protected Sensor getSensorByName(String operationName) {
         Sensor sensor = null;
         if (getProfileWeight() == DMSConsole.NORMAL) {
-            sensor = (Sensor)getNormalWeightSensors().get(operationName);
+            sensor = getNormalWeightSensors().get(operationName);
         } else if (getProfileWeight() == DMSConsole.HEAVY) {
-            sensor = (Sensor)getNormalAndHeavyWeightSensors().get(operationName);
+            sensor = getNormalAndHeavyWeightSensors().get(operationName);
         } else if (getProfileWeight() == DMSConsole.ALL) {
-            sensor = (Sensor)getNormalHeavyAndAllWeightSensors().get(operationName);
+            sensor = getNormalHeavyAndAllWeightSensors().get(operationName);
         }
         return sensor;
     }
@@ -434,7 +444,7 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
      * Build dms HEAVY weight sensors for TopLink dms metrics.
      */
     protected void initializeHeavyWeightSensors() {
-        Noun baseSessionNoun = (Noun)getNormalWeightNouns().get(SessionNounType);
+        Noun baseSessionNoun = getNormalWeightNouns().get(SessionNounType);
 
         //clientSession
         Event clientSession = Event.create(baseSessionNoun, SessionProfiler.ClientSessionCreated, DMSLocalization.buildMessage("client_session_count"));
@@ -522,7 +532,7 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
      */
     protected void initializeAllWeightSensors() {
         //MergeTime
-        Noun baseTransactionNoun = (Noun)getHeavyWeightNouns().get(TransactionNounType);
+        Noun baseTransactionNoun = getHeavyWeightNouns().get(TransactionNounType);
         PhaseEvent mergeTime = PhaseEvent.create(baseTransactionNoun, MergeTime, DMSLocalization.buildMessage("merge_time"));
         mergeTime.deriveMetric(Sensor.all);
         this.getAllWeightSensors().put(SessionProfiler.Merge, mergeTime);
@@ -552,19 +562,19 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
         this.getAllWeightSensors().put(SessionProfiler.AssignSequence, sequence);
 
         //Caching
-        Noun baseCacheNoun = (Noun)getHeavyWeightNouns().get(CacheNounType);
+        Noun baseCacheNoun = getHeavyWeightNouns().get(CacheNounType);
         PhaseEvent cache = PhaseEvent.create(baseCacheNoun, SessionProfiler.Caching, DMSLocalization.buildMessage("caching"));
         cache.deriveMetric(Sensor.all);
         this.getAllWeightSensors().put(CACHE, cache);
 
         //Connection
-        Noun baseConnectionNoun = (Noun)getHeavyWeightNouns().get(ConnectionNounType);
+        Noun baseConnectionNoun = getHeavyWeightNouns().get(ConnectionNounType);
         PhaseEvent dbConnect = PhaseEvent.create(baseConnectionNoun, SessionProfiler.ConnectionManagement, DMSLocalization.buildMessage("connection"));
         dbConnect.deriveMetric(Sensor.all);
         this.getAllWeightSensors().put(CONNECT, dbConnect);
 
         //rcm
-        Noun baseRcmNoun = (Noun)getHeavyWeightNouns().get(RcmNounType);
+        Noun baseRcmNoun = getHeavyWeightNouns().get(RcmNounType);
 
         //ChangeSetsMerged
         Event changeSetsProcessed = Event.create(baseRcmNoun, SessionProfiler.ChangeSetsProcessed, DMSLocalization.buildMessage("change_set_processed"));
@@ -724,10 +734,12 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
         }
     }
 
+    @Override
     public void setSession(Session session) {
         this.session = (AbstractSession)session;
     }
 
+    @Override
     public Object profileExecutionOfQuery(DatabaseQuery query, Record row, AbstractSession session) {
         //This is to profile the query execution and no operation name is given
         startOperationProfile(null, query, DMSConsole.HEAVY);

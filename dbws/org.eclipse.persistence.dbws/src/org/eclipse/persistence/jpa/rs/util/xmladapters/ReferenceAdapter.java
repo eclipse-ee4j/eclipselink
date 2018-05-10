@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -128,8 +128,8 @@ public class ReferenceAdapter<T extends PersistenceWeavedRest> extends XmlAdapte
         if ((link != null) && (link.getHref() != null)) {
             String uri = link.getHref().replace("\\/", "/");
             String entityType = uri.substring(uri.indexOf("/entity/"), uri.lastIndexOf('/'));
-            entityType = entityType.substring(entityType.lastIndexOf("/") + 1);
-            String entityId = uri.substring(uri.lastIndexOf("/") + 1);
+            entityType = entityType.substring(entityType.lastIndexOf('/') + 1);
+            String entityId = uri.substring(uri.lastIndexOf('/') + 1);
             ClassDescriptor descriptor = context.getDescriptor(entityType);
             Object id = IdHelper.buildId(context, descriptor.getAlias(), entityId);
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -54,6 +54,7 @@ public class CloneCopyPolicy extends AbstractCopyPolicy {
     /**
      * Clone through calling the clone method.
      */
+    @Override
     public Object buildClone(Object domainObject, Session session) throws DescriptorException {
         // Must allow for null clone method for 9.0.4 deployment XML.
         if (this.getMethodName() == null) {
@@ -85,6 +86,7 @@ public class CloneCopyPolicy extends AbstractCopyPolicy {
     /**
      * Clone through the workingCopyClone method, or if not specified the clone method.
      */
+    @Override
     public Object buildWorkingCopyClone(Object domainObject, Session session) throws DescriptorException {
         if (this.getWorkingCopyMethodName() == null) {
             //not implemented to perform special operations.
@@ -164,6 +166,7 @@ public class CloneCopyPolicy extends AbstractCopyPolicy {
     /**
      * Validate and build the methods.
      */
+    @Override
     public void initialize(Session session) throws DescriptorException {
         final Class javaClass = this.getDescriptor().getJavaClass();
         try {
@@ -220,10 +223,12 @@ public class CloneCopyPolicy extends AbstractCopyPolicy {
     /**
      * Return false as a shallow clone is returned, not a new instance.
      */
+    @Override
     public boolean buildsNewInstance() {
         return getMethodName() == null;
     }
 
+    @Override
     public String toString() {
         return Helper.getShortClassName(this) + "(" + this.getMethodName() + ")";
     }

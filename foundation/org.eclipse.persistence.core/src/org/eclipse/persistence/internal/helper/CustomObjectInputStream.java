@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -38,6 +38,7 @@ public class CustomObjectInputStream extends ObjectInputStream {
         m_conversionManager = session.getDatasourceLogin().getDatasourcePlatform().getConversionManager();
     }
 
+    @Override
     public Class resolveClass(ObjectStreamClass classDesc) throws ClassNotFoundException, IOException {
         return m_conversionManager.convertClassNameToClass(classDesc.getName());
     }

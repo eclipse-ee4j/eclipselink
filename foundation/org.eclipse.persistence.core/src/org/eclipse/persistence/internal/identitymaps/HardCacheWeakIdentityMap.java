@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -74,6 +74,7 @@ public class HardCacheWeakIdentityMap extends WeakIdentityMap {
     /**
      * Remove the cache key from the map and the sub-cache list.
      */
+    @Override
     public Object remove(CacheKey cacheKey) {
         if (cacheKey == null) {
             return null;
@@ -101,6 +102,7 @@ public class HardCacheWeakIdentityMap extends WeakIdentityMap {
     /**
      * This method will be used to update the max cache size.
      */
+    @Override
     public synchronized void updateMaxSize(int maxSize) {
         setMaxSize(maxSize);
         synchronized (this.referenceCache) {
@@ -139,6 +141,7 @@ public class HardCacheWeakIdentityMap extends WeakIdentityMap {
          * Allows the LRU sub-cache to be maintained,
          * the cache node must be moved to the front of the list.
          */
+        @Override
         public void updateAccess() {
             // Check if the node's contents is null (was removed),
             // or ref value may have garbage collected so reset it.

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,7 +27,6 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
-
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DirectCollectionMapping;
 
@@ -160,7 +159,7 @@ public class OrderByMetadata extends ORMetadata {
                         // string names of the nested embeddables only.
                         String embeddableChain = "";
                         if (propertyOrFieldName.contains(".")) {
-                            embeddableChain = propertyOrFieldName.substring(0, propertyOrFieldName.lastIndexOf("."));
+                            embeddableChain = propertyOrFieldName.substring(0, propertyOrFieldName.lastIndexOf('.'));
                         }
 
                         mapping.addAggregateOrderBy(embeddableChain, attributeName, ordering.equals(DESCENDING));

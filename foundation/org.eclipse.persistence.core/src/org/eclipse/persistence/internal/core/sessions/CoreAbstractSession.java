@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -33,12 +33,14 @@ public abstract class CoreAbstractSession<
      * Return the database platform currently connected to.
      * The platform is used for database specific behavior.
      */
+    @Override
     public abstract PLATFORM getDatasourcePlatform();
 
     /**
      * ADVANCED:
      * Return all registered descriptors.
      */
+    @Override
     public abstract Map<Class, DESCRIPTOR> getDescriptors();
 
     /**

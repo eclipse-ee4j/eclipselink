@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -328,6 +328,7 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
         isTypedTextField = false;
     }
 
+    @Override
     public void initialize() {
         if(null != xPathFragment) {
            initializeXPathFragment(xPathFragment);
@@ -370,6 +371,7 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
          * Returns the xpath statement associated with this XMLField
          * @return The xpath statement associated with this XMLField
          */
+    @Override
     public String getXPath() {
         return getName();
     }
@@ -378,6 +380,7 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
         * Set the xpath statment for this XMLField.
         * @param xPath The xpath statement to be associated with this XMLField
         */
+    @Override
     public void setXPath(String xPath) {
         setName(xPath);
     }
@@ -387,6 +390,7 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
      * @return The NamespaceResolver associated with this XMLField
      * @see org.eclipse.persistence.oxm.NamespaceResolver
      */
+    @Override
     public NamespaceResolver getNamespaceResolver() {
         return namespaceResolver;
     }
@@ -396,6 +400,7 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
      * @param newNamespaceResolver The namespaceResolver to be associated with this XMLField
      * @see org.eclipse.persistence.oxm.NamespaceResolver
      */
+    @Override
     public void setNamespaceResolver(NamespaceResolver newNamespaceResolver) {
         namespaceResolver = newNamespaceResolver;
     }
@@ -405,6 +410,7 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
     * Sets whether the mapping uses a single node.
     * @param usesSingleNode True if the items in the collection are in a single node or false if each of the items in the collection is in its own node
     */
+    @Override
     public void setUsesSingleNode(boolean usesSingleNode) {
         this.usesSingleNode = usesSingleNode;
     }
@@ -415,6 +421,7 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
     *
     * @return True if the items in the collection are in a single node or false if each of the items in the collection is in its own node.
     */
+    @Override
     public boolean usesSingleNode() {
         return usesSingleNode;
     }
@@ -424,6 +431,7 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
      * This is an optional setting; when set the schema type will be used to format the XML appropriately
      * @param value QName to be added to the list of schema types
      */
+    @Override
     public void setSchemaType(QName value) {
         this.schemaType = value;
     }
@@ -432,6 +440,7 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
     * Return the schema type associated with this field
     * @return the schema type
     */
+    @Override
     public QName getSchemaType() {
         return schemaType;
     }
@@ -441,6 +450,7 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
       * True when we should base conversions on the "type" attribute on elements
       * @return True when we should base conversions on the "type" attribute on elements, otherwise false
       */
+    @Override
     public boolean isTypedTextField() {
         return isTypedTextField;
     }
@@ -450,6 +460,7 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
      * True when we should base conversions on the "type" attribute on elements
      * @param value The boolean value specifiy if  this is a typed text field
      */
+    @Override
     public void setIsTypedTextField(boolean value) {
         isTypedTextField = value;
     }
@@ -460,6 +471,7 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
      *
      * @return true if the xpath is ".", false otherwise
      */
+    @Override
     public boolean isSelfField() {
         if (null == xPathFragment) {
             return false;
@@ -472,6 +484,7 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
     * Returns false since this is a union field
      * The subclass XMLUnionField returns true for this
     */
+    @Override
     public boolean isUnionField() {
         return false;
     }
@@ -498,6 +511,7 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
      *
      * @param xPath The xPath associated with this XMLField
      */
+    @Override
     public void setName(String xPath) {
         setName(xPath, null, null);
     }
@@ -558,6 +572,7 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
      * Maintain a direct pointer to the first XPathFragment.  For example given
      * the following XPath first/middle/@last, first is the first XPathFragment.
      */
+    @Override
     public XPathFragment getXPathFragment() {
         return xPathFragment;
     }
@@ -574,6 +589,7 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
      * INTERNAL:
      * Return the last XPathFragment.
      */
+    @Override
     public XPathFragment getLastXPathFragment() {
         return lastXPathFragment;
     }
@@ -732,6 +748,7 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
     * INTERNAL:
     * Called from DOMRecord and XMLReader.  MappingNodeValues call XMLReader which calls this method so that other XMLReader subclasses can override.
     */
+    @Override
     public Object convertValueBasedOnSchemaType(Object value, XMLConversionManager xmlConversionManager, AbstractUnmarshalRecord record) {
         if (schemaType != null) {
             if(XMLConstants.QNAME_QNAME.equals(schemaType)){
@@ -816,6 +833,7 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
         }
     }
 
+    @Override
     public QName getLeafElementType() {
         if (lastXPathFragment != null) {
             return lastXPathFragment.getLeafElementType();
@@ -827,6 +845,7 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
      * INTERNAL:
      * @return
      */
+    @Override
     public boolean hasLastXPathFragment() {
         return lastXPathFragment != null;
     }
@@ -834,6 +853,7 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
     /**
      * INTERNAL:
      */
+    @Override
     public QName getSchemaTypeForValue(Object value, CoreAbstractSession session) {
         if(leafElementType != null){
             return leafElementType;
@@ -855,6 +875,7 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
      * INTERNAL:
      * @param CDATA
      */
+    @Override
     public void setIsCDATA(boolean CDATA) {
         this.isCDATA = CDATA;
     }
@@ -863,12 +884,14 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
      * INTERNAL:
      * @return
      */
+    @Override
     public boolean isCDATA() {
         return isCDATA;
     }
     /**
      * INTERNAL
      */
+    @Override
     public boolean isSchemaType(QName schemaType){
         if(getSchemaType() == null){
             return false;
@@ -883,6 +906,7 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
      *
      * @see org.eclipse.persistence.internal.oxm.schema.SchemaModelGenerator
      */
+    @Override
     public boolean isRequired() {
         return isRequired;
     }
@@ -894,6 +918,7 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
      *
      * @see org.eclipse.persistence.internal.oxm.schema.SchemaModelGenerator
      */
+    @Override
     public void setRequired(boolean isRequired) {
         this.isRequired = isRequired;
     }
@@ -928,10 +953,10 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
 
     @Override
     public int hashCode() {
-        if(null == xPathFragment) {
+        if(null == xPathFragment && null == xPathFragment.getXPath()) {
             return 1;
         }
-        return xPathFragment.hashCode();
+        return (xPathFragment.getXPath().replace((xPathFragment.getPrefix() != null) ? xPathFragment.getPrefix() + xPathFragment.getNamespaceSeparator() : "", "")).hashCode();
     }
 
 }

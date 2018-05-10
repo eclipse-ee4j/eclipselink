@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -79,6 +79,7 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
      * The Reference object is stored on the ReferenceResolver associated with
      * the UnmarshalRecord's session.
      */
+    @Override
     public void attribute(UnmarshalRecord unmarshalRecord, String namespaceURI, String localName, String value) {
         if (value != null) {
             Object realValue = unmarshalRecord.getXMLReader().convertValueBasedOnSchemaType(xmlField, value, (ConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager(), unmarshalRecord);
@@ -99,6 +100,7 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
      * The Reference object is stored on the ReferenceResolver associated with
      * the UnmarshalRecord's session.
      */
+    @Override
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord) {
         if (!xmlField.getLastXPathFragment().nameIsText()) {
             return;
@@ -121,6 +123,7 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
         xmlCollectionReferenceMapping.buildReference(unmarshalRecord, xmlField, value, unmarshalRecord.getSession(), container);
     }
 
+    @Override
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Object container) {
         this.endElement(xPathFragment, unmarshalRecord);
     }
@@ -128,6 +131,7 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
     /**
      * Indicate if the next XPathFragment is an attribute or text() node.
      */
+    @Override
     public boolean isOwningNode(XPathFragment xPathFragment) {
         if(isMarshalNodeValue()) {
             if (xmlCollectionReferenceMapping.usesSingleNode()) {
@@ -144,18 +148,22 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
         return true;
     }
 
+    @Override
     public boolean isContainerValue() {
         return true;
     }
 
+    @Override
     public Object getContainerInstance() {
         return getContainerPolicy().containerInstance();
     }
 
+    @Override
     public void setContainerInstance(Object object, Object containerInstance) {
         xmlCollectionReferenceMapping.setAttributeValueInObject(object, containerInstance);
     }
 
+    @Override
     public CoreContainerPolicy getContainerPolicy() {
         return xmlCollectionReferenceMapping.getContainerPolicy();
     }
@@ -166,6 +174,7 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
      * (in the XMLCollectionReferenceMapping's source-target key field association list)
      * are retrieved and written out.
      */
+    @Override
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver) {
         if(this.xmlCollectionReferenceMapping.isReadOnly()) {
             return false;
@@ -228,6 +237,7 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
      * @param unmarshalRecord
      * @param atts
      */
+    @Override
     public boolean startElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts) {
         if (xmlField.getLastXPathFragment().isAttribute()) {
             if (!this.xmlCollectionReferenceMapping.usesSingleNode()) {
@@ -246,15 +256,16 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
         return true;
     }
 
+    @Override
     public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         if (xmlCollectionReferenceMapping.usesSingleNode()) {
             XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
             if (xPathFragment.isAttribute()) {
-                marshalRecord.attribute(xPathFragment, namespaceResolver, (String) value, null);
+                marshalRecord.attribute(xPathFragment, namespaceResolver, value, null);
                 marshalRecord.closeStartGroupingElements(groupingFragment);
             } else {
                 marshalRecord.closeStartGroupingElements(groupingFragment);
-                marshalRecord.characters(null, (String)value, null, false);
+                marshalRecord.characters(null, value, null, false);
             }
         } else {
             QName schemaType;
@@ -279,10 +290,12 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
         return true;
     }
 
+    @Override
     public CollectionReferenceMapping getMapping() {
         return xmlCollectionReferenceMapping;
     }
 
+    @Override
     public boolean getReuseContainer() {
         return getMapping().getReuseContainer();
     }
@@ -296,6 +309,7 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
      *  INTERNAL:
      *  Used to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord
      */
+    @Override
     public void setIndex(int index){
         this.index = index;
     }
@@ -305,6 +319,7 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
      * Set to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord
      * Set during TreeObjectBuilder initialization
      */
+    @Override
     public int getIndex(){
         return index;
     }
@@ -315,6 +330,7 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
      * is no presence of the collection in the XML document.
      * @since EclipseLink 2.3.3
      */
+    @Override
     public boolean isDefaultEmptyContainer() {
         return getMapping().isDefaultEmptyContainer();
     }

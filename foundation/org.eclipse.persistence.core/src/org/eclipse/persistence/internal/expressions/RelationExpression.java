@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -50,6 +50,7 @@ public class RelationExpression extends CompoundExpression {
      * Modify this individual expression node to use outer joins wherever there are
      * equality operations between two field nodes.
      */
+    @Override
     protected void convertNodeToUseOuterJoin() {
         if ((this.operator.getSelector() == ExpressionOperator.Equal) && allChildrenAreFields()) {
             setOperator(getOperator(ExpressionOperator.EqualOuterJoin));
@@ -60,6 +61,7 @@ public class RelationExpression extends CompoundExpression {
      * INTERNAL:
      * Used for debug printing.
      */
+    @Override
     public String descriptionOfNodeType() {
         return "Relation";
     }
@@ -70,6 +72,7 @@ public class RelationExpression extends CompoundExpression {
      * This is used for in-memory querying.
      * If the expression in not able to determine if the object conform throw a not supported exception.
      */
+    @Override
     public boolean doesConform(Object object, AbstractSession session, AbstractRecord translationRow, int valueHolderPolicy, boolean isObjectUnregistered) {
         if ((this.secondChild.getBuilder().getSession() == null) || (this.firstChild.getBuilder().getSession() == null)) {
             // Parallel selects are not supported in memory.
@@ -515,6 +518,7 @@ public class RelationExpression extends CompoundExpression {
     /**
      * INTERNAL:
      */
+    @Override
     public boolean isRelationExpression() {
         return true;
     }
@@ -561,6 +565,7 @@ public class RelationExpression extends CompoundExpression {
      * INTERNAL:
      * Check for object comparison as this requires for the expression to be replaced by the object comparison.
      */
+    @Override
     public Expression normalize(ExpressionNormalizer normalizer) {
         // PERF: Optimize out unnecessary joins.
         Expression optimizedExpression = checkForeignKeyJoinOptimization(this.firstChild, this.secondChild, normalizer);
@@ -884,6 +889,7 @@ public class RelationExpression extends CompoundExpression {
      * INTERNAL:
      * Print SQL
      */
+    @Override
     public void printSQL(ExpressionSQLPrinter printer) {
         // If both sides are parameters, some databases don't allow binding.
         if (printer.getPlatform().isDynamicSQLRequiredForFunctions()
@@ -904,6 +910,7 @@ public class RelationExpression extends CompoundExpression {
      * INTERNAL:
      * Print java for project class generation
      */
+    @Override
     public void printJava(ExpressionJavaPrinter printer) {
         ExpressionOperator realOperator = getPlatformOperator(printer.getPlatform());
         Expression tempFirstChild = this.firstChild;
@@ -923,6 +930,7 @@ public class RelationExpression extends CompoundExpression {
     /**
      * Do any required validation for this node. Throw an exception if it's incorrect.
      */
+    @Override
     public void validateNode() {
         if (this.firstChild.isTableExpression()) {
             throw QueryException.cannotCompareTablesInExpression(((TableExpression)this.firstChild).getTable());

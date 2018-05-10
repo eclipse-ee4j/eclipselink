@@ -258,6 +258,7 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
     /**
      * Return the lookup table.
      */
+    @Override
     protected Object[][] getContents() {
         return contents;
     }

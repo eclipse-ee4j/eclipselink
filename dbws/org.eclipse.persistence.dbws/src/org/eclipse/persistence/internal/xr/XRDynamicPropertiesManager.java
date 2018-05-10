@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -48,10 +48,12 @@ public class XRDynamicPropertiesManager extends DynamicPropertiesManager {
         }
     }
 
+    @Override
     public boolean contains(String propertyName) {
         return propertyNames.contains(propertyName);
     }
 
+    @Override
     public List<String> getPropertyNames() {
         List<String> tmp = new ArrayList<String>();
         if (propertyNames != null) {
