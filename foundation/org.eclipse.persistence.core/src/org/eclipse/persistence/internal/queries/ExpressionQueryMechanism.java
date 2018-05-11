@@ -1849,11 +1849,9 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
     			continue;
     		}
     		
-    		QueryKeyExpression qke = (QueryKeyExpression) key;
-    		ExpressionBuilder eb = qke.getBuilder();
-    		Expression ex = eb.existingDerivedField(targetField);
-    		if (ex != null) {
-    			// Found an expression in the update clause that touches this database field.
+    		QueryKeyExpression qke = (QueryKeyExpression) key;   		
+    		DatabaseField qkField = getDescriptor().getObjectBuilder().getFieldForQueryKeyName(qke.getName());
+    		if (qkField == targetField) {
     			return true;
     		}
     	}
