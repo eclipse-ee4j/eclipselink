@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -148,7 +148,7 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
             }
             return adapter.unmarshal(toConvert);
         } catch (Exception ex) {
-            if(unmarshaller.getErrorHandler() == null){
+            if(unmarshaller == null || unmarshaller.getErrorHandler() == null){
                 throw ConversionException.couldNotBeConverted(dataValue, boundType, ex);
             }
             try {
@@ -181,7 +181,7 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
             }
             return dataValue;
         } catch (Exception ex) {
-            if(marshaller.getErrorHandler() == null){
+            if(marshaller == null || marshaller.getErrorHandler() == null){
                 throw ConversionException.couldNotBeConverted(objectValue, valueType, ex);
             }
             try {
