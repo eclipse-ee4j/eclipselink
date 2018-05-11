@@ -1,0 +1,13 @@
+----------------------------------------------------------------
+Mon Jul 09 12:58:37 CDT 2018:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.14.1.0 - (1808820): instance a816c00e-0164-8031-fd7c-00000cc6aae0 
+on database directory memory:/Users/arcticfox/Dev/Eclipse/eclipselink/jpa/eclipselink.jpa.test.jse/testdb with class loader sun.misc.Launcher$AppClassLoader@6ce253f1 
+Loaded from file:/Users/arcticfox/Dev/Libraries/derby/db-derby-10.14.1.0-bin/lib/derby.jar
+java.vendor=Oracle Corporation
+java.runtime.version=1.8.0_152-b16
+user.dir=/Users/arcticfox/Dev/Eclipse/eclipselink/jpa/eclipselink.jpa.test.jse
+os.name=Mac OS X
+os.arch=x86_64
+os.version=10.13.5
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''
