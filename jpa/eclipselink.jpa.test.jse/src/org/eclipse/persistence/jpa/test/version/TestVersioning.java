@@ -84,7 +84,7 @@ public class TestVersioning {
 	}
 	
 	private TemporalVersionedEntity performJpqlBulkUpdate(EntityManager em, TemporalVersionedEntity entity) {
-		try { Thread.sleep(500); } catch (Exception e) {}
+		try { Thread.sleep(1500); } catch (Exception e) {}
 		em.getTransaction().begin();
 		
 		final Query q = em.createQuery(qStr1);
@@ -93,6 +93,7 @@ public class TestVersioning {
 		
 		try { Thread.sleep(500); } catch (Exception e) {}
 		final java.sql.Timestamp newTime = new java.sql.Timestamp(System.currentTimeMillis());
+		newTime.setNanos(0);  // Some DB platforms don't do milli/nano granularity with timestamp.
 		Assert.assertNotNull(newTime);
 		q.setParameter(3, newTime);
 //		System.out.println("Bulk Update Parameter 3 = " + newTime);
@@ -152,7 +153,7 @@ public class TestVersioning {
 	}
 	
 	private TemporalVersionedEntity2 performJpqlBulkUpdate2(EntityManager em, TemporalVersionedEntity2 entity) {
-		try { Thread.sleep(500); } catch (Exception e) {}
+		try { Thread.sleep(1500); } catch (Exception e) {}
 		em.getTransaction().begin();
 		
 		final Query q = em.createQuery(qStr2);
@@ -161,6 +162,7 @@ public class TestVersioning {
 		
 		try { Thread.sleep(500); } catch (Exception e) {}
 		final java.sql.Timestamp newTime = new java.sql.Timestamp(System.currentTimeMillis());
+		newTime.setNanos(0);  // Some DB platforms don't do milli/nano granularity with timestamp.
 		Assert.assertNotNull(newTime);
 		q.setParameter(3, newTime);
 //		System.out.println("Bulk Update Parameter 3 = " + newTime);
