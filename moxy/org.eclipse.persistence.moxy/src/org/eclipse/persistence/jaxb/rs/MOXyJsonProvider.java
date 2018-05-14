@@ -39,8 +39,6 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.activation.DataSource;
 import javax.ws.rs.Consumes;
@@ -74,6 +72,8 @@ import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.oxm.JSONWithPadding;
 
 /**
@@ -207,7 +207,6 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
     private static final QName EMPTY_STRING_QNAME = new QName("");
     private static final String JSON = "json";
     private static final String PLUS_JSON = "+json";
-    private static final Logger LOGGER = Logger.getLogger(MOXyJsonProvider.class.getName());
 
     @Context
     protected Providers providers;
@@ -348,7 +347,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
             Set<Class<?>> domainClasses = getDomainClasses(genericType);
             return getJAXBContext(domainClasses, annotations, mediaType, null);
         } catch(JAXBException e) {
-            LOGGER.log(Level.WARNING, "Exception to get/create JAXB context: ", e);
+            AbstractSessionLog.getLog().logThrowable(SessionLog.WARNING, SessionLog.MOXY, e);
             return null;
         }
     }
