@@ -275,7 +275,8 @@ public class JsonStructureReader extends XMLReaderAdapter {
                 break;
             }
             case NULL: {
-                break; // noop
+                contentHandler.setNil(true);
+                break;
             }
             default:
                 throw new IllegalStateException("Unhandled valueType: " + jsonValue.getValueType());
