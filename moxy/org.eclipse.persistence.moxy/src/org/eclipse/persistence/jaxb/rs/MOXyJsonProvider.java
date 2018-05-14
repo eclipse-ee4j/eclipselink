@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -72,6 +72,8 @@ import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.oxm.JSONWithPadding;
 
 /**
@@ -345,6 +347,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
             Set<Class<?>> domainClasses = getDomainClasses(genericType);
             return getJAXBContext(domainClasses, annotations, mediaType, null);
         } catch(JAXBException e) {
+            AbstractSessionLog.getLog().logThrowable(SessionLog.WARNING, SessionLog.MOXY, e);
             return null;
         }
     }
