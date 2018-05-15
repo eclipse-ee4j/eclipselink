@@ -254,8 +254,8 @@
         <property name="sun.xml.bind.criteria" value="[2.2.11,5.0.0)"/>
         <property name="mongodb.prefix" value="org.mongodb.mongo-java-driver"/>
         <property name="mongodb.criteria" value="[2.0.0,9.0.0)"/>
-        <property name="json.prefix" value="org.glassfish.javax.json"/>
-        <property name="json.criteria" value="[1.0.4,5.0.0)"/>
+        <property name="json.prefix" value="javax.json-api"/>
+        <property name="json.criteria" value="[1.1.0,5.0.0)"/>
 
         <!-- For EclipseLink bundles -->
         <property name="antlr.prefix" value="org.eclipse.persistence.antlr"/>

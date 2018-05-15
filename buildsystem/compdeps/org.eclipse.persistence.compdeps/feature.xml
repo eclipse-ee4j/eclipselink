@@ -109,7 +109,7 @@
          unpack="false"/>
 
    <plugin
-         id="org.glassfish.javax.json"
+         id="javax.json-api"
          download-size="0"
          install-size="0"
          version="@JSON_VERSION@"
