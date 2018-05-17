@@ -37,82 +37,400 @@
         - clean   : cleans up all generated files and dirs
         - compile : compiles all tests
         - package : packages test jar
-        - process.resource : translates login info in resources into run directory
+        - process-resource : translates login info in resources into run directory
         - test : runs LRG
         - test-lrg : runs LRG
         - test-srg : runs SRG
+        - test-single : runs single JUnit ${test.class}
+        - test-prompt : runs single TestModel ${test.class}
         - test-performance : runs performance tests
         - create-perfdb-mysql : creates database tables needed to store performance tests data
 
         It requires some configuration of the build.properties and test.properties to run.
 -->
 <project name="eclipselink.core.test" default="build" basedir=".">
+
     <echo message="CORETEST_BEGINS..."/>
     <available file="../${ant.project.name}" type="dir" property="core_test.is.local"/>
     <fail message="Not running from '${ant.project.name}' directory" unless="core_test.is.local"/>
 
-    <dirname  property="core_test.build.location_temp" file="${ant.file.eclipselink.core.test}"/>
-    <pathconvert targetos="unix" property="core_test.build.location">
-        <path>
-            <pathelement location="${core_test.build.location_temp}"/>
-        </path>
-    </pathconvert>
-    <echo message="core_test.build.location = '${core_test.build.location}'"/>
-    <condition property="core_test.2.base.dir" value="../.." else="..">
-        <contains string="${core_test.build.location}" substring="foundation"/>
-    </condition>
-    <echo message="core_test.2.base.dir = '${core_test.2.base.dir}'"/>
-    <property name="core_test.2.common.plugins.dir" value="${core_test.2.base.dir}/plugins"/>
-    <property name="core_test.2.core.dir" value="../org.eclipse.persistence.core"/>
-    <property name="core_test.plugins.dir" value="../plugins"/>
-
-    <!-- Allows tools.jar to be relative to JAVA_HOME. -->
-    <property environment="env"/>
-
-    <!-- Allows a user to overide certain user specific properties. -->
-    <condition property="custom.bld.properties.message" value="Loading ${user.home}/build.properties..."
-                                                     else="Notice: custom properties file '${user.home}/build.properties' not found to load.">
-        <available file="${user.home}/build.properties"/>
-    </condition>
-    <echo message="${custom.bld.properties.message}"/>
-    <property file="${user.home}/build.properties"/>
-    <condition property="custom.tst.properties.message" value="Loading ${user.home}/test.properties..."
-                                                     else="Notice: custom properties file '${user.home}/test.properties' not found to load.">
-        <available file="${user.home}/test.properties"/>
-    </condition>
-    <condition property="custom.cmdtst.properties.message" value="Loading ${test.properties}..."
-                                                     else="Notice: custom properties file '${test.properties}' not found to load.">
-        <available file="${test.properties}"/>
-    </condition>
-    <echo message="${custom.tst.properties.message}"/>
-    <echo message="${custom.cmdtst.properties.message}"/>
-    <property file="${user.home}/test.properties"/>
-    <property file="${test.properties}"/>
-    <property file="${core_test.build.location}/antbuild.properties"/>
-    <property file="${core_test.build.location}/${test.properties}"/>
-    <property file="${core_test.build.location}/test.properties"/>
-
-    <!-- JVM used to run tests -->
-    <property name="test.junit.jvm" value="${env.JAVA_HOME}"/>
-    <property name="test.junit.jvm.exec" value="${test.junit.jvm}/bin/java"/>
-
-    <!-- JVM specific settings -->
-    <condition property="test.junit.jvm.modules.prop" value="-Dignore.modules=true" else="${test.junit.jvm.modules}">
-        <matches pattern="[1-8]\..*" string="${java.version}"/>
-    </condition>
-
-    <!-- Local path variables -->
-    <property name="core_test.src.dir"      value="${core_test.build.location}/${src.dir}"/>
-    <property name="core_test.resource.dir" value="${core_test.build.location}/${resource.dir}"/>
-    <property name="core_test.classes.dir"  value="${core_test.build.location}/${classes.dir}"/>
-    <property name="core_test.report.dir"   value="${core_test.build.location}/${report.dir}"/>
-    <property name="core_test.run.dir"      value="${core_test.build.location}/${run.dir}"/>
-
     <!-- Default ant target, compiles and translates resources, does not run tests. -->
-    <target name="build" depends="clean, compile, package" description="build EclipseLink jar"/>
+    <target name="build" depends="clean, compile, package" description="build EclipseLink core tests"/>
+
+
+    <!-- Initialization -->
+
+    <target name="pre-init">
+        <dirname  property="core_test.build.location_temp" file="${ant.file.eclipselink.core.test}"/>
+        <pathconvert targetos="unix" property="core_test.build.location">
+            <path>
+                <pathelement location="${core_test.build.location_temp}"/>
+            </path>
+        </pathconvert>
+        <condition property="core_test.2.base.dir" value="../.." else="..">
+            <contains string="${core_test.build.location}" substring="foundation"/>
+        </condition>
+
+        <!-- Allows tools.jar to be relative to JAVA_HOME. -->
+        <property environment="env"/>
+
+        <!-- Allows a user to overide certain user specific properties. -->
+        <condition property="custom.bld.properties.message" value="Loading ${user.home}/build.properties..."
+                   else="Notice: custom properties file '${user.home}/build.properties' not found to load.">
+            <available file="${user.home}/build.properties"/>
+        </condition>
+        <echo message="${custom.bld.properties.message}"/>
+        <property file="${user.home}/build.properties"/>
+        <condition property="custom.cmd.properties.message" value="Loading ${test.properties}..."
+                   else="Notice: custom properties file '${test.properties}' not found to load.">
+            <available file="${test.properties}"/>
+        </condition>
+        <echo message="${custom.cmd.properties.message}"/>
+        <property file="${test.properties}"/>
+        <condition property="custom.tst.properties.message" value="Loading ${user.home}/test.properties..."
+                   else="Notice: custom properties file '${user.home}/test.properties' not found to load.">
+            <available file="${user.home}/test.properties"/>
+        </condition>
+        <echo message="${custom.tst.properties.message}"/>
+        <property file="${user.home}/test.properties"/>
+        <condition property="custom.local.properties.message" value="Loading ${basedir}/local.build.properties..."
+                   else="Notice: custom properties file '${basedir}/local.build.properties' not found to load.">
+            <available file="${basedir}/local.build.properties"/>
+        </condition>
+        <echo message="${custom.local.properties.message}"/>
+        <property file="${basedir}/local.build.properties"/>
+        <property file="${core_test.build.location}/antbuild.properties"/>
+        <property file="${core_test.build.location}/${test.properties}"/>
+        <property file="${core_test.build.location}/test.properties"/>
+
+        <!-- JVM used to run tests -->
+        <property name="test.junit.jvm" value="${env.JAVA_HOME}"/>
+        <property name="test.junit.jvm.exec" value="${test.junit.jvm}/bin/java"/>
+        <property prefix="test.junit.jdk" file="${test.junit.jvm}/release"/>
+
+        <condition property="use.modules" value="true" else="false">
+            <not><matches pattern='"[1-8]\..*"' string="${test.junit.jdk.JAVA_VERSION}"/></not>
+        </condition>
+
+        <!-- versioning -->
+        <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
+        <property name="version.qualifier" value="qualifier"/>
+        <property name="version.string" value="${release.version}.${version.qualifier}"/>
+
+        <!-- Local path variables -->
+        <property name="core_test.src.dir"      value="${core_test.build.location}/${src.dir}"/>
+        <property name="core_test.resource.dir" value="${core_test.build.location}/${resource.dir}"/>
+        <property name="core_test.classes.dir"  value="${core_test.build.location}/${classes.dir}"/>
+        <property name="core_test.report.dir"   value="${core_test.build.location}/${report.dir}"/>
+        <property name="core_test.run.dir"      value="${core_test.build.location}/${run.dir}"/>
+
+        <property name="core_test.2.common.plugins.dir" value="${core_test.2.base.dir}/plugins"/>
+        <property name="core_test.2.core.dir"           value="../org.eclipse.persistence.core"/>
+        <property name="core_test.plugins.dir"          value="../plugins"/>
+
+        <!-- Give this a default value if not set in a user.home or test property file -->
+        <property name="extensions.depend.dir" value="../${core_test.2.base.dir}/extension.lib.external"/>
+        <property name="junit.lib"             value="${extensions.depend.dir}/junit.jar"/>
+        <property name="tools.lib"             value="${env.JAVA_HOME}/lib/tools.jar"/>
+        <property name="jacocoagent.lib"       value="${extensions.depend.dir}/${jacocoagent.jar}"/>
+
+        <echo message="core_test.build.location ='${core_test.build.location}'"/>
+        <echo message="core_test.2.base.dir     ='${core_test.2.base.dir}'"/>
+        <echo message="core_test.src.dir        ='${core_test.src.dir}'"/>
+        <echo message="core_test.resource.dir   ='${core_test.resource.dir}'"/>
+        <echo message="core_test.classes.dir    ='${core_test.classes.dir}'"/>
+        <echo message="core_test.report.dir     ='${core_test.report.dir}'"/>
+        <echo message="core_test.run.dir        ='${core_test.run.dir}'"/>
+        <echo message="user.home                ='${user.home}'"/>
+        <echo message="test.properties          ='${test.properties}'"/>
+        <echo message="extensions.depend.dir    ='${extensions.depend.dir}'"/>
+        <echo message="junit.lib                ='${junit.lib}'"/>
+        <echo message="tools.lib                ='${tools.lib}'"/>
+        <echo message="jdk.version              ='${test.junit.jdk.JAVA_VERSION}'"/>
+
+        <!-- Determine availability of compile dependencies   -->
+        <available file="${core_test.2.common.plugins.dir}/${antlr.jar}" property="antlr.bundle.exist"/>
+        <available file="${core_test.2.common.plugins.dir}/${asm.jar}" property="asm.bundle.exist"/>
+        <available file="${core_test.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar" property="core.bundle.exist"/>
+        <available file="${core_test.2.base.dir}/${eclipselink.jar}" property="eclipselink.jar.exist"/>
+        <available file="${core_test.2.core.dir}/${classes.dir}" type="dir" property="core.classes.exist"/>
+        <available classname="org.junit.Test" classpath="${junit.lib}" property="junit.jar.exist"/>
+        <available file="${core_test.2.base.dir}/jpa/plugins/${persistence22.jar}" property="persistence.bundle.exist"/>
+        <!-- Determine availability of runtime dependencies   -->
+        <available file="${eclipselink.core}/${resource.dir}" type="dir" property="core.resources.exist"/>
+        <available file="${jdbc.driver.jar}" property="jdbc.jar.exist"/>
+        <available file="${tools.lib}"       property="tools.jar.exist"/>
+        <!-- Determine where to get product classes, based upon availability  -->
+        <condition property="use.eclipselink">
+            <isset property="eclipselink.jar.exist"/>
+        </condition>
+        <condition property="use.bundles">
+            <and>
+                <isset property="antlr.bundle.exist"/>
+                <isset property="asm.bundle.exist"/>
+                <isset property="core.bundle.exist"/>
+                <not><isset property="use.eclipselink"/></not>
+            </and>
+        </condition>
+        <condition property="use.classes">
+            <and>
+                <isset property="core.resources.exist"/>
+                <isset property="core.classes.exist"/>
+                <not><isset property="use.eclipselink"/></not>
+                <not><isset property="use.bundles"/></not>
+            </and>
+        </condition>
+        <!-- Define system properties for resource processing and testing  -->
+        <property name="eclipselink.logging.level" value="${logging.level}"/>
+        <propertyset id="test.run.propertyset" dynamic="false">
+            <propertyref prefix="test.security-manager"/>
+            <propertyref regex="db\.(?!pwd).*"/>
+            <propertyref name="jdbc.driver.jar"/>
+            <propertyref name="eclipselink.logging.level"/>
+        </propertyset>
+        <propertyset id="test.perfrun.propertyset" dynamic="false">
+            <propertyref regex="eclipselink.perfdb\.(?!pwd).*"/>
+        </propertyset>
+    </target>
+
+    <target name="init-eclipselink" if="use.eclipselink">
+        <path id="core_test.product.path" cache="true">
+            <pathelement path="${core_test.2.base.dir}/${eclipselink.jar}"/>
+        </path>
+        <echo message="Using EclipseLink.jar as 'product' in compile dependency: ${toString:core_test.product.path}."/>
+    </target>
+    <target name="init-bundles" if="use.bundles">
+        <path id="core_test.product.path" cache="true">
+            <pathelement path="${core_test.2.common.plugins.dir}/${antlr.jar}"/>
+            <pathelement path="${core_test.2.common.plugins.dir}/${asm.jar}"/>
+            <pathelement path="${core_test.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
+        </path>
+        <echo message="Using EclipseLink OSGi bundles as 'product' in compile dependency ${toString:core_test.product.path}."/>
+    </target>
+    <target name="init-classes" if="use.classes">
+        <path id="core_test.product.path" cache="true">
+            <pathelement path="${core_test.2.common.plugins.dir}/${antlr.jar}"/>
+            <pathelement path="${core_test.2.common.plugins.dir}/${asm.jar}"/>
+            <pathelement path="${core_test.2.core.dir}/${classes.dir}"/>
+            <!--<pathelement path="${eclipselink.core}/${resource.dir}"/>   ??? -->
+        </path>
+        <echo message="Using EclipseLink classes directly as 'product' in compile dependency: ${toString:core_test.product.path}."/>
+    </target>
+
+    <target name="init-classpaths" unless="${use.modules}">
+        <property name="test.javac.version" value="1.8"/>
+        <property name="test.javac.args" value=""/>
+        <property name="test.junit.jvm.modules.prop" value=""/>
+        <path id="core_test.compile.module.path" cache="true"></path>
+        <path id="core_test.upgrade.module.path" cache="true"></path>
+        <path id="core_test.compile.without.connector.path" cache="true">
+            <path refid="core_test.product.path"/>
+            <pathelement path="${junit.lib}"/>
+            <pathelement path="${core_test.2.base.dir}/jpa/plugins/${persistence22.jar}"/>
+            <pathelement path="${core_test.2.common.plugins.dir}/${transaction.jar}"/>
+            <!--<fileset dir="${core_test.2.common.plugins.dir}" includes="${eclipselink.core.depend.without.connector}"/>-->
+        </path>
+    </target>
+    <target name="init-modulepaths" if="${use.modules}">
+        <property name="test.javac.version" value="9"/>
+        <property name="test.javac.args" value="--add-modules ${javac.modules}"/>
+        <property name="test.junit.jvm.modules.prop" value="--add-modules ${test.junit.jvm.modules}"/>
+        <path id="core_test.compile.module.path" cache="true">
+            <!--<pathelement path="${core_test.2.base.dir}/jpa/plugins/${persistence22.jar}"/>-->
+        </path>
+        <path id="core_test.upgrade.module.path" cache="true">
+            <pathelement path="${core_test.2.common.plugins.dir}/${transaction.jar}"/>
+        </path>
+        <path id="core_test.compile.without.connector.path" cache="true">
+            <path refid="core_test.product.path"/>
+            <pathelement path="${junit.lib}"/>
+            <pathelement path="${core_test.2.base.dir}/jpa/plugins/${persistence22.jar}"/>
+            <!--            <pathelement path="${core_test.2.common.plugins.dir}/${unsigned.persistence10.jar}"/>
+            <fileset dir="${core_test.2.common.plugins.dir}" includes="${eclipselink.core.depend.without.connector}"/>-->
+        </path>
+    </target>
+
+    <target name="init" depends="pre-init, init-eclipselink, init-bundles, init-classes, init-classpaths, init-modulepaths"
+            description="Initialize the build">
+        <condition property="use.failed">
+            <and>
+                <not><isset property="use.eclipselink"/></not>
+                <not><isset property="use.bundles"/></not>
+                <not><isset property="use.classes"/></not>
+            </and>
+        </condition>
+        <fail message="Product classes do not exist anywhere! Compile product or populate jars." if="use.failed"/>
+
+        <path id="core_test.compile.path" cache="true">
+            <path refid="core_test.compile.without.connector.path"/>
+            <!--<pathelement path="${core_test.2.common.plugins.dir}/${connector.jar}"/>-->
+        </path>
+        <path id="core_test.runtime.only.path" cache="true">
+            <pathelement path="${jacocoagent.lib}"/>
+            <pathelement path="${core_test.build.location}/${coretest.framework.jar}"/>
+            <pathelement path="${core_test.build.location}/${core.test.jar}"/>
+            <pathelement path="${core_test.run.dir}"/>
+            <pathelement path="${jdbc.driver.jar}"/>
+            <pathelement path="${tools.lib}"/>
+            <!--<pathelement path="${core_test.2.common.plugins.dir}/${persistence.extension}_${version.string}.jar"/>-->
+            <pathelement path="${extensions.depend.dir}/${jgroups.jar}"/>
+        </path>
+        <path id="core_test.run.path" cache="true">
+            <path refid="core_test.compile.path"/>
+            <path refid="core_test.runtime.only.path"/>
+        </path>
+    </target>
+
+    <target name="init-test-macro" depends="init">
+        <macrodef name="test">
+            <attribute name="include" />
+            <attribute name="classpath" default="core_test.run.path"/>
+            <attribute name="modulepath" default="core_test.compile.module.path"/>
+            <attribute name="upgrademodulepath" default="core_test.upgrade.module.path"/>
+            <sequential>
+                <property name="additional.jvmargs" value=""/>
+                <local name="single.test"/>
+                <condition property="single.test" value="true" else="false">
+                    <not>
+                        <contains string="@{include}" substring=".java"/>
+                    </not>
+                </condition>
+                <echo message="${line.separator}${line.separator}Running test on ${db.url}${line.separator}${line.separator}" />
+                <echo message="JUnit settings:"/>
+                <echo message="  test                         ='@{include}'"/>
+                <echo message="  run.dir                      ='${core_test.run.dir}'"/>
+                <echo message="  report.dir                   ='${core_test.report.dir}'"/>
+                <echo message="  failonerror                  ='${fail.on.error}'"/>
+                <echo message="Java settings:"/>
+                <echo message="  jdk.version                  ='${test.junit.jdk.JAVA_VERSION}'"/>
+                <echo message="  additional.jvmargs           ='${additional.jvmargs}'"/>
+                <echo message="  maxmemory                    ='${max.heap.memory}'"/>
+                <echo message="  java args                    ='${test.junit.jvm.modules.prop}'"/>
+                <echo message="  module-path                  ='${toString:@{modulepath}}'"/>
+                <echo message="  upgrade-module-path          ='${toString:@{upgrademodulepath}}'"/>
+                <echo message="  class-path                   ='${toString:@{classpath}}'"/>
+                <echo message="System properties:             ='${toString:test.run.propertyset}'"/>
+                <echo message="  db.pwd                       ='**********'"/>
+                <mkdir dir="${core_test.run.dir}"/>
+                <mkdir dir="${core_test.report.dir}"/>
+                <junit fork="yes" jvm="${test.junit.jvm.exec}" maxmemory="${max.heap.memory}"
+                       dir="${core_test.run.dir}" showoutput="true" printsummary="yes" failureproperty="junit.failed">
+                    <classpath refid="@{classpath}"/>
+                    <modulepath refid="@{modulepath}"/>
+                    <upgrademodulepath refid="@{upgrademodulepath}"/>
+                    <jvmarg line="${test.junit.jvm.modules.prop}"/>
+                    <syspropertyset refid="test.run.propertyset"/>
+                    <sysproperty key="db.pwd" value="${db.pwd}"/>
+                    <formatter type="xml"/>
+                    <!--<formatter type="plain"/>-->
+                    <batchtest haltonfailure="no" todir="${core_test.report.dir}">
+                        <fileset dir="${core_test.src.dir}">
+                            <include name="@{include}"/>
+                        </fileset>
+                    </batchtest>
+                    <test name="@{include}" haltonfailure="no" todir="${core_test.report.dir}" if="${single.test}"/>
+                </junit>
+                <fail message="TESTS FAILED !">
+                    <condition>
+                        <and>
+                            <isset property="junit.failed"/>
+                            <istrue value="${fail.on.error}"/>
+                        </and>
+                    </condition>
+                </fail>
+            </sequential>
+        </macrodef>
+    </target>
+    <target name="init-report-macro" depends="pre-init">
+        <macrodef name="generate-report">
+            <attribute name="dir" default="${core_test.report.dir}"/>
+            <sequential>
+                <junitreport todir="@{dir}">
+                    <fileset dir="@{dir}">
+                        <include name="TEST-*.xml"/>
+                    </fileset>
+                    <report format="noframes" todir="@{dir}"/>
+                </junitreport>
+            </sequential>
+        </macrodef>
+    </target>
+    <target name="init-java-macro" depends="init">
+        <macrodef name="run-java">
+            <attribute name="classname" />
+            <attribute name="classpath" default="core_test.run.path"/>
+            <attribute name="modulepath" default="core_test.compile.module.path"/>
+            <attribute name="upgrademodulepath" default="core_test.upgrade.module.path"/>
+            <element name="customize" implicit="true" optional="true"/>
+            <sequential>
+                <property name="additional.jvmargs" value=""/>
+                <condition property="jvmarg.performance.baseline.version"
+                           value="-Dtoplink.loadbuild.baseline-version=${performance.baseline.version}" else="-Ddummy=dummy">
+                    <isset property="performance.baseline.version"/>
+                </condition>
+                <echo message="Java settings:"/>
+                <echo message="  classname                    ='@{classname}'"/>
+                <echo message="  run.dir                      ='${core_test.run.dir}'"/>
+                <echo message="  report.dir                   ='${core_test.report.dir}'"/>
+                <echo message="  failonerror                  ='${fail.on.error}'"/>
+                <echo message="  jdk.version                  ='${test.junit.jdk.JAVA_VERSION}'"/>
+                <echo message="  additional.jvmargs           ='${additional.jvmargs}'"/>
+                <echo message="  maxmemory                    ='${max.heap.memory}'"/>
+                <echo message="  java args                    ='${test.junit.jvm.modules.prop}'"/>
+                <echo message="  module-path                  ='${toString:@{modulepath}}'"/>
+                <echo message="  upgrade-module-path          ='${toString:@{upgrademodulepath}}'"/>
+                <echo message="  class-path                   ='${toString:@{classpath}}'"/>
+                <echo message="System properties:             ='${toString:test.run.propertyset}'"/>
+                <echo message="  db.pwd                       ='**********'"/>
+                <echo message="Perf properties:               ='${jvmarg.performance.baseline.version}, ${toString:test.perfrun.propertyset}'"/>
+                <echo message="  eclipselink.perfdb.pwd       ='**********'"/>
+                <mkdir dir="${core_test.run.dir}"/>
+                <mkdir dir="${core_test.report.dir}"/>
+                <java fork="true" jvm="${test.junit.jvm.exec}" maxmemory="${max.heap.memory}"
+                      dir="${core_test.run.dir}" failonerror="${fail.on.error}"
+                      classname="@{classname}">
+                    <classpath refid="@{classpath}"/>
+                    <modulepath refid="@{modulepath}"/>
+                    <upgrademodulepath refid="@{upgrademodulepath}"/>
+                    <jvmarg line="${test.junit.jvm.modules.prop}"/>
+                    <syspropertyset refid="test.run.propertyset"/>
+                    <sysproperty key="db.pwd" value="${db.pwd}"/>
+                    <syspropertyset refid="test.perfrun.propertyset"/>
+                    <sysproperty key="eclipselink.perfdb.pwd" value="${eclipselink.perfdb.pwd}"/>
+                    <jvmarg value="${jvmarg.performance.baseline.version}"/>
+                    <jvmarg value="-Djava.naming.factory.initial=com.sun.jndi.cosnaming.CNCtxFactory"/>
+                    <jvmarg line="${additional.jvmargs}"/>
+                    <customize/>
+                </java>
+            </sequential>
+        </macrodef>
+    </target>
+    <target name="init-test-prompt-macro" depends="init-java-macro">
+        <macrodef name="test-prompt">
+            <attribute name="testmodel" />
+            <attribute name="classpath" default="core_test.run.path"/>
+            <attribute name="modulepath" default="core_test.compile.module.path"/>
+            <attribute name="upgrademodulepath" default="core_test.upgrade.module.path"/>
+            <element name="customize" implicit="true" optional="true"/>
+            <sequential>
+                <echo message="${line.separator}${line.separator}Running @{testmodel} on ${db.url}${line.separator}${line.separator}" />
+                <run-java classname="org.eclipse.persistence.testing.framework.PromptTestRunner"
+                          classpath="@{classpath}" modulepath="@{modulepath}" upgrademodulepath="@{upgrademodulepath}">
+                    <arg value="testmodel=@{testmodel}" />
+                    <arg value="regressionlog=${core_test.report.dir}/test.log" />
+                    <arg value="saveresults=${should.save.results}" />
+                    <customize/>
+                </run-java>
+            </sequential>
+        </macrodef>
+    </target>
+
+    <target name="init-testing" depends="init, init-test-macro, init-report-macro, init-test-prompt-macro, process-resource"/>
+
+
+    <!-- Cleaning, Building & Packaging -->
 
     <!-- Clean all build generated content. -->
-    <target name="clean" description="Clean the build">
+    <target name="clean" depends="pre-init" description="Clean the build">
         <echo message="Cleaning..."/>
         <echo message="    ${core_test.classes.dir}"/>
         <echo message="    ${core_test.report.dir}"/>
@@ -123,181 +441,45 @@
             <fileset dir="${core_test.classes.dir}"/>
             <fileset dir="${core_test.report.dir}"/>
             <fileset dir="${core_test.run.dir}"/>
-            <fileset dir="${core_test.build.location}" includes="${coretest.framework.jar}"/>
-            <fileset dir="${core_test.build.location}" includes="${core.test.jar}"/>
+            <fileset dir="${core_test.build.location}" includes="${coretest.framework.jar},${core.test.jar}"/>
         </delete>
     </target>
 
-    <target name="init">
-        <!-- Give this a default value if not set in a user.home or test property file -->
-        <property name="extensions.depend.dir" value="../${core_test.2.base.dir}/extension.lib.external"/>
-        <property name="junit.lib"             value="${extensions.depend.dir}/junit.jar"/>
-        <property name="jacocoagent.lib" value="${extensions.depend.dir}/${jacocoagent.jar}"/>
-
-        <echo message="core_test.src.dir     ='${core_test.src.dir}'"/>
-        <echo message="core_test.resource.dir='${core_test.resource.dir}'"/>
-        <echo message="core_test.classes.dir ='${core_test.classes.dir}'"/>
-        <echo message="core_test.report.dir  ='${core_test.report.dir}'"/>
-        <echo message="core_test.run.dir     ='${core_test.run.dir}'"/>
-        <echo message="user.home      ='${user.home}'"/>
-        <echo message="test.properties='${test.properties}'"/>
-        <echo message="extensions.depend.dir ='${extensions.depend.dir}'"/>
-        <echo message="junit.lib             ='${junit.lib}'"/>
-        <echo message="tools.lib             ='${tools.lib}'"/>
-
-        <!-- versioning -->
-        <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
-        <tstamp>
-           <format property="build.date" pattern="yyyyMMdd"/>
-           <format property="build.time" pattern="HHmm"/>
-        </tstamp>
-        <property name="build.type" value="SNAPSHOT"/>
-        <property name="svn.revision" value="NA"/>
-        <property name="version.qualifier" value="qualifier"/>
-        <property name="version.string" value="${release.version}.${version.qualifier}"/>
-        <property name="release.designation"  value="EclipseLink ${release.version} Build"/>
-
-        <!-- Determine availability of compile dependencies   -->
-        <available file="${core_test.2.common.plugins.dir}/${antlr}_${version.string}.jar" property="antlr.bundle.exist"/>
-        <available file="${core_test.2.common.plugins.dir}/${asm}_${version.string}.jar" property="asm.bundle.exist"/>
-        <available file="${core_test.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar" property="core.bundle.exist"/>
-        <available file="${core_test.2.base.dir}/${eclipselink.jar}" property="eclipselink.jar.exist"/>
-        <available file="${core_test.2.core.dir}/${classes.dir}" type="dir" property="core.classes.exist"/>
-        <available file="${junit.lib}" property="junit.jar.exist"/>
-        <available file="${core_test.2.common.plugins.dir}/${unsigned.persistence10.jar}" property="persistence.bundle.exist"/>
-        <!-- Determine availability of runtime dependencies   -->
-        <available file="${eclipselink.core}/${resource.dir}" type="dir" property="core.resources.exist"/>
-        <available file="${jdbc.driver.jar}" property="jdbc.jar.exist"/>
-        <available file="${tools.lib}"       property="tools.jar.exist"/>
-
-        <!-- Determine where to get product classes, based upon availability  -->
-        <condition property="use.eclipselink">
-                <isset property="eclipselink.jar.exist"/>
-        </condition>
-        <condition property="use.bundles">
-            <and>
-                <isset property="antlr.bundle.exist"/>
-                <isset property="asm.bundle.exist"/>
-                <isset property="core.bundle.exist"/>
-                <not> <isset property="use.eclipselink"/> </not>
-            </and>
-        </condition>
-        <condition property="use.classes">
-            <and>
-                <isset property="core.resources.exist"/>
-                <isset property="core.classes.exist"/>
-                <not> <isset property="use.eclipselink"/> </not>
-                <not> <isset property="use.bundles"/>     </not>
-            </and>
-        </condition>
-        <condition property="use.failed">
-            <and>
-                <not> <isset property="use.eclipselink"/> </not>
-                <not> <isset property="use.bundles"/>     </not>
-                <not> <isset property="use.classes"/>     </not>
-            </and>
-        </condition>
-        <!-- Determine where to get product classes, based upon availability  -->
-        <condition property="run.ok">
-            <and>
-                <not> <isset property="use.failed"/> </not>
-                <isset property="jdbc.jar.exist"/>
-                <isset property="tools.jar.exist"/>
-            </and>
-        </condition>
-
-        <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
-        <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
-        <echo message="additional.jvmargs    ='${additional.jvmargs}'"/>
-    </target>
-
-    <target name="init_eclipselink" if="use.eclipselink">
-        <echo message="Using EclipseLink.jar as 'product' in compile dependency."/>
-        <path id="core_test.product.path">
-            <pathelement path="${core_test.2.base.dir}/${eclipselink.jar}"/>
-        </path>
-    </target>
-    <target name="init_bundles" if="use.bundles">
-        <echo message="Using EclipseLink OSGi bundles as 'product' in compile dependency."/>
-        <path id="core_test.product.path">
-            <pathelement path="${core_test.2.common.plugins.dir}/${antlr}_${version.string}.jar"/>
-            <pathelement path="${core_test.2.common.plugins.dir}/${asm}_${version.string}.jar"/>
-            <pathelement path="${core_test.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
-        </path>
-    </target>
-    <target name="init_classes" if="use.classes">
-        <echo message="Using EclipseLink classes directly as 'product' in compile dependency."/>
-        <path id="core_test.product.path">
-            <pathelement path="${core_test.2.common.plugins.dir}/${antlr}"/>
-            <pathelement path="${core_test.2.common.plugins.dir}/${asm}"/>
-            <pathelement path="${core_test.2.core.dir}/${classes.dir}"/>
-            <pathelement path="${eclipselink.core}/${resource.dir}"/>
-        </path>
-    </target>
-    <target name="init_paths" depends="init, init_eclipselink, init_bundles, init_classes">
-        <fail message="Product classes do not exist anywhere! Compile product or populate jars." if="use.failed"/>
-        <path id="core_test.compile.without.connector.path">
-            <path refid="core_test.product.path"/>
-            <pathelement path="${junit.lib}"/>
-            <pathelement path="${core_test.2.common.plugins.dir}/${unsigned.persistence10.jar}"/>
-            <fileset dir="${core_test.2.common.plugins.dir}" includes="${eclipselink.core.depend.without.connector}"/>
-        </path>
-        <path id="core_test.compile.path">
-            <path refid="core_test.compile.without.connector.path"/>
-            <pathelement path="${core_test.2.common.plugins.dir}/${connector.jar}"/>
-        </path>
-        <path id="core_test.runtime.only.path">
-            <pathelement path="${jacocoagent.lib}"/>
-            <pathelement path="${core_test.build.location}/${coretest.framework.jar}"/>
-            <pathelement path="${core_test.build.location}/${core.test.jar}"/>
-            <pathelement path="${core_test.run.dir}"/>
-            <pathelement path="${jdbc.driver.jar}"/>
-            <pathelement path="${tools.lib}"/>
-            <pathelement path="${core_test.2.common.plugins.dir}/${persistence.extension}_${version.string}.jar"/>
-            <pathelement path="${extensions.depend.dir}/${jgroups.jar}"/>
-        </path>
-        <path id="core_test.run.path">
-            <path refid="core_test.compile.path"/>
-            <path refid="core_test.runtime.only.path"/>
-        </path>
-    </target>
-
     <!-- Compiles all tests. -->
-    <target name="compile" depends="init_paths" description="compile EclipseLink core tests">
+    <target name="compile" depends="init" description="compile EclipseLink core tests">
         <!-- fail message="Cannot find junit: '${junit.lib}'." unless="junit.jar.exist"/ -->
         <!-- fail message="Cannot find persistence: '${core_test.2.common.plugins.dir}/${unsigned.persistence10.jar}'." unless="persistence.bundle.exist"/ -->
+        <echo message="Compiler settings:"/>
+        <echo message="jdk.version          ='${test.junit.jdk.JAVA_VERSION}'"/>
+        <echo message="srcdir               ='${core_test.src.dir}'"/>
+        <echo message="destdir              ='${core_test.classes.dir}'"/>
+        <echo message="debug/debuglevel     ='${javac.debug}'/'${javac.debuglevel}'"/>
+        <echo message="source/target        ='${test.javac.version}'/'${test.javac.version}'"/>
+        <echo message="deprecation          ='${javac.deprecation}'"/>
+        <echo message="failonerror          ='${fail.on.error}'"/>
+        <echo message="memoryMaximumSize    ='${max.heap.memory}'"/>
+        <echo message="javac args           ='${test.javac.args}'"/>
+        <echo message="module-path          ='${toString:core_test.compile.module.path}'"/>
+        <echo message="upgrade-module-path  ='${toString:core_test.upgrade.module.path}'"/>
+        <echo message="class-path           ='${toString:core_test.compile.path}'"/>
         <mkdir dir="${core_test.classes.dir}"/>
-        <javac srcdir="${core_test.src.dir}"
-               destdir="${core_test.classes.dir}"
-               includes="org/eclipse/persistence/**, deprecated/**, java/sql/**"
-               debug="${javac.debug}"
-               debuglevel="${javac.debuglevel}"
-               encoding="UTF-8"
-               optimize="${javac.optimize}"
-               source="${javac.version}"
-               target="${javac.version}"
-               deprecation="${javac.deprecation}"
-               failonerror="true"
-               memoryMaximumSize="512m"
-               fork="true"
+        <javac srcdir="${core_test.src.dir}" destdir="${core_test.classes.dir}"
+               debug="${javac.debug}" debuglevel="${javac.debuglevel}"
+               encoding="UTF-8" deprecation="${javac.deprecation}"
+               source="${test.javac.version}" target="${test.javac.version}"
+               failonerror="${fail.on.error}"
+               memoryMaximumSize="${max.heap.memory}"
+               includes="org/eclipse/persistence/**"
                classpathref="core_test.compile.path"
-        />
-    </target>
-
-    <!-- Packages tests jar. -->
-    <target name="package" depends="compile, process-resource" description="jar for local testing">
-        <delete file="${core_test.build.location}/${coretest.framework.jar}" failonerror="false"/>
-        <jar jarfile="${core_test.build.location}/${coretest.framework.jar}">
-           <fileset dir="${core_test.classes.dir}" includes="org/eclipse/persistence/testing/framework/**/*.class"/>
-        </jar>
-        <delete file="${core_test.build.location}/${core.test.jar}" failonerror="false"/>
-        <jar jarfile="${core_test.build.location}/${core.test.jar}">
-           <fileset dir="${core_test.classes.dir}" excludes="org/eclipse/persistence/testing/framework/**/*.class"/>
-        </jar>
+               modulepathref="core_test.compile.module.path"
+               upgrademodulepathref="core_test.upgrade.module.path"
+               fork="true" >
+            <compilerarg line="${test.javac.args}"/>
+        </javac>
     </target>
 
     <!-- Translates the login information in the resources into the run directory. -->
-    <target name="process-resource">
+    <target name="process-resource" depends="init">
         <!-- fail message="Cannot find jdbc driver: '${jdbc.driver.jar}'." unless="jdbc.jar.exist"/ -->
         <!-- fail message="Cannot find tools library: '${tools.lib}'." unless="tools.jar.exist"/ -->
         <mkdir dir="${core_test.run.dir}"/>
@@ -323,7 +505,7 @@
         <echo message="     to '${core_test.run.dir}'"/>
         <copy todir="${core_test.run.dir}" filtering="true" overwrite="true">
             <fileset dir="${core_test.resource.dir}"
-                excludes="**/Employee_utf16.xml, **/NLSJapaneseMWIntegrationTestEmployeeProject.xml"/>
+                     excludes="**/Employee_utf16.xml, **/NLSJapaneseMWIntegrationTestEmployeeProject.xml"/>
         </copy>
 
         <echo message="Filter copying Resources '**/Employee_utf16.xml' (UTF-16 encoding)"/>
@@ -341,39 +523,49 @@
         </copy>
     </target>
 
+    <!-- Packages tests jar. -->
+    <target name="package" depends="compile, process-resource" description="jar for local testing">
+        <delete file="${core_test.build.location}/${coretest.framework.jar}" failonerror="false"/>
+        <jar jarfile="${core_test.build.location}/${coretest.framework.jar}" filesonly="true">
+            <fileset dir="${core_test.classes.dir}" includes="org/eclipse/persistence/testing/framework/**/*.class"/>
+        </jar>
+        <delete file="${core_test.build.location}/${core.test.jar}" failonerror="false"/>
+        <jar jarfile="${core_test.build.location}/${core.test.jar}" filesonly="true">
+            <fileset dir="${core_test.classes.dir}" excludes="org/eclipse/persistence/testing/framework/**/*.class"/>
+        </jar>
+    </target>
+
 
     <!-- Testing -->
 
     <!-- Test target to initialize a clean database (needed before a nighlty run of the LRG or a continuous build SRG run) -->
-    <target name="clear-database">
-        <antcall target="run-test" inheritRefs="true">
-            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.ClearDatabaseSchemaTest"/>
-        </antcall>
+    <target name="clear-database" depends="init-testing">
+        <test include="org.eclipse.persistence.testing.tests.ClearDatabaseSchemaTest"/>
     </target>
 
     <!-- Default test target, runs test.class from test.properties (default is LRG). -->
-    <target name="test">
-        <antcall target="run-junit-test" inheritRefs="true" />
-        <antcall target="run-test" inheritRefs="true">
-            <param name="TEST_CLASS" value="${test.class}"/>
-        </antcall>
-        <antcall target="run-test" inheritRefs="true">
-            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.security.SecurityTestModel"/>
-        </antcall>
-        <antcall target="generate-report" inheritRefs="true"/>
+    <target name="test" depends="init-testing">
+        <test include="**/junit/**/*Test.java"/>
+        <test include="${test.class}"/>
+        <test include="org.eclipse.persistence.testing.tests.security.SecurityTestModel"/>
+        <generate-report/>
+    </target>
+
+    <!-- Test target to run/debug single ${test.class}. -->
+    <target name="test-single" depends="init-testing">
+        <test include="${test.class}"/>
+        <generate-report/>
     </target>
 
     <!-- Runs SRG (SRGTestModel). -->
-    <target name="test-srg">
-        <antcall target="run-junit-test" inheritRefs="true" />
-        <antcall target="run-test" inheritRefs="true">
-            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.SRGTestModel"/>
-        </antcall>
-        <antcall target="generate-report" inheritRefs="true"/>
+    <target name="test-srg" depends="init-testing">
+        <test include="**/junit/**/*Test.java"/>
+        <test include="org.eclipse.persistence.testing.tests.SRGTestModel"/>
+        <generate-report/>
     </target>
 
     <!-- Runs non-LRG tests -->
-    <target name="test-non-lrg">
+    <target name="test-non-lrg" depends="init-testing">
         <!-- Requires remote config.
         The following JVM arguments must be set.
             -Djava.naming.factory.initial=com.sun.jndi.cosnaming.CNCtxFactory
@@ -382,77 +574,72 @@
         The follwing corba naming server must also be started on the computer.
             <java_home>/bin/tnameserv.exe
         -->
-        <antcall target="run-test-prompt" inheritRefs="true">
-            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.remote.RMIRemoteModel"/>
-        </antcall>
-        <antcall target="run-test-prompt" inheritRefs="true">
-            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.remote.rmi.IIOP.RMIIIOPRemoteModel"/>
-        </antcall>
-        <antcall target="run-test-prompt" inheritRefs="true">
-            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.remote.suncorba.SunCORBARemoteModel"/>
-        </antcall>
-        <antcall target="run-test-prompt" inheritRefs="true">
-            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.sessionbroker.RMISessionBrokerRemoteModel"/>
-        </antcall>
+        <test-prompt testmodel="org.eclipse.persistence.testing.tests.remote.RMIRemoteModel"/>
+        <test-prompt testmodel="org.eclipse.persistence.testing.tests.remote.rmi.IIOP.RMIIIOPRemoteModel"/>
+        <test-prompt testmodel="org.eclipse.persistence.testing.tests.remote.suncorba.SunCORBARemoteModel"/>
+        <test-prompt testmodel="org.eclipse.persistence.testing.tests.sessionbroker.RMISessionBrokerRemoteModel"/>
         <!-- Requires user "scott" unlocked and granted special privileges on oracle database -->
-        <antcall target="run-test-prompt" inheritRefs="true">
-            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.feature.NativeModeCreatorTestModel"/>
-        </antcall>
+        <test-prompt testmodel="org.eclipse.persistence.testing.tests.feature.NativeModeCreatorTestModel"/>
         <!-- Requires usage of Japanese machine and database. -->
-        <!--antcall target="run-test-prompt" inheritRefs="true">
-            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.nls.japanese.NLSMappingWorkbenchIntegrationTestModel"/>
-        </antcall-->
+        <!--<test-prompt testmodel="org.eclipse.persistence.testing.tests.nls.japanese.NLSMappingWorkbenchIntegrationTestModel"/>-->
         <!-- Requires specific LAB databases. -->
-        <antcall target="run-test-prompt" inheritRefs="true">
-            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.sessionbroker.BrokerTestModel"/>
-        </antcall>
-        <antcall target="run-test-prompt" inheritRefs="true">
-            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.sessionbroker.MultipleClientBrokersTestModel"/>
-        </antcall>
-        <antcall target="run-test-prompt" inheritRefs="true">
-            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.sessionbroker.ServerBrokerTestModel"/>
-        </antcall>
-        <antcall target="run-test-prompt" inheritRefs="true">
-            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.distributedservers.DistributedSessionBrokerServersModel"/>
-        </antcall>
-        <antcall target="run-test-prompt" inheritRefs="true">
-            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.distributedservers.rcm.RCMDistributedServersModel"/>
-        </antcall>
+        <test-prompt testmodel="org.eclipse.persistence.testing.tests.sessionbroker.BrokerTestModel"/>
+        <test-prompt testmodel="org.eclipse.persistence.testing.tests.sessionbroker.MultipleClientBrokersTestModel"/>
+        <test-prompt testmodel="org.eclipse.persistence.testing.tests.sessionbroker.ServerBrokerTestModel"/>
+        <test-prompt testmodel="org.eclipse.persistence.testing.tests.distributedservers.DistributedSessionBrokerServersModel"/>
+        <test-prompt testmodel="org.eclipse.persistence.testing.tests.distributedservers.rcm.RCMDistributedServersModel"/>
         <!-- Can take a long time, can deadlock. -->
-        <antcall target="run-test-prompt" inheritRefs="true">
-            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.clientserver.ClientServerTestModel"/>
-        </antcall>
+        <test-prompt testmodel="org.eclipse.persistence.testing.tests.clientserver.ClientServerTestModel"/>
 
         <!--PLSQL -->
-        <antcall target="run-test-prompt" inheritRefs="true">
-            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.plsql.PLSQLTestModel"/>
-        </antcall>
-        <antcall target="run-test-prompt" inheritRefs="true">
-            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.plsql.PLSQLXMLTestModel"/>
-        </antcall>
+        <test-prompt testmodel="org.eclipse.persistence.testing.tests.plsql.PLSQLTestModel"/>
+        <test-prompt testmodel="org.eclipse.persistence.testing.tests.plsql.PLSQLXMLTestModel"/>
     </target>
 
     <!-- Runs LRG (TestRunModel). -->
-    <target name="test-lrg">
-        <antcall target="run-junit-test" inheritRefs="true" />
-        <antcall target="run-test" inheritRefs="true">
-            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.TestRunModel"/>
-        </antcall>
-        <antcall target="generate-report" inheritRefs="true"/>
+    <target name="test-lrg" depends="init-testing">
+        <test include="**/junit/**/*Test.java"/>
+        <test include="org.eclipse.persistence.testing.tests.TestRunModel"/>
+        <generate-report/>
     </target>
 
     <!-- Prompt runner test target, runs test.class from test.properties (default is LRG). -->
-    <target name="test-prompt">
-        <antcall target="run-test-prompt" inheritRefs="true">
-            <param name="TEST_CLASS" value="${test.class}"/>
-        </antcall>
+    <target name="test-prompt" depends="init-testing">
+        <test-prompt testmodel="${test.class}"/>
     </target>
 
+    <!-- Runs concurrency tests. -->
+    <target name="test-concurrency" depends="init-testing">
+        <test-prompt testmodel="org.eclipse.persistence.testing.tests.performance.ConcurrencyComparisonTestModel"/>
+    </target>
+
+    <!-- Runs extension tests. -->
+    <target name="test-extension" depends="init-testing">
+        <test include="org.eclipse.persistence.testing.tests.ExtensionTestModel"/>
+        <generate-report/>
+    </target>
+
+    <!-- Execute this target on non-Oracle database platforms only, because a test requires no Oracle JDBC jar in the classpath-->
+    <target name="test-ClassPathTestModel" depends="init, init-testing">
+        <path id="test.cpmodel.cp">
+            <path refid="core_test.compile.without.connector.path"/>
+            <path refid="core_test.runtime.only.path"/>
+        </path>
+        <test-prompt testmodel="org.eclipse.persistence.testing.tests.classpath.ClassPathTestModel" classpath="test.cpmodel.cp">
+            <arg value="createdbconnection=false" />
+        </test-prompt>
+    </target>
+
+    <target name="generate-report" depends="init-report-macro">
+        <generate-report/>
+    </target>
+
+
+    <!-- Performance Testing -->
+
     <!-- Runs performance tests. -->
-    <target name="test-performance" depends="check-performance-test-dependencies">
-        <antcall target="run-test-prompt" inheritRefs="true">
-            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.performance.PerformanceTestModel"/>
-        </antcall>
+    <target name="test-performance" depends="init-testing, check-performance-test-dependencies">
+        <test-prompt testmodel="org.eclipse.persistence.testing.tests.performance.PerformanceTestModel"/>
     </target>
 
     <!-- Checks that the following performance test properties are set:
@@ -464,7 +651,7 @@
         eclipselink.perfdb.platform     - database platform (ex. org.eclipse.persistence.platform.database.MySQLPlatform)
         eclipselink.perfdb.driver.jar   - database driver jar location (ex. /opt/jdk/mysql-connector-java-5.1.30-bin.jar)
     -->
-    <target name="check-performance-test-dependencies">
+    <target name="check-performance-test-dependencies" depends="init">
         <condition property="performance.test.condition">
             <and>
                 <isset property="eclipselink.perfdb.user"/>
@@ -508,202 +695,7 @@
         <echo message="${eclipselink.perfdb.platform.msg}"/>
         <echo message="${eclipselink.perfdb.driver.jar.msg}"/>
         <echo message="${should.save.results.msg}"/>
-
         <fail message="Performance test properties are missing." unless="performance.test.condition"/>
-    </target>
-
-    <!-- Runs concurrency tests. -->
-    <target name="test-concurrency">
-        <antcall target="run-test-prompt" inheritRefs="true">
-            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.performance.ConcurrencyComparisonTestModel"/>
-        </antcall>
-    </target>
-
-    <!-- Runs extension tests. -->
-    <target name="test-extension">
-        <antcall target="run-test" inheritRefs="true">
-            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.ExtensionTestModel"/>
-        </antcall>
-        <antcall target="generate-report" inheritRefs="true"/>
-    </target>
-
-    <!-- Launches the testing browser -->
-    <target name="test-browser" depends="init_paths, process-resource">
-        <echo>Running test browser</echo>
-        <mkdir dir="${core_test.run.dir}"/>
-        <mkdir dir="${core_test.report.dir}"/>
-        <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
-        <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
-        <java classname="org.eclipse.persistence.testing.framework.ui.TestingBrowserFrame"
-             fork="true"
-             maxmemory="512m"
-             failonerror="false"
-             dir="${core_test.run.dir}">
-            <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
-            <jvmarg value="${test.security-manager}"/>
-            <jvmarg value="${test.security-manager.policy}"/>
-            <jvmarg value="-Djava.naming.factory.initial=com.sun.jndi.cosnaming.CNCtxFactory"/>
-                <jvmarg line="${additional.jvmargs}"/>
-            <classpath>
-                <path refid="core_test.run.path"/>
-            </classpath>
-        </java>
-    </target>
-
-    <!-- Generic target for running tests. -->
-    <target name="run-test" depends="init_paths, process-resource">
-        <echo>Running test on ${db.url}</echo>
-        <mkdir dir="${core_test.run.dir}"/>
-        <mkdir dir="${core_test.report.dir}"/>
-        <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
-        <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
-        <!-- 282012: On a 64-bit JVM - The XML processing at the end of the testing requires at least 1536 -->
-        <!-- Note: on a legacy XP OS with 4GB ram - the max is 1536 - use of 2048 will cause [junit] [WARN ] Unable to acquire some virtual address space - reduced from 2048 to 1908MB. -->
-        <junit jvm="${test.junit.jvm.exec}" printsummary="yes" failureproperty="junit.failed" logfailedtests="true"
-               fork="yes" forkmode="once" showoutput="true" maxmemory="${max.heap.memory}" dir="${core_test.run.dir}">
-            <jvmarg line="${test.junit.jvm.modules.prop}"/>
-            <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
-            <jvmarg value="-Ddb.driver=${db.driver}"/>
-            <jvmarg value="-Ddb.url=${db.url}"/>
-            <jvmarg value="-Ddb.user=${db.user}"/>
-            <jvmarg value="-Ddb.pwd=${db.pwd}"/>
-            <jvmarg value="-Ddb.platform=${db.platform}"/>
-            <jvmarg line="${additional.jvmargs}"/>
-            <jvmarg value="${test.security-manager}"/>
-            <jvmarg value="${test.security-manager.policy}"/>
-            <classpath>
-                <path refid="core_test.run.path"/>
-            </classpath>
-            <formatter type="xml"/>
-            <formatter type="plain"/>
-            <test name="${TEST_CLASS}" haltonfailure="no" outfile="${report.dir}/${TEST_CLASS}-test-results">
-            </test>
-        </junit>
-        <fail message="TESTS FAILED !">
-            <condition>
-                <and>
-                    <isset property="junit.failed"/>
-                    <istrue value="${test.fail.fast}"/>
-                </and>
-            </condition>
-        </fail>
-    </target>
-
-    <!-- Generic target for running JUnit tests. -->
-    <target name="run-junit-test" depends="init_paths, process-resource">
-        <echo>Running test on ${db.url}</echo>
-        <mkdir dir="${core_test.run.dir}"/>
-        <mkdir dir="${core_test.report.dir}"/>
-        <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
-        <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
-        <!-- 282012: On a 64-bit JVM - The XML processing at the end of the testing requires at least 1536 -->
-        <!-- Note: on a legacy XP OS with 4GB ram - the max is 1536 - use of 2048 will cause [junit] [WARN ] Unable to acquire some virtual address space - reduced from 2048 to 1908MB. -->
-        <junit jvm="${test.junit.jvm.exec}" printsummary="yes" failureproperty="junit.failed" fork="yes" showoutput="true" maxmemory="${max.heap.memory}" dir="${core_test.run.dir}">
-            <jvmarg line="${test.junit.jvm.modules.prop}"/>
-            <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
-            <jvmarg value="-Ddb.driver=${db.driver}"/>
-            <jvmarg value="-Ddb.url=${db.url}"/>
-            <jvmarg value="-Ddb.user=${db.user}"/>
-            <jvmarg value="-Ddb.pwd=${db.pwd}"/>
-            <jvmarg value="-Ddb.platform=${db.platform}"/>
-            <jvmarg line="${additional.jvmargs}"/>
-            <jvmarg value="${test.security-manager}"/>
-            <jvmarg value="${test.security-manager.policy}"/>
-            <classpath>
-                <path refid="core_test.run.path"/>
-            </classpath>
-            <formatter type="xml"/>
-            <batchtest haltonfailure="no" todir="${report.dir}">
-                <fileset dir="${core_test.src.dir}">
-                    <include name="**/junit/**/*Test.java"/>
-                </fileset>
-            </batchtest>
-        </junit>
-    </target>
-
-    <target name="generate-report">
-        <junitreport todir="${core_test.report.dir}">
-            <fileset dir="${core_test.report.dir}">
-                <include name="*-test-results.xml"/>
-                <include name="TEST-*.xml"/>
-            </fileset>
-            <report format="noframes" todir="${core_test.report.dir}"/>
-        </junitreport>
-        <!-- fail message="Some of the junit tests failed.  See the ${report.dir}/junit-noframes.html file for details." if="junit.failed"/ -->
-    </target>
-
-    <!-- Runs the test using the PromptTestRunner -->
-    <target name="run-test-prompt" depends="init_paths, process-resource">
-        <condition property="jvmarg.performance.baseline.version" value="-Dtoplink.loadbuild.baseline-version=${performance.baseline.version}">
-            <isset property="performance.baseline.version"/>
-        </condition>
-        <condition property="jvmarg.performance.baseline.version" value="-Ddummy=dummy">
-            <not>
-                <isset property="performance.baseline.version"/>
-            </not>
-        </condition>
-
-        <echo>Running test on ${db.url}</echo>
-        <mkdir dir="${core_test.run.dir}"/>
-        <mkdir dir="${core_test.report.dir}"/>
-        <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
-        <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
-        <java classname="org.eclipse.persistence.testing.framework.PromptTestRunner"
-             fork="true"
-             maxmemory="512m"
-             failonerror="false"
-             dir="${core_test.run.dir}">
-            <jvmarg value="${jvmarg.performance.baseline.version}"/>
-            <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
-            <jvmarg value="-Ddb.driver=${db.driver}"/>
-            <jvmarg value="-Ddb.url=${db.url}"/>
-            <jvmarg value="-Ddb.user=${db.user}"/>
-            <jvmarg value="-Ddb.pwd=${db.pwd}"/>
-            <jvmarg value="-Ddb.platform=${db.platform}"/>
-            <jvmarg value="${test.security-manager}"/>
-            <jvmarg value="${test.security-manager.policy}"/>
-            <jvmarg value="-Djava.naming.factory.initial=com.sun.jndi.cosnaming.CNCtxFactory"/>
-            <jvmarg line="${additional.jvmargs}"/>
-            <arg value="testmodel=${TEST_CLASS}" />
-            <arg value="regressionlog=${core_test.report.dir}/test.log" />
-            <arg value="saveresults=${should.save.results}" />
-            <classpath>
-                <path refid="core_test.run.path"/>
-            </classpath>
-        </java>
-    </target>
-
-    <!-- Execute this target on non-Oracle database platforms only, because a test requires no Oracle JDBC jar in the classpath-->
-    <target name="test-ClassPathTestModel" depends="init_paths, process-resource">
-        <echo>Running test on ${db.url}</echo>
-        <mkdir dir="${core_test.run.dir}"/>
-        <mkdir dir="${core_test.report.dir}"/>
-        <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
-        <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
-        <java classname="org.eclipse.persistence.testing.framework.PromptTestRunner"
-             fork="true"
-             maxmemory="512m"
-             failonerror="false"
-             dir="${core_test.run.dir}">
-            <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
-            <jvmarg value="-Ddb.driver=${db.driver}"/>
-            <jvmarg value="-Ddb.url=${db.url}"/>
-            <jvmarg value="-Ddb.user=${db.user}"/>
-            <jvmarg value="-Ddb.pwd=${db.pwd}"/>
-            <jvmarg value="-Ddb.platform=${db.platform}"/>
-            <jvmarg value=""/>
-            <jvmarg value="${test.security-manager}"/>
-            <jvmarg value="${test.security-manager.policy}"/>
-            <jvmarg line="${additional.jvmargs}"/>
-            <arg value="testmodel=org.eclipse.persistence.testing.tests.classpath.ClassPathTestModel" />
-            <arg value="regressionlog=${core_test.report.dir}/test.log" />
-            <arg value="createdbconnection=false" />
-            <arg value="saveresults=true" />
-            <classpath>
-                <path refid="core_test.compile.without.connector.path"/>
-                <path refid="core_test.runtime.only.path"/>
-            </classpath>
-        </java>
     </target>
 
     <!-- Creates MySQL database tables for performance tests. -->
@@ -717,5 +709,11 @@
                 <pathelement location="${eclipselink.perfdb.driver.jar}"/>
             </classpath>
         </sql>
+    </target>
+
+    <!-- Launches the testing browser -->
+    <target name="test-browser" depends="init, init-java-macro, process-resource">
+        <echo>Running test browser</echo>
+        <run-java classname="org.eclipse.persistence.testing.framework.ui.TestingBrowserFrame" />
     </target>
 </project>
