@@ -10,6 +10,6 @@
             <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
             <!--property name="eclipselink.logging.level.sql" value="FINE"/-->
         </properties>
-        <class>org.eclipse.persistence.testing.models.jpa.identity.Person</class>
+        <class>org.eclipse.persistence.testing.models.jpa22.identity.Person</class>
     </persistence-unit>
 </persistence>
