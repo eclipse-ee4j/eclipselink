@@ -109,17 +109,8 @@
     </target>
 
     <target name="-wildfly-cli-init" description="Initialize 'cli' macro for jboss-cli.">
-        <condition property="is.windows" value="true">
+        <condition property="suffix" value="bat" else="sh">
             <os family="windows"/>
-        </condition>
-        <condition property="is.unix" value="true">
-            <os family="unix"/>
-        </condition>
-        <condition property="suffix" value="bat">
-            <isset property="is.windows"/>
-        </condition>
-        <condition property="suffix" value="sh">
-            <isset property="is.unix"/>
         </condition>
 
         <macrodef name="cli" description="Run ${wildfly.home}/bin/jboss-cli.${suffix}">
@@ -178,9 +169,6 @@
         <cli command="data-source add --jndi-name=${wildfly.nonJtaDs.jndi} --name=${w.nonjtads.name} --connection-url=${db.url} --driver-name=${db.name}Driver --user-name=${db.user} —-password=${db.pwd} --jta=true --enabled=true"/>
         <cli command="/subsystem=datasources/data-source=${w.nonjtads.name}:write-attribute(name=password,value=${db.pwd})"/>
         <cli command=":reload"/>
-
-        <cli command="/system-property=eclipselink.archive.factory:add(value=org.jipijapa.eclipselink.JBossArchiveFactoryImpl)"/>
-        <cli command=":reload"/>
     </target>
 
     <target name="wildfly-reset" description="Revert all modifications on the server done by install/setup." depends="-wildfly-cli-init,wildfly-start">
@@ -190,7 +178,6 @@
         <cli command=":reload"/>
 
         <cli command="/subsystem=datasources/jdbc-driver=${db.name}Driver:remove"/>
-        <cli command="/system-property=eclipselink.archive.factory:remove"/>
         <cli command=":reload"/>
 
         <!-- JDBC Driver -->
@@ -229,7 +216,7 @@
             <http url="http://localhost:8080/index.html"/>
         </waitfor>
         <fail if="wildfly.not.running" message="Wildfly did not start within given time"/>
-        <echo>Wildfly is runnig at http://localhost:8080/index.html</echo>
+        <echo>Wildfly is running at http://localhost:8080/index.html</echo>
     </target>
 
     <target name="wildfly-stop" description="Stop the server." depends="-wildfly-cli-init">
