@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,13 +12,25 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.expressions;
 
-import org.eclipse.persistence.testing.models.employee.domain.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.platform.database.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.tools.schemaframework.PopulationManager;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.expressions.ExpressionMath;
+import org.eclipse.persistence.platform.database.AccessPlatform;
+import org.eclipse.persistence.platform.database.DerbyPlatform;
+import org.eclipse.persistence.platform.database.MySQLPlatform;
+import org.eclipse.persistence.platform.database.OraclePlatform;
+import org.eclipse.persistence.platform.database.SymfowarePlatform;
+import org.eclipse.persistence.platform.database.TimesTenPlatform;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.queries.ReportQuery;
+import org.eclipse.persistence.testing.framework.TestSuite;
+import org.eclipse.persistence.testing.models.employee.domain.Address;
+import org.eclipse.persistence.testing.models.employee.domain.Employee;
+import org.eclipse.persistence.testing.models.employee.domain.LargeProject;
+import org.eclipse.persistence.testing.models.employee.domain.PhoneNumber;
+import org.eclipse.persistence.testing.models.employee.domain.Project;
 import org.eclipse.persistence.testing.models.inheritance.Vehicle;
+import org.eclipse.persistence.tools.schemaframework.PopulationManager;
 
 public class ExpressionSubSelectTestSuite extends TestSuite {
     protected PopulationManager manager;
@@ -865,6 +877,9 @@ public class ExpressionSubSelectTestSuite extends TestSuite {
         test.setQuery(query);
         test.setName("SubSelectFromClauseTest2");
         test.setDescription("Test subselects in the from clause");
+        //bug 535088: this test fails randomly on public infra
+        //TODO: investigate why; hardly reproducible locally
+        test.addUnsupportedPlatform(MySQLPlatform.class);
         addTest(test);
     }
 
