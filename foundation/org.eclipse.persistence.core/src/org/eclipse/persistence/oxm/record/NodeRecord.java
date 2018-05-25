@@ -290,7 +290,11 @@ public class NodeRecord extends MarshalRecord {
     @Override
     public void characters(String value) {
         if (value.length() > 0) {
-            node.appendChild(document.createTextNode(value));
+            if (node instanceof CDATASection) {
+                ((CDATASection) node).setData(value);
+            } else {
+                node.appendChild(document.createTextNode(value));
+            }
         }
     }
 
