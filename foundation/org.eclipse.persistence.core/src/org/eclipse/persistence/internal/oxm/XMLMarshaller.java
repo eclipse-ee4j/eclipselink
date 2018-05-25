@@ -502,7 +502,11 @@ public abstract class XMLMarshaller<
      * @throws XMLMarshalException if an error occurred during marshalling
      */
     public void marshal(Object object, ContentHandler contentHandler) throws XMLMarshalException {
-        marshal(object, contentHandler, null);
+        if (contentHandler instanceof LexicalHandler) {
+            marshal(object, contentHandler, (LexicalHandler)contentHandler);
+        } else {
+            marshal(object, contentHandler, null);
+        }
     }
 
     /**
