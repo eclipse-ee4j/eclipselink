@@ -97,7 +97,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     public static final String DEFAULT_RAW_CLASS = "java.lang.String";
 
     /** The name of the element, i.e. class name, field name, method name. */
-    private String m_name;
+    protected String m_name;
 
     /** Defines elements modifiers, i.e. private/static/transient. */
     private int m_modifiers;
@@ -137,7 +137,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     private Map<String, MetadataAnnotation> m_annotations;
 
     /** Stores any meta-annotations defined for the element, keyed by meta-annotation name. */
-    private Map<String, MetadataAnnotation> m_metaAnnotations;
+    protected Map<String, MetadataAnnotation> m_metaAnnotations;
 
     /**
      * INTERNAL:
