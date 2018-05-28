@@ -1,0 +1,8 @@
+<employee name="John Doe">
+    <home-address>
+        <street>123 Fake Street</street>
+        <city>Ottawa</city>
+        <country>Canada</country>
+    </home-address>
+    <mytag><![CDATA[Hello world!<>'"]]></mytag>
+</employee>

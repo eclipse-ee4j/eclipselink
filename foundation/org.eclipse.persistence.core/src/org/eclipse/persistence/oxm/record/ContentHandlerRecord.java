@@ -369,6 +369,7 @@ public class ContentHandlerRecord extends MarshalRecord {
             } else {
                 XMLFragmentReader xfragReader = new XMLFragmentReader(namespaceResolver);
                 xfragReader.setContentHandler(contentHandler);
+                xfragReader.setLexicalHandler(lexicalHandler);
                 try {
                     xfragReader.parse(node, uri, name);
                 } catch (SAXException sex) {
