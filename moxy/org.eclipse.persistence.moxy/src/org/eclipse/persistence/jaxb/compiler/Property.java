@@ -166,10 +166,8 @@ public class Property implements Cloneable {
     public Property(Helper helper) {
         this.helper = helper;
 
-        if (xmlAdapterClass == null)
-            xmlAdapterClass = helper.getJavaClass(XmlAdapter.class);
-        if (objectClass == null)
-            objectClass = helper.getJavaClass(Object.class);
+        xmlAdapterClass = helper.getJavaClass(XmlAdapter.class);
+        objectClass = helper.getJavaClass(Object.class);
     }
 
     public void setHelper(Helper helper) {
