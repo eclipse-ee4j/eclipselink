@@ -1380,39 +1380,41 @@ public class DatabaseAccessor extends DatasourceAccessor {
         } else if ((fieldType == ClassConstants.SHORT) || (fieldType == ClassConstants.PSHORT)) {
             value = Short.valueOf(resultSet.getShort(columnNumber));
             isPrimitive = ((Short)value).shortValue() == 0;
-        } else if (Helper.shouldOptimizeDates && (type == Types.TIME) || (type == Types.DATE) || (type == Types.TIMESTAMP)) {
-            // Optimize dates by avoid conversion to timestamp then back to date or time or util.date.
-            String dateString = resultSet.getString(columnNumber);
-            value = platform.convertObject(dateString, fieldType);
         } else if ((type == Types.TIME) || (type == Types.DATE) || (type == Types.TIMESTAMP)) {
-            // PERF: Optimize dates by calling direct get method if type is Date or Time,
-            // unfortunately the double conversion is unavoidable for Calendar and util.Date.
-            if (fieldType == ClassConstants.SQLDATE) {
-                value = resultSet.getDate(columnNumber);
-            } else if (fieldType == ClassConstants.TIME) {
-                value = resultSet.getTime(columnNumber);
-            } else if (fieldType == ClassConstants.TIMESTAMP) {
-                value = resultSet.getTimestamp(columnNumber);
-            } else if (fieldType == ClassConstants.TIME_LTIME) {
-                final java.sql.Timestamp ts = resultSet.getTimestamp(columnNumber);
-                value = ts != null ? ts.toLocalDateTime().toLocalTime()
-                        : platform.getConversionManager().getDefaultNullValue(ClassConstants.TIME_LTIME);
-            } else if (fieldType == ClassConstants.TIME_LDATE) {
-                final java.sql.Date dt = resultSet.getDate(columnNumber);
-                value = dt != null ? dt.toLocalDate()
-                        : platform.getConversionManager().getDefaultNullValue(ClassConstants.TIME_LDATE);
-            } else if (fieldType == ClassConstants.TIME_LDATETIME) {
-                final java.sql.Timestamp ts = resultSet.getTimestamp(columnNumber);
-                value = ts != null ? ts.toLocalDateTime()
-                        : platform.getConversionManager().getDefaultNullValue(ClassConstants.TIME_LDATETIME);
-            } else if (fieldType == ClassConstants.TIME_OTIME) {
-                final java.sql.Timestamp ts = resultSet.getTimestamp(columnNumber);
-                value = ts != null ? ts.toLocalDateTime().toLocalTime().atOffset(java.time.OffsetDateTime.now().getOffset())
-                        : platform.getConversionManager().getDefaultNullValue(ClassConstants.TIME_OTIME);
-            } else if (fieldType == ClassConstants.TIME_ODATETIME) {
-                final java.sql.Timestamp ts = resultSet.getTimestamp(columnNumber);
-                value = ts != null ? java.time.OffsetDateTime.ofInstant(ts.toInstant(), java.time.ZoneId.systemDefault())
-                        : platform.getConversionManager().getDefaultNullValue(ClassConstants.TIME_ODATETIME);
+            if (Helper.shouldOptimizeDates) {
+                // Optimize dates by avoid conversion to timestamp then back to date or time or util.date.
+                String dateString = resultSet.getString(columnNumber);
+                value = platform.convertObject(dateString, fieldType);
+            } else {
+                // PERF: Optimize dates by calling direct get method if type is Date or Time,
+                // unfortunately the double conversion is unavoidable for Calendar and util.Date.
+                if (fieldType == ClassConstants.SQLDATE) {
+                    value = resultSet.getDate(columnNumber);
+                } else if (fieldType == ClassConstants.TIME) {
+                    value = resultSet.getTime(columnNumber);
+                } else if (fieldType == ClassConstants.TIMESTAMP) {
+                    value = resultSet.getTimestamp(columnNumber);
+                } else if (fieldType == ClassConstants.TIME_LTIME) {
+                    final java.sql.Timestamp ts = resultSet.getTimestamp(columnNumber);
+                    value = ts != null ? ts.toLocalDateTime().toLocalTime()
+                            : platform.getConversionManager().getDefaultNullValue(ClassConstants.TIME_LTIME);
+                } else if (fieldType == ClassConstants.TIME_LDATE) {
+                    final java.sql.Date dt = resultSet.getDate(columnNumber);
+                    value = dt != null ? dt.toLocalDate()
+                            : platform.getConversionManager().getDefaultNullValue(ClassConstants.TIME_LDATE);
+                } else if (fieldType == ClassConstants.TIME_LDATETIME) {
+                    final java.sql.Timestamp ts = resultSet.getTimestamp(columnNumber);
+                    value = ts != null ? ts.toLocalDateTime()
+                            : platform.getConversionManager().getDefaultNullValue(ClassConstants.TIME_LDATETIME);
+                } else if (fieldType == ClassConstants.TIME_OTIME) {
+                    final java.sql.Timestamp ts = resultSet.getTimestamp(columnNumber);
+                    value = ts != null ? ts.toLocalDateTime().toLocalTime().atOffset(java.time.OffsetDateTime.now().getOffset())
+                            : platform.getConversionManager().getDefaultNullValue(ClassConstants.TIME_OTIME);
+                } else if (fieldType == ClassConstants.TIME_ODATETIME) {
+                    final java.sql.Timestamp ts = resultSet.getTimestamp(columnNumber);
+                    value = ts != null ? java.time.OffsetDateTime.ofInstant(ts.toInstant(), java.time.ZoneId.systemDefault())
+                            : platform.getConversionManager().getDefaultNullValue(ClassConstants.TIME_ODATETIME);
+                }
             }
         } else if (fieldType == ClassConstants.BIGINTEGER) {
             value = resultSet.getBigDecimal(columnNumber);
