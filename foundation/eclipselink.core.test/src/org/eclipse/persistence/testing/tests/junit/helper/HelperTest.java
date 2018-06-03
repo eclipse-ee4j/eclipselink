@@ -285,11 +285,30 @@ public class HelperTest {
     public void timestampFromStringTest() {
         boolean optimizedDatesState = Helper.shouldOptimizeDates();
         try {
-            String currentTime = new Timestamp(System.currentTimeMillis()).toString();
-
             Helper.setShouldOptimizeDates(true);
+            
+            String currentTime = new Timestamp(System.currentTimeMillis()).toString();
             Assert.assertEquals("Failed to convert String to java.sql.Timestamp when shouldOptimizedDates is on",
                     currentTime, Helper.timestampFromString(currentTime).toString());
+
+            Assert.assertEquals("Failed to convert String to java.sql.Timestamp when shouldOptimizedDates is on",
+                    Timestamp.valueOf("2018-01-01 16:24:33.00013"), Helper.timestampFromString("2018-01-01 16:24:33.00013+02"));
+
+            Assert.assertEquals("Failed to convert String to java.sql.Timestamp when shouldOptimizedDates is on",
+                    Timestamp.valueOf("2018-01-01 16:24:33.0"), Helper.timestampFromString("2018-01-01 16:24:33+02"));
+
+            Assert.assertEquals("Failed to convert String to java.sql.Timestamp when shouldOptimizedDates is on",
+                    Timestamp.valueOf("2018-01-01 16:24:33.1"), Helper.timestampFromString("2018-01-01 16:24:33.1+02"));
+
+            Assert.assertEquals("Failed to convert String to java.sql.Timestamp when shouldOptimizedDates is on",
+                    Timestamp.valueOf("2018-01-01 16:24:33.0"), Helper.timestampFromString("2018-01-01 16:24:33.0000000+02"));
+
+            Assert.assertEquals("Failed to convert String to java.sql.Timestamp when shouldOptimizedDates is on",
+                    Timestamp.valueOf("2018-01-01 16:24:33.0"), Helper.timestampFromString("2018-01-01 16:24:33.0000000"));
+
+            Assert.assertEquals("Failed to convert String to java.sql.Timestamp when shouldOptimizedDates is on",
+                    Timestamp.valueOf("2018-01-01 16:24:33.0"), Helper.timestampFromString("2018-01-01 16:24:33"));
+
         } finally {
             Helper.setShouldOptimizeDates(optimizedDatesState);
         }
