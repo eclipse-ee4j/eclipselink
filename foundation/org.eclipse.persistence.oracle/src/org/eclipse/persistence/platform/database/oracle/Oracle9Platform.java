@@ -211,12 +211,8 @@ public class Oracle9Platform extends Oracle8Platform {
             SQLXML sqlXml = resultSet.getSQLXML(columnNumber);
             String str = sqlXml.getString();
             sqlXml.free();
-            if (str != null ) { 
-                // Oracle 12c appends a \n character to the xml string
-                return str.endsWith("\n") ? str.substring(0, str.length() - 1) : str;
-            } else {
-                return str;
-            }
+            // Oracle 12c appends a \n character to the xml string
+            return (str != null && str.endsWith("\n")) ? str.substring(0, str.length() - 1) : str;
         } else if (type == OracleTypes.OPAQUE) {
             try {
                 Object result = resultSet.getObject(columnNumber);
