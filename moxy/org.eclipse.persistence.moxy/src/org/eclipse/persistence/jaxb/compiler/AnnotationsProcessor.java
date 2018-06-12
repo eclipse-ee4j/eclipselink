@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -3817,12 +3817,12 @@ public final class AnnotationsProcessor {
                 if (JAVAX_XML_BIND_JAXBELEMENT.equals(type.getName())) {
                     Object[] actualTypeArguments = type.getActualTypeArguments().toArray();
                     if (actualTypeArguments.length == 0) {
-                        type = helper.OBJECT_CLASS;
+                        type = helper.getObjectClass();
                     } else {
                         type = (JavaClass) actualTypeArguments[0];
                     }
                     type = processXmlElementDecl(type, next, packageInfo, elemDecls);
-                }else if (helper.JAXBELEMENT_CLASS.isAssignableFrom(type)) {
+                }else if (helper.getJaxbElementClass().isAssignableFrom(type)) {
                     this.factoryMethods.put(type.getRawName(), next);
                     type = processXmlElementDecl(type, next, packageInfo, elemDecls);
                 } else {
