@@ -237,12 +237,12 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
     public static Test suite() {
         TestSuite suite = new TestSuite();
+        suite.addTest(suiteSpring());
         suite.addTest(new EntityManagerJUnitTestSuite("testCacheUsage"));
 
         if (!isJPA10()) {
             suite.addTest(new EntityManagerJUnitTestSuite("testIsLoaded"));
         }
-        suite.addTest(suiteSpring());
         return suite;
     }
 

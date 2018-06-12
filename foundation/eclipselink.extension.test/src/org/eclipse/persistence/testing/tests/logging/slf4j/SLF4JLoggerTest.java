@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2016  Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -17,10 +17,10 @@ import static org.junit.Assert.assertEquals;
 
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.AbstractSessionLog;
-import org.eclipse.persistence.logging.LogLevelHelper;
 import org.eclipse.persistence.logging.slf4j.SLF4JLogger;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.testing.framework.junit.LogTestExecution;
+import org.eclipse.persistence.testing.tests.junit.logging.LogLevelHelper;
 import org.eclipse.persistence.testing.tests.logging.LogTestSession;
 import org.junit.After;
 import org.junit.Before;

@@ -230,6 +230,9 @@ public class FullRegressionTestSuite extends TestSuite {
         // Has security manager issues on some JVMs.
         //fullSuite.addTest(RemoteEntityManagerTestSuite.suite());
 
+        // JPA Advanced Properties model
+        fullSuite.addTest(JPAAdvPropertiesJUnitTestCase.suite());
+
         // Composite tests.
         fullSuite.addTest(org.eclipse.persistence.testing.tests.jpa.composite.advanced.EntityManagerJUnitTestSuite.suite());
 
@@ -309,9 +312,6 @@ public class FullRegressionTestSuite extends TestSuite {
         // DDL model
         fullSuite.addTest(DDLGenerationJUnitTestSuite.suite());
         fullSuite.addTest(DDLGenerationExtendTablesJUnitTestSuite.suite());
-
-        // JPA Advanced Properties model
-        fullSuite.addTest(JPAAdvPropertiesJUnitTestCase.suite());
 
         // DataTypes model
         fullSuite.addTest(org.eclipse.persistence.testing.tests.jpa.datatypes.NullBindingJUnitTestCase.suite());

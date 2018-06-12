@@ -12,7 +12,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.junit.logging;
 
-import org.eclipse.persistence.logging.LogLevelHelper;
 import org.junit.Test;
 
 /**

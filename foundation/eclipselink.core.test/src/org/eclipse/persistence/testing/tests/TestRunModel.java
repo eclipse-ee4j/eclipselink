@@ -13,13 +13,17 @@
 package org.eclipse.persistence.testing.tests;
 
 import java.lang.reflect.Method;
-import java.util.*;
-
-import junit.framework.Test;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Vector;
 
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.sessions.DatabaseLogin;
-import org.eclipse.persistence.testing.framework.*;
+import org.eclipse.persistence.testing.framework.TestModel;
+
+import junit.framework.Test;
 
 /**
  * This class create test runs, i.e. models of model to allow all tests to be run a once.
@@ -116,7 +120,6 @@ public class TestRunModel extends TestModel {
             tests.add("org.eclipse.persistence.testing.tests.tableswithspacesmodel.EmployeeWithSpacesTestModel");
             tests.add("org.eclipse.persistence.testing.tests.optimization.queryandsqlcounting.QueryAndSQLCountingTestModel");
             tests.add("org.eclipse.persistence.testing.tests.identitymaps.cache.CacheIdentityMapTestModel");
-            tests.add("org.eclipse.persistence.testing.tests.cache.AdvancedProcessingTestModel");
         }
 
         // ** All new tests should be in light, unless they require specific db/config support
