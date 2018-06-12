@@ -1467,7 +1467,7 @@
     </target>
 
 
-    <!-- Testing -->
+  <!-- Testing -->
 
     <target name="init-test-macro" depends="init">
         <macrodef name="test">
@@ -1886,7 +1886,8 @@
             <pathelement path="${jpatest.basedir}/${jpa.test.jar}"/>
             <pathelement path="${jpatest.basedir}/woven-${eclipselink.xml.mapping.metadata.complete}.jar"/>
             <path refid="compile.path"/>
-            <pathelement path="${jpatest.2.common.plugins.dir}/${json.jar}"/>
+            <pathelement path="${jpatest.2.common.plugins.dir}/${json-api.jar}"/>
+            <pathelement path="${jpatest.2.common.plugins.dir}/${json-impl.jar}"/>
         </path>
         <path id="run.extended.classpath.static">
             <pathelement path="${jpatest.basedir}/woven-${eclipselink.xml.extended.model}.jar"/>
@@ -1899,7 +1900,8 @@
             <pathelement path="${jpatest.basedir}/${jpatest.framework}.jar"/>
             <pathelement path="${jpatest.basedir}/${jpa.test.jar}"/>
             <path refid="compile.path"/>
-            <pathelement path="${jpatest.2.common.plugins.dir}/${json.jar}"/>
+            <pathelement path="${jpatest.2.common.plugins.dir}/${json-api.jar}"/>
+            <pathelement path="${jpatest.2.common.plugins.dir}/${json-impl.jar}"/>
         </path>
         <antcall target="run-test" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.AllCMP3TestRunModel"/>
