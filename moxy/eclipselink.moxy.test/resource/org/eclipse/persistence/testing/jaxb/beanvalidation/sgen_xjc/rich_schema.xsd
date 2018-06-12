@@ -13,6 +13,7 @@
             <xsd:element nillable="true" name="unsignedByte" type="rs:unsignedByte"/>
             <xsd:element nillable="false" name="byteArray" type="rs:byteArray"/>
             <xsd:element name="someCollection" minOccurs="1" maxOccurs="unbounded"/>
+            <xsd:element name="optionalElement" minOccurs="0" maxOccurs="unbounded"/>
         </xsd:sequence>
     </xsd:complexType>
 
