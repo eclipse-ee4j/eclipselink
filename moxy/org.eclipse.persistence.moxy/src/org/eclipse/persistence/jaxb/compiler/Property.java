@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998 - 2014, 2015  Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018  Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -152,8 +152,8 @@ public class Property implements Cloneable {
     private boolean isTransientType;
     private static final String MARSHAL_METHOD_NAME = "marshal";
 
-    private static JavaClass XML_ADAPTER_CLASS;
-    private static JavaClass OBJECT_CLASS;
+    private JavaClass xmlAdapterClass;
+    private JavaClass objectClass;
 
     private boolean isTyped;
     private Integer minOccurs;
@@ -166,11 +166,8 @@ public class Property implements Cloneable {
     public Property(Helper helper) {
         this.helper = helper;
 
-        // let's init static fields
-        if (XML_ADAPTER_CLASS == null)
-            XML_ADAPTER_CLASS = helper.getJavaClass(XmlAdapter.class);
-        if (OBJECT_CLASS == null)
-            OBJECT_CLASS = helper.getJavaClass(Object.class);
+        xmlAdapterClass = helper.getJavaClass(XmlAdapter.class);
+        objectClass = helper.getJavaClass(Object.class);
     }
 
     public void setHelper(Helper helper) {
@@ -193,7 +190,7 @@ public class Property implements Cloneable {
                 JavaClass boundType = getJavaClassFromType(parameterizedTypeArguments[1]);
 
                 if (valueTypeClass.isInterface()) {
-                    valueTypeClass = OBJECT_CLASS; // during unmarshalling we'll need to instantiate this, so -> no interfaces
+                    valueTypeClass = objectClass; // during unmarshalling we'll need to instantiate this, so -> no interfaces
                 }
 
                 setTypeFromAdapterClass(valueTypeClass, boundType);
@@ -215,7 +212,7 @@ public class Property implements Cloneable {
 
                 // Try and find a marshal method where Object is not the return type,
                 // to avoid processing an inherited default marshal method
-                if (!returnType.getQualifiedName().equals(OBJECT_CLASS.getQualifiedName()) && !returnType.isInterface()) { // if it's interface, we'll use OBJECT instead later
+                if (!returnType.getQualifiedName().equals(objectClass.getQualifiedName()) && !returnType.isInterface()) { // if it's interface, we'll use OBJECT instead later
                     setTypeFromAdapterClass(returnType, parameterTypes[0]);
                     return;
                 }
@@ -228,13 +225,13 @@ public class Property implements Cloneable {
         for (JavaMethod method : marshalMethods) {
             JavaClass paramType = method.getParameterTypes()[0];
             // look for non-Object parameter type
-            if (!paramType.getQualifiedName().equals(OBJECT_CLASS.getQualifiedName())) {
-                setTypeFromAdapterClass(OBJECT_CLASS, paramType);
+            if (!paramType.getQualifiedName().equals(objectClass.getQualifiedName())) {
+                setTypeFromAdapterClass(objectClass, paramType);
                 return;
             }
         }
         if (!marshalMethods.isEmpty())
-            setTypeFromAdapterClass(OBJECT_CLASS, null);
+            setTypeFromAdapterClass(objectClass, null);
         // else impossible? - looks like provided adapted doesn't contain marshal(...) method
     }
 
@@ -257,7 +254,7 @@ public class Property implements Cloneable {
                 return helper.getJavaClass(Array.newInstance((Class) rawType, 1).getClass());
             }
         }
-        return OBJECT_CLASS;
+        return objectClass;
     }
 
     /**
@@ -1447,6 +1444,7 @@ public class Property implements Cloneable {
      * Return a shallow copy of this Property.
      * Simply calls super.clone().
      */
+    @Override
     public Object clone() {
         try {
             return super.clone();
