@@ -22,6 +22,7 @@ import java.util.Map.Entry;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.StrBuffer;
 import org.eclipse.persistence.internal.oxm.record.ExtendedContentHandler;
+import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -30,12 +31,13 @@ import org.w3c.dom.Text;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
+import org.xml.sax.ext.LexicalHandler;
 
 /**
  * <p><b>Purpose</b>:  Build a DOM from SAX events.</p>
  */
 
-public class SAXDocumentBuilder implements ExtendedContentHandler {
+public class SAXDocumentBuilder implements ExtendedContentHandler, LexicalHandler {
     protected Document document;
     protected List<Node> nodes;
     protected XMLPlatform xmlPlatform;
@@ -202,4 +204,35 @@ public class SAXDocumentBuilder implements ExtendedContentHandler {
     }
     @Override
     public void setNil(boolean isNil) {}
+
+    @Override
+    public void startDTD(String name, String publicId, String systemId) throws SAXException {}
+
+    @Override
+    public void endDTD() throws SAXException {}
+
+    @Override
+    public void startEntity(String name) throws SAXException {}
+
+    @Override
+    public void endEntity(String name) throws SAXException {}
+
+    @Override
+    public void startCDATA() throws SAXException {
+        CDATASection cdata = document.createCDATASection(null);
+        Node parentNode = nodes.get(nodes.size() -1);
+        parentNode.appendChild(cdata);
+    }
+
+    @Override
+    public void endCDATA() throws SAXException {
+        CDATASection cdata = (CDATASection)nodes.get(nodes.size()-1).getFirstChild();
+        if (stringBuffer.length() > 0) {
+            cdata.setData(stringBuffer.toString());
+            stringBuffer.reset();
+        }
+    }
+
+    @Override
+    public void comment(char[] ch, int start, int length) throws SAXException {}
 }

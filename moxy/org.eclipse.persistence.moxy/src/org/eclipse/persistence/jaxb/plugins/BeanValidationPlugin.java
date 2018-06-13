@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -328,19 +328,20 @@ public class BeanValidationPlugin extends Plugin {
 
         XSTerm term = particle.getTerm();
         if (term instanceof XSElementDecl) {
-            processTermElement(fieldVar, (XSElementDecl) term, customizations);
+            processTermElement(particle, fieldVar, (XSElementDecl) term, customizations);
         // When a complex type resides inside another complex type and thus gets lazily loaded or processed.
         } else if (term instanceof DelayedRef.Element) { 
-            processTermElement(fieldVar, ((DelayedRef.Element) term).get(), customizations);
+            processTermElement(particle, fieldVar, ((DelayedRef.Element) term).get(), customizations);
         }
     }
 
-    private void processTermElement(JFieldVar fieldVar, XSElementDecl element, List<FacetCustomization> customizations) {
+    private void processTermElement(XSParticle particle, JFieldVar fieldVar, XSElementDecl element, List<FacetCustomization> customizations) {
+        final int minOccurs = getOccursValue("minOccurs", particle);
         XSType elementType = element.getType();
 
         if (elementType.isComplexType()) {
             validAnnotate(fieldVar);
-            if (!element.isNillable()) {
+            if (!element.isNillable() && minOccurs > 0) {
                 notNullAnnotate(fieldVar);
             }
             if (elementType.getBaseType().isSimpleType()) {

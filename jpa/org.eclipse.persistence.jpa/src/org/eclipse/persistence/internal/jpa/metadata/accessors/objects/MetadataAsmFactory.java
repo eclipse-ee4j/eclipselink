@@ -134,8 +134,8 @@ public class MetadataAsmFactory extends MetadataFactory {
         } catch (Exception exception) {
             SessionLog log = getLogger().getSession() != null
                     ? getLogger().getSession().getSessionLog() : AbstractSessionLog.getLog();
-            if (log.shouldLog(SessionLog.FINE, SessionLog.METADATA)) {
-                log.logThrowable(SessionLog.FINE, SessionLog.METADATA, exception);
+            if (log.shouldLog(SessionLog.FINEST, SessionLog.METADATA)) {
+                log.logThrowable(SessionLog.FINEST, SessionLog.METADATA, exception);
             }
             addMetadataClass(getVirtualMetadataClass(className));
         } finally {
