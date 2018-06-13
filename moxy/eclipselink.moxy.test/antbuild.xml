@@ -107,10 +107,15 @@
     <!-- JVM used to run tests -->
     <property name="test.junit.jvm" value="${env.JAVA_HOME}"/>
     <property name="test.junit.jvm.exec" value="${test.junit.jvm}/bin/java"/>
+    <property prefix="test.junit.jdk" file="${test.junit.jvm}/release"/>
 
     <!-- JVM specific settings -->
     <condition property="test.junit.jvm.modules.prop" value="-Dignore.modules=true" else="${test.junit.jvm.modules}">
-        <matches pattern="[1-8]\..*" string="${java.version}"/>
+        <matches pattern='"[1-8]\..*"' string="${test.junit.jdk.JAVA_VERSION}"/>
+    </condition>
+
+    <condition property="test.junit.osgi.jvm.modules.prop" value="-Dignore.modules.osgi=true" else="${test.junit.osgi.jvm.modules}">
+        <matches pattern='"[1-8]\..*"' string="${test.junit.jdk.JAVA_VERSION}"/>
     </condition>
 
     <path id="xml.parser.path">
@@ -376,6 +381,7 @@
             <arg line="-Djaxrs.jar=${jaxrs.jar}"/>
             <arg line="-Dasm.jar=${asm.jar}"/>
             <arg line="-Dtest.junit.jvm=${test.junit.jvm}"/>
+            <arg line="-DargLine='${test.junit.osgi.jvm.modules.prop}'"/>
             <classpath>
                 <fileset dir="${M2_HOME}/boot">
                     <include name="plexus-classworlds-*.jar"/>
