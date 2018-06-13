@@ -707,7 +707,7 @@
         <ant antfile="antbuild.xml" dir="${eclipselink.jpa.wdf.test}"   target="build-against-jar"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.jpars.test}"     target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.moxy.test}"      target="compile-tests-against-jar"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.sdo.test}"       target="compile-sdo-tests-against-jar"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.sdo.test}"       target="compile-sdo-tests"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.dbws.test}"      target="build"/>
     </target>
 
@@ -815,6 +815,7 @@
                 <exclude name="*jpars*.jar"/>
                 <exclude name="*nosql*.jar"/>
                 <exclude name="*extension*.jar"/>
+                <exclude name="*sdo*.jar"/>
             </zipgroupfileset>
             <!-- Include hermes runtime Only -->
             <fileset dir="${build.dir}/hermes/${classes.dir}">
@@ -1640,10 +1641,10 @@
     </target>
     <!-- Run SDO & MOXY tests. -->
     <target name="test-sdo" description="run the sdo tests">
-        <ant antfile="antbuild.xml" dir="${eclipselink.sdo.test}" target="test-against-jar"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.sdo.test}" target="test"/>
     </target>
     <target name="test-sdo-srg" description="run the sdo srg tests">
-        <ant antfile="antbuild.xml" dir="${eclipselink.sdo.test}" target="test-srg-against-jar"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.sdo.test}" target="test-srg"/>
     </target>
     <target name="test-moxy" description="run the moxy tests">
         <ant antfile="antbuild.xml" dir="${eclipselink.moxy.test}" target="test-against-jar"/>
