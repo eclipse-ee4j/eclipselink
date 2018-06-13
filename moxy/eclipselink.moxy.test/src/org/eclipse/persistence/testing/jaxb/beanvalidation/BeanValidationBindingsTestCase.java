@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -234,6 +234,12 @@ public class BeanValidationBindingsTestCase extends junit.framework.TestCase {
         assertTrue(size.min() == 1);
         assertNotNull(someCollection.getAnnotation(Valid.class));
         assertNotNull(someCollection.getAnnotation(NotNull.class));
+
+        Field optionalElement = Main.getDeclaredField("optionalElement");
+        size = optionalElement.getAnnotation(Size.class);
+        assertTrue(size.min() == 0);
+        assertNotNull(optionalElement.getAnnotation(Valid.class));
+        assertNull(optionalElement.getAnnotation(NotNull.class));
 
         /* Numbers.class */
         Field minInclusive = Numbers.getDeclaredField("minInclusive");
