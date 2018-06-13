@@ -203,6 +203,7 @@
         <path id="core_test.product.path" cache="true">
             <pathelement path="${core_test.2.common.plugins.dir}/${antlr.jar}"/>
             <pathelement path="${core_test.2.common.plugins.dir}/${asm.jar}"/>
+            <pathelement path="${core_test.2.common.plugins.dir}/org.eclipse.persistence.jpa.jpql_${version.string}.jar"/>
             <pathelement path="${core_test.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
         </path>
         <echo message="Using EclipseLink OSGi bundles as 'product' in compile dependency ${toString:core_test.product.path}."/>
@@ -424,7 +425,7 @@
         </macrodef>
     </target>
 
-    <target name="init-testing" depends="init, init-test-macro, init-report-macro, init-test-prompt-macro, process-resource"/>
+    <target name="init-testing" depends="init-test-macro, init-report-macro, init-test-prompt-macro, process-resource"/>
 
 
     <!-- Cleaning, Building & Packaging -->
