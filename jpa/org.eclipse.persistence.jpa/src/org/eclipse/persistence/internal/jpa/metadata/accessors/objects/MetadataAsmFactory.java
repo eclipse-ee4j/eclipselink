@@ -376,25 +376,13 @@ public class MetadataAsmFactory extends MetadataFactory {
 
         @Override
         public void visitEnd() {
-            if (this.element != null && !isRecursive()) {
+            if (this.element != null) {
                 if (this.annotation.isMeta()) {
                     this.element.addMetaAnnotation(this.annotation);
                 } else {
                     this.element.addAnnotation(this.annotation);
                 }
             }
-        }
-        private boolean isRecursive() {
-            if(this.annotation.getName().equals( this.element.getName())) {
-                //simple recursion (annotation annotated with itself)
-                return true;
-            }
-            MetadataClass aClass = this.element.m_factory.m_metadataClasses.get( this.annotation.m_name );
-            if ( aClass != null ) {
-                //complex recursion (bi-directional dependency)
-                return aClass.m_metaAnnotations.containsKey( this.element.m_name );
-            }
-            return false;
         }
     }
 
