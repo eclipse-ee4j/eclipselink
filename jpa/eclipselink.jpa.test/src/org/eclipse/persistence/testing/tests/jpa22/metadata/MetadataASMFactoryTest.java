@@ -19,6 +19,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.samples.annotations.CycleA;
+import org.eclipse.samples.annotations.CycleB;
 import org.eclipse.samples.annotations.CycleSelf;
 import org.junit.Assert;
 
@@ -63,6 +64,8 @@ public class MetadataASMFactoryTest extends JUnitTestCase {
             MetadataAsmFactory fact = new MetadataAsmFactory(new MetadataLogger(null), MetadataASMFactoryTest.class.getClassLoader());
             MetadataClass metadataClass = fact.getMetadataClass(CycleA.class.getName());
             MetadataAnnotation annotation = metadataClass.getAnnotation("org.eclipse.samples.annotations.CycleC");
+            metadataClass = fact.getMetadataClass(CycleB.class.getName());
+            annotation = metadataClass.getAnnotation("org.eclipse.samples.annotations.CycleA");
         } catch (StackOverflowError e) {
             fail("Stack overflow while processing cycle in meta-annotations");
         }

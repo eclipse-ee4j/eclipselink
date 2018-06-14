@@ -66,8 +66,10 @@ import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JP
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.persistence.annotations.Array;
 import org.eclipse.persistence.annotations.BasicCollection;
@@ -206,13 +208,25 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * @param annotation annotation name
      */
     public MetadataAnnotation getAnnotation(final String annotation) {
+        return getAnnotation(annotation, (Set<String>)null);
+    }
+
+    protected MetadataAnnotation getAnnotation(final String annotation, Set<String> names) {
         if (m_annotations == null && m_metaAnnotations == null) {
             return null;
         }
         MetadataAnnotation metadataAnnotation = m_annotations.get(annotation);
         if (metadataAnnotation == null) {
             for (MetadataAnnotation a: m_metaAnnotations.values()) {
-                MetadataAnnotation ma = m_factory.getMetadataClass(a.getName()).getAnnotation(annotation);
+                if (names != null) {
+                    if (names.contains(a.getName())) {
+                        return a;
+                    }
+                } else {
+                    names = new HashSet<>();
+                }
+                names.add(getName());
+                MetadataAnnotation ma = m_factory.getMetadataClass(a.getName()).getAnnotation(annotation, names);
                 if (ma != null) {
                     return ma;
                 }
