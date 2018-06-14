@@ -20,10 +20,11 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAsmFactory;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
-import org.eclipse.samples.RecursiveAnnotation;
-import org.eclipse.samples.RecursiveAnnotation2;
+import org.eclipse.samples.RecursiveEntity;
 
 import org.junit.Assert;
+
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ACCESS;
 
 public class MetadataASMFactoryTest extends JUnitTestCase {
 
@@ -54,11 +55,15 @@ public class MetadataASMFactoryTest extends JUnitTestCase {
         Assert.assertNotNull(annotation);
     }
 
+	/**
+	 * Tests recursive annotations with the following scenarios:
+	 * A -> A
+	 * A -> B -> C -> A or A -> B -> A
+	 */
     public void testRecursiveMetadataAnnotations() {
-        MetadataAsmFactory fact = new MetadataAsmFactory(new MetadataLogger(null), RecursiveAnnotation.class.getClassLoader());
-        MetadataClass metadataClass = fact.getMetadataClass(RecursiveAnnotation.class.getName());
-        MetadataClass metadataClass2 = fact.getMetadataClass(RecursiveAnnotation2.class.getName());
-        MetadataAnnotation annotation = metadataClass.getAnnotation("org.eclipse.samples.RecursiveAnnotation");
+        MetadataAsmFactory fact = new MetadataAsmFactory(new MetadataLogger(null), RecursiveEntity.class.getClassLoader());
+        MetadataClass metadataClass = fact.getMetadataClass(RecursiveEntity.class.getName());
+        MetadataAnnotation annotation = metadataClass.getAnnotation(JPA_ACCESS);
         Assert.assertNotNull(annotation);
     }
 

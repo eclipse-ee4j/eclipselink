@@ -137,7 +137,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     private Map<String, MetadataAnnotation> m_annotations;
 
     /** Stores any meta-annotations defined for the element, keyed by meta-annotation name. */
-    private Map<String, MetadataAnnotation> m_metaAnnotations;
+    protected Map<String, MetadataAnnotation> m_metaAnnotations;
 
     /**
      * INTERNAL:
@@ -212,9 +212,8 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
         MetadataAnnotation metadataAnnotation = m_annotations.get(annotation);
         if (metadataAnnotation == null) {
             for (MetadataAnnotation a: m_metaAnnotations.values()) {
-                if ( this.getName().equals( a.getName() ) ) { //Recursive
-                    return a;
-                }
+                if(isRecursive(a))
+                    continue;
                 MetadataAnnotation ma = m_factory.getMetadataClass(a.getName()).getAnnotation(annotation);
                 if (ma != null) {
                     return ma;
@@ -222,6 +221,20 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
             }
         }
         return metadataAnnotation;
+    }
+    private boolean isRecursive(MetadataAnnotation annotation) {
+        if ( annotation.getName().equals( this.getName() ) ) {
+            //simple recursion (annotation annotated with itself)
+            return true;
+        }
+        MetadataClass aClass = this.m_factory.m_metadataClasses.get( annotation.getName() );
+        if ( aClass != null) {
+            //complex recursion (bi-directional dependency)
+            return aClass.m_metaAnnotations.values().stream().anyMatch( it->
+                m_factory.getMetadataClass( it.getName() ).m_metaAnnotations.containsKey( this.getName() )
+             );
+        }
+        return false;
     }
 
     /**
