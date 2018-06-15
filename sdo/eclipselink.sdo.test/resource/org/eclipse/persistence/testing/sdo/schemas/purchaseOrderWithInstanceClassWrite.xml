@@ -1,4 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    SPDX-License-Identifier: EPL-2.0
+
+-->
+
 <purchaseOrder comment="Hurry, my lawn is going wild!" orderDate="2001-12-17T01:01:01Z" xmlns:ns0="org.eclipse.persistence.sdo" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
    <items>
       <item theMimeType="image" productName="Lawnmower" quantity="1" partNum="872-AA">

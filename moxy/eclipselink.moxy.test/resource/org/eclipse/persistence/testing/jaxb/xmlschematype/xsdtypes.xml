@@ -1,3 +1,15 @@
+<!--
+
+    Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    SPDX-License-Identifier: EPL-2.0
+
+-->
+
 <ns0:holder xmlns:ns0="myns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
    <things xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="xsd:nonNegativeInteger">10</things>
    <things xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="xsd:positiveInteger">10</things>

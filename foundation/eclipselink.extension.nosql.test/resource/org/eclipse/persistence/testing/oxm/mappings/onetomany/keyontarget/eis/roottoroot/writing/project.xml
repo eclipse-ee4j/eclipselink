@@ -1,1 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?><root><project id="1"><name>Project1</name><leader>Jack</leader></project><project id="2"><name>Project2</name><leader>Jill</leader></project><project id="3"><name>Project3</name><leader>Joe</leader></project></root>
+<!--
+
+    Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    SPDX-License-Identifier: EPL-2.0
+
+-->
+
+

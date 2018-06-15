@@ -1,1 +1,13 @@
+<!--
+
+    Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    SPDX-License-Identifier: EPL-2.0
+
+-->
+
 <employee name="John Doe"><home-address><street>123 Fake Street</street><city>Ottawa</city><country>Canada</country></home-address><jb1>jb1String</jb1>new string110<address><street>222 Fake Street</street><city>Toronto</city><country>Canada</country></address>new string2<address><street>second address</street><city>Ottawa</city><country>Canada</country></address><jb2>15</jb2><jb1>jb3String</jb1><jb4 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="address"><street>222 Fake Street</street><city>Toronto</city><country>Canada</country></jb4></employee>

@@ -1,1 +1,13 @@
+<!--
+
+    Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    SPDX-License-Identifier: EPL-2.0
+
+-->
+
 <root>myTextNode<child>Child1</child><child>Child2</child><theInteger xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:int">15</theInteger><theString>15</theString><theTime xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:time">09:30:45</theTime><someChild>Child3</someChild><blah xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="childType">Child4</blah><ns0:someChild xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ns0="my.uri1" xsi:type="childType"></ns0:someChild></root>

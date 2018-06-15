@@ -1,1 +1,13 @@
+<!--
+
+    Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    SPDX-License-Identifier: EPL-2.0
+
+-->
+
 <bar:employee xmlns:bar="urn:example" bar:id="123" id2="456"><bar:first-name>Jane</bar:first-name><bar:last-name>Doe</bar:last-name><bar>Hello World</bar></bar:employee>

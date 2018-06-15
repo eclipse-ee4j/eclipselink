@@ -1,4 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+
+    Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    SPDX-License-Identifier: EPL-2.0
+
+-->
+
 <xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm" package-name="test.model" xml-accessor-order="ALPHABETICAL" xml-accessor-type="PUBLIC_MEMBER" xml-mapping-metadata-complete="false" xml-name-transformer="test.someNameTransformer">
    <xml-schema attribute-form-default="UNQUALIFIED" element-form-default="UNQUALIFIED" location="someLocation" namespace="testnamespace"/>
    <xml-schema-types>

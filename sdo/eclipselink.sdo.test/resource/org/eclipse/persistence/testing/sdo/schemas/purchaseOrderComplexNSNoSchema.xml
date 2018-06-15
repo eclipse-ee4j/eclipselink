@@ -1,4 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    SPDX-License-Identifier: EPL-2.0
+
+-->
+
 <ns0:purchaseOrder orderDate="1999-10-20" comment="Hurry, my lawn is going wild!" xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
    <ns0:shipTo name="Alice Smith" street="123 Maple Street" city="Mill Valley" country="US" state="CA" zip="90952" xsi:type="ns0:usAddressType"/>
    <ns0:billTo name="Robert Smith" street="8 Oak Avenue" city="Mill Valley" country="Canada" province="Ontario" postalcode="B3L 4J3" deliveryInfo="usual" xsi:type="ns0:cdnAddressMailingType"/>
