@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 /* $Id: //dev/eclipselink/jpa/eclipselink.jpa.wdf.test/src/org/eclipse/persistence/testing/tests/wdf/jpa1/generator/TestIdentity.java#2 $
  * Last changelist: $Change: 3861, 2015 0 $
  * Last changed at: $DateTime: 2009/09/23 09:51:44 $

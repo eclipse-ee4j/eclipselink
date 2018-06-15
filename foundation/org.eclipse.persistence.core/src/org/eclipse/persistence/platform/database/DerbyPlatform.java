@@ -1,20 +1,20 @@
-/*******************************************************************************
- * Copyright 2005, 2017 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
- * http://www.eclipse.org/org/documents/edl-v10.php.
+/*
+ * Copyright 2005, 2018 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     Sun Microsystems
- *     09/14/2011-2.3.1 Guy Pelletier
- *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
- *     03/18/2015-2.6.0 Joe Grassel
- *       - 462498: Missing isolation level expression in SQL for Derby platform
- ******************************************************************************/
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     Sun Microsystems
+//     09/14/2011-2.3.1 Guy Pelletier
+//       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
+//     03/18/2015-2.6.0 Joe Grassel
+//       - 462498: Missing isolation level expression in SQL for Derby platform
 package org.eclipse.persistence.platform.database;
 
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;

@@ -1,25 +1,25 @@
-/*******************************************************************************
+/*
  * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
- * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     11/13/2009-2.0  mobrien - 294765: MapKey keyType DirectToField processing
- *       should return attributeClassification class in getMapKeyTargetType when
- *       accessor.attributeField is null in the absence of a MapKey annotation
- *     11/10/2011-2.4 Guy Pelletier
- *       - 357474: Address primaryKey option from tenant discriminator column
- *     30/05/2012-2.4 Guy Pelletier
- *       - 354678: Temp classloader is still being used during metadata processing
- *     06/03/2013-2.5.1 Guy Pelletier
- *       - 402380: 3 jpa21/advanced tests failed on server with
- *         "java.lang.NoClassDefFoundError: org/eclipse/persistence/testing/models/jpa21/advanced/enums/Gender"
- ******************************************************************************/
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     11/13/2009-2.0  mobrien - 294765: MapKey keyType DirectToField processing
+//       should return attributeClassification class in getMapKeyTargetType when
+//       accessor.attributeField is null in the absence of a MapKey annotation
+//     11/10/2011-2.4 Guy Pelletier
+//       - 357474: Address primaryKey option from tenant discriminator column
+//     30/05/2012-2.4 Guy Pelletier
+//       - 354678: Temp classloader is still being used during metadata processing
+//     06/03/2013-2.5.1 Guy Pelletier
+//       - 402380: 3 jpa21/advanced tests failed on server with
+//         "java.lang.NoClassDefFoundError: org/eclipse/persistence/testing/models/jpa21/advanced/enums/Gender"
 package org.eclipse.persistence.mappings.foundation;
 
 import java.security.AccessController;

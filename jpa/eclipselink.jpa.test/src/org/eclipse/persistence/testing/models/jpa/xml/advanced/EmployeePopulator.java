@@ -1,22 +1,22 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
- * http://www.eclipse.org/org/documents/edl-v10.php.
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     09/23/2008-1.1 Guy Pelletier
- *       - 241651: JPA 2.0 Access Type support
- *     03/03/2010 - 2.1 Michael O'Brien
- *       - 302316: clear the object cache when testing stored procedure returns on SQLServer
- *         to avoid false positives visible only when debugging in DatabaseCall.buildOutputRow()
- *       - 260263: SQLServer 2005/2008 requires stored procedure creation select clause variable and column name matching
- *
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     09/23/2008-1.1 Guy Pelletier
+//       - 241651: JPA 2.0 Access Type support
+//     03/03/2010 - 2.1 Michael O'Brien
+//       - 302316: clear the object cache when testing stored procedure returns on SQLServer
+//         to avoid false positives visible only when debugging in DatabaseCall.buildOutputRow()
+//       - 260263: SQLServer 2005/2008 requires stored procedure creation select clause variable and column name matching
+//
 package org.eclipse.persistence.testing.models.jpa.xml.advanced;
 
 import java.util.*;

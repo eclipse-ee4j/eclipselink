@@ -1,37 +1,37 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
- * http://www.eclipse.org/org/documents/edl-v10.php.
+/*
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     06/20/2008-1.0 Guy Pelletier
- *       - 232975: Failure when attribute type is generic
- *     09/23/2008-1.1 Guy Pelletier
- *       - 241651: JPA 2.0 Access Type support
- *     01/28/2009-2.0 Guy Pelletier
- *       - 248293: JPA 2.0 Element Collections (part 1)
- *     02/06/2009-2.0 Guy Pelletier
- *       - 248293: JPA 2.0 Element Collections (part 2)
- *     03/27/2009-2.0 Guy Pelletier
- *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
- *     04/03/2009-2.0 Guy Pelletier
- *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
- *     06/02/2009-2.0 Guy Pelletier
- *       - 278768: JPA 2.0 Association Override Join Table
- *     06/09/2009-2.0 Guy Pelletier
- *       - 249037: JPA 2.0 persisting list item index
- *     02/18/2010-2.0.2 Guy Pelletier
- *       - 294803: @Column(updatable=false) has no effect on @Basic mappings
- *     06/18/2010-2.2 Guy Pelletier
- *       - 300458: EclispeLink should throw a more specific exception than NPE
- *     07/16/2010-2.2 Guy Pelletier
- *       - 260296: mixed access with no Transient annotation does not result in error
- ******************************************************************************/
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     06/20/2008-1.0 Guy Pelletier
+//       - 232975: Failure when attribute type is generic
+//     09/23/2008-1.1 Guy Pelletier
+//       - 241651: JPA 2.0 Access Type support
+//     01/28/2009-2.0 Guy Pelletier
+//       - 248293: JPA 2.0 Element Collections (part 1)
+//     02/06/2009-2.0 Guy Pelletier
+//       - 248293: JPA 2.0 Element Collections (part 2)
+//     03/27/2009-2.0 Guy Pelletier
+//       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+//     04/03/2009-2.0 Guy Pelletier
+//       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+//     06/02/2009-2.0 Guy Pelletier
+//       - 278768: JPA 2.0 Association Override Join Table
+//     06/09/2009-2.0 Guy Pelletier
+//       - 249037: JPA 2.0 persisting list item index
+//     02/18/2010-2.0.2 Guy Pelletier
+//       - 294803: @Column(updatable=false) has no effect on @Basic mappings
+//     06/18/2010-2.2 Guy Pelletier
+//       - 300458: EclispeLink should throw a more specific exception than NPE
+//     07/16/2010-2.2 Guy Pelletier
+//       - 260296: mixed access with no Transient annotation does not result in error
 package org.eclipse.persistence.testing.tests.jpa.inherited;
 
 import java.lang.reflect.ParameterizedType;

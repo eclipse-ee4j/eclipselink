@@ -1,23 +1,23 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
- * http://www.eclipse.org/org/documents/edl-v10.php.
+/*
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     06/20/2008-1.0 Guy Pelletier
- *       - 232975: Failure when attribute type is generic
- *     07/15/2010-2.2 Guy Pelletier
- *       -311395 : Multiple lifecycle callback methods for the same lifecycle event
- *     08/11/2010-2.2 Guy Pelletier
- *       - 312123: JPA: Validation error during Id processing on parameterized generic OneToOne Entity relationship from MappedSuperclass
- *     10/05/2012-2.4.1 Guy Pelletier
- *       - 373092: Exceptions using generics, embedded key and entity inheritance
- ******************************************************************************/
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     06/20/2008-1.0 Guy Pelletier
+//       - 232975: Failure when attribute type is generic
+//     07/15/2010-2.2 Guy Pelletier
+//       -311395 : Multiple lifecycle callback methods for the same lifecycle event
+//     08/11/2010-2.2 Guy Pelletier
+//       - 312123: JPA: Validation error during Id processing on parameterized generic OneToOne Entity relationship from MappedSuperclass
+//     10/05/2012-2.4.1 Guy Pelletier
+//       - 373092: Exceptions using generics, embedded key and entity inheritance
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
 import javax.persistence.Basic;

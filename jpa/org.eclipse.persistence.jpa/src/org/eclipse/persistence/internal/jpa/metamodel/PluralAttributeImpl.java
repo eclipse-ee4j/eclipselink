@@ -1,24 +1,24 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
- * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     03/19/2009-2.0  dclarke  - initial API start
- *     06/30/2009-2.0  mobrien - finish JPA Metadata API modifications in support
- *       of the Metamodel implementation for EclipseLink 2.0 release involving
- *       Map, ElementCollection and Embeddable types on MappedSuperclass descriptors
- *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)
- *    08/19/2009-2.0  mobrien - Extend Collection support
- *       http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_59:_20090818:_PluralAttribute.elementType_not_set_for_non-lazy_instantiated_Collection_Attribute
- *     06/14/2010-2.1  mobrien - 314906: getJavaType should return the
- *       collection javaType C in <X,C,V) of <X, List<V>, V> instead off the elementType V
- *     08/06/2010-2.2 mobrien 322018 - reduce protected instance variables to private to enforce encapsulation
- ******************************************************************************/
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
+// Contributors:
+//     03/19/2009-2.0  dclarke  - initial API start
+//     06/30/2009-2.0  mobrien - finish JPA Metadata API modifications in support
+//       of the Metamodel implementation for EclipseLink 2.0 release involving
+//       Map, ElementCollection and Embeddable types on MappedSuperclass descriptors
+//       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)
+//    08/19/2009-2.0  mobrien - Extend Collection support
+//       http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_59:_20090818:_PluralAttribute.elementType_not_set_for_non-lazy_instantiated_Collection_Attribute
+//     06/14/2010-2.1  mobrien - 314906: getJavaType should return the
+//       collection javaType C in <X,C,V) of <X, List<V>, V> instead off the elementType V
+//     08/06/2010-2.2 mobrien 322018 - reduce protected instance variables to private to enforce encapsulation
 package org.eclipse.persistence.internal.jpa.metamodel;
 
 import javax.persistence.metamodel.Bindable;

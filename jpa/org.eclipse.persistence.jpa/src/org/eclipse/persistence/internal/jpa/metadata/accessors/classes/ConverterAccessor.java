@@ -1,27 +1,27 @@
-/*******************************************************************************
- * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
- * http://www.eclipse.org/org/documents/edl-v10.php.
+/*
+ * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
  *
- * Contributors:
- *     10/09/2012-2.5 Guy Pelletier
- *       - 374688: JPA 2.1 Converter support
- *     10/25/2012-2.5 Guy Pelletier
- *       - 374688: JPA 2.1 Converter support
- *     10/30/2012-2.5 Guy Pelletier
- *       - 374688: JPA 2.1 Converter support
- *     11/28/2012-2.5 Guy Pelletier
- *       - 374688: JPA 2.1 Converter support
- *     06/03/2013-2.5.1 Guy Pelletier
- *       - 402380: 3 jpa21/advanced tests failed on server with
- *         "java.lang.NoClassDefFoundError: org/eclipse/persistence/testing/models/jpa21/advanced/enums/Gender"
- *     07/16/2013-2.5.1 Guy Pelletier
- *       - 412384: Applying Converter for parameterized basic-type for joda-time's DateTime does not work
- ******************************************************************************/
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
+// Contributors:
+//     10/09/2012-2.5 Guy Pelletier
+//       - 374688: JPA 2.1 Converter support
+//     10/25/2012-2.5 Guy Pelletier
+//       - 374688: JPA 2.1 Converter support
+//     10/30/2012-2.5 Guy Pelletier
+//       - 374688: JPA 2.1 Converter support
+//     11/28/2012-2.5 Guy Pelletier
+//       - 374688: JPA 2.1 Converter support
+//     06/03/2013-2.5.1 Guy Pelletier
+//       - 402380: 3 jpa21/advanced tests failed on server with
+//         "java.lang.NoClassDefFoundError: org/eclipse/persistence/testing/models/jpa21/advanced/enums/Gender"
+//     07/16/2013-2.5.1 Guy Pelletier
+//       - 412384: Applying Converter for parameterized basic-type for joda-time's DateTime does not work
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
 import java.util.List;

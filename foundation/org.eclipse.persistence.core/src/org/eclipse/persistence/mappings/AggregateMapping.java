@@ -1,23 +1,23 @@
-/*******************************************************************************
+/*
  * Copyright (c) 1998, 2018 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
- * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *      *     30/05/2012-2.4 Guy Pelletier
- *       - 354678: Temp classloader is still being used during metadata processing
- *     09 Jan 2013-2.5 Gordon Yorke
- *       - 397772: JPA 2.1 Entity Graph Support
- *     08/07/2016-2.7 Dalia Abo Sheasha
- *       - 499335: Multiple embeddable fields can't reference same object
- *     03/19/2018-2.7.2 Lukas Jungmann
- *       - 413120: Nested Embeddable Null pointer
- ******************************************************************************/
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//      //     30/05/2012-2.4 Guy Pelletier
+//       - 354678: Temp classloader is still being used during metadata processing
+//     09 Jan 2013-2.5 Gordon Yorke
+//       - 397772: JPA 2.1 Entity Graph Support
+//     08/07/2016-2.7 Dalia Abo Sheasha
+//       - 499335: Multiple embeddable fields can't reference same object
+//     03/19/2018-2.7.2 Lukas Jungmann
+//       - 413120: Nested Embeddable Null pointer
 package org.eclipse.persistence.mappings;
 
 import java.util.*;

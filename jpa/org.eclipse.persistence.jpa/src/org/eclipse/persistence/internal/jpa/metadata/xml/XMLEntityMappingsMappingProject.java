@@ -1,91 +1,91 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
- * http://www.eclipse.org/org/documents/edl-v10.php.
+/*
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     05/16/2008-1.0M8 Guy Pelletier
- *       - 218084: Implement metadata merging functionality between mapping file
- *     05/23/2008-1.0M8 Guy Pelletier
- *       - 211330: Add attributes-complete support to the EclipseLink-ORM.XML Schema
- *     07/22/2008-1.1 Guy Pelletier
- *       - 237315: Support converters on attribute mappings in the eclipselink orm.xml schema
- *     08/27/2008-1.1 Guy Pelletier
- *       - 211329: Add sequencing on non-id attribute(s) support to the EclipseLink-ORM.XML Schema
- *     09/23/2008-1.1 Guy Pelletier
- *       - 241651: JPA 2.0 Access Type support
- *     02/06/2009-2.0 Guy Pelletier
- *       - 248293: JPA 2.0 Element Collections (part 2)
- *     02/25/2009-2.0 Guy Pelletier
- *       - 265359: JPA 2.0 Element Collections - Metadata processing portions
- *     03/27/2009-2.0 Guy Pelletier
- *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
- *     04/03/2009-2.0 Guy Pelletier
- *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
- *     06/09/2009-2.0 Guy Pelletier
- *       - 249037: JPA 2.0 persisting list item index
- *     06/16/2009-2.0 Guy Pelletier
- *       - 277039: JPA 2.0 Cache Usage Settings
- *     11/06/2009-2.0 Guy Pelletier
- *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
- *     12/2/2009-2.1 Guy Pelletier
- *       - 296289: Add current annotation metadata support on mapped superclasses to EclipseLink-ORM.XML Schema
- *     12/18/2009-2.1 Guy Pelletier
- *       - 211323: Add class extractor support to the EclipseLink-ORM.XML Schema
- *     01/19/2010-2.1 Guy Pelletier
- *       - 211322: Add fetch-group(s) support to the EclipseLink-ORM.XML Schema
- *     03/08/2010-2.1 Guy Pelletier
- *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
- *     04/09/2010-2.1 Guy Pelletier
- *       - 307050: Add defaults for access methods of a VIRTUAL access type
- *     04/27/2010-2.1 Guy Pelletier
- *       - 309856: MappedSuperclasses from XML are not being initialized properly
- *     05/04/2010-2.1 Guy Pelletier
- *       - 309373: Add parent class attribute to EclipseLink-ORM
- *     09/16/2010-2.2 Guy Pelletier
- *       - 283028: Add support for letting an @Embeddable extend a @MappedSuperclass
- *     10/15/2010-2.2 Guy Pelletier
- *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
- *     10/28/2010-2.2 Guy Pelletier
- *       - 3223850: Primary key metadata issues
- *     01/25/2011-2.3 Guy Pelletier
- *       - 333913: @OrderBy and <order-by/> without arguments should order by primary
- *     03/24/2011-2.3 Guy Pelletier
- *       - 337323: Multi-tenant with shared schema support (part 1)
- *     03/28/2011-2.3 Guy Pelletier
- *       - 341152: From XML cache interceptor and query redirector metadata don't support package specification
- *     03/24/2011-2.3 Guy Pelletier
- *       - 337323: Multi-tenant with shared schema support (part 8)
- *     07/03/2011-2.3.1 Guy Pelletier
- *       - 348756: m_cascadeOnDelete boolean should be changed to Boolean
- *     08/18/2011-2.3.1 Guy Pelletier
- *       - 355093: Add new 'includeCriteria' flag to Multitenant metadata
- *     02/08/2012-2.4 Guy Pelletier
- *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     14/05/2012-2.4 Guy Pelletier
- *       - 376603: Provide for table per tenant support for multitenant applications
- *      *     30/05/2012-2.4 Guy Pelletier
- *       - 354678: Temp classloader is still being used during metadata processing
- *     10/09/2012-2.5 Guy Pelletier
- *       - 374688: JPA 2.1 Converter support
- *     10/25/2012-2.5 Guy Pelletier
- *       - 3746888: JPA 2.1 Converter support
- *     11/19/2012-2.5 Guy Pelletier
- *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
- *     11/22/2012-2.5 Guy Pelletier
- *       - 389090: JPA 2.1 DDL Generation Support (index metadata support)
- *     01/23/2013-2.5 Guy Pelletier
- *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     02/13/2013-2.5 Guy Pelletier
- *       - 397772: JPA 2.1 Entity Graph Support (XML support)
- *     02/20/2013-2.5 Guy Pelletier
- *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
- *******************************************************************************/
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     05/16/2008-1.0M8 Guy Pelletier
+//       - 218084: Implement metadata merging functionality between mapping file
+//     05/23/2008-1.0M8 Guy Pelletier
+//       - 211330: Add attributes-complete support to the EclipseLink-ORM.XML Schema
+//     07/22/2008-1.1 Guy Pelletier
+//       - 237315: Support converters on attribute mappings in the eclipselink orm.xml schema
+//     08/27/2008-1.1 Guy Pelletier
+//       - 211329: Add sequencing on non-id attribute(s) support to the EclipseLink-ORM.XML Schema
+//     09/23/2008-1.1 Guy Pelletier
+//       - 241651: JPA 2.0 Access Type support
+//     02/06/2009-2.0 Guy Pelletier
+//       - 248293: JPA 2.0 Element Collections (part 2)
+//     02/25/2009-2.0 Guy Pelletier
+//       - 265359: JPA 2.0 Element Collections - Metadata processing portions
+//     03/27/2009-2.0 Guy Pelletier
+//       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+//     04/03/2009-2.0 Guy Pelletier
+//       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+//     06/09/2009-2.0 Guy Pelletier
+//       - 249037: JPA 2.0 persisting list item index
+//     06/16/2009-2.0 Guy Pelletier
+//       - 277039: JPA 2.0 Cache Usage Settings
+//     11/06/2009-2.0 Guy Pelletier
+//       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
+//     12/2/2009-2.1 Guy Pelletier
+//       - 296289: Add current annotation metadata support on mapped superclasses to EclipseLink-ORM.XML Schema
+//     12/18/2009-2.1 Guy Pelletier
+//       - 211323: Add class extractor support to the EclipseLink-ORM.XML Schema
+//     01/19/2010-2.1 Guy Pelletier
+//       - 211322: Add fetch-group(s) support to the EclipseLink-ORM.XML Schema
+//     03/08/2010-2.1 Guy Pelletier
+//       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
+//     04/09/2010-2.1 Guy Pelletier
+//       - 307050: Add defaults for access methods of a VIRTUAL access type
+//     04/27/2010-2.1 Guy Pelletier
+//       - 309856: MappedSuperclasses from XML are not being initialized properly
+//     05/04/2010-2.1 Guy Pelletier
+//       - 309373: Add parent class attribute to EclipseLink-ORM
+//     09/16/2010-2.2 Guy Pelletier
+//       - 283028: Add support for letting an @Embeddable extend a @MappedSuperclass
+//     10/15/2010-2.2 Guy Pelletier
+//       - 322008: Improve usability of additional criteria applied to queries at the session/EM
+//     10/28/2010-2.2 Guy Pelletier
+//       - 3223850: Primary key metadata issues
+//     01/25/2011-2.3 Guy Pelletier
+//       - 333913: @OrderBy and <order-by/> without arguments should order by primary
+//     03/24/2011-2.3 Guy Pelletier
+//       - 337323: Multi-tenant with shared schema support (part 1)
+//     03/28/2011-2.3 Guy Pelletier
+//       - 341152: From XML cache interceptor and query redirector metadata don't support package specification
+//     03/24/2011-2.3 Guy Pelletier
+//       - 337323: Multi-tenant with shared schema support (part 8)
+//     07/03/2011-2.3.1 Guy Pelletier
+//       - 348756: m_cascadeOnDelete boolean should be changed to Boolean
+//     08/18/2011-2.3.1 Guy Pelletier
+//       - 355093: Add new 'includeCriteria' flag to Multitenant metadata
+//     02/08/2012-2.4 Guy Pelletier
+//       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+//     14/05/2012-2.4 Guy Pelletier
+//       - 376603: Provide for table per tenant support for multitenant applications
+//      //     30/05/2012-2.4 Guy Pelletier
+//       - 354678: Temp classloader is still being used during metadata processing
+//     10/09/2012-2.5 Guy Pelletier
+//       - 374688: JPA 2.1 Converter support
+//     10/25/2012-2.5 Guy Pelletier
+//       - 3746888: JPA 2.1 Converter support
+//     11/19/2012-2.5 Guy Pelletier
+//       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+//     11/22/2012-2.5 Guy Pelletier
+//       - 389090: JPA 2.1 DDL Generation Support (index metadata support)
+//     01/23/2013-2.5 Guy Pelletier
+//       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+//     02/13/2013-2.5 Guy Pelletier
+//       - 397772: JPA 2.1 Entity Graph Support (XML support)
+//     02/20/2013-2.5 Guy Pelletier
+//       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;

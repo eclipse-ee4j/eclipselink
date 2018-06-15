@@ -1,28 +1,28 @@
-/*******************************************************************************
+/*
  * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
- * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     07/19/2011-2.2.1 Guy Pelletier
- *       - 338812: ManyToMany mapping in aggregate object violate integrity constraint on deletion
- *     04/09/2012-2.4 Guy Pelletier
- *       - 374377: OrderBy with ElementCollection doesn't work
- *     14/05/2012-2.4 Guy Pelletier
- *       - 376603: Provide for table per tenant support for multitenant applications
- *     30/05/2012-2.4 Guy Pelletier
- *       - 354678: Temp classloader is still being used during metadata processing
- *     08/01/2012-2.5 Chris Delahunt
- *       - 371950: Metadata caching
- *     06/03/2013-2.5.1 Guy Pelletier
- *       - 402380: 3 jpa21/advanced tests failed on server with
- *         "java.lang.NoClassDefFoundError: org/eclipse/persistence/testing/models/jpa21/advanced/enums/Gender"
- ******************************************************************************/
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     07/19/2011-2.2.1 Guy Pelletier
+//       - 338812: ManyToMany mapping in aggregate object violate integrity constraint on deletion
+//     04/09/2012-2.4 Guy Pelletier
+//       - 374377: OrderBy with ElementCollection doesn't work
+//     14/05/2012-2.4 Guy Pelletier
+//       - 376603: Provide for table per tenant support for multitenant applications
+//     30/05/2012-2.4 Guy Pelletier
+//       - 354678: Temp classloader is still being used during metadata processing
+//     08/01/2012-2.5 Chris Delahunt
+//       - 371950: Metadata caching
+//     06/03/2013-2.5.1 Guy Pelletier
+//       - 402380: 3 jpa21/advanced tests failed on server with
+//         "java.lang.NoClassDefFoundError: org/eclipse/persistence/testing/models/jpa21/advanced/enums/Gender"
 package org.eclipse.persistence.mappings;
 
 import java.beans.PropertyChangeEvent;

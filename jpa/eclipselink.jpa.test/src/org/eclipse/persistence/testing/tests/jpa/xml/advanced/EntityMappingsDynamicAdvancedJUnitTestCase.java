@@ -1,29 +1,29 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
- * http://www.eclipse.org/org/documents/edl-v10.php.
+/*
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     09/23/2008-1.1 Guy Pelletier
- *       - 241651: JPA 2.0 Access Type support
- *     03/08/2010-2.1 Guy Pelletier
- *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
- *     03/29/2010-2.1 Guy Pelletier
- *       - 267217: Add Named Access Type to EclipseLink-ORM
- *     04/09/2010-2.1 Guy Pelletier
- *       - 307050: Add defaults for access methods of a VIRTUAL access type
- *     07/05/2010-2.1.1 Guy Pelletier
- *       - 317708: Exception thrown when using LAZY fetch on VIRTUAL mapping
- *     11/17/2010-2.2 Guy Pelletier
- *       - 329008: Support dynamic context creation without persistence.xml
- *     08/20/2012-2.4 Guy Pelletier
- *       - 381079: EclipseLink dynamic entity does not support embedded-id
- ******************************************************************************/
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     09/23/2008-1.1 Guy Pelletier
+//       - 241651: JPA 2.0 Access Type support
+//     03/08/2010-2.1 Guy Pelletier
+//       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
+//     03/29/2010-2.1 Guy Pelletier
+//       - 267217: Add Named Access Type to EclipseLink-ORM
+//     04/09/2010-2.1 Guy Pelletier
+//       - 307050: Add defaults for access methods of a VIRTUAL access type
+//     07/05/2010-2.1.1 Guy Pelletier
+//       - 317708: Exception thrown when using LAZY fetch on VIRTUAL mapping
+//     11/17/2010-2.2 Guy Pelletier
+//       - 329008: Support dynamic context creation without persistence.xml
+//     08/20/2012-2.4 Guy Pelletier
+//       - 381079: EclipseLink dynamic entity does not support embedded-id
 package org.eclipse.persistence.testing.tests.jpa.xml.advanced;
 
 import java.lang.reflect.Method;

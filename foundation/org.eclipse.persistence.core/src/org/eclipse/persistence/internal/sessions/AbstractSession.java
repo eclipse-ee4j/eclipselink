@@ -1,35 +1,35 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2017 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
- * http://www.eclipse.org/org/documents/edl-v10.php.
+/*
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     10/15/2010-2.2 Guy Pelletier
- *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
- *     06/30/2011-2.3.1 Guy Pelletier
- *       - 341940: Add disable/enable allowing native queries
- *     09/09/2011-2.3.1 Guy Pelletier
- *       - 356197: Add new VPD type to MultitenantType
- *     09/14/2011-2.3.1 Guy Pelletier
- *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
- *     05/14/2012-2.4 Guy Pelletier
- *       - 376603: Provide for table per tenant support for multitenant applications
- *     08/11/2012-2.5 Guy Pelletier
- *       - 393867: Named queries do not work when using EM level Table Per Tenant Multitenancy.
- *     11/29/2012-2.5 Guy Pelletier
- *       - 395406: Fix nightly static weave test errors
- *     08/11/2014-2.5 Rick Curtis
- *       - 440594: Tolerate invalid NamedQuery at EntityManager creation.
- *     09/03/2015 - Will Dazey
- *       - 456067: Added support for defining query timeout units
- *     05/26/2016-2.7 Tomas Kraus
- *       - 494610: Session Properties map should be Map<String, Object>
- ******************************************************************************/
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     10/15/2010-2.2 Guy Pelletier
+//       - 322008: Improve usability of additional criteria applied to queries at the session/EM
+//     06/30/2011-2.3.1 Guy Pelletier
+//       - 341940: Add disable/enable allowing native queries
+//     09/09/2011-2.3.1 Guy Pelletier
+//       - 356197: Add new VPD type to MultitenantType
+//     09/14/2011-2.3.1 Guy Pelletier
+//       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
+//     05/14/2012-2.4 Guy Pelletier
+//       - 376603: Provide for table per tenant support for multitenant applications
+//     08/11/2012-2.5 Guy Pelletier
+//       - 393867: Named queries do not work when using EM level Table Per Tenant Multitenancy.
+//     11/29/2012-2.5 Guy Pelletier
+//       - 395406: Fix nightly static weave test errors
+//     08/11/2014-2.5 Rick Curtis
+//       - 440594: Tolerate invalid NamedQuery at EntityManager creation.
+//     09/03/2015 - Will Dazey
+//       - 456067: Added support for defining query timeout units
+//     05/26/2016-2.7 Tomas Kraus
+//       - 494610: Session Properties map should be Map<String, Object>
 package org.eclipse.persistence.internal.sessions;
 
 import java.io.Serializable;

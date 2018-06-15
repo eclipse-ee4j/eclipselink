@@ -1,27 +1,27 @@
-/*******************************************************************************
- * Copyright (c) 2011, 2016 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
- * http://www.eclipse.org/org/documents/edl-v10.php.
+/*
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     05/26/2009-2.0  mobrien - 266912: Add implementation of IdentifiableType
- *       as EntityType inherits here instead of ManagedType as of rev# 4265
- *     09/23/2009-2.0  mobrien - 266912: Implement hasSingleIdAttribute() and
- *       all other 6 remaining methods for Id and Version support.
- *       DI 71 - 77 and 56
- *       http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_74:_20090909:_Implement_IdentifiableType.hasSingleIdAttribute.28.29
- *     10/21/2009-2.0 Guy Pelletier
- *       - 290567: mappedbyid support incomplete
- *     06/14/2010-2.1  mobrien - 314906: getJavaType should return the
- *       collection javaType C in <X,C,V) of <X, List<V>, V> instead off the elementType V.
- *       Because of this we switch to using getBindableJavaType() in getIdType()
- *     08/06/2010-2.2 mobrien 322018 - reduce protected instance variables to private to enforce encapsulation
- ******************************************************************************/
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     05/26/2009-2.0  mobrien - 266912: Add implementation of IdentifiableType
+//       as EntityType inherits here instead of ManagedType as of rev# 4265
+//     09/23/2009-2.0  mobrien - 266912: Implement hasSingleIdAttribute() and
+//       all other 6 remaining methods for Id and Version support.
+//       DI 71 - 77 and 56
+//       http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_74:_20090909:_Implement_IdentifiableType.hasSingleIdAttribute.28.29
+//     10/21/2009-2.0 Guy Pelletier
+//       - 290567: mappedbyid support incomplete
+//     06/14/2010-2.1  mobrien - 314906: getJavaType should return the
+//       collection javaType C in <X,C,V) of <X, List<V>, V> instead off the elementType V.
+//       Because of this we switch to using getBindableJavaType() in getIdType()
+//     08/06/2010-2.2 mobrien 322018 - reduce protected instance variables to private to enforce encapsulation
 package org.eclipse.persistence.internal.jpa.metamodel;
 
 import java.util.HashSet;

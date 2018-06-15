@@ -1,28 +1,28 @@
-/*******************************************************************************
+/*
  * Copyright (c) 1998, 2018 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
- * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     05/5/2009-2.0 Guy Pelletier
- *       - 248489: JPA 2.0 Pessimistic Locking/Lock Mode support
- *       - Allows the configuration of pessimistic locking from JPA entity manager
- *         functions (find, refresh, lock) and from individual query execution.
- *         A pessimistic lock can be issued with a lock timeout value as well, in
- *         which case, for those databases that support LOCK WAIT will cause
- *         a LockTimeoutException to be thrown if the query fails as a result of
- *         a timeout trying to acquire the lock. A PessimisticLockException is
- *         thrown otherwise.
- *     05/19/2010-2.1 ailitchev - Bug 244124 - Add Nested FetchGroup
- *     09/21/2010-2.2 Frank Schwarz and ailitchev - Bug 325684 - QueryHints.BATCH combined with QueryHints.FETCH_GROUP_LOAD will cause NPE
- *     3/13/2015 - Will Dazey
- *       - 458301 : Added check so that aggregate results won't attempt force version lock if locking type is set
- ******************************************************************************/
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     05/5/2009-2.0 Guy Pelletier
+//       - 248489: JPA 2.0 Pessimistic Locking/Lock Mode support
+//       - Allows the configuration of pessimistic locking from JPA entity manager
+//         functions (find, refresh, lock) and from individual query execution.
+//         A pessimistic lock can be issued with a lock timeout value as well, in
+//         which case, for those databases that support LOCK WAIT will cause
+//         a LockTimeoutException to be thrown if the query fails as a result of
+//         a timeout trying to acquire the lock. A PessimisticLockException is
+//         thrown otherwise.
+//     05/19/2010-2.1 ailitchev - Bug 244124 - Add Nested FetchGroup
+//     09/21/2010-2.2 Frank Schwarz and ailitchev - Bug 325684 - QueryHints.BATCH combined with QueryHints.FETCH_GROUP_LOAD will cause NPE
+//     3/13/2015 - Will Dazey
+//       - 458301 : Added check so that aggregate results won't attempt force version lock if locking type is set
 package org.eclipse.persistence.queries;
 
 import java.util.ArrayList;

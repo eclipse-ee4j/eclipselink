@@ -1,27 +1,27 @@
-/*******************************************************************************
+/*
  * Copyright (c) 1998, 2018 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
- * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     02/25/2009-2.0 Guy Pelletier
- *       - 265359: JPA 2.0 Element Collections - Metadata processing portions
- *     06/16/2010-2.2 Guy Pelletier
- *       - 247078: eclipselink-orm.xml schema should allow lob and enumerated on version and id mappings
- *     10/15/2010-2.2 Guy Pelletier
- *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
- *     10/27/2010-2.2 Guy Pelletier
- *       - 328114: @AttributeOverride does not work with nested embeddables having attributes of the same name
- *     01/06/2015-2.6 Dalia Abo Sheasha
- *       - 454917: Informix tables need to use INT fields when referencing SERIAL types, moved helper methods to parent class
- *     01/15/2015-2.6 Mythily Parthasarathy
- *       - 457480: NPE in  MethodAttributeAccessor.getAttributeValueFromObject
- ******************************************************************************/
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     02/25/2009-2.0 Guy Pelletier
+//       - 265359: JPA 2.0 Element Collections - Metadata processing portions
+//     06/16/2010-2.2 Guy Pelletier
+//       - 247078: eclipselink-orm.xml schema should allow lob and enumerated on version and id mappings
+//     10/15/2010-2.2 Guy Pelletier
+//       - 322008: Improve usability of additional criteria applied to queries at the session/EM
+//     10/27/2010-2.2 Guy Pelletier
+//       - 328114: @AttributeOverride does not work with nested embeddables having attributes of the same name
+//     01/06/2015-2.6 Dalia Abo Sheasha
+//       - 454917: Informix tables need to use INT fields when referencing SERIAL types, moved helper methods to parent class
+//     01/15/2015-2.6 Mythily Parthasarathy
+//       - 457480: NPE in  MethodAttributeAccessor.getAttributeValueFromObject
 package org.eclipse.persistence.testing.models.jpa.advanced;
 
 import org.eclipse.persistence.exceptions.DatabaseException;

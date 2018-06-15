@@ -1,31 +1,31 @@
-/*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
- * http://www.eclipse.org/org/documents/edl-v10.php.
+/*
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  *
- * Contributors:
- *     03/19/2009-2.0  dclarke  - initial API start
- *     06/30/2009-2.0  mobrien - finish JPA Metadata API modifications in support
- *       of the Metamodel implementation for EclipseLink 2.0 release involving
- *       Map, ElementCollection and Embeddable types on MappedSuperclass descriptors
- *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)
- *     29/10/2009-2.0  mobrien - m:1 and 1:m relationships require special handling
- *       in their internal m:m and 1:1 database mapping representations.
- *       http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_96:_20091019:_Attribute.getPersistentAttributeType.28.29_treats_ManyToOne_the_same_as_OneToOne
- *     16/06/2010-2.2  mobrien - 316991: Attribute.getJavaMember() requires reflective getMethod call
- *       when only getMethodName is available on accessor for attributes of Embeddable types.
- *       http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_95:_20091017:_Attribute.getJavaMember.28.29_returns_null_for_a_BasicType_on_a_MappedSuperclass_because_of_an_uninitialized_accessor
- *     09/08/2010-2.2  mobrien - 322166: If attribute is defined on a lower level MappedSuperclass (and not on a superclass)
- *       - do not attempt a reflective call on a superclass
- *       - see design issue #25
- *       http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_25:_20090616:_Inherited_parameterized_generics_for_Element_Collections_.28Basic.29
- *     11/10/2011-2.4 Guy Pelletier
- *       - 357474: Address primaryKey option from tenant discriminator column
- ******************************************************************************/
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
+// Contributors:
+//     03/19/2009-2.0  dclarke  - initial API start
+//     06/30/2009-2.0  mobrien - finish JPA Metadata API modifications in support
+//       of the Metamodel implementation for EclipseLink 2.0 release involving
+//       Map, ElementCollection and Embeddable types on MappedSuperclass descriptors
+//       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)
+//     29/10/2009-2.0  mobrien - m:1 and 1:m relationships require special handling
+//       in their internal m:m and 1:1 database mapping representations.
+//       http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_96:_20091019:_Attribute.getPersistentAttributeType.28.29_treats_ManyToOne_the_same_as_OneToOne
+//     16/06/2010-2.2  mobrien - 316991: Attribute.getJavaMember() requires reflective getMethod call
+//       when only getMethodName is available on accessor for attributes of Embeddable types.
+//       http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_95:_20091017:_Attribute.getJavaMember.28.29_returns_null_for_a_BasicType_on_a_MappedSuperclass_because_of_an_uninitialized_accessor
+//     09/08/2010-2.2  mobrien - 322166: If attribute is defined on a lower level MappedSuperclass (and not on a superclass)
+//       - do not attempt a reflective call on a superclass
+//       - see design issue #25
+//       http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_25:_20090616:_Inherited_parameterized_generics_for_Element_Collections_.28Basic.29
+//     11/10/2011-2.4 Guy Pelletier
+//       - 357474: Address primaryKey option from tenant discriminator column
 package org.eclipse.persistence.internal.jpa.metamodel;
 
 import java.io.Serializable;

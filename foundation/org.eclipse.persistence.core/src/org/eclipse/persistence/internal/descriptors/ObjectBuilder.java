@@ -1,29 +1,29 @@
-/*******************************************************************************
+/*
  * Copyright (c) 1998, 2018 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
- * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     07/16/2009-2.0 Guy Pelletier
- *       - 277039: JPA 2.0 Cache Usage Settings
- *     04/01/2011-2.3 Guy Pelletier
- *       - 337323: Multi-tenant with shared schema support (part 2)
- *     09/09/2011-2.3.1 Guy Pelletier
- *       - 356197: Add new VPD type to MultitenantType
- *     11/10/2011-2.4 Guy Pelletier
- *       - 357474: Address primaryKey option from tenant discriminator column
- *     01/15/2016-2.7 Mythily Parthasarathy
- *       - 485984: Retrieve FetchGroup info along with getReference() from cache
- *     08/07/2016-2.7 Dalia Abo Sheasha
- *       - 499335: Multiple embeddable fields can't reference same object
- *     02/20/2018-2.7 Will Dazey
- *       - 529602: Added support for CLOBs in DELETE statements for Oracle
- ******************************************************************************/
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     07/16/2009-2.0 Guy Pelletier
+//       - 277039: JPA 2.0 Cache Usage Settings
+//     04/01/2011-2.3 Guy Pelletier
+//       - 337323: Multi-tenant with shared schema support (part 2)
+//     09/09/2011-2.3.1 Guy Pelletier
+//       - 356197: Add new VPD type to MultitenantType
+//     11/10/2011-2.4 Guy Pelletier
+//       - 357474: Address primaryKey option from tenant discriminator column
+//     01/15/2016-2.7 Mythily Parthasarathy
+//       - 485984: Retrieve FetchGroup info along with getReference() from cache
+//     08/07/2016-2.7 Dalia Abo Sheasha
+//       - 499335: Multiple embeddable fields can't reference same object
+//     02/20/2018-2.7 Will Dazey
+//       - 529602: Added support for CLOBs in DELETE statements for Oracle
 package org.eclipse.persistence.internal.descriptors;
 
 import java.io.*;

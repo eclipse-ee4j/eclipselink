@@ -1,31 +1,31 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
- * http://www.eclipse.org/org/documents/edl-v10.php.
+/*
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     27/07/2010 - 2.1.1 Sabine Heider
- *          304650: fix left over entity data interfering with testSetRollbackOnly
- *     11/17/2010-2.2 Michael O'Brien
- *       - 325605: Do not track SQL category logs in QuerySQLTracker logged at FINEST
- *         testDeleteEmployee*() will fail on DB2 9.7 Universal because cascade deletes
- *         of an uninstantiated collection of enums must inherently be deleted even if
- *         the actual collection is empty.  DB2 warns of nothing deleted - we convert it to a FINEST log
- *     04/29/2011 - 2.3 Andrei Ilitchev
- *       - Bug 328404 - JPA Persistence Unit Composition
- *         Adapted org.eclipse.persistence.testing.tests.jpa.advanced.EntityManagerJUnitTestSuite
- *         for composite persistence unit.
- *         Try to keep one-to-one correspondence between the two in the future, too.
- *         The tests that could not (or not yet) adapted for composite persistence unit
- *         are commented out, the quick explanation why the test can't run is provided.
- *     03/22/2016-2.6_WAS Nathan Rauh
- *       - 489787: Add negative test for non-entity supplied to PersistenceUnitUtil.isLoaded
- ******************************************************************************/
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     27/07/2010 - 2.1.1 Sabine Heider
+//          304650: fix left over entity data interfering with testSetRollbackOnly
+//     11/17/2010-2.2 Michael O'Brien
+//       - 325605: Do not track SQL category logs in QuerySQLTracker logged at FINEST
+//         testDeleteEmployee//() will fail on DB2 9.7 Universal because cascade deletes
+//         of an uninstantiated collection of enums must inherently be deleted even if
+//         the actual collection is empty.  DB2 warns of nothing deleted - we convert it to a FINEST log
+//     04/29/2011 - 2.3 Andrei Ilitchev
+//       - Bug 328404 - JPA Persistence Unit Composition
+//         Adapted org.eclipse.persistence.testing.tests.jpa.advanced.EntityManagerJUnitTestSuite
+//         for composite persistence unit.
+//         Try to keep one-to-one correspondence between the two in the future, too.
+//         The tests that could not (or not yet) adapted for composite persistence unit
+//         are commented out, the quick explanation why the test can't run is provided.
+//     03/22/2016-2.6_WAS Nathan Rauh
+//       - 489787: Add negative test for non-entity supplied to PersistenceUnitUtil.isLoaded
 package org.eclipse.persistence.testing.tests.jpa.composite.advanced;
 
 import java.io.ByteArrayInputStream;

@@ -1,22 +1,22 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2006, 2018 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
- * http://www.eclipse.org/org/documents/edl-v10.php.
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
  *
- * Contributors:
- *     Oracle - initial API and implementation
- *
- *     04/11/2017-2.6 Will Dazey
- *       - 512386: Concat expression return type Boolean -> String
- *     02/20/2018-2.7 Will Dazey
- *       - 531062: Incorrect expression type created for CollectionExpression
- *     05/11/2018-2.7 Will Dazey
- *       - 534515: Incorrect return type set for CASE functions
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation
+//
+//     04/11/2017-2.6 Will Dazey
+//       - 512386: Concat expression return type Boolean -> String
+//     02/20/2018-2.7 Will Dazey
+//       - 531062: Incorrect expression type created for CollectionExpression
+//     05/11/2018-2.7 Will Dazey
+//       - 534515: Incorrect return type set for CASE functions
 package org.eclipse.persistence.internal.jpa.jpql;
 
 import java.sql.Date;

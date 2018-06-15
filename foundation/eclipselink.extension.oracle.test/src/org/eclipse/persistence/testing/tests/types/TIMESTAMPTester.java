@@ -1,49 +1,49 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
- * http://www.eclipse.org/org/documents/edl-v10.php.
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *
- *     14/05/2009 ailitchev - Bug 267929: Oracle 11.1.0.7: TIMESTAMP test '100 Years from now -> 2109-03-10 13:22:28.5 EST5EDT EDT' began to fail after Daylight Saving Time started
- *     Changed the test "100 Years from now" to "Last DST year" in both TIMESTAMPDirectToFieldTester and TIMESTAMPTypeConversionTester:
- *     instead of hitting the current date 100 years ahead
- *     it now tests the current date on the latest year for which Daylight Saving Time is defined in Oracle db (by default lastDSTYear = 2020).
- *     The change was done because "100 Years from now" fails when run during DST (though passes outside of it).
- *     To figure out what is the latest year in your Oracle db for which DST defined,
- *     one of Oracle jdbc people suggested printing out the table which includes entries for each supported year
- *     (so the last entry in this table corresponds to the latest supported year).
- *     Here is the code that prints table with oracle jdbc 11.2.0.0.2 and later:
- *         String sTZ = conn.getSessionTimeZone();
- *         if (sTZ != null && ZONEIDMAP.isValidRegion(sTZ)) {
- *           System.out.println("Session TZ is " + sTZ);
- *           int regionID = ZONEIDMAP.getID(sTZ);
- *           System.out.println("Session TZ ID is " + regionID);
- *           TIMEZONETAB tzTab = TIMEZONETAB.getInstance(1);
- *           if (tzTab.checkID(regionID)) {
- *             tzTab.updateTable(conn, regionID);
- *           }
- *            tzTab.displayTable(regionID);
- *         }
- *     Here is the code that prints table with oracle jdbc 11.1.0.7 and earlier:
- *     (note that unlike 11.2 the user has to explicitly set time zone
- *         conn.setSessionTimeZone(connTimeZone);
- *         String sTZ = conn.getSessionTimeZone();
- *         if (sTZ != null) {
- *           System.out.println("Session TZ is " + sTZ);
- *           int regionID = ZONEIDMAP.getID(sTZ);
- *           System.out.println("Session TZ ID is " + regionID);
- *           if (TIMEZONETAB.checkID(regionID)) {
- *               TIMEZONETAB.updateTable(conn, regionID);
- *           }
- *           TIMEZONETAB.displayTable(regionID);
- *         }
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//
+//     14/05/2009 ailitchev - Bug 267929: Oracle 11.1.0.7: TIMESTAMP test '100 Years from now -> 2109-03-10 13:22:28.5 EST5EDT EDT' began to fail after Daylight Saving Time started
+//     Changed the test "100 Years from now" to "Last DST year" in both TIMESTAMPDirectToFieldTester and TIMESTAMPTypeConversionTester:
+//     instead of hitting the current date 100 years ahead
+//     it now tests the current date on the latest year for which Daylight Saving Time is defined in Oracle db (by default lastDSTYear = 2020).
+//     The change was done because "100 Years from now" fails when run during DST (though passes outside of it).
+//     To figure out what is the latest year in your Oracle db for which DST defined,
+//     one of Oracle jdbc people suggested printing out the table which includes entries for each supported year
+//     (so the last entry in this table corresponds to the latest supported year).
+//     Here is the code that prints table with oracle jdbc 11.2.0.0.2 and later:
+//         String sTZ = conn.getSessionTimeZone();
+//         if (sTZ != null && ZONEIDMAP.isValidRegion(sTZ)) {
+//           System.out.println("Session TZ is " + sTZ);
+//           int regionID = ZONEIDMAP.getID(sTZ);
+//           System.out.println("Session TZ ID is " + regionID);
+//           TIMEZONETAB tzTab = TIMEZONETAB.getInstance(1);
+//           if (tzTab.checkID(regionID)) {
+//             tzTab.updateTable(conn, regionID);
+//           }
+//            tzTab.displayTable(regionID);
+//         }
+//     Here is the code that prints table with oracle jdbc 11.1.0.7 and earlier:
+//     (note that unlike 11.2 the user has to explicitly set time zone
+//         conn.setSessionTimeZone(connTimeZone);
+//         String sTZ = conn.getSessionTimeZone();
+//         if (sTZ != null) {
+//           System.out.println("Session TZ is " + sTZ);
+//           int regionID = ZONEIDMAP.getID(sTZ);
+//           System.out.println("Session TZ ID is " + regionID);
+//           if (TIMEZONETAB.checkID(regionID)) {
+//               TIMEZONETAB.updateTable(conn, regionID);
+//           }
+//           TIMEZONETAB.displayTable(regionID);
+//         }
 package org.eclipse.persistence.testing.tests.types;
 
 import java.util.*;

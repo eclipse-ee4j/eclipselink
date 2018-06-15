@@ -1,21 +1,21 @@
-/*******************************************************************************
- * Copyright (c) 2010, 2015 Dies Koper (Fujitsu). Oracle and/or its affiliates, IBM Corporation.
- * All rights reserved. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
- * http://www.eclipse.org/org/documents/edl-v10.php.
+/*
+ * Copyright (c) 2010, 2018 Dies Koper (Fujitsu). Oracle and/or its affiliates, IBM Corporation.
  *
- * Contributors:
- *     Created Feb 19, 2010 - Dies Koper (Fujitsu)
- *        bug 288715: Drop Table Restrictions: "table locked" errors when dropping
- *                    tables in several Core and many JPA LRG tests on Symfoware.
- *     Jul 19, 2014 - Tomas Kraus (Oracle)
- *        bug 437578: Added few helper methods to simplify table builder methods.
- *     Jan 06, 2015 - Dalia Abo Sheasha (IBM)
- *        bug 454917: Moved a few helper methods from child class to be visible to all table creators.
- ******************************************************************************/
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
+// Contributors:
+//     Created Feb 19, 2010 - Dies Koper (Fujitsu)
+//        bug 288715: Drop Table Restrictions: "table locked" errors when dropping
+//                    tables in several Core and many JPA LRG tests on Symfoware.
+//     Jul 19, 2014 - Tomas Kraus (Oracle)
+//        bug 437578: Added few helper methods to simplify table builder methods.
+//     Jan 06, 2015 - Dalia Abo Sheasha (IBM)
+//        bug 454917: Moved a few helper methods from child class to be visible to all table creators.
 package org.eclipse.persistence.testing.framework;
 
 import java.util.HashSet;

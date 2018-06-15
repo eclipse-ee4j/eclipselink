@@ -1,19 +1,19 @@
-/*******************************************************************************
+/*
  * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
- * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     31/05/2010-2.1 Michael O'Brien
- *         - 312503: invalidateClass(Class, recurseFlag) - when recurseFlag=false
- *         (non-default) will now invalidate the implementing subtree
- *           from [Class] down.  Previously only the single Class inside the tree was invalidated.
- ******************************************************************************/
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     31/05/2010-2.1 Michael O'Brien
+//         - 312503: invalidateClass(Class, recurseFlag) - when recurseFlag=false
+//         (non-default) will now invalidate the implementing subtree
+//           from [Class] down.  Previously only the single Class inside the tree was invalidated.
 package org.eclipse.persistence.internal.sessions;
 
 import java.util.*;

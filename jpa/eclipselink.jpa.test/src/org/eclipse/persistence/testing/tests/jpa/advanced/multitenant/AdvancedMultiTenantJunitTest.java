@@ -1,42 +1,42 @@
-/*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
- * http://www.eclipse.org/org/documents/edl-v10.php.
+/*
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  *
- * Contributors:
- *     03/23/2011-2.3 Guy Pelletier
- *       - 337323: Multi-tenant with shared schema support (part 1)
- *     04/01/2011-2.3 Guy Pelletier
- *       - 337323: Multi-tenant with shared schema support (part 2)
- *     04/21/2011-2.3 Guy Pelletier
- *       - 337323: Multi-tenant with shared schema support (part 5)
- *     05/24/2011-2.3 Guy Pelletier
- *       - 345962: Join fetch query when using tenant discriminator column fails.
- *     06/1/2011-2.3 Guy Pelletier
- *       - 337323: Multi-tenant with shared schema support (part 9)
- *     06/30/2011-2.3.1 Guy Pelletier
- *       - 341940: Add disable/enable allowing native queries
- *     09/09/2011-2.3.1 Guy Pelletier
- *       - 356197: Add new VPD type to MultitenantType
- *     11/10/2011-2.4 Guy Pelletier
- *       - 357474: Address primaryKey option from tenant discriminator column
- *     11/15/2011-2.3.2 Guy Pelletier
- *       - 363820: Issue with clone method from VPDMultitenantPolicy
- *     14/05/2012-2.4 Guy Pelletier
- *       - 376603: Provide for table per tenant support for multitenant applications
- *     22/05/2012-2.4 Guy Pelletier
- *       - 380008: Multitenant persistence units with a dedicated emf should force tenant property specification up front.
- *     01/06/2011-2.3 Guy Pelletier
- *       - 371453: JPA Multi-Tenancy in Bidirectional OneToOne Relation throws ArrayIndexOutOfBoundsException
- *     08/11/2012-2.5 Guy Pelletier
- *       - 393867: Named queries do not work when using EM level Table Per Tenant Multitenancy.
- *     20/11/2012-2.5 Guy Pelletier
- *       - 394524: Invalid query key [...] in expression
- ******************************************************************************/
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
+// Contributors:
+//     03/23/2011-2.3 Guy Pelletier
+//       - 337323: Multi-tenant with shared schema support (part 1)
+//     04/01/2011-2.3 Guy Pelletier
+//       - 337323: Multi-tenant with shared schema support (part 2)
+//     04/21/2011-2.3 Guy Pelletier
+//       - 337323: Multi-tenant with shared schema support (part 5)
+//     05/24/2011-2.3 Guy Pelletier
+//       - 345962: Join fetch query when using tenant discriminator column fails.
+//     06/1/2011-2.3 Guy Pelletier
+//       - 337323: Multi-tenant with shared schema support (part 9)
+//     06/30/2011-2.3.1 Guy Pelletier
+//       - 341940: Add disable/enable allowing native queries
+//     09/09/2011-2.3.1 Guy Pelletier
+//       - 356197: Add new VPD type to MultitenantType
+//     11/10/2011-2.4 Guy Pelletier
+//       - 357474: Address primaryKey option from tenant discriminator column
+//     11/15/2011-2.3.2 Guy Pelletier
+//       - 363820: Issue with clone method from VPDMultitenantPolicy
+//     14/05/2012-2.4 Guy Pelletier
+//       - 376603: Provide for table per tenant support for multitenant applications
+//     22/05/2012-2.4 Guy Pelletier
+//       - 380008: Multitenant persistence units with a dedicated emf should force tenant property specification up front.
+//     01/06/2011-2.3 Guy Pelletier
+//       - 371453: JPA Multi-Tenancy in Bidirectional OneToOne Relation throws ArrayIndexOutOfBoundsException
+//     08/11/2012-2.5 Guy Pelletier
+//       - 393867: Named queries do not work when using EM level Table Per Tenant Multitenancy.
+//     20/11/2012-2.5 Guy Pelletier
+//       - 394524: Invalid query key [...] in expression
 package org.eclipse.persistence.testing.tests.jpa.advanced.multitenant;
 
 import java.sql.SQLException;

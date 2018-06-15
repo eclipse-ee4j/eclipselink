@@ -1,41 +1,41 @@
-/*******************************************************************************
+/*
  * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
- * http://www.eclipse.org/org/documents/edl-v10.php.
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *
- *     04/30/2009-2.0 Michael O'Brien
- *       - 266912: JPA 2.0 Metamodel API (part of Criteria API)
- *         Add Set<RelationalDescriptor> mappedSuperclassDescriptors
- *         to support the Metamodel API
- *     06/17/2009-2.0 Michael O'Brien
- *       - 266912: change mappedSuperclassDescriptors Set to a Map
- *          keyed on MetadataClass - avoiding the use of a hashCode/equals
- *          override on RelationalDescriptor, but requiring a contains check prior to a put
- *     09/23/2009-2.0 Michael O'Brien
- *       - 266912: Add metamodelIdClassMap to store IdClass types for exclusive
- *         use by the IdentifiableTypeImpl class in the JPA 2.0 Metamodel API
- *     06/30/2011-2.3.1 Guy Pelletier
- *       - 341940: Add disable/enable allowing native queries
- *     09/09/2011-2.3.1 Guy Pelletier
- *       - 356197: Add new VPD type to MultitenantType
- *     09/14/2011-2.3.1 Guy Pelletier
- *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
- *     14/05/2012-2.4 Guy Pelletier
- *       - 376603: Provide for table per tenant support for multitenant applications
- *     31/05/2012-2.4 Guy Pelletier
- *       - 381196: Multitenant persistence units with a dedicated emf should allow for DDL generation.
- *     08/11/2012-2.5 Guy Pelletier
- *       - 393867: Named queries do not work when using EM level Table Per Tenant Multitenancy
- *     04/11/2018 - Will Dazey
- *       - 533148 : Add the eclipselink.jpa.sql-call-deferral property
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//
+//     04/30/2009-2.0 Michael O'Brien
+//       - 266912: JPA 2.0 Metamodel API (part of Criteria API)
+//         Add Set<RelationalDescriptor> mappedSuperclassDescriptors
+//         to support the Metamodel API
+//     06/17/2009-2.0 Michael O'Brien
+//       - 266912: change mappedSuperclassDescriptors Set to a Map
+//          keyed on MetadataClass - avoiding the use of a hashCode/equals
+//          override on RelationalDescriptor, but requiring a contains check prior to a put
+//     09/23/2009-2.0 Michael O'Brien
+//       - 266912: Add metamodelIdClassMap to store IdClass types for exclusive
+//         use by the IdentifiableTypeImpl class in the JPA 2.0 Metamodel API
+//     06/30/2011-2.3.1 Guy Pelletier
+//       - 341940: Add disable/enable allowing native queries
+//     09/09/2011-2.3.1 Guy Pelletier
+//       - 356197: Add new VPD type to MultitenantType
+//     09/14/2011-2.3.1 Guy Pelletier
+//       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
+//     14/05/2012-2.4 Guy Pelletier
+//       - 376603: Provide for table per tenant support for multitenant applications
+//     31/05/2012-2.4 Guy Pelletier
+//       - 381196: Multitenant persistence units with a dedicated emf should allow for DDL generation.
+//     08/11/2012-2.5 Guy Pelletier
+//       - 393867: Named queries do not work when using EM level Table Per Tenant Multitenancy
+//     04/11/2018 - Will Dazey
+//       - 533148 : Add the eclipselink.jpa.sql-call-deferral property
 package org.eclipse.persistence.sessions;
 
 import java.io.Serializable;

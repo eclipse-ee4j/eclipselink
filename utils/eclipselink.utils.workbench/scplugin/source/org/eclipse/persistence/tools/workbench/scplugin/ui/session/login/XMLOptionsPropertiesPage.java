@@ -1,13 +1,13 @@
 /*
- * @(#)RdbmsOptionsPropertiesPage.java
+ * Copyright (c) 2008, 2018 Oracle and/or its affiliates. All rights reserved.
  *
- * Copyright 2004, 2015  by Oracle Corporation,
- * 500 Oracle Parkway, Redwood Shores, California, 94065, U.S.A.
- * All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
  *
- * This software is the confidential and proprietary information
- * of Oracle Corporation.
+ * SPDX-License-Identifier: EPL-2.0
  */
+
 package org.eclipse.persistence.tools.workbench.scplugin.ui.session.login;
 
 // JDK
