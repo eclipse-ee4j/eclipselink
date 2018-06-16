@@ -1,46 +1,29 @@
-<!--/*******************************************************************************
-* Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
-* This program and the accompanying materials are made available under the
-* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
-* which accompanies this distribution.
-* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
-* and the Eclipse Distribution License is available at
-* http://www.eclipse.org/org/documents/edl-v10.php.
-*
-*   Ant naming conventions:
-*   - regardless of the actual OS platform,'/' is the directory separator
-*     (Ant will convert as appropriate).
-*   - multi-word properties use periods '.'
-*     - properties ending in .jar define jarfile names only (no path)
-*     - properties ending in .lib are fully qualified jars (path and filename)
-*     - properties ending in .dir are directory paths
-*     - properties ending in .path are path refid names (classpath fragments)
-*   - multi-word targets use hyphens '-'
-*     - targets beginning with test- are reserved for high level test targets,
-*       and are used in test results parsing
-*     - targets typically use the form <action>-<object>-<type> (ie. package-bundle-zip)
-*   - multi-word macros use underscores '_'
-*   - multi-word macro attributes are concatenated
-*     e.g. 'runpathref'
-*   - multi-word tasks (taskdef) names are concatenated
-*     e.g. 'validateconnection'
-*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
-*     e.g. ${env.XXX}.
-*   - Ant properties are lower case.
-*
-* Contributors:
-*     tware  - initial API and implementation
-*     pkrogh - javadocs
-*     egwin  - rework to follow ant conventions.
-*     dtwelves - Add SDO, MOXy SRG targets
-*     egwin  - rework to incorporate new versioning standards and revision info.
-*     egwin  - add jpa 2.0 jar creation, and JPA 1.1/2.0 concurrent development
+<!--
+
+    Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    SPDX-License-Identifier: EPL-2.0
+
+-->
+
+<!--
+  Contributors:
+      tware  - initial API and implementation
+      pkrogh - javadocs
+      egwin  - rework to follow ant conventions.
+      dtwelves - Add SDO, MOXy SRG targets
+      egwin  - rework to incorporate new versioning standards and revision info.
+      egwin  - add jpa 2.0 jar creation, and JPA 1.1/2.0 concurrent development
                strategy. Also includes fixes to eclipselink.jar creation.
-*     egwin  - rework to standardize antcall conventions and fix multiple target builds.
-*     tkraus - additional JDK, Ant and JDBC driver check, conditional Oracle extensions tests build
-*     mvalovy - OSGi tests
-*     Rick Curtis - Add jse bucket to lrg-test
-#******************************************************************************/-->
+      egwin  - rework to standardize antcall conventions and fix multiple target builds.
+      tkraus - additional JDK, Ant and JDBC driver check, conditional Oracle extensions tests build
+      mvalovy - OSGi tests
+      Rick Curtis - Add jse bucket to lrg-test
+-->
 <!-- =============================================================================
 *  General Comments
 *  This buildfile contains:
@@ -89,6 +72,28 @@
 
         It may require some configuration of the build.properties to run.
     -->
+<!--
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*     - properties ending in .jar define jarfile names only (no path)
+*     - properties ending in .lib are fully qualified jars (path and filename)
+*     - properties ending in .dir are directory paths
+*     - properties ending in .path are path refid names (classpath fragments)
+*   - multi-word targets use hyphens '-'
+*     - targets beginning with test- are reserved for high level test targets,
+*       and are used in test results parsing
+*     - targets typically use the form <action>-<object>-<type> (ie. package-bundle-zip)
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatenated
+*     e.g. 'runpathref'
+*   - multi-word tasks (taskdef) names are concatenated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+-->
 <project name="trunk" default="build" basedir="." xmlns:jacoco="antlib:org.jacoco.ant" xmlns:sonar="antlib:org.sonar.ant">
     <dirname  property="trunk.build.location_temp" file="${ant.file.trunk}"/>
     <pathconvert targetos="unix" property="trunk.build.location">

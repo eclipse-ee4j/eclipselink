@@ -1,11 +1,32 @@
-<!--/*******************************************************************************
-* This program and the accompanying materials are made available under the
-* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
-* which accompanies this distribution.
-* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
-* and the Eclipse Distribution License is available at
-* http://www.eclipse.org/org/documents/edl-v10.php.
-*
+<!--
+
+    Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    SPDX-License-Identifier: EPL-2.0
+
+-->
+
+<!--
+  Contributors:
+      egwin - initial API and implementation
+-->
+
+<!---
+For each oracle project
+Find out if current checkin is latest hash
+  find current hash
+  find checked in hash
+  compare hash if != mark for build
+if build=true
+  set build arguments
+  build
+  checkin results
+-->
+<!--
 *   Ant naming conventions:
 *   - regardless of the actual OS platform,'/' is the directory separator
 *     (Ant will convert as appropriate).
@@ -26,22 +47,7 @@
 *   - OS environment variables are in ALLCAPS and have 'env' as a prefix
 *     e.g. ${env.XXX}.
 *   - Ant properties are lower case.
-*
-* Contributors:
-*     egwin - initial API and implementation
-#******************************************************************************/-->
-<!---
-For each oracle project
-Find out if current checkin is latest hash
-  find current hash
-  find checked in hash
-  compare hash if != mark for build
-if build=true
-  set build arguments
-  build
-  checkin results
 -->
-
 <project name="oraclebuild" default="build" basedir=".">
 
     <!-- Default ant target, compiles and translates resources, does not run tests. -->

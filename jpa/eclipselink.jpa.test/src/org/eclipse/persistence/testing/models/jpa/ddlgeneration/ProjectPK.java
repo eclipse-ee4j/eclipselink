@@ -8,6 +8,11 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
+// Contributors:
+//     05/24/2012 ailitchev
+//       Bug 380580 - DatabaseField mapped with Temporal in EmbeddedId has no type
+//             caused an NPE in ddl generation code for this class
+
 package org.eclipse.persistence.testing.models.jpa.ddlgeneration;
 
 import java.io.Serializable;
@@ -16,21 +21,6 @@ import java.util.*;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-
-/*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
- * http://www.eclipse.org/org/documents/edl-v10.php.
- *
- * Contributors:
- *     05/24/2012 ailitchev
- *       Bug 380580 - DatabaseField mapped with Temporal in EmbeddedId has no type
- *             caused an NPE in ddl generation code for this class
- ******************************************************************************/
 @Embeddable
 public class ProjectPK  implements Serializable{
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -7,6 +7,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
 
 // $ANTLR 3.5.2 org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g 2016-05-10 11:03:29
 
@@ -32,18 +35,6 @@ import java.util.Stack;
 import java.util.List;
 import java.util.ArrayList;
 
-/*******************************************************************************
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
- * http://www.eclipse.org/org/documents/edl-v10.php.
- *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/
 @SuppressWarnings("all")
 public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpql.JPQLParser {
     public static final String[] tokenNames = new String[] {
