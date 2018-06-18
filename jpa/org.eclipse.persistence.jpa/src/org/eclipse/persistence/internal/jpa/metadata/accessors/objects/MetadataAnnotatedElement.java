@@ -219,7 +219,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
         if (metadataAnnotation == null) {
             for (MetadataAnnotation a: m_metaAnnotations.values()) {
                 if (names != null) {
-                    if (names.contains(a.getName())) {
+                    if (names.contains(a.getName()) && annotation.equals(a.getName())) {
                         return a;
                     }
                 } else {
