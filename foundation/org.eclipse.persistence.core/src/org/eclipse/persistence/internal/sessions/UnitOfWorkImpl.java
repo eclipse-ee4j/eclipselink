@@ -4334,6 +4334,13 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 //if object is deleted and a create is issued on the that object
                 // then the object must be transitioned back to existing and not deleted
                 this.undeleteObject(newObject);
+            } else{
+                if (descriptor.getEventManager().hasAnyEventListeners()) {
+                    DescriptorEvent event = new DescriptorEvent(newObject);
+                    event.setEventCode(DescriptorEventManager.PrePersistEvent);
+                    event.setSession(this);
+                    descriptor.getEventManager().executeEvent(event);
+                 }
             }
             descriptor.getObjectBuilder().cascadeRegisterNewForCreate(newObject, this, visitedObjects);
             // After any cascade persists and assigning any sequence numbers,

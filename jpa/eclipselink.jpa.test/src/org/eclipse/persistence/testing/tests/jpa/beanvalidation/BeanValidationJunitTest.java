@@ -51,6 +51,7 @@ public class BeanValidationJunitTest extends JUnitTestCase {
             suite.addTest(new BeanValidationJunitTest("testRemoveWithInvalidData"));
             suite.addTest(new BeanValidationJunitTest("testTraversableResolverPreventsLoadingOfLazyRelationships"));
             suite.addTest(new BeanValidationJunitTest("testTraversableResolverPreventsTraversingRelationshipMultipleTimes"));
+            suite.addTest(new BeanValidationJunitTest("testPesistWithInvalidAndModifiedBeanData"));
         }
         return suite;
     }
@@ -342,6 +343,32 @@ public class BeanValidationJunitTest extends JUnitTestCase {
         assertTrue( "Lazy field should not be instantiated because of validation", !isInstantiated(employee, "projects", project) );
         assertTrue( "Lazy field should not be instantiated because of validation", !isInstantiated(employee, "managedProject", project) );
     }
+    
+    public void testPesistWithInvalidAndModifiedBeanData() {
+        
+        EntityManager em = createEntityManager();
+        boolean gotConstraintViolations = false;
+        String invalidName = getFilledStringOfLength(Employee.NAME_MAX_SIZSE + 1);
+        String validName = getFilledStringOfLength(Employee.NAME_MAX_SIZSE - 1);
+        
+        // Persist an object with valid value
+        beginTransaction(em);
+        Employee e1 = new Employee(100, validName, validName, 1337);
+        em.persist(e1);
+
+        // (b) now we demonstrate how eclipse link fails to invoke the JSR validations on entity
+        // when we modify the entity during the transaction with invalid value
+        try {
+            e1.setName(invalidName);
+            e1.setSurname(invalidName);
+            em.persist(e1);
+        }catch (ConstraintViolationException e) {
+            assertTrue("Transaction not marked for roll back when ConstraintViolation is thrown", getRollbackOnly(em)) ;
+            gotConstraintViolations =true;
+        }
+        assertTrue("Did not get Constraint Violation while persisting invalid data ", gotConstraintViolations);
+   }
+    
 
     /**
      * Strategy:
