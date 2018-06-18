@@ -372,7 +372,7 @@ public class MetadataAsmFactory extends MetadataFactory {
         @Override
         public void visitEnd() {
             if (this.element != null) {
-                if (this.annotation.isMeta()) {
+                if (this.annotation.isMeta() && element.notCycle(annotation)) {
                     this.element.addMetaAnnotation(this.annotation);
                 } else {
                     this.element.addAnnotation(this.annotation);
