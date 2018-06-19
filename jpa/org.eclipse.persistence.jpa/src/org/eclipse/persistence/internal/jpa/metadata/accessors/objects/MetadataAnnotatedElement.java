@@ -225,8 +225,12 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
         MetadataAnnotation metadataAnnotation = m_annotations.get(annotation);
         if (metadataAnnotation == null) {
             for (MetadataAnnotation a: m_metaAnnotations.values()) {
-                if (names.contains(a.getName()) && annotation.equals(a.getName())) {
-                    return a;
+                if (names.contains(a.getName())) {
+                    if (annotation.equals(a.getName())) {
+                        return a;
+                    } else {
+                        continue;
+                    }
                 }
                 names.add(getName());
                 MetadataAnnotation ma = m_factory.getMetadataClass(a.getName()).getAnnotation(annotation, names);
