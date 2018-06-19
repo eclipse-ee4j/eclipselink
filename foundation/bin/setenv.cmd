@@ -1,3 +1,13 @@
+@REM
+@REM Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+@REM
+@REM This program and the accompanying materials are made available under the
+@REM terms of the Eclipse Public License 2.0 which is available at
+@REM http://www.eclipse.org/legal/epl-2.0.
+@REM
+@REM SPDX-License-Identifier: EPL-2.0
+@REM
+
 @REM User MUST set DRIVER_CLASSPATH to point to their desired driver jar(s), such as JDBC and J2C.  For example:
 @REM set DRIVER_CLASSPATH=c:\some_dir\jdbc\ojdbc14.jar;c:\some_other_dir\j2c\aqapi.jar
 @REM 

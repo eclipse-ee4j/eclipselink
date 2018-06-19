@@ -1,3 +1,13 @@
+@REM
+@REM Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+@REM
+@REM This program and the accompanying materials are made available under the
+@REM terms of the Eclipse Public License 2.0 which is available at
+@REM http://www.eclipse.org/legal/epl-2.0.
+@REM
+@REM SPDX-License-Identifier: EPL-2.0
+@REM
+
 @echo off
 @setlocal
 call "%~dp0../../bin/setenv.cmd"
