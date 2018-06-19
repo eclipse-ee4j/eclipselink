@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns0="http://www.example.com/projects" targetNamespace="http://www.example.com/projects">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns0="http://www.example.com/projects" targetNamespace="http://www.example.com/projects">
    <xsd:element name="project">
       <xsd:complexType>
          <xsd:sequence>

@@ -102,7 +102,7 @@ public class LoadAndSaveXMLEncodingAndVersionTestCases extends LoadAndSaveTestCa
         log("Expected:" + controlString);
         log("Actual  :" + testString);
 
-        assertEquals(removeWhiteSpaceFromString(controlString), removeWhiteSpaceFromString(testString));
+        assertEquals(removeCopyrightFromString(removeWhiteSpaceFromString(controlString)), removeWhiteSpaceFromString(testString));
     }
 
     protected void verifyAfterLoad(XMLDocument document) {

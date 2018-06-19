@@ -169,6 +169,7 @@ public class DocumentPreservationFragmentTestCases extends OXTestCase {
 
         String writerStringNoWS = removeWhiteSpaceFromString(writer.toString());
         String controlStringNoWS = removeWhiteSpaceFromString(new String(bytes));
+        controlStringNoWS = removeCopyrightFromString(controlStringNoWS);
 
         log("\nWRITER  STRING:" + writerStringNoWS);
         log("CONTROL STRING:" + controlStringNoWS);
@@ -192,6 +193,7 @@ public class DocumentPreservationFragmentTestCases extends OXTestCase {
 
         String writerStringNoWS = removeWhiteSpaceFromString(outStream.toString());
         String controlStringNoWS = removeWhiteSpaceFromString(new String(bytes));
+        controlStringNoWS = removeCopyrightFromString(controlStringNoWS);
         log("\nWRITERSTRING:" + writerStringNoWS);
         log("CONTROLSTRING:" + controlStringNoWS);
 

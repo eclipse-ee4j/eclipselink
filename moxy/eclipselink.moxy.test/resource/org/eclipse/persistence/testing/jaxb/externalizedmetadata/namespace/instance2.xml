@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><m:MESSAGE xmlns:m="bar"><HEADER>Bob</HEADER></m:MESSAGE>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
@@ -11,4 +11,5 @@
 
 -->
 
+<m:MESSAGE xmlns:m="bar"><HEADER>Bob</HEADER></m:MESSAGE>
 

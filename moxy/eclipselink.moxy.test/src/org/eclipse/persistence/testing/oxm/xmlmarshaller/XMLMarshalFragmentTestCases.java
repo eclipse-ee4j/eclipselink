@@ -117,6 +117,7 @@ public class XMLMarshalFragmentTestCases extends OXTestCase {
         inputStream.read(bytes);
 
         String controlStringNoWS = removeWhiteSpaceFromString(new String(bytes));
+        controlStringNoWS = removeCopyrightFromString(controlStringNoWS);
         String writerStringNoWS = removeWhiteSpaceFromString(outStream.toString());
 
         log("WRITERSTRING:" + writerStringNoWS);
@@ -146,6 +147,7 @@ public class XMLMarshalFragmentTestCases extends OXTestCase {
         inputStream.read(bytes);
 
         String controlStringNoWS = removeWhiteSpaceFromString(new String(bytes));
+        controlStringNoWS = removeCopyrightFromString(controlStringNoWS);
         String writerStringNoWS = removeWhiteSpaceFromString(result.getOutputStream().toString());
 
         log("WRITERSTRING:" + writerStringNoWS);
@@ -165,6 +167,7 @@ public class XMLMarshalFragmentTestCases extends OXTestCase {
         inputStream.read(bytes);
 
         String controlStringNoWS = removeWhiteSpaceFromString(new String(bytes));
+        controlStringNoWS = removeCopyrightFromString(controlStringNoWS);
         String writerStringNoWS = removeWhiteSpaceFromString(writer.toString());
 
         log("\nWRITERSTRING:" + writerStringNoWS);

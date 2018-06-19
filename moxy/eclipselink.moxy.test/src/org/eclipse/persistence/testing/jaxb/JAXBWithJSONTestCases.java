@@ -462,6 +462,7 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
             expectedString = loadFileToString(controlFileLocation);
         }
 
+        expectedString = removeCopyrightFromString(expectedString);
         compareStrings(testString, testString, expectedString, removeWhitespace);
     }
 

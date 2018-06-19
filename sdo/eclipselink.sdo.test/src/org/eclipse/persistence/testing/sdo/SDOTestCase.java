@@ -250,7 +250,7 @@ public class SDOTestCase extends junit.framework.TestCase {
         try {
             byte[] bytes = new byte[is.available()];
             is.read(bytes);
-            xsdSchema = new String(bytes);
+            xsdSchema = removeCopyrightFromString(new String(bytes));
             log(xsdSchema);
             return xsdSchema;
         } catch (Exception e) {
@@ -1004,6 +1004,20 @@ public class SDOTestCase extends junit.framework.TestCase {
         }
     }
 
+    public static void removeCopyrightNode(Node node) {
+        NodeList nodeList = node.getChildNodes();
+        Node childNode;
+        for (int x = 0; x < nodeList.getLength(); x++) {
+            childNode = nodeList.item(x);
+            if (childNode.getNodeType() == Node.COMMENT_NODE) {
+                if (childNode.getNodeValue().trim().contains("Copyright")) {
+                    node.removeChild(childNode);
+                    break;
+                }
+            }
+        }
+    }
+
     protected String removeWhiteSpaceFromString(String s) {
         String returnString = s.replaceAll(" ", "");
         returnString = returnString.replaceAll("\n", "");
@@ -1018,6 +1032,10 @@ public class SDOTestCase extends junit.framework.TestCase {
         returnString = returnString.replaceAll("\t", "");
         returnString = returnString.replaceAll("\r", "");
         return returnString;
+    }
+
+    public static String removeCopyrightFromString(String s) {
+        return s.replaceAll("<!--.*Copyright.*?-->", "").replaceAll("(?s)/\\*.*Copyright.*?\\*/", "");
     }
 
     /**

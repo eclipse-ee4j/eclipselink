@@ -294,6 +294,20 @@ public abstract class OXTestCase extends XMLTestCase {
         }
     }
 
+    public static void removeCopyrightNode(Node node) {
+        NodeList nodeList = node.getChildNodes();
+        Node childNode;
+        for (int x = 0; x < nodeList.getLength(); x++) {
+            childNode = nodeList.item(x);
+            if (childNode.getNodeType() == Node.COMMENT_NODE) {
+                if (childNode.getNodeValue().trim().contains("Copyright")) {
+                    node.removeChild(childNode);
+                    break;
+                }
+            }
+        }
+    }
+
     public static String removeWhiteSpaceFromString(String s) {
         String returnString = s.replaceAll(" ", "");
         returnString = returnString.replaceAll("\n", "");
@@ -301,6 +315,10 @@ public abstract class OXTestCase extends XMLTestCase {
         returnString = returnString.replaceAll("\r", "");
 
         return returnString;
+    }
+
+    public static String removeCopyrightFromString(String s) {
+        return s.replaceAll("<!--.*Copyright.*?-->", "");
     }
 
     /**

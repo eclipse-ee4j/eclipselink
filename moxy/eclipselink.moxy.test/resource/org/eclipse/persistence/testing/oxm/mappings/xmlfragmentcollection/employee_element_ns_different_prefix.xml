@@ -1,4 +1,4 @@
-<?xml version = '1.0' encoding = 'UTF-8'?><employee xmlns:ns1="http://www.example.com/test-uri"><first-name>Jane</first-name><last-name>Doe</last-name><xml-node id="10"><nsx:child xmlns:nsx="http://www.example.com/test-uri">childtext</nsx:child></xml-node><xml-node id="11"><nsx:child xmlns:nsx="http://www.example.com/test-uri">morechildtext</nsx:child></xml-node><xml-node id="12"><nsx:child xmlns:nsx="http://www.example.com/test-uri">evenmorechildtext</nsx:child></xml-node></employee>
+<?xml version = '1.0' encoding = 'UTF-8'?>
 <!--
 
     Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
@@ -11,4 +11,5 @@
 
 -->
 
+<employee xmlns:ns1="http://www.example.com/test-uri"><first-name>Jane</first-name><last-name>Doe</last-name><xml-node id="10"><nsx:child xmlns:nsx="http://www.example.com/test-uri">childtext</nsx:child></xml-node><xml-node id="11"><nsx:child xmlns:nsx="http://www.example.com/test-uri">morechildtext</nsx:child></xml-node><xml-node id="12"><nsx:child xmlns:nsx="http://www.example.com/test-uri">evenmorechildtext</nsx:child></xml-node></employee>
 

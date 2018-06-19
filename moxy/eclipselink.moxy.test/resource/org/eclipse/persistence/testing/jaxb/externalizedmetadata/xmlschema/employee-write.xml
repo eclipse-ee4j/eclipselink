@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><ns1:employee xmlns:ns1="http://www.eclipse.org/eclipselink/xsds/persistence/oxm" xmlns:ns0="http://www.example.com" xmlns:nsx="http://www.example.com/xsds/real"><firstName>firstName</firstName><lastName>LastName</lastName><myInt>66</myInt></ns1:employee>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!--
 
     Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
@@ -11,4 +11,5 @@
 
 -->
 
+<ns1:employee xmlns:ns1="http://www.eclipse.org/eclipselink/xsds/persistence/oxm" xmlns:ns0="http://www.example.com" xmlns:nsx="http://www.example.com/xsds/real"><firstName>firstName</firstName><lastName>LastName</lastName><myInt>66</myInt></ns1:employee>
 

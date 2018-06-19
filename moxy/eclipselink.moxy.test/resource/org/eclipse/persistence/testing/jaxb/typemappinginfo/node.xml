@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><ns0:root xmlns:ns0="testNS"><child active="true" status="success" xmlns="nestedNS"/></ns0:root>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
@@ -11,4 +11,5 @@
 
 -->
 
+<ns0:root xmlns:ns0="testNS"><child active="true" status="success" xmlns="nestedNS"/></ns0:root>
 

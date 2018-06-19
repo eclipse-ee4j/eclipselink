@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><root slashNAttribute="Hello&#xA;World" slashRAttribute="Hello&#xD;World" slashRslashNAttribute="Hello&#xD;&#xA;World" slashNslashRAttribute="Hello&#xA;&#xD;World"><slashNElement>Hello
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
@@ -10,7 +10,7 @@
     SPDX-License-Identifier: EPL-2.0
 
 -->
-
+<root slashNAttribute="Hello&#xA;World" slashRAttribute="Hello&#xD;World" slashRslashNAttribute="Hello&#xD;&#xA;World" slashNslashRAttribute="Hello&#xA;&#xD;World"><slashNElement>Hello
 World</slashNElement><slashRElement>Hello&#xD;World</slashRElement><slashRslashNElement>Hello&#xD;
 World</slashRslashNElement><slashNslashRElement>Hello
 &#xD;World</slashNslashRElement></root>

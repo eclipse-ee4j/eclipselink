@@ -93,6 +93,7 @@ public abstract class XMLMappingTestCases extends OXTestCase {
             if (shouldRemoveEmptyTextNodesFromControlDoc()) {
                 removeEmptyTextNodes(controlDocument);
             }
+            removeCopyrightNode(controlDocument);
             inputStream.close();
         }
 
@@ -102,6 +103,7 @@ public abstract class XMLMappingTestCases extends OXTestCase {
             if (shouldRemoveEmptyTextNodesFromControlDoc()) {
                 removeEmptyTextNodes(writeControlDocument);
             }
+            removeCopyrightNode(writeControlDocument);
             inputStream.close();
         }
     }

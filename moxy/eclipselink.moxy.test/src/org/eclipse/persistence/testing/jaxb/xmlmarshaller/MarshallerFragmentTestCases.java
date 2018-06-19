@@ -56,6 +56,7 @@ public class MarshallerFragmentTestCases extends OXTestCase {
         InputStream inputStream = ClassLoader.getSystemResourceAsStream(XML_RESOURCE);
         controlDocument = parser.parse(inputStream);
         removeEmptyTextNodes(controlDocument);
+        removeCopyrightNode(controlDocument);
     }
 
     public void tearDown() {
@@ -76,6 +77,7 @@ public class MarshallerFragmentTestCases extends OXTestCase {
         inputStream.read(bytes);
 
         String controlStringNoWS = removeWhiteSpaceFromString(new String(bytes));
+        controlStringNoWS = removeCopyrightFromString(controlStringNoWS);
         String writerStringNoWS = removeWhiteSpaceFromString(writer.toString());
 
         log("\nWRITERSTRING:" + writerStringNoWS);

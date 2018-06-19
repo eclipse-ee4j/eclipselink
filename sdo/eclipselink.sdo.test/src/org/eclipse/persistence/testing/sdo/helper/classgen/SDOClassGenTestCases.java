@@ -121,12 +121,12 @@ public abstract class SDOClassGenTestCases extends SDOXMLHelperTestCases {
         Iterator<String> keysIter = controlFiles.keySet().iterator();
         while (keysIter.hasNext()) {
             String nextKey = keysIter.next();
-            String nextControlValue = controlFiles.get(nextKey);
+            String nextControlValue = removeCopyrightFromString(controlFiles.get(nextKey));
             String nextGeneratedValue = generatedFiles.get(nextKey);
             assertNotNull(nextControlValue);
             assertNotNull(nextGeneratedValue);
             // convert ignoreCRLF
-            assertStringsEqual(nextControlValue, nextGeneratedValue);
+            assertStringsEqual(nextControlValue.trim(), nextGeneratedValue.trim());
         }
     }
 

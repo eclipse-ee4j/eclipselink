@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><employee><my-first-name>Joe</my-first-name><my-last-name>Oracle</my-last-name></employee>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
@@ -11,4 +11,5 @@
 
 -->
 
+<employee><my-first-name>Joe</my-first-name><my-last-name>Oracle</my-last-name></employee>
 

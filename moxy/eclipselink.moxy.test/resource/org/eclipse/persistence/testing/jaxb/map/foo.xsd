@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns0="FOO" elementFormDefault="qualified" targetNamespace="FOO">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns0="FOO" elementFormDefault="qualified" targetNamespace="FOO">
    <xsd:complexType name="foo">
       <xsd:sequence>
          <xsd:element minOccurs="0" name="map">

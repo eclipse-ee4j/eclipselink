@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><root><project id="1"><name>Project1</name><type>one</type></project><project id="2"><name>Project2</name><type>two</type></project><project id="3"><name>Project3</name><type>three</type></project></root>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
@@ -11,4 +11,5 @@
 
 -->
 
+<root><project id="1"><name>Project1</name><type>one</type></project><project id="2"><name>Project2</name><type>two</type></project><project id="3"><name>Project3</name><type>three</type></project></root>
 

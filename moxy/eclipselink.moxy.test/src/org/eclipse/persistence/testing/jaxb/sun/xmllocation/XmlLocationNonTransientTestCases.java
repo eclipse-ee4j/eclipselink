@@ -39,11 +39,11 @@ public class XmlLocationNonTransientTestCases extends JAXBTestCases {
         d.data1 = "sdjfhdsaoiufhosaidufh";
         d.data2 = "kjdfgkjdsfg8374934874";
         d.data3 = "84376328476324XXXXXXX";
-        d.locator = new TestLocator(2, 7, 1, includeSysId);
+        d.locator = new TestLocator(14, 7, 1, includeSysId);
 
-        SubDataNT sd1 = new DetailDataNT(); sd1.info = "name|rbarkhouse"; sd1.locator = new TestLocator(7, 91, 4, includeSysId); d.subData.add(sd1);
-        SubDataNT sd2 = new SubDataNT(); sd2.info = "phone|6132832684";  sd2.locator = new TestLocator(14, 13, 4, includeSysId); d.subData.add(sd2);
-        SubDataNT sd3 = new LeafDataNT(); sd3.info = "id|8827"; sd3.locator = new TestLocator(21, 89, 4, includeSysId); d.subData.add(sd3);
+        SubDataNT sd1 = new DetailDataNT(); sd1.info = "name|rbarkhouse"; sd1.locator = new TestLocator(19, 91, 4, includeSysId); d.subData.add(sd1);
+        SubDataNT sd2 = new SubDataNT(); sd2.info = "phone|6132832684";  sd2.locator = new TestLocator(26, 13, 4, includeSysId); d.subData.add(sd2);
+        SubDataNT sd3 = new LeafDataNT(); sd3.info = "id|8827"; sd3.locator = new TestLocator(33, 89, 4, includeSysId); d.subData.add(sd3);
 
         if (this.getName().endsWith("Node") || this.getName().endsWith("UnmarshallerHandler")) {
             TestLocator noLoc = new TestLocator(0, 0, 0, false);

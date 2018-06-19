@@ -70,6 +70,7 @@ public class UnmarshalLevelTestCases extends OXTestCase {
         InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/oxm/xmlmarshaller/stax/address.xml");
         XMLStreamReader xmlStreamReader = xmlInputFactory.createXMLStreamReader(instream);
         xmlStreamReader.next();  // Advance event to start element
+        xmlStreamReader.next();  // Advance event to start element
 
         XMLStreamReaderReader staxReader = new XMLStreamReaderReader();
         XMLContext xmlContext = new XMLContext(new AddressProject());
@@ -92,6 +93,7 @@ public class UnmarshalLevelTestCases extends OXTestCase {
 
            InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/oxm/xmlmarshaller/stax/address.xml");
            XMLStreamReader xmlStreamReader = xmlInputFactory.createXMLStreamReader(instream);
+           xmlStreamReader.next();  // Advance event to start element
            xmlStreamReader.next();  // Advance event to start element
 
            XMLStreamReaderReader staxReader = new XMLStreamReaderReader();

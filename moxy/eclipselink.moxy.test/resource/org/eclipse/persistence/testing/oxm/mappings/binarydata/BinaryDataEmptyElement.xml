@@ -1,4 +1,4 @@
-<?xml version="1.0"?><employee id="123">
+<?xml version="1.0"?>
 <!--
 
     Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
@@ -11,5 +11,6 @@
 
 -->
 
+<employee id="123">
     <photo></photo>
 </employee>

@@ -46,5 +46,6 @@ public class XMLDeclarationTestCases extends MarshallerFragmentTestCases{
             InputStream inputStream = ClassLoader.getSystemResourceAsStream(XML_RESOURCE);
             controlDocument = parser.parse(inputStream);
             removeEmptyTextNodes(controlDocument);
+            removeCopyrightNode(controlDocument);
         }
 }

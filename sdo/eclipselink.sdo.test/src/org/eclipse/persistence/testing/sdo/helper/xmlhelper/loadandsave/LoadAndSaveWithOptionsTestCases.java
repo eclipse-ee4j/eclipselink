@@ -257,7 +257,7 @@ public abstract class LoadAndSaveWithOptionsTestCases extends SDOXMLHelperTestCa
     }
 
     protected void compareXML(String controlFileName, String testString, boolean compareNodes) throws Exception {
-        String controlString = getControlString(controlFileName);
+        String controlString = removeCopyrightFromString(getControlString(controlFileName));
         log("Expected:" + controlString);
         log("Actual  :" + testString);
 
@@ -267,7 +267,9 @@ public abstract class LoadAndSaveWithOptionsTestCases extends SDOXMLHelperTestCa
         reader.close();
 
         if (compareNodes) {
-            assertXMLIdentical(getDocument(controlFileName), testDocument);
+            Document controlDocument = getDocument(controlFileName);
+            removeCopyrightNode(controlDocument);
+            assertXMLIdentical(controlDocument, testDocument);
         }
     }
 

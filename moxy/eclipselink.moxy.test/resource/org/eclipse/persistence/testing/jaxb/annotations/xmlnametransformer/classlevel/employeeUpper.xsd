@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:x="examplenamespace" targetNamespace="examplenamespace">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:x="examplenamespace" targetNamespace="examplenamespace">
    <xsd:complexType name="ORG.ECLIPSE.PERSISTENCE.TESTING.JAXB.ANNOTATIONS.XMLNAMETRANSFORMER.CLASSLEVEL.UPPER.EMPLOYEE">
       <xsd:sequence>
          <xsd:element minOccurs="0" name="FIRSTNAME" type="xsd:string"/>
