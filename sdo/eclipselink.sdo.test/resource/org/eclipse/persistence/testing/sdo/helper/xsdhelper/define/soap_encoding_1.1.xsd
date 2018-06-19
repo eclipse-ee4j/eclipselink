@@ -1,36 +1,18 @@
 <?xml version='1.0' encoding='UTF-8' ?>
+<!--
 
-<!-- Schema for the SOAP/1.1 encoding
+    Copyright (c) 2001, 2018 Oracle and/or its affiliates. All rights reserved.
+    Copyright 2001 Martin Gudgin, Developmentor.
+    Copyright 2001 W3C (Massachusetts Institute of Technology,
 
-     This schema has been produced using W3C's SOAP Version 1.2 schema
-     found at:
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0.
 
-     http://www.w3.org/2001/06/soap-encoding
+    SPDX-License-Identifier: EPL-2.0
 
-     Copyright 2001 Martin Gudgin, Developmentor.
-     http://www.develop.co.uk
-
-     Changes made are the following:
-     - reverted namespace to http://schemas.xmlsoap.org/soap/encoding/
-     - reverted root to only allow 0 and 1 as lexical values
-
-     Further changes:
-
-     - removed default value from root attribute declaration - 20030314
-
-     Original copyright:
-
-     Copyright 2001 W3C (Massachusetts Institute of Technology,
-     Institut National de Recherche en Informatique et en Automatique,
-     Keio University). All Rights Reserved.
-     http://www.w3.org/Consortium/Legal/
-
-     This document is governed by the W3C Software License [1] as
-     described in the FAQ [2].
-
-     [1] http://www.w3.org/Consortium/Legal/copyright-software-19980720
-     [2] http://www.w3.org/Consortium/Legal/IPR-FAQ-20000620.html#DTD
 -->
+
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
            xmlns:tns="http://schemas.xmlsoap.org/soap/encoding/"
            targetNamespace="http://schemas.xmlsoap.org/soap/encoding/" >

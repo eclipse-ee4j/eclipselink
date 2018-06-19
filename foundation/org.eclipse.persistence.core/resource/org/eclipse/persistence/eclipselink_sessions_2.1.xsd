@@ -1,17 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-*******************************************************************************
- Copyright (c) 1998, 2015 Oracle. All rights reserved.
- This program and the accompanying materials are made available under the
- terms of the Eclipse Public License v1.0, which accompanies this distribution
- and is available at http://www.eclipse.org/legal/epl-v10.html.
 
- Contributors:
-     Oracle - initial API and implementation from Oracle TopLink
-     tware - update version number to 2.0
-     pkrogh- update version number to 2.1
-     agoerler - add Net weaver support
-*****************************************************************************/
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    SPDX-License-Identifier: EPL-2.0
+
+-->
+
+<!--
+Contributors:
+    Oracle - initial API and implementation from Oracle TopLink
+    tware - update version number to 2.0
+    pkrogh- update version number to 2.1
+    agoerler - add Net weaver support
 -->
 <!--
 
