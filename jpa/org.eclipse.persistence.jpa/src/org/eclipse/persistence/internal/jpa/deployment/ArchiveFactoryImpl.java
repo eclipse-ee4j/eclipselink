@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle, IBM and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     Jody Grassel - 2.6_WAS - ArchiveFactoryImpl.isJarInputStream() requires doPriv block
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.deployment;
 
@@ -19,6 +20,10 @@ import java.net.JarURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -27,6 +32,7 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.jpa.Archive;
 import org.eclipse.persistence.jpa.ArchiveFactory;
 
@@ -130,10 +136,23 @@ public class ArchiveFactoryImpl implements ArchiveFactory {
      * format InputStream can be obtained.
      * @param url
      */
-    protected boolean isJarInputStream(URL url) throws IOException {
+    protected boolean isJarInputStream(final URL url) throws IOException {
         InputStream in = null;
         try {
-        	in = url.openStream();
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                try {
+                    in = AccessController.doPrivileged(new PrivilegedExceptionAction<InputStream>() {
+                        public InputStream run() throws Exception {
+                            return url.openStream();
+                        }
+                    }); 
+                } catch (PrivilegedActionException e) {
+                    return false;
+                }       
+            } else {
+                in = url.openStream();
+            }
+
             if (in == null) { // for directories, we may get InputStream as null
             	return false;
             }
