@@ -139,20 +139,20 @@ public class ArchiveFactoryImpl implements ArchiveFactory {
     protected boolean isJarInputStream(final URL url) throws IOException {
         InputStream in = null;
         try {
-        	if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-        		try {
-        			in = AccessController.doPrivileged(new PrivilegedExceptionAction<InputStream>() {
-    					public InputStream run() throws Exception {
-    						return url.openStream();
-    					}
-        			}); 
-        		} catch (PrivilegedActionException e) {
-        			return false;
-                }       		
-        	} else {
-        		in = url.openStream();
-        	}
-        	
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                try {
+                    in = AccessController.doPrivileged(new PrivilegedExceptionAction<InputStream>() {
+                        public InputStream run() throws Exception {
+                            return url.openStream();
+                        }
+                    }); 
+                } catch (PrivilegedActionException e) {
+                    return false;
+                }       
+            } else {
+                in = url.openStream();
+            }
+
             if (in == null) { // for directories, we may get InputStream as null
             	return false;
             }
