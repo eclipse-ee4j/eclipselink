@@ -288,6 +288,10 @@ public class MetadataAsmFactory extends MetadataFactory {
         @Override
         public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
             boolean isJPA = false;
+            if (desc.startsWith("Lkotlin")) {
+                //ignore kotlin annotations
+                return null;
+            }
             if (desc.startsWith("Ljava")) {
                 char c = desc.charAt(5);
                 //ignore annotations from 'java' namespace

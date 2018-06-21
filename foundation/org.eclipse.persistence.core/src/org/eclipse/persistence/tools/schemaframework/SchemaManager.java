@@ -458,25 +458,16 @@ public class SchemaManager {
 
     /**
      * Check if the table exists by issuing a select.
+     * @param table database table meta-data
+     * @return value of {@code true} if given table exists or {@code false} otherwise
      */
     public boolean checkTableExists(TableDefinition table) {
-        String column = null;
-        for (FieldDefinition field : table.getFields()) {
-            if (column == null) {
-                column = field.getName();
-            } else if (field.isPrimaryKey()) {
-                column = field.getName();
-                break;
-            }
-        }
-        String sql = "SELECT " + column + " FROM " + table.getFullName() + " WHERE " + column + " <> " + column;
-        DataReadQuery query = new DataReadQuery(sql);
-        query.setMaxRows(1);
-        boolean loggingOff = session.isLoggingOff();
+        final DataReadQuery query = session.getPlatform().getTableExistsQuery(table);
+        final boolean loggingOff = session.isLoggingOff();
         try {
             session.setLoggingOff(true);
-            session.executeQuery(query);
-            return true;
+            final Vector result = (Vector)session.executeQuery(query);
+            return !result.isEmpty();
         } catch (Exception notFound) {
             return false;
         } finally {

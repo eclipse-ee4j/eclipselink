@@ -68,8 +68,10 @@ import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JP
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.persistence.annotations.Array;
 import org.eclipse.persistence.annotations.BasicCollection;
@@ -139,7 +141,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     private Map<String, MetadataAnnotation> m_annotations;
 
     /** Stores any meta-annotations defined for the element, keyed by meta-annotation name. */
-    private Map<String, MetadataAnnotation> m_metaAnnotations;
+    private final Map<String, MetadataAnnotation> m_metaAnnotations;
 
     /**
      * INTERNAL:
@@ -204,17 +206,36 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     /**
      * INTERNAL:
      * Return the annotated element for this accessor. Note: This method does
-     * not check against a metadata complete.
+     * not check against a meta-data complete.
+     * @param annotation annotation name
      */
-    public MetadataAnnotation getAnnotation(String annotation) {
+    public MetadataAnnotation getAnnotation(final String annotation) {
+        return getAnnotation(annotation, new HashSet<>());
+    }
+
+    /**
+     * INTERNAL:
+     * Return the annotated element for this accessor. Note: This method does
+     * not check against a meta-data complete.
+     * @param annotation annotation name
+     * @param names meta-annotations names cycle detection set, shall not be {@code null}
+     */
+    protected final MetadataAnnotation getAnnotation(final String annotation, final Set<String> names) {
         if (m_annotations == null && m_metaAnnotations == null) {
             return null;
         }
-
         MetadataAnnotation metadataAnnotation = m_annotations.get(annotation);
         if (metadataAnnotation == null) {
             for (MetadataAnnotation a: m_metaAnnotations.values()) {
-                MetadataAnnotation ma = m_factory.getMetadataClass(a.getName()).getAnnotation(annotation);
+                if (names.contains(a.getName())) {
+                    if (annotation.equals(a.getName())) {
+                        return a;
+                    } else {
+                        continue;
+                    }
+                }
+                names.add(getName());
+                MetadataAnnotation ma = m_factory.getMetadataClass(a.getName()).getAnnotation(annotation, names);
                 if (ma != null) {
                     return ma;
                 }
@@ -241,8 +262,10 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     /**
      * INTERNAL:
      * Return the annotations of this accessible object.
+     * @return annotations defined for the element, keyed by annotation name.
+     *         Never returns {@code null}.
      */
-    public Map<String, MetadataAnnotation> getAnnotations(){
+    public Map<String, MetadataAnnotation> getAnnotations() {
         return m_annotations;
     }
 

@@ -50,8 +50,10 @@ import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.queries.ValueReadQuery;
+import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 
 /**
  * <p><b>Purpose</b>: Provides MySQL specific behavior.
@@ -812,4 +814,19 @@ public class MySQLPlatform extends DatabasePlatform {
     public void printStoredFunctionReturnKeyWord(Writer writer) throws IOException {
         writer.write("\n\t RETURNS ");
     }
+
+    /**
+     * INTERNAL:
+     * Returns query to check whether given table exists in MySQL database.
+     * Returned query must be completely prepared so it can be just executed by calling code.
+     * @param table database table meta-data
+     * @return query to check whether given table exists
+     */
+    public DataReadQuery getTableExistsQuery(final TableDefinition table) {
+        final String sql = "SHOW TABLES LIKE '" + table.getFullName() + "'";
+        final DataReadQuery query = new DataReadQuery(sql);
+        query.setMaxRows(1);
+        return query;
+    }
+
 }

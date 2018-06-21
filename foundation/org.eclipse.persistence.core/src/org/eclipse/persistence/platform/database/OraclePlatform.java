@@ -60,11 +60,13 @@ import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.DataModifyQuery;
+import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.queries.ValueReadQuery;
+import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 
 /**
  * <p><b>Purpose</b>: Provides Oracle specific behavior.
@@ -1183,4 +1185,19 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         }
         return super.createExpressionFor(field, builder);
     }
+
+    /**
+     * INTERNAL:
+     * Returns query to check whether given table exists in MySQL database.
+     * Returned query must be completely prepared so it can be just executed by calling code.
+     * @param table database table meta-data
+     * @return query to check whether given table exists
+     */
+    public DataReadQuery getTableExistsQuery(final TableDefinition table) {
+        final String sql = "SELECT table_name FROM user_tables WHERE table_name='" + table.getFullName() + "'";
+        final DataReadQuery query = new DataReadQuery(sql);
+        query.setMaxRows(1);
+        return query;
+    }
+
 }
