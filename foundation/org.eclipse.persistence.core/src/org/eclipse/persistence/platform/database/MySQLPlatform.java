@@ -841,7 +841,8 @@ public class MySQLPlatform extends DatabasePlatform {
         final boolean loggingOff = session.isLoggingOff();
         try {
             session.setLoggingOff(true);
-            return session.executeQuery(query) != null;
+            final Vector result = (Vector)session.executeQuery(query);
+            return !result.isEmpty();
         } catch (Exception notFound) {
             return false;
         } finally {

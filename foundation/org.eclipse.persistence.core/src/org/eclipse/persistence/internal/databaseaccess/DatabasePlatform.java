@@ -3536,7 +3536,7 @@ public class DatabasePlatform extends DatasourcePlatform {
                  break;
              }
          }
-         final String sql = "SELECT " + column + " FROM " + table.getFullName() + " WHERE " + column + " <> " + column;
+         final String sql = "SELECT " + column + " FROM " + table.getFullName() + " WHERE FALSE";
          final DataReadQuery query = new DataReadQuery(sql);
          query.setMaxRows(1);
          return query;
