@@ -62,7 +62,7 @@ public class XmlElementNoNamespaceTestCases extends JAXBWithJSONTestCases {
         }catch(Exception e){
             assertNotNull(handler);
             assertNotNull(handler.getLocator());
-            assertEquals(15, handler.getLocator().getLineNumber());
+            assertEquals(17, handler.getLocator().getLineNumber());
             return;
         }finally{
             instream.close();
