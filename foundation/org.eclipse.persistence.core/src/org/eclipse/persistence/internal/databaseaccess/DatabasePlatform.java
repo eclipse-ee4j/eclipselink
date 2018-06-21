@@ -86,12 +86,14 @@ import org.eclipse.persistence.platform.database.SymfowarePlatform;
 import org.eclipse.persistence.platform.database.converters.StructConverter;
 import org.eclipse.persistence.platform.database.partitioning.DataPartitioningCallback;
 import org.eclipse.persistence.queries.Call;
+import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sequencing.TableSequence;
+import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
@@ -3516,4 +3518,50 @@ public class DatabasePlatform extends DatasourcePlatform {
      public String getConnectionUserName() {
          throw new UnsupportedOperationException("Connection user name is not supported.");
      }
+
+     /**
+      * INTERNAL:
+      * Returns query to check whether given table exists.
+      * Returned query must be completely prepared so it can be just executed by calling code.
+      * @param table database table meta-data
+      * @return query to check whether given table exists
+      */
+     public DataReadQuery getTableExistsQuery(final TableDefinition table) {
+         String column = null;
+         for (FieldDefinition field : table.getFields()) {
+             if (column == null) {
+                 column = field.getName();
+             } else if (field.isPrimaryKey()) {
+                 column = field.getName();
+                 break;
+             }
+         }
+         final String sql = "SELECT " + column + " FROM " + table.getFullName() + " WHERE " + column + " <> " + column;
+         final DataReadQuery query = new DataReadQuery(sql);
+         query.setMaxRows(1);
+         return query;
+     }
+
+     /**
+      * INTERNAL:
+      * Checks whether given table exists in current database.
+      * This method handles how the query returned by {@link #getTableExistsQuery(TableDefinition)}
+      * is being executed and evaluated. 
+      * @param session current database session
+      * @param table database table meta-data
+      * @return value of {@code true} if given table exists or {@code false} otherwise
+      */
+     public boolean checkTableExists(final AbstractSession session, final DataReadQuery query) {
+         final boolean loggingOff = session.isLoggingOff();
+         try {
+             session.setLoggingOff(true);
+             session.executeQuery(query);
+             return true;
+         } catch (Exception notFound) {
+             return false;
+         } finally {
+             session.setLoggingOff(loggingOff);
+         }
+     }
+     
 }

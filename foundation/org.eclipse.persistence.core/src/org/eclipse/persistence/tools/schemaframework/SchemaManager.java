@@ -31,6 +31,7 @@ import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
+import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sequencing.Sequencing;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -456,30 +457,12 @@ public class SchemaManager {
 
     /**
      * Check if the table exists by issuing a select.
+     * @param table database table meta-data
+     * @return value of {@code true} if given table exists or {@code false} otherwise
      */
     public boolean checkTableExists(TableDefinition table) {
-        String column = null;
-        for (FieldDefinition field : table.getFields()) {
-            if (column == null) {
-                column = field.getName();
-            } else if (field.isPrimaryKey()) {
-                column = field.getName();
-                break;
-            }
-        }
-        String sql = "SELECT " + column + " FROM " + table.getFullName() + " WHERE " + column + " <> " + column;
-        DataReadQuery query = new DataReadQuery(sql);
-        query.setMaxRows(1);
-        boolean loggingOff = session.isLoggingOff();
-        try {
-            session.setLoggingOff(true);
-            session.executeQuery(query);
-            return true;
-        } catch (Exception notFound) {
-            return false;
-        } finally {
-            session.setLoggingOff(loggingOff);
-        }
+        final DatabasePlatform platform = session.getPlatform();
+        return platform.checkTableExists(session, platform.getTableExistsQuery(table));
     }
 
     protected SequenceDefinition buildSequenceDefinition(Sequence sequence) {
