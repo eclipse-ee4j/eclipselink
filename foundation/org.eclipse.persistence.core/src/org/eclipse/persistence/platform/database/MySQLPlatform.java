@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2017 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -51,7 +51,6 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.queries.ValueReadQuery;
-import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 
 /**
@@ -826,28 +825,6 @@ public class MySQLPlatform extends DatabasePlatform {
         final DataReadQuery query = new DataReadQuery(sql);
         query.setMaxRows(1);
         return query;
-    }
-
-    /**
-     * INTERNAL:
-     * Checks whether given table exists in current database.
-     * This method handles how the query returned by {@link #getTableExistsQuery(TableDefinition)}
-     * is being executed and evaluated. 
-     * @param session current database session
-     * @param table database table meta-data
-     * @return value of {@code true} if given table exists or {@code false} otherwise
-     */
-    public boolean checkTableExists(final AbstractSession session, final DataReadQuery query) {
-        final boolean loggingOff = session.isLoggingOff();
-        try {
-            session.setLoggingOff(true);
-            final Vector result = (Vector)session.executeQuery(query);
-            return !result.isEmpty();
-        } catch (Exception notFound) {
-            return false;
-        } finally {
-            session.setLoggingOff(loggingOff);
-        }
     }
 
 }

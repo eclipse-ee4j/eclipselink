@@ -93,7 +93,6 @@ import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sequencing.TableSequence;
-import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
@@ -3542,26 +3541,4 @@ public class DatabasePlatform extends DatasourcePlatform {
          return query;
      }
 
-     /**
-      * INTERNAL:
-      * Checks whether given table exists in current database.
-      * This method handles how the query returned by {@link #getTableExistsQuery(TableDefinition)}
-      * is being executed and evaluated. 
-      * @param session current database session
-      * @param table database table meta-data
-      * @return value of {@code true} if given table exists or {@code false} otherwise
-      */
-     public boolean checkTableExists(final AbstractSession session, final DataReadQuery query) {
-         final boolean loggingOff = session.isLoggingOff();
-         try {
-             session.setLoggingOff(true);
-             session.executeQuery(query);
-             return true;
-         } catch (Exception notFound) {
-             return false;
-         } finally {
-             session.setLoggingOff(loggingOff);
-         }
-     }
-     
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -31,7 +31,6 @@ import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
-import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sequencing.Sequencing;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -461,8 +460,19 @@ public class SchemaManager {
      * @return value of {@code true} if given table exists or {@code false} otherwise
      */
     public boolean checkTableExists(TableDefinition table) {
-        final DatabasePlatform platform = session.getPlatform();
-        return platform.checkTableExists(session, platform.getTableExistsQuery(table));
+        final DataReadQuery query = session.getPlatform().getTableExistsQuery(table);
+        final boolean loggingOff = session.isLoggingOff();
+        try {
+            session.setLoggingOff(true);
+            System.out.println("########## TableExists " + query.toString());
+            final Vector result = (Vector)session.executeQuery(query);
+            System.out.println("########## - " + Boolean.toString(result.isEmpty()));
+            return !result.isEmpty();
+        } catch (Exception notFound) {
+            return false;
+        } finally {
+            session.setLoggingOff(loggingOff);
+        }
     }
 
     protected SequenceDefinition buildSequenceDefinition(Sequence sequence) {
