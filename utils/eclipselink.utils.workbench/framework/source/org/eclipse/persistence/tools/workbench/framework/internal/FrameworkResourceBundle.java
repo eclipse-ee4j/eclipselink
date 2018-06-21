@@ -2,10 +2,12 @@
  * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which is available at
- * http://www.eclipse.org/legal/epl-2.0.
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * SPDX-License-Identifier: EPL-2.0
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
  */
 
 // Contributors:
@@ -23,7 +25,7 @@ public final class FrameworkResourceBundle extends ListResourceBundle {
 
     static final Object[][] contents = {
 
-        {"COPYRIGHT", "Copyright \u00A9 1997, 2018 Oracle and/or its affiliates. All rights reserved. <p> This program and the accompanying materials are made available under the terms Eclipse Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0.</p><p>SPDX-License-Identifier: EPL-2.0</p>"},
+        {"COPYRIGHT", "Copyright \u00A9 1997, 2018 Oracle and/or its affiliates. All rights reserved. <p> This program and the accompanying materials are made available under the terms of the Eclipse Public License v. 2.0 which is available at http://www.eclipse.org/legal/epl-2.0, or the Eclipse Distribution License v. 1.0 which is available at http://www.eclipse.org/org/documents/edl-v10.php.</p><p>SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause</p>"},
 
         // Helpful when having more than one Browse button in a panel
         {"BROWSE_BUTTON_1", "&Browse..."},
