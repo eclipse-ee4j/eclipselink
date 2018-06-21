@@ -464,9 +464,7 @@ public class SchemaManager {
         final boolean loggingOff = session.isLoggingOff();
         try {
             session.setLoggingOff(true);
-            System.out.println("########## TableExists " + query.toString());
             final Vector result = (Vector)session.executeQuery(query);
-            System.out.println("########## - " + Boolean.toString(result.isEmpty()));
             return !result.isEmpty();
         } catch (Exception notFound) {
             return false;
