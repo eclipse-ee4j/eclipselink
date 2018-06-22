@@ -524,6 +524,7 @@
                 <exclude name="**/org.eclipse.persistence.antlr**"/>
                 <exclude name="**/org.eclipse.persistence.asm**"/>
                 <exclude name="**/readme.for.distribution**"/>
+                <exclude name="**/org.eclipse.persistence.oracle*.jar"/>
             </fileset>
         </delete>
     </target>
