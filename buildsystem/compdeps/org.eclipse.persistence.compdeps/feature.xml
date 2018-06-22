@@ -124,7 +124,7 @@
             unpack="false"/>
 
     <plugin
-            id="javax.mail"
+            id="jakarta.mail-api"
             download-size="0"
             install-size="0"
             version="0.0.0"
