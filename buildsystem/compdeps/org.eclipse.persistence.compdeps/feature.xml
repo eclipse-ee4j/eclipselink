@@ -53,7 +53,7 @@
             unpack="false"/>
 
     <plugin
-            id="javax.ejb"
+            id="javax.ejb-api"
             download-size="0"
             install-size="0"
             version="0.0.0"
@@ -331,7 +331,7 @@
             unpack="false"/>
 
     <plugin
-            id="org.eclipse.orbit.mongodb"
+            id="org.mongodb.mongo-java-driver"
             download-size="0"
             install-size="0"
             version="0.0.0"
@@ -345,7 +345,21 @@
             unpack="false"/>
 
     <plugin
+            id="osgi.cmpn"
+            download-size="0"
+            install-size="0"
+            version="0.0.0"
+            unpack="false"/>
+
+    <plugin
             id="org.slf4j.api"
+            download-size="0"
+            install-size="0"
+            version="0.0.0"
+            unpack="false"/>
+
+    <plugin
+            id="org.slf4j.nop"
             download-size="0"
             install-size="0"
             version="0.0.0"
@@ -367,6 +381,49 @@
 
     <plugin
             id="javax.annotation-api"
+            download-size="0"
+            install-size="0"
+            version="0.0.0"
+            unpack="false"/>
+
+
+    <plugin
+            id="org.glassfish.hk2.api"
+            download-size="0"
+            install-size="0"
+            version="0.0.0"
+            unpack="false"/>
+
+    <plugin
+            id="org.glassfish.hk2.locator"
+            download-size="0"
+            install-size="0"
+            version="0.0.0"
+            unpack="false"/>
+
+    <plugin
+            id="org.glassfish.hk2.utils"
+            download-size="0"
+            install-size="0"
+            version="0.0.0"
+            unpack="false"/>
+
+    <plugin
+            id="org.glassfish.jersey.bundles.repackaged.jersey-guava"
+            download-size="0"
+            install-size="0"
+            version="0.0.0"
+            unpack="false"/>
+
+    <plugin
+            id="org.glassfish.jersey.core.jersey-client"
+            download-size="0"
+            install-size="0"
+            version="0.0.0"
+            unpack="false"/>
+
+    <plugin
+            id="org.glassfish.jersey.core.jersey-common"
             download-size="0"
             install-size="0"
             version="0.0.0"

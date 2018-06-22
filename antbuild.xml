@@ -562,8 +562,8 @@
 
     <!-- Prepare/copy local Tycho repository from internal dependencies (ASM, ANTLR) and external (javax APIs, various implementations) resolved from Maven central repository. -->
     <target name="generate-local-compdeps" description="Build local p2 repository of local compiler dependencies">
-    <!--<target name="generate-local-compdeps" if="generate.compdeps" depends="set-compdeps, generate-internal-compdeps" description="Build local p2 repository of local compiler dependencies">-->
-        <!-- a bit redundant, but here as a failsafe. -->
+    <target name="generate-local-compdeps" if="generate.compdeps" depends="set-compdeps, generate-internal-compdeps" description="Build local p2 repository of local compiler dependencies">
+         <!--a bit redundant, but here as a failsafe.-->
         <available file="${eclipse.install.dir}/plugins" type="dir" property="eclipse.dir.exist"/>
         <fail message="Specified Eclipse installation (${eclipse.install.dir}/plugins) not found. Exiting..." unless="eclipse.dir.exist"/>
         <echo message="Generating local 'Compile Dependency P2 Repository' using tools found in '${eclipse.install.dir}/plugins'."/>
@@ -571,7 +571,6 @@
         <echo message="    -Dmaven.multiModuleProjectDirectory=${eclipselink.compdeps}"/>
         <echo message="    -Dmaven.home=${M2_HOME}"/>
         <echo message="    clean verify"/>
-<!--
         <java dir="${eclipselink.compdeps}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
             <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
             <jvmarg value="-Dmaven.home=${M2_HOME}"/>
@@ -583,7 +582,6 @@
                 </fileset>
             </classpath>
         </java>
--->
 
         <macrodef name="copy-plugin">
             <attribute name="from"/>
@@ -596,7 +594,7 @@
             </sequential>
         </macrodef>
 
-        <!-- Populate plugins directory from local compdeps repository. -->
+         <!--Populate plugins directory from local compdeps repository.-->
         <copy-plugin from="cdi.api*.jar" to="cdi.api_1.0.0.v201105160744.jar"/>
         <copy-plugin from="ch.qos.logback.classic*.jar" to="ch.qos.logback.classic_1.0.7.v20121108-1250.jar"/>
         <copy-plugin from="ch.qos.logback.core*.jar" to="ch.qos.logback.core_1.0.7.v20121108-1250.jar"/>
@@ -604,7 +602,6 @@
         <!--SLF4J <copy-plugin from="ch.qos.logback.slf4j_1.0.7.v20121108-1250.jar" to="ch.qos.logback.slf4j_1.0.7.v20121108-1250.jar"/>-->
 
         <copy-plugin from="com.sun.xml.bind.jaxb-impl*.jar" to="com.sun.xml.bind_2.2.11.v201406210428.jar"/>
-
         <copy-plugin from="gmbal-api-only*.jar" to="gmbal-api-only_3.2.0.b003.jar"/>
         <copy-plugin from="javax.annotation-api*.jar" to="javax.annotation_1.2.0.v201401042248.jar"/>
         <copy-plugin from="javax.ejb*.jar" to="javax.ejb_3.1.0.v201205171433.jar"/>
@@ -620,45 +617,41 @@
         <copy-plugin from="javax.validation.api*.jar" to="javax.validation.api_2.0.1.Final.jar"/>
         <copy-plugin from="javax.ws.rs*.jar" to="javax.ws.rs_2.0.1.v201504171603.jar"/>
         <copy-plugin from="javax.xml.bind*.jar" to="javax.xml.bind_2.2.12.v201410011542.jar"/>
-        <!--<copy-plugin from="javax.xml.bind.source_2.2.12.v1410011542.jar" to="javax.xml.bind.source_2.2.12.v1410011542.jar"/>-->
         <copy-plugin from="javax.xml.rpc*.zip" to="javax.xml.rpc_1.1.0.v200706111329.zip"/>
         <copy-plugin from="javax.xml.soap*.jar" to="javax.xml.soap_1.3.0.v200906010428.jar"/>
         <copy-plugin from="javax.xml.ws*.jar" to="javax.xml.ws_2.0.0.v200902170419.jar"/>
         <copy-plugin from="com.sun.xml.bind.jaxb-core*.jar" to="jaxb-core_2.2.11.v201407311112.jar"/>
-        <!--<copy-plugin from="jaxb-core.source_2.2.11.v201407311112.jar" to="jaxb-core.source_2.2.11.v201407311112.jar"/>-->
         <copy-plugin from="com.sun.xml.bind.jaxb-xjc*.jar" to="jaxb-xjc_2.2.11.v201407311112.jar"/>
-        <!--<copy-plugin from="jaxb-xjc.source_2.2.11.v201407311112.jar" to="jaxb-xjc.source_2.2.11.v201407311112.jar"/>-->
         <copy-plugin from="org.glassfish.external.management-api*.jar" to="management-api_3.2.1.b003.jar"/>
-        <copy-plugin from="org.apache.ant_1.7.0.v20080627-1145.zip" to="org.apache.ant_1.7.0.v20080627-1145.zip"/>
-        <copy-plugin from="org.eclipse.orbit.mongodb_2.10.1.v20130422-1135.jar" to="org.eclipse.orbit.mongodb_2.10.1.v20130422-1135.jar"/>
-        <copy-plugin from="org.eclipse.orbit.mongodb.source_2.10.1.v20130422-1135.jar" to="org.eclipse.orbit.mongodb.source_2.10.1.v20130422-1135.jar"/>
-
-        <copy-plugin from="org.eclipse.persistence.sun-misc_1.0.0.v20181030.jar" to="org.eclipse.persistence.sun-misc_1.0.0.v20181030.jar"/>
+        <copy-plugin from="org.apache.ant*.jar" to="org.apache.ant_1.7.0.v20080627-1145.zip"/>
+        <copy-plugin from="org.eclipse.orbit.mongodb*.jar" to="org.eclipse.orbit.mongodb_2.10.1.v20130422-1135.jar"/>
+        <copy-plugin from="org.eclipse.persistence.sun-misc*.jar" to="org.eclipse.persistence.sun-misc_1.0.0.v20181030.jar"/>
+        <!--Bundle-SymbolicName is not available-->
         <copy-plugin from="org.glassfish.corba.exception-annotation-processor_4.2.0.b003.jar" to="org.glassfish.corba.exception-annotation-processor_4.2.0.b003.jar"/>
-        <copy-plugin from="org.glassfish.corba.glassfish-corba-csiv2-idl_4.2.0.b003.jar" to="org.glassfish.corba.glassfish-corba-csiv2-idl_4.2.0.b003.jar"/>
-        <copy-plugin from="org.glassfish.corba.glassfish-corba-internal-api_4.2.0.b003.jar" to="org.glassfish.corba.glassfish-corba-internal-api_4.2.0.b003.jar"/>
-        <copy-plugin from="org.glassfish.corba.glassfish-corba-omgapi_4.2.0.b003.jar" to="org.glassfish.corba.glassfish-corba-omgapi_4.2.0.b003.jar"/>
-        <copy-plugin from="org.glassfish.corba.glassfish-corba-orb_4.2.0.b003.jar" to="org.glassfish.corba.glassfish-corba-orb_4.2.0.b003.jar"/>
-        <copy-plugin from="org.glassfish.gmbal.gmbal_4.0.0.b002.jar" to="org.glassfish.gmbal.gmbal_4.0.0.b002.jar"/>
-        <copy-plugin from="org.glassfish.hk2.api_2.3.0.b10_201505192201.jar" to="org.glassfish.hk2.api_2.3.0.b10_201505192201.jar"/>
-        <copy-plugin from="org.glassfish.hk2.locator_2.3.0.b10_201505192201.jar" to="org.glassfish.hk2.locator_2.3.0.b10_201505192201.jar"/>
-        <copy-plugin from="org.glassfish.hk2.utils_2.3.0.b10_201505192201.jar" to="org.glassfish.hk2.utils_2.3.0.b10_201505192201.jar"/>
-        <copy-plugin from="org.glassfish.jersey.bundles.repackaged.jersey-guava_2.14.0.v201504151636.jar" to="org.glassfish.jersey.bundles.repackaged.jersey-guava_2.14.0.v201504151636.jar"/>
-        <copy-plugin from="org.glassfish.jersey.core.jersey-client_2.14.0.v201504211925.jar" to="org.glassfish.jersey.core.jersey-client_2.14.0.v201504211925.jar"/>
-        <copy-plugin from="org.glassfish.jersey.core.jersey-common_2.14.0.v201504171603.jar" to="org.glassfish.jersey.core.jersey-common_2.14.0.v201504171603.jar"/>
-        <copy-plugin from="org.glassfish.pfl.pfl-asm_4.0.1.b003.jar" to="org.glassfish.pfl.pfl-asm_4.0.1.b003.jar"/>
-        <copy-plugin from="org.glassfish.pfl.pfl-basic_4.0.1.b003.jar" to="org.glassfish.pfl.pfl-basic_4.0.1.b003.jar"/>
-        <copy-plugin from="org.glassfish.pfl.pfl-basic-tools_4.0.1.b003.jar" to="org.glassfish.pfl.pfl-basic-tools_4.0.1.b003.jar"/>
-        <copy-plugin from="org.glassfish.pfl.pfl-dynamic_4.0.1.b003.jar" to="org.glassfish.pfl.pfl-dynamic_4.0.1.b003.jar"/>
-        <copy-plugin from="org.glassfish.pfl.pfl-test_4.0.1.b003.jar" to="org.glassfish.pfl.pfl-test_4.0.1.b003.jar"/>
-        <copy-plugin from="org.glassfish.pfl.pfl-tf_4.0.1.b003.jar" to="org.glassfish.pfl.pfl-tf_4.0.1.b003.jar"/>
-        <copy-plugin from="org.mongodb.mongo-java-driver_3.2.0.jar" to="org.mongodb.mongo-java-driver_3.2.0.jar"/>
-        <copy-plugin from="org.mongodb.mongo-java-driver.source_3.2.0.jar" to="org.mongodb.mongo-java-driver.source_3.2.0.jar"/>
-        <copy-plugin from="org.osgi.core_1.2.0.jar" to="org.osgi.core_1.2.0.jar"/>
-        <copy-plugin from="org.slf4j.api_1.7.2.v20121108-1250.jar" to="org.slf4j.api_1.7.2.v20121108-1250.jar"/>
-        <copy-plugin from="org.slf4j.api.source_1.7.2.v20121108-1250.jar" to="org.slf4j.api.source_1.7.2.v20121108-1250.jar"/>
-        <copy-plugin from="osgi.cmpn_4.1.0.jar" to="osgi.cmpn_4.1.0.jar"/>
-        <copy-plugin from="osgi.core.zip" to="osgi.core.zip"/>
+        <copy-plugin from="org.glassfish.corba.glassfish-corba-csiv2-idl*.jar" to="org.glassfish.corba.glassfish-corba-csiv2-idl_4.2.0.b003.jar"/>
+        <copy-plugin from="org.glassfish.corba.glassfish-corba-internal-api*.jar" to="org.glassfish.corba.glassfish-corba-internal-api_4.2.0.b003.jar"/>
+        <copy-plugin from="org.glassfish.corba.glassfish-corba-omgapi*.jar" to="org.glassfish.corba.glassfish-corba-omgapi_4.2.0.b003.jar"/>
+        <copy-plugin from="org.glassfish.corba.glassfish-corba-orb*.jar" to="org.glassfish.corba.glassfish-corba-orb_4.2.0.b003.jar"/>
+        <copy-plugin from="org.glassfish.gmbal.gmbal*" to="org.glassfish.gmbal.gmbal_4.0.0.b002.jar"/>
+        <copy-plugin from="org.glassfish.hk2.api*.jar" to="org.glassfish.hk2.api_2.3.0.b10_201505192201.jar"/>
+        <copy-plugin from="org.glassfish.hk2.locator*.jar" to="org.glassfish.hk2.locator_2.3.0.b10_201505192201.jar"/>
+        <copy-plugin from="org.glassfish.hk2.utils*.jar" to="org.glassfish.hk2.utils_2.3.0.b10_201505192201.jar"/>
+        <copy-plugin from="org.glassfish.jersey.bundles.repackaged.jersey-guava*.jar" to="org.glassfish.jersey.bundles.repackaged.jersey-guava_2.14.0.v201504151636.jar"/>
+        <copy-plugin from="org.glassfish.jersey.core.jersey-client*.jar" to="org.glassfish.jersey.core.jersey-client_2.14.0.v201504211925.jar"/>
+        <copy-plugin from="org.glassfish.jersey.core.jersey-common*.jar" to="org.glassfish.jersey.core.jersey-common_2.14.0.v201504171603.jar"/>
+        <copy-plugin from="org.glassfish.pfl.pfl-asm*.jar" to="org.glassfish.pfl.pfl-asm_4.0.1.b003.jar"/>
+        <copy-plugin from="org.glassfish.pfl.pfl-basic*.jar" to="org.glassfish.pfl.pfl-basic_4.0.1.b003.jar"/>
+        <copy-plugin from="org.glassfish.pfl.pfl-basic-tools*.jar" to="org.glassfish.pfl.pfl-basic-tools_4.0.1.b003.jar"/>
+        <copy-plugin from="org.glassfish.pfl.pfl-dynamic*.jar" to="org.glassfish.pfl.pfl-dynamic_4.0.1.b003.jar"/>
+        <copy-plugin from="org.glassfish.pfl.pfl-test*.jar" to="org.glassfish.pfl.pfl-test_4.0.1.b003.jar"/>
+        <copy-plugin from="org.glassfish.pfl.pfl-tf*.jar" to="org.glassfish.pfl.pfl-tf_4.0.1.b003.jar"/>
+        <copy-plugin from="org.mongodb.mongo-java-driver*.jar" to="org.mongodb.mongo-java-driver_3.2.0.jar"/>
+        <copy-plugin from="org.osgi.core*.jar" to="org.osgi.core_1.2.0.jar"/>
+        <copy-plugin from="org.slf4j.api*.jar" to="org.slf4j.api_1.7.2.v20121108-1250.jar"/>
+        <!--Replacement for ch.qos.logback.slf4j-->
+        <!--TODO Change dependency from ch.qos.logback.slf4j* to org.slf4j.nop*-->
+        <copy-plugin from="org.slf4j.nop*.jar" to="org.slf4j.nop_1.7.2.v201212060727.jar"/>
+        <copy-plugin from="osgi.cmpn*.jar" to="osgi.cmpn_4.1.0.jar"/>
 
 
     </target>
