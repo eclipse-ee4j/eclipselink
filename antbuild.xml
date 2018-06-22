@@ -614,7 +614,7 @@
         </macrodef>
 
          <!--Populate plugins directory from local compdeps repository.-->
-        <copy-plugin from="cdi.api*.jar" to="cdi.api_1.0.0.v201105160744.jar"/>
+        <copy-plugin from="jakarta.enterprise.cdi-api*.jar" to="cdi.api_1.0.0.v201105160744.jar"/>
         <copy-plugin from="ch.qos.logback.classic*.jar" to="ch.qos.logback.classic_1.0.7.v20121108-1250.jar"/>
         <copy-plugin from="ch.qos.logback.core*.jar" to="ch.qos.logback.core_1.0.7.v20121108-1250.jar"/>
         <!--SLF4J <copy-plugin from="ch.qos.logback.slf4j_1.0.7.v20121108-1250.jar" to="ch.qos.logback.slf4j_1.0.7.v20121108-1250.jar"/>-->
@@ -633,10 +633,10 @@
         <copy-plugin from="javax.resource*.jar" to="javax.resource_1.6.0.v201204270900.jar"/>
         <copy-plugin from="javax.servlet*.jar" to="javax.servlet_2.4.0.v200806031604.jar"/>
         <copy-plugin from="javax.transaction-api*.jar" to="javax.transaction.api_1.3.0.jar"/>
-        <copy-plugin from="javax.validation.api*.jar" to="javax.validation.api_2.0.1.Final.jar"/>
+        <copy-plugin from="jakarta.validation.jakarta.validation-api*.jar" to="javax.validation.api_2.0.1.Final.jar"/>
         <copy-plugin from="javax.ws.rs*.jar" to="javax.ws.rs_2.0.1.v201504171603.jar"/>
         <copy-plugin from="jakarta.xml.bind-api_*.jar" to="javax.xml.bind_2.2.12.v201410011542.jar"/>
-        <copy-plugin from="javax.xml.soap*.jar" to="javax.xml.soap_1.3.0.v200906010428.jar"/>
+        <copy-plugin from="jakarta.xml.soap-api*.jar" to="javax.xml.soap_1.3.0.v200906010428.jar"/>
         <copy-plugin from="javax.xml.ws*.jar" to="javax.xml.ws_2.0.0.v200902170419.jar"/>
         <copy-plugin from="org.glassfish.external.management-api*.jar" to="management-api_3.2.1.b003.jar"/>
         <copy-plugin from="org.apache.ant*.jar" to="org.apache.ant_1.7.0.v20080627-1145.zip"/>

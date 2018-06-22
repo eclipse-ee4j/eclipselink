@@ -33,7 +33,7 @@
 
 
     <plugin
-            id="cdi.api"
+            id="jakarta.enterprise.cdi-api"
             download-size="0"
             install-size="0"
             version="0.0.0"
@@ -159,7 +159,7 @@
             unpack="false"/>
 
     <plugin
-            id="javax.validation.api"
+            id="jakarta.validation.jakarta.validation-api"
             download-size="0"
             install-size="0"
             version="0.0.0"
@@ -180,7 +180,7 @@
             unpack="false"/>
 
     <plugin
-            id="javax.xml.soap"
+            id="jakarta.xml.soap-api"
             download-size="0"
             install-size="0"
             version="0.0.0"

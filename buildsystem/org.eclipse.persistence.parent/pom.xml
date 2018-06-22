@@ -81,6 +81,11 @@
             <url>https://oss.sonatype.org/content/groups/staging</url>
         </repository>
         <repository>
+            <id>repository.jboss.org</id>
+            <name>JBoss Staging</name>
+            <url>https://repository.jboss.org/nexus/content/repositories/staging</url>
+        </repository>
+        <repository>
             <id>Orbit</id>
             <layout>p2</layout>
             <url>http://download.eclipse.org/tools/orbit/downloads/drops/${orbit.drop}/repository</url>
