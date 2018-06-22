@@ -80,6 +80,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
     static final String[][] contents = {
         // CONFIG, INFO, WARNING and SEVERE level messages.
         { "topLink_version", "EclipseLink, version: {0}" },
+        { "eclipselink_version_error", "File: {0} not exist or is corrupted." },
         { "application_server_name_and_version", "Server: {0}" },
         { "login_successful", "{0} login successful" },
         { "logout_successful", "{0} logout successful" },

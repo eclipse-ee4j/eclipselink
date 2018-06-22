@@ -18,9 +18,14 @@
 //     2 July 2018   Radek Felcman - changed source of build info into version.properties generated during build
 package org.eclipse.persistence;
 
-import java.io.IOException;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
+
 import java.io.InputStream;
+import java.text.MessageFormat;
+import java.util.Locale;
 import java.util.Properties;
+import java.util.ResourceBundle;
 
 /**
  * This class stores variables for the version and build numbers that are used
@@ -38,19 +43,12 @@ public class Version {
      * Version numbers separator.
      */
     private static final char SEPARATOR = '.';
-
     private static final String VERSION_PROPERTIES_FILE = "version.properties";
+    private static final String RESOURCE_BUNDLE = "org.eclipse.persistence.internal.localization.i18n.LoggingLocalizationResource";
+    private static final String ERROR_MESSAGE_KEY = "eclipselink_version_error";
 
     private static Properties versionProperties;
 
-    static {
-        try (InputStream versionStream = Version.class.getResourceAsStream(VERSION_PROPERTIES_FILE)) {
-            versionProperties = new Properties();
-            versionProperties.load(versionStream);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     /**
      * Returns version {@link String} containing three part version number
@@ -76,13 +74,13 @@ public class Version {
 
     // A three part version number (major.minor.service)
     public static String getVersion() {
-        return versionProperties.getProperty("version");
+        return getProperty("version");
     }
 
     //private static final String version = "@VERSION@";
     // A string that describes this build i.e.( vYYYYMMDD-HHMM, etc.)
     public static String getQualifier() {
-        return versionProperties.getProperty("qualifier");
+        return getProperty("qualifier");
     }
 
     public static String getBuildNumber() {
@@ -91,22 +89,22 @@ public class Version {
 
     // Should be in the format YYYYMMDD
     public static String getBuildDate() {
-        return versionProperties.getProperty("buildDate");
+        return getProperty("buildDate");
     }
 
     // Should be in the format HHMM
     public static String getBuildTime() {
-        return versionProperties.getProperty("buildTime");
+        return getProperty("buildTime");
     }
 
     // revision of source from the repository
     public static String getBuildRevision() {
-        return versionProperties.getProperty("buildRevision");
+        return getProperty("buildRevision");
     }
 
     // Typically SNAPSHOT, Milestone name (M1,M2,etc), or RELEASE
     public static String getBuildType() {
-        return versionProperties.getProperty("buildType");
+        return getProperty("buildType");
     }
 
     public static void printVersion() {
@@ -114,18 +112,44 @@ public class Version {
     }
 
     public static void main(String[] args) {
-        System.out.println();
-        System.out.print(getProduct());
-        System.out.println(" (EclipseLink)");
-        System.out.print("   Build Version:   ");
-        System.out.println(getVersionString());
-        System.out.print("   Build Qualifier: ");
-        System.out.println(getQualifier());
-        System.out.print("   Build Date:      ");
-        System.out.println(getBuildDate());
-        System.out.print("   Build Time:      ");
-        System.out.println(getBuildTime());
-        System.out.print("   Build Revision:  ");
-        System.out.println(getBuildRevision());
+        try {
+            System.out.println();
+            System.out.print(getProduct());
+            System.out.println(" (EclipseLink)");
+            System.out.print("   Build Version:   ");
+            System.out.println(getVersionString());
+            System.out.print("   Build Qualifier: ");
+            System.out.println(getQualifier());
+            System.out.print("   Build Date:      ");
+            System.out.println(getBuildDate());
+            System.out.print("   Build Time:      ");
+            System.out.println(getBuildTime());
+            System.out.print("   Build Revision:  ");
+            System.out.println(getBuildRevision());
+        }catch (Exception e) {
+            AbstractSessionLog.getLog().logThrowable(SessionLog.SEVERE, e);
+        }
     }
+
+    private static Properties loadProperties(String propertiesFileName) throws Exception {
+        Properties properties = null;
+        try (InputStream versionStream = Version.class.getResourceAsStream(propertiesFileName)) {
+            properties = new Properties();
+            properties.load(versionStream);
+        }
+        return properties;
+    }
+
+    private static String getProperty(String propertyName) {
+        try {
+            if (versionProperties == null) {
+                versionProperties = loadProperties(VERSION_PROPERTIES_FILE);
+            }
+            return versionProperties.getProperty(propertyName);
+        } catch (Exception e) {
+            ResourceBundle bundle = ResourceBundle.getBundle(RESOURCE_BUNDLE, Locale.getDefault());
+            throw new RuntimeException(MessageFormat.format(bundle.getString(ERROR_MESSAGE_KEY), VERSION_PROPERTIES_FILE));
+        }
+    }
+
 }
