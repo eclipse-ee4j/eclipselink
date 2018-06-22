@@ -38,6 +38,7 @@
                     <includeAllDependencies>true</includeAllDependencies>
                 </configuration>
             </plugin>
+            <!-- Required there for source packages. Some source packages doesn't contain OSGi info and can't be specified in feature.xml file. -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>

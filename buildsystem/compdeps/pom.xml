@@ -86,6 +86,7 @@
 
     <build>
         <plugins>
+            <!-- Required there for source packages. Some source packages doesn't contain OSGi info and can't be specified in feature.xml file. -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -100,6 +101,7 @@
                     <resolver>p2</resolver>
                 </configuration>
             </plugin>
+            <!-- Filtering is used there to override version (use Maven dependency instead of Orbit). -->
             <plugin>
                 <groupId>org.eclipse.tycho</groupId>
                 <artifactId>target-platform-configuration</artifactId>
