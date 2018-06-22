@@ -15,15 +15,8 @@
 
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
     <modelVersion>4.0.0</modelVersion>
-
-    <!--    <parent>
-        <groupId>org.eclipse.persistence</groupId>
-        <artifactId>compdeps</artifactId>
-        <version>1.0.5-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
-    </parent>-->
-
     <name>EclipseLink Internal Compilation Dependencies</name>
     <groupId>org.eclipse.persistence</groupId>
     <artifactId>org.eclipse.persistence.compdeps.internal</artifactId>
@@ -67,19 +60,11 @@
                     </execution>
                 </executions>
             </plugin>
- 
-
             <!-- Configuration for the PublishFeaturesAndBundlesMojoTest -->
             <plugin>
                 <groupId>org.eclipse.tycho.extras</groupId>
                 <artifactId>tycho-p2-extras-plugin</artifactId>
                 <version>1.2.0</version>
-                <configuration>
-                    <!-- additional arguments example
-                    <compress>false</compress>
-                            <additionalArgs>-configs win32.win32.x86</additionalArgs>
-                    -->
-                </configuration>
                 <executions>
                     <execution>
                         <phase>prepare-package</phase>

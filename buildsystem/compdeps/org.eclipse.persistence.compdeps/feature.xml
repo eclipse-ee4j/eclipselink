@@ -31,8 +31,44 @@
         %license
     </license>
 
+
     <plugin
             id="cdi.api"
+            download-size="0"
+            install-size="0"
+            version="0.0.0"
+            unpack="false"/>
+
+    <plugin
+            id="ch.qos.logback.classic"
+            download-size="0"
+            install-size="0"
+            version="0.0.0"
+            unpack="false"/>
+
+    <plugin
+            id="ch.qos.logback.core"
+            download-size="0"
+            install-size="0"
+            version="0.0.0"
+            unpack="false"/>
+
+    <plugin
+            id="com.sun.xml.bind.jaxb-core"
+            download-size="0"
+            install-size="0"
+            version="0.0.0"
+            unpack="false"/>
+
+    <plugin
+            id="com.sun.xml.bind.jaxb-xjc"
+            download-size="0"
+            install-size="0"
+            version="0.0.0"
+            unpack="false"/>
+
+    <plugin
+            id="com.sun.xml.bind.jaxb-impl"
             download-size="0"
             install-size="0"
             version="0.0.0"
@@ -53,7 +89,21 @@
             unpack="false"/>
 
     <plugin
+            id="javax.annotation-api"
+            download-size="0"
+            install-size="0"
+            version="0.0.0"
+            unpack="false"/>
+
+    <plugin
             id="javax.ejb-api"
+            download-size="0"
+            install-size="0"
+            version="0.0.0"
+            unpack="false"/>
+
+    <plugin
+            id="javax.inject"
             download-size="0"
             install-size="0"
             version="0.0.0"
@@ -75,13 +125,6 @@
 
     <plugin
             id="javax.json-api"
-            download-size="0"
-            install-size="0"
-            version="0.0.0"
-            unpack="false"/>
-
-    <plugin
-            id="org.glassfish.javax.json"
             download-size="0"
             install-size="0"
             version="0.0.0"
@@ -115,7 +158,7 @@
             version="0.0.0"
             unpack="false"/>
 
-        <plugin
+    <plugin
             id="javax.transaction-api"
             download-size="0"
             install-size="0"
@@ -129,15 +172,6 @@
             version="0.0.0"
             unpack="false"/>
 
-<!--
-    <plugin
-            id="wsdl4j"
-            download-size="0"
-            install-size="0"
-            version="0.0.0"
-            unpack="false"/>
--->
-
     <plugin
             id="javax.ws.rs"
             download-size="0"
@@ -146,7 +180,7 @@
             unpack="false"/>
 
     <plugin
-            id="javax.xml.bind"
+            id="jaxb-api"
             download-size="0"
             install-size="0"
             version="0.0.0"
@@ -161,34 +195,6 @@
 
     <plugin
             id="javax.xml.ws"
-            download-size="0"
-            install-size="0"
-            version="0.0.0"
-            unpack="false"/>
-
-    <plugin
-            id="com.sun.xml.bind.jaxb-core"
-            download-size="0"
-            install-size="0"
-            version="0.0.0"
-            unpack="false"/>
-
-    <plugin
-            id="com.sun.xml.bind.jaxb-xjc"
-            download-size="0"
-            install-size="0"
-            version="0.0.0"
-            unpack="false"/>
-
-    <plugin
-            id="com.sun.xml.bind.jaxb-impl"
-            download-size="0"
-            install-size="0"
-            version="0.0.0"
-            unpack="false"/>
-
-    <plugin
-            id="org.glassfish.external.management-api"
             download-size="0"
             install-size="0"
             version="0.0.0"
@@ -280,9 +286,57 @@
             version="0.0.0"
             unpack="false"/>
 
+    <plugin
+            id="org.glassfish.external.management-api"
+            download-size="0"
+            install-size="0"
+            version="0.0.0"
+            unpack="false"/>
 
     <plugin
-            id="org.glassfish.gmbal.gmbal"
+            id="org.glassfish.javax.json"
+            download-size="0"
+            install-size="0"
+            version="0.0.0"
+            unpack="false"/>
+
+    <plugin
+            id="org.glassfish.hk2.api"
+            download-size="0"
+            install-size="0"
+            version="0.0.0"
+            unpack="false"/>
+
+    <plugin
+            id="org.glassfish.hk2.locator"
+            download-size="0"
+            install-size="0"
+            version="0.0.0"
+            unpack="false"/>
+
+    <plugin
+            id="org.glassfish.hk2.utils"
+            download-size="0"
+            install-size="0"
+            version="0.0.0"
+            unpack="false"/>
+
+    <plugin
+            id="org.glassfish.jersey.bundles.repackaged.jersey-guava"
+            download-size="0"
+            install-size="0"
+            version="0.0.0"
+            unpack="false"/>
+
+    <plugin
+            id="org.glassfish.jersey.core.jersey-client"
+            download-size="0"
+            install-size="0"
+            version="0.0.0"
+            unpack="false"/>
+
+    <plugin
+            id="org.glassfish.jersey.core.jersey-common"
             download-size="0"
             install-size="0"
             version="0.0.0"
@@ -338,20 +392,6 @@
             unpack="false"/>
 
     <plugin
-            id="osgi.core"
-            download-size="0"
-            install-size="0"
-            version="0.0.0"
-            unpack="false"/>
-
-    <plugin
-            id="osgi.cmpn"
-            download-size="0"
-            install-size="0"
-            version="0.0.0"
-            unpack="false"/>
-
-    <plugin
             id="org.slf4j.api"
             download-size="0"
             install-size="0"
@@ -366,142 +406,17 @@
             unpack="false"/>
 
     <plugin
-            id="ch.qos.logback.classic"
+            id="osgi.core"
             download-size="0"
             install-size="0"
             version="0.0.0"
             unpack="false"/>
 
     <plugin
-            id="ch.qos.logback.core"
+            id="osgi.cmpn"
             download-size="0"
             install-size="0"
             version="0.0.0"
             unpack="false"/>
-
-    <plugin
-            id="javax.annotation-api"
-            download-size="0"
-            install-size="0"
-            version="0.0.0"
-            unpack="false"/>
-
-
-    <plugin
-            id="org.glassfish.hk2.api"
-            download-size="0"
-            install-size="0"
-            version="0.0.0"
-            unpack="false"/>
-
-    <plugin
-            id="org.glassfish.hk2.locator"
-            download-size="0"
-            install-size="0"
-            version="0.0.0"
-            unpack="false"/>
-
-    <plugin
-            id="org.glassfish.hk2.utils"
-            download-size="0"
-            install-size="0"
-            version="0.0.0"
-            unpack="false"/>
-
-    <plugin
-            id="org.glassfish.jersey.bundles.repackaged.jersey-guava"
-            download-size="0"
-            install-size="0"
-            version="0.0.0"
-            unpack="false"/>
-
-    <plugin
-            id="org.glassfish.jersey.core.jersey-client"
-            download-size="0"
-            install-size="0"
-            version="0.0.0"
-            unpack="false"/>
-
-    <plugin
-            id="org.glassfish.jersey.core.jersey-common"
-            download-size="0"
-            install-size="0"
-            version="0.0.0"
-            unpack="false"/>
-
-<!--
-    <plugin
-        id="javax.activation"
-        download-size="0"
-        install-size="0"
-        version="0.0.0"
-        unpack="false"/>
-
-    <plugin
-        id="javax.mail"
-        download-size="0"
-        install-size="0"
-        version="0.0.0"
-        unpack="false"/>
-
-
-
-
-    &lt;!&ndash;    <plugin
-    id="gmbal-api-only"
-    download-size="0"
-    install-size="0"
-    version="0.0.0"
-    unpack="false"/>&ndash;&gt;
-
-
-
-
-
-
-
-    &lt;!&ndash;
-       <plugin
-             id="javax.persistence.source"
-             download-size="0"
-             install-size="0"
-             version="0.0.0"
-             unpack="false"/>
-    &ndash;&gt;
-
-    &lt;!&ndash;   <plugin
-    id="javax.interceptor.api"
-    download-size="0"
-    install-size="0"
-    version="0.0.0"
-    unpack="false"/>&ndash;&gt;
-
-    &lt;!&ndash;   <plugin
-    id="javax.transaction.api"
-    download-size="0"
-    install-size="0"
-    version="0.0.0"
-    unpack="false"/>&ndash;&gt;
-
-
-    <plugin
-        id="jaxb-api"
-        download-size="0"
-        install-size="0"
-        version="0.0.0"
-        unpack="false"/>
-
-
-
-    <plugin
-        id="javax.wsdl"
-        download-size="0"
-        install-size="0"
-        version="0.0.0"
-        unpack="false"/>
-
--->
-
-
 
 </feature>

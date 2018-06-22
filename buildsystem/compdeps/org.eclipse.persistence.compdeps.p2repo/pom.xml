@@ -38,6 +38,30 @@
                     <includeAllDependencies>true</includeAllDependencies>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-sources</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <artifactItems>
+                        <artifactItem>
+                            <groupId>javax.xml.bind</groupId>
+                            <artifactId>jaxb-api</artifactId>
+                            <version>${javax.xml.bind.version}</version>
+                            <classifier>sources</classifier>
+                        </artifactItem>
+                    </artifactItems>
+                    <outputDirectory>${project.build.directory}/repository/plugins</outputDirectory>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 

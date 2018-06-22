@@ -17,19 +17,12 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
 
-    <!-- <parent>
- <artifactId>org.eclipse.persistence.parent</artifactId>
-    <groupId>org.eclipse.persistence</groupId>
-<version>3.0.0-SNAPSHOT</version>
-    <relativePath>../../org.eclipse.persistence.parent/pom.xml</relativePath>
-    </parent> -->
     <name>EclipseLink CompDeps</name>
     <groupId>org.eclipse.persistence</groupId>
     <artifactId>compdeps</artifactId>
     <version>1.0.5-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <!-- Default repositories set and added to by all profiles -->
     <repositories>
         <repository>
             <id>Local_CompDeps</id>
@@ -57,19 +50,47 @@
         <eclipse.drop>2018-09</eclipse.drop>
 
         <!-- DEPENDENCY Versions -->
-        <javax.ejb.version>3.2</javax.ejb.version>
+        <ch.qos.logback.version>1.1.2</ch.qos.logback.version>
+        <commonj.sdo.version>2.1.1</commonj.sdo.version>
+        <com.sun.xml.bind.version>2.2.11</com.sun.xml.bind.version>
+        <javax.activation.version>1.1.1</javax.activation.version>
+        <javax.annotation.version>1.2</javax.annotation.version>
+        <javax.ejb.version>3.2.2</javax.ejb.version>
+        <javax.enterprise.cdi.version>1.0</javax.enterprise.cdi.version>
+        <javax.inject.version>1</javax.inject.version>
+        <javax.interceptor.version>1.2.2</javax.interceptor.version>
+        <javax.jms.version>1.1-rev-1</javax.jms.version>
         <javax.json.version>1.1.2</javax.json.version>
-        <javax.transaction.version>1.2</javax.transaction.version>
+        <javax.mail.version>1.4</javax.mail.version>
+        <javax.persistence.version>2.2.1</javax.persistence.version>
+        <javax.resource.version>1.7.1</javax.resource.version>
+        <javax.servlet.version>2.4</javax.servlet.version>
+        <javax.transaction.version>1.3</javax.transaction.version>
+        <javax.validation.version>2.0.1.Final</javax.validation.version>
+        <javax.ws.rs.version>2.0.1</javax.ws.rs.version>
+        <javax.xml.bind.version>2.2.12</javax.xml.bind.version>
+        <javax.xml.soap.version>1.3</javax.xml.soap.version>
+        <javax.xml.webservices-api.version>2.0</javax.xml.webservices-api.version>
+        <org.apache.ant.version>1.10.5</org.apache.ant.version>
         <org.glassfish.corba.version>4.2.0-b004</org.glassfish.corba.version>
+        <org.glassfish.gmbal.version>3.2.0-b003</org.glassfish.gmbal.version>
         <org.glassfish.hk2.version>2.3.0-b10</org.glassfish.hk2.version>
         <org.glassfish.jersey.version>2.14</org.glassfish.jersey.version>
+        <org.glassfish.management-api.version>3.2.1-b003</org.glassfish.management-api.version>
         <org.glassfish.pfl.version>4.0.1-b003</org.glassfish.pfl.version>
+        <org.mongodb.version>3.2.0</org.mongodb.version>
         <org.osgi.version>4.3.1</org.osgi.version>
         <org.slf4j.version>1.7.2</org.slf4j.version>
+        <wsdl4j.version>1.6.2</wsdl4j.version>
     </properties>
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.1.1</version>
+            </plugin>
             <plugin>
                 <groupId>org.eclipse.tycho</groupId>
                 <artifactId>tycho-maven-plugin</artifactId>
@@ -88,6 +109,20 @@
                     <resolveWithExecutionEnvironmentConstraints>false</resolveWithExecutionEnvironmentConstraints>
                     <filter>
                         <type>java-package</type>
+                        <id>ch.qos.logback.classic</id>
+                        <restrictTo>
+                            <version>${ch.qos.logback.version}</version>
+                        </restrictTo>
+                    </filter>
+                    <filter>
+                        <type>java-package</type>
+                        <id>ch.qos.logback.core</id>
+                        <restrictTo>
+                            <version>${ch.qos.logback.version}</version>
+                        </restrictTo>
+                    </filter>
+                    <filter>
+                        <type>java-package</type>
                         <id>javax.ejb-api</id>
                         <restrictTo>
                             <version>${javax.ejb.version}</version>
@@ -98,6 +133,20 @@
                         <id>javax.transaction-api</id>
                         <restrictTo>
                             <version>${javax.transaction.version}</version>
+                        </restrictTo>
+                    </filter>
+                    <filter>
+                        <type>java-package</type>
+                        <id>jaxb-api</id>
+                        <restrictTo>
+                            <version>${javax.xml.bind.version}</version>
+                        </restrictTo>
+                    </filter>
+                    <filter>
+                        <type>java-package</type>
+                        <id>org.slf4j.api</id>
+                        <restrictTo>
+                            <version>${org.slf4j.version}</version>
                         </restrictTo>
                     </filter>
                 </configuration>
@@ -113,19 +162,39 @@
 
     <dependencies>
         <dependency>
-            <groupId>javax.enterprise</groupId>
-            <artifactId>cdi-api</artifactId>
-            <version>1.0</version>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${ch.qos.logback.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>commonj.sdo</artifactId>
-            <version>2.1.1</version>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>${ch.qos.logback.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.gmbal</groupId>
-            <artifactId>gmbal-api-only</artifactId>
-            <version>3.2.0-b003</version>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-core</artifactId>
+            <version>${com.sun.xml.bind.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+            <version>${com.sun.xml.bind.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-xjc</artifactId>
+            <version>${com.sun.xml.bind.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.activation</groupId>
+            <artifactId>activation</artifactId>
+            <version>${javax.activation.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+            <version>${javax.annotation.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.ejb</groupId>
@@ -133,19 +202,19 @@
             <version>${javax.ejb.version}</version>
         </dependency>
         <dependency>
+            <groupId>javax.enterprise</groupId>
+            <artifactId>cdi-api</artifactId>
+            <version>${javax.enterprise.cdi.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+            <version>${javax.inject.version}</version>
+        </dependency>
+        <dependency>
             <groupId>javax.interceptor</groupId>
             <artifactId>javax.interceptor-api</artifactId>
-            <version>1.2.2</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.jms</groupId>
-            <artifactId>jms-api</artifactId>
-            <version>1.1-rev-1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.json</artifactId>
-            <version>${javax.json.version}</version>
+            <version>${javax.interceptor.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.json</groupId>
@@ -153,74 +222,79 @@
             <version>${javax.json.version}</version>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>javax.persistence</artifactId>
-            <version>2.2.1</version>
+            <groupId>javax.jms</groupId>
+            <artifactId>jms-api</artifactId>
+            <version>${javax.jms.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.mail</groupId>
             <artifactId>mail</artifactId>
-            <version>1.4</version>
+            <version>${javax.mail.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.resource</groupId>
             <artifactId>javax.resource-api</artifactId>
-            <version>1.7.1</version>
+            <version>${javax.resource.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
-            <version>2.4</version>
+            <version>${javax.servlet.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.transaction</groupId>
             <artifactId>javax.transaction-api</artifactId>
             <version>${javax.transaction.version}</version>
         </dependency>
-            <dependency>
+        <dependency>
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
-            <version>2.0.1.Final</version>
-        </dependency>
-        <dependency>
-            <groupId>wsdl4j</groupId>
-            <artifactId>wsdl4j</artifactId>
-            <version>1.6.2</version>
+            <version>${javax.validation.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.ws.rs</groupId>
             <artifactId>javax.ws.rs-api</artifactId>
-            <version>2.0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jaxb-api</artifactId>
-            <version>2.2.12</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.xml.soap</groupId>
-            <artifactId>saaj-api</artifactId>
-            <version>1.3</version>
+            <version>${javax.ws.rs.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.xml</groupId>
             <artifactId>webservices-api</artifactId>
-            <version>2.0</version>
+            <version>${javax.xml.webservices-api.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-core</artifactId>
-            <version>2.2.11</version>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>${javax.xml.bind.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-xjc</artifactId>
-            <version>2.2.11</version>
+            <groupId>javax.xml.soap</groupId>
+            <artifactId>saaj-api</artifactId>
+            <version>${javax.xml.soap.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.ant</groupId>
+            <artifactId>ant</artifactId>
+            <version>${org.apache.ant.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>commonj.sdo</artifactId>
+            <version>${commonj.sdo.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>javax.persistence</artifactId>
+            <version>${javax.persistence.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.external</groupId>
             <artifactId>management-api</artifactId>
-            <version>3.2.1-b003</version>
+            <version>${org.glassfish.management-api.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.json</artifactId>
+            <version>${javax.json.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.corba</groupId>
@@ -249,8 +323,38 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.gmbal</groupId>
-            <artifactId>gmbal</artifactId>
-            <version>4.0.0-b002</version>
+            <artifactId>gmbal-api-only</artifactId>
+            <version>${org.glassfish.gmbal.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.hk2</groupId>
+            <artifactId>hk2-api</artifactId>
+            <version>${org.glassfish.hk2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.hk2</groupId>
+            <artifactId>hk2-locator</artifactId>
+            <version>${org.glassfish.hk2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.hk2</groupId>
+            <artifactId>hk2-utils</artifactId>
+            <version>${org.glassfish.hk2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.core</groupId>
+            <artifactId>jersey-client</artifactId>
+            <version>${org.glassfish.jersey.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.bundles.repackaged</groupId>
+            <artifactId>jersey-guava</artifactId>
+            <version>${org.glassfish.jersey.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.core</groupId>
+            <artifactId>jersey-common</artifactId>
+            <version>${org.glassfish.jersey.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.pfl</groupId>
@@ -285,7 +389,7 @@
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongo-java-driver</artifactId>
-            <version>3.2.0</version>
+            <version>${org.mongodb.version}</version>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
@@ -307,68 +411,11 @@
             <artifactId>slf4j-nop</artifactId>
             <version>${org.slf4j.version}</version>
         </dependency>
-
         <dependency>
-            <groupId>javax.activation</groupId>
-            <artifactId>activation</artifactId>
-            <version>1.1.1</version>
-        </dependency>
-
-        <dependency>
-            <groupId>javax.annotation</groupId>
-            <artifactId>javax.annotation-api</artifactId>
-            <version>1.2</version>
-        </dependency>
-
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>1.0.7</version>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-core</artifactId>
-            <version>1.0.7</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-impl</artifactId>
-            <version>2.2.11</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.ant</groupId>
-            <artifactId>ant</artifactId>
-            <version>1.10.5</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.hk2</groupId>
-            <artifactId>hk2-api</artifactId>
-            <version>${org.glassfish.hk2.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.hk2</groupId>
-            <artifactId>hk2-locator</artifactId>
-            <version>${org.glassfish.hk2.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.hk2</groupId>
-            <artifactId>hk2-utils</artifactId>
-            <version>${org.glassfish.hk2.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.jersey.bundles.repackaged</groupId>
-            <artifactId>jersey-guava</artifactId>
-            <version>${org.glassfish.jersey.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.jersey.core</groupId>
-            <artifactId>jersey-client</artifactId>
-            <version>${org.glassfish.jersey.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.jersey.core</groupId>
-            <artifactId>jersey-common</artifactId>
-            <version>${org.glassfish.jersey.version}</version>
+            <groupId>wsdl4j</groupId>
+            <artifactId>wsdl4j</artifactId>
+            <version>${wsdl4j.version}</version>
         </dependency>
     </dependencies>
+
 </project>
