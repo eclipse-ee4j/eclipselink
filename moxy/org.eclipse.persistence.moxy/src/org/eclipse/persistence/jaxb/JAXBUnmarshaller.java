@@ -865,6 +865,8 @@ public class JAXBUnmarshaller implements Unmarshaller {
             xmlUnmarshaller.getJsonTypeConfiguration().setUseXsdTypesWithPrefix((Boolean)value);
         } else if (UnmarshallerProperties.JSON_TYPE_COMPATIBILITY.equals(key)) {
             xmlUnmarshaller.getJsonTypeConfiguration().setJsonTypeCompatibility((Boolean)value);
+        } else if (UnmarshallerProperties.JSON_TYPE_ATTRIBUTE_NAME.equals(key)) {
+            xmlUnmarshaller.getJsonTypeConfiguration().setJsonTypeAttributeName((String)value);
         } else if (UnmarshallerProperties.ID_RESOLVER.equals(key)) {
             setIDResolver((IDResolver) value);
         } else if (SUN_ID_RESOLVER.equals(key) || SUN_JSE_ID_RESOLVER.equals(key)) {
@@ -961,6 +963,8 @@ public class JAXBUnmarshaller implements Unmarshaller {
             return xmlUnmarshaller.getJsonTypeConfiguration().isUseXsdTypesWithPrefix();
         } else if (UnmarshallerProperties.JSON_TYPE_COMPATIBILITY.equals(key)) {
             return xmlUnmarshaller.getJsonTypeConfiguration().isJsonTypeCompatibility();
+        } else if (MarshallerProperties.JSON_TYPE_ATTRIBUTE_NAME.equals(key)) {
+            return xmlUnmarshaller.getJsonTypeConfiguration().getJsonTypeAttributeName();
         } else if (UnmarshallerProperties.ID_RESOLVER.equals(key)) {
             return xmlUnmarshaller.getIDResolver();
         } else if (SUN_ID_RESOLVER.equals(key) || SUN_JSE_ID_RESOLVER.equals(key)) {
