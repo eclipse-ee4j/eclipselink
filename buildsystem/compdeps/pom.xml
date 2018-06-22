@@ -58,6 +58,7 @@
         <eclipse.drop>2018-09</eclipse.drop>
 
         <!-- DEPENDENCY Versions -->
+        <javax.json.version>1.1.2</javax.json.version>
         <org.glassfish.corba.version>4.2.0-b004</org.glassfish.corba.version>
     </properties>
 
@@ -92,11 +93,7 @@
     </build>
 
     <modules>
-<!--
-	<module>org.eclipse.persistence.compdeps.internal</module>
--->
         <module>sun.misc</module>
-        <!--<module>org.eclipse.persistence.compdeps.target</module>-->
         <module>org.eclipse.persistence.compdeps</module>
         <module>org.eclipse.persistence.compdeps.p2repo</module>
     </modules>
@@ -133,14 +130,24 @@
             <version>1.1-rev-1</version>
         </dependency>
         <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.json</artifactId>
+            <version>${javax.json.version}</version>
+        </dependency>
+        <dependency>
             <groupId>javax.json</groupId>
             <artifactId>javax.json-api</artifactId>
-            <version>1.1.2</version>
+            <version>${javax.json.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>javax.persistence</artifactId>
             <version>2.2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+            <version>1.4</version>
         </dependency>
         <dependency>
             <groupId>javax.resource</groupId>
@@ -181,6 +188,11 @@
             <groupId>javax.xml.soap</groupId>
             <artifactId>saaj-api</artifactId>
             <version>1.3</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.xml</groupId>
+            <artifactId>webservices-api</artifactId>
+            <version>2.0</version>
         </dependency>
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
@@ -241,7 +253,6 @@
             <groupId>org.glassfish.pfl</groupId>
             <artifactId>pfl-basic-tools</artifactId>
             <version>4.0.1-b003</version>
-            <!--<type>bundle</type>-->
         </dependency>
         <dependency>
             <groupId>org.glassfish.pfl</groupId>
@@ -301,43 +312,5 @@
             <artifactId>jaxb-impl</artifactId>
             <version>2.2.11</version>
         </dependency>
-
-        <!--
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>javax.persistence</artifactId>
-            <version>2.2.1</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jaxb-api</artifactId>
-            <version>2.2.12</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.json</groupId>
-            <artifactId>javax.json-api</artifactId>
-            <version>1.1.2</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
-            <version>2.0.1.Final</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-core</artifactId>
-            <version>2.2.11</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-xjc</artifactId>
-            <version>2.2.11</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.corba</groupId>
-            <artifactId>glassfish-corba-orb</artifactId>
-            <version>4.2.0-b004</version>
-        </dependency>
--->
     </dependencies>
 </project>

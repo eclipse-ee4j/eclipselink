@@ -81,6 +81,20 @@
             unpack="false"/>
 
     <plugin
+            id="org.glassfish.javax.json"
+            download-size="0"
+            install-size="0"
+            version="0.0.0"
+            unpack="false"/>
+
+    <plugin
+            id="javax.mail"
+            download-size="0"
+            install-size="0"
+            version="0.0.0"
+            unpack="false"/>
+
+    <plugin
             id="javax.persistence"
             download-size="0"
             install-size="0"
@@ -140,6 +154,13 @@
 
     <plugin
             id="javax.xml.soap"
+            download-size="0"
+            install-size="0"
+            version="0.0.0"
+            unpack="false"/>
+
+    <plugin
+            id="javax.xml.ws"
             download-size="0"
             install-size="0"
             version="0.0.0"
