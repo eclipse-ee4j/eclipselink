@@ -14,7 +14,7 @@
 -->
 
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
 
     <name>EclipseLink Core</name>
@@ -37,53 +37,66 @@
 
     <build>
         <plugins>
+            <!--Initialize build.date and build.time buildNumber properties. Used to generate version.properties in org.eclipse.persistence.core module-->
             <plugin>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.6</version>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>buildnumber-maven-plugin</artifactId>
+                <version>1.4</version>
                 <executions>
                     <execution>
-                        <id>stamp-version</id>
-                        <phase>generate-sources</phase>
-                        <configuration>
-                            <target>
-                                <tstamp>
-                                     <format property="build.date" pattern="yyyyMMdd"/>
-                                     <format property="build.time" pattern="HHmm"/>
-                                </tstamp>
-                                <echo message="Stamping the following values:"/>
-                                <echo message="version:       '${release.version}'"/>
-                                <echo message="qualifier:     '${build.qualifier}'"/>
-                                <echo message="buildDate:     '${build.date}'"/>
-                                <echo message="buildTime:     '${build.time}'"/>
-                                <echo message="buildType:     '${build.type}'"/>
-                                <echo message="buildRevision: '${svn.revision}'"/>
-                                <filter token="VERSION"         value="${release.version}"/>
-                                <filter token="QUALIFIER"       value="${build.qualifier}"/>
-                                <filter token="BUILD_DATE"      value="${build.date}"/>
-                                <filter token="BUILD_TIME"      value="${build.time}"/>
-                                <filter token="BUILD_TYPE"      value="${build.type}"/>
-                                <filter token="BUILD_REVISION"  value="${svn.revision}"/>
-                                <copy file="${src}/org/eclipse/persistence/Version.java" tofile="${src}/org/eclipse/persistence/Version.j"    filtering="false"/>
-                                <copy file="${src}/org/eclipse/persistence/Version.j"    tofile="${src}/org/eclipse/persistence/Version.java" filtering="true"/>
-                            </target>
-                        </configuration>
+                        <id>build.date</id>
+                        <phase>initialize</phase>
                         <goals>
-                          <goal>run</goal>
+                            <goal>create-timestamp</goal>
                         </goals>
+                        <configuration>
+                            <timestampFormat>yyyyMMdd</timestampFormat>
+                            <timestampPropertyName>build.date</timestampPropertyName>
+                        </configuration>
                     </execution>
                     <execution>
-                        <id>cleanup-stamp-version</id>
-                        <phase>package</phase>
-                        <configuration>
-                            <target>
-                                <echo message="Clean-up after stamping."/>
-                                <copy file="${src}/org/eclipse/persistence/Version.j"    tofile="${src}/org/eclipse/persistence/Version.java" filtering="false" overwrite="true"/>
-                                <delete file="${src}/org/eclipse/persistence/Version.j"/>
-                            </target>
-                        </configuration>
+                        <id>build.time</id>
+                        <phase>initialize</phase>
                         <goals>
-                            <goal>run</goal>
+                            <goal>create-timestamp</goal>
                         </goals>
+                        <configuration>
+                            <timestampFormat>HHmm</timestampFormat>
+                            <timestampPropertyName>build.time</timestampPropertyName>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>create</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!--Prepare version.properties file. Store there info about version, build date/time, git commit id-->
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/target/classes</outputDirectory>
+                            <overwrite>true</overwrite>
+                            <resources>
+                                <resource>
+                                    <directory>${basedir}</directory>
+                                    <includes>
+                                        <include>version.properties</include>
+                                    </includes>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

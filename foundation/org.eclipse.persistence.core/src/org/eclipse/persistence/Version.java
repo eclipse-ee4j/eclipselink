@@ -11,11 +11,16 @@
  */
 
 // Contributors:
-//     Oracle - initial API and implementation from Oracle TopLink
+//  Oracle - initial API and implementation from Oracle TopLink
 //     egwin  - Changed buildNumber to buildDate. Added buildRevision,
 //              buildType, getBuildDate(), getBuildRevision(), getBuildType(),
 //              getVersionString(), printVersionString(), and main()
+//     2 July 2018   Radek Felcman - changed source of build info into version.properties generated during build
 package org.eclipse.persistence;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 
 /**
  * This class stores variables for the version and build numbers that are used
@@ -28,21 +33,22 @@ public class Version {
     // The current version of EclipseLink.
     // This will be used by all product components and included in exceptions.
     private static String product = "Eclipse Persistence Services";
-    // A three part version number (major.minor.service)
-    private static final String version = "@VERSION@";
-    // A string that describes this build i.e.( vYYYYMMDD-HHMM, etc.)
-    private static final String qualifier = "@QUALIFIER@";
-    // Should be in the format YYYYMMDD
-    private static final String buildDate = "@BUILD_DATE@";
-    // Should be in the format HHMM
-    private static final String buildTime = "@BUILD_TIME@";
-    // revision of source from the repository
-    private static final String buildRevision = "@BUILD_REVISION@";
-    // Typically SNAPSHOT, Milestone name (M1,M2,etc), or RELEASE
-    private static final String buildType = "@BUILD_TYPE@";
 
     /** Version numbers separator. */
     private static final char SEPARATOR = '.';
+
+    private static final String VERSION_PROPERTIES_FILE = "version.properties";
+
+    private static Properties versionProperties;
+
+    static {
+        try (InputStream versionStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(VERSION_PROPERTIES_FILE)) {
+            versionProperties = new Properties();
+            versionProperties.load(versionStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * Returns version {@link String} containing three part version number
@@ -50,10 +56,10 @@ public class Version {
      * @return Version {@link String}.
      */
     public static String getVersionString() {
-        StringBuilder sb = new StringBuilder(version.length() + 1 + qualifier.length());
-        sb.append(version);
+        StringBuilder sb = new StringBuilder(getVersion().length() + 1 + getQualifier().length());
+        sb.append(getVersion());
         sb.append(SEPARATOR);
-        sb.append(qualifier);
+        sb.append(getQualifier());
         return sb.toString();
     }
 
@@ -65,32 +71,39 @@ public class Version {
         product = ProductName;
     }
 
+    // A three part version number (major.minor.service)
     public static String getVersion() {
-        return version;
+        return versionProperties.getProperty("version");
     }
 
+    //private static final String version = "@VERSION@";
+    // A string that describes this build i.e.( vYYYYMMDD-HHMM, etc.)
     public static String getQualifier() {
-        return qualifier;
+        return versionProperties.getProperty("qualifier");
     }
 
     public static String getBuildNumber() {
         return getBuildDate();
     }
 
+    // Should be in the format YYYYMMDD
     public static String getBuildDate() {
-        return buildDate;
+        return versionProperties.getProperty("buildDate");
     }
 
+    // Should be in the format HHMM
     public static String getBuildTime() {
-        return buildTime;
+        return versionProperties.getProperty("buildTime");
     }
 
+    // revision of source from the repository
     public static String getBuildRevision() {
-        return buildRevision;
+        return versionProperties.getProperty("buildRevision");
     }
 
+    // Typically SNAPSHOT, Milestone name (M1,M2,etc), or RELEASE
     public static String getBuildType() {
-        return buildType;
+        return versionProperties.getProperty("buildType");
     }
 
     public static void printVersion() {
