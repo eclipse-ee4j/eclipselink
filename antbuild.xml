@@ -144,6 +144,13 @@
     <echo message="JDK version detected: '${java.version}'"/>
     <fail message="A non-compatible version of JDK was detected! Build won't run properly unless running on at least JDK 1.8!." unless="compat.jdk"/>
 
+    <!-- Add some modules required for javadoc JDK (=10.*). -->
+    <!-- TODO temporary disabled some check checks for problems in Javadoc comments by -Xdoclint:none -->
+    <condition property="javadoc.additionParams" value="${javadoc.additionParamsCommon} -Xdoclint:none --add-modules java.activation,java.corba,java.xml.ws.annotation --upgrade-module-path ${eclipselink.plugins}/${transaction.jar}" else="${javadoc.additionParamsCommon}">
+        <matches string="${java.version}" pattern="10.*"/>
+    </condition>
+    <echo message="javadoc additional params: '${javadoc.additionParams}'"/>
+
     <!-- JDBC driver settings info -->
     <condition property="msg.jdbc.driver.jar.configured" value="JDBC driver JAR: '${jdbc.driver.jar}'" else="JDBC driver JAR: jdbc.driver.jar property missing">
         <isset property="jdbc.driver.jar"/>
