@@ -180,7 +180,7 @@
                       criterion="[2.0.0,3.0.0)" property="persistence20.lib" includepath="true"/>
         <selectbundle basename="javax.ws.rs-api" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
                       criterion="[2.0.0,3.0.0)" property="javax.ws.rs.lib" includepath="true"/>
-        <selectbundle basename="javax.ejb" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
+        <selectbundle basename="jakarta.ejb-api" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
                       criterion="[3.0.0,4.0.0)" property="javax.ejb.lib" includepath="true"/>
         <selectbundle basename="javax.servlet" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
                       criterion="[2.0.0,3.0.0)" property="javax.servlet.lib" includepath="true"/>
