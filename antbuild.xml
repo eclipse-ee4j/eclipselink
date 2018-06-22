@@ -193,7 +193,7 @@
         <pathelement path="${eclipselink.plugins}/${transaction-api.jar}"/>
         <pathelement path="${eclipselink.plugins}/${mail.jar}"/>
         <pathelement path="${eclipselink.plugins}/${wsrs-api.jar}"/>
-        <pathelement path="${eclipselink.plugins}/${slf4j.api.jar}"/>
+        <pathelement path="${eclipselink.plugins}/${slf4j-api.jar}"/>
         <pathelement path="${eclipselink.plugins}/org.eclipse.persistence.nosql_${version.string}.jar"/>
         <pathelement path="${eclipselink.plugins}/org.eclipse.persistence.extension_${version.string}.jar"/>
         <pathelement path="${extensions.depend.dir}/${jgroups.jar}"/>
@@ -626,39 +626,34 @@
         <copy-plugin from="jakarta.xml.bind-api_*.jar" to="${jaxb-api.jar}"/>
         <copy-plugin from="jakarta.xml.soap-api*.jar" to="${soap-api.jar}"/>
         <copy-plugin from="jakarta.xml.ws-api*.jar" to="${ws-api.jar}"/>
-        <copy-plugin from="org.glassfish.external.management-api*.jar" to="${management-api}.jar"/>
+        <copy-plugin from="org.glassfish.external.management-api*.jar" to="${management-api.jar}"/>
         <copy-plugin from="org.mongodb.mongo-java-driver*.jar" to="${mongo-java-driver.jar}"/>
-        <copy-plugin from="org.eclipse.persistence.sun-misc*.jar" to="org.eclipse.persistence.sun-misc_1.0.0.v20181030.jar"/>
-        <!--Bundle-SymbolicName is not available-->
-        <!--<copy-plugin from="org.glassfish.corba.exception-annotation-processor_4.2.0.b003.jar" to="org.glassfish.corba.exception-annotation-processor_4.2.0.b003.jar"/>-->
-        <copy-plugin from="org.glassfish.corba.glassfish-corba-csiv2-idl*.jar" to="org.glassfish.corba.glassfish-corba-csiv2-idl_4.2.0.b003.jar"/>
-        <copy-plugin from="org.glassfish.corba.glassfish-corba-internal-api*.jar" to="org.glassfish.corba.glassfish-corba-internal-api_4.2.0.b003.jar"/>
-        <copy-plugin from="org.glassfish.corba.glassfish-corba-omgapi*.jar" to="org.glassfish.corba.glassfish-corba-omgapi_4.2.0.b003.jar"/>
-        <copy-plugin from="org.glassfish.corba.glassfish-corba-orb*.jar" to="org.glassfish.corba.glassfish-corba-orb_4.2.0.b003.jar"/>
-        <copy-plugin from="org.glassfish.gmbal.gmbal*" to="org.glassfish.gmbal.gmbal_4.0.0.b002.jar"/>
-        <copy-plugin from="org.glassfish.hk2.api*.jar" to="org.glassfish.hk2.api_2.3.0.b10_201505192201.jar"/>
-        <copy-plugin from="org.glassfish.hk2.locator*.jar" to="org.glassfish.hk2.locator_2.3.0.b10_201505192201.jar"/>
-        <copy-plugin from="org.glassfish.hk2.utils*.jar" to="org.glassfish.hk2.utils_2.3.0.b10_201505192201.jar"/>
-        <copy-plugin from="org.glassfish.jersey.core.jersey-core*.jar*.jar" to="org.glassfish.jersey.bundles.repackaged.jersey-guava_2.14.0.v201504151636.jar"/>
-        <!--<copy-plugin from="org.glassfish.jersey.bundles.repackaged.jersey-guava*.jar" to="org.glassfish.jersey.bundles.repackaged.jersey-guava_2.14.0.v201504151636.jar"/>-->
-        <copy-plugin from="org.glassfish.jersey.core.jersey-client*.jar" to="org.glassfish.jersey.core.jersey-client_2.14.0.v201504211925.jar"/>
-        <copy-plugin from="org.glassfish.jersey.core.jersey-common*.jar" to="org.glassfish.jersey.core.jersey-common_2.14.0.v201504171603.jar"/>
-        <copy-plugin from="org.glassfish.pfl.pfl-asm*.jar" to="org.glassfish.pfl.pfl-asm_4.0.1.b003.jar"/>
-        <copy-plugin from="org.glassfish.pfl.pfl-basic*.jar" to="org.glassfish.pfl.pfl-basic_4.0.1.b003.jar"/>
-        <copy-plugin from="org.glassfish.pfl.pfl-basic-tools*.jar" to="org.glassfish.pfl.pfl-basic-tools_4.0.1.b003.jar"/>
-        <copy-plugin from="org.glassfish.pfl.pfl-dynamic*.jar" to="org.glassfish.pfl.pfl-dynamic_4.0.1.b003.jar"/>
-        <copy-plugin from="org.glassfish.pfl.pfl-test*.jar" to="org.glassfish.pfl.pfl-test_4.0.1.b003.jar"/>
-        <copy-plugin from="org.glassfish.pfl.pfl-tf*.jar" to="org.glassfish.pfl.pfl-tf_4.0.1.b003.jar"/>
-        <copy-plugin from="osgi.core*.jar" to="org.osgi.core_1.2.0.jar"/>
-        <copy-plugin from="org.slf4j.api*.jar" to="org.slf4j.api_1.7.2.v20121108-1250.jar"/>
-        <!--Replacement for ch.qos.logback.slf4j-->
-        <!--TODO Change dependency from ch.qos.logback.slf4j* to org.slf4j.nop*-->
-        <copy-plugin from="org.slf4j.nop*.jar" to="ch.qos.logback.slf4j_1.0.7.v20121108-1250.jar"/>
-        <copy-plugin from="osgi.cmpn*.jar" to="osgi.cmpn_4.1.0.jar"/>
+        <copy-plugin from="org.eclipse.persistence.sun-misc*.jar" to="${sun-misc.jar}"/>
+        <copy-plugin from="org.glassfish.corba.glassfish-corba-csiv2-idl*.jar" to="${glassfish-corba-csiv2-idl.jar}"/>
+        <copy-plugin from="org.glassfish.corba.glassfish-corba-internal-api*.jar" to="${glassfish-corba-internal-api.jar}"/>
+        <copy-plugin from="org.glassfish.corba.glassfish-corba-omgapi*.jar" to="${glassfish-corba-omgapi.jar}"/>
+        <copy-plugin from="org.glassfish.corba.glassfish-corba-orb*.jar" to="${glassfish-corba-orb.jar}"/>
+        <copy-plugin from="org.glassfish.gmbal.gmbal*" to="${gmbal.jar}"/>
+        <copy-plugin from="org.glassfish.hk2.api*.jar" to="${hk2-api.jar}"/>
+        <copy-plugin from="org.glassfish.hk2.locator*.jar" to="${hk2-locator.jar}"/>
+        <copy-plugin from="org.glassfish.hk2.utils*.jar" to="${hk2-utils.jar}"/>
+        <copy-plugin from="org.glassfish.jersey.core.jersey-core*.jar*.jar" to="${jersey-core.jar}"/>
+        <copy-plugin from="org.glassfish.jersey.core.jersey-client*.jar" to="${jersey-client.jar}"/>
+        <copy-plugin from="org.glassfish.jersey.core.jersey-common*.jar" to="${jersey-common.jar}"/>
+        <copy-plugin from="org.glassfish.pfl.pfl-asm*.jar" to="${pfl-asm.jar}"/>
+        <copy-plugin from="org.glassfish.pfl.pfl-basic*.jar" to="${pfl-basic.jar}"/>
+        <copy-plugin from="org.glassfish.pfl.pfl-basic-tools*.jar" to="${pfl-basic-tools.jar}"/>
+        <copy-plugin from="org.glassfish.pfl.pfl-dynamic*.jar" to="${pfl-dynamic.jar}"/>
+        <copy-plugin from="org.glassfish.pfl.pfl-test*.jar" to="${pfl-test.jar}"/>
+        <copy-plugin from="org.glassfish.pfl.pfl-tf*.jar" to="${pfl-tf.jar}"/>
+        <copy-plugin from="osgi.core*.jar" to="${osgi.core.jar}"/>
+        <copy-plugin from="osgi.cmpn*.jar" to="${osgi.cmpn.jar}"/>
+        <copy-plugin from="org.slf4j.api*.jar" to="${slf4j-api.jar}"/>
+        <copy-plugin from="org.slf4j.nop*.jar" to="${slf4j-nop.jar}"/>
 
         <!-- Copy source jars -->
-        <copy-plugin from="jakarta.xml.bind-api*sources.jar" to="javax.xml.bind.source_2.2.12.v1410011542.jar"/>
-        <copy-plugin from="jakarta.persistence-2.2.2*sources.jar" to="jakarta.persistence.source_2.2.2.jar" todir="${eclipselink.jpa.plugins}"/>
+        <copy-plugin from="jakarta.xml.bind-api*sources.jar" to="${jaxb-api.src.jar}"/>
+        <copy-plugin from="jakarta.persistence-2.2.2*sources.jar" to="${persistence22.src.jar}" todir="${eclipselink.jpa.plugins}"/>
     </target>
 
     <!-- Compiles all runtime components (excluding Tests, Oracle extensions). -->

@@ -19,11 +19,11 @@
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.glassfish.jersey.bundles.repackaged.jersey-guava_2.14.0.v201504151636.jar"/>
-	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.glassfish.jersey.core.jersey-client_2.14.0.v201504211925.jar"/>
-	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.glassfish.jersey.core.jersey-common_2.14.0.v201504171603.jar"/>
-	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.glassfish.hk2.api_2.3.0.b10_201505192201.jar"/>
-	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.glassfish.hk2.locator_2.3.0.b10_201505192201.jar"/>
-	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.glassfish.hk2.utils_2.3.0.b10_201505192201.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/jersey-core.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/jersey-client.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/jersey-common.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/hk2-api.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/hk2-locator.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/hk2-utils.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

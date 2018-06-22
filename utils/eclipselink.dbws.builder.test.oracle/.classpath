@@ -6,7 +6,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.dbws"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.dbws.builder"/>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="var" path="ECLIPSELINK_HOME/utils/plugins/javax.wsdl_1.6.2.v201012040545.jar" sourcepath="/ECLIPSELINK_HOME/utils/plugins/wsdl4j-src-1.6.2.zip"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/utils/plugins/javax.wsdl.jar" sourcepath="/ECLIPSELINK_HOME/utils/plugins/wsdl4j-src-1.6.2.zip"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.eclipse.persistence.antlr_3.5.2.v201711011707.jar" sourcepath="/ECLIPSELINK_HOME/plugins/org.eclipse.persistence.antlr.source_3.5.2.v201711011707.jar"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm_7.0.0.v201811131354.jar" sourcepath="/ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm.source_7.0.0.v201811131354.jar"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/utils/plugins/org.eclipse.persistence.oracleddlparser_1.0.0.v201807030954.jar" sourcepath="/ECLIPSELINK_HOME/utils/plugins/org.eclipse.persistence.oracleddlparser.source_1.0.0.v201807030954.jar"/>
