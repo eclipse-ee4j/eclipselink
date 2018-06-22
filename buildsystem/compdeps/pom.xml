@@ -56,7 +56,8 @@
     <properties>
         <!-- TOOL Properties -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <tycho.version>1.3.0-SNAPSHOT</tycho.version>
+        <tycho.version>1.2.0</tycho.version>
+        <!--<tycho.version>1.3.0-SNAPSHOT</tycho.version>-->
 
         <!-- BUILD Properties -->
         <orbit.drop>R20180905201904</orbit.drop>
@@ -192,13 +193,11 @@
             <artifactId>jakarta.activation</artifactId>
             <version>${jakarta.activation.version}</version>
         </dependency>
-<!--
         <dependency>
-            <groupId>com.sun.istack</groupId>
-            <artifactId>istack-commons-runtime</artifactId>
-            <version>${com.sun.istack.version}</version>
+            <groupId>jakarta.activation</groupId>
+            <artifactId>jakarta.activation-api</artifactId>
+            <version>${jakarta.activation.version}</version>
         </dependency>
--->
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-osgi</artifactId>
