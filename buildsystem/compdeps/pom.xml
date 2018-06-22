@@ -74,7 +74,7 @@
         <com.sun.xml.bind.version>2.3.2</com.sun.xml.bind.version>
         <jakarta.activation.version>1.2.1</jakarta.activation.version>
         <jakarta.annotation.version>1.3.4</jakarta.annotation.version>
-        <jakarta.ejb.version>3.2.3</jakarta.ejb.version>
+        <jakarta.ejb.version>3.2.4</jakarta.ejb.version>
         <jakarta.enterprise.cdi.version>2.0.1</jakarta.enterprise.cdi.version>
         <jakarta.inject.version>2.5.0</jakarta.inject.version>
         <jakarta.interceptor.version>1.2.3</jakarta.interceptor.version>
