@@ -41,7 +41,7 @@ Created-By: 1.6.0_21 (Sun Microsystems Inc.)
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.jpa
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.eclipse.persistence.core;bundle-version="2.7.4";visibility:=reexport,
- org.eclipse.persistence.asm;bundle-version="6.2.0";resolution:=optional
+ org.eclipse.persistence.asm;bundle-version="7.0.0";resolution:=optional
 Bundle-Vendor: Eclipse.org - EclipseLink Project
 Bundle-Version: 2.7.4.qualifier
 Bundle-ManifestVersion: 2
@@ -83,8 +83,8 @@ Import-Package: javax.naming;resolution:=optional,
  org.eclipse.persistence.internal.indirection;version="2.7.4",
  org.eclipse.persistence.internal.jpa.parsing;version="2.7.4",
  org.eclipse.persistence.internal.jpa.parsing.jpql;version="2.7.4",
- org.eclipse.persistence.internal.libraries.asm;version="[6.2.0,7.0)",
- org.eclipse.persistence.internal.libraries.asm.commons;version="[6.2.0,7.0)",
+ org.eclipse.persistence.internal.libraries.asm;version="[7.0,8.0)",
+ org.eclipse.persistence.internal.libraries.asm.commons;version="[7.0,8.0)",
  org.eclipse.persistence.internal.localization;version="2.7.4",
  org.eclipse.persistence.internal.mappings.converters;version="2.7.4",
  org.eclipse.persistence.internal.queries;version="2.7.4",
