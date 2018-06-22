@@ -629,7 +629,7 @@
         <copy-plugin from="jakarta.jms-api*.jar" to="jakarta.jms-api.jar"/>
         <copy-plugin from="org.glassfish.jakarta.json*.jar" to="org.glassfish.jakarta.json.jar"/>
         <copy-plugin from="com.sun.mail.jakarta.mail*.jar" to="com.sun.mail.jakarta.mail.jar"/>
-        <copy-plugin from="jakarta.resource-api*.jar" to="javax.resource_1.6.0.v201204270900.jar"/>
+        <copy-plugin from="jakarta.resource-api*.jar" to="jakarta.resource-api.jar"/>
         <copy-plugin from="jakarta.servlet-api*.jar" to="jakarta.servlet-api.jar"/>
         <copy-plugin from="jakarta.transaction-api*.jar" to="jakarta.transaction-api.jar"/>
         <copy-plugin from="jakarta.validation.jakarta.validation-api*.jar" to="jakarta.validation-api.jar"/>

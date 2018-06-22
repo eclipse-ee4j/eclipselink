@@ -7,7 +7,7 @@
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/jakarta.jms-api.jar"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.glassfish.jakarta.json.jar"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/com.sun.mail.jakarta.mail.jar"/>
-	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.resource_1.6.0.v201204270900.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/jakarta.resource-api.jar"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/jakarta.transaction-api.jar"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm_7.0.0.v201811131354.jar" sourcepath="/ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm.source_7.0.0.v201811131354.jar"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
