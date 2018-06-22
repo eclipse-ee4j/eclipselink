@@ -96,7 +96,7 @@
             unpack="false"/>
 
     <plugin
-            id="javax.interceptor-api"
+            id="jakarta.interceptor-api"
             download-size="0"
             install-size="0"
             version="0.0.0"
