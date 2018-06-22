@@ -1,5 +1,5 @@
 {"vehicle-data":{
-    "type":"car",
+    "vtype":"car",
     "model":"Mustang GT",
     "manufacturer":"Ford",
     "top-speed":354,

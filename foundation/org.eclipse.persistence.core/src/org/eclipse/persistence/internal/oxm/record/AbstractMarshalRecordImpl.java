@@ -35,6 +35,7 @@ import org.eclipse.persistence.internal.oxm.Root;
 import org.eclipse.persistence.internal.oxm.XPathQName;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
+import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.w3c.dom.Node;
 
@@ -501,7 +502,13 @@ public boolean addXsiTypeAndClassIndicatorIfRequired(Descriptor descriptor, Desc
                 }
             }
         }
-        attributeWithoutQName(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, Constants.SCHEMA_TYPE_ATTRIBUTE, xsiPrefix, typeValue);
+        if (marshaller.isApplicationJSON() && descriptor != null && descriptor.getInheritancePolicyOrNull() != null &&
+                descriptor.getInheritancePolicyOrNull().getClassIndicatorFieldName() != null) {
+            attributeWithoutQName(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI,
+                    ((XMLField)(descriptor.getInheritancePolicyOrNull().getClassIndicatorField())).getXPathFragment().getLocalName(), xsiPrefix, typeValue);
+        } else {
+            attributeWithoutQName(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, Constants.SCHEMA_TYPE_ATTRIBUTE, xsiPrefix, typeValue);
+        }
     }
 
     @Override
