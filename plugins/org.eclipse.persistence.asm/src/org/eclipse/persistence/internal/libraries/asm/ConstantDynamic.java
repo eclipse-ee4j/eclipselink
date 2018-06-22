@@ -33,9 +33,7 @@ import java.util.Arrays;
  * A constant whose value is computed at runtime, with a bootstrap method.
  *
  * @author Remi Forax
- * @deprecated This API is experimental.
  */
-@Deprecated
 public final class ConstantDynamic {
 
   /** The constant name (can be arbitrary). */
@@ -101,14 +99,47 @@ public final class ConstantDynamic {
   }
 
   /**
-   * Returns the arguments to pass to the bootstrap method, in order to compute the value of this
+   * Returns the number of arguments passed to the bootstrap method, in order to compute the value
+   * of this constant.
+   *
+   * @return the number of arguments passed to the bootstrap method, in order to compute the value
+   *     of this constant.
+   */
+  public int getBootstrapMethodArgumentCount() {
+    return bootstrapMethodArguments.length;
+  }
+
+  /**
+   * Returns an argument passed to the bootstrap method, in order to compute the value of this
    * constant.
+   *
+   * @param index an argument index, between 0 and {@link #getBootstrapMethodArgumentCount()}
+   *     (exclusive).
+   * @return the argument passed to the bootstrap method, with the given index.
+   */
+  public Object getBootstrapMethodArgument(final int index) {
+    return bootstrapMethodArguments[index];
+  }
+
+  /**
+   * Returns the arguments to pass to the bootstrap method, in order to compute the value of this
+   * constant. WARNING: this array must not be modified, and must not be returned to the user.
    *
    * @return the arguments to pass to the bootstrap method, in order to compute the value of this
    *     constant.
    */
-  public Object[] getBootstrapMethodArguments() {
+  Object[] getBootstrapMethodArgumentsUnsafe() {
     return bootstrapMethodArguments;
+  }
+
+  /**
+   * Returns the size of this constant.
+   *
+   * @return the size of this constant, i.e., 2 for {@code long} and {@code double}, 1 otherwise.
+   */
+  public int getSize() {
+    char firstCharOfDescriptor = descriptor.charAt(0);
+    return (firstCharOfDescriptor == 'J' || firstCharOfDescriptor == 'D') ? 2 : 1;
   }
 
   @Override

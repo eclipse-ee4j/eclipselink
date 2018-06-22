@@ -28,7 +28,6 @@
 package org.eclipse.persistence.internal.libraries.asm.tree;
 
 import java.util.Map;
-
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 
@@ -43,6 +42,8 @@ public class MethodInsnNode extends AbstractInsnNode {
   /**
    * The internal name of the method's owner class (see {@link
    * org.eclipse.persistence.internal.libraries.asm.Type#getInternalName()}).
+   *
+   * <p>For methods of arrays, e.g., {@code clone()}, the array type descriptor.
    */
   public String owner;
 
@@ -64,7 +65,7 @@ public class MethodInsnNode extends AbstractInsnNode {
    *     org.eclipse.persistence.internal.libraries.asm.Type#getInternalName()}).
    * @param name the method's name.
    * @param descriptor the method's descriptor (see {@link org.eclipse.persistence.internal.libraries.asm.Type}).
-   * @deprecated
+   * @deprecated use {@link #MethodInsnNode(int, String, String, String, boolean)} instead.
    */
   @Deprecated
   public MethodInsnNode(

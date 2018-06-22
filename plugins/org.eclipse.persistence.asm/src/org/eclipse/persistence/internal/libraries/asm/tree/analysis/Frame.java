@@ -29,12 +29,12 @@ package org.eclipse.persistence.internal.libraries.asm.tree.analysis;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 import org.eclipse.persistence.internal.libraries.asm.Type;
 import org.eclipse.persistence.internal.libraries.asm.tree.AbstractInsnNode;
 import org.eclipse.persistence.internal.libraries.asm.tree.IincInsnNode;
 import org.eclipse.persistence.internal.libraries.asm.tree.InvokeDynamicInsnNode;
+import org.eclipse.persistence.internal.libraries.asm.tree.LabelNode;
 import org.eclipse.persistence.internal.libraries.asm.tree.MethodInsnNode;
 import org.eclipse.persistence.internal.libraries.asm.tree.MultiANewArrayInsnNode;
 import org.eclipse.persistence.internal.libraries.asm.tree.VarInsnNode;
@@ -50,43 +50,43 @@ import org.eclipse.persistence.internal.libraries.asm.tree.VarInsnNode;
 public class Frame<V extends Value> {
 
   /**
-   * The expected return type of the analyzed method, or <tt>null</tt> if the method returns void.
+   * The expected return type of the analyzed method, or {@literal null} if the method returns void.
    */
   private V returnValue;
 
   /**
-   * The local variables and the operand stack of this frame. The first {@link #nLocals} elements
-   * correspond to the local variables. The following {@link #nStack} elements correspond to the
+   * The local variables and the operand stack of this frame. The first {@link #numLocals} elements
+   * correspond to the local variables. The following {@link #numStack} elements correspond to the
    * operand stack.
    */
   private V[] values;
 
   /** The number of local variables of this frame. */
-  private int nLocals;
+  private int numLocals;
 
   /** The number of elements in the operand stack. */
-  private int nStack;
+  private int numStack;
 
   /**
    * Constructs a new frame with the given size.
    *
-   * @param nLocals the maximum number of local variables of the frame.
-   * @param nStack the maximum stack size of the frame.
+   * @param numLocals the maximum number of local variables of the frame.
+   * @param numStack the maximum stack size of the frame.
    */
   @SuppressWarnings("unchecked")
-  public Frame(final int nLocals, final int nStack) {
-    this.values = (V[]) new Value[nLocals + nStack];
-    this.nLocals = nLocals;
+  public Frame(final int numLocals, final int numStack) {
+    this.values = (V[]) new Value[numLocals + numStack];
+    this.numLocals = numLocals;
   }
 
   /**
-   * Constructs a copy of the given.
+   * Constructs a copy of the given Frame.
    *
    * @param frame a frame.
    */
   public Frame(final Frame<? extends V> frame) {
-    this(frame.nLocals, frame.values.length - frame.nLocals);
-    init(frame);
+    this(frame.numLocals, frame.values.length - frame.numLocals);
+    init(frame); // NOPMD(ConstructorCallsOverridableMethod): can't fix for backward compatibility.
   }
 
   /**
@@ -98,14 +98,34 @@ public class Frame<V extends Value> {
   public Frame<V> init(final Frame<? extends V> frame) {
     returnValue = frame.returnValue;
     System.arraycopy(frame.values, 0, values, 0, values.length);
-    nStack = frame.nStack;
+    numStack = frame.numStack;
     return this;
   }
 
   /**
+   * Initializes a frame corresponding to the target or to the successor of a jump instruction. This
+   * method is called by {@link Analyzer#analyze(String, org.eclipse.persistence.internal.libraries.asm.tree.MethodNode)} while
+   * interpreting jump instructions. It is called once for each possible target of the jump
+   * instruction, and once for its successor instruction (except for GOTO and JSR), before the frame
+   * is merged with the existing frame at this location. The default implementation of this method
+   * does nothing.
+   *
+   * <p>Overriding this method and changing the frame values allows implementing branch-sensitive
+   * analyses.
+   *
+   * @param opcode the opcode of the jump instruction. Can be IFEQ, IFNE, IFLT, IFGE, IFGT, IFLE,
+   *     IF_ICMPEQ, IF_ICMPNE, IF_ICMPLT, IF_ICMPGE, IF_ICMPGT, IF_ICMPLE, IF_ACMPEQ, IF_ACMPNE,
+   *     GOTO, JSR, IFNULL, IFNONNULL, TABLESWITCH or LOOKUPSWITCH.
+   * @param target a target of the jump instruction this frame corresponds to, or {@literal null} if
+   *     this frame corresponds to the successor of the jump instruction (i.e. the next instruction
+   *     in the instructions sequence).
+   */
+  public void initJumpTarget(final int opcode, final LabelNode target) {}
+
+  /**
    * Sets the expected return type of the analyzed method.
    *
-   * @param v the expected return type of the analyzed method, or <tt>null</tt> if the method
+   * @param v the expected return type of the analyzed method, or {@literal null} if the method
    *     returns void.
    */
   public void setReturn(final V v) {
@@ -118,7 +138,7 @@ public class Frame<V extends Value> {
    * @return the maximum number of local variables of this frame.
    */
   public int getLocals() {
-    return nLocals;
+    return numLocals;
   }
 
   /**
@@ -127,7 +147,7 @@ public class Frame<V extends Value> {
    * @return the maximum stack size of this frame.
    */
   public int getMaxStackSize() {
-    return values.length - nLocals;
+    return values.length - numLocals;
   }
 
   /**
@@ -138,7 +158,7 @@ public class Frame<V extends Value> {
    * @throws IndexOutOfBoundsException if the variable does not exist.
    */
   public V getLocal(final int index) {
-    if (index >= nLocals) {
+    if (index >= numLocals) {
       throw new IndexOutOfBoundsException("Trying to access an inexistant local variable");
     }
     return values[index];
@@ -152,7 +172,7 @@ public class Frame<V extends Value> {
    * @throws IndexOutOfBoundsException if the variable does not exist.
    */
   public void setLocal(final int index, final V value) {
-    if (index >= nLocals) {
+    if (index >= numLocals) {
       throw new IndexOutOfBoundsException("Trying to access an inexistant local variable " + index);
     }
     values[index] = value;
@@ -165,7 +185,7 @@ public class Frame<V extends Value> {
    * @return the number of values in the operand stack of this frame.
    */
   public int getStackSize() {
-    return nStack;
+    return numStack;
   }
 
   /**
@@ -176,12 +196,23 @@ public class Frame<V extends Value> {
    * @throws IndexOutOfBoundsException if the operand stack slot does not exist.
    */
   public V getStack(final int index) {
-    return values[nLocals + index];
+    return values[numLocals + index];
+  }
+
+  /**
+   * Sets the value of the given stack slot.
+   *
+   * @param index the index of an operand stack slot.
+   * @param value the new value of the stack slot.
+   * @throws IndexOutOfBoundsException if the stack slot does not exist.
+   */
+  public void setStack(final int index, final V value) throws IndexOutOfBoundsException {
+    values[numLocals + index] = value;
   }
 
   /** Clears the operand stack of this frame. */
   public void clearStack() {
-    nStack = 0;
+    numStack = 0;
   }
 
   /**
@@ -191,10 +222,10 @@ public class Frame<V extends Value> {
    * @throws IndexOutOfBoundsException if the operand stack is empty.
    */
   public V pop() {
-    if (nStack == 0) {
+    if (numStack == 0) {
       throw new IndexOutOfBoundsException("Cannot pop operand off an empty stack.");
     }
-    return values[nLocals + (--nStack)];
+    return values[numLocals + (--numStack)];
   }
 
   /**
@@ -204,10 +235,10 @@ public class Frame<V extends Value> {
    * @throws IndexOutOfBoundsException if the operand stack is full.
    */
   public void push(final V value) {
-    if (nLocals + nStack >= values.length) {
+    if (numLocals + numStack >= values.length) {
       throw new IndexOutOfBoundsException("Insufficient maximum stack size.");
     }
-    values[nLocals + (nStack++)] = value;
+    values[numLocals + (numStack++)] = value;
   }
 
   /**
@@ -265,12 +296,12 @@ public class Frame<V extends Value> {
         var = ((VarInsnNode) insn).var;
         setLocal(var, value1);
         if (value1.getSize() == 2) {
-          setLocal(var + 1, interpreter.newValue(null));
+          setLocal(var + 1, interpreter.newEmptyValue(var + 1));
         }
         if (var > 0) {
           Value local = getLocal(var - 1);
           if (local != null && local.getSize() == 2) {
-            setLocal(var - 1, interpreter.newValue(null));
+            setLocal(var - 1, interpreter.newEmptyValue(var - 1));
           }
         }
         break;
@@ -637,17 +668,17 @@ public class Frame<V extends Value> {
    *
    * @param frame a frame. This frame is left unchanged by this method.
    * @param interpreter the interpreter used to merge values.
-   * @return <tt>true</tt> if this frame has been changed as a result of the merge operation, or
-   *     <tt>false</tt> otherwise.
+   * @return {@literal true} if this frame has been changed as a result of the merge operation, or
+   *     {@literal false} otherwise.
    * @throws AnalyzerException if the frames have incompatible sizes.
    */
   public boolean merge(final Frame<? extends V> frame, final Interpreter<V> interpreter)
       throws AnalyzerException {
-    if (nStack != frame.nStack) {
+    if (numStack != frame.numStack) {
       throw new AnalyzerException(null, "Incompatible stack heights");
     }
     boolean changed = false;
-    for (int i = 0; i < nLocals + nStack; ++i) {
+    for (int i = 0; i < numLocals + numStack; ++i) {
       V v = interpreter.merge(values[i], frame.values[i]);
       if (!v.equals(values[i])) {
         values[i] = v;
@@ -665,12 +696,12 @@ public class Frame<V extends Value> {
    * @param localsUsed the local variables that are read or written by the subroutine. The i-th
    *     element is true if and only if the local variable at index i is read or written by the
    *     subroutine.
-   * @return <tt>true</tt> if this frame has been changed as a result of the merge operation, or
-   *     <tt>false</tt> otherwise.
+   * @return {@literal true} if this frame has been changed as a result of the merge operation, or
+   *     {@literal false} otherwise.
    */
   public boolean merge(final Frame<? extends V> frame, final boolean[] localsUsed) {
     boolean changed = false;
-    for (int i = 0; i < nLocals; ++i) {
+    for (int i = 0; i < numLocals; ++i) {
       if (!localsUsed[i] && !values[i].equals(frame.values[i])) {
         values[i] = frame.values[i];
         changed = true;

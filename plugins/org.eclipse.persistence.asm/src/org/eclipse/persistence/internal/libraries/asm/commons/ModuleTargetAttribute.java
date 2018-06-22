@@ -35,17 +35,19 @@ import org.eclipse.persistence.internal.libraries.asm.ClassWriter;
 import org.eclipse.persistence.internal.libraries.asm.Label;
 
 /**
- * ModuleTarget attribute. This attribute is specific to the OpenJDK and may change in the future.
+ * A ModuleTarget attribute. This attribute is specific to the OpenJDK and may change in the future.
  *
  * @author Remi Forax
  */
 public final class ModuleTargetAttribute extends Attribute {
+
+  /** The name of the platform on which the module can run. */
   public String platform;
 
   /**
-   * Constructs an attribute with a platform name.
+   * Constructs a new {@link ModuleTargetAttribute}.
    *
-   * @param platform the platform name on which the module can run.
+   * @param platform the name of the platform on which the module can run.
    */
   public ModuleTargetAttribute(final String platform) {
     super("ModuleTarget");
@@ -53,8 +55,8 @@ public final class ModuleTargetAttribute extends Attribute {
   }
 
   /**
-   * Constructs an empty attribute that can be used as prototype to be passed as argument of the method
-   * {@link ClassReader#accept(org.eclipse.persistence.internal.libraries.asm.ClassVisitor, Attribute[], int)}.
+   * Constructs an empty {@link ModuleTargetAttribute}. This object can be passed as a prototype to
+   * the {@link ClassReader#accept(org.eclipse.persistence.internal.libraries.asm.ClassVisitor, Attribute[], int)} method.
    */
   public ModuleTargetAttribute() {
     this(null);
@@ -62,16 +64,24 @@ public final class ModuleTargetAttribute extends Attribute {
 
   @Override
   protected Attribute read(
-      ClassReader cr, int off, int len, char[] buf, int codeOff, Label[] labels) {
-    String platform = cr.readUTF8(off, buf);
-    return new ModuleTargetAttribute(platform);
+      final ClassReader classReader,
+      final int offset,
+      final int length,
+      final char[] charBuffer,
+      final int codeOffset,
+      final Label[] labels) {
+    return new ModuleTargetAttribute(classReader.readUTF8(offset, charBuffer));
   }
 
   @Override
-  protected ByteVector write(ClassWriter cw, byte[] code, int len, int maxStack, int maxLocals) {
-    ByteVector v = new ByteVector();
-    int index = (platform == null) ? 0 : cw.newUTF8(platform);
-    v.putShort(index);
-    return v;
+  protected ByteVector write(
+      final ClassWriter classWriter,
+      final byte[] code,
+      final int codeLength,
+      final int maxStack,
+      final int maxLocals) {
+    ByteVector byteVector = new ByteVector();
+    byteVector.putShort(platform == null ? 0 : classWriter.newUTF8(platform));
+    return byteVector;
   }
 }

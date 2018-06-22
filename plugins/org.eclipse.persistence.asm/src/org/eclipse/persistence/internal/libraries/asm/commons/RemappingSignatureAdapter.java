@@ -40,31 +40,32 @@ import org.eclipse.persistence.internal.libraries.asm.signature.SignatureVisitor
 @Deprecated
 public class RemappingSignatureAdapter extends SignatureVisitor {
 
-  private final SignatureVisitor v;
+  private final SignatureVisitor signatureVisitor;
 
   private final Remapper remapper;
 
   private String className;
 
-  public RemappingSignatureAdapter(final SignatureVisitor v, final Remapper remapper) {
-    this(Opcodes.ASM6, v, remapper);
+  public RemappingSignatureAdapter(
+      final SignatureVisitor signatureVisitor, final Remapper remapper) {
+    this(Opcodes.ASM6, signatureVisitor, remapper);
   }
 
   protected RemappingSignatureAdapter(
-      final int api, final SignatureVisitor v, final Remapper remapper) {
+      final int api, final SignatureVisitor signatureVisitor, final Remapper remapper) {
     super(api);
-    this.v = v;
+    this.signatureVisitor = signatureVisitor;
     this.remapper = remapper;
   }
 
   @Override
-  public void visitClassType(String name) {
+  public void visitClassType(final String name) {
     className = name;
-    v.visitClassType(remapper.mapType(name));
+    signatureVisitor.visitClassType(remapper.mapType(name));
   }
 
   @Override
-  public void visitInnerClassType(String name) {
+  public void visitInnerClassType(final String name) {
     String remappedOuter = remapper.mapType(className) + '$';
     className = className + '$' + name;
     String remappedName = remapper.mapType(className);
@@ -72,85 +73,85 @@ public class RemappingSignatureAdapter extends SignatureVisitor {
         remappedName.startsWith(remappedOuter)
             ? remappedOuter.length()
             : remappedName.lastIndexOf('$') + 1;
-    v.visitInnerClassType(remappedName.substring(index));
+    signatureVisitor.visitInnerClassType(remappedName.substring(index));
   }
 
   @Override
-  public void visitFormalTypeParameter(String name) {
-    v.visitFormalTypeParameter(name);
+  public void visitFormalTypeParameter(final String name) {
+    signatureVisitor.visitFormalTypeParameter(name);
   }
 
   @Override
-  public void visitTypeVariable(String name) {
-    v.visitTypeVariable(name);
+  public void visitTypeVariable(final String name) {
+    signatureVisitor.visitTypeVariable(name);
   }
 
   @Override
   public SignatureVisitor visitArrayType() {
-    v.visitArrayType();
+    signatureVisitor.visitArrayType();
     return this;
   }
 
   @Override
-  public void visitBaseType(char descriptor) {
-    v.visitBaseType(descriptor);
+  public void visitBaseType(final char descriptor) {
+    signatureVisitor.visitBaseType(descriptor);
   }
 
   @Override
   public SignatureVisitor visitClassBound() {
-    v.visitClassBound();
+    signatureVisitor.visitClassBound();
     return this;
   }
 
   @Override
   public SignatureVisitor visitExceptionType() {
-    v.visitExceptionType();
+    signatureVisitor.visitExceptionType();
     return this;
   }
 
   @Override
   public SignatureVisitor visitInterface() {
-    v.visitInterface();
+    signatureVisitor.visitInterface();
     return this;
   }
 
   @Override
   public SignatureVisitor visitInterfaceBound() {
-    v.visitInterfaceBound();
+    signatureVisitor.visitInterfaceBound();
     return this;
   }
 
   @Override
   public SignatureVisitor visitParameterType() {
-    v.visitParameterType();
+    signatureVisitor.visitParameterType();
     return this;
   }
 
   @Override
   public SignatureVisitor visitReturnType() {
-    v.visitReturnType();
+    signatureVisitor.visitReturnType();
     return this;
   }
 
   @Override
   public SignatureVisitor visitSuperclass() {
-    v.visitSuperclass();
+    signatureVisitor.visitSuperclass();
     return this;
   }
 
   @Override
   public void visitTypeArgument() {
-    v.visitTypeArgument();
+    signatureVisitor.visitTypeArgument();
   }
 
   @Override
-  public SignatureVisitor visitTypeArgument(char wildcard) {
-    v.visitTypeArgument(wildcard);
+  public SignatureVisitor visitTypeArgument(final char wildcard) {
+    signatureVisitor.visitTypeArgument(wildcard);
     return this;
   }
 
   @Override
   public void visitEnd() {
-    v.visitEnd();
+    signatureVisitor.visitEnd();
   }
 }
