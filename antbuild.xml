@@ -534,13 +534,64 @@
         <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle.nosql.test}" target="clean"/>
     </target>
 
-    <target name="generate-local-compdeps" if="generate.compdeps" depends="set-compdeps" description="Build local p2 repository of local compiler dependencies">
+    <!--TODO RFELCMAN-->
+
+    <target name="generate-internal-compdeps" if="generate.compdeps" depends="set-compdeps" description="Build local p2 repository of internal compiler dependencies">
         <!-- a bit redundant, but here as a failsafe. -->
+        <available file="${eclipse.install.dir}/plugins" type="dir" property="eclipse.dir.exist"/>
+        <fail message="Specified Eclipse installation (${eclipse.install.dir}/plugins) not found. Exiting..." unless="eclipse.dir.exist"/>
+        <echo message="Generating local internal 'Compile Dependency P2 Repository' using tools found in '${eclipse.install.dir}/plugins'."/>
+        <echo message="Launching Maven build with the following parameters:"/>
+        <echo message="    -Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
+        <echo message="    -Dmaven.multiModuleProjectDirectory=${eclipselink.mvn.parent}"/>
+        <echo message="    -Dmaven.home=${M2_HOME}"/>
+        <echo message="    clean install"/>
+        <java dir="${eclipselink.compdeps}/org.eclipse.persistence.compdeps.internal" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
+            <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
+            <jvmarg value="-Dmaven.home=${M2_HOME}"/>
+            <jvmarg value="-Dmaven.multiModuleProjectDirectory=${eclipselink.mvn.parent}"/>
+            <arg line="clean install"/>
+            <classpath>
+                <fileset dir="${M2_HOME}/boot">
+                    <include name="plexus-classworlds-*.jar"/>
+                </fileset>
+            </classpath>
+        </java>
+    </target>
+
+
+    <target name="generate-local-compdeps" if="generate.compdeps" depends="set-compdeps, generate-internal-compdeps" description="Build local p2 repository of local compiler dependencies">
+        <!-- a bit redundant, but here as a failsafe. -->
+        <available file="${eclipse.install.dir}/plugins" type="dir" property="eclipse.dir.exist"/>
+        <fail message="Specified Eclipse installation (${eclipse.install.dir}/plugins) not found. Exiting..." unless="eclipse.dir.exist"/>
+        <echo message="Generating local 'Compile Dependency P2 Repository' using tools found in '${eclipse.install.dir}/plugins'."/>
+        <echo message="    -Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
+        <echo message="    -Dmaven.multiModuleProjectDirectory=${eclipselink.compdeps}"/>
+        <echo message="    -Dmaven.home=${M2_HOME}"/>
+        <echo message="    clean verify"/>
+        <java dir="${eclipselink.compdeps}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
+            <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
+            <jvmarg value="-Dmaven.home=${M2_HOME}"/>
+            <jvmarg value="-Dmaven.multiModuleProjectDirectory=${eclipselink.compdeps}"/>
+            <arg line="${maven.goals}"/>
+            <classpath>
+                <fileset dir="${M2_HOME}/boot">
+                    <include name="plexus-classworlds-*.jar"/>
+                </fileset>
+            </classpath>
+        </java>
+    </target>
+
+
+<!--
+    <target name="generate-local-compdeps" if="generate.compdeps" depends="set-compdeps" description="Build local p2 repository of local compiler dependencies">
+        &lt;!&ndash; a bit redundant, but here as a failsafe. &ndash;&gt;
         <available file="${eclipse.install.dir}/plugins" type="dir" property="eclipse.dir.exist"/>
         <fail message="Specified Eclipse installation (${eclipse.install.dir}/plugins) not found. Exiting..." unless="eclipse.dir.exist"/>
         <echo message="Generating local 'Compile Dependency P2 Repository' using tools found in '${eclipse.install.dir}/plugins'."/>
         <ant antfile="antbuild.xml" dir="${eclipselink.compdeps}"  target="build"/>
     </target>
+-->
 
     <!-- Compiles all runtime components (excluding Tests, Oracle extensions). -->
     <target name="build-core" depends="generate-local-compdeps, clean-runtime-checkedin">

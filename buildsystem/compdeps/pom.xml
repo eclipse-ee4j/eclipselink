@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+
+-->
+
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- <parent>
+ <artifactId>org.eclipse.persistence.parent</artifactId>
+    <groupId>org.eclipse.persistence</groupId>
+<version>3.0.0-SNAPSHOT</version>
+    <relativePath>../../org.eclipse.persistence.parent/pom.xml</relativePath>
+    </parent> -->
+    <name>EclipseLink CompDeps</name>
+    <groupId>org.eclipse.persistence</groupId>
+    <artifactId>compdeps</artifactId>
+    <version>1.0.5-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <!-- Default repositories set and added to by all profiles -->
+    <repositories>
+        <repository>
+            <id>Local_CompDeps</id>
+            <layout>p2</layout>
+            <url>file:/${basedir}/../org.eclipse.persistence.compdeps.internal/target/repository</url>
+            <!--<url>file:/${maven.multiModuleProjectDirectory}/org.eclipse.persistence.compdeps.internal/target/repository</url>-->
+        </repository>
+	<repository>
+            <id>Orbit</id>
+            <layout>p2</layout>
+            <url>http://download.eclipse.org/tools/orbit/downloads/drops/${orbit.drop}/repository</url>
+        </repository>
+        <repository>
+            <id>Eclipse</id>
+            <layout>p2</layout>
+            <url>http://download.eclipse.org/releases/${eclipse.drop}</url>
+        </repository>
+    </repositories>
+
+    <properties>
+        <!-- TOOL Properties -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <tycho.version>1.2.0</tycho.version>
+        <!-- BUILD Properties -->
+        <orbit.drop>R20180905201904</orbit.drop>
+        <eclipse.drop>2018-09</eclipse.drop>
+
+        <!-- DEPENDENCY Versions -->
+        <org.glassfish.corba.version>4.2.0-b004</org.glassfish.corba.version>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.eclipse.tycho</groupId>
+                <artifactId>tycho-maven-plugin</artifactId>
+                <version>${tycho.version}</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <resolver>p2</resolver>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.eclipse.tycho</groupId>
+                <artifactId>target-platform-configuration</artifactId>
+                <version>${tycho.version}</version>
+                <configuration>
+                    <pomDependencies>consider</pomDependencies>
+                    <resolveWithExecutionEnvironmentConstraints>false</resolveWithExecutionEnvironmentConstraints>
+                    <target>
+                        <artifact>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>org.eclipse.persistence.compdeps.target</artifactId>
+                            <version>${project.version}</version>
+                        </artifact>
+                    </target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <modules>
+<!--
+	<module>org.eclipse.persistence.compdeps.internal</module>
+-->
+        <module>sun.misc</module>
+        <!--<module>org.eclipse.persistence.compdeps.target</module>-->
+        <module>org.eclipse.persistence.compdeps</module>
+        <module>org.eclipse.persistence.compdeps.p2repo</module>
+    </modules>
+    
+    <dependencies>
+        <dependency>
+            <groupId>javax.enterprise</groupId>
+            <artifactId>cdi-api</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>commonj.sdo</artifactId>
+            <version>2.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.gmbal</groupId>
+            <artifactId>gmbal-api-only</artifactId>
+            <version>3.2.0-b003</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.ejb</groupId>
+            <artifactId>javax.ejb-api</artifactId>
+            <version>3.2</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.interceptor</groupId>
+            <artifactId>javax.interceptor-api</artifactId>
+            <version>1.2.2</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.jms</groupId>
+            <artifactId>jms-api</artifactId>
+            <version>1.1-rev-1</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.json</groupId>
+            <artifactId>javax.json-api</artifactId>
+            <version>1.1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>javax.persistence</artifactId>
+            <version>2.2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.resource</groupId>
+            <artifactId>javax.resource-api</artifactId>
+            <version>1.7.1</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.4</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.transaction</groupId>
+            <artifactId>javax.transaction-api</artifactId>
+            <version>1.3</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>2.0.1.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>wsdl4j</groupId>
+            <artifactId>wsdl4j</artifactId>
+            <version>1.6.2</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>javax.ws.rs-api</artifactId>
+            <version>2.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.2.12</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.xml.soap</groupId>
+            <artifactId>saaj-api</artifactId>
+            <version>1.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-core</artifactId>
+            <version>2.2.11</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-xjc</artifactId>
+            <version>2.2.11</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.external</groupId>
+            <artifactId>management-api</artifactId>
+            <version>3.2.1-b003</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.corba</groupId>
+            <artifactId>exception-annotation-processor</artifactId>
+            <version>${org.glassfish.corba.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.corba</groupId>
+            <artifactId>glassfish-corba-csiv2-idl</artifactId>
+            <version>${org.glassfish.corba.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.corba</groupId>
+            <artifactId>glassfish-corba-internal-api</artifactId>
+            <version>${org.glassfish.corba.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.corba</groupId>
+            <artifactId>glassfish-corba-omgapi</artifactId>
+            <version>${org.glassfish.corba.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.corba</groupId>
+            <artifactId>glassfish-corba-orb</artifactId>
+            <version>${org.glassfish.corba.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.gmbal</groupId>
+            <artifactId>gmbal</artifactId>
+            <version>4.0.0-b002</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.pfl</groupId>
+            <artifactId>pfl-asm</artifactId>
+            <version>4.0.1-b003</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.pfl</groupId>
+            <artifactId>pfl-basic</artifactId>
+            <version>4.0.1-b003</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.pfl</groupId>
+            <artifactId>pfl-basic-tools</artifactId>
+            <version>4.0.1-b003</version>
+            <!--<type>bundle</type>-->
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.pfl</groupId>
+            <artifactId>pfl-dynamic</artifactId>
+            <version>4.0.1-b003</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.pfl</groupId>
+            <artifactId>pfl-test</artifactId>
+            <version>4.0.1-b003</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.pfl</groupId>
+            <artifactId>pfl-tf</artifactId>
+            <version>4.0.1-b003</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongo-java-driver</artifactId>
+            <version>3.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <version>4.3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.activation</groupId>
+            <artifactId>activation</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+            <version>1.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.0.7</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>1.0.7</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+            <version>2.2.11</version>
+        </dependency>
+
+        <!--
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>javax.persistence</artifactId>
+            <version>2.2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.2.12</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.json</groupId>
+            <artifactId>javax.json-api</artifactId>
+            <version>1.1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>2.0.1.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-core</artifactId>
+            <version>2.2.11</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-xjc</artifactId>
+            <version>2.2.11</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.corba</groupId>
+            <artifactId>glassfish-corba-orb</artifactId>
+            <version>4.2.0-b004</version>
+        </dependency>
+-->
+    </dependencies>
+</project>

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+
+-->
+
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!--    <parent>
+        <groupId>org.eclipse.persistence</groupId>
+        <artifactId>compdeps</artifactId>
+        <version>1.0.5-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>-->
+
+    <name>EclipseLink Internal Compilation Dependencies</name>
+    <groupId>org.eclipse.persistence</groupId>
+    <artifactId>org.eclipse.persistence.compdeps.internal</artifactId>
+    <version>1.0.5-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                    <execution>
+                        <id>inject-common-into-src-bundles</id>
+                        <phase>prepare-package</phase>
+                        <configuration>
+                            <target>
+                                <mkdir dir="${project.basedir}/target/source/plugins"/>
+                                <copy todir="${project.basedir}/target/source/plugins">
+                                    <fileset dir="../../../plugins">
+                                        <include name="org.eclipse.persistence.asm_*"/>
+                                        <include name="org.eclipse.persistence.asm.source_*"/>
+                                        <include name="org.eclipse.persistence.antlr_*"/>
+                                        <include name="org.eclipse.persistence.antlr.source_*"/>
+                                    </fileset>
+                                    <fileset dir="../../../utils/plugins">
+                                        <include name="org.eclipse.persistence.oracleddlparser_*"/>
+                                        <include name="org.eclipse.persistence.oracleddlparser.source_*"/>
+                                    </fileset>
+                                </copy>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+ 
+
+            <!-- Configuration for the PublishFeaturesAndBundlesMojoTest -->
+            <plugin>
+                <groupId>org.eclipse.tycho.extras</groupId>
+                <artifactId>tycho-p2-extras-plugin</artifactId>
+                <version>1.2.0</version>
+                <configuration>
+                    <!-- additional arguments example
+                    <compress>false</compress>
+                            <additionalArgs>-configs win32.win32.x86</additionalArgs>
+                    -->
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>publish-features-and-bundles</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.eclipse.tycho</groupId>
+                <artifactId>tycho-p2-repository-plugin</artifactId>
+                <version>1.2.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>archive-repository</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

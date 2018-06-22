@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-Version: 1.0.5.qualifier
+Export-Package: sun.misc;sun.reflect
+Bundle-ManifestVersion: 2
+Bundle-Name: System Bundle Fragment exporting sun.misc and sun.reflect
+Bundle-SymbolicName: org.eclipse.persistence.sun-misc
+Fragment-Host: system.bundle; extension:=framework
