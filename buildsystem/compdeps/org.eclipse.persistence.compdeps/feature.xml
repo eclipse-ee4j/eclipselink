@@ -89,21 +89,21 @@
             unpack="false"/>
 
     <plugin
-            id="javax.inject"
+            id="org.glassfish.hk2.external.jakarta.inject"
             download-size="0"
             install-size="0"
             version="0.0.0"
             unpack="false"/>
 
     <plugin
-            id="javax.interceptor-api"
+            id="jakarta.interceptor-api"
             download-size="0"
             install-size="0"
             version="0.0.0"
             unpack="false"/>
 
     <plugin
-            id="javax.jms"
+            id="jakarta.jms-api"
             download-size="0"
             install-size="0"
             version="0.0.0"
@@ -152,7 +152,7 @@
             unpack="false"/>
 
     <plugin
-            id="javax.transaction-api"
+            id="jakarta.transaction-api"
             download-size="0"
             install-size="0"
             version="0.0.0"
@@ -187,7 +187,7 @@
             unpack="false"/>
 
     <plugin
-            id="javax.xml.ws"
+            id="jakarta.xml.ws-api"
             download-size="0"
             install-size="0"
             version="0.0.0"
