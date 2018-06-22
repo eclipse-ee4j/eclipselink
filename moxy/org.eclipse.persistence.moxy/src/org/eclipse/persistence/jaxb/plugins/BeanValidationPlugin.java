@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -286,7 +286,7 @@ public class BeanValidationPlugin extends Plugin {
         JFieldVar fieldVar = classOutline.implClass.fields().get(valuePropertyName);
         XSSimpleType type = ((RestrictionSimpleTypeImpl) valueProperty.getSchemaComponent()).asSimpleType();
 
-        processSimpleType(type, fieldVar, customizations);
+        processSimpleType(null, type, fieldVar, customizations);
     }
 
     /**
@@ -313,7 +313,7 @@ public class BeanValidationPlugin extends Plugin {
             notNullAnnotate(fieldVar);
         }
 
-        processSimpleType(type, fieldVar, customizations);
+        processSimpleType(null, type, fieldVar, customizations);
     }
 
     /**
@@ -347,17 +347,17 @@ public class BeanValidationPlugin extends Plugin {
                 notNullAnnotate(fieldVar);
             }
             if (elementType.getBaseType().isSimpleType()) {
-                processSimpleType(elementType.getBaseType().asSimpleType(), fieldVar, customizations);
+                processSimpleType(particle, elementType.getBaseType().asSimpleType(), fieldVar, customizations);
             }
         } else { 
-            processSimpleType(elementType.asSimpleType(), fieldVar, customizations);
+            processSimpleType(particle, elementType.asSimpleType(), fieldVar, customizations);
         }
     }
 
-    private void processSimpleType(XSSimpleType simpleType, JFieldVar fieldVar, List<FacetCustomization> customizations) {
+    private void processSimpleType(XSParticle particle, XSSimpleType simpleType, JFieldVar fieldVar, List<FacetCustomization> customizations) {
         Map<JAnnotationUse, FacetType> annotationsAndTheirOrigin = new HashMap<JAnnotationUse, FacetType>();
 
-        applyAnnotations(simpleType, fieldVar, annotationsAndTheirOrigin);
+        applyAnnotations(particle, simpleType, fieldVar, annotationsAndTheirOrigin);
         applyCustomizations(fieldVar, customizations, annotationsAndTheirOrigin);
     }
 
@@ -370,7 +370,7 @@ public class BeanValidationPlugin extends Plugin {
      * do not compile.
      * Stores the applied annotations and their origin into the map arg.
      */
-    private void applyAnnotations(XSSimpleType simpleType, JFieldVar fieldVar, Map<JAnnotationUse, FacetType> a) {
+    private void applyAnnotations(XSParticle particle, XSSimpleType simpleType, JFieldVar fieldVar, Map<JAnnotationUse, FacetType> a) {
         XSFacet facet = null; // Auxiliary field.
         JType fieldType = fieldVar.type();
         if (notAnnotated(fieldVar, ANNOTATION_SIZE) && isSizeAnnotationApplicable(fieldType)) {
@@ -403,7 +403,7 @@ public class BeanValidationPlugin extends Plugin {
             String maxIncValue = facet.getValue().value;
             if (notAnnotatedAndNotDefaultBoundary(fieldVar, ANNOTATION_DECIMALMAX, maxIncValue)) {
                 a.put(fieldVar.annotate(ANNOTATION_DECIMALMAX).param(VALUE, maxIncValue), FacetType.maxInclusive);
-                convertToElement(fieldVar);
+                convertToElement(particle, fieldVar);
             }
         }
 
@@ -411,7 +411,7 @@ public class BeanValidationPlugin extends Plugin {
             String minIncValue = facet.getValue().value;
             if (notAnnotatedAndNotDefaultBoundary(fieldVar, ANNOTATION_DECIMALMIN, minIncValue)) {
                 a.put(fieldVar.annotate(ANNOTATION_DECIMALMIN).param(VALUE, minIncValue), FacetType.minInclusive);
-                convertToElement(fieldVar);
+                convertToElement(particle, fieldVar);
             }
         }
 
@@ -420,14 +420,14 @@ public class BeanValidationPlugin extends Plugin {
             if (!jsr303) { // ~ if jsr349
                 if (notAnnotatedAndNotDefaultBoundary(fieldVar, ANNOTATION_DECIMALMAX, maxExcValue)) {
                     a.put(fieldVar.annotate(ANNOTATION_DECIMALMAX).param(VALUE, maxExcValue).param("inclusive", false), FacetType.maxExclusive);
-                    convertToElement(fieldVar);
+                    convertToElement(particle, fieldVar);
                 }
             } else {
                 Integer intMaxExc = Integer.parseInt(maxExcValue) - 1;
                 maxExcValue = intMaxExc.toString();
                 if (notAnnotatedAndNotDefaultBoundary(fieldVar, ANNOTATION_DECIMALMAX, maxExcValue)) {
                     a.put(fieldVar.annotate(ANNOTATION_DECIMALMAX).param(VALUE, maxExcValue), FacetType.maxExclusive);
-                    convertToElement(fieldVar);
+                    convertToElement(particle, fieldVar);
                 }
             }
         }
@@ -437,13 +437,13 @@ public class BeanValidationPlugin extends Plugin {
             if (!jsr303) { // ~ if jsr349
                 if (notAnnotatedAndNotDefaultBoundary(fieldVar, ANNOTATION_DECIMALMIN, minExcValue)) {
                     a.put(fieldVar.annotate(ANNOTATION_DECIMALMIN).param(VALUE, minExcValue).param("inclusive", false), FacetType.minExclusive);
-                    convertToElement(fieldVar);
+                    convertToElement(particle, fieldVar);
                 } else {
                     Integer intMinExc = Integer.parseInt(minExcValue) + 1;
                     minExcValue = intMinExc.toString();
                     if (notAnnotatedAndNotDefaultBoundary(fieldVar, ANNOTATION_DECIMALMIN, minExcValue)) {
                         a.put(fieldVar.annotate(ANNOTATION_DECIMALMIN).param(VALUE, minExcValue), FacetType.minExclusive);
-                        convertToElement(fieldVar);
+                        convertToElement(particle, fieldVar);
                     }
                 }
             }
@@ -699,10 +699,12 @@ public class BeanValidationPlugin extends Plugin {
      * field wouldn't be recognized by Schemagen. @XmlElement annotation may
      * also trigger change of the field's type from primitive to object.
      */
-    private void convertToElement(JFieldVar fieldVar) {
+    private void convertToElement(XSParticle particle, JFieldVar fieldVar) {
         if (notAnnotated(fieldVar, ANNOTATION_XMLELEMENT)) {
             fieldVar.annotate(XmlElement.class);
-            notNullAnnotate(fieldVar);
+            if (particle != null && getOccursValue("minOccurs", particle) > 0) {
+                notNullAnnotate(fieldVar);
+            }
         }
     }
 
