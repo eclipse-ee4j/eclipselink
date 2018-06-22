@@ -141,6 +141,7 @@
         <pathelement path="${moxytest.2.common.plugins.dir}/${transaction.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${mail.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${jaxrs.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${istack-commons-runtime.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${asm.jar}"/>
         <pathelement path="${oep.nosql.lib}"/>
         <pathelement path="${jmockit.lib}"/>
@@ -159,6 +160,7 @@
         <pathelement path="${moxytest.2.common.plugins.dir}/${json-impl.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${mail.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${jaxrs.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${istack-commons-runtime.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${asm.jar}"/>
         <pathelement path="${moxytest.2.moxy.dir}/target/${classes.dir}"/>
         <pathelement path="${moxytest.2.moxy.dir}/${resource.dir}"/>
