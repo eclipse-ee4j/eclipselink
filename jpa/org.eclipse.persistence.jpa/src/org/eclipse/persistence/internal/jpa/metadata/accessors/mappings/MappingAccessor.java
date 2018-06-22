@@ -1840,7 +1840,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
         } else if (getProject().hasAutoApplyConverter(referenceClassWithGenerics) && !hasAutoApplyConverterExcludeAnnotations(this)) {
             // If no convert is specified and there exist an auto-apply
             // converter for the reference class, apply it.
-                getProject().getAutoApplyConverter(referenceClassWithGenerics).process(mapping, isForMapKey, null);
+            getProject().getAutoApplyConverter(referenceClassWithGenerics).process(mapping, isForMapKey, null);
         } else {
             // Check for original JPA converters. Check for an enum first since
             // it will fall into a serializable mapping otherwise since enums
