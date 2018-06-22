@@ -205,12 +205,12 @@
             dir="${eclipselink.plugins}"
             includes="*nosql*"
             excludes="*source*"/>
-        <pathelement path="${eclipselink.plugins}/org.mongodb.mongo-java-driver_3.2.0.jar"/>
+        <pathelement path="${eclipselink.plugins}/${mongo-java-driver.jar}"/>
     </path>
     <path id="jpars.javadoc.path">
         <path refid="javadoc.path"/>
         <pathelement path="${eclipselink.plugins}/com.sun.jersey_1.8.0.201204181614.jar"/>
-        <pathelement path="${eclipselink.plugins}/jakarta.ejb-api.jar"/>
+        <pathelement path="${eclipselink.plugins}/${ejb-api.jar}"/>
     </path>
 
     <target name="check-maven" description="Verify the Maven tool is installed and configured">
