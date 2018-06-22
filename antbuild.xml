@@ -441,9 +441,11 @@
             </and>
         </condition>
         <!-- Set default log level for Maven download status it it's not specified via environment variable. -->
+<!--
         <condition property="MAVEN_OPTS" else="-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=info">
             <isset property="MAVEN_OPTS"/>
         </condition>
+-->
         <echo message="Compdeps Settings:"/>
         <echo message="    Whether to use a local compdeps p2 repo:"/>
         <echo message="        local.compdeps: '${local.compdeps}'"/>
@@ -553,13 +555,13 @@
         <echo message="    -Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
         <echo message="    -Dmaven.multiModuleProjectDirectory=${eclipselink.mvn.parent}"/>
         <echo message="    -Dmaven.home=${M2_HOME}"/>
-        <echo message="    ${MAVEN_OPTS}"/>
+        <!--<echo message="    ${MAVEN_OPTS}"/>-->
         <echo message="    clean install"/>
         <java dir="${eclipselink.compdeps.internal}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
             <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
             <jvmarg value="-Dmaven.home=${M2_HOME}"/>
             <jvmarg value="-Dmaven.multiModuleProjectDirectory=${eclipselink.mvn.parent}"/>
-            <jvmarg value="${MAVEN_OPTS}"/>
+            <!--<jvmarg value="${MAVEN_OPTS}"/>-->
             <arg line="clean install"/>
             <classpath>
                 <fileset dir="${M2_HOME}/boot">
@@ -575,13 +577,13 @@
         <echo message="    -Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
         <echo message="    -Dmaven.multiModuleProjectDirectory=${eclipselink.compdeps}"/>
         <echo message="    -Dmaven.home=${M2_HOME}"/>
-        <echo message="    ${MAVEN_OPTS}"/>
+        <!--<echo message="    ${MAVEN_OPTS}"/>-->
         <echo message="    clean verify"/>
         <java dir="${eclipselink.compdeps}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
             <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
             <jvmarg value="-Dmaven.home=${M2_HOME}"/>
             <jvmarg value="-Dmaven.multiModuleProjectDirectory=${eclipselink.compdeps}"/>
-            <jvmarg value="${MAVEN_OPTS}"/>
+            <!--<jvmarg value="${MAVEN_OPTS}"/>-->
             <arg line="${maven.goals}"/>
             <classpath>
                 <fileset dir="${M2_HOME}/boot">
