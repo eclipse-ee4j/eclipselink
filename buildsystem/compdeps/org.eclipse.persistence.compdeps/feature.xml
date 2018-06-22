@@ -110,7 +110,7 @@
             unpack="false"/>
 
     <plugin
-            id="jakarta.activation-api"
+            id="com.sun.activation.jakarta.activation"
             download-size="0"
             install-size="0"
             version="0.0.0"
