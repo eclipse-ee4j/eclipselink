@@ -30,7 +30,7 @@ env:
   global:
     - ANT_HOME=$HOME/apache-ant-1.10.5
     - M2_HOME=/usr/local/maven-3.5.2
-    - MAVEN_OPTS=-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+    - MAVEN_OPTS="-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dorg.apache.commons.logging.simplelog.log.org.apache.http=WARNING"
   matrix:
     - TEST_TARGET=test-core
     - TEST_TARGET=test-jpa22
@@ -38,6 +38,7 @@ env:
     - TEST_TARGET=test-sdo
     - TEST_TARGET="test-jpa-jse test-ext test-jpql test-wdf test-jpars test-dbws test-dbws-builder test-osgi"
     - TEST_TARGET=test-lrg-server
+    - TEST_TARGET=build-distribution
 
 jdk:
   - oraclejdk8

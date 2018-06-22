@@ -441,8 +441,8 @@
             </and>
         </condition>
         <!-- Set default log level for Maven download status it it's not specified via environment variable. -->
-        <condition property="MAVEN_OPTS" else="-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=info">
-            <isset property="MAVEN_OPTS"/>
+        <condition property="MAVEN_OPTS" value="${env.MAVEN_OPTS}" else="-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=info  -Dorg.apache.commons.logging.simplelog.log.org.apache.http=INFO">
+            <isset property="env.MAVEN_OPTS"/>
         </condition>
         <echo message="Compdeps Settings:"/>
         <echo message="    Whether to use a local compdeps p2 repo:"/>
