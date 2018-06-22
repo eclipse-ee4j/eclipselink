@@ -1124,8 +1124,30 @@ public abstract class XMLMarshaller<
             Class objectClass = object.getClass();
             if(object instanceof Collection) {
                 marshalRecord.startCollection();
+                String valueWrapper;
                 for(Object o : (Collection) object) {
-                    marshal(o, marshalRecord);
+                    if (o == null) {
+                        valueWrapper = this.getValueWrapper();
+                        if (isApplicationJSON()) {
+                            this.setValueWrapper("");
+                            marshalRecord.setMarshaller(this);
+                        }
+                        marshalRecord.nilSimple(null);
+                        this.setValueWrapper(valueWrapper);
+                    } else {
+                        if (isApplicationJSON() && o != null && (o.getClass() == CoreClassConstants.STRING || o.getClass() == CoreClassConstants.BOOLEAN || CoreClassConstants.NUMBER.isAssignableFrom(o.getClass()))) {
+                            if (marshalRecord.getSession() == null) {
+                                marshalRecord.setSession((ABSTRACT_SESSION) this.getContext().getSession());
+                            }
+                            valueWrapper = this.getValueWrapper();
+                            this.setValueWrapper("");
+                            marshalRecord.setMarshaller(this);
+                            marshalRecord.characters(null, o, null, false);
+                            this.setValueWrapper(valueWrapper);
+                        } else {
+                            marshal(o, marshalRecord);
+                        }
+                    }
                 }
                 marshalRecord.endCollection();
                 marshalRecord.flush();
