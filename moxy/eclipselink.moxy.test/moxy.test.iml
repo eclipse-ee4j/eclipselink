@@ -17,7 +17,7 @@
       <src_folder value="file://$MODULE_DIR$/resource" expected_position="1" />
     </src_description>
   </component>
-  <component name="NewModuleRootManager" inherit-compiler-output="false">
+  <component name="NewModuleRootManager">
     <output url="file://$MODULE_DIR$/classes" />
     <exclude-output />
     <content url="file://$MODULE_DIR$">
@@ -80,12 +80,10 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/org.glassfish.javax.json_1.0.4.v201311181159.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/org.glassfish.jakarta.json.jar!/" />
         </CLASSES>
         <JAVADOC />
-        <SOURCES>
-          <root url="jar://$MODULE_DIR$/../../plugins/org.glassfish.javax.json.source_1.0.4.v201311181159.jar!/" />
-        </SOURCES>
+        <SOURCES />
       </library>
     </orderEntry>
     <orderEntry type="module-library">
@@ -149,7 +147,6 @@
           <root url="file://$MODULE_DIR$/resource" />
         </JAVADOC>
         <SOURCES>
-          <root url="file://$MODULE_DIR$/resource" />
           <root url="file://$MODULE_DIR$/resource" />
         </SOURCES>
         <jarDirectory url="file://$MODULE_DIR$/resource" recursive="false" type="SOURCES" />
