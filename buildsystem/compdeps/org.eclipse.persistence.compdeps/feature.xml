@@ -53,14 +53,12 @@
             version="0.0.0"
             unpack="false"/>
 
-<!--
     <plugin
-            id="com.sun.xml.bind.jaxb-core"
+            id="com.sun.istack.commons-runtime"
             download-size="0"
             install-size="0"
             version="0.0.0"
             unpack="false"/>
--->
 
     <plugin
             id="com.sun.xml.bind.jaxb-xjc"
@@ -119,7 +117,14 @@
             unpack="false"/>
 
     <plugin
-            id="javax.json-api"
+            id="jakarta.activation-api"
+            download-size="0"
+            install-size="0"
+            version="0.0.0"
+            unpack="false"/>
+
+    <plugin
+            id="jakarta.json-api"
             download-size="0"
             install-size="0"
             version="0.0.0"
@@ -147,7 +152,7 @@
             unpack="false"/>
 
     <plugin
-            id="javax.servlet"
+            id="javax.servlet-api"
             download-size="0"
             install-size="0"
             version="0.0.0"
@@ -175,7 +180,7 @@
             unpack="false"/>
 
     <plugin
-            id="jaxb-api"
+            id="jakarta.xml.bind-api"
             download-size="0"
             install-size="0"
             version="0.0.0"
@@ -289,7 +294,7 @@
             unpack="false"/>
 
     <plugin
-            id="org.glassfish.javax.json"
+            id="org.glassfish.jakarta.json"
             download-size="0"
             install-size="0"
             version="0.0.0"
@@ -339,12 +344,14 @@
             version="0.0.0"
             unpack="false"/>
 
+<!--
     <plugin
             id="org.glassfish.jersey.core.jersey-core"
             download-size="0"
             install-size="0"
             version="0.0.0"
             unpack="false"/>
+-->
 
     <plugin
             id="org.glassfish.pfl.pfl-asm"

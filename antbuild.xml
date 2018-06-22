@@ -618,7 +618,9 @@
         <copy-plugin from="ch.qos.logback.classic*.jar" to="ch.qos.logback.classic_1.0.7.v20121108-1250.jar"/>
         <copy-plugin from="ch.qos.logback.core*.jar" to="ch.qos.logback.core_1.0.7.v20121108-1250.jar"/>
         <!--SLF4J <copy-plugin from="ch.qos.logback.slf4j_1.0.7.v20121108-1250.jar" to="ch.qos.logback.slf4j_1.0.7.v20121108-1250.jar"/>-->
+        <copy-plugin from="com.sun.istack.commons-runtime*.jar" to="com.sun.istack.commons-runtime_3.0.8.jar"/>
         <copy-plugin from="com.sun.xml.bind.jaxb-impl*.jar" to="com.sun.xml.bind_2.2.11.v201406210428.jar"/>
+        <copy-plugin from="com.sun.xml.bind.jaxb-xjc*.jar" to="jaxb-xjc_2.2.11.v201407311112.jar"/>
         <copy-plugin from="gmbal-api-only*.jar" to="gmbal-api-only_3.2.0.b003.jar"/>
         <copy-plugin from="javax.annotation-api*.jar" to="javax.annotation_1.2.0.v201401042248.jar"/>
         <copy-plugin from="javax.ejb*.jar" to="javax.ejb_3.1.0.v201205171433.jar"/>
@@ -626,19 +628,17 @@
         <copy-plugin from="javax.interceptor-api*.jar" to="javax.interceptor.api_1.2.2.jar"/>
         <copy-plugin from="javax.jms*.jar" to="javax.jms_1.1.0.v200906010428.jar"/>
         <copy-plugin from="org.glassfish.javax.json*.jar" to="javax.json_1.1.2.jar"/>
-        <copy-plugin from="javax.json-api*.jar" to="javax.json-api_1.1.2.jar"/>
+        <copy-plugin from="jakarta.json-api*.jar" to="javax.json-api_1.1.2.jar"/>
         <copy-plugin from="javax.mail*.jar" to="javax.mail_1.4.0.v201005080615.jar"/>
         <copy-plugin from="javax.resource*.jar" to="javax.resource_1.6.0.v201204270900.jar"/>
         <copy-plugin from="javax.servlet*.jar" to="javax.servlet_2.4.0.v200806031604.jar"/>
         <copy-plugin from="javax.transaction-api*.jar" to="javax.transaction.api_1.3.0.jar"/>
         <copy-plugin from="javax.validation.api*.jar" to="javax.validation.api_2.0.1.Final.jar"/>
         <copy-plugin from="javax.ws.rs*.jar" to="javax.ws.rs_2.0.1.v201504171603.jar"/>
-        <copy-plugin from="jaxb-api_*.jar" to="javax.xml.bind_2.2.12.v201410011542.jar"/>
+        <copy-plugin from="jakarta.xml.bind-api_*.jar" to="javax.xml.bind_2.2.12.v201410011542.jar"/>
         <copy-plugin from="javax.xml.soap*.jar" to="javax.xml.soap_1.3.0.v200906010428.jar"/>
         <copy-plugin from="javax.xml.ws*.jar" to="javax.xml.ws_2.0.0.v200902170419.jar"/>
         <copy-plugin from="com.sun.xml.bind.jaxb-impl*.jar" to="jaxb-core_2.2.11.v201407311112.jar"/>
-        <!--<copy-plugin from="com.sun.xml.bind.jaxb-core*.jar" to="jaxb-core_2.2.11.v201407311112.jar"/>-->
-        <copy-plugin from="com.sun.xml.bind.jaxb-xjc*.jar" to="jaxb-xjc_2.2.11.v201407311112.jar"/>
         <copy-plugin from="org.glassfish.external.management-api*.jar" to="management-api_3.2.1.b003.jar"/>
         <copy-plugin from="org.apache.ant*.jar" to="org.apache.ant_1.7.0.v20080627-1145.zip"/>
         <copy-plugin from="org.mongodb.mongo-java-driver*.jar" to="org.eclipse.orbit.mongodb_2.10.1.v20130422-1135.jar"/>
@@ -672,7 +672,7 @@
         <copy-plugin from="osgi.cmpn*.jar" to="osgi.cmpn_4.1.0.jar"/>
 
         <!-- Copy source jars -->
-        <copy-plugin from="jaxb-api*sources.jar" to="javax.xml.bind.source_2.2.12.v1410011542.jar"/>
+        <copy-plugin from="jakarta.xml.bind-api*sources.jar" to="javax.xml.bind.source_2.2.12.v1410011542.jar"/>
     </target>
 
     <!-- Compiles all runtime components (excluding Tests, Oracle extensions). -->

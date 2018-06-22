@@ -50,13 +50,14 @@
         <!-- TOOL Properties -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <tycho.version>1.2.0</tycho.version>
+
         <!-- BUILD Properties -->
         <orbit.drop>R20180905201904</orbit.drop>
         <eclipse.drop>2018-09</eclipse.drop>
 
         <!-- DEPENDENCY Versions -->
         <ch.qos.logback.version>1.2.3</ch.qos.logback.version>
-        <!--<ch.qos.logback.version>1.1.2</ch.qos.logback.version>-->
+        <com.sun.istack.version>3.0.8</com.sun.istack.version>
         <com.sun.xml.bind.version>2.3.2</com.sun.xml.bind.version>
         <jakarta.activation.version>1.2.1</jakarta.activation.version>
         <jakarta.annotation.version>1.3.3</jakarta.annotation.version>
@@ -131,23 +132,23 @@
                     </filter>
                     <filter>
                         <type>java-package</type>
-                        <id>javax.ejb-api</id>
+                        <id>jakarta.ejb-api</id>
                         <restrictTo>
-                            <version>${javax.ejb.version}</version>
+                            <version>${jakarta.ejb.version}</version>
                         </restrictTo>
                     </filter>
                     <filter>
                         <type>java-package</type>
-                        <id>javax.transaction-api</id>
+                        <id>jakarta.transaction-api</id>
                         <restrictTo>
-                            <version>${javax.transaction.version}</version>
+                            <version>${jakarta.transaction.version}</version>
                         </restrictTo>
                     </filter>
                     <filter>
                         <type>java-package</type>
                         <id>jaxb-api</id>
                         <restrictTo>
-                            <version>${javax.xml.bind.version}</version>
+                            <version>${jakarta.xml.bind.version}</version>
                         </restrictTo>
                     </filter>
                     <filter>
@@ -179,13 +180,16 @@
             <artifactId>logback-core</artifactId>
             <version>${ch.qos.logback.version}</version>
         </dependency>
-<!--
         <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-core</artifactId>
-            <version>${com.sun.xml.bind.version}</version>
+            <groupId>com.sun.activation</groupId>
+            <artifactId>jakarta.activation</artifactId>
+            <version>${jakarta.activation.version}</version>
         </dependency>
--->
+        <dependency>
+            <groupId>com.sun.istack</groupId>
+            <artifactId>istack-commons-runtime</artifactId>
+            <version>${com.sun.istack.version}</version>
+        </dependency>
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-impl</artifactId>
@@ -195,11 +199,6 @@
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-xjc</artifactId>
             <version>${com.sun.xml.bind.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>jakarta.activation</groupId>
-            <artifactId>jakarta.activation-api</artifactId>
-            <version>${jakarta.activation.version}</version>
         </dependency>
         <dependency>
             <groupId>jakarta.annotation</groupId>
@@ -351,13 +350,6 @@
             <artifactId>jersey-client</artifactId>
             <version>${org.glassfish.jersey.version}</version>
         </dependency>
-<!-- Not available in 2.27
-        <dependency>
-            <groupId>org.glassfish.jersey.bundles.repackaged</groupId>
-            <artifactId>jersey-guava</artifactId>
-            <version>${org.glassfish.jersey.version}</version>
-        </dependency>
--->
         <dependency>
             <groupId>org.glassfish.jersey.core</groupId>
             <artifactId>jersey-common</artifactId>
@@ -424,5 +416,4 @@
             <version>${wsdl4j.version}</version>
         </dependency>
     </dependencies>
-
 </project>
