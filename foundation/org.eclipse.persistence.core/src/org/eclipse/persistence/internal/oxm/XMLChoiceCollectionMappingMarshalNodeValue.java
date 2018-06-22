@@ -235,12 +235,16 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends MappingNodeValue
                 }
                 if(frag != null || associatedNodeValue.isAnyMappingNodeValue()){
                     int valueSize = listValue.size();
-                    marshalRecord.startCollection();
+                    if(valueSize > 1 || !marshalRecord.getMarshaller().isReduceAnyArrays()) {
+                        marshalRecord.startCollection();
+                    }
 
                     for(int j=0;j<valueSize; j++){
                         marshalSingleValueWithNodeValue(frag, marshalRecord, object, listValue.get(j), session, namespaceResolver, ObjectMarshalContext.getInstance(), associatedNodeValue);
                     }
-                    marshalRecord.endCollection();
+                    if(valueSize > 1 || !marshalRecord.getMarshaller().isReduceAnyArrays()) {
+                        marshalRecord.endCollection();
+                    }
                 }
             }
         }
