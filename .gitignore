@@ -65,6 +65,7 @@ jakarta.interceptor*.jar
 jakarta.jms*.jar
 jakarta.json*.jar
 jakarta.mail*.jar
+jakarta.persistence*.jar
 jakarta.resource*.jar
 jakarta.servlet*.jar
 jakarta.transaction*.jar

@@ -247,7 +247,7 @@
         <property name="sdo.criteria" value="[2.1.1,2.2.0)"/>
         <property name="mail.prefix" value="com.sun.mail.jakarta.mail"/>
         <property name="mail.criteria" value="(1.6.2,2.0.0)"/>
-        <property name="persistence.prefix" value="javax.persistence"/>
+        <property name="persistence.prefix" value="jakarta.persistence"/>
         <property name="persistence.criteria" value="[2.0.100,2.3.0)"/>
         <property name="resource.prefix" value="jakarta.resource-api"/>
         <property name="resource.criteria" value="(1.7.2,2.0.0)"/>
@@ -637,7 +637,7 @@
             <zipfileset dir="${feature.2.common.plugins.dir}" prefix="plugins"  includes="org.eclipse.persistence*.jar"/>
             <zipfileset dir="${feature.2.util.plugins.dir}"   prefix="plugins"  includes="org.eclipse.persistence*.jar"/>
             <!-- see https://bugs.eclipse.org/bugs/show_bug.cgi?id=348829 -->
-            <zipfileset dir="${feature.2.jpa.plugins.dir}"    prefix="plugins"  includes="javax.persistence*.jar"/>
+            <zipfileset dir="${feature.2.jpa.plugins.dir}"    prefix="plugins"  includes="jakarta.persistence*.jar"/>
         </zip>
     </target>
 
