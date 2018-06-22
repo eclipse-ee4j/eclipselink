@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-Version: 1.0.5.qualifier
-Export-Package: sun.misc;sun.reflect;com.sun.source.tree;com.sun.source.util
+Export-Package: sun.misc;sun.reflect;com.sun.activation.registries;com.sun.source.tree;com.sun.source.util
 Bundle-ManifestVersion: 2
 Bundle-Name: System Bundle Fragment exporting sun.misc and sun.reflect
 Bundle-SymbolicName: org.eclipse.persistence.sun-misc
