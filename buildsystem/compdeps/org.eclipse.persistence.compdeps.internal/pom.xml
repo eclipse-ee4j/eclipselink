@@ -43,13 +43,17 @@
                                         <include name="org.eclipse.persistence.antlr_*"/>
                                         <include name="org.eclipse.persistence.antlr.source_*"/>
                                     </fileset>
+                                    <fileset dir="../../../jpa/plugins">
+                                        <include name="javax.persistence_*"/>
+                                        <include name="javax.persistence.source_*"/>
+                                    </fileset>
                                     <fileset dir="../../../utils/plugins">
                                         <include name="org.eclipse.persistence.oracleddlparser_*"/>
                                         <include name="org.eclipse.persistence.oracleddlparser.source_*"/>
                                     </fileset>
-                                    <fileset dir="../../../jpa/plugins">
-                                        <include name="javax.persistence_*"/>
-                                        <include name="javax.persistence.source_*"/>
+                                    <fileset dir="../../../sdo/plugins">
+                                        <include name="commonj.sdo._*"/>
+                                        <include name="commonj.sdo.source_*"/>
                                     </fileset>
                                 </copy>
                             </target>

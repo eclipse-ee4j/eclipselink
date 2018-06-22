@@ -51,7 +51,6 @@
 
         <!-- DEPENDENCY Versions -->
         <ch.qos.logback.version>1.1.2</ch.qos.logback.version>
-        <commonj.sdo.version>2.1.1</commonj.sdo.version>
         <com.sun.xml.bind.version>2.2.11</com.sun.xml.bind.version>
         <javax.activation.version>1.1.1</javax.activation.version>
         <javax.annotation.version>1.2</javax.annotation.version>
@@ -277,11 +276,6 @@
             <groupId>org.apache.ant</groupId>
             <artifactId>ant</artifactId>
             <version>${org.apache.ant.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>commonj.sdo</artifactId>
-            <version>${commonj.sdo.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>

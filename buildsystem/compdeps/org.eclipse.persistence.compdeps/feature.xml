@@ -75,13 +75,6 @@
             unpack="false"/>
 
     <plugin
-            id="commonj.sdo"
-            download-size="0"
-            install-size="0"
-            version="0.0.0"
-            unpack="false"/>
-
-    <plugin
             id="gmbal-api-only"
             download-size="0"
             install-size="0"

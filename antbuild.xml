@@ -424,12 +424,14 @@
 
 <!-- ================================================================================= -->
     <target name="set-compdeps" depends="check-maven" description="Setup for use of local compdeps rather than hosted, and whether to generate">
-        <!-- Determine whether the build could generate/use a local compdeps repo -->
-        <!--     To setup generation of local compdeps:                           -->
-        <!--        Set "eclipse.install.dir" to a valid Eclipse installation     -->
-        <!--           (Indigo or higher has been tested) by using a -D on        -->
-        <!--           the commandline, or adding it in a user properties file    -->
-        <!-- Test to see if local repo can be generated: tools exist                -->
+        <!-- Determine whether the build could generate/use a local compdeps repo. -->
+        <!-- It'll generate local compdeps repo only once.                         -->
+        <resourcecount property="plugin.count.jars">
+            <fileset dir="${plugins.dir}">
+                <include name="*.jar"/>
+            </fileset>
+        </resourcecount>
+        <echo message="There are ${plugin.count.jars} jarfiles in ${plugins.dir}"/>
         <condition property="local.compdeps" value="true" else="false">
             <and>
                 <isset property="eclipse.install.dir"/>
@@ -437,8 +439,16 @@
             </and>
         </condition>
         <!-- Test to see if local repo should be generated: if local set and if can -->
-        <condition property="generate.compdeps">
-                <equals arg1="${local.compdeps}" arg2="true"/>
+        <condition property="generate.compdeps" value="true" else="false">
+            <and>
+                <!--<equals arg1="${local.compdeps}" arg2="true"/>-->
+                <available file="${eclipselink.compdeps.p2repo}" type="dir"/>
+                <resourcecount when="less" count="40">
+                    <fileset dir="${plugins.dir}">
+                        <include name="*.jar"/>
+                    </fileset>
+                </resourcecount>
+            </and>
         </condition>
         <echo message="Compdeps Settings:"/>
         <echo message="    Whether to use a local compdeps p2 repo:"/>
@@ -544,10 +554,7 @@
 
     <!-- Prepare/copy internal compilation dependencies (ASM, ANTLR) into local Tycho repository. -->
     <target name="generate-internal-compdeps" if="generate.compdeps" depends="set-compdeps" description="Build local p2 repository of internal compiler dependencies">
-        <!-- a bit redundant, but here as a failsafe. -->
-        <available file="${eclipse.install.dir}/plugins" type="dir" property="eclipse.dir.exist"/>
-        <fail message="Specified Eclipse installation (${eclipse.install.dir}/plugins) not found. Exiting..." unless="eclipse.dir.exist"/>
-        <echo message="Generating local internal 'Compile Dependency P2 Repository' using tools found in '${eclipse.install.dir}/plugins'."/>
+        <echo message="Generating local internal 'Compile Dependency P2 Repository' using Tycho."/>
         <echo message="Launching Maven build with the following parameters:"/>
         <echo message="    -Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
         <echo message="    -Dmaven.multiModuleProjectDirectory=${eclipselink.mvn.parent}"/>
@@ -568,10 +575,7 @@
 
     <!-- Prepare/copy local Tycho repository from internal dependencies (ASM, ANTLR) and external (javax APIs, various implementations) resolved from Maven central repository. -->
     <target name="generate-local-compdeps" if="generate.compdeps" depends="set-compdeps, generate-internal-compdeps, clean-plugins" description="Build local p2 repository of local compiler dependencies">
-         <!--a bit redundant, but here as a failsafe.-->
-        <available file="${eclipse.install.dir}/plugins" type="dir" property="eclipse.dir.exist"/>
-        <fail message="Specified Eclipse installation (${eclipse.install.dir}/plugins) not found. Exiting..." unless="eclipse.dir.exist"/>
-        <echo message="Generating local 'Compile Dependency P2 Repository' using tools found in '${eclipse.install.dir}/plugins'."/>
+        <echo message="Generating local 'Compile Dependency P2 Repository' using Tycho."/>
         <echo message="    -Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
         <echo message="    -Dmaven.multiModuleProjectDirectory=${eclipselink.compdeps}"/>
         <echo message="    -Dmaven.home=${M2_HOME}"/>
