@@ -34,7 +34,9 @@ public class Version {
     // This will be used by all product components and included in exceptions.
     private static String product = "Eclipse Persistence Services";
 
-    /** Version numbers separator. */
+    /**
+     * Version numbers separator.
+     */
     private static final char SEPARATOR = '.';
 
     private static final String VERSION_PROPERTIES_FILE = "version.properties";
@@ -42,7 +44,7 @@ public class Version {
     private static Properties versionProperties;
 
     static {
-        try (InputStream versionStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(VERSION_PROPERTIES_FILE)) {
+        try (InputStream versionStream = Version.class.getResourceAsStream(VERSION_PROPERTIES_FILE)) {
             versionProperties = new Properties();
             versionProperties.load(versionStream);
         } catch (IOException e) {
@@ -53,6 +55,7 @@ public class Version {
     /**
      * Returns version {@link String} containing three part version number
      * and build qualifier.
+     *
      * @return Version {@link String}.
      */
     public static String getVersionString() {
@@ -112,11 +115,17 @@ public class Version {
 
     public static void main(String[] args) {
         System.out.println();
-        System.out.print(getProduct()); System.out.println(" (EclipseLink)");
-        System.out.print("   Build Version:   "); System.out.println(getVersionString());
-        System.out.print("   Build Qualifier: "); System.out.println(getQualifier());
-        System.out.print("   Build Date:      "); System.out.println(getBuildDate());
-        System.out.print("   Build Time:      "); System.out.println(getBuildTime());
-        System.out.print("   Build Revision:  "); System.out.println(getBuildRevision());
+        System.out.print(getProduct());
+        System.out.println(" (EclipseLink)");
+        System.out.print("   Build Version:   ");
+        System.out.println(getVersionString());
+        System.out.print("   Build Qualifier: ");
+        System.out.println(getQualifier());
+        System.out.print("   Build Date:      ");
+        System.out.println(getBuildDate());
+        System.out.print("   Build Time:      ");
+        System.out.println(getBuildTime());
+        System.out.print("   Build Revision:  ");
+        System.out.println(getBuildRevision());
     }
 }

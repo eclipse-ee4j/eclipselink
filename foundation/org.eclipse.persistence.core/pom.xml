@@ -85,7 +85,7 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${basedir}/target/classes</outputDirectory>
+                            <outputDirectory>${project.build.outputDirectory}/org/eclipse/persistence</outputDirectory>
                             <overwrite>true</overwrite>
                             <resources>
                                 <resource>
