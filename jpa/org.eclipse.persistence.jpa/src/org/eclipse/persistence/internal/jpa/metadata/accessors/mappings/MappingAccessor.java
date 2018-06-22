@@ -1837,10 +1837,10 @@ public abstract class MappingAccessor extends MetadataAccessor {
         } else if (hasConverts) {
             // If we have JPA converts, apply them.
             processConverts(converts, mapping, referenceClass, isForMapKey);
-        } else if (getProject().hasAutoApplyConverter(referenceClassWithGenerics)) {
+        } else if (getProject().hasAutoApplyConverter(referenceClassWithGenerics) && !hasAutoApplyConverterExcludeAnnotations(this)) {
             // If no convert is specified and there exist an auto-apply
             // converter for the reference class, apply it.
-            getProject().getAutoApplyConverter(referenceClassWithGenerics).process(mapping, isForMapKey, null);
+                getProject().getAutoApplyConverter(referenceClassWithGenerics).process(mapping, isForMapKey, null);
         } else {
             // Check for original JPA converters. Check for an enum first since
             // it will fall into a serializable mapping otherwise since enums
@@ -1855,6 +1855,16 @@ public abstract class MappingAccessor extends MetadataAccessor {
                 processSerialized(mapping, referenceClass, isForMapKey);
             }
         }
+    }
+
+    private boolean hasAutoApplyConverterExcludeAnnotations(MappingAccessor mappingAccessor) {
+        final Class[] excludeAnnotations = {javax.persistence.Id.class, javax.persistence.Version.class, javax.persistence.Enumerated.class, javax.persistence.Temporal.class};
+        for (Class excludeAnnotation: excludeAnnotations) {
+            if (mappingAccessor.isAnnotationPresent(excludeAnnotation)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
