@@ -149,6 +149,9 @@
     <condition property="javadoc.additionParams" value="${javadoc.additionParamsCommon} -Xdoclint:none --add-modules java.activation,java.corba,java.xml.ws.annotation --upgrade-module-path ${eclipselink.plugins}/${transaction.jar}" else="${javadoc.additionParamsCommon}">
         <matches string="${java.version}" pattern="10.*"/>
     </condition>
+    <condition property="is.new.jdk" value="true" else="false">
+        <not><matches pattern='"[1-8]\..*"' string="${java.version}"/></not>
+    </condition>
     <echo message="javadoc additional params: '${javadoc.additionParams}'"/>
 
     <!-- JDBC driver settings info -->
@@ -203,6 +206,7 @@
             dir="${eclipselink.plugins}"
             includes="*nosql*"
             excludes="*source*"/>
+        <pathelement path="${eclipselink.plugins}/org.mongodb.mongo-java-driver_3.2.0.jar"/>
     </path>
     <path id="jpars.javadoc.path">
         <path refid="javadoc.path"/>
@@ -1345,6 +1349,8 @@
             </fileset>
             <fileset dir="${eclipselink.extension.oracle.nosql}/${src.dir}" defaultexcludes="yes">
                 <include name="org/eclipse/persistence/**/*.java"/>
+                <exclude name="org/eclipse/persistence/**/AQPlatform.java" if="${is.new.jdk}"/>
+                <exclude name="org/eclipse/persistence/**/OracleNoSQLPlatform.java" if="${is.new.jdk}"/>
                 <exclude name="org/eclipse/persistence/internal/**/*.java"/>
             </fileset>
         </javadoc>
