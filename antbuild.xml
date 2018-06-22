@@ -147,7 +147,7 @@
 
     <!-- Add some modules required for javadoc JDK (=10.*). -->
     <!-- TODO temporary disabled some check checks for problems in Javadoc comments by -Xdoclint:none -->
-    <condition property="javadoc.additionParams" value="${javadoc.additionParamsCommon} -Xdoclint:none --add-modules java.activation,java.corba,java.xml.ws.annotation --upgrade-module-path ${eclipselink.plugins}/${transaction.jar}" else="${javadoc.additionParamsCommon}">
+    <condition property="javadoc.additionParams" value="${javadoc.additionParamsCommon} -Xdoclint:none --add-modules java.activation,java.corba,java.xml.ws.annotation --upgrade-module-path ${eclipselink.plugins}/${transaction.jar}" else="${javadoc.additionParamsCommon} -Xdoclint:none">
         <matches string="${java.version}" pattern="9\..*|10\..*"/>
     </condition>
     <condition property="is.new.jdk" value="true" else="false">
