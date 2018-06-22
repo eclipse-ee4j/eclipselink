@@ -126,7 +126,7 @@ public class Version {
             System.out.println(getBuildTime());
             System.out.print("   Build Revision:  ");
             System.out.println(getBuildRevision());
-        }catch (Exception e) {
+        }catch (Throwable e) {
             AbstractSessionLog.getLog().logThrowable(SessionLog.SEVERE, e);
         }
     }
