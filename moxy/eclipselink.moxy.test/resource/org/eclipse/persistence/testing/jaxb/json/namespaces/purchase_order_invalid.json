@@ -1,0 +1,20 @@
+{
+   "PurchaseOrder":{
+      "ShipTo":[
+         {
+            "name":"str1234",
+            "street":"str1234",
+            "city":"str1234",
+            "state":"str1234",
+            "zip":1234
+         }
+      ],
+      "BillTo":{
+         "nameq":"str1234",
+         "street":"str1234",
+         "city":"str1234",
+         "state":"str1234",
+         "zip":1234
+      }
+   }
+}

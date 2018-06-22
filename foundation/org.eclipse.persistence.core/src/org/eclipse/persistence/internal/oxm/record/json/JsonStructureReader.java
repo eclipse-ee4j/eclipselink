@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,6 +12,7 @@
 
 // Contributors:
 //     Denise Smith - 2.6 - initial implementation
+//     Juan Pablo Gardella = 2.7.4 - Fix for the bug #543063
 package org.eclipse.persistence.internal.oxm.record.json;
 
 import java.io.FileInputStream;
@@ -300,6 +301,7 @@ public class JsonStructureReader extends XMLReaderAdapter {
             }
             String uri = Constants.EMPTY_STRING;
             if (isNamespaceAware() && namespaces != null) {
+            	uri=null;
                 if (parentLocalName.length() > 2) {
                     int nsIndex = parentLocalName.indexOf(getNamespaceSeparator(), 1);
                     if (nsIndex > -1) {
@@ -319,8 +321,11 @@ public class JsonStructureReader extends XMLReaderAdapter {
             boolean isTextValue;
             int arraySize = jsonArray.size();
             if (arraySize == 0) {
-                if (contentHandler instanceof UnmarshalRecord) {
-                    UnmarshalRecord ur = (UnmarshalRecord) contentHandler;
+                if (contentHandler instanceof UnmarshalRecord  || isUnmarshalRecordWithinAdapter()) {
+                    //UnmarshalRecord ur = (UnmarshalRecord) contentHandler;
+    				final UnmarshalRecord ur = this.contentHandler instanceof UnmarshalRecord
+    						? (UnmarshalRecord) this.contentHandler
+    						: getUnmarshalRecordFromAdapter();
                     XPathNode node = ur.getNonAttributeXPathNode(uri, parentLocalName, parentLocalName, null);
                     if (node != null) {
                         NodeValue nv = node.getNodeValue();
@@ -337,9 +342,12 @@ public class JsonStructureReader extends XMLReaderAdapter {
 
             XPathFragment groupingXPathFragment = null;
             XPathFragment itemXPathFragment = null;
-            if (contentHandler instanceof UnmarshalRecord) {
-                isTextValue = isTextValue(parentLocalName);
-                UnmarshalRecord unmarshalRecord = (UnmarshalRecord) contentHandler;
+            if (contentHandler instanceof UnmarshalRecord || isUnmarshalRecordWithinAdapter()) {
+				final UnmarshalRecord contentHandler_ = contentHandler instanceof UnmarshalRecord
+						? (UnmarshalRecord) contentHandler
+						: getUnmarshalRecordFromAdapter();
+                isTextValue = isTextValue(parentLocalName, (UnmarshalRecord) contentHandler_);
+                UnmarshalRecord unmarshalRecord = (UnmarshalRecord) contentHandler_;
                 if (unmarshalRecord.getUnmarshaller().isWrapperAsCollectionName()) {
                     XPathNode unmarshalRecordXPathNode = unmarshalRecord.getXPathNode();
                     if (null != unmarshalRecordXPathNode) {
@@ -351,7 +359,7 @@ public class JsonStructureReader extends XMLReaderAdapter {
                         if (groupingXPathNode != null) {
                             if (groupingXPathNode.getUnmarshalNodeValue() instanceof CollectionGroupingElementNodeValue) {
                                 groupingXPathFragment = groupingXPathNode.getXPathFragment();
-                                contentHandler.startElement(uri, parentLocalName, parentLocalName, new AttributesImpl());
+                                contentHandler_.startElement(uri, parentLocalName, parentLocalName, new AttributesImpl());
                                 XPathNode itemXPathNode = groupingXPathNode.getNonAttributeChildren().get(0);
                                 itemXPathFragment = itemXPathNode.getXPathFragment();
                             } else if (groupingXPathNode.getUnmarshalNodeValue() == null) {
@@ -359,7 +367,7 @@ public class JsonStructureReader extends XMLReaderAdapter {
                                 if (itemXPathNode != null) {
                                     if ((itemXPathNode.getUnmarshalNodeValue()).isContainerValue()) {
                                         groupingXPathFragment = groupingXPathNode.getXPathFragment();
-                                        contentHandler.startElement(uri, parentLocalName, parentLocalName, new AttributesImpl());
+                                        contentHandler_.startElement(uri, parentLocalName, parentLocalName, new AttributesImpl());
                                         itemXPathFragment = itemXPathNode.getXPathFragment();
                                     }
                                 }
@@ -402,6 +410,7 @@ public class JsonStructureReader extends XMLReaderAdapter {
             String localName = name;
             String uri = Constants.EMPTY_STRING;
             if (isNamespaceAware() && namespaces != null) {
+            	uri=null;
                 if (localName.length() > 2) {
                     int nsIndex = localName.indexOf(getNamespaceSeparator(), 1);
                     String prefix = Constants.EMPTY_STRING;
@@ -440,7 +449,7 @@ public class JsonStructureReader extends XMLReaderAdapter {
                         return;
                     }
                 }
-                boolean isTextValue = isTextValue(localName);
+                boolean isTextValue = isTextValue(localName,(UnmarshalRecord) contentHandler);
                 if (isTextValue) {
                     parseValue(jsonValue);
                     return;
@@ -449,7 +458,26 @@ public class JsonStructureReader extends XMLReaderAdapter {
                 if(attributePrefix == null && nv !=null ){
                   return;
                 }
-            }
+			} else if (isUnmarshalRecordWithinAdapter()) {
+				@SuppressWarnings("rawtypes")
+				final UnmarshalRecord contentHandler_ = getUnmarshalRecordFromAdapter();
+				if (jsonTypeCompatibility) {
+					if (!isNamespaceAware() && localName.equals(Constants.SCHEMA_TYPE_ATTRIBUTE)
+							&& !contentHandler_.getXPathNode().hasTypeChild()) {
+						return;
+					}
+				}
+				boolean isTextValue = isTextValue(localName, contentHandler_);
+				if (isTextValue) {
+					parseValue(jsonValue);
+					return;
+				}
+				NodeValue nv = contentHandler_.getAttributeChildNodeValue(uri, localName);
+				if (attributePrefix == null && nv != null) {
+					return;
+				}
+			}
+
             if (jsonValue.getValueType() == ValueType.NULL) {
                 contentHandler.setNil(true);
             }
@@ -462,7 +490,19 @@ public class JsonStructureReader extends XMLReaderAdapter {
 
     }
 
-    @Override
+	private UnmarshalRecord getUnmarshalRecordFromAdapter() {
+		return (UnmarshalRecord) ((ValidatingContentHandler) ((ExtendedContentHandlerAdapter) contentHandler)
+				.getContentHandler()).getContentHandler();
+	}
+
+	private boolean isUnmarshalRecordWithinAdapter() {
+		return contentHandler instanceof ExtendedContentHandlerAdapter
+				&& ((ExtendedContentHandlerAdapter) contentHandler)
+						.getContentHandler() instanceof ValidatingContentHandler
+				&& ((ValidatingContentHandler) ((ExtendedContentHandlerAdapter) contentHandler).getContentHandler())
+						.getContentHandler() instanceof UnmarshalRecord;
+	}
+
     public boolean isNullRepresentedByXsiNil(AbstractNullPolicy nullPolicy) {
         return true;
     }
@@ -480,8 +520,8 @@ public class JsonStructureReader extends XMLReaderAdapter {
         return isInCollection;
     }
 
-    private boolean isTextValue(String localName) {
-        XPathNode currentNode = ((UnmarshalRecord) contentHandler).getXPathNode();
+    private boolean isTextValue(String localName, UnmarshalRecord contentHandler_) {
+        XPathNode currentNode = ((UnmarshalRecord) contentHandler_).getXPathNode();
         if (currentNode == null) {
             return textWrapper != null && textWrapper.equals(localName);
         }
@@ -493,6 +533,7 @@ public class JsonStructureReader extends XMLReaderAdapter {
                 ) && textWrapper != null && textWrapper.equals(localName)
         );
     }
+
 
     @Override
     public Object convertValueBasedOnSchemaType(Field xmlField, Object value, ConversionManager conversionManager, AbstractUnmarshalRecord record) {
