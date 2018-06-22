@@ -50,7 +50,8 @@
         <eclipse.drop>2018-09</eclipse.drop>
 
         <!-- DEPENDENCY Versions -->
-        <ch.qos.logback.version>1.1.2</ch.qos.logback.version>
+        <ch.qos.logback.version>1.2.3</ch.qos.logback.version>
+        <!--<ch.qos.logback.version>1.1.2</ch.qos.logback.version>-->
         <com.sun.xml.bind.version>2.2.11</com.sun.xml.bind.version>
         <javax.activation.version>1.1.1</javax.activation.version>
         <javax.annotation.version>1.2</javax.annotation.version>
@@ -79,7 +80,7 @@
         <org.glassfish.pfl.version>4.0.1-b003</org.glassfish.pfl.version>
         <org.mongodb.version>3.2.0</org.mongodb.version>
         <org.osgi.version>4.3.1</org.osgi.version>
-        <org.slf4j.version>1.7.2</org.slf4j.version>
+        <org.slf4j.version>1.7.25</org.slf4j.version>
         <wsdl4j.version>1.6.2</wsdl4j.version>
     </properties>
 
