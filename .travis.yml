@@ -30,7 +30,8 @@ env:
   global:
     - ANT_HOME=$HOME/apache-ant-1.10.5
     - M2_HOME=/usr/local/maven-3.5.2
-matrix:
+    - MAVEN_OPTS=-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+  matrix:
     - TEST_TARGET=test-core
     - TEST_TARGET=test-jpa22
     - TEST_TARGET=test-moxy
