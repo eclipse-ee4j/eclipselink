@@ -145,8 +145,8 @@
     <fail message="A non-compatible version of JDK was detected! Build won't run properly unless running on at least JDK 1.8!." unless="compat.jdk"/>
 
     <!-- Add some modules required for javadoc JDK (=10.*). -->
-    <!-- TODO temporary disabled some check checks for problems in Javadoc comments by -Xdoclint:none -->
-    <condition property="javadoc.additionParams" value="${javadoc.additionParamsCommon} -Xdoclint:none --add-modules java.activation,java.corba,java.xml.ws.annotation --upgrade-module-path ${eclipselink.plugins}/${transaction.jar}" else="${javadoc.additionParamsCommon}">
+    <!-- TODO temporary disabled some check checks for problems in Javadoc comments by -Xdoclint:none. (JDK 8: in case of javax/xml/bind/JAXBContext|JAXBContextFactory there is {@linkplain java.lang.Module...}-->
+    <condition property="javadoc.additionParams" value="${javadoc.additionParamsCommon} -Xdoclint:none --add-modules java.activation,java.corba,java.xml.ws.annotation --upgrade-module-path ${eclipselink.plugins}/${transaction.jar}" else="${javadoc.additionParamsCommon} -Xdoclint:none">
         <matches string="${java.version}" pattern="10.*"/>
     </condition>
     <condition property="is.new.jdk" value="true" else="false">
@@ -627,7 +627,7 @@
         <copy-plugin from="javax.inject*.jar" to="javax.inject_1.0.0.v20091030.jar"/>
         <copy-plugin from="javax.interceptor-api*.jar" to="javax.interceptor.api_1.2.2.jar"/>
         <copy-plugin from="javax.jms*.jar" to="javax.jms_1.1.0.v200906010428.jar"/>
-        <copy-plugin from="org.glassfish.javax.json*.jar" to="javax.json_1.1.2.jar"/>
+        <copy-plugin from="org.glassfish.jakarta.json*.jar" to="javax.json_1.1.2.jar"/>
         <copy-plugin from="jakarta.json-api*.jar" to="javax.json-api_1.1.2.jar"/>
         <copy-plugin from="javax.mail*.jar" to="javax.mail_1.4.0.v201005080615.jar"/>
         <copy-plugin from="javax.resource*.jar" to="javax.resource_1.6.0.v201204270900.jar"/>
@@ -1283,6 +1283,7 @@
             </fileset>
             <fileset dir="${build.dir}/javax.xml.bind/src" defaultexcludes="yes">
                 <include name="**/*.java"/>
+                <exclude name="module-info.java"/>
             </fileset>
             <!-- *** EclipseLink modules *** -->
             <fileset dir="${eclipselink.core}/${src.dir}" defaultexcludes="yes">
