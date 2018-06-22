@@ -77,8 +77,12 @@
             <layout>p2</layout>
             <url>http://download.eclipse.org/releases/${eclipse.drop}</url>
         </repository>
+        <repository>
+            <id>oss.sonatype.org</id>
+            <name>OSS Sonatype Staging</name>
+            <url>https://oss.sonatype.org/content/groups/staging</url>
+        </repository>
     </repositories>
-
     <profiles>
         <profile>
             <id>tycho.local.compdeps</id>

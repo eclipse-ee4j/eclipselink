@@ -636,7 +636,8 @@
         <copy-plugin from="jaxb-api_*.jar" to="javax.xml.bind_2.2.12.v201410011542.jar"/>
         <copy-plugin from="javax.xml.soap*.jar" to="javax.xml.soap_1.3.0.v200906010428.jar"/>
         <copy-plugin from="javax.xml.ws*.jar" to="javax.xml.ws_2.0.0.v200902170419.jar"/>
-        <copy-plugin from="com.sun.xml.bind.jaxb-core*.jar" to="jaxb-core_2.2.11.v201407311112.jar"/>
+        <copy-plugin from="com.sun.xml.bind.jaxb-impl*.jar" to="jaxb-core_2.2.11.v201407311112.jar"/>
+        <!--<copy-plugin from="com.sun.xml.bind.jaxb-core*.jar" to="jaxb-core_2.2.11.v201407311112.jar"/>-->
         <copy-plugin from="com.sun.xml.bind.jaxb-xjc*.jar" to="jaxb-xjc_2.2.11.v201407311112.jar"/>
         <copy-plugin from="org.glassfish.external.management-api*.jar" to="management-api_3.2.1.b003.jar"/>
         <copy-plugin from="org.apache.ant*.jar" to="org.apache.ant_1.7.0.v20080627-1145.zip"/>
@@ -652,7 +653,8 @@
         <copy-plugin from="org.glassfish.hk2.api*.jar" to="org.glassfish.hk2.api_2.3.0.b10_201505192201.jar"/>
         <copy-plugin from="org.glassfish.hk2.locator*.jar" to="org.glassfish.hk2.locator_2.3.0.b10_201505192201.jar"/>
         <copy-plugin from="org.glassfish.hk2.utils*.jar" to="org.glassfish.hk2.utils_2.3.0.b10_201505192201.jar"/>
-        <copy-plugin from="org.glassfish.jersey.bundles.repackaged.jersey-guava*.jar" to="org.glassfish.jersey.bundles.repackaged.jersey-guava_2.14.0.v201504151636.jar"/>
+        <copy-plugin from="org.glassfish.jersey.core.jersey-core*.jar*.jar" to="org.glassfish.jersey.bundles.repackaged.jersey-guava_2.14.0.v201504151636.jar"/>
+        <!--<copy-plugin from="org.glassfish.jersey.bundles.repackaged.jersey-guava*.jar" to="org.glassfish.jersey.bundles.repackaged.jersey-guava_2.14.0.v201504151636.jar"/>-->
         <copy-plugin from="org.glassfish.jersey.core.jersey-client*.jar" to="org.glassfish.jersey.core.jersey-client_2.14.0.v201504211925.jar"/>
         <copy-plugin from="org.glassfish.jersey.core.jersey-common*.jar" to="org.glassfish.jersey.core.jersey-common_2.14.0.v201504171603.jar"/>
         <copy-plugin from="org.glassfish.pfl.pfl-asm*.jar" to="org.glassfish.pfl.pfl-asm_4.0.1.b003.jar"/>
