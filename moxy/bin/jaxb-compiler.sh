@@ -21,7 +21,6 @@ JVM_ARGS="-Xmx256m"
 
 # Please do not change any of the following lines:
 CLASSPATH=`dirname $0`/../jlib/moxy/com.sun.xml.bind.jaxb-osgi.jar:\
-`dirname $0`/../jlib/moxy/com.sun.xml.bind.jaxb-xjc.jar:\
 `dirname $0`/../jlib/moxy/org.glassfish.jakarta.json.jar:\
 `dirname $0`/../jlib/moxy/jakarta.validation-api.jar:\
 `dirname $0`/../jlib/eclipselink.jar

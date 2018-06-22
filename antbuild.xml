@@ -184,7 +184,6 @@
         <pathelement path="${eclipselink.plugins}/${asm}"/>
         <pathelement path="${eclipselink.plugins}/${jaxb-api.jar}"/>
         <pathelement path="${eclipselink.plugins}/${jaxb-core.jar}"/>
-        <pathelement path="${eclipselink.plugins}/${jaxb-xjc.jar}"/>
         <pathelement path="${eclipselink.jpa.plugins}/${persistence22.jar}"/>
         <pathelement path="${eclipselink.plugins}/${resource.jar}"/>
         <pathelement path="${eclipselink.plugins}/${json-api.jar}"/>
@@ -617,10 +616,7 @@
         <copy-plugin from="jakarta.enterprise.cdi-api*.jar" to="cdi.api_1.0.0.v201105160744.jar"/>
         <copy-plugin from="ch.qos.logback.classic*.jar" to="ch.qos.logback.classic_1.0.7.v20121108-1250.jar"/>
         <copy-plugin from="ch.qos.logback.core*.jar" to="ch.qos.logback.core_1.0.7.v20121108-1250.jar"/>
-        <!--SLF4J <copy-plugin from="ch.qos.logback.slf4j_1.0.7.v20121108-1250.jar" to="ch.qos.logback.slf4j_1.0.7.v20121108-1250.jar"/>-->
         <copy-plugin from="com.sun.xml.bind.jaxb-osgi*.jar" to="com.sun.xml.bind.jaxb-osgi.jar"/>
-        <!--jaxb-core...jar content is in *jaxb-osgi*.jar  <copy-plugin from="com.sun.xml.bind.jaxb-osgi*.jar" to="jaxb-core_2.2.11.v201407311112.jar"/>-->
-        <copy-plugin from="com.sun.xml.bind.jaxb-xjc*.jar" to="com.sun.xml.bind.jaxb-xjc.jar"/>
         <copy-plugin from="gmbal-api-only*.jar" to="gmbal-api-only_3.2.0.b003.jar"/>
         <copy-plugin from="jakarta.annotation-api*.jar" to="jakarta.annotation-api.jar"/>
         <copy-plugin from="jakarta.ejb-api*.jar" to="jakarta.ejb-api.jar"/>
@@ -1470,7 +1466,6 @@
             <zipfileset dir="${eclipselink.plugins}/" prefix="eclipselink/jlib/moxy">
                 <include name="${mail.jar}"/>
                 <include name="${jaxb-core.jar}"/>
-                <include name="${jaxb-xjc.jar}"/>
                 <include name="${javax.validation.jar}"/>
                 <include name="${json-api.jar}"/>
                 <include name="${json-impl.jar}"/>

@@ -27,7 +27,6 @@ call :fixpath "%~dp0"
 set THIS=%_FIXPATH:~1%
 set CLASSPATH=%THIS%..\jlib\moxy\org.glassfish.jakarta.json.jar
 set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\moxy\com.sun.xml.bind.jaxb-osgi.jar
-set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\moxy\com.sun.xml.bind.jaxb-xjc.jar
 set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\moxy\jakarta.validation-api.jar
 set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\eclipselink.jar
 set JAVA_ARGS=%*
