@@ -48,10 +48,7 @@ import org.eclipse.persistence.testing.jaxb.json.norootelement.NoRootElementNSTe
 import org.eclipse.persistence.testing.jaxb.json.norootelement.NoRootElementTestCases;
 import org.eclipse.persistence.testing.jaxb.json.padding.JSONWithPaddingTestCases;
 import org.eclipse.persistence.testing.jaxb.json.rootlevellist.RootLevelListTestCases;
-import org.eclipse.persistence.testing.jaxb.json.type.TypeNameValueTestCases;
-import org.eclipse.persistence.testing.jaxb.json.type.TypePrefixTestCases;
-import org.eclipse.persistence.testing.jaxb.json.type.TypePropertyInheritanceTestCases;
-import org.eclipse.persistence.testing.jaxb.json.type.TypePropertyTestCases;
+import org.eclipse.persistence.testing.jaxb.json.type.*;
 import org.eclipse.persistence.testing.jaxb.json.unmapped.JsonUnmappedTestCases;
 import org.eclipse.persistence.testing.jaxb.json.wrapper.AllWrapperTestCases;
 import org.eclipse.persistence.testing.jaxb.json.xmlvalue.XMLValuePropDifferentTestCases;
@@ -98,6 +95,7 @@ public class JSONTestSuite extends TestSuite {
           suite.addTestSuite(MultiLineStringTestCases.class);
           suite.addTestSuite(TypeNameValueTestCases.class);
           suite.addTestSuite(TypePrefixTestCases.class);
+          suite.addTestSuite(TypePropertyCustomNameTestCases.class);
           suite.addTestSuite(TypePropertyInheritanceTestCases.class);
           suite.addTestSuite(TypePropertyTestCases.class);
           suite.addTestSuite(JsonUnmappedTestCases.class);
