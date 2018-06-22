@@ -192,14 +192,16 @@
             <artifactId>jakarta.activation</artifactId>
             <version>${jakarta.activation.version}</version>
         </dependency>
+<!--
         <dependency>
             <groupId>com.sun.istack</groupId>
             <artifactId>istack-commons-runtime</artifactId>
             <version>${com.sun.istack.version}</version>
         </dependency>
+-->
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-impl</artifactId>
+            <artifactId>jaxb-osgi</artifactId>
             <version>${com.sun.xml.bind.version}</version>
         </dependency>
         <dependency>

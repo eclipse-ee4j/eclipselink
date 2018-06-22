@@ -54,7 +54,7 @@
             unpack="false"/>
 
     <plugin
-            id="com.sun.istack.commons-runtime"
+            id="com.sun.xml.bind.jaxb-osgi"
             download-size="0"
             install-size="0"
             version="0.0.0"
@@ -62,13 +62,6 @@
 
     <plugin
             id="com.sun.xml.bind.jaxb-xjc"
-            download-size="0"
-            install-size="0"
-            version="0.0.0"
-            unpack="false"/>
-
-    <plugin
-            id="com.sun.xml.bind.jaxb-impl"
             download-size="0"
             install-size="0"
             version="0.0.0"

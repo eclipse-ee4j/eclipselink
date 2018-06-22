@@ -618,8 +618,8 @@
         <copy-plugin from="ch.qos.logback.classic*.jar" to="ch.qos.logback.classic_1.0.7.v20121108-1250.jar"/>
         <copy-plugin from="ch.qos.logback.core*.jar" to="ch.qos.logback.core_1.0.7.v20121108-1250.jar"/>
         <!--SLF4J <copy-plugin from="ch.qos.logback.slf4j_1.0.7.v20121108-1250.jar" to="ch.qos.logback.slf4j_1.0.7.v20121108-1250.jar"/>-->
-        <copy-plugin from="com.sun.istack.commons-runtime*.jar" to="com.sun.istack.commons-runtime_3.0.8.jar"/>
-        <copy-plugin from="com.sun.xml.bind.jaxb-impl*.jar" to="com.sun.xml.bind_2.2.11.v201406210428.jar"/>
+        <copy-plugin from="com.sun.xml.bind.jaxb-osgi*.jar" to="com.sun.xml.bind_2.2.11.v201406210428.jar"/>
+        <copy-plugin from="com.sun.xml.bind.jaxb-osgi*.jar" to="jaxb-core_2.2.11.v201407311112.jar"/>
         <copy-plugin from="com.sun.xml.bind.jaxb-xjc*.jar" to="jaxb-xjc_2.2.11.v201407311112.jar"/>
         <copy-plugin from="gmbal-api-only*.jar" to="gmbal-api-only_3.2.0.b003.jar"/>
         <copy-plugin from="javax.annotation-api*.jar" to="javax.annotation_1.2.0.v201401042248.jar"/>
@@ -638,7 +638,6 @@
         <copy-plugin from="jakarta.xml.bind-api_*.jar" to="javax.xml.bind_2.2.12.v201410011542.jar"/>
         <copy-plugin from="javax.xml.soap*.jar" to="javax.xml.soap_1.3.0.v200906010428.jar"/>
         <copy-plugin from="javax.xml.ws*.jar" to="javax.xml.ws_2.0.0.v200902170419.jar"/>
-        <copy-plugin from="com.sun.xml.bind.jaxb-impl*.jar" to="jaxb-core_2.2.11.v201407311112.jar"/>
         <copy-plugin from="org.glassfish.external.management-api*.jar" to="management-api_3.2.1.b003.jar"/>
         <copy-plugin from="org.apache.ant*.jar" to="org.apache.ant_1.7.0.v20080627-1145.zip"/>
         <copy-plugin from="org.mongodb.mongo-java-driver*.jar" to="org.eclipse.orbit.mongodb_2.10.1.v20130422-1135.jar"/>
@@ -1476,7 +1475,6 @@
                 <include name="${javax.validation.jar}"/>
                 <include name="${json-api.jar}"/>
                 <include name="${json-impl.jar}"/>
-                <include name="${istack-commons-runtime.jar}"/>
             </zipfileset>
             <zipfileset dir="${eclipselink.plugins}/" prefix="eclipselink/jlib/moxy/api">
                 <include name="${jaxb-api.jar}"/>
