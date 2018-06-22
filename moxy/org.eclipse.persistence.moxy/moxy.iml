@@ -3,8 +3,8 @@
   <component name="EclipseModuleManager">
     <libelement value="file://C:\eclipselink-runtime\moxy\org.eclipse.persistence.moxy\resource" />
     <varelement var="jar://$MODULE_DIR$/../../plugins/javax.ws.rs_2.0.1.v201504171603.jar!/" value="MODULE_DIR/../../plugins/javax.ws.rs_2.0.1.v201504171603.jar" />
-    <varelement var="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.asm_6.2.0.v201808041549.jar!/" value="MODULE_DIR/../../plugins/org.eclipse.persistence.asm_6.2.0.v201808041549.jar" />
-    <varelement var="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.asm.source_6.2.0.v201808041549.jar!/" value="src:/MODULE_DIR/../../plugins/org.eclipse.persistence.asm.source_6.2.0.v201808041549.jar" />
+    <varelement var="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.asm_7.0.0.v201811131354.jar!/" value="MODULE_DIR/../../plugins/org.eclipse.persistence.asm_7.0.0.v201811131354.jar" />
+    <varelement var="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.asm.source_7.0.0.v201811131354.jar!/" value="src:/MODULE_DIR/../../plugins/org.eclipse.persistence.asm.source_7.0.0.v201811131354.jar" />
     <src_description expected_position="0">
       <src_folder value="file://$MODULE_DIR$/src" expected_position="0" />
     </src_description>
@@ -41,11 +41,11 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.asm_6.2.0.v201808041549.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.asm_7.0.0.v201811131354.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.asm.source_6.2.0.v201808041549.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.asm.source_7.0.0.v201811131354.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
