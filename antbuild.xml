@@ -1476,6 +1476,7 @@
                 <include name="${javax.validation.jar}"/>
                 <include name="${json-api.jar}"/>
                 <include name="${json-impl.jar}"/>
+                <include name="${istack-commons-runtime.jar}"/>
             </zipfileset>
             <zipfileset dir="${eclipselink.plugins}/" prefix="eclipselink/jlib/moxy/api">
                 <include name="${jaxb-api.jar}"/>

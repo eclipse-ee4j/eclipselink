@@ -21,6 +21,7 @@ JVM_ARGS="-Xmx256m"
 
 # Please do not change any of the following lines:
 CLASSPATH=`dirname $0`/../jlib/moxy/jaxb-core_2.2.11.v201407311112.jar:\
+`dirname $0`/../jlib/moxy/com.sun.istack.commons-runtime_3.0.8.jar:\
 `dirname $0`/../jlib/moxy/jaxb-xjc_2.2.11.v201407311112.jar:\
 `dirname $0`/../jlib/moxy/javax.json-api_1.1.2.jar:\
 `dirname $0`/../jlib/moxy/javax.json_1.1.2.jar:\
