@@ -129,7 +129,7 @@ CREATE OR REPLACE FUNCTION SF_TBL1(NUM IN INTEGER) RETURN SOMEPACKAGE_TBL1 AS
   BEGIN
       FOR I IN 1 .. NUM LOOP
          L_DATA.EXTEND;
-         L_DATA(I) := 'entry ' || i;
+         L_DATA(I) := CONCAT('entry ', TO_CHAR(i));
       END LOOP;
      RETURN L_DATA;
 END;
@@ -197,7 +197,7 @@ CREATE OR REPLACE PACKAGE BODY ANOTHER_ADVANCED_DEMO AS
   BEGIN
       FOR I IN 1 .. NUM LOOP
          L_DATA.EXTEND;
-         L_DATA(I) := EMP_INFO(I, 'entry ' || i);
+         L_DATA(I) := EMP_INFO(I, CONCAT('entry ', TO_CHAR(i)));
       END LOOP;
      RETURN L_DATA;
   END BUILDEMPARRAY;
