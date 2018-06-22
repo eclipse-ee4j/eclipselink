@@ -174,7 +174,7 @@
         <taskdef name="selectbundle" classname="${custom.selectbundle.task.class}" classpath="${custom.tasks.lib}"/>
 
         <!-- Test for Third-party dependencies -->
-        <selectbundle basename="javax.xml.bind" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
+        <selectbundle basename="jakarta.xml.bind-api" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
                       criterion="[2.0.0,3.0.0)" property="jaxb-api.lib" includepath="true"/>
         <selectbundle basename="javax.persistence" directory="${jparstest.build.location}/${jparstest.2.jpa.plugins.dir}" separator="_"
                       criterion="[2.0.0,3.0.0)" property="persistence20.lib" includepath="true"/>

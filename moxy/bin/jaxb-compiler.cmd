@@ -25,12 +25,10 @@ set JVM_ARGS=-Xmx256m
 set _FIXPATH=
 call :fixpath "%~dp0"
 set THIS=%_FIXPATH:~1%
-set CLASSPATH=%THIS%..\jlib\moxy\javax.json-api_1.1.2.jar
-set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\moxy\javax.json_1.1.2.jar
-set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\moxy\jaxb-core_2.2.11.v201407311112.jar
-set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\moxy\jaxb-core_2.2.11.v201407311112.jar
-set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\moxy\jaxb-xjc_2.2.11.v201407311112.jar
-set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\moxy\javax.validation.api_2.0.1.Final.jar
+set CLASSPATH=%THIS%..\jlib\moxy\org.glassfish.jakarta.json.jar
+set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\moxy\com.sun.xml.bind.jaxb-osgi.jar
+set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\moxy\com.sun.xml.bind.jaxb-xjc.jar
+set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\moxy\jakarta.validation-api.jar
 set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\eclipselink.jar
 set JAVA_ARGS=%*
 

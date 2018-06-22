@@ -20,7 +20,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/javax.servlet_2.4.0.v200806031604.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/jakarta.servlet-api.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

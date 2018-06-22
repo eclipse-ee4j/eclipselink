@@ -93,7 +93,6 @@
     <property name="jaxb-xjc.lib" value="${moxytest.2.common.plugins.dir}/${jaxb-xjc.jar}"/>
     <property name="jaxb-api.lib" value="${moxytest.2.common.plugins.dir}/${jaxb-api.jar}"/>
     <property name="jaxb-impl.lib" value="${moxytest.2.common.plugins.dir}/${jaxb-impl.jar}"/>
-    <property name="jaxb-core.lib" value="${moxytest.2.common.plugins.dir}/${jaxb-core.jar}"/>
     <property name="javax.validation.lib" value="${moxytest.2.common.plugins.dir}/${javax.validation.jar}"/>
     <property name="validation-impl.lib" value="${extensions.depend.dir}/${validation-impl.jar}"/>
     <property name="jboss-logging.lib" value="${extensions.depend.dir}/${jboss-logging.jar}"/>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="JAVA_MODULE" version="4">
   <component name="EclipseModuleManager">
-    <varelement var="jar://$MODULE_DIR$/../../plugins/com.sun.xml.bind_2.2.11.v201406210428.jar!/" value="MODULE_DIR/../../plugins/com.sun.xml.bind_2.2.11.v201406210428.jar" />
+    <varelement var="jar://$MODULE_DIR$/../../plugins/com.sun.xml.bind.jaxb-osgi.jar!/" value="MODULE_DIR/../../plugins/com.sun.xml.bind.jaxb-osgi.jar" />
     <varelement var="jar://$MODULE_DIR$/../../plugins/javax.mail_1.4.0.v201005080615.jar!/" value="MODULE_DIR/../../plugins/javax.mail_1.4.0.v201005080615.jar" />
     <varelement var="jar://$MODULE_DIR$/../../plugins/javax.ws.rs_2.0.1.v201504171603.jar!/" value="MODULE_DIR/../../plugins/javax.ws.rs_2.0.1.v201504171603.jar" />
     <varelement var="jar://$MODULE_DIR$/../../plugins/javax.xml.bind_2.2.0.v201105210648.jar!/" value="MODULE_DIR/../../plugins/javax.xml.bind_2.2.0.v201105210648.jar" />
@@ -9,10 +9,10 @@
     <varelement var="jar://$MODULE_DIR$/../../plugins/org.glassfish.javax.json.source_1.0.4.v201311181159.jar" value="src:/MODULE_DIR/../../plugins/org.glassfish.javax.json.source_1.0.4.v201311181159.jar" />
     <varelement var="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.asm_7.0.0.v201811131354.jar!/" value="MODULE_DIR/../../plugins/org.eclipse.persistence.asm_7.0.0.v201811131354.jar" />
     <varelement var="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.asm.source_7.0.0.v201811131354.jar!/" value="src:/MODULE_DIR/../../plugins/org.eclipse.persistence.asm.source_7.0.0.v201811131354.jar" />
-    <varelement var="jar://$MODULE_DIR$/../../plugins/jaxb-core_2.2.11.v201407311112.jar!/" value="MODULE_DIR/../../plugins/jaxb-core_2.2.11.v201407311112.jar" />
+    <varelement var="jar://$MODULE_DIR$/../../plugins/com.sun.xml.bind.jaxb-osgi.jar!/" value="MODULE_DIR/../../plugins/com.sun.xml.bind.jaxb-osgi.jar" />
     <varelement var="jar://$MODULE_DIR$/../../plugins/jaxb-core.source_2.2.11.v201407311112.jar!/" value="src:/MODULE_DIR/../../plugins/jaxb-core.source_2.2.11.v201407311112.jar" />
-    <varelement var="jar://$MODULE_DIR$/../../plugins/javax.validation.api_2.0.1.Final.jar!/" value="MODULE_DIR/../../plugins/javax.validation.api_2.0.1.Final.jar" />
-    <varelement var="jar://$MODULE_DIR$/../../plugins/jaxb-xjc_2.2.11.v201407311112.jar!/" value="MODULE_DIR/../../plugins/jaxb-xjc_2.2.11.v201407311112.jar" />
+    <varelement var="jar://$MODULE_DIR$/../../plugins/jakarta.validation-api.jar!/" value="MODULE_DIR/../../plugins/jakarta.validation-api.jar" />
+    <varelement var="jar://$MODULE_DIR$/../../plugins/com.sun.xml.bind.jaxb-xjc.jar!/" value="MODULE_DIR/../../plugins/com.sun.xml.bind.jaxb-xjc.jar" />
     <varelement var="jar://$MODULE_DIR$/../../plugins/jaxb-xjc.source_2.2.11.v201407311112.jar!/" value="src:/MODULE_DIR/../../plugins/jaxb-xjc.source_2.2.11.v201407311112.jar" />
     <src_description expected_position="0">
       <src_folder value="file://$MODULE_DIR$/src" expected_position="0" />
@@ -44,7 +44,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/com.sun.xml.bind_2.2.11.v201406210428.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/com.sun.xml.bind.jaxb-osgi.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -71,7 +71,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/javax.xml.bind_2.2.12.v201410011542.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/jakarta.xml.bind-api.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -104,7 +104,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/jaxb-core_2.2.11.v201407311112.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/com.sun.xml.bind.jaxb-osgi.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -115,7 +115,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/javax.validation.api_2.0.1.Final.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/jakarta.validation-api.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -124,11 +124,11 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/jaxb-xjc_2.2.11.v201407311112.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/com.sun.xml.bind.jaxb-xjc.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/../../plugins/jaxb-xjc_2.2.11.v201407311112.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/com.sun.xml.bind.jaxb-xjc.jar!/" />
           <root url="jar://$MODULE_DIR$/../../plugins/jaxb-xjc.source_2.2.11.v201407311112.jar!/" />
         </SOURCES>
       </library>

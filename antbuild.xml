@@ -618,24 +618,25 @@
         <copy-plugin from="ch.qos.logback.classic*.jar" to="ch.qos.logback.classic_1.0.7.v20121108-1250.jar"/>
         <copy-plugin from="ch.qos.logback.core*.jar" to="ch.qos.logback.core_1.0.7.v20121108-1250.jar"/>
         <!--SLF4J <copy-plugin from="ch.qos.logback.slf4j_1.0.7.v20121108-1250.jar" to="ch.qos.logback.slf4j_1.0.7.v20121108-1250.jar"/>-->
-        <copy-plugin from="com.sun.xml.bind.jaxb-osgi*.jar" to="com.sun.xml.bind_2.2.11.v201406210428.jar"/>
-        <copy-plugin from="com.sun.xml.bind.jaxb-osgi*.jar" to="jaxb-core_2.2.11.v201407311112.jar"/>
-        <copy-plugin from="com.sun.xml.bind.jaxb-xjc*.jar" to="jaxb-xjc_2.2.11.v201407311112.jar"/>
+        <copy-plugin from="com.sun.xml.bind.jaxb-osgi*.jar" to="com.sun.xml.bind.jaxb-osgi.jar"/>
+        <!--jaxb-core...jar content is in *jaxb-osgi*.jar  <copy-plugin from="com.sun.xml.bind.jaxb-osgi*.jar" to="jaxb-core_2.2.11.v201407311112.jar"/>-->
+        <copy-plugin from="com.sun.xml.bind.jaxb-xjc*.jar" to="com.sun.xml.bind.jaxb-xjc.jar"/>
         <copy-plugin from="gmbal-api-only*.jar" to="gmbal-api-only_3.2.0.b003.jar"/>
         <copy-plugin from="jakarta.annotation-api*.jar" to="javax.annotation_1.2.0.v201401042248.jar"/>
         <copy-plugin from="jakarta.ejb*.jar" to="javax.ejb_3.1.0.v201205171433.jar"/>
         <copy-plugin from="org.glassfish.hk2.external.jakarta.inject*.jar" to="javax.inject_1.0.0.v20091030.jar"/>
         <copy-plugin from="javax.interceptor-api*.jar" to="javax.interceptor.api_1.2.2.jar"/>
         <copy-plugin from="jakarta.jms-api*.jar" to="javax.jms_1.1.0.v200906010428.jar"/>
-        <copy-plugin from="org.glassfish.jakarta.json*.jar" to="javax.json_1.1.2.jar"/>
-        <copy-plugin from="jakarta.json-api*.jar" to="javax.json-api_1.1.2.jar"/>
+        <copy-plugin from="org.glassfish.jakarta.json*.jar" to="org.glassfish.jakarta.json.jar"/>
         <copy-plugin from="com.sun.mail.jakarta.mail*.jar" to="javax.mail_1.4.0.v201005080615.jar"/>
         <copy-plugin from="javax.resource*.jar" to="javax.resource_1.6.0.v201204270900.jar"/>
-        <copy-plugin from="javax.servlet*.jar" to="javax.servlet_2.4.0.v200806031604.jar"/>
+        <copy-plugin from="jakarta.servlet-api*.jar" to="jakarta.servlet-api.jar"/>
         <copy-plugin from="jakarta.transaction-api*.jar" to="javax.transaction.api_1.3.0.jar"/>
-        <copy-plugin from="jakarta.validation.jakarta.validation-api*.jar" to="javax.validation.api_2.0.1.Final.jar"/>
+        <copy-plugin from="jakarta.validation.jakarta.validation-api*.jar" to="jakarta.validation-api.jar"/>
         <copy-plugin from="javax.ws.rs*.jar" to="javax.ws.rs_2.0.1.v201504171603.jar"/>
-        <copy-plugin from="jakarta.xml.bind-api_*.jar" to="javax.xml.bind_2.2.12.v201410011542.jar"/>
+        <copy-plugin from="jakarta.xml.bind-api_*.jar" to="jakarta.xml.bind-api.jar"/>
+        <!--TODO temorary due jpa/eclipselink.jpars.test selectbundle task -->
+        <copy-plugin from="jakarta.xml.bind-api_*.jar" to="jakarta.xml.bind-api_2.2.0.jar"/>
         <copy-plugin from="jakarta.xml.soap-api*.jar" to="javax.xml.soap_1.3.0.v200906010428.jar"/>
         <copy-plugin from="javax.xml.ws*.jar" to="javax.xml.ws_2.0.0.v200902170419.jar"/>
         <copy-plugin from="org.glassfish.external.management-api*.jar" to="management-api_3.2.1.b003.jar"/>

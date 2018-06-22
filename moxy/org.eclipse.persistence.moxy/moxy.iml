@@ -52,7 +52,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/javax.validation.api_2.0.1.Final.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/jakarta.validation-api.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -61,7 +61,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/jaxb-core_2.2.11.v201407311112.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/com.sun.xml.bind.jaxb-osgi.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -72,12 +72,12 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/jaxb-xjc_2.2.11.v201407311112.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/com.sun.xml.bind.jaxb-xjc.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
           <root url="jar://$MODULE_DIR$/../../plugins/jaxb-xjc.source_2.2.11.v201407311112.jar!/" />
-          <root url="jar://$MODULE_DIR$/../../plugins/jaxb-xjc_2.2.11.v201407311112.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/com.sun.xml.bind.jaxb-xjc.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
