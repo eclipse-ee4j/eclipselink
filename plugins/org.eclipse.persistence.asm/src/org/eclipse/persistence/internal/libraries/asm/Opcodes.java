@@ -38,6 +38,7 @@ package org.eclipse.persistence.internal.libraries.asm;
  * @author Eric Bruneton
  * @author Eugene Kuleshov
  */
+// DontCheck(InterfaceIsType): can't be fixed (for backward binary compatibility).
 public interface Opcodes {
 
   // ASM API versions.
@@ -45,14 +46,7 @@ public interface Opcodes {
   int ASM4 = 4 << 16 | 0 << 8;
   int ASM5 = 5 << 16 | 0 << 8;
   int ASM6 = 6 << 16 | 0 << 8;
-
-  /**
-   * <b>Experimental, use at your own risk. This field will be renamed when it becomes stable, this
-   * will break existing code using it</b>.
-   *
-   * @deprecated This API is experimental.
-   */
-  @Deprecated int ASM7_EXPERIMENTAL = 1 << 24 | 7 << 16 | 0 << 8;
+  int ASM7 = 7 << 16 | 0 << 8;
 
   // Java ClassFile versions (the minor version is stored in the 16 most
   // significant bits, and the
@@ -69,16 +63,15 @@ public interface Opcodes {
   int V9 = 0 << 16 | 53;
   int V10 = 0 << 16 | 54;
   int V11 = 0 << 16 | 55;
+  int V12 = 0 << 16 | 56;
 
   /**
    * Version flag indicating that the class is using 'preview' features.
    *
-   * <p>{@code version & V_PREVIEW_EXPERIMENTAL == V_PREVIEW_EXPERIMENTAL} tests if a version is
-   * flagged with {@code V_PREVIEW_EXPERIMENTAL}.
-   *
-   * @deprecated This API is experimental.
+   * <p>{@code version & V_PREVIEW == V_PREVIEW} tests if a version is flagged with {@code
+   * V_PREVIEW}.
    */
-  @Deprecated int V_PREVIEW_EXPERIMENTAL = 0xFFFF0000;
+  int V_PREVIEW = 0xFFFF0000;
 
   // Access flags values, defined in
   // - https://docs.oracle.com/javase/specs/jvms/se9/html/jvms-4.html#jvms-4.1-200-E.1

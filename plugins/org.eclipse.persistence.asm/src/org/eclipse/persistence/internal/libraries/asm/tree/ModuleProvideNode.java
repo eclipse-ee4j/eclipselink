@@ -28,7 +28,6 @@
 package org.eclipse.persistence.internal.libraries.asm.tree;
 
 import java.util.List;
-
 import org.eclipse.persistence.internal.libraries.asm.ModuleVisitor;
 
 /**
@@ -62,6 +61,6 @@ public class ModuleProvideNode {
    * @param moduleVisitor a module visitor.
    */
   public void accept(final ModuleVisitor moduleVisitor) {
-    moduleVisitor.visitProvide(service, providers.toArray(new String[providers.size()]));
+    moduleVisitor.visitProvide(service, providers.toArray(new String[0]));
   }
 }

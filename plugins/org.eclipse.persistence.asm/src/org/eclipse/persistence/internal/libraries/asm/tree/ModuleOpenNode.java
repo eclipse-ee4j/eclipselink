@@ -28,7 +28,6 @@
 package org.eclipse.persistence.internal.libraries.asm.tree;
 
 import java.util.List;
-
 import org.eclipse.persistence.internal.libraries.asm.ModuleVisitor;
 
 /**
@@ -49,7 +48,7 @@ public class ModuleOpenNode {
 
   /**
    * The fully qualified names (using dots) of the modules that can use deep reflection to the
-   * classes of the open package, or <tt>null</tt>.
+   * classes of the open package, or {@literal null}.
    */
   public List<String> modules;
 
@@ -60,7 +59,7 @@ public class ModuleOpenNode {
    * @param access the access flag of the opened package, valid values are among {@code
    *     ACC_SYNTHETIC} and {@code ACC_MANDATED}.
    * @param modules the fully qualified names (using dots) of the modules that can use deep
-   *     reflection to the classes of the open package, or <tt>null</tt>.
+   *     reflection to the classes of the open package, or {@literal null}.
    */
   public ModuleOpenNode(final String packaze, final int access, final List<String> modules) {
     this.packaze = packaze;
@@ -75,6 +74,6 @@ public class ModuleOpenNode {
    */
   public void accept(final ModuleVisitor moduleVisitor) {
     moduleVisitor.visitOpen(
-        packaze, access, modules == null ? null : modules.toArray(new String[modules.size()]));
+        packaze, access, modules == null ? null : modules.toArray(new String[0]));
   }
 }

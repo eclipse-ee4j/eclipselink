@@ -52,7 +52,7 @@ public class CheckFieldAdapter extends FieldVisitor {
    * @throws IllegalStateException If a subclass calls this constructor.
    */
   public CheckFieldAdapter(final FieldVisitor fieldVisitor) {
-    this(Opcodes.ASM6, fieldVisitor);
+    this(Opcodes.ASM7, fieldVisitor);
     if (getClass() != CheckFieldAdapter.class) {
       throw new IllegalStateException();
     }
@@ -62,7 +62,7 @@ public class CheckFieldAdapter extends FieldVisitor {
    * Constructs a new {@link CheckFieldAdapter}.
    *
    * @param api the ASM API version implemented by this visitor. Must be one of {@link
-   *     Opcodes#ASM4}, {@link Opcodes#ASM5} or {@link Opcodes#ASM6}.
+   *     Opcodes#ASM4}, {@link Opcodes#ASM5}, {@link Opcodes#ASM6} or {@link Opcodes#ASM7}.
    * @param fieldVisitor the field visitor to which this adapter must delegate calls.
    */
   protected CheckFieldAdapter(final int api, final FieldVisitor fieldVisitor) {
@@ -72,7 +72,8 @@ public class CheckFieldAdapter extends FieldVisitor {
   @Override
   public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
     checkVisitEndNotCalled();
-    CheckMethodAdapter.checkDescriptor(descriptor, false);
+    // Annotations can only appear in V1_5 or more classes.
+    CheckMethodAdapter.checkDescriptor(Opcodes.V1_5, descriptor, false);
     return new CheckAnnotationAdapter(super.visitAnnotation(descriptor, visible));
   }
 
@@ -86,7 +87,7 @@ public class CheckFieldAdapter extends FieldVisitor {
           "Invalid type reference sort 0x" + Integer.toHexString(sort));
     }
     CheckClassAdapter.checkTypeRef(typeRef);
-    CheckMethodAdapter.checkDescriptor(descriptor, false);
+    CheckMethodAdapter.checkDescriptor(Opcodes.V1_5, descriptor, false);
     return new CheckAnnotationAdapter(
         super.visitTypeAnnotation(typeRef, typePath, descriptor, visible));
   }

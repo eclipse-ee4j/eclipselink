@@ -22,7 +22,6 @@
 package org.eclipse.persistence.internal.libraries.asm.util;
 
 import java.util.Map;
-
 import org.eclipse.persistence.internal.libraries.asm.Label;
 
 /**
@@ -31,6 +30,7 @@ import org.eclipse.persistence.internal.libraries.asm.Label;
  *
  * @author Eugene Kuleshov
  */
+// DontCheck(AbbreviationAsWordInName): can't be renamed (for backward binary compatibility).
 public interface ASMifiable {
 
   /**

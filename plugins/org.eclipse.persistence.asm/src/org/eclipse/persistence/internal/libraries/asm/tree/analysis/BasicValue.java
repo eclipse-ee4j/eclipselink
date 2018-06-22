@@ -59,7 +59,7 @@ public class BasicValue implements Value {
   /** A return address value (produced by a jsr instruction). */
   public static final BasicValue RETURNADDRESS_VALUE = new BasicValue(Type.VOID_TYPE);
 
-  /** The {@link Type} of this value, or <tt>null</tt> for uninitialized values. */
+  /** The {@link Type} of this value, or {@literal null} for uninitialized values. */
   private final Type type;
 
   /**
@@ -80,6 +80,7 @@ public class BasicValue implements Value {
     return type;
   }
 
+  @Override
   public int getSize() {
     return type == Type.LONG_TYPE || type == Type.DOUBLE_TYPE ? 2 : 1;
   }

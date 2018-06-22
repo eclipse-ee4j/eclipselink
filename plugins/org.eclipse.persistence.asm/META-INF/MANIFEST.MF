@@ -1,21 +1,21 @@
 Manifest-Version: 1.0
 Automatic-Module-Name: eclipselink.asm
 Export-Package: org.eclipse.persistence.internal.libraries.asm;version
- ="6.2.0",org.eclipse.persistence.internal.libraries.asm.commons;versi
- on="6.2.0";uses:="org.eclipse.persistence.internal.libraries.asm,org.
+ ="7.0.0",org.eclipse.persistence.internal.libraries.asm.commons;versi
+ on="7.0.0";uses:="org.eclipse.persistence.internal.libraries.asm,org.
  eclipse.persistence.internal.libraries.asm.signature,org.eclipse.pers
  istence.internal.libraries.asm.tree",org.eclipse.persistence.internal
- .libraries.asm.signature;version="6.2.0",org.eclipse.persistence.inte
- rnal.libraries.asm.tree;version="6.2.0";uses:="org.eclipse.persistenc
+ .libraries.asm.signature;version="7.0.0",org.eclipse.persistence.inte
+ rnal.libraries.asm.tree;version="7.0.0";uses:="org.eclipse.persistenc
  e.internal.libraries.asm",org.eclipse.persistence.internal.libraries.
- asm.tree.analysis;version="6.2.0";uses:="org.eclipse.persistence.inte
+ asm.tree.analysis;version="7.0.0";uses:="org.eclipse.persistence.inte
  rnal.libraries.asm,org.eclipse.persistence.internal.libraries.asm.tre
- e",org.eclipse.persistence.internal.libraries.asm.util;version="6.2.0
+ e",org.eclipse.persistence.internal.libraries.asm.util;version="7.0.0
  ";uses:="org.eclipse.persistence.internal.libraries.asm,org.eclipse.p
  ersistence.internal.libraries.asm.signature,org.eclipse.persistence.i
  nternal.libraries.asm.tree.analysis,org.eclipse.persistence.internal.
  libraries.asm.tree",org.eclipse.persistence.internal.libraries.asm.xm
- l;version="6.2.0";uses:="org.xml.sax.helpers,org.eclipse.persistence.
+ l;version="7.0.0";uses:="org.xml.sax.helpers,org.eclipse.persistence.
  internal.libraries.asm,org.xml.sax,javax.xml.transform"
 Bundle-Name: EclipseLink ASM
 Created-By: 1.8.0_121 (Sun Microsystems Inc.)
@@ -23,7 +23,7 @@ HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.asm
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Implementation-Vendor: Eclipse.org - EclipseLink Project
 Bundle-Vendor: Eclipse.org - EclipseLink Project
-Bundle-Version: 6.2.0.qualifier
+Bundle-Version: 7.0.0.qualifier
 Bundle-ManifestVersion: 2
 Import-Package: javax.xml.transform;resolution:=optional,javax.xml.tra
  nsform.sax;resolution:=optional,javax.xml.transform.stream;resolution

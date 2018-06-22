@@ -41,12 +41,12 @@ import java.util.Set;
  */
 final class SmallSet<T> extends AbstractSet<T> {
 
-  /** The first element of this set, maybe <tt>null</tt>. */
+  /** The first element of this set, maybe {@literal null}. */
   private final T element1;
 
   /**
-   * The second element of this set, maybe <tt>null</tt>. If {@link #element1} is <tt>null</tt> then
-   * this field must be <tt>null</tt>, otherwise it must be different from {@link #element1}.
+   * The second element of this set, maybe {@literal null}. If {@link #element1} is {@literal null}
+   * then this field must be {@literal null}, otherwise it must be different from {@link #element1}.
    */
   private final T element2;
 
@@ -88,43 +88,6 @@ final class SmallSet<T> extends AbstractSet<T> {
   @Override
   public Iterator<T> iterator() {
     return new IteratorImpl<T>(element1, element2);
-  }
-
-  static class IteratorImpl<T> implements Iterator<T> {
-
-    /** The next element to return in {@link #next}. Maybe <tt>null</tt>. */
-    private T firstElement;
-
-    /**
-     * The element to return in {@link #next}, after {@link #firstElement} is returned. If {@link
-     * #firstElement} is <tt>null</tt> then this field must be <tt>null</tt>, otherwise it must be
-     * different from {@link #firstElement}.
-     */
-    private T secondElement;
-
-    IteratorImpl(final T firstElement, final T secondElement) {
-      this.firstElement = firstElement;
-      this.secondElement = secondElement;
-    }
-
-    public boolean hasNext() {
-      return firstElement != null;
-    }
-
-    public T next() {
-      if (firstElement == null) {
-        throw new NoSuchElementException();
-      }
-      T element = firstElement;
-      firstElement = secondElement;
-      secondElement = null;
-      return element;
-    }
-
-    @Override
-    public void remove() {
-      throw new UnsupportedOperationException();
-    }
   }
 
   @Override
@@ -186,5 +149,44 @@ final class SmallSet<T> extends AbstractSet<T> {
       result.add(otherSet.element2);
     }
     return result;
+  }
+
+  static class IteratorImpl<T> implements Iterator<T> {
+
+    /** The next element to return in {@link #next}. Maybe {@literal null}. */
+    private T firstElement;
+
+    /**
+     * The element to return in {@link #next}, after {@link #firstElement} is returned. If {@link
+     * #firstElement} is {@literal null} then this field must be {@literal null}, otherwise it must
+     * be different from {@link #firstElement}.
+     */
+    private T secondElement;
+
+    IteratorImpl(final T firstElement, final T secondElement) {
+      this.firstElement = firstElement;
+      this.secondElement = secondElement;
+    }
+
+    @Override
+    public boolean hasNext() {
+      return firstElement != null;
+    }
+
+    @Override
+    public T next() {
+      if (firstElement == null) {
+        throw new NoSuchElementException();
+      }
+      T element = firstElement;
+      firstElement = secondElement;
+      secondElement = null;
+      return element;
+    }
+
+    @Override
+    public void remove() {
+      throw new UnsupportedOperationException();
+    }
   }
 }

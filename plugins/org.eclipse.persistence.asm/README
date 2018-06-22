@@ -10,6 +10,7 @@ org.eclipse.persistence.utils.rename.MigrateTopLinkToEclipseLink <tmp>/org/objec
 -update release version in 'about.html' and 'readme.html'
 -update asm version in the manifest, i.e.
 sed -i "s/6\.1\.1/6\.2\.0/g" META-INF/MANIFEST.MF
+Note: Version is required in following format major.minor.micro . For example 7.0.0. See OSGI spec.
 -update asm version in:
         dbws/org.eclipse.persistence.dbws/META-INF/MANIFEST.MF
         foundation/org.eclipse.persistence.core/META-INF/MANIFEST.MF
@@ -23,7 +24,7 @@ sed -i "s/6\.1\.1/6\.2\.0/g" META-INF/MANIFEST.MF
 Once CQ is approved, pull request can be approved, and EclipseLink project committer can:
 -merge the pull request
 -build final artifact with:
-ant -f antbuild.xml -Dbuild.type=RELEASE bld
+    ant -f antbuild.xml -Dbuild.type=RELEASE bld
 
 -commit & push changes
 -rebuild compdeps (run job @ https://ci.eclipse.org/eclipselink/job/eclipselink-update-compdeps)
