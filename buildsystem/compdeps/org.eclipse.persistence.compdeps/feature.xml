@@ -117,14 +117,14 @@
             unpack="false"/>
 
     <plugin
-            id="jakarta.json-api"
+            id="com.sun.mail.jakarta.mail"
             download-size="0"
             install-size="0"
             version="0.0.0"
             unpack="false"/>
 
     <plugin
-            id="jakarta.mail-api"
+            id="jakarta.json-api"
             download-size="0"
             install-size="0"
             version="0.0.0"
