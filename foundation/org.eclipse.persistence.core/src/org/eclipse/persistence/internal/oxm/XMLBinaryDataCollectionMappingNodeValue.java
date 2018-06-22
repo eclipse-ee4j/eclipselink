@@ -96,13 +96,17 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
 
         XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
         marshalRecord.closeStartGroupingElements(groupingFragment);
-
-        marshalRecord.startCollection();
+        int valueSize = cp.sizeFor(collection);
+        if(marshalRecord.getMarshaller().isApplicationJSON() && (valueSize > 1 || !marshalRecord.getMarshaller().isReduceAnyArrays())) {
+            marshalRecord.startCollection();
+        }
         while (cp.hasNext(iterator)) {
             Object objectValue = cp.next(iterator, session);
           marshalSingleValue(xPathFragment, marshalRecord, object, objectValue, session, namespaceResolver, ObjectMarshalContext.getInstance());
         }
+        if(marshalRecord.getMarshaller().isApplicationJSON() && (valueSize > 1 || !marshalRecord.getMarshaller().isReduceAnyArrays())) {
             marshalRecord.endCollection();
+        }
         return true;
     }
 

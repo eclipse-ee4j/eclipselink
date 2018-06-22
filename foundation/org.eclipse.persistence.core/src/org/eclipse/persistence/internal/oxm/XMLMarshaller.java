@@ -1125,7 +1125,10 @@ public abstract class XMLMarshaller<
         }else{
             Class objectClass = object.getClass();
             if(object instanceof Collection) {
-                marshalRecord.startCollection();
+                int valueSize = ((Collection)object).size();
+                if(marshalRecord.getMarshaller().isApplicationJSON() && (valueSize > 1 || !marshalRecord.getMarshaller().isReduceAnyArrays())) {
+                    marshalRecord.startCollection();
+                }
                 String valueWrapper;
                 for(Object o : (Collection) object) {
                     if (o == null) {
@@ -1151,16 +1154,22 @@ public abstract class XMLMarshaller<
                         }
                     }
                 }
-                marshalRecord.endCollection();
+                if(marshalRecord.getMarshaller().isApplicationJSON() && (valueSize > 1 || !marshalRecord.getMarshaller().isReduceAnyArrays())) {
+                    marshalRecord.endCollection();
+                }
                 marshalRecord.flush();
                 return;
             } else if(objectClass.isArray()) {
-                marshalRecord.startCollection();
                 int arrayLength = Array.getLength(object);
+                if(marshalRecord.getMarshaller().isApplicationJSON() && (arrayLength > 1 || !marshalRecord.getMarshaller().isReduceAnyArrays())) {
+                    marshalRecord.startCollection();
+                }
                 for(int x=0; x<arrayLength; x++) {
                     marshal(Array.get(object, x), marshalRecord);
                 }
-                marshalRecord.endCollection();
+                if(marshalRecord.getMarshaller().isApplicationJSON() && (arrayLength > 1 || !marshalRecord.getMarshaller().isReduceAnyArrays())) {
+                    marshalRecord.endCollection();
+                }
                 marshalRecord.flush();
                 return;
             }

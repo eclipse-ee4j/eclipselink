@@ -130,13 +130,18 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
                 }
             }
         } else {
-            marshalRecord.startCollection();
+            int valueSize = cp.sizeFor(collection);
+            if(marshalRecord.getMarshaller().isApplicationJSON() && (valueSize > 1 || !marshalRecord.getMarshaller().isReduceAnyArrays())) {
+                marshalRecord.startCollection();
+            }
 
             while (cp.hasNext(iterator)) {
                 objectValue = cp.next(iterator, session);
                 marshalSingleValue(xPathFragment, marshalRecord, object, objectValue, session, namespaceResolver, ObjectMarshalContext.getInstance());
             }
-            marshalRecord.endCollection();
+            if(marshalRecord.getMarshaller().isApplicationJSON() && (valueSize > 1 || !marshalRecord.getMarshaller().isReduceAnyArrays())) {
+                marshalRecord.endCollection();
+            }
         }
         return true;
     }
