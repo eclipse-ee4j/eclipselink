@@ -23,7 +23,7 @@ call :fixpath "%~dp0"
 set THIS=%_FIXPATH:~1%
 
 set CLASSPATH=%THIS%\jakarta.servlet-api.jar
-set CLASSPATH=%CLASSPATH%;%THIS%\javax.wsdl.jar
+set CLASSPATH=%CLASSPATH%;%THIS%\javax.wsdl_1.6.2.v201012040545.jar
 set CLASSPATH=%CLASSPATH%;%THIS%\org.eclipse.persistence.oracleddlparser_1.0.0.v201807030954.jar
 set CLASSPATH=%CLASSPATH%;%THIS%..\..\jlib\eclipselink.jar
 set CLASSPATH=%CLASSPATH%;%THIS%\eclipselink-dbwsutils.jar
