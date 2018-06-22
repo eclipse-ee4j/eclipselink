@@ -26,6 +26,7 @@ import org.eclipse.persistence.testing.jaxb.annotations.xmlelementnillable.XmlEl
 import org.eclipse.persistence.testing.jaxb.annotations.xmlelementnillable.XmlElementNillableTypeLevelTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlidref.XmlIdRefMissingIdEventHandlerTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlidref.XmlIdRefMissingIdTestCases;
+import org.eclipse.persistence.testing.jaxb.annotations.xmlidref.inheritance.XmlIdRefInheritanceTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlidref.self.XmlIdRefSelfTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlinlinebinarydata.InlineHexBinaryTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlinversereference.InverseRefChoiceAdapterTestCases;
@@ -114,6 +115,7 @@ public class AnnotationsTestSuite extends TestSuite {
         suite.addTestSuite(XmlIdRefMissingIdTestCases.class);
         suite.addTestSuite(XmlIdRefMissingIdEventHandlerTestCases.class);
         suite.addTestSuite(XmlIdRefSelfTestCases.class);
+        suite.addTestSuite(XmlIdRefInheritanceTestCases.class);
         suite.addTest(org.eclipse.persistence.testing.jaxb.annotations.xmltransient.XmlTransientTestSuite.suite());
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlelementdecl.qualified.QualfiedTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlelementdecl.noxmlrootelement.NoRootElementTestCases.class);
