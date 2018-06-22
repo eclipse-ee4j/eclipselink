@@ -95,14 +95,12 @@
             version="0.0.0"
             unpack="false"/>
 
-<!--
     <plugin
             id="jakarta.interceptor-api"
             download-size="0"
             install-size="0"
             version="0.0.0"
             unpack="false"/>
--->
 
     <plugin
             id="jakarta.jms-api"
@@ -133,14 +131,14 @@
             unpack="false"/>
 
     <plugin
-            id="javax.resource-api"
+            id="jakarta.resource-api"
             download-size="0"
             install-size="0"
             version="0.0.0"
             unpack="false"/>
 
     <plugin
-            id="javax.servlet-api"
+            id="jakarta.servlet-api"
             download-size="0"
             install-size="0"
             version="0.0.0"
