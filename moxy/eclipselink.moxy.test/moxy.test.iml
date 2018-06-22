@@ -2,7 +2,7 @@
 <module type="JAVA_MODULE" version="4">
   <component name="EclipseModuleManager">
     <varelement var="jar://$MODULE_DIR$/../../plugins/com.sun.xml.bind.jaxb-osgi.jar!/" value="MODULE_DIR/../../plugins/com.sun.xml.bind.jaxb-osgi.jar" />
-    <varelement var="jar://$MODULE_DIR$/../../plugins/javax.mail_1.4.0.v201005080615.jar!/" value="MODULE_DIR/../../plugins/javax.mail_1.4.0.v201005080615.jar" />
+    <varelement var="jar://$MODULE_DIR$/../../plugins/com.sun.mail.jakarta.mail.jar!/" value="MODULE_DIR/../../plugins/com.sun.mail.jakarta.mail.jar" />
     <varelement var="jar://$MODULE_DIR$/../../plugins/javax.ws.rs_2.0.1.v201504171603.jar!/" value="MODULE_DIR/../../plugins/javax.ws.rs_2.0.1.v201504171603.jar" />
     <varelement var="jar://$MODULE_DIR$/../../plugins/javax.xml.bind_2.2.0.v201105210648.jar!/" value="MODULE_DIR/../../plugins/javax.xml.bind_2.2.0.v201105210648.jar" />
     <varelement var="jar://$MODULE_DIR$/../../plugins/org.glassfish.javax.json_1.0.4.v201311181159.jar" value="MODULE_DIR/../../plugins/org.glassfish.javax.json_1.0.4.v201311181159.jar" />
@@ -53,7 +53,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/javax.mail_1.4.0.v201005080615.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/com.sun.mail.jakarta.mail.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

@@ -3,7 +3,7 @@
   <component name="EclipseModuleManager">
     <varelement var="jar://$MODULE_DIR$/../../plugins/javax.resource_1.6.0.v201204270900.jar!/" value="MODULE_DIR/../../plugins/javax.resource_1.6.0.v201204270900.jar" />
     <varelement var="jar://$MODULE_DIR$/../../plugins/org.eclipse.orbit.mongodb_2.7.3.v20120213-1927.jar!/" value="MODULE_DIR/../../plugins/org.eclipse.orbit.mongodb_2.7.3.v20120213-1927.jar" />
-    <varelement var="jar://$MODULE_DIR$/../../plugins/javax.jms_1.1.0.v200906010428.jar!/" value="MODULE_DIR/../../plugins/javax.jms_1.1.0.v200906010428.jar" />
+    <varelement var="jar://$MODULE_DIR$/../../plugins/jakarta.jms-api.jar!/" value="MODULE_DIR/../../plugins/jakarta.jms-api.jar" />
     <varelement var="file://$MODULE_DIR$/../../plugins/javax.jms/src" value="src:/MODULE_DIR/../../plugins/javax.jms/src" />
     <src_description expected_position="0">
       <src_folder value="file://$MODULE_DIR$/src" expected_position="0" />
@@ -42,7 +42,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/javax.jms_1.1.0.v200906010428.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/jakarta.jms-api.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
