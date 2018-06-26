@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -25,6 +25,8 @@
  *       - 464641 : Fixed platform matching returning CNF.
  *     09/03/2015 - Will Dazey
  *       - 456067 : Added support for defining query timeout units
+ *     06/26/2018 - Will Dazey
+ *       - 532160 : Add support for non-extension OracleXPlatform classes
  *       ******************************************************************************/
 package org.eclipse.persistence.internal.sessions;
 
@@ -265,19 +267,25 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
             this.platform = null;
             platformName = DBPlatformHelper.getDBPlatform(vendorNameAndVersion, getSessionLog());
             getLogin().setPlatformClassName(platformName);
-            if (driverName != null) {
-                getLogin().getPlatform().setDriverName(driverName);
-            }
         } catch (EclipseLinkException classNotFound) {
             if (platformName != null && platformName.indexOf("Oracle") != -1) {
-                // If we are running against Oracle, it is possible that we are
-                // running in an environment where
-                // the OracleXPlatform class can not be loaded. Try using
-                // OraclePlatform class before giving up
-                getLogin().setPlatformClassName(OraclePlatform.class.getName());
+                try {
+                    // If we are running against Oracle, it is possible that we are
+                    // running in an environment where the extension OracleXPlatform classes can 
+                    // not be loaded. Try using the core OracleXPlatform classes
+                    platformName = DBPlatformHelper.getDBPlatform("core."+ vendorNameAndVersion, getSessionLog());
+                    getLogin().setPlatformClassName(platformName);
+                } catch (EclipseLinkException oracleClassNotFound) {
+                    // If we still cannot classload a matching OracleXPlatform class, 
+                    // fallback on the base OraclePlatform class
+                    getLogin().setPlatformClassName(OraclePlatform.class.getName());
+                }
             } else {
                 throw classNotFound;
             }
+        }
+        if (driverName != null) {
+            getLogin().getPlatform().setDriverName(driverName);
         }
     }
 
