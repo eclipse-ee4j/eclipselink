@@ -89,7 +89,6 @@ public class SimpleListTestCases extends TestCase {
     public void testReadListOfBoolean() throws Exception {
         Field field = SimpleListTestCases.class.getField("listOfBoolean");
         InputStream entityStream = new ByteArrayInputStream(jsonArrayOfBoolean.getBytes("UTF-8"));
-        //Object result =  moxyJsonProvider.readFrom((Class<Object>) field.getType(), field.getGenericType(), null, null, null, entityStream);
         Object result =  moxyJsonProvider.readFrom((Class<Object>) field.getType(), Boolean.TYPE, null, null, null, entityStream);
         entityStream.close();
         assertEquals(listOfBoolean, result);
