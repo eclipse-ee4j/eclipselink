@@ -21,6 +21,7 @@ import java.io.StringReader;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -66,7 +67,8 @@ import static javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.assertTrue;
+
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 //EclipseLink imports
@@ -395,9 +397,16 @@ public class SQLAsCollectionTestSuite extends ProviderHelper implements Provider
             getTransformer().transform(src, result);
             Document resultDoc = (Document)result.getNode();
             String resultString = documentToString(resultDoc);
-            Document controlDoc = xmlParser.parse(new StringReader(GETDATA_RESPONSE));
+            Document controlDoc = xmlParser.parse(new StringReader(MessageFormat.format(GETDATA_RESPONSE, NS_STRING, "")));
             String controlString = documentToString(controlDoc);
-            assertTrue("Control document not same as instance document.\n Expected:\n" + controlString + "\nActual:\n" + resultString, controlString.equals(resultString));
+            boolean docsEqual = controlString.equals(resultString);
+            if (!docsEqual) {
+                // different JDKs put xmlns declaration to different element, so retry
+                controlDoc = xmlParser.parse(new StringReader(MessageFormat.format(GETDATA_RESPONSE, "", NS_STRING)));
+                controlString = documentToString(controlDoc);
+                assertEquals("Control document not same as instance document.\n Expected:\n" + controlString + "\nActual:\n" + resultString,
+                        controlString, resultString);
+            }
         }
     }
 
@@ -427,12 +436,13 @@ public class SQLAsCollectionTestSuite extends ProviderHelper implements Provider
               "<build-statement><![CDATA[select * from sqlascollection where 0=1]]></build-statement>" +
           "</sql>" +
         "</dbws-builder>";
+    private static final String NS_STRING = " xmlns=\"" + SQLCOLLECTION_NAMESPACE + "\" xmlns:srvc=\"" + SQLCOLLECTION_SERVICE_NAMESPACE + "\"";
     static final String GETDATA_RESPONSE =
         "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +
         "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
             "<SOAP-ENV:Header/>" +
-            "<SOAP-ENV:Body xmlns=\"" + SQLCOLLECTION_NAMESPACE + "\" xmlns:srvc=\"" + SQLCOLLECTION_SERVICE_NAMESPACE + "\">" +
-                "<srvc:"+SQLCOLLECTION_SERVICE+"Response>" +
+            "<SOAP-ENV:Body{0}>" +
+                "<srvc:"+SQLCOLLECTION_SERVICE+"Response{1}>" +
                     "<srvc:result>" +
                         "<sRecord>" +
                             "<id>1</id>" +
