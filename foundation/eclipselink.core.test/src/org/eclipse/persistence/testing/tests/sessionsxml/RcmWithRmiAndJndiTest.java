@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -20,7 +20,7 @@ import javax.naming.Context;
 import org.eclipse.persistence.internal.security.SecurableObjectHolder;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
-import org.eclipse.persistence.sessions.coordination.rmi.RMITransportManager;
+import org.eclipse.persistence.sessions.coordination.TransportManager;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 
 
@@ -33,7 +33,7 @@ public class RcmWithRmiAndJndiTest extends RcmBasicTest {
     public void verify() {
         RemoteCommandManager rcm = (RemoteCommandManager)((AbstractSession)loadedSession).getCommandManager();
 
-        RMITransportManager transportMgr = (RMITransportManager)rcm.getTransportManager();
+        TransportManager transportMgr = rcm.getTransportManager();
 
         Vector errors = new Vector();
 
@@ -61,7 +61,7 @@ public class RcmWithRmiAndJndiTest extends RcmBasicTest {
             errors.add("DM announcement delay = " + rcm.getDiscoveryManager().getAnnouncementDelay());
         }
         // naming services
-        if (transportMgr.getNamingServiceType() != RMITransportManager.JNDI_NAMING_SERVICE) {
+        if (transportMgr.getNamingServiceType() != TransportManager.JNDI_NAMING_SERVICE) {
             errors.add("Naming service type (not JNDI) = " + transportMgr.getNamingServiceType());
         }
         if (!rcm.getUrl().equals("new_jndi_url")) {
